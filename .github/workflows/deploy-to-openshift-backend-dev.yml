@@ -34,6 +34,13 @@ env:
   MAX_CPU: "250m"
   MIN_MEM: "200Mi"
   MAX_MEM: "700Mi"
+
+  MIN_REPLICAS_NGINX: "1"
+  MAX_REPLICAS_NGINX: "2"
+  MIN_CPU_NGINX: "50m"
+  MAX_CPU_NGINX: "100m"
+  MIN_MEM_NGINX: "200Mi"
+  MAX_MEM_NGINX: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
 
@@ -143,6 +150,9 @@ jobs:
           oc rollout cancel deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
               || true && echo "No rollout in progress"
 
+          oc rollout cancel deployment/${{ env.APP_NAME }}-nginx-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+              || true && echo "No rollout in progress"
+
           oc tag \
              ${{ steps.push-image-backend.outputs.registry-path }} \
              ${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ env.TAG }}
@@ -165,6 +175,28 @@ jobs:
              -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
               | oc apply -f -
 
+          # Process and apply nginx deployment template
+          oc process \
+             -f tools/openshift/nginx.deployment.yaml \
+             -p APP_NAME=${{ env.APP_NAME }} \
+             -p REPO_NAME=${{ env.REPO_NAME }} \
+             -p BRANCH=${{ env.BRANCH }} \
+             -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
+             -p MIN_REPLICAS=${{ env.MIN_REPLICAS_NGINX }} \
+             -p MAX_REPLICAS=${{ env.MAX_REPLICAS_NGINX }} \
+             -p MIN_CPU=${{ env.MIN_CPU_NGINX }} \
+             -p MAX_CPU=${{ env.MAX_CPU_NGINX }} \
+             -p MIN_MEM=${{ env.MIN_MEM_NGINX }} \
+             -p MAX_MEM=${{ env.MAX_MEM_NGINX }} \
+             -p HOST_ROUTE=${{ secrets.NGINX_HOST_ROUTE }} \
+             -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
+             -p NGINX_BASIC_AUTH_TOKEN=${{ secrets.NGINX_BASIC_AUTH_TOKEN }} \
+              | oc apply -f -
+
+          cat <<- \EOF | sed 's/^ \+//g' > /tmp/nginx_htpasswd
+            ${{ secrets.NGINX_HTPASSWD_FILE }}
+          EOF
+
           # Process update-configmap
           curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
             | bash /dev/stdin \
@@ -178,10 +210,18 @@ jobs:
               ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
               ${{ secrets.SPLUNK_TOKEN }} \
               ${{ secrets.REDIS_PASSWORD }} \
-              ${{ secrets.D365_API_PREFIX }}
+              ${{ secrets.D365_API_PREFIX }} \
+              /tmp/nginx_htpasswd
 
-          # Start rollout (if necessary) and follow it
+          # Start rollout of the application
           oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+              || true && echo "Rollout in progress"
+
+          # Get status, returns 0 if rollout is successful
+          oc rollout status deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
+
+          # Start rollout of nginx
+          oc rollout restart deployment/${{ env.APP_NAME }}-nginx-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
               || true && echo "Rollout in progress"
 
           # Get status, returns 0 if rollout is successful

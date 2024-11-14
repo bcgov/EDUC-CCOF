@@ -11,6 +11,7 @@ readonly SOAM_CLIENT_SECRET_IDIR=$8
 readonly SPLUNK_TOKEN=$9
 readonly REDIS_PASSWORD=${10}
 readonly D365_API_PREFIX=${11}
+readonly NGINX_HTPASSWD_FILE=${12:-unset}
 readonly SOAM_KC_REALM_ID="standard"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"
@@ -111,7 +112,51 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="UI_PUBLIC_KEY=$UI_PUBLIC_KEY_VAL" \
   --from-literal="CLAMAV_PORT=3310" \
   --from-literal="ISSUER=EDUC_CCOF" \
-  --dry-run -o yaml | oc apply -f -
+  --dry-run=client -o yaml | oc apply -f -
+
+if [ "$ENV_VAL" = 'dev' ]; then
+  API_CLUSTER_ADDRESS="http://$D365_API_PREFIX-$ENV_VAL.$OPENSHIFT_NAMESPACE.svc.cluster.local:5091"
+
+  cat << CONF > /tmp/nginx_conf
+server {
+  listen 8080 default_server;
+  location / {
+      proxy_ignore_client_abort on;
+      proxy_pass $API_CLUSTER_ADDRESS;
+      proxy_redirect off;
+      proxy_set_header  X-Real-IP  \$remote_addr;
+      proxy_set_header  X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header  Host \$http_host;
+      expires -1;
+      proxy_no_cache 1;
+      auth_basic "Authentication Required";
+      auth_basic_user_file /etc/nginx/conf.d/htpasswd;
+  }
+  location /api/Health {
+      proxy_ignore_client_abort on;
+      proxy_pass $API_CLUSTER_ADDRESS/api/Health;
+      proxy_redirect off;
+      proxy_set_header  X-Real-IP  \$remote_addr;
+      proxy_set_header  X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header  Host \$http_host;
+      expires -1;
+      proxy_no_cache 1;
+  }
+}
+CONF
+
+  if [ "$NGINX_HTPASSWD_FILE" != 'unset' ]; then
+    echo Creating config map "$APP_NAME-nginx-config-map"
+    oc create -n "$OPENSHIFT_NAMESPACE" \
+      configmap "$APP_NAME-nginx-config-map" \
+      --from-file=default.conf=/tmp/nginx_conf \
+      --from-file=htpasswd="$NGINX_HTPASSWD_FILE" \
+      --dry-run=client -o yaml | oc apply -f -
+  else
+    echo "Nginx htpasswd file unset, cannot create nginx config map!"
+    exit 1
+  fi
+fi
 
 if [ "$ENV_VAL" != 'qa' ]; then
     SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
@@ -155,5 +200,6 @@ if [ "$ENV_VAL" != 'qa' ]; then
        configmap "$APP_NAME-flb-sc-config-map" \
        --from-literal=fluent-bit.conf="$FLB_CONFIG" \
        --from-literal=parsers.conf="$PARSER_CONFIG" \
-       --dry-run -o yaml | oc apply -f -
+       --dry-run=client -o yaml | oc apply -f -
 fi
+
