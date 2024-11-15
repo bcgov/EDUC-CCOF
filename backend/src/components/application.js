@@ -194,9 +194,10 @@ async function upsertParentFees(req, res) {
       // log.info(feeGroup.ccfriApplicationGuid);
 
       let payload = {
-        'ccof_frequency': feeGroup.feeFrequency,
-        'ccof_ChildcareCategory@odata.bind': childCareCategory,
-        'ccof_ProgramYear@odata.bind': programYear,
+        ccof_frequency: feeGroup.feeFrequency,
+        "ccof_ChildcareCategory@odata.bind": childCareCategory,
+        "ccof_ProgramYear@odata.bind": programYear,
+        "ccof_ApplicationCCFRI@odata.bind": `/ccof_applicationccfris(${feeGroup.ccfriApplicationGuid})`,
       };
 
       Object.assign(payload,
