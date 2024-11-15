@@ -1212,7 +1212,6 @@ export default {
       this.updateNumberOfChildSubForms();
       this.showEstimatorResults = false;
       this.results = [];
-      this.$refs.form.resetErrorBag(); // necessary to remove validation errors after the field values are removed
       this.$refs.form.resetValidation();
     },
     validateParentFee(child, v) {
