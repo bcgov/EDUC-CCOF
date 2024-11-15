@@ -517,12 +517,12 @@
                             <span style="color: #313131"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
-                        <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
-                            :color="active ? '#F3E6F6' : '#FFFFFF'"
+                            :color="isSelected ? '#F3E6F6' : '#FFFFFF'"
                             class="ma-1 fill-height"
-                            :elevation="active ? 4 : 0"
+                            :elevation="isSelected ? 4 : 0"
                             height="67"
                             width="70"
                             @click="toggle(focusAwayFromOnSlider(child.number - 1))"
@@ -532,8 +532,8 @@
                                 <span
                                   :style="
                                     'color:' +
-                                    (active ? 'white' : 'white') +
-                                    ';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:px;padding-right:19px;padding-top:4px'
+                                    (isSelected ? 'white' : 'white') +
+                                    ';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:20px;padding-right:19px;padding-top:4px'
                                   "
                                 >
                                   {{ n.month }}
@@ -542,7 +542,7 @@
                             </v-row>
                             <v-row style="font-size: 14px" justify="center">
                               <v-col align="center" style="padding-top: 3px">
-                                <span :style="'color:' + (active ? '#9D2AB1' : 'black')">
+                                <span :style="'color:' + (isSelected ? '#9D2AB1' : 'black')">
                                   {{
                                     n.rate == 0 || n.rate == null || n.rate == undefined || n.rate == 'N/A'
                                       ? 'N/A'
@@ -552,7 +552,7 @@
                               </v-col>
                             </v-row>
                           </v-card>
-                        </v-slide-item>
+                        </v-slide-group-item>
                       </v-slide-group>
                       <!-- ****************************************************************************************************************************************************************-->
                       <!-- *** The following slider is for the OFF (unselected) state *****************************************************************************************************-->
@@ -579,12 +579,12 @@
                             <span style="color: #313131; font-family: BCSans"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
-                        <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
-                            :color="active ? '#FFFFFF' : '#FFFFFF'"
+                            :color="isSelected ? '#FFFFFF' : '#FFFFFF'"
                             class="ma-1 fill-height"
-                            :elevation="active ? 0 : 0"
+                            :elevation="isSelected ? 0 : 0"
                             height="67"
                             width="70"
                             @click="toggle(clickForOffSlider(n.id, child.number - 1))"
@@ -622,7 +622,7 @@
                               </v-col>
                             </v-row>
                           </v-card>
-                        </v-slide-item>
+                        </v-slide-group-item>
                       </v-slide-group>
                       <v-btn
                         ref="hiddenButton"
