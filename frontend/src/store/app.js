@@ -127,10 +127,16 @@ export const useAppStore = defineStore('app', {
       const orderNumber = state?.programYearList.list.find(
         (el) => el.programYearId == applicationStore?.programYearId,
       )?.order;
-      if (orderNumber < 5) {
-        return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
-      } else {
-        return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
+      switch (orderNumber) {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+          return PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+        case 5:
+          return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
+        case 6:
+          return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
       }
     },
     getProgramYearNameById: (state) => {

@@ -8,6 +8,7 @@
         <div class="text-h5 my-6">Early Childhood Educator Wage Enhancement (ECE-WE)</div>
         <div class="text-h5 my-6" style="color: #003466">
           {{ userInfo.organizationName }}
+          {{ languageYearLabel }}
         </div>
       </div>
       <v-alert class="col-11 mb-0" variant="outlined" prominent>
