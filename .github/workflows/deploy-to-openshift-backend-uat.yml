@@ -40,6 +40,11 @@ env:
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'The image tag to deploy'
+        required: true
+        type: string
 
 jobs:
   openshift-ci-cd:
@@ -52,6 +57,12 @@ jobs:
       SELECTOR: ${{ steps.deploy-and-expose.outputs.selector }}
 
     steps:
+    - name: Print Workflow Dispatch Inputs and Env Vars
+      uses: shayki5/print-workflow-dispatch-inputs@v1
+      with:
+        add_to_summary: 'true'
+        print_env_vars: 'false'
+
     - name: Check for required secrets
       uses: actions/github-script@v4
       with:
@@ -95,10 +106,6 @@ jobs:
       with:
         ref: ${{ env.BRANCH }}
 
-    - name: Get latest tag
-      uses: actions-ecosystem/action-get-latest-tag@v1
-      id: get-latest-tag
-
     - name: Install oc
       uses: redhat-actions/openshift-tools-installer@v1
       with:
@@ -116,8 +123,8 @@ jobs:
 
         # Create tag for TEST env from DEV env image
         oc tag \
-           ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }} \
-           ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ steps.get-latest-tag.outputs.tag }}
+           ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ inputs.tag }} \
+           ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ inputs.tag }}
 
         # Process and apply deployment template
         oc process \
@@ -126,7 +133,7 @@ jobs:
            -p REPO_NAME=${{ env.REPO_NAME }} \
            -p BRANCH=${{ env.BRANCH }} \
            -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-           -p TAG=${{ steps.get-latest-tag.outputs.tag }} \
+           -p TAG=${{ inputs.tag }} \
            -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
            -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
            -p MIN_CPU=${{ env.MIN_CPU }} \
