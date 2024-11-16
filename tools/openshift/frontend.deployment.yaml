@@ -12,14 +12,14 @@
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-${BRANCH}-frontend-deployment"
         branch: "${BRANCH}"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
         matchLabels:
-          app: "${APP_NAME}-${BRANCH}"
+          app: "${APP_NAME}-${BRANCH}-frontend-deployment"
       strategy:
         type: RollingUpdate
         rollingUpdate:
@@ -30,7 +30,7 @@
           annotations:
             openshift.io/generated-by: OpenShiftNewApp
           labels:
-            app: "${APP_NAME}-${BRANCH}"
+            app: "${APP_NAME}-${BRANCH}-frontend-deployment"
         spec:
           containers:
           - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
@@ -85,7 +85,7 @@
         service.alpha.openshift.io/serving-cert-secret-name: "ccof-frontend-cert"
         openshift.io/generated-by: OpenShiftNewApp
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-${BRANCH}-frontend-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       ports:
@@ -94,14 +94,14 @@
         protocol: TCP
         targetPort: 2015
       selector:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-${BRANCH}-frontend-deployment"
   - apiVersion: v1
     kind: Route
     metadata:
       annotations:
         openshift.io/host.generated: 'true'
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-${BRANCH}-frontend-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       host: "${HOST_ROUTE}"
