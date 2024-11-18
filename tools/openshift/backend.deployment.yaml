@@ -12,14 +12,14 @@ objects:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
     labels:
-      app: "${APP_NAME}-${BRANCH}-backend-deployment"
+      app: "${APP_NAME}-backend-deployment"
       branch: "${BRANCH}"
     name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
       matchLabels:
-        app: "${APP_NAME}-${BRANCH}-backend-deployment"
+        app: "${APP_NAME}-backend-deployment"
     strategy:
       type: RollingUpdate
       rollingUpdate:
@@ -30,7 +30,7 @@ objects:
         annotations:
           openshift.io/generated-by: OpenShiftNewApp
         labels:
-          app: "${APP_NAME}-${BRANCH}-backend-deployment"
+          app: "${APP_NAME}-backend-deployment"
       spec:
         containers:
         - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
@@ -132,7 +132,7 @@ objects:
       service.alpha.openshift.io/serving-cert-secret-name: "ccof-backend-cert"
       openshift.io/generated-by: OpenShiftNewApp
     labels:
-      app: "${APP_NAME}-${BRANCH}-backend-deployment"
+      app: "${APP_NAME}-backend-deployment"
     name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     ports:
@@ -145,7 +145,7 @@ objects:
       protocol: TCP
       targetPort: 443
     selector:
-      app: "${APP_NAME}-${BRANCH}-backend-deployment"
+      app: "${APP_NAME}-backend-deployment"
 - apiVersion: v1
   kind: Route
   metadata:
@@ -156,7 +156,7 @@ objects:
       haproxy.router.openshift.io/timeout: 120s
       openshift.io/host.generated: 'true'
     labels:
-      app: "${APP_NAME}-${BRANCH}-backend-deployment"
+      app: "${APP_NAME}-backend-deployment"
     name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
   spec:
     host: "${HOST_ROUTE}"
