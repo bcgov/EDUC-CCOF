@@ -111,7 +111,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="UI_PUBLIC_KEY=$UI_PUBLIC_KEY_VAL" \
   --from-literal="CLAMAV_PORT=3310" \
   --from-literal="ISSUER=EDUC_CCOF" \
-  --dry-run -o yaml | oc apply -f -
+  --dry-run=client -o yaml | oc apply -f -
 
 if [ "$ENV_VAL" != 'qa' ]; then
     SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
@@ -155,5 +155,6 @@ if [ "$ENV_VAL" != 'qa' ]; then
        configmap "$APP_NAME-flb-sc-config-map" \
        --from-literal=fluent-bit.conf="$FLB_CONFIG" \
        --from-literal=parsers.conf="$PARSER_CONFIG" \
-       --dry-run -o yaml | oc apply -f -
+       --dry-run=client -o yaml | oc apply -f -
 fi
+
