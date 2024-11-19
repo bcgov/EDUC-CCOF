@@ -123,7 +123,7 @@ jobs:
 
         # Process and apply deployment template
         oc process \
-           -f tools/openshift/backend-no-fb.deployment.yaml \
+           -f tools/openshift/backend.no-fb.deployment.yaml \
            -p APP_NAME=${{ env.APP_NAME }} \
            -p REPO_NAME=${{ env.REPO_NAME }} \
            -p BRANCH=${{ env.BRANCH }} \
