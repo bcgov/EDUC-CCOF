@@ -1,17 +1,9 @@
 <template>
   <v-form ref="form" v-model="isValidForm">
     <v-container>
-      <v-row justify="center">
-        <div
-          class="pa-10 text-h5"
-          v-text="
-            `Child Care Operating Funding Program - ${getNextProgramYear.name.replace(
-              /[^\d/]/g,
-              '',
-            )} Program Confirmation Form`
-          "
-        />
-      </v-row>
+      <div class="pa-10 text-h5 text-center">
+        Child Care Operating Funding Program - {{ formattedNextProgramYearName }} Program Confirmation Form
+      </div>
 
       <div v-if="processing">
         <v-skeleton-loader max-height="475px" :loading="processing" type="image, image" />
@@ -43,7 +35,7 @@
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center" width="800">
+          <v-card class="cc-top-level-card justify-center pa-4" width="800">
             <v-card-text>
               Do your current licence and service details match the information found in Schedule A of your most recent
               Funding Agreement?
@@ -87,7 +79,7 @@
           </v-card>
         </v-row>
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center" width="800">
+          <v-card class="cc-top-level-card justify-center pa-4" width="800">
             <v-card-text> Has your banking information changed? </v-card-text>
             <v-row>
               <v-col class="d-flex justify-center">
@@ -139,15 +131,16 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
 
-import { PATHS, pcfUrl } from '../../utils/constants.js';
-import rules from '../../utils/rules.js';
-import NavButton from '../../components/util/NavButton.vue';
-import { isAnyChangeRequestActive } from '../../utils/common.js';
+import NavButton from '@/components/util/NavButton.vue';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { isAnyChangeRequestActive } from '@/utils/common.js';
+import { PATHS, pcfUrl } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton },
@@ -170,8 +163,11 @@ export default {
     ]),
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-    getNextProgramYear() {
+    nextProgramYear() {
       return this.programYearList?.list?.find((el) => el.previousYearId == this.latestProgramYearId);
+    },
+    formattedNextProgramYearName() {
+      return formatFiscalYearName(this.nextProgramYear?.name);
     },
   },
   async created() {
@@ -186,9 +182,9 @@ export default {
       this.applicationStatus == 'DRAFT' &&
       this.applicationType == 'RENEW' &&
       this.ccofApplicationStatus == 'NEW' &&
-      this.programYearId == this.getNextProgramYear?.programYearId
+      this.programYearId == this.nextProgramYear?.programYearId
     ) {
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.getNextProgramYear.programYearId));
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
     }
   },
   methods: {
@@ -197,7 +193,7 @@ export default {
     async next() {
       this.processing = true;
       await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.getNextProgramYear.programYearId));
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
     },
     isSomeChangeRequestActive() {
       //Status of : "Submitted" "Action Required";
@@ -221,9 +217,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.blueBorder {
-  border-top: 5px solid #003366 !important;
-}
-</style>

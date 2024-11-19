@@ -119,7 +119,7 @@
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
               4. Please tell us anything else you’d like us to know about how your facility’s business case supports
-              setting fees higher than the Affordability Benchmarks outlined in the 2023/24
+              setting fees higher than the Affordability Benchmarks outlined in the 2023-24
               <a :href="fundingUrl" target="_blank">Funding Guidelines</a>
             </p>
             <div class="pt-6">

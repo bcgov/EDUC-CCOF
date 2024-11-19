@@ -36,6 +36,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
   APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
+  APPLICATION_CCFRI: baseRoot + '/application/ccfri',
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
@@ -110,6 +111,7 @@ export const PATHS = {
   CCOF_FAMILY_FUNDING: '/family/funding',
 
   CCFRI_HOME: '/ccfri',
+  CCFRI_AFS: '/ccfri/afs',
   CCFRI_CURRENT_FEES: '/ccfri/current-fees',
   CCFRI_NEW_FEES: '/ccfri/new-fees',
   CCFRI_RFI: '/ccfri/req-info',
@@ -164,9 +166,19 @@ export const NAV_BAR_GROUPS = {
   MTFI: 'MTFI',
 };
 
-export const ORGANIZATION_PROVIDER_TYPES = {
+export const ORGANIZATION_PROVIDER_TYPES_IDS = {
   GROUP: 100000000,
   FAMILY: 100000001,
+};
+
+export const ORGANIZATION_PROVIDER_TYPES = {
+  GROUP: 'GROUP',
+  FAMILY: 'FAMILY',
+};
+
+export const ECEWE_SECTOR_TYPES = {
+  CSSEA: 100000000,
+  OTHER_UNION: 100000001,
 };
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
@@ -269,3 +281,15 @@ export const PROVINCES = Object.freeze([
     value: 'YT',
   },
 ]);
+
+export const AFS_STATUSES = Object.freeze({
+  ACCEPT: 1,
+  UPLOAD_DOCUMENTS: 2,
+  DECLINE: 3,
+});
+
+export const PARENT_FEE_FREQUENCIES = Object.freeze({
+  MONTHLY: 100000000,
+  WEEKLY: 100000001,
+  DAILY: 100000002,
+});

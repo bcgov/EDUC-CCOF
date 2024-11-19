@@ -4,30 +4,32 @@
       <div class="pa-10 text-h4 text-center">Welcome to CCOF!</div>
     </v-row>
     <v-row>
-      <span class="text-h4">Instructions:</span>
-      <br /><br /><br />
-      <p class="px-10 text-h6">
-        Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
-        increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to submit
-        any request to increase your parent fees in the 2023/24 Fiscal Year. To complete this form, you will need the
-        following:
-        <br /><br />
-      </p>
+      <v-container>
+        <span class="text-h4">Instructions:</span>
+        <br /><br /><br />
+        <p class="px-10 text-h6">
+          Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
+          increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to
+          submit any request to increase your parent fees in the 2023-24 Fiscal Year. To complete this form, you will
+          need the following:
+          <br /><br />
+        </p>
 
-      <ul>
-        <li>A proposed Parent Fee Schedule; and</li>
-        <li>
-          if the increase you are requesting is above the Fee Increase Limit for your
-          <a
-            href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/ccfri_funding_guidelines_23_24.pdf"
-          >
-            Service Delivery Area </a
-          >, you are required to complete a Request for Information and will be required to submit supporting
-          documentation..
-        </li>
-      </ul>
+        <ul class="px-10">
+          <li>A proposed Parent Fee Schedule; and</li>
+          <li>
+            if the increase you are requesting is above the Fee Increase Limit for your
+            <a
+              href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/ccfri_funding_guidelines_23_24.pdf"
+            >
+              Service Delivery Area </a
+            >, you are required to complete a Request for Information and will be required to submit supporting
+            documentation..
+          </li>
+        </ul>
 
-      <p class="px-15 text-h6">* The facilities that are not opted in to CCFRI cannot be selected</p>
+        <p class="px-15 text-h6">* The facilities that are not opted in to CCFRI cannot be selected</p>
+      </v-container>
     </v-row>
     <v-row justify="space-around">
       <v-col cols="6" />
@@ -47,10 +49,10 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import {
   PATHS,
@@ -58,6 +60,7 @@ import {
   changeUrl,
   CHANGE_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
 } from '../../utils/constants.js';
 import alertMixin from '../../mixins/alertMixin.js';
 
@@ -68,11 +71,9 @@ export default {
   mixins: [alertMixin],
   data() {
     return {
-      isValidForm: false,
       newReq: undefined,
       processing: false,
       loading: false,
-      rules: [(v) => !!v || 'Required.'],
     };
   },
   computed: {
@@ -113,7 +114,7 @@ export default {
       }
 
       //below code i think can be removed as now only new CR sees this page?
-      if (this.organizationProviderType == 'FAMILY') {
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         // && mtfi does not exist yet?
 
         if (this.mtfiFacilities?.length == 0) {

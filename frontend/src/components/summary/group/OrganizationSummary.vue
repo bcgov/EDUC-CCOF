@@ -46,33 +46,35 @@
                 :rules="rules.required"
               />
             </v-col>
-            <v-col v-if="summaryModel.application.organizationProviderType == 'GROUP'" cols="12" md="4">
-              <div class="summary-label">Organization Contact Name</div>
-              <v-text-field
-                placeholder="Required"
-                :model-value="summaryModel?.organization?.contactName"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-            <v-col v-if="summaryModel.application.organizationProviderType == 'GROUP'" cols="12" md="4">
-              <div class="summary-label">Position</div>
-              <v-text-field
-                placeholder="Required"
-                class="summary-value"
-                :model-value="summaryModel?.organization?.position"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
+            <div v-if="summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+              <v-col cols="12" md="4">
+                <div class="summary-label">Organization Contact Name</div>
+                <v-text-field
+                  placeholder="Required"
+                  :model-value="summaryModel?.organization?.contactName"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+              <v-col cols="12" md="4">
+                <div class="summary-label">Position</div>
+                <v-text-field
+                  placeholder="Required"
+                  class="summary-value"
+                  :model-value="summaryModel?.organization?.position"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+            </div>
           </v-row>
           <v-row no-gutters>
             <v-col cols="12" md="4">
@@ -286,7 +288,7 @@ import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
-import { PATHS, pcfUrl } from '@/utils/constants.js';
+import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationSummary',
@@ -335,9 +337,12 @@ export default {
       },
     },
   },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+  },
   methods: {
     getRoutingPath() {
-      if (this.summaryModel.application.organizationProviderType == 'FAMILY') {
+      if (this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
       } else {
         return pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId);

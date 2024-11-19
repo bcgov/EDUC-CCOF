@@ -24,15 +24,15 @@
               ECE-WE Funding Guidelines
             </a>
           </u>
-          . All CCFRI-eligible facilities must opt-in to CCFRI <u>to be eligible for ECE-WE.</u>
+          . All CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
         </span>
       </v-alert>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
-        <v-container fluid class="pa-0">
+        <v-container v-if="!isLoading" fluid class="pa-0">
           <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
-              <v-row v-if="!isLoading" class="justify-center">
+              <v-row class="justify-center">
                 <v-col align-self="start">
                   <v-radio-group
                     v-model="model.optInECEWE"
@@ -55,40 +55,20 @@
             </v-container>
           </v-card>
 
-          <v-card v-if="model.optInECEWE == 1 || isLoading" elevation="4" class="py-2 px-5 my-10 rounded-lg">
-            <v-container>
-              <v-row v-if="!isLoading" class="justify-center">
-                <v-col align-self="start">
-                  <v-radio-group
-                    v-model="model.belongsToUnion"
-                    :disabled="isReadOnly('belongsToUnion')"
-                    :rules="rules.required"
-                  >
-                    <template #label>
-                      <span class="radio-label"
-                        >Do any of the ECE Employees at any facility in your organization belong to a union?</span
-                      >
-                    </template>
-                    <div class="flex-left">
-                      <v-radio class="pt-2 pr-8" label="Yes" :value="1" />
-                      <v-radio class="pt-1" label="No" :value="0" @click="model.applicableSector = null" />
-                    </div>
-                  </v-radio-group>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-
-          <div v-if="languageYearLabel != programYearTypes.HISTORICAL">
-            <v-card v-if="model.optInECEWE == 1 || isLoading" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+          <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+            <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
               <v-container>
-                <v-row v-if="!isLoading" class="justify-left">
+                <v-row class="justify-center">
                   <v-col align-self="start">
-                    <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
+                    <v-radio-group
+                      v-model="model.belongsToUnion"
+                      :disabled="isReadOnly('belongsToUnion')"
+                      :rules="rules.required"
+                    >
                       <template #label>
-                        <div class="radio-label text-left">
-                          Are you a public sector employer, as defined in the <u><i>Public Sector Employers Act?</i></u>
-                        </div>
+                        <span class="radio-label"
+                          >Do any of the ECE Employees at any facility in your organization belong to a union?</span
+                        >
                       </template>
                       <div class="flex-left">
                         <v-radio class="pt-2 pr-8" label="Yes" :value="1" />
@@ -99,160 +79,59 @@
                 </v-row>
               </v-container>
             </v-card>
-          </div>
 
-          <div
-            v-if="
-              (model.belongsToUnion == 1 &&
-                model.optInECEWE == 1 &&
-                languageYearLabel != programYearTypes.HISTORICAL) ||
-              (model.belongsToUnion == 1 &&
-                model.optInECEWE == 1 &&
-                languageYearLabel == programYearTypes.HISTORICAL) ||
-              isLoading
-            "
-          >
-            <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
-              <v-container>
-                <v-row v-if="!isLoading" class="justify-left">
-                  <v-col align-self="start">
-                    <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
-                      <template #label>
-                        <div class="radio-label text-left">Select the applicable sector:</div>
-                      </template>
-                      <div class="flex-left">
-                        <v-radio
-                          class="pt-2 pr-8"
-                          label="Community Social Services Employers' Association (CSSEA) Member"
-                          :value="100000000"
-                          @click="model.confirmation = null"
-                        />
-                        <v-radio
-                          class="pt-1"
-                          label="Other Unionized Employer"
-                          :value="100000001"
-                          @click="model.confirmation = null"
-                        />
-                      </div>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-              </v-container>
-              <v-card
-                v-if="
-                  (model.applicableSector == 100000001 &&
-                    model.belongsToUnion == 1 &&
-                    model.optInECEWE == 1 &&
-                    languageYearLabel != programYearTypes.HISTORICAL) ||
-                  (model.applicableSector == 100000001 &&
-                    model.belongsToUnion == 1 &&
-                    model.optInECEWE == 1 &&
-                    languageYearLabel == programYearTypes.HISTORICAL) ||
-                  isLoading
-                "
-                class="mx-2 mb-4 justify-center"
-              >
-                <v-row v-if="!isLoading">
-                  <v-col class="py-0">
-                    <v-card-title class="py-0 noticeInfo">
-                      <span style="float: left">
-                        <v-icon size="x-large" color="#D40D19" class="py-1 px-3 noticeInfoIcon">
-                          mdi-information
-                        </v-icon>
-                      </span>
-                      Please confirm
-                    </v-card-title>
-                  </v-col>
-                </v-row>
-                <v-row v-if="!isLoading">
-                  <v-col class="pl-6 d-flex py-0">
-                    <v-checkbox
-                      v-model="model.confirmation"
-                      class="pa-0"
-                      :value="1"
-                      label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
-                      :disabled="isReadOnly()"
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-card>
-            </v-card>
-          </div>
-
-          <div
-            v-if="
-              (model.applicableSector == 100000000 && model.belongsToUnion == 1 && model.optInECEWE == 1) || isLoading
-            "
-          >
-            <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
-              <v-container>
-                <v-row v-if="!isLoading">
-                  <v-col align-self="start">
-                    <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
-                      <template #label>
-                        <div class="radio-label text-left">Select your funding model:</div>
-                      </template>
-                      <div class="flex-left">
-                        <v-radio
-                          :label="fundingModelTypeList[0].description"
-                          :value="fundingModelTypeList[0].id"
-                          class="pt-2 pr-8"
-                        />
-                        <v-radio
-                          :label="fundingModelTypeList[1].description"
-                          :value="fundingModelTypeList[1].id"
-                          class="pt-1 pr-8"
-                        />
-                        <v-radio
-                          :label="fundingModelTypeList[2].description"
-                          :value="fundingModelTypeList[2].id"
-                          class="pt-1 pr-8"
-                        />
-                      </div>
-                    </v-radio-group>
-                  </v-col>
-                </v-row>
-                <v-card v-if="model.fundingModel == fundingModelTypeList[0].id" width="100%">
-                  <v-row>
-                    <v-col class="py-0">
-                      <v-card-title class="py-0 noticeAlert">
-                        <span style="float: left">
-                          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                        </span>
-                        ECEs at these facilities are not eligible for ECE Wage Enhancement
-                      </v-card-title>
+            <div v-if="languageYearLabel !== programYearTypes.HISTORICAL">
+              <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+                <v-container>
+                  <v-row class="justify-left">
+                    <v-col align-self="start">
+                      <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
+                        <template #label>
+                          <div class="radio-label text-left">
+                            Are you a public sector employer, as defined in the
+                            <u><i>Public Sector Employers Act?</i></u>
+                          </div>
+                        </template>
+                        <div class="flex-left">
+                          <v-radio class="pt-2 pr-8" label="Yes" :value="1" />
+                          <v-radio class="pt-1" label="No" :value="0" @click="model.applicableSector = null" />
+                        </div>
+                      </v-radio-group>
                     </v-col>
                   </v-row>
-                  <v-row class="pa-2 justify-center">
-                    Government’s Low-Wage Redress Funding supports ECE wage adjustments
+                </v-container>
+              </v-card>
+            </div>
+
+            <div v-if="showApplicableSectorQuestion">
+              <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
+                <v-container>
+                  <v-row class="justify-left">
+                    <v-col align-self="start">
+                      <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
+                        <template #label>
+                          <div class="radio-label text-left">Select the applicable sector:</div>
+                        </template>
+                        <div class="flex-left">
+                          <v-radio
+                            class="pt-2 pr-8"
+                            label="Community Social Services Employers' Association (CSSEA) Member"
+                            :value="100000000"
+                            @click="model.confirmation = null"
+                          />
+                          <v-radio
+                            class="pt-1"
+                            label="Other Unionized Employer"
+                            :value="100000001"
+                            @click="model.confirmation = null"
+                          />
+                        </div>
+                      </v-radio-group>
+                    </v-col>
                   </v-row>
-                </v-card>
-                <div v-else-if="model.fundingModel == fundingModelTypeList[1].id">
-                  <v-card width="100%" class="mb-4">
-                    <v-row>
-                      <v-col class="py-0">
-                        <v-card-title class="py-0 noticeWarning">
-                          <span style="float: left">
-                            <v-icon size="x-large" class="py-1 px-3 noticeWarningIcon"> mdi-alert </v-icon>
-                          </span>
-                          ECEs in provincially funded programs are not eligible
-                        </v-card-title>
-                      </v-col>
-                    </v-row>
-                    <v-row class="pa-2 justify-center">
-                      Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
-                    </v-row>
-                  </v-card>
-                </div>
-                <v-card
-                  v-if="
-                    model.fundingModel === fundingModelTypeList[1].id ||
-                    model.fundingModel === fundingModelTypeList[2].id
-                  "
-                  width="100%"
-                >
-                  <v-row v-if="!isLoading">
+                </v-container>
+                <v-card v-if="showConfirmationQuestion" class="mx-2 mb-4 justify-center">
+                  <v-row>
                     <v-col class="py-0">
                       <v-card-title class="py-0 noticeInfo">
                         <span style="float: left">
@@ -264,22 +143,113 @@
                       </v-card-title>
                     </v-col>
                   </v-row>
-                  <v-row v-if="!isLoading">
+                  <v-row>
                     <v-col class="pl-6 d-flex py-0">
                       <v-checkbox
                         v-model="model.confirmation"
                         class="pa-0"
                         :value="1"
-                        label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
+                        label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
                         :disabled="isReadOnly()"
                         :rules="rules.required"
                       />
                     </v-col>
                   </v-row>
                 </v-card>
-              </v-container>
-            </v-card>
-          </div>
+              </v-card>
+            </div>
+
+            <div v-if="showFundingModelQuestion">
+              <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
+                <v-container>
+                  <v-row>
+                    <v-col align-self="start">
+                      <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
+                        <template #label>
+                          <div class="radio-label text-left">Select your funding model:</div>
+                        </template>
+                        <div class="flex-left">
+                          <v-radio
+                            :label="fundingModelTypeList[0].description"
+                            :value="fundingModelTypeList[0].id"
+                            class="pt-2 pr-8"
+                          />
+                          <v-radio
+                            :label="fundingModelTypeList[1].description"
+                            :value="fundingModelTypeList[1].id"
+                            class="pt-1 pr-8"
+                          />
+                          <v-radio
+                            :label="fundingModelTypeList[2].description"
+                            :value="fundingModelTypeList[2].id"
+                            class="pt-1 pr-8"
+                          />
+                        </div>
+                      </v-radio-group>
+                    </v-col>
+                  </v-row>
+                  <v-card v-if="model.fundingModel === fundingModelTypeList[0].id" width="100%">
+                    <v-row>
+                      <v-col class="py-0">
+                        <v-card-title class="py-0 noticeAlert">
+                          <span style="float: left">
+                            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+                          </span>
+                          ECEs at these facilities are not eligible for ECE Wage Enhancement
+                        </v-card-title>
+                      </v-col>
+                    </v-row>
+                    <v-row class="pa-2 justify-center">
+                      Government's Low-Wage Redress Funding supports ECE wage adjustments
+                    </v-row>
+                  </v-card>
+                  <div v-else-if="model.fundingModel === fundingModelTypeList[1].id">
+                    <v-card width="100%" class="mb-4">
+                      <v-row>
+                        <v-col class="py-0">
+                          <v-card-title class="py-0 noticeWarning">
+                            <span style="float: left">
+                              <v-icon size="x-large" class="py-1 px-3 noticeWarningIcon"> mdi-alert </v-icon>
+                            </span>
+                            ECEs in provincially funded programs are not eligible
+                          </v-card-title>
+                        </v-col>
+                      </v-row>
+                      <v-row class="pa-2 justify-center">
+                        Only ECEs in non-provincially funded programs are eligible for ECE Wage Enhancement.
+                      </v-row>
+                    </v-card>
+                  </div>
+                  <v-card v-if="showJJEPQuestion" width="100%">
+                    <v-row>
+                      <v-col class="py-0">
+                        <v-card-title class="py-0 noticeInfo">
+                          <span style="float: left">
+                            <v-icon size="x-large" color="#D40D19" class="py-1 px-3 noticeInfoIcon">
+                              mdi-information
+                            </v-icon>
+                          </span>
+                          Please confirm
+                        </v-card-title>
+                      </v-col>
+                    </v-row>
+                    <v-row>
+                      <v-col class="pl-6 d-flex py-0">
+                        <v-checkbox
+                          v-model="model.confirmation"
+                          class="pa-0"
+                          :value="1"
+                          label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
+                          :disabled="isReadOnly()"
+                          :rules="rules.required"
+                        />
+                      </v-col>
+                    </v-row>
+                  </v-card>
+                </v-container>
+              </v-card>
+            </div>
+          </template>
         </v-container>
       </v-skeleton-loader>
 
@@ -307,8 +277,16 @@ import { useAuthStore } from '@/store/auth.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  changeUrl,
+  pcfUrl,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  ECEWE_SECTOR_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
 import { isNullOrBlank } from '@/utils/common.js';
@@ -342,7 +320,13 @@ export default {
       'belongsToUnionChangeRequestReadonly',
     ]),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'previousPath',
+      'isChangeRequest',
+      'userProfileList',
+    ]),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'programYearId',
@@ -350,7 +334,44 @@ export default {
       'unlockEcewe',
       'applicationId',
     ]),
+    ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
+    showApplicableSectorQuestion() {
+      return (
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
+      );
+    },
+    showConfirmationQuestion() {
+      return (
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
+          this.model.belongsToUnion === 1 &&
+          this.model.optInECEWE === 1 &&
+          this.languageYearLabel === this.programYearTypes.HISTORICAL)
+      );
+    },
+    showFundingModelQuestion() {
+      return (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.belongsToUnion === 1 &&
+        this.model.optInECEWE === 1
+      );
+    },
+    showJJEPQuestion() {
+      return (
+        this.model.fundingModel === this.fundingModelTypeList[1].id ||
+        this.model.fundingModel === this.fundingModelTypeList[2].id
+      );
+    },
+
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
       if (this.isChangeRequest) {
@@ -359,6 +380,7 @@ export default {
         return eceweAppStore.facilities?.filter((el) => !el.changeRequestId);
       }
     },
+
     fundingUrl() {
       return this.getFundingUrl(this.programYearId);
     },
@@ -400,6 +422,9 @@ export default {
       this.isLoading = false;
     }
   },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+  },
   methods: {
     ...mapActions(useEceweAppStore, [
       'loadECEWE',
@@ -420,15 +445,15 @@ export default {
       if (this.isChangeRequest) {
         if (this.isEceweUnlocked || !this.changeRequestStatus)
           return (
-            (question == 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-            (question == 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
+            (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
+            (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
           );
         else if (this.changeRequestStatus !== 'INCOMPLETE') {
           return true;
         }
         return (
-          (question == 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-          (question == 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
+          (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
+          (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
         );
       }
       if (this.unlockEcewe) {
@@ -443,26 +468,25 @@ export default {
     },
     async next() {
       if (this.isChangeRequest) {
-        if (this.model.optInECEWE == 0) {
+        if (this.model.optInECEWE === 0) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
+      } else if (this.model.optInECEWE === 0) {
+        this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       } else {
-        if (this.model.optInECEWE == 0) {
-          this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
-        } else {
-          this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
-        }
+        this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
       }
     },
+
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
       for (let facility of this.facilities) {
-        if (facility.optInOrOut == 1 || facility.optInOrOut == null) {
+        if (facility.optInOrOut === 1 || facility.optInOrOut === null) {
           return false;
         }
       }
@@ -474,27 +498,23 @@ export default {
         this.model.belongsToUnion = null;
         this.model.fundingModel = null;
         this.model.confirmation = null;
-      } else {
-        if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
-          this.model.fundingModel = null;
-          this.model.confirmation = null;
-        } else {
-          if (this.model.applicableSector == 100000001) {
-            this.model.fundingModel = null;
-          } else if (
-            this.model.applicableSector == 100000000 &&
-            this.model.fundingModel === this.fundingModelTypeList[0].id
-          ) {
-            this.model.confirmation = null;
-          }
-        }
+      } else if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
+        this.model.fundingModel = null;
+        this.model.confirmation = null;
+      } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
+        this.model.fundingModel = null;
+      } else if (
+        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+        this.model.fundingModel === this.fundingModelTypeList[0].id
+      ) {
+        this.model.confirmation = null;
       }
     },
     async loadData() {
       if (
         this.isStarted &&
         this.facilities?.length > 0 &&
-        this.facilities[0].changeRequestId == this.$route.params.changeRecGuid
+        this.facilities[0].changeRequestId === this.$route.params.changeRecGuid
       ) {
         return true;
       }
@@ -562,15 +582,28 @@ export default {
           this.model.optInECEWE === 0 &&
           this.facilities.some((facility) => facility.eceweApplicationId != null && facility.optInOrOut === 1);
 
-        //jb below
-        if (this.model.optInECEWE === 0) {
+        // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
+        // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
+        if (
+          this.model.optInECEWE === 0 ||
+          this.model.fundingModel === this.fundingModelTypeList[0].id ||
+          optOutFacilities
+        ) {
           this.optOutFacilities();
         }
 
-        // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
-        // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
-        if (this.model.fundingModel === this.fundingModelTypeList[0].id || optOutFacilities) {
-          this.optOutFacilities();
+        //ccfri 3816 set facility level opt-in for family providers so they don't re-fill this info next page
+        //there is only ever one facility
+
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
+          this.facilities.forEach((facility) => {
+            facility.optInOrOut = this.model?.optInECEWE;
+            //update the next page navbar checkmark
+            let fac = this.navBarList.find((f) => f.facilityId === facility.facilityId);
+            if (fac) {
+              fac.eceweOptInStatus = this.model?.optInECEWE;
+            }
+          });
         }
 
         //save the facilites reagrdless so ECE WE application is always created

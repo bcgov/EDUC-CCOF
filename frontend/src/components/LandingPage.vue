@@ -29,10 +29,10 @@
                 </ul>
                 <v-card v-if="ccofStatus === CCOF_STATUS_NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
                   <v-row align="center" no-gutters>
-                    <v-col :cols="12" md="3" lg="2" xl="1" align="center">
+                    <v-col cols="2" sm="1" align="center">
                       <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
                     </v-col>
-                    <v-col :cols="12" md="9" lg="10" xl="11" class="px-2 py-1">
+                    <v-col cols="10" sm="11" class="px-0 px-sm-2 py-1">
                       <div v-html="item.body" />
                     </v-col>
                   </v-row>
@@ -58,9 +58,13 @@
 
             <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
               <p class="text-h5 blueText">Status: Incomplete</p>
-              <v-btn theme="dark" class="blueButton" @click="continueApplication()"> Continue Application </v-btn>
+              <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
+              <v-btn
+                v-if="isLoadingComplete && isCancelPcfButtonEnabled"
+                class="red-button"
+                @click="toggleCancelApplicationDialog"
+              >
                 Cancel Application
               </v-btn>
             </div>
@@ -301,41 +305,14 @@
         </v-col>
       </v-row>
     </v-card>
-    <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
-      <v-card>
-        <v-container class="pt-0">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="text-white"> Cancel Application Warning </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <p>
-                If you cancel your application, any information you entered will be deleted. If you create a new
-                application, you will need to re-enter this information.
-              </p>
-              <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
-              <v-btn :loading="!isLoadingComplete" theme="dark" color="secondary" class="mr-10" @click="closeDialog()">
-                Back
-              </v-btn>
-              <v-btn :loading="!isLoadingComplete" theme="dark" color="primary" @click="deletePcf()"> Continue </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <CancelApplicationDialog :show="showCancelDialog" max-width="60%" @close="toggleCancelApplicationDialog" />
     <p class="text-center mt-4 font-weight-bold">
       Note: For assistance completing your Program Confirmation Form, contact the program at 1-888-338-6622 (Option 2).
     </p>
   </v-container>
 </template>
 <script>
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
@@ -345,23 +322,31 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
+import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
-import { PATHS, pcfUrl, pcfUrlGuid, CHANGE_REQUEST_EXTERNAL_STATUS } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrl,
+  pcfUrlGuid,
+  CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
       input: '',
       PATHS: PATHS,
       results: {},
-      showDeleteDialog: false,
+      showCancelDialog: false,
       ccofNewApplicationText: [
         {
           title: 'CCOF Base Funding',
@@ -423,7 +408,7 @@ export default {
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW) {
         let nameToReturn = this.getNextProgramYear?.name;
-        return nameToReturn?.replace(/[^\d/]/g, '');
+        return formatFiscalYearName(nameToReturn);
       } else if (
         this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE ||
         this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED
@@ -538,31 +523,23 @@ export default {
         this.unlockEcewe ||
         this.unlockLicenseUpload ||
         this.unlockSupportingDocuments ||
-        this.unlockCCFRIList.length > 0 ||
-        this.unlockNMFList.length > 0 ||
-        this.unlockRFIList.length > 0
+        !isEmpty(this.unlockCCFRIList) ||
+        !isEmpty(this.unlockNMFList) ||
+        !isEmpty(this.unlockRFIList) ||
+        !isEmpty(this.unlockAFSList)
       );
     },
     unlockCCFRIList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockCCFRIList(this.navBarList);
     },
     unlockNMFList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockNMFList(this.navBarList);
     },
     unlockRFIList() {
-      let unlockList = [];
-      this.navBarList?.forEach((facility) => {
-        if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      return this.getUnlockRFIList(this.navBarList);
+    },
+    unlockAFSList() {
+      return this.getUnlockAFSList(this.navBarList);
     },
     isCCOFApproved() {
       return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS_APPROVED;
@@ -630,14 +607,10 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
-    ...mapActions(useApplicationStore, ['deletePcfApplication']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
-    closeDialog() {
-      this.showDeleteDialog = false;
-    },
-    openDialog() {
-      this.showDeleteDialog = true;
+    toggleCancelApplicationDialog() {
+      this.showCancelDialog = !this.showCancelDialog;
     },
     newApplicationIntermediatePage() {
       this.setIsRenewal(false);
@@ -660,19 +633,13 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
-    continueApplication() {
+    goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);
       this.$router.push(
         pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
-          this.programYearId,
-        ),
-      );
-    },
-    goToCCOFOrganizationInfo() {
-      this.$router.push(
-        pcfUrl(
-          this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_ORG : PATHS.CCOF_FAMILY_ORG,
+          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+            ? PATHS.CCOF_GROUP_ORG
+            : PATHS.CCOF_FAMILY_ORG,
           this.programYearId,
         ),
       );
@@ -683,7 +650,9 @@ export default {
         if (ccofBaseFundingId && programYearId) {
           this.$router.push(
             pcfUrlGuid(
-              this.organizationProviderType === 'GROUP' ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+              this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+                ? PATHS.CCOF_GROUP_FUNDING
+                : PATHS.CCOF_FAMILY_FUNDING,
               programYearId,
               ccofBaseFundingId,
             ),
@@ -703,6 +672,9 @@ export default {
     },
     goToRFI(ccfriApplicationId, programYearId) {
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, programYearId, ccfriApplicationId));
+    },
+    goToAFS(ccfriApplicationId, programYearId) {
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_AFS, programYearId, ccfriApplicationId));
     },
     goToECEWE(programYearId) {
       this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, programYearId));
@@ -728,30 +700,22 @@ export default {
       }
     },
 
-    async deletePcf() {
-      try {
-        this.isLoadingComplete = false;
-        await this.deletePcfApplication();
-
-        location.reload(); //force a refresh because we just nuked all the data
-      } catch (error) {
-        console.info(error);
-      }
-    },
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
       const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
       const unlockRFIList = this.getUnlockRFIList(facilityList);
       const unlockNMFList = this.getUnlockNMFList(facilityList);
+      const unlockAFSList = this.getUnlockAFSList(facilityList);
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
       else if (application?.unlockBaseFunding && application?.applicationType === 'NEW')
         this.goToCCOFFunding(programYearId, facilityList);
       else if (application?.unlockEcewe) this.goToECEWE(programYearId);
       else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
-      else if (unlockCCFRIList?.length > 0) this.goToCCFRI(unlockCCFRIList[0], application);
-      else if (unlockNMFList?.length > 0) this.goToNMF(unlockNMFList[0], programYearId);
-      else if (unlockRFIList?.length > 0) this.goToRFI(unlockRFIList[0], programYearId);
+      else if (!isEmpty(unlockCCFRIList)) this.goToCCFRI(unlockCCFRIList[0], application);
+      else if (!isEmpty(unlockNMFList)) this.goToNMF(unlockNMFList[0], programYearId);
+      else if (!isEmpty(unlockRFIList)) this.goToRFI(unlockRFIList[0], programYearId);
+      else if (!isEmpty(unlockAFSList)) this.goToAFS(unlockAFSList[0], programYearId);
       else if (application?.unlockDeclaration) this.goToSummaryDeclaration(programYearId);
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
@@ -762,6 +726,7 @@ export default {
       if (this.isCCFRIUnlock(ccfriApplicationId, application)) this.goToCCFRI(ccfriApplicationId, application);
       else if (this.isNMFUnlock(ccfriApplicationId, application)) this.goToNMF(ccfriApplicationId, programYearId);
       else if (this.isRFIUnlock(ccfriApplicationId, application)) this.goToRFI(ccfriApplicationId, programYearId);
+      else if (this.isAFSUnlock(ccfriApplicationId, application)) this.goToAFS(ccfriApplicationId, programYearId);
     },
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
@@ -774,7 +739,8 @@ export default {
       return (
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
         this.isNMFUnlock(ccfriApplicationId, application) ||
-        this.isRFIUnlock(ccfriApplicationId, application)
+        this.isRFIUnlock(ccfriApplicationId, application) ||
+        this.isAFSUnlock(ccfriApplicationId, application)
       );
     },
     isCCFRIUnlock(ccfriApplicationId, application) {
@@ -792,24 +758,36 @@ export default {
       const unlockRFIList = this.getUnlockRFIList(facilityList);
       return application?.applicationStatus === 'SUBMITTED' && unlockRFIList.includes(ccfriApplicationId);
     },
+    isAFSUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockAFSList = this.getUnlockAFSList(facilityList);
+      return application?.applicationStatus === 'SUBMITTED' && unlockAFSList?.includes(ccfriApplicationId);
+    },
     getUnlockCCFRIList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockNMFList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
     getUnlockRFIList(facilityList) {
-      let unlockList = [];
+      const unlockList = [];
       facilityList?.forEach((facility) => {
         if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
+      });
+      return unlockList;
+    },
+    getUnlockAFSList(facilityList) {
+      const unlockList = [];
+      facilityList?.forEach((facility) => {
+        if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
     },
@@ -866,8 +844,9 @@ export default {
 .blueButton {
   background-color: #003366 !important;
 }
-.redButton {
-  background-color: #cc0f0f !important;
+.red-button {
+  background-color: #d8292f;
+  color: white;
 }
 .blueText {
   color: rgb(0, 52, 102) !important;

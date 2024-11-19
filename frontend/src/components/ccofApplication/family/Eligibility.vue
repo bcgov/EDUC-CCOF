@@ -94,16 +94,16 @@
 <script>
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import facilityMixin from '@/mixins/facilityMixin.js';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
 export default {
   name: 'EligibilityComponent',
   components: { AppDateInput },
   mixins: [facilityMixin],
-  data() {
-    return {
-      providerType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-    };
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.isModelEmpty) {
+      await this.save(false);
+    }
+    next();
   },
 };
 </script>

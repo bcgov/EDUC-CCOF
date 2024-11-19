@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia';
-import { useAppStore } from './app.js';
-import { useNavBarStore } from './navBar.js';
 
-import { filterFacilityListForPCF, checkApplicationUnlocked } from '../utils/common.js';
-import ApiService from '../common/apiService.js';
-import { ApiRoutes } from '../utils/constants.js';
+import ApiService from '@/common/apiService.js';
+import { useAppStore } from '@/store/app.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
   state: () => ({
@@ -134,13 +135,17 @@ export const useApplicationStore = defineStore('application', {
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);
       }
     },
-    async deletePcfApplication({ state }) {
-      //this should only be used on NEW PCF applications - usually in the case where the user incorrectly selects "GROUP or FAMILY"
-      await ApiService.apiAxios.delete(ApiRoutes.APPLICATION + '/' + state?.applicationId);
+    async deletePcfApplication() {
+      try {
+        await ApiService.apiAxios.delete(`${ApiRoutes.APPLICATION}/${this.applicationId}`);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     },
   },
   getters: {
-    formattedProgramYear: (state) => state.programYearLabel?.replace(/[^\d/]/g, ''),
+    formattedProgramYear: (state) => formatFiscalYearName(state.programYearLabel),
     fiscalStartAndEndDates: (state) => {
       //set fiscal year dates to prevent user from choosing dates outside the current FY
       //ASSUMPTION that fiscal year start / end dates will not move from April / March
@@ -181,7 +186,6 @@ export const useApplicationStore = defineStore('application', {
       });
       return applicationIds;
     },
-    latestApplicationId: (state) => state.applicationMap.get(this.latestProgramYearId)?.applicationId,
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;
       const selectedApplication = state.applicationMap?.get(programYearId);

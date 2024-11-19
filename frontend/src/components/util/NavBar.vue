@@ -65,6 +65,9 @@
                 <div>
                   {{ subItem.subTitle }}
                 </div>
+                <div v-if="subItem.subTitle2">
+                  {{ subItem.subTitle2 }}
+                </div>
               </v-list-item-title>
             </v-list-item>
           </v-list-group>
@@ -107,7 +110,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES } from '@/utils/constants.js';
+import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
@@ -191,7 +194,6 @@ export default {
   watch: {
     navRefresh: {
       handler() {
-        console.log('BuildNavBar called - trigged by navRefresh - computed value');
         this.buildNavBar();
       },
       immediate: true,
@@ -199,7 +201,6 @@ export default {
     },
     refreshNavBar: {
       handler() {
-        console.log('BuildNavBar called - trigged by navBarRefresh - forced refresh');
         this.buildNavBar();
       },
       immediate: true,
@@ -209,7 +210,6 @@ export default {
   methods: {
     ...mapActions(useNavBarStore, ['setNavBarItems', 'setCanSubmit']),
     setActive(item) {
-      this.items[1].expanded = false;
       let index = this.items.findIndex((obj) => obj.title === item.title);
       if (item.active) {
         this.items[index].active = false;
@@ -352,7 +352,7 @@ export default {
       if (this.isRenewal) {
         this.addLicenseUploadToNavbar();
       } else {
-        if (this.organizationProviderType === 'FAMILY') {
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
           this.items.push(this.getCCOFFamilyNavigation());
         } else {
           this.items.push(this.getCCOFNavigation());
@@ -421,6 +421,7 @@ export default {
             items.push({
               title: 'Parent Fees',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
               link: {
                 name: 'change-request-ccfri-add-fees-guid',
@@ -438,6 +439,7 @@ export default {
               items.push({
                 title: 'Parent Fee Increase – RFI',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: {
                   name: 'change-request-ccfri-request-info',
@@ -456,6 +458,7 @@ export default {
               items.push({
                 title: 'Parent Fee - RFI',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: {
                   name: 'change-request-new-facilities',
@@ -503,6 +506,7 @@ export default {
               items.push({
                 title: 'Parent Fees',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: {
                   name:
@@ -523,6 +527,7 @@ export default {
               items.push({
                 title: 'Parent Fees',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: { name: 'ccfri-add-fees-guid', params: { urlGuid: item.ccfriApplicationId } },
                 isAccessible: this.applicationStatus === 'SUBMITTED' ? true : this.isCCFRIOptInComplete(),
@@ -537,6 +542,7 @@ export default {
               items.push({
                 title: 'Parent Fee Increase – RFI',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: { name: 'ccfri-request-info', params: { urlGuid: item.ccfriApplicationId } },
                 isAccessible: true,
@@ -551,12 +557,27 @@ export default {
               items.push({
                 title: 'Parent Fee - RFI',
                 subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
                 id: item.facilityId,
                 link: { name: 'new-facilities', params: { urlGuid: item.ccfriApplicationId } },
                 isAccessible: true,
                 icon: this.getCheckbox(item.isNmfComplete),
                 isActive:
                   this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name,
+                position: positionIndex++,
+                navBarId: navBarId++,
+              });
+            }
+            if (item.enableAfs) {
+              items.push({
+                title: 'Approvable Fee Schedule',
+                subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
+                id: item.facilityId,
+                link: { name: 'ccfri-afs', params: { urlGuid: item.ccfriApplicationId } },
+                isAccessible: true,
+                icon: this.getCheckbox(item.isAfsComplete), // TODO (vietle-cgi) - CCFRI-3756 - work in progress
+                isActive: this.$route.params.urlGuid === item.ccfriApplicationId && 'ccfri-afs' === this.$route.name,
                 position: positionIndex++,
                 navBarId: navBarId++,
               });
@@ -589,7 +610,8 @@ export default {
         items.push(
           {
             title: 'Eligibility',
-            subTitle: this.navBarList[0].facilityName,
+            subTitle: this.navBarList[0]?.facilityName,
+            subTitle2: this.navBarList[0]?.facilityAccountNumber,
             id: this.navBarList[0].facilityId,
             link: { name: 'Eligibility GUID', params: { urlGuid: this.navBarList[0].facilityId } },
             isAccessible: true,
@@ -601,7 +623,8 @@ export default {
           },
           {
             title: 'Funding',
-            subTitle: this.navBarList[0].facilityName,
+            subTitle: this.navBarList[0]?.facilityName,
+            subTitle2: this.navBarList[0]?.facilityAccountNumber,
             link: { name: 'FamilyFunding GUID', params: { urlGuid: this.navBarList[0].ccofBaseFundingId } },
             isAccessible: true,
             icon: this.getCheckbox(this.navBarList[0].isCCOFComplete),
@@ -744,7 +767,7 @@ export default {
           name: 'Midterm Fee Increase Select Facilities',
           params: { changeRecGuid: this.$route.params.changeRecGuid, changeType: CHANGE_TYPES.MTFI },
         },
-        isAccessible: this.organizationProviderType != 'FAMILY',
+        isAccessible: this.organizationProviderType !== ORGANIZATION_PROVIDER_TYPES.FAMILY,
         icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
         isActive: 'Midterm Fee Increase Select Facilities' === this.$route.name,
         position: positionIndex++,
@@ -756,6 +779,7 @@ export default {
           items.push({
             title: 'Parent Fee Verification',
             subTitle: item.facilityName,
+            subTitle2: item.facilityAccountNumber,
             id: item.facilityId,
             link: {
               name: 'CCFRI Fee Verification',
@@ -776,6 +800,7 @@ export default {
             items.push({
               title: 'Parent Fee Increase – RFI',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
               link: {
                 name: 'mtfi-change-request-ccfri-request-info',
@@ -804,13 +829,13 @@ export default {
     },
     getAddNewFacilityCCOFNavigation() {
       let items = [];
-      console.log('changeRecGuid::::::::', this.$route.params.changeRecGuid);
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item) => {
           items.push(
             {
               title: 'Facility',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
               link: {
                 name: 'change-request-facility-information-guid',
@@ -824,10 +849,10 @@ export default {
               position: positionIndex++,
               navBarId: navBarId++,
             },
-            //funding doesn't work right, wait until Viet is done integration before trying again
             {
               title: 'Funding',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               link: {
                 name: 'change-request-funding-guid',
                 params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccofBaseFundingId },
@@ -876,6 +901,7 @@ export default {
             {
               title: 'Facility',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
               link: { name: 'Facility Information Guid', params: { urlGuid: item.facilityId } },
               isAccessible: true,
@@ -888,6 +914,7 @@ export default {
             {
               title: 'Funding',
               subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
               link: { name: 'Funding Amount Guid', params: { urlGuid: item.ccofBaseFundingId } },
               isAccessible: true,
               icon: this.getCheckbox(item.isCCOFComplete),

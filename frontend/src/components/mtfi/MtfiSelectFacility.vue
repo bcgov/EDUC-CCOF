@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
     </div>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h5 font-weight-bold">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <div class="row pt-4 justify-center">
+    <div class="row pt-4 text-center">
       <span class="text-h6 font-weight-bold blueText">{{ organizationName }}</span>
     </div>
     <v-row no-gutters class="justify-center align-center pt-12">
@@ -22,7 +22,7 @@
       <v-skeleton-loader max-height="475px" :loading="true" type="image, image, image" />
     </div>
     <LargeButtonContainer v-else>
-      <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+      <v-form ref="isValidForm" v-model="isValidForm">
         <v-card
           v-for="(
             { facilityName, facilityAccountNumber, licenseNumber, ccfriOptInStatus, ccfriStatus }, index
@@ -76,15 +76,15 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useApplicationStore } from '../../store/application.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import LargeButtonContainer from '../guiComponents/LargeButtonContainer.vue';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import NavButton from '../../components/util/NavButton.vue';
+import LargeButtonContainer from '@/components/guiComponents/LargeButtonContainer.vue';
+import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
 
 let ccfriOptInOrOut = {};
 let textInput = '';
@@ -102,17 +102,12 @@ export default {
   },
   data() {
     return {
-      isUnlocked: false,
-      originalFacilityList: [],
       model,
-      //textInput,
-      showOptStatus: '',
       isValidForm: false,
       processing: false,
       loading: true,
       ccfriOptInOrOut,
       checkbox: [],
-      rules: [(v) => !!v || 'Required.'],
     };
   },
   computed: {
@@ -191,8 +186,6 @@ export default {
             applicationID: this.applicationId,
             changeActionId: this.changeActionId,
             optInResponse: 1,
-            // 'ccfriApplicationId': facility.ccfriApplicationId,
-            // 'ccfriFacilityId': facility.ccfriFacilityId,
             programYearId: this.programYearId,
             organizationId: this.organizationId,
           });

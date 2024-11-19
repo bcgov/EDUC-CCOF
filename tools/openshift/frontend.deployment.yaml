@@ -1,37 +1,36 @@
 ---
   apiVersion: template.openshift.io/v1
   kind: Template
-  labels:
-    template: "${REPO_NAME}-template"
   metadata:
-    name: "${REPO_NAME}-frontend-dc"
+    name: "${REPO_NAME}-frontend-deployment"
+    labels:
+      template: "${REPO_NAME}-template"
   objects:
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewApp
-      creationTimestamp:
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
         branch: "${BRANCH}"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       replicas: ${{MIN_REPLICAS}}
       selector:
-        app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
+        matchLabels:
+          app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
       strategy:
-        resources: {}
-        type: Rolling
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 25%
+          maxSurge: 25%
       template:
         metadata:
           annotations:
             openshift.io/generated-by: OpenShiftNewApp
-          creationTimestamp:
           labels:
-            app: "${APP_NAME}-${BRANCH}"
-            deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
+            app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
         spec:
           containers:
           - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
@@ -79,17 +78,14 @@
             configMap:
               name: ccof-frontend-${APP_ENVIRONMENT}-config-map
       test: false
-      triggers:
-      - type: ConfigChange
   - apiVersion: v1
     kind: Service
     metadata:
       annotations:
         service.alpha.openshift.io/serving-cert-secret-name: "ccof-frontend-cert"
         openshift.io/generated-by: OpenShiftNewApp
-      creationTimestamp:
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       ports:
@@ -98,15 +94,14 @@
         protocol: TCP
         targetPort: 2015
       selector:
-        app: "${APP_NAME}-${BRANCH}"
-        deploymentconfig: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
+        app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
   - apiVersion: v1
     kind: Route
     metadata:
       annotations:
         openshift.io/host.generated: 'true'
       labels:
-        app: "${APP_NAME}-${BRANCH}"
+        app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       host: "${HOST_ROUTE}"
@@ -129,10 +124,9 @@
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-cpu-autoscaler"
     spec:
       scaleTargetRef:
-        apiVersion: apps.openshift.io/v1
-        kind: DeploymentConfig
+        apiVersion: apps/v1
+        kind: Deployment
         name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
-        subresource: scale
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
       metrics:

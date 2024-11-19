@@ -48,7 +48,7 @@ import { useAppStore } from '../../store/app.js';
 import { useOrganizationStore } from '../../store/ccof/organization.js';
 
 import LargeCard from '../../components/guiComponents/LargeCard.vue';
-import { PATHS, pcfUrl } from '../../utils/constants.js';
+import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import NavButton from '../../components/util/NavButton.vue';
 
 export default {
@@ -63,11 +63,11 @@ export default {
       this.$router.push(PATHS.ROOT.HOME);
     },
     toGroup() {
-      this.setOrganizationProviderType('GROUP');
+      this.setOrganizationProviderType(ORGANIZATION_PROVIDER_TYPES.GROUP);
       this.$router.push(pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearList.newApp.programYearId));
     },
     toFamily() {
-      this.setOrganizationProviderType('FAMILY');
+      this.setOrganizationProviderType(ORGANIZATION_PROVIDER_TYPES.FAMILY);
       this.$router.push(pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearList.newApp.programYearId));
     },
   },

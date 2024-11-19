@@ -19,7 +19,7 @@
               cols="12"
               placeholder="Required"
               class="summary-value"
-              :model-value="getOptInOptOut(ccfri.ccfriOptInStatus)"
+              :model-value="optInOptOut"
               density="compact"
               flat
               variant="solo"
@@ -27,7 +27,6 @@
               readonly
               :rules="rules.required"
             >
-              Opt-Out
             </v-text-field>
           </v-col>
         </v-row>
@@ -376,7 +375,7 @@
               <v-text-field
                 cols="6"
                 placeholder="Required"
-                :model-value="getOptInOptOut(ccfri.ccfriOptInStatus)"
+                :model-value="optInOptOut"
                 class="summary-value"
                 flat
                 variant="solo"
@@ -545,6 +544,16 @@ export default {
         return _.sortBy(this.ccfri?.childCareTypes, 'orderNumber');
       }
     },
+    optInOptOut() {
+      switch (this.ccfri?.ccfriOptInStatus) {
+        case 0:
+          return 'Opt-Out';
+        case 1:
+          return 'Opt-In';
+        default:
+          return '';
+      }
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -592,15 +601,6 @@ export default {
         );
       }
       return null;
-    },
-    getOptInOptOut(status) {
-      if (status === 1) {
-        return 'Opt-In';
-      } else if (status === 0) {
-        return 'Opt-Out';
-      } else {
-        return '';
-      }
     },
   },
 };

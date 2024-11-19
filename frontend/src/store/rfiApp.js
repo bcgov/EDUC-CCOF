@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
 import { isEmpty, isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
-import ApiService from '../common/apiService.js';
-import { ApiRoutes } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
-import { deepCloneObject } from '../utils/common.js';
+import ApiService from '@/common/apiService.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useRfiAppStore = defineStore('rfiApp', {
   store: () => ({
@@ -20,6 +20,7 @@ export const useRfiAppStore = defineStore('rfiApp', {
   }),
   getters: {
     getByCcfriId: (state) => (ccfriId) => {
+      if (!state.rfiStore) state.rfiStore = {};
       return state.rfiStore[ccfriId];
     },
   },
@@ -36,7 +37,6 @@ export const useRfiAppStore = defineStore('rfiApp', {
       }
     },
     async loadRfi(ccfriId) {
-      console.log('loading RFI for: ', ccfriId);
       let rfiModel = this.getByCcfriId(ccfriId);
       if (rfiModel) {
         this.setRfiModel(rfiModel);
@@ -45,7 +45,6 @@ export const useRfiAppStore = defineStore('rfiApp', {
         checkSession();
         try {
           let response = await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + ccfriId + '/rfi');
-          console.info(response);
           if (!isEmpty(response.data)) {
             this.addRfiToStore({ ccfriId: ccfriId, model: response.data });
             this.setRfiModel(response.data);
@@ -72,7 +71,6 @@ export const useRfiAppStore = defineStore('rfiApp', {
       checkSession();
 
       if (isEqual({ ...this.rfiModel }, { ...this.loadedModel })) {
-        console.info('no model changes');
         return;
       }
 

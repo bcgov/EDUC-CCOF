@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -23,7 +24,7 @@ export const useAppStore = defineStore('app', {
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
-    logoutCounter: 120,
+    logoutCounter: undefined,
   }),
   actions: {
     setLookupInfo(lookupInfo) {
@@ -105,24 +106,23 @@ export const useAppStore = defineStore('app', {
       this.setLogoutTimerEnabled(false);
     },
     stopCounter() {
+      //set the inactivity counter which is also displayed to the user
       this.setLogoutCounter(120);
       this.setLogoutTimerEnabled(false);
     },
   },
   getters: {
-    currentYearLabel(state) {
+    //jb oct 24 - changed so state is no longer passed in as a param - this shouldn't break other things
+    currentYearLabel: (state) => {
       return state.programYearList?.current?.name;
     },
-    renewalYearLabel(state) {
-      return state.programYearList?.renewal?.name?.replace(/[^\d/]/g, '');
+    renewalYearLabel: (state) => {
+      return formatFiscalYearName(state.programYearList?.renewal?.name);
     },
-    getLogoutCounter(state) {
-      return state.logoutCounter < 0 ? 0 : this.logoutCounter;
-    },
-    getFundingUrl(state, programYearId) {
+    getFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;
     },
-    getLanguageYearLabel(state) {
+    getLanguageYearLabel: (state) => {
       const applicationStore = useApplicationStore();
       const orderNumber = state?.programYearList.list.find(
         (el) => el.programYearId == applicationStore?.programYearId,
@@ -132,6 +132,30 @@ export const useAppStore = defineStore('app', {
       } else {
         return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
       }
+    },
+    getProgramYearNameById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear?.name;
+      };
+    },
+    getProgramYearOrderById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear?.order;
+      };
+    },
+    getChildCareCategoryNameById: (state) => {
+      return (id) => {
+        const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);
+        return childCareCategory?.ccof_description;
+      };
+    },
+    getChildCareCategoryNumberById: (state) => {
+      return (id) => {
+        const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);
+        return childCareCategory?.ccof_childcarecategorynumber;
+      };
     },
   },
 });

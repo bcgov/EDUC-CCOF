@@ -8,12 +8,12 @@
       <!-- <span class="text-h5">What would you like to change?</span> -->
     </div>
 
-    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+    <v-form ref="isValidForm" v-model="isValidForm">
       <v-container>
         <p class="text-h6 text-center">What changes do you want to make?</p>
         <v-row>
-          <v-col cols="12" md="6" xl="4">
-            <SmallCard v-if="organizationProviderType == 'GROUP'">
+          <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="12" md="6" xl="4">
+            <SmallCard>
               <template #content>
                 <div class="px-10">
                   <p class="text-h6 text-center">Add a New facility to an existing organization</p>
@@ -90,13 +90,6 @@
             <h2 v-if="viewOlderRequestActive">Change History Archive</h2>
             <h2 v-else>Change History</h2>
           </v-col>
-          <!-- <v-text-field
-            v-if="!viewOlderRequestActive"
-            v-model="search"
-            label="Search by facility name">
-          </v-text-field>
-        NOT SURE IF THIS IS ACTUALLY WHAT THE REQUIREMENTS WANT
-        -->
         </v-row>
         <v-row v-if="processing">
           <v-col>
@@ -232,17 +225,18 @@
 <script>
 import _ from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useNavBarStore } from '../../store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
-import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import SmallCard from '../guiComponents/SmallCard.vue';
-import NavButton from '../util/NavButton.vue';
-import { isFacilityAvailable } from '../../utils/common.js';
+import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import { isFacilityAvailable } from '@/utils/common.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'ReportChange',
@@ -323,16 +317,16 @@ export default {
       return allChangeRequests;
     },
     getPrevProgramYearId() {
-      return this.programYearList.list.find(({ programYearId }) => programYearId == this.programYearId).previousYearId;
+      return this.programYearList.list.find(({ programYearId }) => programYearId === this.programYearId).previousYearId;
     },
     currentChangeRequests() {
       return this.allChangeRequests.filter(
         (el) =>
-          el.programYearId == this.programYearId ||
-          (el.programYearId == this.getPrevProgramYearId &&
-            (el.externalStatus == 'In Progress' ||
-              el.externalStatus == 'Submitted' ||
-              el.externalStatus == 'Action Required')),
+          el.programYearId === this.programYearId ||
+          (el.programYearId === this.getPrevProgramYearId &&
+            (el.externalStatus === 'In Progress' ||
+              el.externalStatus === 'Submitted' ||
+              el.externalStatus === 'Action Required')),
       );
     },
     pastChangeRequests() {
@@ -343,7 +337,9 @@ export default {
       return this.allChangeRequests?.length > 8 ? 53 * 9 : undefined;
     },
     headers() {
-      return this.organizationProviderType == 'GROUP' ? this.headersGroup : this.headersFamily;
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+        ? this.headersGroup
+        : this.headersFamily;
     },
     maxfacilityNamesStringLength() {
       if (this.$vuetify.display.width > 3500) {
@@ -391,6 +387,9 @@ export default {
     await this.getChangeRequestList();
     this.processing = false;
   },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+  },
   methods: {
     ...mapActions(useReportChangesStore, [
       'getChangeRequestList',
@@ -413,8 +412,10 @@ export default {
     //   return currentFutureYears?.includes(programYearId);
     // },
     getProgramYearString(programYearId) {
-      let label = this.programYearList?.list?.find((programYear) => programYear.programYearId == programYearId)?.name;
-      return label?.replace(/[^\d/]/g, '');
+      const label = this.programYearList?.list?.find(
+        (programYear) => programYear.programYearId === programYearId,
+      )?.name;
+      return formatFiscalYearName(label);
     },
     getChangeTypeString(changeType) {
       switch (changeType) {
@@ -433,14 +434,14 @@ export default {
       //TODO - add more logic to grab facility name from relevent change request. IE: MTFI
 
       //did it this way so if there are many change Actions, it checks all of them to see if there is a new facility. Maybe change in the future
-      if (!changeActions.find((el) => el.changeType == 'NEW_FACILITY')) {
+      if (!changeActions.find((el) => el.changeType === 'NEW_FACILITY')) {
         return '- - - -';
       }
 
       let str = '';
 
       //change in backend, only returns 1 at a time rn
-      let action = changeActions.find((el) => el.changeType == 'NEW_FACILITY');
+      let action = changeActions.find((el) => el.changeType === 'NEW_FACILITY');
       if (action?.facilities) {
         action.facilities.forEach((fac) => (str = str + `${fac.facilityName}, `));
       }
@@ -492,7 +493,7 @@ export default {
       return '- - - -';
     },
     getChangeRequestStyle(changeRequest) {
-      return changeRequest.externalStatus == 'Action Required' ? 'redText' : '';
+      return changeRequest.externalStatus === 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -503,19 +504,19 @@ export default {
     async continueButton(changeType, changeActionId = null, changeRequestId = null, index) {
       this.processing = true;
       let sortedChangeActions = this.sortChangeActions(this.changeRequestStore[index], 'desc');
-      if (changeType == 'PDF_CHANGE') {
+      if (changeType === 'PDF_CHANGE') {
         this.goToChangeForm(changeActionId, changeRequestId);
-      } else if (changeType == 'NEW_FACILITY') {
+      } else if (changeType === 'NEW_FACILITY') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
         this.$router.push(
           changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, changeRequestId, sortedChangeActions[0].facilities[0].facilityId),
         );
-      } else if (changeType == 'PARENT_FEE_CHANGE') {
+      } else if (changeType === 'PARENT_FEE_CHANGE') {
         this.setChangeRequestId(changeRequestId);
         this.setChangeActionId(changeActionId);
 
-        if (this.organizationProviderType == 'FAMILY') {
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
           // i need to load the new CCFRI id here then
           await this.getChangeRequest(changeRequestId);
           this.$router.push(
@@ -707,10 +708,10 @@ export default {
     // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled() {
       let foundCRNotInEndStateStatus = this.allChangeRequests.find(
-        (el) => el.changeType == 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
+        (el) => el.changeType === 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
       );
       let foundFacilityWithApprovedCCFRI = this.userProfileList.find(
-        (el) => el.ccfriStatus == 'APPROVED' && isFacilityAvailable(el),
+        (el) => el.ccfriStatus === 'APPROVED' && isFacilityAvailable(el),
       );
       return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;
     },

@@ -11,11 +11,11 @@ import { checkSession } from '@/utils/session.js';
 
 function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes) {
   if (currentYearLanguageLabel != PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
-    const ooscK = childCareCategoryList?.find((el) => el.ccof_name == 'OOSC-K');
-    const ooscG = childCareCategoryList?.find((el) => el.ccof_name == 'OOSC-G');
+    const ooscK = childCareCategoryList?.find((el) => el.ccof_name === 'OOSC-K');
+    const ooscG = childCareCategoryList?.find((el) => el.ccof_name === 'OOSC-G');
 
     //OOSC and OOSK always exist together - so we just have to find one of them in the array
-    let schoolAgeFound = childCareTypes.find((el) => el.childCareCategoryId == ooscK.ccof_childcare_categoryid);
+    let schoolAgeFound = childCareTypes.find((el) => el.childCareCategoryId === ooscK.ccof_childcare_categoryid);
     if (schoolAgeFound) {
       childCareTypes.forEach((category) => {
         if (category.childCareCategoryId == ooscK.ccof_childcare_categoryid) {
@@ -29,12 +29,10 @@ function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, 
 }
 
 function isLocked(applicationStatus, navBarList, facilityId) {
-  //console.log(facilityId, 'faccccc');
   let currentFac = navBarList.find((element) => {
-    return element.facilityId == facilityId;
+    return element.facilityId === facilityId;
   });
 
-  //console.log('currentFAC in store', currentFac);
   //if submitted, lock er up. If unlock CCFRI - unlock
   if (currentFac.unlockCcfri) {
     return false;
@@ -44,10 +42,9 @@ function isLocked(applicationStatus, navBarList, facilityId) {
   return false;
 }
 function getProgramYear(selectedGuid, programYearList) {
-  const programYear = programYearList.find(({ programYearId }) => programYearId == selectedGuid);
+  const programYear = programYearList.find(({ programYearId }) => programYearId === selectedGuid);
 
   if (!programYear) {
-    //console.log('SELECTED PROGRAM YEAR GUID NOT FOUND :( ');
     throw 'SELECTED PROGRAM YEAR GUID NOT FOUND ';
   }
 
@@ -55,13 +52,13 @@ function getProgramYear(selectedGuid, programYearList) {
 }
 
 function isOver3Percent(currentFees, previousFees, percentValue) {
-  let currentFeeFrequency = currentFees.feeFrequency == 'Monthly' ? 1 : currentFees.feeFrequency == 'Weekly' ? 4 : 21;
+  let currentFeeFrequency = currentFees.feeFrequency === 'Monthly' ? 1 : currentFees.feeFrequency === 'Weekly' ? 4 : 21;
   let previousFeeFrequency =
-    previousFees.feeFrequency == 'Monthly' ? 1 : previousFees.feeFrequency == 'Weekly' ? 4 : 21;
+    previousFees.feeFrequency === 'Monthly' ? 1 : previousFees.feeFrequency === 'Weekly' ? 4 : 21;
   console.log(`Current Fee Frequency: ${currentFeeFrequency}, Previous Fee Frequency: ${previousFeeFrequency}`);
   console.log(`Previous Fee Feb: ${previousFees.approvedFeeFeb}, Previous Fee March: ${previousFees.approvedFeeMar}`);
   console.log(`Current Fee Feb: ${currentFees.approvedFeeFeb}, Current Fee March: ${currentFees.approvedFeeMar}`);
-  if (previousFees.approvedFeeFeb == previousFees.approvedFeeMar) {
+  if (previousFees.approvedFeeFeb === previousFees.approvedFeeMar) {
     if (
       currentFees.approvedFeeJan * currentFeeFrequency - previousFees.approvedFeeMar * previousFeeFrequency >
         percentValue ||
@@ -70,12 +67,12 @@ function isOver3Percent(currentFees, previousFees, percentValue) {
       currentFees.approvedFeeMar * currentFeeFrequency - previousFees.approvedFeeMar * previousFeeFrequency >
         percentValue
     ) {
-      console.log('Found RFI median condition for: previousFees.approvedFeeFeb == previousFees.approvedFeeMar');
+      console.log('Found RFI median condition for: previousFees.approvedFeeFeb === previousFees.approvedFeeMar');
       return true;
     }
   } else if (
     previousFees.approvedFeeFeb > previousFees.approvedFeeMar &&
-    previousFees.approvedFeeFeb == previousFees.approvedFeeJan
+    previousFees.approvedFeeFeb === previousFees.approvedFeeJan
   ) {
     if (
       currentFees.approvedFeeJan * currentFeeFrequency - previousFees.approvedFeeFeb * previousFeeFrequency >
@@ -115,7 +112,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     ccfriStore: {},
     ccfriMedianStore: {},
     previousFeeStore: {},
-    previousClosureDates: {}, //used for MTFI
   }),
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -135,7 +131,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
   },
   actions: {
     // TODO: Refactor all setters as setThing.  You can just set the state directly with Pinia
-    model(value) {
+    setModel(value) {
       this.model = value;
     },
     isValidForm(value) {
@@ -256,7 +252,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     getPreviousCareType(currentRFI, careType, previousProgramYearId) {
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-      // console.log('CURRENTRFI', currentRFI);
+
       // Lookup previous years approved parent fees for most RFI scenarios
       if (currentRFI.existingFeesCorrect == 100000000 && applicationStore.isRenewal) {
         let previousRFI = this.getPreviousApprovedFeesByFacilityId({
@@ -266,15 +262,15 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
         return previousRFI.childCareTypes.find(
           (item) =>
-            item.childCareCategoryId == careType.childCareCategoryId && item.programYearId == previousProgramYearId,
+            item.childCareCategoryId === careType.childCareCategoryId && item.programYearId === previousProgramYearId,
         );
-      } else if (navBarStore.changeType == 'mtfi' && !applicationStore.isRenewal) {
+      } else if (navBarStore.changeType === 'mtfi' && !applicationStore.isRenewal) {
         // MTFI can be done on a new PCF or renewal - so it may not have previous CCFRI. If no previous CCFRI, base median off current year.
         // keep as elif because PCF RFI may call this but not satisfy the above if statement
         return currentRFI.childCareTypes.find(
           (item) =>
-            item.childCareCategoryId == careType.childCareCategoryId &&
-            item.programYearId == applicationStore.programYearId,
+            item.childCareCategoryId === careType.childCareCategoryId &&
+            item.programYearId === applicationStore.programYearId,
         );
       } else {
         return undefined;
@@ -296,24 +292,25 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       const currentProgramYear = getProgramYear(currentProgramYearId, programYearList);
       const previousProgramYear = getProgramYear(currentProgramYear.previousYearId, programYearList);
       const previousProgramYearId = previousProgramYear.programYearId;
-      //console.log('getCcfriOver3percent.currentRFI: ', this.CCFRIFacilityModel);
       const threePercentMedian = this.getCCFRIMedianById(currentCcfri ? currentCcfri.ccfriApplicationId : this.ccfriId);
       console.log(threePercentMedian);
       this.CCFRIFacilityModel.childCareTypes
-        .filter((filterItem) => filterItem.programYearId == currentProgramYearId)
+        .filter((filterItem) => filterItem.programYearId === currentProgramYearId)
         .forEach((careType) => {
           console.log(
             `Determining RFI for : [${careType.childCareCategory}] using Current Year: [${currentProgramYear.name}] and Last Year [${previousProgramYear.name}]`,
           );
-          const thisCcFri = currentCcfri || this.setCCFRIFacilityModel;
+
+          const thisCcFri = currentCcfri || this.CCFRIFacilityModel;
+
           let previousCareType = this.getPreviousCareType(thisCcFri, careType, previousProgramYearId);
           if (previousCareType) {
             console.log('previousCare Type found, testing RFI median fees: ', previousCareType);
             let allowedDifference;
 
-            if (careType.childCareCategory == 'Kindergarten') {
+            if (careType.childCareCategory === 'Kindergarten') {
               allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Kindergarten'] : null;
-            } else if (careType.childCareCategory == 'Grade 1 to Age 12') {
+            } else if (careType.childCareCategory === 'Grade 1 to Age 12') {
               allowedDifference = threePercentMedian ? threePercentMedian['Out of School Care - Grade 1+'] : null;
             } else {
               allowedDifference = threePercentMedian ? threePercentMedian[careType.childCareCategory] : null;
@@ -345,15 +342,11 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           if (response?.data) {
             this.addCCFRIMedianToStore({ ccfriId: this.ccfriId, ccfriMedian: response.data });
           } else {
-            console.log('NO median found, sleeping...');
             //Sometimes it takes a bit of time for RFI median to come by from dynamics. if no value is found. wait 10 seconds and try again.
             await sleep(10 * 1000);
-            //console.log("I should have slept for 10 seconds");
             response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${this.ccfriId}/median`);
             if (response?.data) {
               this.addCCFRIMedianToStore({ ccfriId: this.ccfriId, ccfriMedian: response.data });
-            } else {
-              console.log(`CCFRI median from backend is blank for CCFRI: ${this.ccfriId}`);
             }
           }
         } catch (e) {
@@ -404,7 +397,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       } else {
         try {
           const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FEES}/${facilityId}/year/${programYearId}`);
-          console.log('feeee response', response);
           //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
           replaceChildCareLabel(
             appStore.getLanguageYearLabel,
@@ -423,16 +415,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         }
       }
     },
-    async getClosureDates(ccfriId) {
-      try {
-        const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_DATES}/${ccfriId}`);
-        this.previousClosureDates = response.data;
-        return response.data;
-      } catch (e) {
-        console.log(`Failed to get existing Facility with error - ${e}`);
-        throw e;
-      }
-    },
+
     async decorateWithCareTypes(facilityId) {
       const appStore = useAppStore();
       const applicationStore = useApplicationStore();
@@ -442,7 +425,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
       try {
         let response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`);
-        console.log('resp', response);
         let careTypes = [];
         const currProgramYear = getProgramYear(ccofProgramYearId, programYearList);
         const prevProgramYear = getProgramYear(currProgramYear.previousYearId, programYearList);
@@ -451,16 +433,12 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           programYearId: prevProgramYear.programYearId,
         });
 
-        console.log(prevCcfriApp, 'in upper try');
-
-        //('currProgramYear', currProgramYear);
-
         //Always show the current year fee cards
         response.data.forEach((item) => {
           let found = this.CCFRIFacilityModel.childCareTypes.find((searchItem) => {
             return (
-              searchItem.childCareCategoryId == item.childCareCategoryId &&
-              searchItem.programYearId == ccofProgramYearId
+              searchItem.childCareCategoryId === item.childCareCategoryId &&
+              searchItem.programYearId === ccofProgramYearId
             );
           });
           if (!found) {
@@ -483,12 +461,11 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
             (!prevCcfriApp &&
               !isLocked(applicationStore.applicationStatus, navBarStore.navBarList, this.loadedModel.facilityId)))
         ) {
-          console.log('show all the cards');
           response.data.forEach((item) => {
             let found = this.CCFRIFacilityModel.childCareTypes.find((searchItem) => {
               return (
-                searchItem.childCareCategoryId == item.childCareCategoryId &&
-                searchItem.programYearId == prevProgramYear.programYearId
+                searchItem.childCareCategoryId === item.childCareCategoryId &&
+                searchItem.programYearId === prevProgramYear.programYearId
               );
             });
             if (!found) {
@@ -509,28 +486,26 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           Then check if we have any cards that don't belong (for example user selects NO fees are not correct, then goes back and selects YES)
         */
         if (applicationStore.isRenewal && this.CCFRIFacilityModel.existingFeesCorrect == 100000000 && prevCcfriApp) {
-          console.log('prevCCFRI IS:', prevCcfriApp);
           response.data.forEach((item) => {
             //check to see if childcarecat exists in last years CCFRI app.
             let pastChildCareTypefound = prevCcfriApp.childCareTypes.find((prevChildCareCat) => {
               return (
-                prevChildCareCat.childCareCategoryId == item.childCareCategoryId &&
-                prevChildCareCat.programYearId == prevProgramYear.programYearId
+                prevChildCareCat.childCareCategoryId === item.childCareCategoryId &&
+                prevChildCareCat.programYearId === prevProgramYear.programYearId
               );
             });
 
             //check to see if we have saved data for this child care cat in the list
             let foundChildCareCat = this.CCFRIFacilityModel.childCareTypes.find((searchItem) => {
               return (
-                searchItem.childCareCategoryId == item.childCareCategoryId &&
-                searchItem.programYearId == prevProgramYear.programYearId
+                searchItem.childCareCategoryId === item.childCareCategoryId &&
+                searchItem.programYearId === prevProgramYear.programYearId
               );
             });
 
             //if child care type in last years CCFRI fees not found, but license  add a card for that child care cat previous years fees
             //this ensures we get 24 months of fees for a child care type that is new to the facility.
             if (!pastChildCareTypefound && !foundChildCareCat) {
-              console.log('NOT FOUND!');
               careTypes.push({
                 programYear: prevProgramYear.name,
                 programYearId: prevProgramYear.programYearId,
@@ -542,7 +517,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
             //not an else because (!pastChildCareTypefound && foundChildCareCat) is a possible event
             else if (pastChildCareTypefound && foundChildCareCat) {
-              console.log('adding delete flag for: ', foundChildCareCat);
               //past child care type with fees found AND our users choice marked prev fees as correct... delete the card
               foundChildCareCat.deleteMe = true;
             }
@@ -554,12 +528,11 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         //and removing that child care type for new applications
         this.CCFRIFacilityModel.childCareTypes.forEach((childCareCat) => {
           let found = response.data.find((searchItem) => {
-            return searchItem.childCareCategoryId == childCareCat.childCareCategoryId;
+            return searchItem.childCareCategoryId === childCareCat.childCareCategoryId;
           });
 
           //Mark the child care type, and call the delete API with the parentFeeGUID
           if (!found) {
-            console.log('no license for child care type', childCareCat);
             childCareCat.deleteMe = true;
           }
         });
@@ -568,7 +541,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
         //IF not historical year - find Kindergarten & Out of school care in child cat lookup
         //then check if they are in the CCFRI fac model. If so - rename them
-        console.log(appStore.getLanguageYearLabel);
         //if year is 2024/25 or above, change child care cat label to reflect new naming by the buisness.
         replaceChildCareLabel(
           appStore.getLanguageYearLabel,
@@ -596,6 +568,16 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         this.setLoadedModel(deepCloneObject(this.CCFRIFacilityModel));
       } catch (e) {
         console.log('error', e);
+      }
+    },
+
+    async getApprovableFeeSchedules(ccfriId) {
+      try {
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_CCFRI}/${ccfriId}/afs`);
+        return response?.data;
+      } catch (e) {
+        console.log(`Failed to get existing approvable parent fees with error - ${e}`);
+        throw e;
       }
     },
   },

@@ -57,7 +57,7 @@
           </v-row>
           <v-row class="d-flex justify-start">
             <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row v-if="funding?.hasClosedMonth?.toUpperCase() == 'YES'" no-gutters class="d-flex justify-start">
+              <v-row v-if="funding?.hasClosedMonth?.toUpperCase() === 'YES'" no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Months where ALL of the programs at this facility are closed for the entire month:
@@ -368,125 +368,117 @@
               </v-col>
             </v-row>
             <v-row class="d-flex justify-start pt-2">
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Monday</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="funding?.monday"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.monday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Tuesday</span>
                   </v-col>
-                  <v-col class="d-flex justify-left">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="funding?.tusday"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.tusday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Wednesday</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="funding?.wednesday"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.wednesday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    required
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Thursday</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="funding?.thursday"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.thursday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Friday</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="funding?.friday"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.friday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
-              <v-col cols="2" lg="1" class="pb-0 pt-0">
+              <v-col cols="2" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label">Total</span>
                   </v-col>
-                  <v-col class="d-flex justify-start">
-                    <v-text-field
-                      placeholder="Required"
-                      :model-value="calculateTotal()"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                      :rules="rules.required"
-                    />
-                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="calculateTotal"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
             </v-row>
@@ -511,7 +503,7 @@
                   />
                 </v-col>
               </v-row>
-              <span v-if="funding?.maxGroupChildCareSchool > 0 && funding?.isSchoolProperty?.toUpperCase() === 'YES'">
+              <span v-if="showSchoolPropertyQuestion">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start">
                     <span class="summary-label pt-1">Please indicate each service that your facility offers:</span>
@@ -746,7 +738,7 @@
           <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <router-link v-if="summaryModel?.application" :to="getRoutingPath()">
+                <router-link v-if="summaryModel?.application" :to="routingPath">
                   <span style="color: #ff5252; text-underline: black"
                     ><u>To add this information, click here. This will bring you to a different page.</u></span
                   >
@@ -766,7 +758,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
@@ -824,6 +816,40 @@ export default {
       }
       return String(arr);
     },
+    calculateTotal() {
+      let total = 0;
+      total =
+        this.funding.monday +
+        this.funding.tusday +
+        this.funding.wednesday +
+        this.funding.thursday +
+        this.funding.friday;
+      return total;
+    },
+    routingPath() {
+      if (
+        !this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
+        pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
+      } else if (this.isChangeRequest) {
+        return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+      ) {
+        return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
+      }
+      return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
+    },
+    showSchoolPropertyQuestion() {
+      return this.funding?.maxGroupChildCareSchool > 0 && this.funding?.isSchoolProperty?.toUpperCase() === 'YES';
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -839,29 +865,6 @@ export default {
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
-    calculateTotal() {
-      let total = 0;
-      total =
-        this.funding.monday +
-        this.funding.tusday +
-        this.funding.wednesday +
-        this.funding.thursday +
-        this.funding.friday;
-      return total;
-    },
-    getRoutingPath() {
-      if (!this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY') {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else if (this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY') {
-        pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
-      } else if (this.isChangeRequest) {
-        return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
-      } else if (this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'GROUP') {
-        return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
-      } else {
-        return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
-      }
-    },
   },
 };
 </script>

@@ -12,415 +12,157 @@
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="ml-2 mt-2">
+        <span class="summary-label-bold">Exceptional Circumstances</span>
         <v-row no-gutters class="d-flex">
-          <v-col class="col-12 pb-0">
-            <span class="summary-label-bold">Exceptional Circumstances</span>
+          <v-col class="py-0 cols-6">
+            <span class="summary-label pt-3">Is your fee increase due to an exceptional circumstance?</span>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getValueString(rfiApp?.exceptionalCircumstances)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              :rules="rules.required"
+            />
           </v-col>
-          <v-col class="col-12">
-            <v-row class="d-flex">
-              <v-col class="col-6 py-0">
-                <v-row no-gutters>
-                  <span class="summary-label pt-3">Is your fee increase due to an exceptional circumstance?</span>
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.exceptionalCircumstances)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col v-if="rfiApp?.exceptionalCircumstances" class="col-6 py-0">
-                <v-row no-gutters>
-                  <span class="summary-label pt-3"
-                    >Does the exceptional circumstance occur within 6 months of the fee increase?</span
-                  >
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.circumstanceOccurWithin6Month)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-            </v-row>
+
+          <v-col v-if="rfiApp?.exceptionalCircumstances" class="py-0 cols-6">
+            <span class="summary-label pt-3"
+              >Does the exceptional circumstance occur within 6 months of the fee increase?</span
+            >
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getValueString(rfiApp?.circumstanceOccurWithin6Month)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              :rules="rules.required"
+            />
           </v-col>
-          <v-col
-            v-if="rfiApp?.exceptionalCircumstances == 1 && rfiApp?.circumstanceOccurWithin6Month == 1"
-            class="col-12 py-0"
-          >
+        </v-row>
+
+        <v-row>
+          <v-col v-if="rfiApp?.exceptionalCircumstances && rfiApp?.circumstanceOccurWithin6Month" class="col-12 py-0">
+            <span class="summary-label-bold">Expense Information</span>
+
             <v-row no-gutters>
-              <v-col class="col-12 py-2">
-                <span class="summary-label-bold">Expense Information</span>
-              </v-col>
               <v-col class="col-12 py-0">
                 <v-row no-gutters class="d-flex">
-                  <v-col class="col-12 py-0">
-                    <v-row no-gutters class="d-flex">
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <span class="summary-label">Expense Description</span>
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <span class="summary-label">Date of expense</span>
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <span class="summary-label">Payment frequency details</span>
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <span class="summary-label">Expense amount</span>
-                      </v-col>
-                    </v-row>
-                    <v-row v-if="rfiApp?.expenseList.length == 0" no-gutters class="d-flex">
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row v-for="(item, index) in rfiApp?.expenseList" v-else :key="index" no-gutters class="d-flex">
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          :model-value="item.description"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          :model-value="item.date"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          :model-value="item.frequency"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                      <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                        <v-text-field
-                          placeholder="Required"
-                          class="summary-value"
-                          :model-value="item.expense"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          :rules="rules.required"
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-col>
-                  <v-col class="col-12">
-                    <v-row no-gutters class="d-flex">
-                      <span class="summary-label pt-3">Please describe the reason for each expense listed above.</span>
-                      <v-textarea
-                        placeholder="Required"
-                        class="col-12"
-                        :model-value="rfiApp?.expenseInformationNote"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        readonly
-                        no-resize
-                        rows="3"
-                        :rules="rules.required"
-                      />
-                    </v-row>
+                  <v-col
+                    v-for="header in ['Expense Description', 'Date', 'Payment Frequency Details', 'Expense Amount']"
+                    :key="header"
+                    class="d-flex justify-start col-3 pa-0 pr-2"
+                  >
+                    <span class="summary-label">{{ header }}</span>
                   </v-col>
                 </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col v-if="rfiApp?.exceptionalCircumstances && rfiApp?.circumstanceOccurWithin6Month" class="col-12 py-0">
-            <v-row no-gutters>
-              <v-col class="col-12">
-                <span class="summary-label-bold">Other Sources of Ministry Funding</span>
-              </v-col>
-              <v-col class="col-12">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up
-                    Grants) for any of the expenses you listed?</span
+
+                <v-row v-if="rfiApp?.expenseList.length === 0" no-gutters class="d-flex">
+                  <v-col v-for="n in 4" :key="n" class="d-flex justify-start col-3 pa-0 pr-2">
+                    <v-text-field
+                      placeholder="Required"
+                      class="summary-value"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      required
+                      :rules="rules.required"
+                    />
+                  </v-col>
+                </v-row>
+
+                <v-row v-for="(item, index) in rfiApp?.expenseList" v-else :key="index" no-gutters class="d-flex">
+                  <v-col
+                    v-for="(field, key) in {
+                      description: item.description,
+                      date: item.date,
+                      frequency: item.frequency,
+                      expense: item.expense,
+                    }"
+                    :key="key"
+                    class="d-flex justify-start col-3 pa-0 pr-2"
                   >
-                  <v-text-field
+                    <v-text-field
+                      :placeholder="field ? '' : 'Required'"
+                      class="summary-value"
+                      :model-value="field"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      required
+                      :rules="rules.required"
+                    />
+                  </v-col>
+                </v-row>
+
+                <span class="summary-label"> Please describe the reason for each expense listed above. </span>
+                <v-row no-gutters class="d-flex"
+                  ><v-textarea
                     placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.q3)"
+                    class="mt-1 ml-0 summary-value"
+                    :model-value="rfiApp?.expenseInformationNote"
                     density="compact"
                     flat
                     variant="solo"
                     hide-details
-                    required
+                    readonly
+                    no-resize
+                    rows="3"
                     :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col v-if="rfiApp?.q3" class="col-12">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <span class="summary-label">Funding Program</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <span class="summary-label">Application Date</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <span class="summary-label">Status of Application</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <span class="summary-label">Amount Received</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <span class="summary-label">Expense(s)</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rfiApp?.fundingList.length == 0" no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row v-for="(item, index) in rfiApp?.fundingList" v-else :key="index" no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.fundingProgram"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.date"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.status"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.amount"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.expenses"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
+                /></v-row>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
 
-        <v-row no-gutters class="d-flex pt-2">
-          <v-col class="col-12">
-            <span class="summary-label-bold">Direct Care Staff Wages Increases</span>
-          </v-col>
-          <v-col class="col-12">
-            <v-row no-gutters class="d-flex">
-              <v-col class="col-12">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is your fee increase due to a wage increase for Direct Care Staff?</span
-                  >
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.feeIncreaseDueToWage)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col v-if="rfiApp?.feeIncreaseDueToWage" class="col-12">
-            <v-row no-gutters class="d-flex">
-              <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
-                <v-col class="col-6 pr-4">
-                  <v-row no-gutters class="d-flex">
-                    <span class="summary-label pt-3"
-                      >Was the wage increase committed to (in writing) before the January 2022 release of the Funding
-                      Guidelines?</span
-                    >
+        <v-row>
+          <v-col v-if="rfiApp?.exceptionalCircumstances && rfiApp?.circumstanceOccurWithin6Month" class="py-0">
+            <span class="summary-label-bold">Other Sources of Ministry Funding</span>
+            <br />
+            <span class="summary-label pt-3">
+              Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants)
+              for any of the expenses you listed?
+            </span>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getValueString(rfiApp?.q3)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              :rules="rules.required"
+            />
+            <v-row no-gutters>
+              <v-row v-if="rfiApp?.q3" no-gutters class="d-flex">
+                <v-col
+                  v-for="(field, key) in {
+                    fundingProgram: 'Funding Program',
+                    date: 'Application Date',
+                    status: 'Status of Application',
+                    amount: 'Amount Received',
+                    expenses: 'Expense(s)',
+                  }"
+                  :key="key"
+                  class="col-2 pa-0 pr-2"
+                >
+                  <span class="summary-label">{{ field }}</span>
+
+                  <v-row v-if="rfiApp?.fundingList.length === 0" no-gutters class="d-flex">
                     <v-text-field
+                      v-for="n in 1"
+                      :key="n"
                       placeholder="Required"
                       class="summary-value"
-                      :model-value="getValueString(rfiApp?.increaseInWriting)"
                       density="compact"
                       flat
                       variant="solo"
@@ -429,377 +171,227 @@
                       :rules="rules.required"
                     />
                   </v-row>
+
+                  <v-text-field
+                    v-for="(item, index) in rfiApp?.fundingList"
+                    v-else
+                    :key="key + index"
+                    :placeholder="item[key] ? '' : 'Required'"
+                    class="summary-value"
+                    :model-value="item[key]"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    required
+                    :rules="rules.required"
+                  />
                 </v-col>
-              </div>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the
-                    facility?</span
-                  >
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.isBargainingAgreement)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Has the facility lost or been unable to hire Direct Care Staff due to current wages?</span
-                  >
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.lossOfCareStaff)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is this creating challenges in maintaining the staff-to-child ratios required under the facility
-                    licence?</span
-                  >
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getValueString(rfiApp?.healthAndSafetyConcerns)"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col v-if="rfiApp?.feeIncreaseDueToWage == 1" class="col-12">
-            <v-row no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Number of staff receiving wage increase</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Direct Care staff role</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Wage before increase</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Wage after increase</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Average hours per week at this facility</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Date</span>
-              </v-col>
-            </v-row>
-            <v-row v-if="rfiApp?.wageList.length == 0" no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-for="(item, index) in rfiApp?.wageList" v-else :key="index" no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.staffNumber"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.staffRole"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.wageBeforeIncrease"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.wageAfterIncrease"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.averageHours"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.wageDate"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col v-if="rfiApp?.feeIncreaseDueToWage" class="col-12">
-            <v-row no-gutters class="d-flex">
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >When did your facility's challenges with hiring and keeping staff begin?</span
-                  >
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox1"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >How many Direct Care Staff have left your facility due to wages?</span
-                  >
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox2"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3">What have you done to try to recruit staff?</span>
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox3"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3">Have you had to adjust your hours/days of operation?</span>
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox4"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is your facility unable to fill spaces due to insufficient staffing?</span
-                  >
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox5"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is there anything else you would like us to know about the wage increase(s)?</span
-                  >
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.textbox6"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
+              </v-row>
             </v-row>
           </v-col>
         </v-row>
 
-        <v-row no-gutters class="d-flex pt-2">
+        <span class="summary-label-bold">Direct Care Staff Wages Increases</span>
+        <v-row no-gutters class="d-flex">
           <v-col class="col-12">
-            <span class="summary-label-bold">Priority Service Expansion: Increase in Hours of Operation</span>
+            <span class="summary-label pt-3">Is your fee increase due to a wage increase for Direct Care Staff?</span>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getValueString(rfiApp?.feeIncreaseDueToWage)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              :rules="rules.required"
+            />
           </v-col>
+        </v-row>
+
+        <div v-if="rfiApp?.feeIncreaseDueToWage" class="col-12">
+          <v-row no-gutters class="d-flex">
+            <v-col v-if="languageYearLabel == programYearTypes.HISTORICAL" class="py-0 cols-6">
+              <span class="summary-label pt-3"
+                >Was the wage increase committed to (in writing) before the January 2022 release of the Funding
+                Guidelines?</span
+              >
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getValueString(rfiApp?.increaseInWriting)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+
+            <v-col class="py-0 cols-6">
+              <span class="summary-label pt-3"
+                >Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the
+                facility?</span
+              >
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getValueString(rfiApp?.isBargainingAgreement)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+
+            <v-col class="py-0 cols-6">
+              <span class="summary-label pt-3"
+                >Has the facility lost or been unable to hire Direct Care Staff due to current wages?</span
+              >
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getValueString(rfiApp?.lossOfCareStaff)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+
+            <v-col class="py-0 cols-6">
+              <span class="summary-label pt-3"
+                >Is this creating challenges in maintaining the staff-to-child ratios required under the facility
+                licence?</span
+              >
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getValueString(rfiApp?.healthAndSafetyConcerns)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+        </div>
+
+        <v-col v-if="rfiApp?.feeIncreaseDueToWage == 1" class="col-12">
+          <v-row no-gutters class="d-flex">
+            <v-col
+              v-for="header in [
+                'Number of staff receiving wage increase',
+                'Direct Care staff role',
+                'Wage before increase',
+                'Wage after increase',
+                'Average hours per week at this facility',
+                'Date',
+              ]"
+              :key="header"
+              class="d-flex justify-start col-2 pa-0 pr-2"
+            >
+              <span class="summary-label">{{ header }}</span>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="rfiApp?.wageList.length === 0" no-gutters class="d-flex">
+            <v-col v-for="n in 6" :key="n" class="d-flex justify-start col-2 pa-0 pr-2">
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+
+          <v-row v-for="(item, index) in rfiApp?.wageList" v-else :key="index" no-gutters class="d-flex">
+            <v-col
+              v-for="(field, key) in {
+                staffNumber: item.staffNumber,
+                staffRole: item.staffRole,
+                wageBeforeIncrease: item.wageBeforeIncrease,
+                wageAfterIncrease: item.wageAfterIncrease,
+                averageHours: item.averageHours,
+                wageDate: item.wageDate,
+              }"
+              :key="key"
+              class="d-flex justify-start col-2 pa-0 pr-2"
+            >
+              <v-text-field
+                :placeholder="field ? '' : 'Required'"
+                class="summary-value"
+                :model-value="field"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+        </v-col>
+
+        <div v-if="rfiApp?.feeIncreaseDueToWage" class="col-12">
+          <span class="summary-label"
+            >Is there anything else about your facility's challenges or staffing you would like us to know?</span
+          >
+          <v-row no-gutters class="d-flex">
+            <v-col
+              v-for="(label, index) in [
+                'When did your facility\'s challenges with hiring and keeping staff begin?',
+                'How many Direct Care Staff have left your facility due to wages?',
+                'What have you done to try to recruit staff?',
+                'Have you had to adjust your hours/days of operation?',
+                'Is your facility unable to fill spaces due to insufficient staffing?',
+                'Is there anything else you would like us to know about the wage increase(s)?',
+              ]"
+              :key="index"
+              class="pr-4"
+              cols="12"
+            >
+              <span class="summary-label pt-3">{{ label }}</span>
+              <v-textarea
+                placeholder="Required"
+                class="mt-1 ml-0 summary-value"
+                :model-value="rfiApp?.[`textbox${index + 1}`]"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                no-resize
+                rows="3"
+                required
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+        </div>
+
+        <span class="summary-label-bold">Priority Service Expansion: Increase in Hours of Operation</span>
+        <v-row no-gutters class="d-flex pt-2">
           <v-col class="col-12">
             <v-row no-gutters class="d-flex">
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is your fee increase due to expanding or extending the hours of child care service available for
-                    all enrolled children?</span
-                  >
+                  <span class="summary-label pt-3">
+                    Is your fee increase due to expanding or extending the hours of child care service available for all
+                    enrolled children?
+                  </span>
                   <v-text-field
                     placeholder="Required"
                     class="summary-value"
@@ -815,106 +407,29 @@
               </v-col>
             </v-row>
           </v-col>
+        </v-row>
+        <v-row>
           <v-col v-if="rfiApp?.feeIncreaseExtendedHours" class="col-12">
             <v-row no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <span class="summary-label">Facility's previous hours of operation</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <span class="summary-label">Facility's new hours of operation</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Date of Change</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Amount of Expense</span>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <span class="summary-label">Payment frequency</span>
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <span class="summary-label">From</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <span class="summary-label">To</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <span class="summary-label">From</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <span class="summary-label">To</span>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-            <v-row v-if="rfiApp?.expansionList.length == 0" no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
+              <v-col
+                v-for="(field, key) in {
+                  timefrom: 'Previous Hours From',
+                  timeto: 'Previous Hours To',
+                  newtimefrom: 'New Hours From',
+                  newtimeto: 'New Hours To',
+                  date: 'Date of Change',
+                  expense: 'Amount of Expense',
+                  frequency: 'Payment frequency',
+                }"
+                :key="key"
+                :class="key.includes('From') || key.includes('To') ? 'col-3 pa-0 pr-2' : 'col-2 pa-0 pr-2'"
+              >
+                <span class="summary-label">{{ field }}</span>
+
+                <v-row v-if="rfiApp?.expansionList.length === 0" no-gutters class="d-flex">
                   <v-text-field
+                    v-for="n in 1"
+                    :key="n"
                     placeholder="Required"
                     class="summary-value"
                     density="compact"
@@ -925,11 +440,17 @@
                     :rules="rules.required"
                   />
                 </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
+
                 <v-text-field
-                  placeholder="Required"
+                  v-for="(item, index) in rfiApp?.expansionList"
+                  :key="key + index"
+                  :placeholder="item[key] ? '' : 'Required'"
                   class="summary-value"
+                  :model-value="
+                    ['timefrom', 'timeto', 'newtimefrom', 'newtimeto'].includes(key)
+                      ? formatTime24to12(item[key])
+                      : item[key]
+                  "
                   density="compact"
                   flat
                   variant="solo"
@@ -937,183 +458,24 @@
                   required
                   :rules="rules.required"
                 />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-for="(item, index) in rfiApp?.expansionList" v-else :key="index" no-gutters class="d-flex">
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.timefrom"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.timeto"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.newtimefrom"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-6 pt-0 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.newtimeto"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-row no-gutters class="d-flex">
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="item.date"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.expense"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col class="d-flex justify-start col-2 pa-0 pr-2">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="item.frequency"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  required
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col v-if="rfiApp?.feeIncreaseExtendedHours" class="col-12">
-            <v-row no-gutters class="d-flex">
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3">Describe each of your expenses above. (e.g. Wages, Utilities)</span>
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.serviceExpansionDetailsNote"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
-              </v-col>
-              <v-col class="col-6 pr-4">
-                <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is there anything else about your change in hours of operation you would like us to know?</span
-                  >
-                  <v-textarea
-                    placeholder="Required"
-                    class="col-12 summary-value"
-                    :model-value="rfiApp?.notes2"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    no-resize
-                    rows="3"
-                    required
-                    :rules="rules.required"
-                  />
-                </v-row>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
 
+        <span class="summary-label-bold"
+          >Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language</span
+        >
         <v-row no-gutters class="d-flex pt-2">
-          <v-col class="col-12">
-            <span class="summary-label-bold"
-              >Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language</span
-            >
-          </v-col>
           <v-col class="col-12">
             <v-row no-gutters class="d-flex">
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
-                  <span class="summary-label pt-3"
-                    >Is your fee increase due to an increased connection to Indigenous community, culture, or language
+                  <span class="summary-label pt-3">
+                    Is your fee increase due to an increased connection to Indigenous community, culture, or language
                     for all enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous
-                    peoples?</span
-                  >
+                    peoples?
+                  </span>
                   <v-text-field
                     placeholder="Required"
                     class="summary-value"
@@ -1129,68 +491,31 @@
               </v-col>
             </v-row>
           </v-col>
+        </v-row>
+
+        <v-row>
           <v-col v-if="rfiApp?.IndigenousConnection" class="col-12">
+            <span class="summary-label-bold">Expense Information</span>
+
             <v-row no-gutters class="d-flex">
-              <v-col class="col-12">
-                <span class="summary-label-bold">Expense Information</span>
-              </v-col>
               <v-col class="col-12 col-lg-8">
                 <v-row no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <span class="summary-label">Expense Description</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <span class="summary-label">Date of expense</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <span class="summary-label">Payment frequency details</span>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <span class="summary-label">Expense amount</span>
+                  <v-col
+                    v-for="(label, key) in {
+                      description: 'Expense Description',
+                      date: 'Date',
+                      frequency: 'Payment Frequency Details',
+                      expense: 'Expense Amount',
+                    }"
+                    :key="key"
+                    class="d-flex justify-start col-3 pa-0 pr-2"
+                  >
+                    <span class="summary-label">{{ label }}</span>
                   </v-col>
                 </v-row>
-                <v-row v-if="rfiApp?.indigenousExpenseList.length == 0" no-gutters class="d-flex">
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-row no-gutters class="d-flex">
-                      <v-text-field
-                        placeholder="Required"
-                        class="summary-value"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        required
-                        :rules="rules.required"
-                      />
-                    </v-row>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-row no-gutters class="d-flex">
-                      <v-text-field
-                        placeholder="Required"
-                        class="summary-value"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        required
-                        :rules="rules.required"
-                      />
-                    </v-row>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
+
+                <v-row v-if="rfiApp?.indigenousExpenseList.length === 0" no-gutters class="d-flex">
+                  <v-col v-for="n in 4" :key="n" class="d-flex justify-start col-3 pa-0 pr-2">
                     <v-text-field
                       placeholder="Required"
                       class="summary-value"
@@ -1203,6 +528,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row
                   v-for="(item, index) in rfiApp?.indigenousExpenseList"
                   v-else
@@ -1210,54 +536,15 @@
                   no-gutters
                   class="d-flex"
                 >
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-row no-gutters class="d-flex">
-                      <v-text-field
-                        placeholder="Required"
-                        class="summary-value"
-                        :model-value="item.description"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        required
-                        :rules="rules.required"
-                      />
-                    </v-row>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-row no-gutters class="d-flex">
-                      <v-text-field
-                        placeholder="Required"
-                        class="summary-value"
-                        :model-value="item.date"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        required
-                        :rules="rules.required"
-                      />
-                    </v-row>
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
+                  <v-col
+                    v-for="key in ['description', 'date', 'frequency', 'expense']"
+                    :key="key + index"
+                    class="d-flex justify-start col-3 pa-0 pr-2"
+                  >
                     <v-text-field
                       placeholder="Required"
                       class="summary-value"
-                      :model-value="item.frequency"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      required
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                  <v-col class="d-flex justify-start col-3 pa-0 pr-2">
-                    <v-text-field
-                      placeholder="Required"
-                      class="summary-value"
-                      :model-value="item.expense"
+                      :model-value="item[key]"
                       density="compact"
                       flat
                       variant="solo"
@@ -1267,39 +554,29 @@
                     />
                   </v-col>
                 </v-row>
-              </v-col>
-              <v-col class="col-12 col-lg-4 pr-4">
+
+                <span class="summary-label">Is there anything else about your expenses you would like us to know?</span>
                 <v-row no-gutters class="d-flex">
-                  <v-col class="col-12">
-                    <v-row no-gutters class="d-flex">
-                      <span class="summary-label"
-                        >Is there anything else about your expenses you would like us to know?</span
-                      >
-                      <v-textarea
-                        placeholder="Required"
-                        class="col-12 summary-value"
-                        :model-value="rfiApp?.iCEIDetailsNote"
-                        density="compact"
-                        flat
-                        variant="solo"
-                        hide-details
-                        no-resize
-                        rows="3"
-                        required
-                        :rules="rules.required"
-                      />
-                    </v-row>
-                  </v-col>
+                  <v-textarea
+                    placeholder="Required"
+                    class="mt-1 ml-0 summary-value"
+                    :model-value="rfiApp?.iCEIDetailsNote"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    no-resize
+                    rows="3"
+                    :rules="rules.required"
+                  />
                 </v-row>
               </v-col>
             </v-row>
           </v-col>
         </v-row>
 
+        <span class="summary-label-bold">Affordable Child Care for Underserved Populations</span>
         <v-row no-gutters class="d-flex pt-2">
-          <v-col class="col-12">
-            <span class="summary-label-bold">Affordable Child Care for Underserved Populations</span>
-          </v-col>
           <v-col class="col-12">
             <v-row no-gutters class="d-flex">
               <v-col class="col-12">
@@ -1321,71 +598,67 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col v-if="rfiApp?.underservedPop" class="col-12">
-            <v-row no-gutters class="d-flex">
-              <v-row no-gutters class="d-flex">
-                <span class="summary-label"
-                  >Please describe how the majority of children you provide care for represent an underserved population
-                  (e.g. indigenous children, low-income families?)</span
-                >
-                <v-textarea
-                  placeholder="Required"
-                  class="col-12 summary-value"
-                  :model-value="rfiApp?.underservedChildCareTypes"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  no-resize
-                  rows="3"
-                  required
-                  :rules="rules.required"
-                />
-              </v-row>
-
-              <v-row no-gutters class="d-flex">
-                <span class="summary-label"
-                  >How will your fee increase contribute to the overall sustainability of the
-                  organization/facility?</span
-                >
-                <v-textarea
-                  placeholder="Required"
-                  class="col-12 summary-value"
-                  :model-value="rfiApp?.orgsustainability"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  no-resize
-                  rows="3"
-                  required
-                  :rules="rules.required"
-                />
-              </v-row>
-
-              <v-row no-gutters class="d-flex">
-                <span class="summary-label"
-                  >Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase
-                  (after applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable
-                  funding source). Will any families experience a cost increase, and if so, by how much?</span
-                >
-                <v-textarea
-                  placeholder="Required"
-                  class="col-12 summary-value"
-                  :model-value="rfiApp?.outOfPocketFees"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  no-resize
-                  rows="3"
-                  required
-                  :rules="rules.required"
-                />
-              </v-row>
-            </v-row>
-          </v-col>
         </v-row>
+
+        <div v-if="rfiApp?.underservedPop === 1">
+          <span class="summary-label">
+            Please describe how the majority of children you provide care for represent an underserved population (e.g.,
+            indigenous children, low-income families).
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.underservedChildCareTypes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
+
+          <span class="summary-label pt-3">
+            How will your fee increase contribute to the overall sustainability of the organization/facility?
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.orgsustainability"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
+
+          <span class="summary-label pt-3">
+            Describe whether parents' out-of-pocket monthly cost for child care will be affected by this increase (after
+            applying reductions from CCFRI and the Affordable Child Care Benefit, and any other applicable funding
+            source). Will any families experience a cost increase, and if so, by how much?
+          </span>
+          <v-row no-gutters class="d-flex">
+            <v-textarea
+              placeholder="Required"
+              class="mt-1 ml-0 summary-value mb-6"
+              :model-value="rfiApp?.outOfPocketFees"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              rows="3"
+              :rules="rules.required"
+            />
+          </v-row>
+        </div>
+
         <v-row v-if="!isValidForm" class="d-flex justify-start">
           <v-col cols="6" lg="4" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
@@ -1405,18 +678,12 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useAppStore } from '../../../store/app.js';
-
-import {
-  PATHS,
-  CHANGE_TYPES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  changeUrlGuid,
-  pcfUrlGuid,
-} from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useAppStore } from '@/store/app.js';
+import { formatTime24to12 } from '@/utils/format';
+import { PATHS, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, changeUrlGuid, pcfUrlGuid } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'RFISummary',
@@ -1472,6 +739,9 @@ export default {
       },
     },
   },
+  created() {
+    this.formatTime24to12 = formatTime24to12;
+  },
   methods: {
     getLink() {
       if (this.isChangeRequest)
@@ -1501,9 +771,9 @@ export default {
   color: black;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 
 .summary-label-smaller {

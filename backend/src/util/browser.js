@@ -14,7 +14,8 @@ let browser = null;
 async function getBrowserContext() {
   try {
     if (browser instanceof puppeteer.Browser && browser.process() !== null) {
-      return browser;
+      log.info('Puppeteer :: getBrowserContext reusing browser process');
+      return browser.createBrowserContext();
     }
     // To debug locally add {headless: false, devtools: true} in options
     // make sure they are boolean and not string
@@ -57,6 +58,7 @@ async function closeBrowser() {
   const pages = await browser.pages();
   if (pages.length === 1) {
     await browser.close();
+    browser = null;
   } else {
     log.warn('Puppeteer :: closeBrowser was called with pages open');
   }

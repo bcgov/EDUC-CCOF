@@ -1,76 +1,68 @@
 ---
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: "${REPO_NAME}-template"
 metadata:
-  name: "${REPO_NAME}-backend-dc"
+  name: ${REPO_NAME}-nginx-deployment
+  labels:
+    template: ${REPO_NAME}-template
 objects:
-- apiVersion: v1
-  kind: DeploymentConfig
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     annotations:
       openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp:
     labels:
-      app: "${APP_NAME}-${BRANCH}"
+      app: "${APP_NAME}-nginx-deployment"
       branch: "${BRANCH}"
-    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+    name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}"
   spec:
     replicas: ${{MIN_REPLICAS}}
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      matchLabels:
+        app: "${APP_NAME}-nginx-deployment"
     strategy:
-      resources: {}
-      type: Rolling
+      type: RollingUpdate
+      rollingUpdate:
+        maxUnavailable: 25%
+        maxSurge: 25%
     template:
       metadata:
         annotations:
           openshift.io/generated-by: OpenShiftNewApp
-        creationTimestamp:
         labels:
-          app: "${APP_NAME}-${BRANCH}"
-          deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+          app: "${APP_NAME}-nginx-deployment"
       spec:
         containers:
-        - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-backend-${BRANCH}:${TAG}
+        - image: artifacts.developer.gov.bc.ca/docker-remote/nginxinc/nginx-unprivileged:1.27-alpine
           imagePullPolicy: Always
-          volumeMounts:
-          - name: tls-certs
-            mountPath: "/etc/tls-certs"
-            readOnly: true
-          - name: log-storage
-            mountPath: /logs
           livenessProbe:
-            initialDelaySeconds: 20
-            failureThreshold: 5
+            failureThreshold: 3
             httpGet:
-              path: "/api/health"
+              path: /api/Health
               port: 8080
               scheme: HTTP
+              httpHeaders:
+              - name: Authorization
+                value: "Basic ${NGINX_BASIC_AUTH_TOKEN}"
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5
-          name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+            timeoutSeconds: 1
+          name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}"
           ports:
           - containerPort: 8080
             protocol: TCP
-          - containerPort: 443
-            protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: ccof-backend-${APP_ENVIRONMENT}-config-map
           readinessProbe:
-            initialDelaySeconds: 10
-            failureThreshold: 5
+            failureThreshold: 3
             httpGet:
-              path: "/api/health"
+              path: /api/Health
               port: 8080
               scheme: HTTP
+              httpHeaders:
+              - name: Authorization
+                value: "Basic ${NGINX_BASIC_AUTH_TOKEN}"
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5
+            timeoutSeconds: 1
           resources:
             requests:
               cpu: "${MIN_CPU}"
@@ -78,53 +70,47 @@ objects:
             limits:
               cpu: "${MAX_CPU}"
               memory: "${MAX_MEM}"
+          volumeMounts:
+          - mountPath: /etc/tls-certs
+            name: tls-certs
+            readOnly: true
+          - mountPath: /etc/nginx/conf.d
+            name: config-env
         volumes:
-        - name: log-storage
-          emptyDir: {}
         - name: tls-certs
           secret:
-            secretName: ccof-backend-cert
+            secretName: ccof-frontend-cert
+        - configMap:
+            name: ${APP_NAME}-nginx-config-map
+          name: config-env
     test: false
-    triggers:
-    - type: ConfigChange
 - apiVersion: v1
   kind: Service
   metadata:
     annotations:
-      service.alpha.openshift.io/serving-cert-secret-name: "ccof-backend-cert"
       openshift.io/generated-by: OpenShiftNewApp
-    creationTimestamp:
+      service.alpha.openshift.io/serving-cert-secret-name: ccof-frontend-cert
     labels:
-      app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      app: "${APP_NAME}-nginx-deployment"
+    name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}"
   spec:
     ports:
     - name: 8080-tcp
       port: 8080
       protocol: TCP
       targetPort: 8080
-    - name: 443-https
-      port: 443
-      protocol: TCP
-      targetPort: 443
     selector:
-      app: "${APP_NAME}-${BRANCH}"
-      deploymentconfig: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      app: "${APP_NAME}-nginx-deployment"
 - apiVersion: v1
   kind: Route
   metadata:
     annotations:
-      haproxy.router.openshift.io/rate-limit-connections: 'true'
-      haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp: '10'
-      haproxy.router.openshift.io/rate-limit-connections.rate-http: '50'
-      haproxy.router.openshift.io/timeout: 120s
-      openshift.io/host.generated: 'true'
+      openshift.io/host.generated: "true"
     labels:
-      app: "${APP_NAME}-${BRANCH}"
-    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      app: "${APP_NAME}-nginx-deployment"
+    name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}"
   spec:
     host: "${HOST_ROUTE}"
-    path: /api
     port:
       targetPort: 8080-tcp
     tls:
@@ -132,19 +118,14 @@ objects:
       termination: edge
     to:
       kind: Service
-      name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
+      name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}"
       weight: 100
     wildcardPolicy: None
 - apiVersion: autoscaling/v2
   kind: HorizontalPodAutoscaler
   metadata:
-    name: "${APP_NAME}-backend-${APP_ENVIRONMENT}-cpu-autoscaler"
+    name: "${APP_NAME}-nginx-${APP_ENVIRONMENT}-cpu-autoscaler"
   spec:
-    scaleTargetRef:
-      apiVersion: apps.openshift.io/v1
-      kind: DeploymentConfig
-      name: "${APP_NAME}-backend-${APP_ENVIRONMENT}"
-      subresource: scale
     minReplicas: ${{MIN_REPLICAS}}
     maxReplicas: ${{MAX_REPLICAS}}
     metrics:
@@ -154,6 +135,10 @@ objects:
         target:
           type: Utilization
           averageUtilization: 90
+    scaleTargetRef:
+      apiVersion: apps/v1
+      kind: Deployment
+      name: ${APP_NAME}-nginx-${APP_ENVIRONMENT}
 parameters:
 - name: REPO_NAME
   description: Application repository name
@@ -166,12 +151,6 @@ parameters:
   required: true
 - name: APP_NAME
   description: Application name
-  required: true
-- name: HOST_ROUTE
-  description: The host the route will use to expose service outside cluster
-  required: true
-- name: TAG
-  description: The identifying tag for this specific deployment
   required: true
 - name: MIN_REPLICAS
   description: The minimum amount of replicas
@@ -194,3 +173,11 @@ parameters:
 - name: APP_ENVIRONMENT
   description: The environment being created ('dev', 'qa', 'uat', 'prod')
   required: true
+- name: HOST_ROUTE
+  description: The internal route for routing nginx traffic
+  required: true
+- name: NGINX_BASIC_AUTH_TOKEN
+  description: The basic authentication for liveness/readiness probes
+  required: true
+
+

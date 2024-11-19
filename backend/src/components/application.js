@@ -11,19 +11,12 @@ const {
   updateChangeRequestNewFacility,
   postApplicationSummaryDocument,
   postChangeRequestSummaryDocument,
-  getChangeActionDetails
+  getChangeActionDetails,
 } = require('./utils');
-const {
-  CCOF_APPLICATION_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-  APPLICATION_STATUS_CODES,
-  CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPES,
-  CCFRI_STATUS_CODES
-} = require('../util/constants');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {MappableObjectForFront, MappableObjectForBack, getMappingString} = require('../util/mapping/MappableObject');
+const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const {
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
@@ -35,58 +28,53 @@ const {
   OrganizationFacilityMappings,
   CCOFApplicationFundingMapping,
   OrganizationMappings,
-  CCFRIFacilityMappings
+  CCFRIApprovableFeeSchedulesMappings,
+  CCFRIFacilityMappings,
   //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
-const {getCCFRIClosureDates} = require('./facility');
-const {mapFundingObjectForFront} = require('./funding');
+const { getCCFRIClosureDates } = require('./facility');
+const { mapFundingObjectForFront } = require('./funding');
 const { getBrowserContext, closeBrowser } = require('../util/browser');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
-
 async function renewCCOFApplication(req, res) {
-  log.info('renew CCOF application called');
   try {
     const application = req.body;
-    let payload = {
-      'ccof_providertype': application.providerType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
-      'ccof_applicationtype': CCOF_APPLICATION_TYPES.RENEW,
+    const payload = {
+      ccof_providertype: application.providerType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
+      ccof_applicationtype: CCOF_APPLICATION_TYPES.RENEW,
       'ccof_ProgramYear@odata.bind': `/ccof_program_years(${application.programYearId})`,
-      'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`
+      'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`,
     };
-    log.info('Payload for renew is: ', payload.toJSON);
-    let applicationGuid = await postOperation('ccof_applications', payload);
+    const applicationGuid = await postOperation('ccof_applications', payload);
     //After the application is created, get the application guid
-    return res.status(HttpStatus.CREATED).json({applicationId: applicationGuid});
+    return res.status(HttpStatus.CREATED).json({ applicationId: applicationGuid });
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-async function patchCCFRIApplication(req, res){
+async function patchCCFRIApplication(req, res) {
   let payload = req.body;
   payload = new MappableObjectForBack(payload, CCFRIFacilityMappings);
   payload = payload.toJSON();
 
-  try{
+  try {
     await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, payload);
-  }
-  catch (e){
+  } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
   return res.status(HttpStatus.OK).json(payload);
 }
 
-async function deleteCCFRIApplication(req, res){
-  try{
-    log.info('deleteCCFRIApplication - ccfriId: ', req.params.ccfriId);
+async function deleteCCFRIApplication(req, res) {
+  try {
     await deleteOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId);
     return res.status(HttpStatus.OK).json();
-  }
-  catch (e){
+  } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
@@ -94,62 +82,61 @@ async function deleteCCFRIApplication(req, res){
 
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
-  let body = req.body;
-  let retVal = [];
+  const body = req.body;
+  const retVal = [];
   try {
-    await Promise.all(body.map(async (facility) => {
-      let payload = {
-        'ccof_ccfrioptin': facility.optInResponse,
-        'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
-        'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
-      };
-
-      // if there is Change Action ID in request body -> creating new Change Action MTFI
-      if (facility.changeActionId) {
-        delete payload['ccof_Application@odata.bind'];
-        payload['ccof_change_request_mtfi_application_ccfri'] = [
-          {
-            "ccof_facility@odata.bind": `/accounts(${facility.facilityID})`,
-            "ccof_Change_Action@odata.bind": `/ccof_change_actions(${facility.changeActionId})`,
-            'ccof_Organization@odata.bind': `/accounts(${facility.organizationId})`,
-            'ccof_ProgramYear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
-          }
-        ];
-      }
-
-      //only bind CCFRI application to main application if this facility is completed during a new application
-      //ccfri application for change request should only bind to their respective changeAction (done below)
-      //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
-      // if (!facility.changeRequestNewFacilityId){
-      //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
-      // }
-      log.info('patch ccfri payload' , payload);
-
-      let response = undefined;
-      if (facility.ccfriApplicationId) {
-        response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
-        log.info('CCFRI RESP!!!!!!!' , response);
-        retVal.push(response);
-      } else {
-        response = await postOperation('ccof_applicationccfris', payload);
-        retVal.push({
-          facilityId: facility.facilityID,
-          applicationId: facility.applicationID,
-          ccfriApplicationId: response,
+    await Promise.all(
+      body.map(async (facility) => {
+        const payload = {
           ccof_ccfrioptin: facility.optInResponse,
-        });
-      }
+          'ccof_Facility@odata.bind': `/accounts(${facility.facilityID})`,
+          'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`,
+        };
 
-      //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
-      if(facility.changeRequestNewFacilityId){
-        let resp = await updateChangeRequestNewFacility(facility.changeRequestNewFacilityId,
-          {"ccof_ccfri@odata.bind": `/ccof_applicationccfris(${facility.ccfriApplicationId? facility.ccfriApplicationId : response})`}
-        );
-        retVal.push(resp);
-      }
-      await sleep(100); //slow down the hits to dynamics.
-      //log.info('res data:' , response);
-    })); //end for each
+        // if there is Change Action ID in request body -> creating new Change Action MTFI
+        if (facility.changeActionId) {
+          delete payload['ccof_Application@odata.bind'];
+          payload['ccof_change_request_mtfi_application_ccfri'] = [
+            {
+              'ccof_facility@odata.bind': `/accounts(${facility.facilityID})`,
+              'ccof_Change_Action@odata.bind': `/ccof_change_actions(${facility.changeActionId})`,
+              'ccof_Organization@odata.bind': `/accounts(${facility.organizationId})`,
+              'ccof_ProgramYear@odata.bind': `/ccof_program_years(${facility.programYearId})`,
+            },
+          ];
+        }
+
+        //only bind CCFRI application to main application if this facility is completed during a new application
+        //ccfri application for change request should only bind to their respective changeAction (done below)
+        //requirements changed so now we DO bind to main app... leaving this here for now just in case it changes again.
+        // if (!facility.changeRequestNewFacilityId){
+        //   payload = {...payload, 'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationID})`};
+        // };
+
+        let response = undefined;
+        if (facility.ccfriApplicationId) {
+          response = await patchOperationWithObjectId('ccof_applicationccfris', facility.ccfriApplicationId, payload);
+          retVal.push(response);
+        } else {
+          response = await postOperation('ccof_applicationccfris', payload);
+          retVal.push({
+            facilityId: facility.facilityID,
+            applicationId: facility.applicationID,
+            ccfriApplicationId: response,
+            ccof_ccfrioptin: facility.optInResponse,
+          });
+        }
+
+        //if this ccfri application is linked to a new facility change request, add the linkage to the New Facility Change Request
+        if (facility.changeRequestNewFacilityId) {
+          const resp = await updateChangeRequestNewFacility(facility.changeRequestNewFacilityId, {
+            'ccof_ccfri@odata.bind': `/ccof_applicationccfris(${facility.ccfriApplicationId ? facility.ccfriApplicationId : response})`,
+          });
+          retVal.push(resp);
+        }
+        await sleep(100); //slow down the hits to dynamics.
+      }),
+    ); //end for each
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -158,106 +145,90 @@ async function updateCCFRIApplication(req, res) {
   return res.status(HttpStatus.OK).json(retVal);
 }
 
+async function getApprovableFeeSchedules(req, res) {
+  try {
+    const response = await getOperation(`ccof_applicationccfris(${req.params.ccfriId})?$select=ccof_afs_status&$expand=ccof_afs_applicationccfri`);
+    const afs = new MappableObjectForFront(response, ApplicationSummaryCcfriMappings).toJSON();
+    afs.approvableFeeSchedules = response?.ccof_afs_applicationccfri?.map((item) => new MappableObjectForFront(item, CCFRIApprovableFeeSchedulesMappings).toJSON());
+    return res.status(HttpStatus.OK).json(afs);
+  } catch (e) {
+    log.error('An error occurred while getting CCFRI AFS', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 /* child care and program year GUIDs are looked up in AddNewFees.vue */
 
 async function upsertParentFees(req, res) {
-  let body = req.body;
-
-  log.info(body);
+  const body = req.body;
   let hasError = false;
-  let theResponse = [];
 
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
   body.forEach(async (feeGroup) => {
-
     //only call the delete API if there is a GUID acossciated to that child care category fee group
     if (feeGroup?.deleteMe && feeGroup?.parentFeeGUID) {
-
       try {
-        let response = await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
-        log.info('delete feeGroup res:', response);
-        theResponse.push(res.status(HttpStatus.OK).json(response));
+        await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
       } catch (e) {
-        //log.info(e);
         hasError = true;
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-        //theResponse.push( res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status ));
       }
     } else if (feeGroup?.feeFrequency) {
-
-      let childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
-      let programYear = `/ccof_program_years(${feeGroup.programYear})`;
-
-      // log.info(feeGroup.notes);
-      // log.info(feeGroup.ccfriApplicationGuid);
-
-      let payload = {
-        'ccof_frequency': feeGroup.feeFrequency,
+      const childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
+      const programYear = `/ccof_program_years(${feeGroup.programYear})`;
+      const payload = {
+        ccof_frequency: feeGroup.feeFrequency,
         'ccof_ChildcareCategory@odata.bind': childCareCategory,
         'ccof_ProgramYear@odata.bind': programYear,
+        'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${feeGroup.ccfriApplicationGuid})`,
       };
 
-      Object.assign(payload,
-        {
-          'ccof_apr': feeGroup.aprFee,
-          'ccof_may': feeGroup.mayFee,
-          'ccof_jun': feeGroup.junFee,
-          'ccof_jul': feeGroup.julFee,
-          'ccof_aug': feeGroup.augFee,
-          'ccof_sep': feeGroup.sepFee,
-          'ccof_oct': feeGroup.octFee,
-          'ccof_nov': feeGroup.novFee,
-          'ccof_dec': feeGroup.decFee,
-          'ccof_jan': feeGroup.janFee,
-          'ccof_feb': feeGroup.febFee,
-          'ccof_mar': feeGroup.marFee,
-        }
-      );
-      let url = `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
+      Object.assign(payload, {
+        ccof_apr: feeGroup.aprFee,
+        ccof_may: feeGroup.mayFee,
+        ccof_jun: feeGroup.junFee,
+        ccof_jul: feeGroup.julFee,
+        ccof_aug: feeGroup.augFee,
+        ccof_sep: feeGroup.sepFee,
+        ccof_oct: feeGroup.octFee,
+        ccof_nov: feeGroup.novFee,
+        ccof_dec: feeGroup.decFee,
+        ccof_jan: feeGroup.janFee,
+        ccof_feb: feeGroup.febFee,
+        ccof_mar: feeGroup.marFee,
+      });
+      const url = `_ccof_applicationccfri_value=${feeGroup.ccfriApplicationGuid},_ccof_childcarecategory_value=${feeGroup.childCareCategory},_ccof_programyear_value=${feeGroup.programYear} `;
       try {
-        let response = await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
-        theResponse.push(res.status(HttpStatus.CREATED).json(response));
+        await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       } catch (e) {
-        //log.info(e);
-        theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
         hasError = true;
       }
     }
   }); //end forEach
 
-
   //if no notes, don't bother sending any requests. Even if left blank, front end will send over an empty string
   //so body[0].notes will always exist
 
-  let payload = {
-    'ccof_informationccfri': body[0].notes,
-    'ccof_formcomplete': body[0].ccof_formcomplete,
-    'ccof_has_rfi': body[0].ccof_has_rfi,
-    'ccof_feecorrectccfri': body[0].existingFeesCorrect,
-    'ccof_chargefeeccfri': body[0].hasClosureFees
+  const payload = {
+    ccof_informationccfri: body[0].notes,
+    ccof_formcomplete: body[0].ccof_formcomplete,
+    ccof_has_rfi: body[0].ccof_has_rfi,
+    ccof_feecorrectccfri: body[0].existingFeesCorrect,
+    ccof_chargefeeccfri: body[0].hasClosureFees,
   };
 
-  log.info(body[0].hasClosureFees);
   try {
-    let response = await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-    log.info('notesRes', response);
-    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+    await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
   } catch (e) {
-    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
   //dates array will always exist - even if blank.
   //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
-  log.info(body[0].facilityClosureDates);
   try {
-    let response = await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
-    //log.info('datesRes', response);
-    theResponse.push(res.status(HttpStatus.CREATED).json(response));
+    await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
   } catch (e) {
-    theResponse.push(res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status));
     hasError = true;
   }
 
@@ -275,22 +246,21 @@ function formatTimeForBack(timeString) {
   return timeString;
 }
 
-
 async function postClosureDates(dates, ccfriApplicationGuid, res) {
-  let retVal = [];
+  const retVal = [];
 
   //delete all the old closure dates from the application - otherwise we will get duplicates when we save
-  let dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
+  const dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
 
   //don't bother trying to delete if there are no dates saved
   if (dynamicsClosureDates.length > 0) {
     try {
-      await Promise.all(dynamicsClosureDates.map(async (date) => {
-        await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
-        //log.info(response);
-      }));
+      await Promise.all(
+        dynamicsClosureDates.map(async (date) => {
+          await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
+        }),
+      );
     } catch (e) {
-      log.info('something broke when deleting existing closure dates.');
       log.info(e);
       //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
     }
@@ -298,19 +268,19 @@ async function postClosureDates(dates, ccfriApplicationGuid, res) {
 
   try {
     //if the user selects an end date, create a start and end date. else, use the only date for start and end.
-    await Promise.all(dates.map(async (date) => {
-
-      let payload = {
-        'ccof_startdate': formatTimeForBack(date.formattedStartDate),
-        'ccof_paidclosure': date.feesPaidWhileClosed,
-        'ccof_enddate': date.formattedEndDate ? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
-        'ccof_comment': date.closureReason,
-        'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${ccfriApplicationGuid})`
-      };
-      let response = await postOperation('ccof_application_ccfri_closures', payload);
-      retVal.push(response);
-
-    }));
+    await Promise.all(
+      dates.map(async (date) => {
+        const payload = {
+          ccof_startdate: formatTimeForBack(date.formattedStartDate),
+          ccof_paidclosure: date.feesPaidWhileClosed,
+          ccof_enddate: date.formattedEndDate ? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
+          ccof_comment: date.closureReason,
+          'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${ccfriApplicationGuid})`,
+        };
+        const response = await postOperation('ccof_application_ccfri_closures', payload);
+        retVal.push(response);
+      }),
+    );
     return retVal;
   } catch (e) {
     log.info(e);
@@ -318,14 +288,16 @@ async function postClosureDates(dates, ccfriApplicationGuid, res) {
   }
 }
 
-
 async function getECEWEApplication(req, res) {
   try {
-    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_public_sector_employer,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
+    const operation =
+      'ccof_applications(' +
+      req.params.applicationId +
+      ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_public_sector_employer,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
     let eceweApp = await getOperation(operation);
     eceweApp = new MappableObjectForFront(eceweApp, ECEWEApplicationMappings);
-    let forFrontFacilities = [];
-    Object.values(eceweApp.data.facilities).forEach(value => forFrontFacilities.push(new MappableObjectForFront(value, ECEWEFacilityMappings).data));
+    const forFrontFacilities = [];
+    Object.values(eceweApp.data.facilities).forEach((value) => forFrontFacilities.push(new MappableObjectForFront(value, ECEWEFacilityMappings).data));
     eceweApp.data.facilities = forFrontFacilities;
     return res.status(HttpStatus.OK).json(eceweApp);
   } catch (e) {
@@ -338,10 +310,10 @@ async function updateECEWEApplication(req, res) {
   let application = req.body;
   application = new MappableObjectForBack(application, ECEWEApplicationMappings);
   application = application.toJSON();
-  application.ccof_ecewe_employeeunion = (application.ccof_ecewe_optin == 0) ? null : application.ccof_ecewe_employeeunion;
+  application.ccof_ecewe_employeeunion = application.ccof_ecewe_optin == 0 ? null : application.ccof_ecewe_employeeunion;
   try {
     log.verbose('updateECEWEApplication: payload', application);
-    let response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
+    const response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, application);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -349,41 +321,39 @@ async function updateECEWEApplication(req, res) {
 }
 
 async function updateECEWEFacilityApplication(req, res) {
-  let facilities = req.body;
-  let forBackFacilities = [];
+  const facilities = req.body;
+  const forBackFacilities = [];
   let response;
-  Object.values(facilities).forEach(value => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
+  Object.values(facilities).forEach((value) => forBackFacilities.push(new MappableObjectForBack(value, ECEWEFacilityMappings).data));
   let eceweApplicationId;
   try {
-    for (let key in forBackFacilities) {
+    for (const key in forBackFacilities) {
       // add join attributes for application and facility
       forBackFacilities[key]['ccof_application@odata.bind'] = '/ccof_applications(' + req.params.applicationId + ')';
       forBackFacilities[key]['ccof_Facility@odata.bind'] = '/accounts(' + forBackFacilities[key]._ccof_facility_value + ')';
       eceweApplicationId = forBackFacilities[key].ccof_applicationeceweid;
-      let changeRequestNewFacilityId = forBackFacilities[key].ccof_change_request_new_facilityid;
+      const changeRequestNewFacilityId = forBackFacilities[key].ccof_change_request_new_facilityid;
       // remove attributes that are already used in payload join (above) and not needed.
       delete forBackFacilities[key].ccof_applicationeceweid;
       delete forBackFacilities[key]._ccof_facility_value;
       delete forBackFacilities[key].ccof_change_request_new_facilityid;
 
-      let facility = forBackFacilities[key];
+      const facility = forBackFacilities[key];
       if (eceweApplicationId) {
         // send PATCH (update existing ECEWE facility)
         response = await patchOperationWithObjectId('ccof_applicationecewes', eceweApplicationId, facility);
       } else {
         // send POST (create a new ECEWE facility)
-        let operation = 'ccof_applicationecewes';
+        const operation = 'ccof_applicationecewes';
         response = await postOperation(operation, facility);
         facilities[key].eceweApplicationId = response;
         //if this is a new facility change request, link ECEWE application to the New Facility Change Request
         if (changeRequestNewFacilityId) {
-          await updateChangeRequestNewFacility(changeRequestNewFacilityId,
-            {"ccof_ecewe@odata.bind": `/ccof_applicationecewes(${facilities[key].eceweApplicationId})`}
-          );
+          await updateChangeRequestNewFacility(changeRequestNewFacilityId, { 'ccof_ecewe@odata.bind': `/ccof_applicationecewes(${facilities[key].eceweApplicationId})` });
         }
       }
     }
-    return res.status(HttpStatus.OK).json({facilities: facilities});
+    return res.status(HttpStatus.OK).json({ facilities: facilities });
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
@@ -392,7 +362,7 @@ async function updateECEWEFacilityApplication(req, res) {
 /* Get the user declaration for a given application id. */
 async function getDeclaration(req, res) {
   try {
-    let operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
+    const operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_consent,ccof_submittedby,ccof_declarationastatus,ccof_declarationbstatus,statuscode';
     let declaration = await getOperation(operation);
     declaration = new MappableObjectForFront(declaration, DeclarationMappings);
     return res.status(HttpStatus.OK).json(declaration);
@@ -406,7 +376,7 @@ async function getDeclaration(req, res) {
 async function submitApplication(req, res) {
   let declaration = new MappableObjectForBack(req.body, DeclarationMappings);
   declaration.data.statuscode = APPLICATION_STATUS_CODES.SUBMITTED;
-  let ccfriFacilitiesToLock = JSON.parse(JSON.stringify(declaration));
+  const ccfriFacilitiesToLock = JSON.parse(JSON.stringify(declaration));
   declaration = declaration.toJSON();
   try {
     delete declaration.facilities;
@@ -417,7 +387,7 @@ async function submitApplication(req, res) {
     if (checkKey('facilities', ccfriFacilitiesToLock)) {
       let ccof_applicationccfriid;
       for (let facility of ccfriFacilitiesToLock.facilities) {
-        facility = (new MappableObjectForBack(facility, UserProfileCCFRIMappings)).toJSON();
+        facility = new MappableObjectForBack(facility, UserProfileCCFRIMappings).toJSON();
         ccof_applicationccfriid = facility.ccof_applicationccfriid;
         delete facility.ccof_applicationccfriid;
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
@@ -439,7 +409,7 @@ async function postPdf(req, buffer) {
       filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
       filesize: buffer.byteLength,
       subject: 'APPLICATION SUMMARY',
-      documentbody: buffer.toString('base64')
+      documentbody: buffer.toString('base64'),
     };
 
     await postApplicationSummaryDocument(payload);
@@ -449,7 +419,7 @@ async function postPdf(req, buffer) {
       filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
       filesize: buffer.byteLength,
       subject: 'CHANGE REQUEST SUMMARY',
-      documentbody: buffer.toString('base64')
+      documentbody: buffer.toString('base64'),
     };
 
     await postChangeRequestSummaryDocument(payload);
@@ -460,7 +430,7 @@ async function postPdf(req, buffer) {
 async function printPdf(req, numOfRetries = 0) {
   let url = `${req.headers.referer}/printable`;
 
-  log.info('printPdf :: user is',req.session?.passport?.user?.displayName);
+  log.info('printPdf :: user is', req.session?.passport?.user?.displayName);
   log.verbose('printPdf :: correlationId is', req.session.correlationID);
   log.info('printPdf :: applicationId is', req.params.applicationId);
   log.verbose('printPdf :: url path is', url);
@@ -490,14 +460,13 @@ async function printPdf(req, numOfRetries = 0) {
       displayHeaderFooter: false,
       printBackground: true,
       timeout: 300000,
-      width: 1280
+      width: 1280,
     });
 
     log.info('printPdf :: pdf buffer created starting compression');
     const compressedPdfBuffer = await compress(pdfBuffer, {
-      gsModule: process.env.GHOSTSCRIPT_PATH // this is set in dockerfile to fix ghostscript error on deploy
-    }
-    );
+      gsModule: process.env.GHOSTSCRIPT_PATH, // this is set in dockerfile to fix ghostscript error on deploy
+    });
     log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
 
     const payload = await postPdf(req, compressedPdfBuffer);
@@ -537,7 +506,7 @@ function getCurrentDateForPdfFileName() {
 function getFacilityInMap(map, facilityId) {
   let facility = map.get(facilityId);
   if (!facility) {
-    facility = {facilityId: facilityId};
+    facility = { facilityId: facilityId };
     map.set(facilityId, facility);
   }
   return facility;
@@ -549,22 +518,25 @@ async function updateStatusForApplicationComponents(req, res) {
   try {
     if (request.organizationId && request.isOrganizationComplete !== null && request.isOrganizationComplete !== undefined) {
       let organizationReq = {
-        isOrganizationComplete: request.isOrganizationComplete
+        isOrganizationComplete: request.isOrganizationComplete,
       };
-      organizationReq = (new MappableObjectForBack(organizationReq, OrganizationMappings)).toJSON();
+      organizationReq = new MappableObjectForBack(organizationReq, OrganizationMappings).toJSON();
       promises.push(patchOperationWithObjectId('accounts', request.organizationId, organizationReq));
     }
 
-    if (request.applicationId && ((request.isEceweComplete !== null && request.isEceweComplete !== undefined ) || ( request.isLicenseUploadComplete !== null && request.isLicenseUploadComplete !== undefined))) {
+    if (
+      request.applicationId &&
+      ((request.isEceweComplete !== null && request.isEceweComplete !== undefined) || (request.isLicenseUploadComplete !== null && request.isLicenseUploadComplete !== undefined))
+    ) {
       let applicationReq = {
         isEceweComplete: request.isEceweComplete,
-        isLicenseUploadComplete: request.isLicenseUploadComplete
+        isLicenseUploadComplete: request.isLicenseUploadComplete,
       };
       if (request.changeRequestId) {
-        applicationReq = (new MappableObjectForBack(applicationReq, ChangeRequestMappings)).toJSON();
+        applicationReq = new MappableObjectForBack(applicationReq, ChangeRequestMappings).toJSON();
         promises.push(patchOperationWithObjectId('ccof_change_requests', request.changeRequestId, applicationReq));
       } else {
-        applicationReq = (new MappableObjectForBack(applicationReq, ECEWEApplicationMappings)).toJSON();
+        applicationReq = new MappableObjectForBack(applicationReq, ECEWEApplicationMappings).toJSON();
         promises.push(patchOperationWithObjectId('ccof_applications', req.params.applicationId, applicationReq));
       }
     }
@@ -572,9 +544,9 @@ async function updateStatusForApplicationComponents(req, res) {
       for (let facility of request.facilities) {
         if (facility.facilityId && facility.isFacilityComplete !== null && facility.isFacilityComplete !== undefined) {
           let facilityReq = {
-            isFacilityComplete: facility.isFacilityComplete
+            isFacilityComplete: facility.isFacilityComplete,
           };
-          facilityReq = (new MappableObjectForBack(facilityReq, OrganizationFacilityMappings)).toJSON();
+          facilityReq = new MappableObjectForBack(facilityReq, OrganizationFacilityMappings).toJSON();
           promises.push(patchOperationWithObjectId('accounts', facility.facilityId, facilityReq));
         }
       }
@@ -583,22 +555,27 @@ async function updateStatusForApplicationComponents(req, res) {
       for (let funding of request.fundings) {
         if (funding.basefundingId && funding.isCCOFComplete !== null && funding.isCCOFComplete !== undefined) {
           let ccofBaseFundingReq = {
-            isCCOFComplete: funding.isCCOFComplete
+            isCCOFComplete: funding.isCCOFComplete,
           };
-          ccofBaseFundingReq = (new MappableObjectForBack(ccofBaseFundingReq, CCOFApplicationFundingMapping)).toJSON();
+          ccofBaseFundingReq = new MappableObjectForBack(ccofBaseFundingReq, CCOFApplicationFundingMapping).toJSON();
           promises.push(patchOperationWithObjectId('ccof_application_basefundings', funding.basefundingId, ccofBaseFundingReq));
         }
       }
     }
     if (request.ccfris) {
       for (let ccfri of request.ccfris) {
-        if (ccfri.ccfriId && ((ccfri.isCCFRIComplete !== null && ccfri.isCCFRIComplete !== undefined) || (ccfri.isNmfComplete !== null && ccfri.isNmfComplete !== undefined) || (ccfri.isRfiComplete !== null && ccfri.isRfiComplete !== undefined))) {
+        if (
+          ccfri.ccfriId &&
+          ((ccfri.isCCFRIComplete !== null && ccfri.isCCFRIComplete !== undefined) ||
+            (ccfri.isNmfComplete !== null && ccfri.isNmfComplete !== undefined) ||
+            (ccfri.isRfiComplete !== null && ccfri.isRfiComplete !== undefined))
+        ) {
           let ccfriApplicationReq = {
             isCCFRIComplete: ccfri.isCCFRIComplete,
             isNmfComplete: ccfri.isNmfComplete,
-            isRfiComplete: ccfri.isRfiComplete
+            isRfiComplete: ccfri.isRfiComplete,
           };
-          ccfriApplicationReq = (new MappableObjectForBack(ccfriApplicationReq, UserProfileCCFRIMappings)).toJSON();
+          ccfriApplicationReq = new MappableObjectForBack(ccfriApplicationReq, UserProfileCCFRIMappings).toJSON();
           promises.push(await patchOperationWithObjectId('ccof_applicationccfris', ccfri.ccfriId, ccfriApplicationReq));
         }
       }
@@ -608,15 +585,16 @@ async function updateStatusForApplicationComponents(req, res) {
       result.status === 'rejected' ? console.error(result.reason) : console.info(result.value);
     }
     return res.sendStatus(HttpStatus.OK);
-  }catch (e){
+  } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-
 async function getApplicationSummary(req, res) {
   try {
-    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(ApplicationSummaryCcfriMappings)}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode),ccof_application_basefunding_Application`;
+    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
+      ApplicationSummaryCcfriMappings,
+    )}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode),ccof_application_basefunding_Application`;
     let results = await getOperation(operation);
 
     let applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;
@@ -628,19 +606,19 @@ async function getApplicationSummary(req, res) {
     //setup the Facility map
     const facilityMap = new Map();
     //map CCFRI
-    results.ccof_applicationccfri_Application_ccof_ap?.forEach(ccfri => {
+    results.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
       const mappedCCFRI = new MappableObjectForFront(ccfri, ApplicationSummaryCcfriMappings).data;
       getFacilityInMap(facilityMap, mappedCCFRI.facilityId).ccfri = mappedCCFRI;
     });
 
     //map ECE-WE
-    results.ccof_ccof_application_ccof_applicationecewe_application?.forEach(ecewe => {
+    results.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ecewe) => {
       const mappedEcewe = new MappableObjectForFront(ecewe, ECEWEFacilityMappings).data;
       getFacilityInMap(facilityMap, mappedEcewe.facilityId).ecewe = mappedEcewe;
     });
 
     //map CCOF Base funding if it exists
-    results.ccof_application_basefunding_Application?.forEach(baseFunding => {
+    results.ccof_application_basefunding_Application?.forEach((baseFunding) => {
       const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
       getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
     });
@@ -648,10 +626,10 @@ async function getApplicationSummary(req, res) {
     //add the change request ID to the facility so we can filter by it on the front end
     let allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
     if (allChangeRequests.length > 0) {
-      allChangeRequests.forEach(changeRequest => {
+      allChangeRequests.forEach((changeRequest) => {
         changeRequest.changeActions.forEach((changeAction) => {
-          if (changeAction.changeType == "NEW_FACILITY"){
-            changeAction.facilities.forEach(newFac => {
+          if (changeAction.changeType == 'NEW_FACILITY') {
+            changeAction.facilities.forEach((newFac) => {
               getFacilityInMap(facilityMap, newFac.facilityId).changeRequestId = changeAction.changeRequestId;
             });
           }
@@ -661,7 +639,7 @@ async function getApplicationSummary(req, res) {
 
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: Array.from(facilityMap.values())
+      facilities: Array.from(facilityMap.values()),
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);
@@ -684,14 +662,14 @@ function checkKey(key, obj) {
   return false;
 }
 
-async function getFacilityChangeData(changeActionId){
+async function getFacilityChangeData(changeActionId) {
   let mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
   let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
   log.info(newFacData, 'new fac data before mapping');
 
-  newFacData.value.forEach(fac => {
+  newFacData.value.forEach((fac) => {
     if (fac.ccof_facility) {
       let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
       mappedFacility.facilityName = fac.ccof_facility['name'];
@@ -705,25 +683,23 @@ async function getFacilityChangeData(changeActionId){
 }
 
 async function getMTFIChangeData(changeActionId) {
-  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings );
-  mtfi?.forEach(item => {
+  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings);
+  mtfi?.forEach((item) => {
     item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
   });
   return mtfi;
 }
 //and Microsoft.Dynamics.CRM.In(PropertyName='_ccof_application_value',PropertyValues=[${applicationId}]));
-async function getChangeRequestsFromApplicationId(applicationIds){
-
+async function getChangeRequestsFromApplicationId(applicationIds) {
   let str = '[';
 
-  const regex = new RegExp('([^,]+)' , 'g');
+  const regex = new RegExp('([^,]+)', 'g');
   const found = applicationIds.match(regex);
   found.forEach((app, index) => {
     str = str + `'${app}'`;
-    if (index != found.length -1 ){
+    if (index != found.length - 1) {
       str = str + ',';
-    }
-    else{
+    } else {
       str = str + ']';
     }
   });
@@ -731,7 +707,9 @@ async function getChangeRequestsFromApplicationId(applicationIds){
   log.info(str);
 
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
+      ChangeRequestMappings,
+    )}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
     //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
@@ -742,25 +720,27 @@ async function getChangeRequestsFromApplicationId(applicationIds){
     let payload = [];
 
     //log.verbose(changeRequests);
-    await Promise.all(changeRequests.map(async (request) => {
+    await Promise.all(
+      changeRequests.map(async (request) => {
+        let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
 
-      let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
+        //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
+        req.changeActions = await Promise.all(
+          request.ccof_change_action_change_request.map(async (changeAction) => {
+            let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
+            if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
+              mappedChangeAction = { ...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId) };
+            } else if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
+              mappedChangeAction = { ...mappedChangeAction, mtfiFacilities: await getMTFIChangeData(mappedChangeAction.changeActionId) };
+            }
+            mappedChangeAction.changeType = getLabelFromValue(mappedChangeAction.changeType, CHANGE_REQUEST_TYPES);
+            return mappedChangeAction;
+          }),
+        );
 
-      //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
-      req.changeActions =  await Promise.all(request.ccof_change_action_change_request.map(async (changeAction) => {
-        let mappedChangeAction = new MappableObjectForFront(changeAction, ChangeActionRequestMappings).toJSON();
-        if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY) {
-          mappedChangeAction = {...mappedChangeAction, facilities: await getFacilityChangeData(mappedChangeAction.changeActionId)};
-        }
-        else if (mappedChangeAction.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
-          mappedChangeAction = {...mappedChangeAction, mtfiFacilities: await getMTFIChangeData(mappedChangeAction.changeActionId)};
-        }
-        mappedChangeAction.changeType = getLabelFromValue(mappedChangeAction.changeType, CHANGE_REQUEST_TYPES);
-        return mappedChangeAction;
-      }));
-
-      payload.push(req);
-    }));
+        payload.push(req);
+      }),
+    );
 
     //log.info('final payload', payload);
     return payload;
@@ -768,10 +748,9 @@ async function getChangeRequestsFromApplicationId(applicationIds){
     log.error('An error occurred while getting change request', e);
     throw e;
   }
-
 }
 
-async function getChangeRequest(req, res){
+async function getChangeRequest(req, res) {
   try {
     //pulled the logic out into a seperate function so it can be called from somewhere else
     const payload = await getChangeRequestsFromApplicationId(req.params.applicationId);
@@ -782,19 +761,20 @@ async function getChangeRequest(req, res){
     log.error('An error occurred while getting change request', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
-
 }
 
-async function deletePcfApplication(req, res){
+async function deletePcfApplication(req, res) {
   try {
     let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
     let application = await getOperation(operation);
 
     //loop thru to grab facility ID's and delete all of them
-    await Promise.all(application['ccof_application_basefunding_Application'].map(async (facility) => {
-      await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
-      //log.info(response);
-    }));
+    await Promise.all(
+      application['ccof_application_basefunding_Application'].map(async (facility) => {
+        await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
+        //log.info(response);
+      }),
+    );
 
     //delete the application
     await deleteOperationWithObjectId('ccof_applications', req.params.applicationId);
@@ -821,8 +801,9 @@ module.exports = {
   getApplicationSummary,
   updateStatusForApplicationComponents,
   getChangeRequest,
+  getApprovableFeeSchedules,
   patchCCFRIApplication,
   deleteCCFRIApplication,
   printPdf,
-  deletePcfApplication
+  deletePcfApplication,
 };
