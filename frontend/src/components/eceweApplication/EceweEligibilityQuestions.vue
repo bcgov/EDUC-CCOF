@@ -401,27 +401,14 @@ export default {
 
     },
     showApplicableSectorQuestion() {
-      //JB i'm pretty sure we can simplify this and just exclude 2025
-      return (
-        (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
-        (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
-      );
+      //This question is only valid from 2023-24 and before.
+      //The template manages 2025 onward so it should only get called for historical applications
+      return  this.model.belongsToUnion === 1 && this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
     },
     showConfirmationQuestion() {
-      return (
-        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
-          this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
-        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
-          this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
-      );
+      //This question is only valid from 2023-24 and before.
+      return this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION && this.model.belongsToUnion === 1 && this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+
     },
     showFundingModelQuestion() {
       return (
