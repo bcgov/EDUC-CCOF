@@ -35,8 +35,9 @@
               <span>, we can approve the following parent fee schedule:</span>
             </div>
           </div>
+
           <ApprovableParentFeesCards
-            :loading="loading"
+            :loading="isEmpty(afs)"
             :approvable-fee-schedules="afs?.approvableFeeSchedules"
             class="my-4"
           />
@@ -45,48 +46,52 @@
             <ul class="pl-4">
               <li>
                 <strong class="text-decoration-underline">Accept the fee schedule</strong>: By selecting "I accept", you
-                confirm that you agree to the approvable fee schedule.
+                confirm that you agree to the approvable fee schedule as indicated above. These fees will replace your
+                requested Parent Fees and are the maximum Parent Fees you may charge.
               </li>
               <li>
                 <strong class="text-decoration-underline">Upload Supporting Documents</strong>: By selecting "I want to
                 upload supporting documents", you confirm that you decline the approvable fee schedule and have new
-                information to submit for review. This will require additional processing time for your application.
+                information to submit for review, This will require additional processing time for your application.
               </li>
               <li>
                 <strong class="text-decoration-underline">Decline the fee schedule</strong>: By selecting "I decline",
-                you confirm your decision not to participate in the Child Care Fee Reduction Initiative (CCFRI).
+                you confirm that you decline the approvable fee schedule and confirm your decision not to participate in
+                the Child Care Fee Reduction Initiative (CCFRI). Your facility will remain eligible to receive Child
+                Care Operating Funding Base Funding and may re-apply to CCFRI at any time.
               </li>
             </ul>
             <div class="mt-2">
               Please call us at 1-888-338-6622 (Option 2) if you have any questions or require assistance.
             </div>
           </div>
-          <v-card elevation="2" class="pa-4">
-            <div class="mb-2">Please select one of the following options regarding the approvable fee schedule:</div>
-            <v-radio-group
-              v-model="afs.afsStatus"
-              :rules="rules.required"
-              :disabled="!currentFacility?.unlockAfs"
-              color="primary"
-            >
-              <v-radio label="I accept" :value="AFS_STATUSES.ACCEPT" />
-              <div v-if="afs?.afsStatus === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
-                After submission please wait to receive notification confirming your approval to participate in CCFRI.
-              </div>
-              <v-radio label="I want to upload supporting documents" :value="AFS_STATUSES.UPLOAD_DOCUMENTS" />
-              <v-radio label="I decline" :value="AFS_STATUSES.DECLINE" />
-              <div v-if="afs?.afsStatus === AFS_STATUSES.DECLINE" class="text-body-2 pl-2">
-                After submission please wait to receive confirmation from the ministry on the results of your CCFRI
-                application.
-              </div>
-            </v-radio-group>
-          </v-card>
+          <v-skeleton-loader :loading="isEmpty(afs)" type="table-tbody">
+            <v-container fluid class="pa-0">
+              <v-card elevation="2" class="pa-4">
+                <div class="mb-2">
+                  Please select one of the following options regarding the approvable fee schedule:
+                </div>
+                <v-radio-group v-model="afs.afsStatus" :rules="rules.required" :disabled="isReadOnly" color="primary">
+                  <v-radio label="I accept" :value="AFS_STATUSES.ACCEPT" />
+                  <div v-if="afs?.afsStatus === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
+                    After submission, please wait for a notification confirming your approval to participate in CCFRI.
+                  </div>
+                  <v-radio label="I want to upload supporting documents" :value="AFS_STATUSES.UPLOAD_DOCUMENTS" />
+                  <v-radio label="I decline" :value="AFS_STATUSES.DECLINE" />
+                  <div v-if="afs?.afsStatus === AFS_STATUSES.DECLINE" class="text-body-2 pl-2">
+                    After submission please wait to receive confirmation from the ministry on the results of your CCFRI
+                    application.
+                  </div>
+                </v-radio-group>
+              </v-card>
+            </v-container>
+          </v-skeleton-loader>
         </v-card>
       </v-row>
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
-        :is-save-disabled="!currentFacility?.unlockAfs"
+        :is-save-disabled="isReadOnly"
         :is-next-disabled="!isFormComplete"
         :is-processing="processing"
         @previous="back"
@@ -100,6 +105,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
+import { isEmpty } from 'lodash';
 
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
@@ -127,55 +133,48 @@ export default {
     return {
       afs: {},
       isValidForm: false,
-      loading: false,
       processing: false,
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getChildCareCategoryNumberById', 'getFundingUrl', 'getProgramYearOrderById']),
-    ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId']),
+    ...mapState(useAppStore, ['getFundingUrl']),
+    ...mapState(useApplicationStore, ['formattedProgramYear', 'isApplicationSubmitted', 'programYearId']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
+    },
+    // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
+    isReadOnly() {
+      return isEmpty(this.afs) || this.processing || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
     },
     isFormComplete() {
       return this.isValidForm;
     },
   },
   watch: {
+    approvableFeeSchedules: {
+      handler() {
+        this.reloadAfs();
+      },
+    },
     '$route.params.urlGuid': {
-      async handler() {
-        await this.loadData();
+      handler() {
+        this.reloadAfs();
       },
     },
   },
-  async created() {
+  created() {
     this.rules = rules;
     this.AFS_STATUSES = AFS_STATUSES;
-    await this.loadData();
+    this.reloadAfs();
   },
   methods: {
-    ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedules']),
-    async loadData() {
-      try {
-        this.loading = true;
-        this.afs = await this.getApprovableFeeSchedules(this.$route.params.urlGuid);
-        this.afs?.approvableFeeSchedules?.forEach((item) => {
-          item.programYearOrder = this.getProgramYearOrderById(item.programYearId);
-          item.childCareCategoryNumber = this.getChildCareCategoryNumberById(item.childCareCategoryId);
-        });
-        this.sortApprovableFeeSchedules();
-      } catch (error) {
-        console.error('Unable to load Approvable Fee Schedules: ' + error);
-        this.setErrorAlert('Sorry, an unexpected error seems to have occurred.');
-      } finally {
-        this.loading = false;
-      }
-    },
-    sortApprovableFeeSchedules() {
-      this.afs?.approvableFeeSchedules?.sort(
-        (a, b) => a.programYearOrder - b.programYearOrder || a.childCareCategoryNumber - b.childCareCategoryNumber,
-      );
+    ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
+    ...mapActions(useNavBarStore, ['setNavBarAfsComplete']),
+    isEmpty,
+    reloadAfs() {
+      this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
     },
     next() {
       this.$router.push(this.nextPath);
@@ -188,8 +187,22 @@ export default {
     },
     // TODO (vietle-cgi) - CCFRI-3756 - work in progress
     async save(showMessage) {
-      if (showMessage) {
-        this.setSuccessAlert('Changes Successfully Saved');
+      try {
+        if (this.isReadOnly) return;
+        this.processing = true;
+        const payload = {
+          afsStatus: this.afs?.afsStatus,
+        };
+        await this.updateApplicationCCFRI(this.$route.params.urlGuid, payload);
+        this.setNavBarAfsComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete });
+        if (showMessage) {
+          this.setSuccessAlert('Changes Successfully Saved');
+        }
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.processing = false;
       }
     },
   },

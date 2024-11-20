@@ -110,7 +110,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
 import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
@@ -143,7 +143,7 @@ export default {
       'isRenewal',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useCcfriAppStore, ['getCCFRIById']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
     ...mapState(useFacilityStore, ['isNewFacilityStarted']),
     ...mapState(useFundingStore, ['isNewFundingStarted']),
     ...mapState(useNavBarStore, [
@@ -207,8 +207,14 @@ export default {
       deep: true,
     },
   },
+
+  async created() {
+    await this.loadApprovableFeeSchedules();
+  },
+
   methods: {
-    ...mapActions(useNavBarStore, ['setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
+    ...mapActions(useNavBarStore, ['checkApprovableFeeSchedulesComplete', 'setNavBarItems', 'setCanSubmit']),
     setActive(item) {
       let index = this.items.findIndex((obj) => obj.title === item.title);
       if (item.active) {
@@ -576,7 +582,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'ccfri-afs', params: { urlGuid: item.ccfriApplicationId } },
                 isAccessible: true,
-                icon: this.getCheckbox(item.isAfsComplete), // TODO (vietle-cgi) - CCFRI-3756 - work in progress
+                icon: this.getCheckbox(item.isAFSComplete),
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId && 'ccfri-afs' === this.$route.name,
                 position: positionIndex++,
                 navBarId: navBarId++,
@@ -1025,6 +1031,11 @@ export default {
       if (page?.isAccessible) {
         this.$router.push(page.link);
       }
+    },
+    async loadApprovableFeeSchedules() {
+      if (!this.$route.path?.includes(`${PATHS.PREFIX.PCF}/`)) return;
+      await this.getApprovableFeeSchedulesForFacilities(this.userProfileList);
+      this.checkApprovableFeeSchedulesComplete();
     },
   },
 };

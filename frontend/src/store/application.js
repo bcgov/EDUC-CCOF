@@ -141,6 +141,7 @@ export const useApplicationStore = defineStore('application', {
     },
   },
   getters: {
+    isApplicationSubmitted: (state) => state.applicationStatus !== 'INCOMPLETE',
     formattedProgramYear: (state) => formatFiscalYearName(state.programYearLabel),
     fiscalStartAndEndDates: (state) => {
       //set fiscal year dates to prevent user from choosing dates outside the current FY
