@@ -1,4 +1,4 @@
-name: 4 PROD - Deploy Backend
+name: 5 PROD - Deploy Backend
 
 env:
   # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -160,7 +160,7 @@ jobs:
             ${{ secrets.D365_API_PREFIX }}
 
         # Start rollout (if necessary) and follow it
-        oc rollout latest deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+        oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
             || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
