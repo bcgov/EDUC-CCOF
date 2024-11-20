@@ -179,6 +179,13 @@ export const ORGANIZATION_PROVIDER_TYPES = {
 export const ECEWE_SECTOR_TYPES = {
   CSSEA: 100000000,
   OTHER_UNION: 100000001,
+  NO_FACILITIES_UNIONIZED: 100000002, // only for 2025-26
+  SOME_FACILITIES_UNIONIZED: 100000003, // only for 2025-26
+};
+
+export const ECEWE_OPT_IN_TYPES = {
+  OPT_IN: 1,
+  OPT_OUT: 0,
 };
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';

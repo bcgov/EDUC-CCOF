@@ -22,10 +22,10 @@
     </v-card>
 
     <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-      {{ languageYearLabel }}
+
       <!-- ccfri 3819 new order and re-wording of all ece-we questions -->
       <template v-if="languageYearLabel === programYearTypes.FY2025_26">
-        <template v-if="model.optInECEWE === 1">
+        <template v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN">
           <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
               <v-row class="justify-left">
@@ -51,27 +51,80 @@
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="test1" :disabled="isReadOnly()" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">Which of the following describes your organization?</div>
                     </template>
                     <div class="flex-left">
                       <v-radio
-                        class="pt-2 pr-8"
-                        label="We are a member of the Community Social Services Employers' Association (CSSEA)"
-                        :value="100000000"
-                        @click="model.confirmation = null"
-                      />
-                      <v-radio
                         class="pt-1"
                         label="We are not a member of the Community Social Services Employers' Association (CSSEA)."
-                        :value="100000001"
-                        @click="model.confirmation = null"
+                        :value="100000000"
+                        @click="model.isUnionAgreementReached = null"
                       />
+                      <v-radio
+                        class="pt-2 pr-8"
+                        label="We are a member of the Community Social Services Employers' Association (CSSEA)"
+                        :value="100000001"
+                        @click="model.isUnionAgreementReached = null"
+                      />
+
                     </div>
                   </v-radio-group>
                 </v-col>
               </v-row>
+              <template v-if="test1 === 100000000">
+                <v-row class="justify-left">
+                  <v-col align-self="start">
+                    <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
+                      <template #label>
+                      <div class="radio-label text-left">Please Select</div>
+                    </template>
+                      <div class="flex-left">
+                        <v-radio
+                          class="pt-1"
+                          label="None of our facilities are unionized"
+                          :value="100000002"
+                          @click="model.isUnionAgreementReached = null"
+                        />
+                        <v-radio
+                          class="pt-2 pr-8"
+                          label="Some or all of our facilities are unionized"
+                          :value="100000003"
+                          @click="model.isUnionAgreementReached = null"
+                        />
+
+                      </div>
+                    </v-radio-group>
+                  </v-col>
+                </v-row>
+                <v-row v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
+                  <v-row class="justify-left">
+                    <v-col class="py-0">
+                      <v-card-title class="py-0 noticeInfo">
+                        <span style="float: left">
+                          <v-icon size="x-large" color="#D40D19" class="py-1 px-3 noticeInfoIcon"> mdi-information </v-icon>
+                        </span>
+                        Please confirm
+                      </v-card-title>
+                      </v-col>
+                  <v-row>
+                    <v-col class="pl-6 d-flex py-0">
+                      <v-checkbox
+                        v-model="model.isUnionAgreementReached"
+                        class="pa-0"
+                        :value="true"
+                        label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
+                        :disabled="isReadOnly()"
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-row>
+                </v-row>
+              </template>
+
+
               <v-row>
 
                 <AppAlertBanner v-if="showCSSEAWarning" type="error" class="ma-2 mb-4"
@@ -84,9 +137,9 @@
         </template>
       </template>
 
-      <!-- previous ECE-WE question logic below -->
+      <!-- previous year's ECE-WE question logic below -->
       <template v-else>
-        <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+        <v-card v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
           <v-container>
             <v-row class="justify-center">
               <v-col align-self="start">
@@ -111,7 +164,7 @@
         </v-card>
 
         <div v-if="languageYearLabel !== programYearTypes.HISTORICAL">
-          <v-card v-if="model.optInECEWE === 1" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+          <v-card v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
@@ -283,31 +336,25 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useAuthStore } from '@/store/auth.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import {
-  PATHS,
-  changeUrl,
-  pcfUrl,
+  ECEWE_OPT_IN_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
 } from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
-import { isNullOrBlank } from '@/utils/common.js';
 import AppAlertBanner from '../guiComponents/AppAlertBanner.vue';
 
 export default {
   components: {AppAlertBanner},
-  mixins: [alertMixin],
   props: {
     isLoading: {
       type: Boolean,
@@ -326,46 +373,41 @@ export default {
     return {
       rules,
       model: {},
-      isProcessing: false, // flag to UI if screen is saving/processing data or not.
-      isValidForm: false,
+      test1: undefined, //placeholder until another question added into dynamics
+      isWarningShown: false,
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, [
-      'isStarted',
-      'loadedFacilities',
       'optinECEWEChangeRequestReadonly',
       'belongsToUnionChangeRequestReadonly',
     ]),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, [
-      'navBarList',
       'changeRequestId',
-      'previousPath',
       'isChangeRequest',
-      'userProfileList',
     ]),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'programYearId',
       'applicationStatus',
       'unlockEcewe',
-      'applicationId',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     showCSSEAWarning(){
-      return model.publicSector === 0
-      //and yes to member of CCSA
+      return this.model?.publicSector === 0
+      //return this.model?.publicSector === 0 && member of CCSSA
+
     },
     showApplicableSectorQuestion() {
+      //JB i'm pretty sure we can simplify this and just exclude 2025
       return (
         (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
           this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
         (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
           this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
@@ -373,11 +415,11 @@ export default {
       return (
         (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
           this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
           this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
         (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
           this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
           this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
@@ -385,7 +427,7 @@ export default {
       return (
         this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
         this.model.belongsToUnion === 1 &&
-        this.model.optInECEWE === 1
+        this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
       );
     },
     showJJEPQuestion() {
@@ -422,14 +464,14 @@ export default {
         eceweAppStore.setFacilities(value);
       },
     },
-    enableButtons() {
-      return this.isValidForm;
-    },
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES
+    this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES
     this.model = { ...this.eceweModel };
   },
+
   methods: {
     getFormData() {
       return this.model;
@@ -457,10 +499,6 @@ export default {
       }
       return false;
     },
-
-    // validateForm() {
-    //   this.$refs.isValidForm?.validate();
-    // },
     /* Determines if all facilites are currently opted out. */
     allFacilitiesOptedOut() {
       for (let facility of this.facilities) {

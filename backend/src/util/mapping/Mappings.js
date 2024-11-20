@@ -244,6 +244,7 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' },
   { back: 'ccof_public_sector_employer', front: 'publicSector' }, //null,
+  { back: 'ccof_union_local_agreement_reached', front: 'isUnionAgreementReached' }, //null,
 ];
 
 const ECEWEFacilityMappings = [

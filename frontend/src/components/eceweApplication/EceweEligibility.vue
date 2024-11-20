@@ -185,7 +185,7 @@ export default {
       },
     },
     enableButtons() {
-      return this.isValidForm;
+      return this.isValidForm && !this.$refs?.eligibilityQuestions?.showCSSEAWarning;
     },
   },
   async mounted() {
