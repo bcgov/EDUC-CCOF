@@ -131,7 +131,6 @@
                     color: white;
                     font-style: normal;
                     font-weight: 700;
-                    font-family: BCSans;
                     font-size: 20px;
                     padding-top: 8px;
                     padding-bottom: 8px;
@@ -205,7 +204,6 @@
                   color: white;
                   font-style: normal;
                   font-weight: 700;
-                  font-family: BCSans;
                   font-size: 20px;
                   padding-top: 8px;
                   padding-bottom: 8px;
@@ -441,9 +439,7 @@
                   <v-btn
                     style="
                       color: white;
-                      font-family: BCSans;
                       font-weight: 600;
-                      font-family: BCSans;
                       font-size: 16px;
                       padding-left: 40px;
                       padding-right: 40px;
@@ -492,7 +488,7 @@
                       <!-- ****************************************************************************************************************************************************************-->
                       <!-- *** The following slider is for the ON (selected) state ********************************************************************************************************-->
                       <!-- ****************************************************************************************************************************************************************-->
-                      <span style="color: #313131; font-size: 15px; font-weight: bold; font-family: BCSans">{{
+                      <span style="color: #313131; font-size: 15px; font-weight: bold">{{
                         child.programYear != undefined ? child.programYear.slice(0, 7) : ''
                       }}</span>
                       <v-slide-group
@@ -517,12 +513,12 @@
                             <span style="color: #313131"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
-                        <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
-                            :color="active ? '#F3E6F6' : '#FFFFFF'"
+                            :color="isSelected ? '#F3E6F6' : '#FFFFFF'"
                             class="ma-1 fill-height"
-                            :elevation="active ? 4 : 0"
+                            :elevation="isSelected ? 4 : 0"
                             height="67"
                             width="70"
                             @click="toggle(focusAwayFromOnSlider(child.number - 1))"
@@ -530,10 +526,15 @@
                             <v-row style="" justify="center">
                               <v-col align="center" style="padding-top: 4px; padding-bottom: 5px; margin-top: -2px">
                                 <span
-                                  :style="
-                                    'color:' +
-                                    (active ? 'white' : 'white') +
-                                    ';font-family:Lucida Grande,monospace;background-color:#431782;font-size:17px;font-weight:bold;padding-bottom:6px;padding-left:px;padding-right:19px;padding-top:4px'
+                                  style="
+                                    color: white;
+                                    background-color: #431782;
+                                    font-size: 17px;
+                                    font-weight: bold;
+                                    padding-bottom: 6px;
+                                    padding-left: 20px;
+                                    padding-right: 19px;
+                                    padding-top: 4px;
                                   "
                                 >
                                   {{ n.month }}
@@ -542,7 +543,7 @@
                             </v-row>
                             <v-row style="font-size: 14px" justify="center">
                               <v-col align="center" style="padding-top: 3px">
-                                <span :style="'color:' + (active ? '#9D2AB1' : 'black')">
+                                <span :style="'color:' + (isSelected ? '#9D2AB1' : 'black')">
                                   {{
                                     n.rate == 0 || n.rate == null || n.rate == undefined || n.rate == 'N/A'
                                       ? 'N/A'
@@ -552,7 +553,7 @@
                               </v-col>
                             </v-row>
                           </v-card>
-                        </v-slide-item>
+                        </v-slide-group-item>
                       </v-slide-group>
                       <!-- ****************************************************************************************************************************************************************-->
                       <!-- *** The following slider is for the OFF (unselected) state *****************************************************************************************************-->
@@ -576,15 +577,15 @@
                         <template #prev>
                           <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size: 13px">
                             <v-icon color="#431782" size="x-large">mdi-chevron-left</v-icon>
-                            <span style="color: #313131; font-family: BCSans"> {{ child.feeFrequency }}&nbsp; </span>
+                            <span style="color: #313131"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
-                        <v-slide-item v-for="n in child.items" :key="n.id" v-slot="{ active, toggle }">
+                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
-                            :color="active ? '#FFFFFF' : '#FFFFFF'"
+                            color="white"
                             class="ma-1 fill-height"
-                            :elevation="active ? 0 : 0"
+                            :elevation="isSelected ? 0 : 0"
                             height="67"
                             width="70"
                             @click="toggle(clickForOffSlider(n.id, child.number - 1))"
@@ -593,9 +594,6 @@
                               <v-col align="center" style="padding-top: 3px; padding-bottom: 5px; margin-top: -2px">
                                 <span
                                   style="
-                                    font-family:
-                                      Lucida Grande,
-                                      monospace;
                                     color: white;
                                     background-color: #431782;
                                     font-size: 17px;
@@ -622,7 +620,7 @@
                               </v-col>
                             </v-row>
                           </v-card>
-                        </v-slide-item>
+                        </v-slide-group-item>
                       </v-slide-group>
                       <v-btn
                         ref="hiddenButton"
@@ -643,7 +641,7 @@
               </v-row>
               <v-row>
                 <v-col cols="5" class="estimator-label" style="padding-bottom: 0px; padding-top: 16px">
-                  <div style="color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px">
+                  <div style="color: #7b7c7e; font-weight: 600; font-size: 16px">
                     <span style="color: #313131"> Approved full-time parent fee before fee reduction applied </span>
                   </div>
                 </v-col>
@@ -691,7 +689,7 @@
               </v-row>
               <v-row>
                 <v-col cols="5" class="estimator-label" style="padding-bottom: 0px; padding-top: 16px">
-                  <div style="color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px">
+                  <div style="color: #7b7c7e; font-weight: 600; font-size: 16px">
                     <span v-if="child.careSchedule == 'Full Time'" style="color: #313131">
                       Actual parent fee before reduction applied (Optional)
                     </span>
@@ -749,15 +747,7 @@
                 <v-row>
                   <v-col cols="12" class="text-center pt-0">
                     <v-btn
-                      style="
-                        color: white;
-                        font-family: BCSans;
-                        font-weight: 600;
-                        font-family: BCSans;
-                        font-size: 16px;
-                        padding-left: 60px;
-                        padding-right: 60px;
-                      "
+                      style="color: white; font-weight: 600; font-size: 16px; padding-left: 60px; padding-right: 60px"
                       class="ma-2"
                       color="#0483AF"
                       @click="estimateTheBenefit"
@@ -775,7 +765,6 @@
                   color: white;
                   font-style: normal;
                   font-weight: 700;
-                  font-family: BCSans;
                   font-size: 20px;
                   padding-top: 8px;
                   padding-bottom: 8px;
@@ -810,15 +799,7 @@
                       </v-tooltip>
                     </v-col>
                     <v-col cols="11" class="px-0">
-                      <div
-                        style="
-                          margin-left: -20px;
-                          color: #313131;
-                          font-family: BCSans;
-                          font-weight: 500;
-                          font-size: 16px;
-                        "
-                      >
+                      <div style="margin-left: -20px; color: #313131; font-weight: 500; font-size: 16px">
                         Based on the information you have provided, you may be eligible for the following ChildCareBC
                         fee reduction:
                       </div>
@@ -854,7 +835,7 @@
                     <div v-for="result in results" :key="result.number">
                       <v-row class="py-3 mx-0">
                         <v-col cols="2" class="pr-0" style="padding-bottom: 2px; padding-top: 2px">
-                          <div style="padding-left: 24px; font-family: BCSans; font-weight: 500; font-size: 16px">
+                          <div style="padding-left: 24px; font-weight: 500; font-size: 16px">
                             {{ result.number }}
                           </div>
                         </v-col>
@@ -862,13 +843,7 @@
                           <div class="d-flex">
                             <div
                               :id="`reduction-amt-${String(result.number)}`"
-                              style="
-                                padding-left: 12px;
-                                color: #431782;
-                                font-family: BCSans;
-                                font-weight: bold;
-                                font-size: 15px;
-                              "
+                              style="padding-left: 12px; color: #431782; font-weight: bold; font-size: 15px"
                             >
                               {{
                                 result.feeFrequency == 'Daily'
@@ -889,13 +864,7 @@
                           <div class="d-flex">
                             <div
                               :id="`parent-fee-amt-${String(result.number)}`"
-                              style="
-                                padding-left: 12px;
-                                color: #0483af;
-                                font-family: BCSans;
-                                font-weight: bold;
-                                font-size: 15px;
-                              "
+                              style="padding-left: 12px; color: #0483af; font-weight: bold; font-size: 15px"
                             >
                               {{
                                 result.feeFrequency == 'Daily'
@@ -1212,7 +1181,6 @@ export default {
       this.updateNumberOfChildSubForms();
       this.showEstimatorResults = false;
       this.results = [];
-      this.$refs.form.resetErrorBag(); // necessary to remove validation errors after the field values are removed
       this.$refs.form.resetValidation();
     },
     validateParentFee(child, v) {
@@ -1704,12 +1672,10 @@ span.banner-title {
   left: 45px;
   color: white;
   font-size: 24px;
-  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 .v-input,
 .v-select-list {
   font-size: 16px !important;
-  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 div.v-select__selection.v-select__selection--comma {
   line-height: 20px !important;
@@ -1721,7 +1687,6 @@ div.v-select__selection.v-select__selection--comma {
   padding-left: 34px;
   padding-top: 20px;
   color: #7b7c7e;
-  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
   font-weight: 600;
   font-size: 16px;
   text-align: left;
@@ -1730,7 +1695,6 @@ div.v-select__selection.v-select__selection--comma {
   font-size: 14px !important;
   color: white;
   font-weight: 600;
-  font-family: 'BCSans', Verdana, Arial, sans-serif !important;
 }
 .v-list-item-title {
   font-size: 14px !important;
@@ -1757,7 +1721,6 @@ div.v-select__selection.v-select__selection--comma {
   color: white;
   font-style: normal;
   font-weight: 700;
-  font-family: BCSans;
   font-size: 16px;
   background-color: #431782;
   word-break: normal;
