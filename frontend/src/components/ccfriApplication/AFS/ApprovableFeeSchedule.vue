@@ -85,7 +85,11 @@
                   </div>
                 </v-radio-group>
               </v-card>
-              <AppDocumentUpload v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS" />
+              <AppDocumentUpload
+                v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS"
+                title="Upload Supporting Documents (for example receipts, quotes, invoices and/or budget/finance documents here)."
+                class="mt-8"
+              />
             </v-container>
           </v-skeleton-loader>
         </v-card>

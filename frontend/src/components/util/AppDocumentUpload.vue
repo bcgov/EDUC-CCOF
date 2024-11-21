@@ -1,28 +1,21 @@
 <template>
-  <v-container fluid class="pa-0">
-    <v-form ref="form" v-model="isValidForm">
-      <v-row>
-        <v-col v-if="documentLabel || documentType" cols="12" sm="7" class="pb-0">
-          <AppLabel>{{ documentLabel ?? documentType }}</AppLabel>
-        </v-col>
-        <v-col
-          cols="12"
-          :sm="documentType ? '5' : '12'"
-          :class="documentType ? 'd-flex flex-column align-end pr-4' : ''"
-        >
-          <div v-if="!documentType">{{ DOCUMENTS_REQUIREMENT_MESSAGE }}</div>
-          <AppButton
-            v-if="showAddFileButton"
-            id="add-new-file"
-            :disabled="disabled"
-            :primary="false"
-            size="large"
-            class="add-file-button"
-            @click="addFile"
-            >Add File</AppButton
-          >
-        </v-col>
-      </v-row>
+  <v-form ref="form" v-model="isValidForm">
+    <div class="mb-2">
+      <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
+      <span> (Required)</span>
+    </div>
+    <div class="mb-4">{{ DOCUMENTS_REQUIREMENT_MESSAGE }}</div>
+    <v-card elevation="2" class="pa-4 my-4">
+      <AppButton
+        v-if="showAddFileButton"
+        id="add-new-file"
+        :disabled="disabled"
+        :primary="false"
+        size="large"
+        class="add-file-button"
+        @click="addFile"
+        >Add File</AppButton
+      >
       <div v-if="documents.length > 0" class="mt-6">
         <v-row v-for="item in documents" :key="item.id" no-gutters>
           <v-col cols="12" md="4" class="pr-4">
@@ -53,7 +46,7 @@
         </v-row>
       </div>
       <div v-if="uploadedDocuments.length > 0" class="mt-6 mx-4 mx-md-8 mx-lg-12">
-        <AppLabel v-if="!documentType">Uploaded Documents</AppLabel>
+        <h3 v-if="!documentType">Uploaded Documents</h3>
         <v-data-table
           :headers="headersUploadedDocuments"
           :items="uploadedDocuments"
@@ -79,19 +72,22 @@
           </v-col>
         </v-row>
       </div>
-    </v-form>
-  </v-container>
+    </v-card>
+  </v-form>
 </template>
 <script>
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import { humanFileSize, getFileExtensionWithDot } from '@/utils/file';
 import { uuid } from 'vue-uuid';
 import { DOCUMENTS_REQUIREMENT_MESSAGE } from '@/utils/constants';
 
 export default {
-  components: { AppButton, AppLabel },
+  components: { AppButton },
   props: {
+    title: {
+      type: String,
+      default: undefined,
+    },
     entityName: {
       type: String,
       required: false,
