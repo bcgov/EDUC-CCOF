@@ -168,7 +168,7 @@
                 <span style="color: #313131"> Type of care</span>
               </v-col>
               <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                <v-tooltip location="top" color="#68449A">
+                <v-tooltip location="top" content-class="tooltip-text">
                   <template #activator="{ props }">
                     <v-card class="tooltip" v-bind="props">
                       <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -217,7 +217,7 @@
                   <span style="color: #313131"> Child's age category </span>
                 </v-col>
                 <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -253,7 +253,7 @@
                   <span style="color: #313131"> Parent fee frequency </span>
                 </v-col>
                 <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -288,7 +288,7 @@
                   <span style="color: #313131"> Weekly care schedule </span>
                 </v-col>
                 <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -308,9 +308,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Monday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[0]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[0]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -326,9 +326,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Tuesday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[1]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[1]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -344,9 +344,9 @@
                         <v-spacer />
                       </v-toolbar>
 
-                      <v-list v-model:selected="child.selectedCareType[2]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[2]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -361,9 +361,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Thursday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[3]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[3]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
 
@@ -379,9 +379,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Friday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[4]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[4]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -395,9 +395,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Saturday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[5]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[5]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -412,9 +412,9 @@
                         <v-toolbar-title class="ms-0 d-flex justify-center">Sunday</v-toolbar-title>
                         <v-spacer />
                       </v-toolbar>
-                      <v-list v-model:selected="child.selectedCareType[6]" active-class="purple--text">
+                      <v-list v-model:selected="child.selectedCareType[6]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
-                          <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
+                          <v-list-item :value="index" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
                           </v-list-item>
                           <v-divider v-if="index < getCareTypes(child.number).length - 1" :key="index" />
@@ -463,7 +463,7 @@
                   <span style="color: #313131"> Select a month (Optional) </span>
                 </v-col>
                 <v-col cols="7" md="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -508,16 +508,16 @@
                           </span>
                         </template>
                         <template #prev>
-                          <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size: 13px">
-                            <v-icon color="#431782" size="x-large">mdi-chevron-left</v-icon>
-                            <span style="color: #313131"> {{ child.feeFrequency }}&nbsp; </span>
+                          <span class="estimator-label fill-height pt-1 pr-7" align="right">
+                            <v-icon color="#431782" size="x-large" class="ml-2">mdi-chevron-left</v-icon>
+                            <span class="fee-frequency-label"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
                         <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
                             :color="isSelected ? '#F3E6F6' : '#FFFFFF'"
-                            class="ma-1 fill-height"
+                            class="ma-1 month-card"
                             :elevation="isSelected ? 4 : 0"
                             height="67"
                             width="70"
@@ -575,17 +575,17 @@
                           </span>
                         </template>
                         <template #prev>
-                          <span class="estimator-label fill-height pt-1 pr-7" align="right" style="font-size: 13px">
-                            <v-icon color="#431782" size="x-large">mdi-chevron-left</v-icon>
-                            <span style="color: #313131"> {{ child.feeFrequency }}&nbsp; </span>
+                          <span class="estimator-label fill-height pt-1 pr-7" align="right">
+                            <v-icon color="#431782" size="x-large" class="ml-2">mdi-chevron-left</v-icon>
+                            <span class="fee-frequency-label"> {{ child.feeFrequency }}&nbsp; </span>
                           </span>
                         </template>
-                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ isSelected, toggle }">
+                        <v-slide-group-item v-for="n in child.items" :key="n.id" v-slot="{ toggle }">
                           <v-card
                             :disabled="n.rate == 0 || n.rate == null || n.rate == 'N/A' ? true : false"
                             color="white"
-                            class="ma-1 fill-height"
-                            :elevation="isSelected ? 0 : 0"
+                            class="ma-1 month-card"
+                            elevation="0"
                             height="67"
                             width="70"
                             @click="toggle(clickForOffSlider(n.id, child.number - 1))"
@@ -646,7 +646,7 @@
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -705,7 +705,7 @@
                   </div>
                 </v-col>
                 <v-col cols="1" style="padding-bottom: 0px; padding-top: 16px; padding-left: 0px">
-                  <v-tooltip location="top" color="#68449A">
+                  <v-tooltip location="top" content-class="tooltip-text">
                     <template #activator="{ props }">
                       <v-card class="tooltip" v-bind="props">
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -778,7 +778,7 @@
                 <v-col cols="10">
                   <v-row>
                     <v-col cols="1" style="padding-bottom: 0px; padding-top: 10px; padding-left: 0px">
-                      <v-tooltip location="top" color="#68449A">
+                      <v-tooltip location="top" content-class="tooltip-text">
                         <template #activator="{ props }">
                           <v-card class="tooltip" v-bind="props">
                             <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
@@ -1660,9 +1660,6 @@ export default {
   text-align: center !important;
   background-color: #7b2ee5 !important;
 }
-.v-tooltip__content {
-  opacity: 0.95 !important;
-}
 .bounce-enter-active {
   animation: bounce-in 0.2s;
 }
@@ -1742,11 +1739,8 @@ div.v-select__selection.v-select__selection--comma {
   overflow-wrap: inherit;
   overflow: hidden;
 }
-div.ma-1.fill-height.v-card.v-card--link.v-sheet.theme--light {
+.month-card {
   border: 1px solid grey !important;
-}
-div.ma-1.fill-height.v-card.v-card--disabled.v-sheet.theme--light {
-  border: 1px solid #b8babd !important;
 }
 .hidden-btn:focus::before {
   opacity: 0 !important;
@@ -1774,5 +1768,19 @@ div.v-slide-group__prev.v-slide-group__prev--disabled span i {
 div.v-slide-group__next.v-slide-group__next--disabled span i {
   caret-color: #7b7c7e !important;
   color: #7b7c7e !important;
+}
+
+.purple-text {
+  color: rgb(156, 39, 176);
+}
+
+.tooltip-text {
+  color: white !important;
+  background-color: #68449a !important;
+}
+
+.fee-frequency-label {
+  color: #313131;
+  font-size: 13px;
 }
 </style>
