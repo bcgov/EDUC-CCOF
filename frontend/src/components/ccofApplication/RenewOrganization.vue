@@ -104,13 +104,18 @@
                 <v-card-text>
                   Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
                   Confirmation Form.<br /><br />
-                  Update your banking information:
-                  <br /><a
-                    href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
+                  Update your banking information by submitting the
+                  <a
+                    href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf" target="_blank"
                   >
-                    https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf</a
-                  >
-                  <br /><br />For any questions, call the program at 1-888-338-6622 (option 2)
+                    Direct Deposit Application
+                  </a>
+                  by email to <a href="mailto:ccdda@gov.bc.ca" target="_blank">ccdda@gov.bc.ca.</a><br />You can also
+                  submit the form by mail to:<br />
+                  Child Care Operating Funding<br />
+                  PO Box 9965 Stn Prov Govt<br />
+                  Victoria BC V8W 9R4<br /><br />
+                  For any questions, call the program at 1-888-338-6622 (option 2)
                 </v-card-text>
               </v-card>
             </v-row>

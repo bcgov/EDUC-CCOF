@@ -48,7 +48,7 @@
             :disabled="isReadOnly"
             @click="toggleAll()"
           >
-            Opt in All Facilities
+            Opt-In All Facilities
           </v-btn>
           <div>
             <div v-for="(_facility, index) in uiFacilities" :key="index">

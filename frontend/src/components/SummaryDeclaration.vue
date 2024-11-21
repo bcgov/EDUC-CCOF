@@ -329,16 +329,16 @@
                 </ol>
                 <v-row>
                   <v-col cols="1" />
-                  <v-col cols="1"> i. </v-col>
-                  <v-col cols="10">
+                  <v-col cols="11">
+                    <span>i.</span>
                     permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
                     (ECEs); and
                   </v-col>
                 </v-row>
                 <v-row>
                   <v-col cols="1" />
-                  <v-col cols="1"> ii. </v-col>
-                  <v-col cols="10">
+                  <v-col cols="11">
+                    <span>ii.</span>
                     able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>

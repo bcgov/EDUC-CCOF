@@ -15,7 +15,7 @@
       class="mx-0 justify-end"
       @click="toggleAll()"
     >
-      Opt in All Facilities
+      Opt-In All Facilities
     </v-btn>
     <LargeButtonContainer>
       <v-form ref="form" v-model="isValidForm">
@@ -49,7 +49,7 @@
                 </p>
                 <strong>
                   <p class="text--primary">
-                    Opt In:
+                    Opt-In:
                     {{
                       ccfriOptInStatus == 'IN'
                         ? 'IN'
@@ -78,8 +78,8 @@
               <v-col v-else cols="" class="d-flex align-center col-12 col-md-5">
                 <v-row>
                   <v-radio-group v-model="ccfriOptInOrOut[index]" class="mx-12" :rules="rules">
-                    <v-radio label="Opt In" value="1" />
-                    <v-radio label="Opt Out" value="0" />
+                    <v-radio label="Opt-In" value="1" />
+                    <v-radio label="Opt-Out" value="0" />
                   </v-radio-group>
                 </v-row>
               </v-col>
@@ -312,7 +312,7 @@ export default {
           this.refreshNavBarList();
           this.forceNavBarRefresh();
           if (withAlert) {
-            this.setSuccessAlert('Success! CCFRI Opt In status has been saved.');
+            this.setSuccessAlert('Success! CCFRI Opt-In status has been saved.');
           }
         } catch (error) {
           console.info(error);
