@@ -309,7 +309,6 @@
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[0]" active-class="purple--text">
-                        {{ console.log(child.selectedCareType) }}
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
                           <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
@@ -328,7 +327,6 @@
                         <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[1]" active-class="purple--text">
-                        {{ console.log(child.selectedCareType) }}
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
                           <v-list-item :value="item.type" :disabled="isScheduleDisabled(child, index)">
                             <v-list-item-title>{{ item.type }}</v-list-item-title>
@@ -1354,7 +1352,7 @@ export default {
           let actualParentFeePerChild;
           let daysOfCare; //Number of days of care per month.
 
-          let partTimeNumberOfDays = this.children[i].selectedCareType.filter((el) => el == '4 hours or less').length;
+          let partTimeNumberOfDays = this.children[i].selectedCareType.filter((el) => el == 1).length;
           let fullTimeNumberOfDays = this.children[i].selectedCareType.filter((el) => el == 2).length;
 
           // multiply by 4 since there are decided on 4 weeks / month
