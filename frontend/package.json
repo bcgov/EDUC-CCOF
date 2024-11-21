@@ -44,6 +44,7 @@
     "vue-pdf-app": "^2.1.0",
     "vue-quick-chat": "^1.2.8",
     "vue-router": "^4.4.3",
+    "vue-uuid": "^3.0.0",
     "vuetify": "^3.7.1",
     "vuex-map-fields": "^1.4.1"
   },

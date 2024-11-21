@@ -52,7 +52,7 @@
               <li>
                 <strong class="text-decoration-underline">Upload Supporting Documents</strong>: By selecting "I want to
                 upload supporting documents", you confirm that you decline the approvable fee schedule and have new
-                information to submit for review, This will require additional processing time for your application.
+                information to submit for review. This will require additional processing time for your application.
               </li>
               <li>
                 <strong class="text-decoration-underline">Decline the fee schedule</strong>: By selecting "I decline",
@@ -74,7 +74,8 @@
                 <v-radio-group v-model="afs.afsStatus" :rules="rules.required" :disabled="isReadOnly" color="primary">
                   <v-radio label="I accept" :value="AFS_STATUSES.ACCEPT" />
                   <div v-if="afs?.afsStatus === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
-                    After submission, please wait for a notification confirming your approval to participate in CCFRI.
+                    After submission please wait to receive notification confirming your approval to participate in
+                    CCFRI.
                   </div>
                   <v-radio label="I want to upload supporting documents" :value="AFS_STATUSES.UPLOAD_DOCUMENTS" />
                   <v-radio label="I decline" :value="AFS_STATUSES.DECLINE" />
@@ -84,6 +85,7 @@
                   </div>
                 </v-radio-group>
               </v-card>
+              <AppDocumentUpload v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS" />
             </v-container>
           </v-skeleton-loader>
         </v-card>
@@ -109,6 +111,7 @@ import { isEmpty } from 'lodash';
 
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -123,7 +126,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'ApprovableFeeSchedule',
-  components: { ApprovableParentFeesCards, FacilityHeader, NavButton },
+  components: { AppDocumentUpload, ApprovableParentFeesCards, FacilityHeader, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
@@ -142,7 +145,7 @@ export default {
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     currentFacility() {
-      return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
     isReadOnly() {

@@ -293,3 +293,6 @@ export const PARENT_FEE_FREQUENCIES = Object.freeze({
   WEEKLY: 100000001,
   DAILY: 100000002,
 });
+
+export const DOCUMENTS_REQUIREMENT_MESSAGE =
+  'The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.';
