@@ -524,11 +524,18 @@
                             @click="toggle(focusAwayFromOnSlider(child.number - 1))"
                           >
                             <v-row style="" justify="center">
-                              <v-col align="center" style="padding-top: 4px; padding-bottom: 5px; margin-top: -2px">
+                              <v-col
+                                align="center"
+                                style="
+                                  padding-top: 4px;
+                                  padding-bottom: 5px;
+                                  margin-top: -2px;
+                                  background-color: #431782;
+                                "
+                              >
                                 <span
                                   style="
                                     color: white;
-                                    background-color: #431782;
                                     font-size: 17px;
                                     font-weight: bold;
                                     padding-bottom: 6px;
@@ -591,11 +598,18 @@
                             @click="toggle(clickForOffSlider(n.id, child.number - 1))"
                           >
                             <v-row style="" justify="center">
-                              <v-col align="center" style="padding-top: 3px; padding-bottom: 5px; margin-top: -2px">
+                              <v-col
+                                align="center"
+                                style="
+                                  padding-top: 3px;
+                                  padding-bottom: 5px;
+                                  margin-top: -2px;
+                                  background-color: #431782;
+                                "
+                              >
                                 <span
                                   style="
                                     color: white;
-                                    background-color: #431782;
                                     font-size: 17px;
                                     font-weight: bold;
                                     padding-bottom: 6px;
