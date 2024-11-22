@@ -302,11 +302,9 @@
               <v-row>
                 <v-col class="d-flex wrap justify-center" style="padding-top: 0px; padding-bottom: 16px">
                   <div class="d-flex wrap" style="align-content: center; flex-wrap: wrap">
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Monday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[0]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -318,13 +316,9 @@
                       </v-list>
                     </v-card>
 
-                    <v-spacer />
-
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Tuesday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[1]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -335,13 +329,10 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
 
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Wednesday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
 
                       <v-list v-model:selected="child.selectedCareType[2]" active-class="purple-text">
@@ -353,13 +344,10 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
 
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Thursday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[3]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -371,13 +359,10 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
 
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Friday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[4]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -388,12 +373,10 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
-                    <v-card min-width="154px" class="mb-1">
+
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Saturday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[5]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -404,13 +387,10 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
 
-                    <v-card min-width="154px" class="mb-1">
+                    <v-card min-width="154px" class="mb-1 ml-1">
                       <v-toolbar color="#431782">
-                        <v-spacer />
                         <v-toolbar-title class="ms-0 d-flex justify-center">Sunday</v-toolbar-title>
-                        <v-spacer />
                       </v-toolbar>
                       <v-list v-model:selected="child.selectedCareType[6]" active-class="purple-text">
                         <div v-for="(item, index) in getCareTypes(child.number)" :key="item.type">
@@ -421,12 +401,11 @@
                         </div>
                       </v-list>
                     </v-card>
-                    <v-spacer />
                   </div>
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="8" class="text-left verticalAlignFlexbox">
+                <v-col cols="6" sm="7" md="8" lg="9" class="text-left verticalAlignFlexbox">
                   <div
                     v-if="child.parentFeeFrequency == 'Daily' && child.childAgeCategory != 'Preschool'"
                     style="padding-left: 30px"
@@ -435,17 +414,10 @@
                     enter them separately to receive an estimate.
                   </div>
                 </v-col>
-                <v-col cols="4" class="text-right">
+                <v-col cols="6" sm="5" md="4" lg="3" class="text-right">
                   <v-btn
-                    style="
-                      color: white;
-                      font-weight: 600;
-                      font-size: 16px;
-                      padding-left: 40px;
-                      padding-right: 40px;
-                      margin-right: 40px !important;
-                    "
-                    class="ma-2"
+                    style="font-weight: 600; font-size: 16px"
+                    class="ma-2 px-8 mr-8"
                     color="#0483AF"
                     @click="clearSchedule(child)"
                   >
