@@ -16,17 +16,17 @@
 
       <div class="px-2 my-10">
         <p>
-          As outlined in the <a :href="fundingUrl" target="_blank">Funding Guidelines</a>
-          , applications by New, New-to-CCFRI, and Modified Facilities will be assessed based on whether the facility’s
-          parent fees are comparable to others in their region. To determine if this policy applies to your facility,
-          please provide more information.
+          As outlined in the <a :href="fundingUrl" target="_blank">Funding Guidelines</a>, applications by New,
+          New-to-CCFRI, and Modified Facilities will be assessed based on whether the facility’s parent fees are
+          comparable to others in their region. To determine if this policy applies to your facility, please provide
+          more information.
         </p>
       </div>
       <v-card elevation="6" class="pa-0 my-10 rounded-lg col-12" min-height="230">
         <v-card-text class="pa-0">
           <v-card class="pa-4 pa-md-4 ma-0 backG rounded-lg rounded-b-0 elevation-0">
             <span class="text-h5 px-2 px-md-8 font-weight-bold blueText">
-              New, New-to CCFRI, and Modified Facilities Information
+              New, New-to-CCFRI, and Modified Facilities Information
             </span>
           </v-card>
           <div class="px-md-12 px-7 py-10">

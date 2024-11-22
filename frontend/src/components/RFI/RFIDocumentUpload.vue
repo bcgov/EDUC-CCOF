@@ -6,7 +6,7 @@
       </div>
       <div class="px-md-12 px-7">
         <v-row class="px-6 text-body-1">
-          Upload Supporting Documents (for example receipts, quotes, invoices and/or budget/finance documents here:)
+          Upload supporting documents (for example, receipts, quotes, invoices, and/or budget/finance documents)
         </v-row>
         <v-row class="pa-6 pt-2 text-body-2">
           The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,

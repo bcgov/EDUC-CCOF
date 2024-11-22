@@ -376,7 +376,7 @@
       >
         <div class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
-            <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care Staff Wages Increases</p>
+            <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care staff Wages Increases</p>
           </div>
 
           <v-banner two-line class="ma-4" color="blue-lighten-4" elevation="5">
@@ -389,8 +389,9 @@
           <br />
 
           <p class="text-h6 text--primary px-5 py-0 my-0">
-            This exception applies to wage increases for Direct Care Staff employed at the facility on a full-time,
-            part-time, or casual basis, providing direct care to children for 50% or more of their working time.
+            This exception applies to wage increases for Direct Care staff employed at the facility on a full-time,
+            part-time or casual basis. Direct Care staff are staff who spend at least 50% of their working time directly
+            responsible for and engaged in the care and supervision of children at the Facility.
           </p>
 
           <br />
@@ -403,7 +404,7 @@
               :rules="rules.required"
               required
               inline
-              label="Is your fee increase due to a wage increase for Direct Care Staff?"
+              label="Is your fee increase due to a wage increase for Direct Care staff?"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
@@ -434,7 +435,7 @@
                 :rules="rules.required"
                 required
                 inline
-                label="Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?"
+                label="Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -449,7 +450,7 @@
                 :rules="rules.required"
                 required
                 inline
-                label="Has the facility lost or been unable to hire Direct Care Staff due to current wages?"
+                label="Has the facility been unable to hire and/or retain Direct Care staff due to wages?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -476,7 +477,7 @@
         <div v-if="model.feeIncreaseDueToWage == 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
-              <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care Staff Wages Increases</p>
+              <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care staff Wages Increases</p>
             </div>
             <br />
 
@@ -560,7 +561,7 @@
                     v-model="obj.staffRole"
                     :disabled="isReadOnly"
                     class=""
-                    label="Direct Care Staff Role "
+                    label="Direct Care staff Role "
                     variant="outlined"
                     clearable
                     :rules="rules.required"
@@ -660,7 +661,7 @@
               />
 
               <br />
-              <label for="wage1"> How many Direct Care Staff have left your facility due to wages? </label>
+              <label for="wage1"> How many Direct Care staff have left your facility due to wages? </label>
               <v-textarea
                 id="wage1"
                 v-model="model.textbox2"
@@ -756,7 +757,7 @@
               :rules="rules.required"
               required
               inline
-              label="Is your fee increase due to expanding or extending the hours of child care service available for all
+              label="Is your fee increase due to expenses related to expanding or extending the hours of child care service available for all
               enrolled children?"
             >
               <v-radio label="Yes" :value="1" />
@@ -946,7 +947,7 @@
         <div class="pa-0">
           <div class="pa-2 pa-md-4 ma-0 backG">
             <p class="text-h5 text--primary px-5 py-0 my-0">
-              Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language
+              Priority Service Expansion: Increasing Connection to Indigenous Community, Culture, and/or Language
             </p>
           </div>
           <br />
@@ -973,7 +974,9 @@
               >, this may include:
             </p>
             <ul>
-              <li>participation of an Elder, culture/language teacher, and/or family in the child care program;</li>
+              <li>
+                participation of an Elder, culture/language teacher, and/or family members in the child care program;
+              </li>
               <li>children’s participation in community, language, and/or cultural events or activities; or</li>
               <li>language or culture resources for use in the child care program.</li>
             </ul>
@@ -1140,9 +1143,8 @@
             <p>Fee increases may be considered under this exception if:</p>
             <ul>
               <li>
-                the facility has historically provided care to underserved populations including Indigenous or
-                low-income families at significantly below the regional median range of fees for their area or at no
-                fee;
+                the facility has historically provided care to underserved populations - including Indigenous or
+                low-income families - at significantly below the regional median fees for their area or at no fee;
               </li>
               <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
               <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
@@ -1168,7 +1170,7 @@
                 <div class="pa-2 pa-md-4 ma-0">
                   <label for="underservedPop1"
                     >Please describe how the majority of children you provide care for represent an underserved
-                    population (e.g. indigenous children, low-income families?)</label
+                    population (e.g. Indigenous children, low-income families?)</label
                   >
                   <v-textarea
                     id="underservedPop1"
