@@ -192,10 +192,10 @@
           </v-col>
         </v-row>
 
-        <span class="summary-label-bold">Direct Care Staff Wages Increases</span>
+        <span class="summary-label-bold">Direct Care staff Wages Increases</span>
         <v-row no-gutters class="d-flex">
           <v-col class="col-12">
-            <span class="summary-label pt-3">Is your fee increase due to a wage increase for Direct Care Staff?</span>
+            <span class="summary-label pt-3">Is your fee increase due to a wage increase for Direct Care staff?</span>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -232,7 +232,7 @@
 
             <v-col class="py-0 cols-6">
               <span class="summary-label pt-3"
-                >Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the
+                >Is the wage increase part of a collective bargaining agreement for Direct Care staff at the
                 facility?</span
               >
               <v-text-field
@@ -250,7 +250,7 @@
 
             <v-col class="py-0 cols-6">
               <span class="summary-label pt-3"
-                >Has the facility lost or been unable to hire Direct Care Staff due to current wages?</span
+                >Has the facility been unable to hire and/or retain Direct Care staff due to wages?</span
               >
               <v-text-field
                 placeholder="Required"
@@ -354,7 +354,7 @@
             <v-col
               v-for="(label, index) in [
                 'When did your facility\'s challenges with hiring and keeping staff begin?',
-                'How many Direct Care Staff have left your facility due to wages?',
+                'How many Direct Care staff have left your facility due to wages?',
                 'What have you done to try to recruit staff?',
                 'Have you had to adjust your hours/days of operation?',
                 'Is your facility unable to fill spaces due to insufficient staffing?',
@@ -389,8 +389,8 @@
               <v-col class="col-12">
                 <v-row no-gutters class="d-flex">
                   <span class="summary-label pt-3">
-                    Is your fee increase due to expanding or extending the hours of child care service available for all
-                    enrolled children?
+                    Is your fee increase due to expenses related to expanding or extending the hours of child care
+                    service available for all enrolled children?
                   </span>
                   <v-text-field
                     placeholder="Required"
@@ -464,7 +464,7 @@
         </v-row>
 
         <span class="summary-label-bold"
-          >Priority Service Expansion: Increased Connection to Indigenous Community, Culture, and/or Language</span
+          >Priority Service Expansion: Increasing Connection to Indigenous Community, Culture, and/or Language</span
         >
         <v-row no-gutters class="d-flex pt-2">
           <v-col class="col-12">
@@ -603,7 +603,7 @@
         <div v-if="rfiApp?.underservedPop === 1">
           <span class="summary-label">
             Please describe how the majority of children you provide care for represent an underserved population (e.g.,
-            indigenous children, low-income families).
+            Indigenous children, low-income families).
           </span>
           <v-row no-gutters class="d-flex">
             <v-textarea

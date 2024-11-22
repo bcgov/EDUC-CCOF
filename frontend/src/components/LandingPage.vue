@@ -181,11 +181,8 @@
       <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
-            <p class="text-h6">Report changes to your licence or service</p>
-            <p>
-              You must notify the Child Care Operating Funding program within two business days of any change to your
-              facility licence or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
-            </p>
+            <p class="text-h6">Request a change</p>
+            <p>Submit a request to change your Organization, licence, service details, or Parent Fee information.</p>
           </template>
           <template #button>
             <v-row no-gutters>
@@ -196,7 +193,7 @@
               </v-col>
               <v-col class="col-12">
                 <v-btn :class="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
-                  Report a change
+                  Request a change
                 </v-btn>
               </v-col>
             </v-row>

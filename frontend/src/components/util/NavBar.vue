@@ -411,7 +411,7 @@ export default {
     getAddNewCCFRINavigation() {
       let items = [];
       items.push({
-        title: 'Opt in / Opt out',
+        title: 'Opt-In / Opt-Out',
         link: { name: 'change-request-ccfri-home', params: { changeRecGuid: this.$route.params.changeRecGuid } },
         isAccessible: isCCOFGroupComplete, //Change - when newFacilityCCOF is complete
         icon: this.getCheckbox(this.isCCFRIOptInComplete()),
@@ -495,7 +495,7 @@ export default {
     getCCFRINavigation() {
       let items = [];
       items.push({
-        title: 'Opt in / Opt out',
+        title: 'Opt-In / Opt-Out',
         link: { name: 'ccfri-home' },
         isAccessible: this.isRenewal ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isCCFRIOptInComplete()),
