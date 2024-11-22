@@ -707,10 +707,10 @@ export default {
     // All the MTFI will have to be in one of the end state statutes.
     // At least 1 Facility has CCFRI status to be Approved.
     isMtfiEnabled() {
-      let foundCRNotInEndStateStatus = this.allChangeRequests.find(
+      let foundCRNotInEndStateStatus = this.allChangeRequests?.find(
         (el) => el.changeType === 'PARENT_FEE_CHANGE' && !this.endStateStatusesCR.includes(el.externalStatus),
       );
-      let foundFacilityWithApprovedCCFRI = this.userProfileList.find(
+      let foundFacilityWithApprovedCCFRI = this.userProfileList?.find(
         (el) => el.ccfriStatus === 'APPROVED' && isFacilityAvailable(el),
       );
       return !foundCRNotInEndStateStatus && foundFacilityWithApprovedCCFRI;

@@ -188,6 +188,16 @@ export const ECEWE_OPT_IN_TYPES = {
   OPT_OUT: 0,
 };
 
+export const ECEWE_DESCRIBE_ORG_TYPES = {
+  NOT_A_MEMBER_OF_CSSEA: 100000000,
+  MEMBER_OF_CSSEA: 100000001,
+};
+
+export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
+  YES: 1,
+  NO: 0,
+};
+
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
 export const CCFRI_Categories = [

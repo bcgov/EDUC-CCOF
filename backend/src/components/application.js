@@ -293,7 +293,7 @@ async function getECEWEApplication(req, res) {
     const operation =
       'ccof_applications(' +
       req.params.applicationId +
-      ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_ecewe_selecttheapplicablesector,ccof_public_sector_employer,ccof_union_local_agreement_reached,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
+      ')?$select=ccof_ecewe_optin,ccof_ecewe_employeeunion,ccof_ecewe_selecttheapplicablefundingmodel,ccof_describe_your_org,ccof_ecewe_selecttheapplicablesector,ccof_public_sector_employer,ccof_union_local_agreement_reached,ccof_ecewe_confirmation&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode)';
     let eceweApp = await getOperation(operation);
     eceweApp = new MappableObjectForFront(eceweApp, ECEWEApplicationMappings);
     const forFrontFacilities = [];

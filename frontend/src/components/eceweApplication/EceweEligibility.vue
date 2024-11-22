@@ -1,14 +1,13 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container>
-      <div align="center">
+      <div class="text-center">
         <div class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </div>
         <div class="text-h5 my-6">Early Childhood Educator Wage Enhancement (ECE-WE)</div>
         <div class="text-h5 my-6" style="color: #003466">
           {{ userInfo.organizationName }}
-          {{ languageYearLabel }}
         </div>
       </div>
       <v-alert class="col-11 mb-0" variant="outlined" prominent>
@@ -31,13 +30,8 @@
 
       <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody" class="my-2"></v-skeleton-loader>
 
-      <EceweEligibilityQuestions
-        v-else-if="model"
-        :eceweModel="model"
-        :isLoading="isLoading"
-        ref="eligibilityQuestions"
-      />
-      {{ model }} {{ isLoading }}
+      <EceweEligibilityQuestions v-else ref="eligibilityQuestions" :ecewe-model="model" :is-loading="isLoading" />
+
       <NavButton
         class="mt-10"
         :is-next-displayed="true"
@@ -56,6 +50,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
+import { cloneDeep } from 'lodash';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -68,9 +63,9 @@ import {
   PATHS,
   changeUrl,
   pcfUrl,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
+  ECEWE_OPT_IN_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
@@ -91,7 +86,7 @@ export default {
       rules,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
-      isProcessing: false, // flag to UI if screen is saving/processing data or not.
+      isProcessing: false, // flag to UI if screen is saving/processing data or not. We do not hide questions when saving, so we need this flag.
       isValidForm: false,
     };
   },
@@ -100,18 +95,11 @@ export default {
     ...mapState(useEceweAppStore, [
       'isStarted',
       'eceweModel',
-      'loadedFacilities',
       'optinECEWEChangeRequestReadonly',
       'belongsToUnionChangeRequestReadonly',
     ]),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, [
-      'navBarList',
-      'changeRequestId',
-      'previousPath',
-      'isChangeRequest',
-      'userProfileList',
-    ]),
+    ...mapState(useAppStore, ['fundingModelTypeList']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'programYearId',
@@ -121,41 +109,6 @@ export default {
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
-    showApplicableSectorQuestion() {
-      return (
-        (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
-        (this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
-      );
-    },
-    showConfirmationQuestion() {
-      return (
-        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
-          this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
-        (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION &&
-          this.model.belongsToUnion === 1 &&
-          this.model.optInECEWE === 1 &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
-      );
-    },
-    showFundingModelQuestion() {
-      return (
-        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
-        this.model.belongsToUnion === 1 &&
-        this.model.optInECEWE === 1
-      );
-    },
-    showJJEPQuestion() {
-      return (
-        this.model.fundingModel === this.fundingModelTypeList[1].id ||
-        this.model.fundingModel === this.fundingModelTypeList[2].id
-      );
-    },
 
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
@@ -164,16 +117,6 @@ export default {
       } else {
         return eceweAppStore.facilities?.filter((el) => !el.changeRequestId);
       }
-    },
-
-    fundingUrl() {
-      return this.getFundingUrl(this.programYearId);
-    },
-    languageYearLabel() {
-      return this.getLanguageYearLabel;
-    },
-    programYearTypes() {
-      return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     facilities: {
       get() {
@@ -185,6 +128,8 @@ export default {
       },
     },
     enableButtons() {
+      //ccfri-3818 : messaging required to prevent moving forward when an invalid question choice selected.
+      //checkbox status is managed by form validation
       return this.isValidForm && !this.$refs?.eligibilityQuestions?.showCSSEAWarning;
     },
   },
@@ -193,11 +138,11 @@ export default {
       this.isLoading = true;
       this.setFundingModelTypes({ ...this.fundingModelTypeList });
       this.setApplicationId(this.applicationId);
-      let response = await this.loadData();
+      const response = await this.loadData();
       if (response) {
         this.setIsStarted(true);
         this.initECEWEFacilities(this.navBarList);
-        let copyFacilities = JSON.parse(JSON.stringify(this.facilities));
+        const copyFacilities = cloneDeep(this.facilities);
         this.setLoadedFacilities(copyFacilities);
         this.model = { ...this.eceweModel };
         this.isLoading = false;
@@ -227,6 +172,7 @@ export default {
     ...mapActions(useReportChangesStore, ['setCRIsEceweComplete', 'getChangeRequest']),
     ...mapActions(useNavBarStore, ['forceNavBarRefresh']),
     isReadOnly(question) {
+      //TODO - this logic is sketch
       if (this.isChangeRequest) {
         if (this.isEceweUnlocked || !this.changeRequestStatus)
           return (
@@ -253,7 +199,7 @@ export default {
     },
     async next() {
       if (this.isChangeRequest) {
-        if (this.model.optInECEWE === 0) {
+        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
@@ -268,16 +214,8 @@ export default {
     validateForm() {
       this.$refs.isValidForm?.validate();
     },
-    /* Determines if all facilites are currently opted out. */
-    allFacilitiesOptedOut() {
-      for (let facility of this.facilities) {
-        if (facility.optInOrOut === 1 || facility.optInOrOut === null) {
-          return false;
-        }
-      }
-      return true;
-    },
-    /* Questions values have a hierarchy, recalculate values incase values have changed. */
+
+    /* Questions values have a hierarchy, recalculate values incase values have changed. Clear invalid values if user changes selection */
     updateQuestions() {
       if (this.model.optInECEWE === 0) {
         this.model.belongsToUnion = null;
@@ -364,16 +302,14 @@ export default {
         }
         this.forceNavBarRefresh();
 
-        const optOutFacilities =
-          this.model.optInECEWE === 0 &&
-          this.facilities.some((facility) => facility.eceweApplicationId != null && facility.optInOrOut === 1);
-
-        // If funding model is option 1, opt out all facilities and save. OR If opting out of ecewe,
+        // If funding model is option 1, opt out all facilities and save. (2024 and previous ONLY) OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (
-          this.model.optInECEWE === 0 ||
-          this.model.fundingModel === this.fundingModelTypeList[0].id ||
-          optOutFacilities
+          (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT &&
+            this.facilities.some(
+              (facility) => facility.eceweApplicationId != null && facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN,
+            )) ||
+          this.model.fundingModel === this.fundingModelTypeList[0].id
         ) {
           this.optOutFacilities();
         }
