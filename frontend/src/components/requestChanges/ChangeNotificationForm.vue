@@ -10,7 +10,7 @@
           <v-col class="col-lg-7 ">
             <v-row>
               <v-col class="col-lg-12">
-                <a href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/cf1345_cc_operating_program_funding_agreement_change_notification.pdf" target="_blank">
+                <a href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428" target="_blank">
                   <v-btn dark class="blueButton mb-10" x-large>
                     <strong>Download a Change Notification Form</strong>
                   </v-btn>
@@ -70,7 +70,7 @@
             </p>
             <p class="mt-10">
               For more information
-              <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/running-daycare-preschool/child-care-operating-funding" class="text-decoration-underline"> visit the Child Care Operating Funding website</a>
+              <a href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes" class="text-decoration-underline"> visit the Child Care Operating Funding website</a>
             </p>
             <p class="mt-10">
               Toll Free: <a href="tel:+18883386622" class="text-decoration-underline">1 888 338-6622 (Option 2)</a>
