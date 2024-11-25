@@ -11,7 +11,12 @@
         </div>
       </div>
       <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-        <v-row justify="center" class="pb-6">Please select each facility you would like to opt-in to ECE-WE:</v-row>
+        <v-row v-if="showUnionQuestion" justify="center" class="pb-6"
+          >Please select each facility you would like to opt-in to ECE-WE and indicate if they are unionized.</v-row
+        >
+        <v-row v-else justify="center" class="pb-6"
+          >Please select each facility you would like to opt-in to ECE-WE:</v-row
+        >
 
         <v-row justify="center">
           <v-alert class="col-11" variant="outlined" prominent>
@@ -64,25 +69,11 @@
                       <strong>Facility Name: {{ navBarList[index].facilityName }}</strong>
                     </v-col>
                     <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                      <strong> Status: Opt-{{ uiFacilities[index].optInOrOut == 1 ? 'In' : 'Out' }} </strong>
+                      <strong>
+                        Status: Opt-{{ uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN ? 'In' : 'Out' }}
+                      </strong>
                     </v-col>
-                    <v-col
-                      v-else-if="uiFacilities[index].update"
-                      cols="3"
-                      class="d-flex justify-center align-center pt-0"
-                    >
-                      <v-radio-group
-                        v-model="uiFacilities[index].optInOrOut"
-                        class="pt-0 my-0"
-                        inline
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        @update:modelValue="toggleRadio(index)"
-                      >
-                        <v-radio label="Opt-In" :value="1" />
-                        <v-radio label="Opt-Out" :value="0" />
-                      </v-radio-group>
-                    </v-col>
+
                     <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
                       <v-btn
                         v-if="
@@ -99,6 +90,47 @@
                       </v-btn>
                     </v-col>
                   </v-row>
+                  <template v-if="uiFacilities[index].update">
+                    <v-row class="ml-16">
+                      <v-radio-group
+                        v-model="uiFacilities[index].optInOrOut"
+                        class="justify-space-around"
+                        inline
+                        :disabled="isReadOnly"
+                        :rules="rules.required"
+                        @update:modelValue="toggleRadio(index)"
+                      >
+                        <v-col cols="12" md="6" class="d-flex">
+                          <v-radio label="Opt-In" :value="1" />
+                        </v-col>
+                        <v-col cols="12" md="6" class="d-flex">
+                          <v-radio label="Opt-Out" :value="0" />
+                        </v-col>
+                      </v-radio-group>
+                    </v-row>
+                    <v-row
+                      v-if="uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
+                      class="ml-16"
+                    >
+                      <v-radio-group
+                        v-model="uiFacilities[index].facilityUnionStatus"
+                        class=""
+                        inline
+                        :disabled="isReadOnly"
+                        :rules="rules.required"
+                        @update:modelValue="toggleRadio(index)"
+                      >
+                        TODO - UPDATE THIS VALUE AFTER CRM CONVO
+                        <v-col cols="12" md="6" class="d-flex">
+                          <v-radio label="Unionized" :value="1" />
+                        </v-col>
+                        <v-col cols="12" md="6" class="d-flex">
+                          <v-radio label="Non-Unionized" :value="0" />
+                        </v-col>
+                      </v-radio-group>
+                    </v-row>
+                  </template>
+
                   <v-row>
                     <v-col cols="12">
                       <strong>Licence Number: {{ navBarList[index].licenseNumber }}</strong>
@@ -137,7 +169,14 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  changeUrl,
+  pcfUrl,
+  ORGANIZATION_PROVIDER_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ECEWE_OPT_IN_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import rules from '@/utils/rules.js';
@@ -162,7 +201,7 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel', 'facilities']),
-    ...mapState(useAppStore, ['fundingModelTypeList']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, [
       'navBarList',
       'userProfileList',
@@ -203,6 +242,9 @@ export default {
     isFamilyFacilityOptIn() {
       return this.uiFacilities.every((fac) => fac.optInOrOut);
     },
+    showUnionQuestion() {
+      return this.model?.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+    },
   },
   async mounted() {
     this.setFundingModelTypes({ ...this.fundingModelTypeList });
@@ -216,6 +258,7 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [

@@ -66,6 +66,8 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
   ECEWE_OPT_IN_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ECEWE_DESCRIBE_ORG_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
@@ -98,7 +100,7 @@ export default {
       'optinECEWEChangeRequestReadonly',
       'belongsToUnionChangeRequestReadonly',
     ]),
-    ...mapState(useAppStore, ['fundingModelTypeList']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
@@ -152,6 +154,7 @@ export default {
       this.isLoading = false;
     }
   },
+
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
@@ -215,23 +218,43 @@ export default {
       this.$refs.isValidForm?.validate();
     },
 
-    /* Questions values have a hierarchy, recalculate values incase values have changed. Clear invalid values if user changes selection */
+    /* Clear values for unanswered questions, in case user changes selection after save */
     updateQuestions() {
-      if (this.model.optInECEWE === 0) {
-        this.model.belongsToUnion = null;
-        this.model.fundingModel = null;
-        this.model.confirmation = null;
-      } else if (this.model.belongsToUnion === 0 || this.model.belongsToUnion === null) {
-        this.model.fundingModel = null;
-        this.model.confirmation = null;
-      } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
-        this.model.fundingModel = null;
-      } else if (
-        this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
-        this.model.fundingModel === this.fundingModelTypeList[0].id
-      ) {
-        this.model.confirmation = null;
+      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+          this.resetModel([
+            'fundingModel',
+            'confirmation',
+            'publicSector',
+            'applicableSector',
+            'describeOrgCSSEA',
+            'isUnionAgreementReached',
+          ]);
+        } else if (this.model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
+          this.resetModel(['fundingModel', 'isUnionAgreementReached']);
+        } else if (this.model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
+          this.resetModel(['applicableSector', 'isUnionAgreementReached']);
+        }
+      } else {
+        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+          this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation']);
+        } else if (!this.model.belongsToUnion) {
+          this.resetModel(['fundingModel', 'confirmation']);
+        } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
+          this.resetModel(['fundingModel']);
+        } else if (
+          this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
+          this.model.fundingModel === this.fundingModelTypeList[0].id
+        ) {
+          this.resetModel(['confirmation']);
+        }
       }
+    },
+
+    resetModel(fields) {
+      fields.forEach((field) => {
+        this.model[field] = null;
+      });
     },
     async loadData() {
       if (
@@ -309,7 +332,8 @@ export default {
             this.facilities.some(
               (facility) => facility.eceweApplicationId != null && facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN,
             )) ||
-          this.model.fundingModel === this.fundingModelTypeList[0].id
+          (this.model.fundingModel === this.fundingModelTypeList[0].id &&
+            this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26)
         ) {
           this.optOutFacilities();
         }

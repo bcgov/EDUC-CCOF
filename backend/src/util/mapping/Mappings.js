@@ -252,6 +252,7 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+  { back: 'ccof_facilityunionstatus', front: 'facilityUnionStatus' },
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 

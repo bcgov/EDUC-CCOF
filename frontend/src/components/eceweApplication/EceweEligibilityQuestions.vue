@@ -25,8 +25,7 @@
     <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
 
       <!-- ccfri 3819 new order and re-wording of all ece-we questions -->
-      <template v-if="languageYearLabel === programYearTypes.FY2025_26">
-        <template v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN">
+      <template v-if="languageYearLabel === programYearTypes.FY2025_26 && model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN">
           <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
               <v-row class="justify-left">
@@ -97,6 +96,7 @@
 
                       </div>
                     </v-radio-group>
+
                   </v-col>
                 </v-row>
                 <div v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
@@ -127,7 +127,56 @@
               </v-row>
             </v-container>
           </v-card>
-        </template>
+
+          <v-card v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+            <v-container>
+              <v-row>
+                <v-col align-self="start">
+                  <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
+                    <template #label>
+                      <div class="radio-label text-left">Select your funding model:</div>
+                    </template>
+                    <div class="flex-left">
+                      <v-radio
+                        :label="fundingModelTypeList[0].description"
+                        :value="fundingModelTypeList[0].id"
+                        class="pt-2 pr-8"
+                      />
+                      <v-radio
+                        :label="fundingModelTypeList[1].description"
+                        :value="fundingModelTypeList[1].id"
+                        class="pt-1 pr-8"
+                      />
+                      <v-radio
+                        :label="fundingModelTypeList[2].description"
+                        :value="fundingModelTypeList[2].id"
+                        class="pt-1 pr-8"
+                      />
+                    </div>
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+               <div v-if="model.fundingModel">
+                  <v-row class="justify-left">
+                    <AppAlertBanner  type="info" class="ma-2 mb-4 w-100"
+                      >Please Confirm</AppAlertBanner
+                    />
+                  </v-row>
+                  <v-row>
+                    <v-col class="pl-6 d-flex py-0">
+                      <v-checkbox
+                        v-model="model.isUnionAgreementReached"
+                        class="pa-0"
+                        :value="true"
+                        label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
+                        :disabled="isReadOnly()"
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </v-row>
+                </div>
+            </v-container>
+            </v-card>
       </template>
 
       <!-- previous year's ECE-WE question logic below -->
