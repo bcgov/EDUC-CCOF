@@ -231,9 +231,9 @@ export default {
             'isUnionAgreementReached',
           ]);
         } else if (this.model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
-          this.resetModel(['fundingModel', 'isUnionAgreementReached']);
+          this.resetModel(['fundingModel']);
         } else if (this.model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
-          this.resetModel(['applicableSector', 'isUnionAgreementReached']);
+          this.resetModel(['applicableSector']);
         }
       } else {
         if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
