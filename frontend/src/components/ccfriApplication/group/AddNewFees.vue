@@ -19,8 +19,7 @@
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br /><br />
         <strong>Enter the fee before CCFRI is applied. </strong> <br /><br />
         <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
-          <strong>New for 2024-25:</strong> CCFRI regions align with the BCSSA's grouping of school districts into 6
-          regional chapters. Use the
+          CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
           <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a>
           to find your region.</span
         >

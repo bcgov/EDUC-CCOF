@@ -60,7 +60,11 @@
               <p class="text-h5 blueText">Status: Incomplete</p>
               <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <v-btn v-if="isCancelPcfButtonEnabled" theme="dark" class="redButton" @click="openDialog()">
+              <v-btn
+                v-if="isLoadingComplete && isCancelPcfButtonEnabled"
+                class="red-button"
+                @click="toggleCancelApplicationDialog"
+              >
                 Cancel Application
               </v-btn>
             </div>
@@ -177,11 +181,8 @@
       <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
-            <p class="text-h6">Report changes to your licence or service</p>
-            <p>
-              You must notify the Child Care Operating Funding program within two business days of any change to your
-              facility licence or the services outlined in Schedule A of your Child Care Operating Funding Agreement.
-            </p>
+            <p class="text-h6">Request a change</p>
+            <p>Submit a request to change your Organization, licence, service details, or Parent Fee information.</p>
           </template>
           <template #button>
             <v-row no-gutters>
@@ -192,7 +193,7 @@
               </v-col>
               <v-col class="col-12">
                 <v-btn :class="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
-                  Report a change
+                  Request a change
                 </v-btn>
               </v-col>
             </v-row>
@@ -301,34 +302,7 @@
         </v-col>
       </v-row>
     </v-card>
-    <v-dialog v-model="showDeleteDialog" persistent max-width="700px">
-      <v-card>
-        <v-container class="pt-0">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="text-white"> Cancel Application Warning </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <p>
-                If you cancel your application, any information you entered will be deleted. If you create a new
-                application, you will need to re-enter this information.
-              </p>
-              <p class="pt-4">Are you sure you want to cancel your application and delete your information?</p>
-              <v-btn :loading="!isLoadingComplete" theme="dark" color="secondary" class="mr-10" @click="closeDialog()">
-                Back
-              </v-btn>
-              <v-btn :loading="!isLoadingComplete" theme="dark" color="primary" @click="deletePcf()"> Continue </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <CancelApplicationDialog :show="showCancelDialog" max-width="60%" @close="toggleCancelApplicationDialog" />
     <p class="text-center mt-4 font-weight-bold">
       Note: For assistance completing your Program Confirmation Form, contact the program at 1-888-338-6622 (Option 2).
     </p>
@@ -345,6 +319,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
+import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -361,14 +336,14 @@ import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
       input: '',
       PATHS: PATHS,
       results: {},
-      showDeleteDialog: false,
+      showCancelDialog: false,
       ccofNewApplicationText: [
         {
           title: 'CCOF Base Funding',
@@ -629,14 +604,10 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
-    ...mapActions(useApplicationStore, ['deletePcfApplication']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
-    closeDialog() {
-      this.showDeleteDialog = false;
-    },
-    openDialog() {
-      this.showDeleteDialog = true;
+    toggleCancelApplicationDialog() {
+      this.showCancelDialog = !this.showCancelDialog;
     },
     newApplicationIntermediatePage() {
       this.setIsRenewal(false);
@@ -726,16 +697,6 @@ export default {
       }
     },
 
-    async deletePcf() {
-      try {
-        this.isLoadingComplete = false;
-        await this.deletePcfApplication();
-
-        location.reload(); //force a refresh because we just nuked all the data
-      } catch (error) {
-        console.info(error);
-      }
-    },
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
@@ -880,8 +841,9 @@ export default {
 .blueButton {
   background-color: #003366 !important;
 }
-.redButton {
-  background-color: #cc0f0f !important;
+.red-button {
+  background-color: #d8292f;
+  color: white;
 }
 .blueText {
   color: rgb(0, 52, 102) !important;

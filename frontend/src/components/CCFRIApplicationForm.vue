@@ -62,7 +62,7 @@ export default {
   props: {
     currentYear: {
       type: Number,
-      default: 2023,
+      default: 2024,
       required: false,
     },
   },
