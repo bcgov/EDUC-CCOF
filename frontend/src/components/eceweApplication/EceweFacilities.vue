@@ -96,10 +96,10 @@
                         :rules="rules.required"
                       >
                         <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Opt-In" :value="1" />
+                          <v-radio label="Opt-In" :value="ECEWE_OPT_IN_TYPES.OPT_IN" />
                         </v-col>
                         <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Opt-Out" :value="0" />
+                          <v-radio label="Opt-Out" :value="ECEWE_OPT_IN_TYPES.OPT_OUT" />
                         </v-col>
                       </v-radio-group>
                     </v-row>
@@ -124,7 +124,7 @@
                     </v-row>
                   </template>
 
-                  <v-row v-if="showUpdateButton(index)">
+                  <v-row v-if="showUnionQuestion">
                     <v-col cols="12">
                       <strong>
                         {{ uiFacilities[index].facilityUnionStatus === 100000001 ? 'Unionized' : 'Non-Unionized' }}
@@ -221,7 +221,6 @@ export default {
     isNextBtnDisabled() {
       return this.uiFacilities.some((item) => {
         if (this.showUnionQuestion) {
-          console.log(item);
           return item.optInOrOut === null || item.facilityUnionStatus === null;
         }
         return item.optInOrOut === null;
@@ -249,6 +248,7 @@ export default {
       return this.uiFacilities.every((fac) => fac.optInOrOut);
     },
     showUnionQuestion() {
+      console.log(this.model?.fundingModel);
       return this.model?.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
   },
@@ -290,7 +290,6 @@ export default {
     },
     setupUiFacilities() {
       let copyFacilities = cloneDeep(this.facilities);
-      console.log(this.facilities);
       copyFacilities?.forEach((element) => (element.update = element.optInOrOut == null));
       this.uiFacilities = copyFacilities;
       this.setLoadedFacilities([...this.facilities]);
@@ -302,7 +301,7 @@ export default {
     toggleAll() {
       this.uiFacilities.forEach((_fac, index) => {
         this.toggleRadio(index);
-        this.uiFacilities[index].optInOrOut = 1;
+        this.uiFacilities[index].optInOrOut = ECEWE_OPT_IN_TYPES.OPT_IN;
       });
     },
     previous() {

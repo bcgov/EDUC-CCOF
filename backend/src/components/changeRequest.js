@@ -3,7 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, UserProfileApplicationMappings, ECEWEApplicationMappings } = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -47,9 +47,12 @@ async function getChangeActionNewFacilitityDetails(changeActionId) {
     try {
       let operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(
         UserProfileBaseCCFRIMappings,
-      )}),ccof_ecewe($select=${getMappingString(ECEWEApplicationMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
+      )}),ccof_ecewe($select=${getMappingString(UserProfileECEWEMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
       let changeActionDetails = await getOperation(operation);
       let details = changeActionDetails?.value;
+
+      log.info('!!!!!!!!!!');
+      log.info(details);
       let retVal = [];
       details?.forEach((el) => {
         let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();

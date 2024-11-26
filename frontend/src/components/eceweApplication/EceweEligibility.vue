@@ -30,13 +30,19 @@
 
       <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody" class="my-2"></v-skeleton-loader>
 
-      <EceweEligibilityQuestions v-else ref="eligibilityQuestions" :ecewe-model="model" :is-loading="isLoading" />
+      <EceweEligibilityQuestions
+        v-else
+        ref="eligibilityQuestions"
+        :ecewe-model="model"
+        :is-loading="isLoading"
+        :is-read-only="isReadOnly"
+      />
 
       <NavButton
         class="mt-10"
         :is-next-displayed="true"
         :is-save-displayed="true"
-        :is-save-disabled="isReadOnly()"
+        :is-save-disabled="isReadOnly"
         :is-next-disabled="!enableButtons"
         :is-processing="isProcessing"
         @previous="previous"
@@ -94,12 +100,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useEceweAppStore, [
-      'isStarted',
-      'eceweModel',
-      'optinECEWEChangeRequestReadonly',
-      'belongsToUnionChangeRequestReadonly',
-    ]),
+    ...mapState(useEceweAppStore, ['isStarted', 'eceweModel']),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
@@ -110,7 +111,7 @@ export default {
       'applicationId',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked']),
 
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
@@ -133,6 +134,15 @@ export default {
       //ccfri-3818 : messaging required to prevent moving forward when an invalid question choice selected.
       //checkbox status is managed by form validation
       return this.isValidForm && !this.$refs?.eligibilityQuestions?.showCSSEAWarning;
+    },
+    //isEceweUnlocked is for change requests - unlockEcewe is for the core application
+    isReadOnly() {
+      if (this.isEceweUnlocked || this.unlockEcewe) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
     },
   },
   async mounted() {
@@ -174,29 +184,7 @@ export default {
     ...mapActions(useApplicationStore, ['setIsEceweCompleteInMap', 'setIsEceweComplete']),
     ...mapActions(useReportChangesStore, ['setCRIsEceweComplete', 'getChangeRequest']),
     ...mapActions(useNavBarStore, ['forceNavBarRefresh']),
-    isReadOnly(question) {
-      //TODO - this logic is sketch
-      if (this.isChangeRequest) {
-        if (this.isEceweUnlocked || !this.changeRequestStatus)
-          return (
-            (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-            (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
-          );
-        else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-        return (
-          (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-          (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
-        );
-      }
-      if (this.unlockEcewe) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
-    },
+
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -207,7 +195,7 @@ export default {
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
-      } else if (this.model.optInECEWE === 0) {
+      } else if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
         this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       } else {
         this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
@@ -256,6 +244,17 @@ export default {
         this.model[field] = null;
       });
     },
+    /* NOTE: ece-we model and ece-we change request are TWO TOTALLY SEPERATE TABLES.
+      If you happen to need to update the model with new questions - you have to update the intergration in two places:
+      backend / application.js - getECEWEApplication
+      backend / changeRequest.js - getChangeActionNewFacilitityDetails
+
+      you can find CR ECE WE data in CRM by going to the change request - and changing the dropdown from 'information' to 'admin'
+
+      however- the facility level data is on the main application ECE-WE table- NOT on the change action.
+
+      good luck :)
+    */
     async loadData() {
       if (
         this.isStarted &&
@@ -285,18 +284,17 @@ export default {
       //this was modified by JB to try and fix bugs with the checkmarks.
       //instead of running map - I update the facility and nav bar with the opt out status.
       this.navBarList.forEach((facility) => {
-        facility.eceweOptInStatus = 0;
+        facility.eceweOptInStatus = ECEWE_OPT_IN_TYPES.OPT_OUT;
       });
       this.facilities.forEach((facility) => {
-        facility.optInOrOut = 0;
+        facility.optInOrOut = ECEWE_OPT_IN_TYPES.OPT_OUT;
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
-      if (this.isReadOnly()) {
+      if (this.isReadOnly) {
         return;
       }
       this.model = this.$refs.eligibilityQuestions.getFormData();
-      console.log('Form Data:', this.model);
       this.isProcessing = true;
       try {
         this.updateQuestions();

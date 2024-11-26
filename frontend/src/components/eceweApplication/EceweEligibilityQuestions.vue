@@ -4,7 +4,7 @@
       <v-container>
         <v-row class="justify-center">
           <v-col align-self="start">
-            <v-radio-group v-model="model.optInECEWE" :disabled="isReadOnly('optInECEWE')" :rules="rules.required">
+            <v-radio-group v-model="model.optInECEWE" :disabled="isQuestionReadOnly('optInECEWE')" :rules="rules.required">
               <template #label>
                 <span class="radio-label" style="text-align: left"
                   >For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any facility
@@ -30,7 +30,7 @@
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">
                         Are you a public sector employer, as defined in the
@@ -51,7 +51,7 @@
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">Which of the following describes your organization?</div>
                     </template>
@@ -76,7 +76,7 @@
               <template v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
                 <v-row class="justify-left">
                   <v-col align-self="start">
-                    <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
+                    <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
                       <template #label>
                       <div class="radio-label text-left">Please Select</div>
                     </template>
@@ -112,7 +112,7 @@
                         class="pa-0"
                         :value="ECEWE_UNION_AGREEMENT_REACHED"
                         label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-                        :disabled="isReadOnly()"
+                        :disabled="isReadOnly"
                         :rules="rules.required"
                       />
                     </v-col>
@@ -132,7 +132,7 @@
             <v-container>
               <v-row>
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">Select your funding model:</div>
                     </template>
@@ -169,7 +169,7 @@
                         class="pa-0"
                         :value="ECEWE_UNION_AGREEMENT_REACHED"
                         label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-                        :disabled="isReadOnly()"
+                        :disabled="isReadOnly"
                         :rules="rules.required"
                       />
                     </v-col>
@@ -187,7 +187,7 @@
               <v-col align-self="start">
                 <v-radio-group
                   v-model="model.belongsToUnion"
-                  :disabled="isReadOnly('belongsToUnion')"
+                  :disabled="isQuestionReadOnly('belongsToUnion')"
                   :rules="rules.required"
                 >
                   <template #label>
@@ -210,7 +210,7 @@
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.publicSector" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">
                         Are you a public sector employer, as defined in the
@@ -233,7 +233,7 @@
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">Select the applicable sector:</div>
                     </template>
@@ -268,7 +268,7 @@
                     class="pa-0"
                     :value="1"
                     label="I confirm our organization/facilities has reached an agreement with the union to amend the collective agreement(s) in order to implement the ECE Wage Enhancement."
-                    :disabled="isReadOnly()"
+                    :disabled="isReadOnly"
                     :rules="rules.required"
                   />
                 </v-col>
@@ -282,7 +282,7 @@
             <v-container>
               <v-row>
                 <v-col align-self="start">
-                  <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly()" :rules="rules.required">
+                  <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly" :rules="rules.required">
                     <template #label>
                       <div class="radio-label text-left">Select your funding model:</div>
                     </template>
@@ -351,7 +351,7 @@
                       class="pa-0"
                       :value="1"
                       label="I confirm that my organization/facilities pay the Joint Job Evaluation Plan (JJEP) wage rates or, if a lesser amount, a side agreement is being concluded to implement the ECE Wage Enhancement."
-                      :disabled="isReadOnly()"
+                      :disabled="isReadOnly"
                       :rules="rules.required"
                     />
                   </v-col>
@@ -390,6 +390,11 @@ export default {
   components: {AppAlertBanner},
   props: {
     isLoading: {
+      type: Boolean,
+      default: true,
+      required: true,
+    },
+    isReadOnly: {
       type: Boolean,
       default: true,
       required: true,
@@ -474,27 +479,21 @@ export default {
       return this.model;
     },
 
-    isReadOnly(question) {
+    //For change requests - if a facility has previously opted-in or said yes to having a union on their CORE application
+    //they are not allowed to change that response, so question becomes read only.
+    //if not a change request- default to the prop calculated by the parent.
+    isQuestionReadOnly(question) {
       if (this.isChangeRequest) {
-        if (this.isEceweUnlocked || !this.changeRequestStatus)
+        if (this.isEceweUnlocked || !this.changeRequestStatus || this.changeRequestStatus === 'INCOMPLETE') {
           return (
             (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
             (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
           );
-        else if (this.changeRequestStatus !== 'INCOMPLETE') {
+        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
           return true;
         }
-        return (
-          (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-          (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
-        );
       }
-      if (this.unlockEcewe) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
+      return this.isReadOnly
     },
 
   },

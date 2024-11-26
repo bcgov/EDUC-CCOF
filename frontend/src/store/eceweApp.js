@@ -42,9 +42,11 @@ export const useEceweAppStore = defineStore('eceweApp', {
     setFundingModelTypes(fundingModelTypes) {
       this.fundingModelTypes = fundingModelTypes;
     },
+    //if org has already opted-in to ECE-WE on the core application, they cannot change it on CR new facility
     setOptinECEWEChangeRequestReadonly(optinECEWEChangeRequestReadonly) {
       this.optinECEWEChangeRequestReadonly = optinECEWEChangeRequestReadonly;
     },
+    //if org has already stated they are in a union, they cannot change it on CR new facility (2024 and previous question)
     setBelongsToUnionChangeRequestReadonly(belongsToUnionChangeRequestReadonly) {
       this.belongsToUnionChangeRequestReadonly = belongsToUnionChangeRequestReadonly;
     },
@@ -66,9 +68,10 @@ export const useEceweAppStore = defineStore('eceweApp', {
         throw error;
       }
     },
+
     async loadECEWEModelFromChangeRequest(loadedChangeRequest) {
       if (!isNullOrBlank(loadedChangeRequest?.optInECEWE)) {
-        const eceweModel = {
+        let eceweModel = {
           applicationId: this.eceweModel?.applicationId,
           optInECEWE: loadedChangeRequest.optInECEWE,
           belongsToUnion: loadedChangeRequest.belongsToUnion,

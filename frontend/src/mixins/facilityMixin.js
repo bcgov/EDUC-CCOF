@@ -145,7 +145,7 @@ export default {
         baseFundingId = this.changeRequestMap
           ?.get(this.changeRequestId)
           ?.changeActions?.find((ca) => ca.changeActionId == this.changeActionId)
-          ?.newFacilities?.find((fac) => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
+          ?.newFacilities.find((fac) => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
       } else {
         const navBarStore = useNavBarStore();
         baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
