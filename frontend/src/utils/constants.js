@@ -198,6 +198,8 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   NO: 0,
 };
 
+export const ECEWE_UNION_AGREEMENT_REACHED = 100000000;
+
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';
 
 export const CCFRI_Categories = [

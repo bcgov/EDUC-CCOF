@@ -51,8 +51,8 @@ export const useEceweAppStore = defineStore('eceweApp', {
     async loadECEWE() {
       checkSession();
       try {
-        let response = await ApiService.apiAxios.get('/api/application/ecewe/' + this.applicationId);
-        let payload = response?.data;
+        const response = await ApiService.apiAxios.get('/api/application/ecewe/' + this.applicationId);
+        const payload = response?.data;
         this.setOptinECEWEChangeRequestReadonly(payload?.optInECEWE === 1);
         this.setBelongsToUnionChangeRequestReadonly(payload?.belongsToUnion === 1);
         this.setEceweModel(payload);
@@ -68,7 +68,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
     },
     async loadECEWEModelFromChangeRequest(loadedChangeRequest) {
       if (!isNullOrBlank(loadedChangeRequest?.optInECEWE)) {
-        let eceweModel = {
+        const eceweModel = {
           applicationId: this.eceweModel?.applicationId,
           optInECEWE: loadedChangeRequest.optInECEWE,
           belongsToUnion: loadedChangeRequest.belongsToUnion,
@@ -88,7 +88,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
           return;
         }
         checkSession();
-        let payload = JSON.parse(JSON.stringify(this.eceweModel));
+        const payload = JSON.parse(JSON.stringify(this.eceweModel));
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
         this.setLoadedModel({ ...this.eceweModel });
@@ -96,7 +96,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
         if (isChangeRequest) {
           delete payload.applicationId;
           //update the ChangeRequest Map with new ECEWE values
-          let existingChangeRequest = await useReportChangesStore().getChangeRequest(changeRequestId);
+          const existingChangeRequest = await useReportChangesStore().getChangeRequest(changeRequestId);
           existingChangeRequest.optInECEWE = payload.optInECEWE;
           existingChangeRequest.belongsToUnion = payload.belongsToUnion;
           existingChangeRequest.applicableSector = payload.applicableSector;
@@ -115,8 +115,8 @@ export const useEceweAppStore = defineStore('eceweApp', {
       }
     },
     async saveECEWEFacilities() {
-      let sortedLoadedFacilities = sortByFacilityId(this.loadedFacilities);
-      let sortedFacilities = sortByFacilityId(this.facilities);
+      const sortedLoadedFacilities = sortByFacilityId(this.loadedFacilities);
+      const sortedFacilities = sortByFacilityId(this.facilities);
       let payload = [];
       // check if there is any new/updated facility
       sortedFacilities?.forEach((facility, index) => {
@@ -129,11 +129,11 @@ export const useEceweAppStore = defineStore('eceweApp', {
         payload = JSON.parse(JSON.stringify(payload));
         try {
           const navBarStore = useNavBarStore();
-          let response = await ApiService.apiAxios.post(
+          const response = await ApiService.apiAxios.post(
             ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + this.applicationId,
             payload,
           );
-          let updatedFacilities = this.facilities;
+          const updatedFacilities = this.facilities;
           response?.data?.facilities?.forEach((facility) => {
             updatedFacilities[updatedFacilities.findIndex((el) => el.facilityId === facility.facilityId)] = facility;
             navBarStore.setNavBarValue({
@@ -158,9 +158,9 @@ export const useEceweAppStore = defineStore('eceweApp', {
       const navBarStore = useNavBarStore();
       let facilityPayload;
 
-      if (this.facilities?.length == 0) {
+      if (this.facilities?.length === 0) {
         if (navBarStore.isChangeRequest) {
-          let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
+          const newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
             ?.newFacilities;
 
           facilityPayload = newFac?.map((facility) => ({
@@ -175,6 +175,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
         } else {
           // No facilities payload, create from the narBarList.
           facilityPayload = navBarList.map((facility) => ({
+            facilityUnionStatus: facility?.facilityUnionStatus ?? null,
             eceweApplicationId: null,
             facilityId: facility.facilityId,
             optInOrOut: this.eceweModel.fundingModel === this.fundingModelTypes[0].id ? 0 : null,
@@ -197,6 +198,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       } else {
         facilityPayload = navBarList.map((facility) => ({
           facilityId: facility.facilityId,
+          facilityUnionStatus: this.getFacilityUnionizedStatus(facility.facilityId),
           eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
           optInOrOut: this.getOptInOrOut(facility.facilityId),
         }));
@@ -215,6 +217,10 @@ export const useEceweAppStore = defineStore('eceweApp', {
         const index = this.facilities.map((facilty) => facilty.facilityId).indexOf(facilityId);
         return index >= 0 ? this.facilities[index].optInOrOut : null;
       }
+    },
+    getFacilityUnionizedStatus(facilityId) {
+      const index = this.facilities?.map((facilty) => facilty.facilityId).indexOf(facilityId);
+      return index >= 0 ? this.facilities[index].facilityUnionStatus : null;
     },
   },
 });

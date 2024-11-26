@@ -110,7 +110,7 @@
                       <v-checkbox
                         v-model="model.isUnionAgreementReached"
                         class="pa-0"
-                        :value="true"
+                        :value="ECEWE_UNION_AGREEMENT_REACHED"
                         label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
                         :disabled="isReadOnly()"
                         :rules="rules.required"
@@ -167,7 +167,7 @@
                       <v-checkbox
                         v-model="model.isUnionAgreementReached"
                         class="pa-0"
-                        :value="true"
+                        :value="ECEWE_UNION_AGREEMENT_REACHED"
                         label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
                         :disabled="isReadOnly()"
                         :rules="rules.required"
@@ -380,7 +380,8 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
-  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER
+  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
+  ECEWE_UNION_AGREEMENT_REACHED
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import AppAlertBanner from '../guiComponents/AppAlertBanner.vue';
@@ -464,6 +465,7 @@ export default {
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES
     this.ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = ECEWE_IS_PUBLIC_SECTOR_EMPLOYER
+    this.ECEWE_UNION_AGREEMENT_REACHED = ECEWE_UNION_AGREEMENT_REACHED
     this.model = { ...this.eceweModel };
   },
 

@@ -76,11 +76,7 @@
 
                     <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
                       <v-btn
-                        v-if="
-                          !uiFacilities?.[index].update &&
-                          !isLoading &&
-                          model.fundingModel != fundingModelTypeList[0].id
-                        "
+                        v-if="showUpdateButton(index)"
                         color="#003366"
                         dark
                         :disabled="isReadOnly"
@@ -98,7 +94,6 @@
                         inline
                         :disabled="isReadOnly"
                         :rules="rules.required"
-                        @update:modelValue="toggleRadio(index)"
                       >
                         <v-col cols="12" md="6" class="d-flex">
                           <v-radio label="Opt-In" :value="1" />
@@ -118,19 +113,24 @@
                         inline
                         :disabled="isReadOnly"
                         :rules="rules.required"
-                        @update:modelValue="toggleRadio(index)"
                       >
-                        TODO - UPDATE THIS VALUE AFTER CRM CONVO
                         <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Unionized" :value="1" />
+                          <v-radio label="Unionized" :value="100000001" />
                         </v-col>
                         <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Non-Unionized" :value="0" />
+                          <v-radio label="Non-Unionized" :value="100000002" />
                         </v-col>
                       </v-radio-group>
                     </v-row>
                   </template>
 
+                  <v-row v-if="showUpdateButton(index)">
+                    <v-col cols="12">
+                      <strong>
+                        {{ uiFacilities[index].facilityUnionStatus === 100000001 ? 'Unionized' : 'Non-Unionized' }}
+                      </strong>
+                    </v-col>
+                  </v-row>
                   <v-row>
                     <v-col cols="12">
                       <strong>Licence Number: {{ navBarList[index].licenseNumber }}</strong>
@@ -219,7 +219,13 @@ export default {
     ]),
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     isNextBtnDisabled() {
-      return this.uiFacilities.some((item) => item.optInOrOut === null);
+      return this.uiFacilities.some((item) => {
+        if (this.showUnionQuestion) {
+          console.log(item);
+          return item.optInOrOut === null || item.facilityUnionStatus === null;
+        }
+        return item.optInOrOut === null;
+      });
     },
     isSaveBtnDisabled() {
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
@@ -272,8 +278,19 @@ export default {
       'setFundingModelTypes',
     ]),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    showUpdateButton(index) {
+      if (this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        return (
+          !this.uiFacilities?.[index].update &&
+          !this.isLoading &&
+          this.model.fundingModel != this.fundingModelTypeList[0].id
+        );
+      }
+      return !this.uiFacilities?.[index].update && !this.isLoading;
+    },
     setupUiFacilities() {
       let copyFacilities = cloneDeep(this.facilities);
+      console.log(this.facilities);
       copyFacilities?.forEach((element) => (element.update = element.optInOrOut == null));
       this.uiFacilities = copyFacilities;
       this.setLoadedFacilities([...this.facilities]);
