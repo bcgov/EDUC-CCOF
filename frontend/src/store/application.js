@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
@@ -28,6 +29,8 @@ export const useApplicationStore = defineStore('application', {
 
     ccofConfirmationEnabled: false,
     applicationMap: new Map(),
+
+    uploadedDocuments: [],
   }),
   actions: {
     setApplicationId(value) {
@@ -138,6 +141,14 @@ export const useApplicationStore = defineStore('application', {
     async deletePcfApplication() {
       try {
         await ApiService.apiAxios.delete(`${ApiRoutes.APPLICATION}/${this.applicationId}`);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    async getApplicationUploadedDocuments() {
+      try {
+        this.uploadedDocuments = await DocumentService.getApplicationUploadedDocuments(this.applicationId);
       } catch (error) {
         console.log(error);
         throw error;

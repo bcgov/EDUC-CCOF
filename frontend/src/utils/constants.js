@@ -50,6 +50,7 @@ export const ApiRoutes = Object.freeze({
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
   PDF: baseRoot + '/pdf/getDocument/',
+  DOCUMENT_APPLICATION: baseRoot + '/document/application',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -296,3 +297,7 @@ export const PARENT_FEE_FREQUENCIES = Object.freeze({
 
 export const DOCUMENTS_REQUIREMENT_MESSAGE =
   'The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.';
+
+export const DOCUMENT_TYPES = Object.freeze({
+  APPLICATION_AFS: 'AFS - Supporting Documents',
+});

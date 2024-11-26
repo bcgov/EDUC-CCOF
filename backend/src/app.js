@@ -27,6 +27,7 @@ const organizationRouter = require('./routes/organization');
 const publicRouter = require('./routes/public');
 const configRouter = require('./routes/config');
 const applicationRouter = require('./routes/application');
+const documentRouter = require('./routes/document');
 const fundingRouter = require('./routes/funding');
 const messageRouter = require('./routes/message');
 const licenseUploadRouter = require('./routes/licenseUpload');
@@ -44,42 +45,48 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(helmet());
 app.use(noCache());
-app.use(promMid({
-  metricsPath: '/api/prometheus',
-  collectDefaultMetrics: true,
-  requestDurationBuckets: [0.1, 0.5, 1, 1.5]
-}));
+app.use(
+  promMid({
+    metricsPath: '/api/prometheus',
+    collectDefaultMetrics: true,
+    requestDurationBuckets: [0.1, 0.5, 1, 1.5],
+  }),
+);
 //tells the app to use json as means of transporting data
 app.use(bodyParser.json({ limit: '50mb', extended: true }));
-app.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '50mb'
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: '50mb',
+  }),
+);
 
 const logStream = {
   write: (message) => {
     log.info(message);
-  }
+  },
 };
 
 const dbSession = getRedisDbSession();
 const cookie = {
   secure: true,
   httpOnly: true,
-  maxAge: 1800000 //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
+  maxAge: 1800000, //30 minutes in ms. this is same as session time. DO NOT MODIFY, IF MODIFIED, MAKE SURE SAME AS SESSION TIME OUT VALUE.
 };
 if ('local' === config.get('environment')) {
   cookie.secure = false;
 }
 //sets cookies for security purposes (prevent cookie access, allow secure connections only, etc)
-app.use(session({
-  name: 'ccof_cookie',
-  secret: config.get('oidc:clientSecret'),
-  resave: false,
-  saveUninitialized: true,
-  cookie: cookie,
-  store: dbSession
-}));
+app.use(
+  session({
+    name: 'ccof_cookie',
+    secret: config.get('oidc:clientSecret'),
+    resave: false,
+    saveUninitialized: true,
+    cookie: cookie,
+    store: dbSession,
+  }),
+);
 
 app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
@@ -101,29 +108,34 @@ function getRedisDbSession() {
 }
 
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, clientId, clientSecret) {
-  passport.use(strategyName, new OidcStrategy({
-    issuer: discovery.issuer,
-    authorizationURL: discovery.authorization_endpoint,
-    tokenURL: discovery.token_endpoint,
-    userInfoURL: discovery.userinfo_endpoint,
-    clientID: config.get(clientId),
-    clientSecret: config.get(clientSecret),
-    callbackURL: callbackURI,
-    scope: 'openid',
-    kc_idp_hint: kc_idp_hint
-  }, (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
-    if ((typeof (accessToken) === 'undefined') || (accessToken === null) ||
-      (typeof (refreshToken) === 'undefined') || (refreshToken === null)) {
-      return done('No access token', null);
-    }
+  passport.use(
+    strategyName,
+    new OidcStrategy(
+      {
+        issuer: discovery.issuer,
+        authorizationURL: discovery.authorization_endpoint,
+        tokenURL: discovery.token_endpoint,
+        userInfoURL: discovery.userinfo_endpoint,
+        clientID: config.get(clientId),
+        clientSecret: config.get(clientSecret),
+        callbackURL: callbackURI,
+        scope: 'openid',
+        kc_idp_hint: kc_idp_hint,
+      },
+      (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
+        if (typeof accessToken === 'undefined' || accessToken === null || typeof refreshToken === 'undefined' || refreshToken === null) {
+          return done('No access token', null);
+        }
 
-    //set access and refresh tokens
-    profile.jwtFrontend = auth.generateUiToken();
-    profile.jwt = accessToken;
-    profile._json = parseJwt(accessToken);
-    profile.refreshToken = refreshToken;
-    return done(null, profile);
-  }));
+        //set access and refresh tokens
+        profile.jwtFrontend = auth.generateUiToken();
+        profile.jwt = accessToken;
+        profile._json = parseJwt(accessToken);
+        profile.refreshToken = refreshToken;
+        return done(null, profile);
+      },
+    ),
+  );
 }
 
 const parseJwt = (token) => {
@@ -134,44 +146,49 @@ const parseJwt = (token) => {
   }
 };
 //initialize our authentication strategy
-utils.getOidcDiscovery().then(discovery => {
+utils.getOidcDiscovery().then((discovery) => {
   //OIDC Strategy is used for authorization
   addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
   addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');
 
   //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
-  passport.use('jwt', new JWTStrategy({
-    algorithms: ['RS256'],
-    // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
-    // If audience checking is needed, check the following SO to update Keycloak first.
-    // Ref: https://stackoverflow.com/a/53627747
-    audience: config.get('server:frontend'),
-    issuer: config.get('tokenGenerate:issuer'),
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.get('tokenGenerate:publicKey'),
-    ignoreExpiration: true
-  }, (jwtPayload, done) => {
-    if ((typeof (jwtPayload) === 'undefined') || (jwtPayload === null)) {
-      return done('No JWT token', null);
-    }
+  passport.use(
+    'jwt',
+    new JWTStrategy(
+      {
+        algorithms: ['RS256'],
+        // Keycloak 7.3.0 no longer automatically supplies matching client_id audience.
+        // If audience checking is needed, check the following SO to update Keycloak first.
+        // Ref: https://stackoverflow.com/a/53627747
+        audience: config.get('server:frontend'),
+        issuer: config.get('tokenGenerate:issuer'),
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: config.get('tokenGenerate:publicKey'),
+        ignoreExpiration: true,
+      },
+      (jwtPayload, done) => {
+        if (typeof jwtPayload === 'undefined' || jwtPayload === null) {
+          return done('No JWT token', null);
+        }
 
-    done(null, {
-      email: jwtPayload.email,
-      familyName: jwtPayload.family_name,
-      givenName: jwtPayload.given_name,
-      jwt: jwtPayload,
-      name: jwtPayload.name,
-      user_guid: jwtPayload.user_guid,
-      realmRole: jwtPayload.realm_role
-    });
-  }));
+        done(null, {
+          email: jwtPayload.email,
+          familyName: jwtPayload.family_name,
+          givenName: jwtPayload.given_name,
+          jwt: jwtPayload,
+          name: jwtPayload.name,
+          user_guid: jwtPayload.user_guid,
+          realmRole: jwtPayload.realm_role,
+        });
+      },
+    ),
+  );
 });
 //functions for serializing/deserializing users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
-
-app.use(morgan(config.get('server:morganFormat'), { 'stream': logStream }));
+app.use(morgan(config.get('server:morganFormat'), { stream: logStream }));
 //set up routing to auth and main API
 app.use(/(\/api)?/, apiRouter);
 
@@ -180,8 +197,9 @@ apiRouter.use('/user', userRouter);
 apiRouter.use('/facility', facilityRouter);
 apiRouter.use('/organization', organizationRouter);
 apiRouter.use('/public', publicRouter);
-apiRouter.use('/config',configRouter);
+apiRouter.use('/config', configRouter);
 apiRouter.use('/application', applicationRouter);
+apiRouter.use('/document', documentRouter);
 apiRouter.use('/group/funding', fundingRouter);
 apiRouter.use('/messages', messageRouter);
 apiRouter.use('/licenseUpload', licenseUploadRouter);
@@ -194,7 +212,7 @@ app.use((err, _req, res, next) => {
   //This is from the ResultValidation
   if (err.errors && err.mapped) {
     return res.status(400).json({
-      errors: err.mapped()
+      errors: err.mapped(),
     });
   }
   log.error(err?.stack);

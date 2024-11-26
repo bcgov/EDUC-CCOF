@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form">
     <v-container fluid>
       <v-row justify="space-around">
         <v-card class="mx-12 mb-12 pa-8">
@@ -87,8 +87,12 @@
               </v-card>
               <AppDocumentUpload
                 v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS"
+                :loading="isLoading"
+                :uploaded-documents="filteredUploadedDocuments"
+                :document-type="DOCUMENT_TYPES.APPLICATION_AFS"
                 title="Upload Supporting Documents (for example receipts, quotes, invoices and/or budget/finance documents here)."
                 class="mt-8"
+                @update-documents-to-upload="updateDocumentsToUpload"
               />
             </v-container>
           </v-skeleton-loader>
@@ -99,7 +103,7 @@
         :is-save-displayed="true"
         :is-save-disabled="isReadOnly"
         :is-next-disabled="!isFormComplete"
-        :is-processing="processing"
+        :is-processing="isLoading"
         @previous="back"
         @next="next"
         @validate-form="validateForm"
@@ -111,7 +115,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { isEmpty } from 'lodash';
+import { isEmpty, cloneDeep } from 'lodash';
 
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
@@ -119,13 +123,14 @@ import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
-
+import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
-import { AFS_STATUSES } from '@/utils/constants.js';
+import { AFS_STATUSES, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -139,24 +144,47 @@ export default {
   data() {
     return {
       afs: {},
+      documentsToUpload: [],
       isValidForm: false,
       processing: false,
     };
   },
   computed: {
     ...mapState(useAppStore, ['getFundingUrl']),
-    ...mapState(useApplicationStore, ['formattedProgramYear', 'isApplicationSubmitted', 'programYearId']),
+    ...mapState(useApplicationStore, [
+      'applicationId',
+      'formattedProgramYear',
+      'isApplicationSubmitted',
+      'programYearId',
+      'uploadedDocuments',
+    ]),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     currentFacility() {
       return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
+    filteredUploadedDocuments() {
+      return this.uploadedDocuments?.filter(
+        (document) =>
+          document.documentType === DOCUMENT_TYPES.APPLICATION_AFS &&
+          document.facilityId === this.currentFacility?.facilityId,
+      );
+    },
+    isLoading() {
+      return isEmpty(this.afs) || this.processing;
+    },
     // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
     isReadOnly() {
-      return isEmpty(this.afs) || this.processing || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
+      return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
+    },
+    isSupportingDocumentsUploaded() {
+      return this.filteredUploadedDocuments?.length + this.documentsToUpload?.length > 0;
     },
     isFormComplete() {
-      return this.isValidForm;
+      return (
+        [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(this.afs?.afsStatus) ||
+        (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && this.isSupportingDocumentsUploaded)
+      );
     },
   },
   watch: {
@@ -174,11 +202,14 @@ export default {
   created() {
     this.rules = rules;
     this.AFS_STATUSES = AFS_STATUSES;
+    this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.reloadAfs();
   },
   methods: {
+    ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments']),
     isEmpty,
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
@@ -201,6 +232,7 @@ export default {
           afsStatus: this.afs?.afsStatus,
         };
         await this.updateApplicationCCFRI(this.$route.params.urlGuid, payload);
+        await this.processDocumentsToUpload();
         this.setNavBarAfsComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete });
         if (showMessage) {
           this.setSuccessAlert('Changes Successfully Saved');
@@ -210,6 +242,23 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.processing = false;
+      }
+    },
+    updateDocumentsToUpload(updatedDocuments) {
+      this.documentsToUpload = updatedDocuments;
+    },
+    async processDocumentsToUpload() {
+      try {
+        const payload = cloneDeep(this.documentsToUpload);
+        payload.forEach((document) => {
+          document.ccof_applicationid = this.applicationId;
+          document.ccof_facility = this.currentFacility?.facilityId;
+          delete document.file;
+        });
+        await DocumentService.createDocuments(payload);
+        await this.getApplicationUploadedDocuments();
+      } catch {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
     },
   },

@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form>
     <div class="mb-2">
       <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
       <span> (Required)</span>
@@ -9,7 +9,6 @@
       <AppButton
         v-if="showAddFileButton"
         id="add-new-file"
-        :disabled="disabled"
         :primary="false"
         size="large"
         class="add-file-button"
@@ -27,7 +26,7 @@
               :accept="fileExtensionAccept"
               :disabled="loading"
               @update:model-value="validateFile(item.id)"
-            ></v-file-input>
+            />
           </v-col>
           <v-col cols="11" md="7" class="pr-4">
             <v-text-field
@@ -46,7 +45,7 @@
         </v-row>
       </div>
       <div v-if="uploadedDocuments.length > 0" class="mt-6 mx-4 mx-md-8 mx-lg-12">
-        <h3 v-if="!documentType">Uploaded Documents</h3>
+        <h3>Uploaded Documents</h3>
         <v-data-table
           :headers="headersUploadedDocuments"
           :items="uploadedDocuments"
@@ -76,30 +75,23 @@
   </v-form>
 </template>
 <script>
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import { humanFileSize, getFileExtensionWithDot } from '@/utils/file';
 import { uuid } from 'vue-uuid';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
 import { DOCUMENTS_REQUIREMENT_MESSAGE } from '@/utils/constants';
+import { humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength } from '@/utils/file';
 
 export default {
   components: { AppButton },
+  mixins: [alertMixin],
   props: {
     title: {
       type: String,
       default: undefined,
     },
-    entityName: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    documentLabel: {
-      type: String,
-      default: undefined,
-    },
     documentType: {
       type: String,
-      required: false,
       default: undefined,
     },
     loading: {
@@ -110,47 +102,43 @@ export default {
       type: Boolean,
       default: false,
     },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
     uploadedDocuments: {
       type: Array,
       default: () => [],
     },
-    uploadLimit: {
-      type: String,
-      default: undefined,
-    },
   },
-  emits: ['update:modelValue', 'deleteUploadedDocument', 'validateDocumentsToUpload'],
+  emits: ['updateDocumentsToUpload', 'deleteUploadedDocument', 'validateDocumentsToUpload'],
   data() {
     return {
       documents: [],
-      isValidForm: false,
     };
   },
   computed: {
-    uploadLimitReached() {
-      return this.uploadLimit && this.documents?.length + this.uploadedDocuments?.length >= Number(this.uploadLimit);
-    },
     showAddFileButton() {
-      return !this.loading && !this.readonly && !this.uploadLimitReached;
+      return !this.loading && !this.readonly;
     },
   },
   watch: {
     documents: {
-      handler() {
+      async handler() {
         this.validateDocumentsToUpload();
-        const documentsToUpload = this.documents?.filter((document) => document.isValidFile && document.file);
-        this.$emit('update:modelValue', documentsToUpload);
+        const documentsToUpload = await Promise.all(
+          this.documents
+            ?.filter((document) => document.isValidFile && document.file)
+            ?.map(async (item) => {
+              const convertedFile = await this.readFile(item.file);
+              return { ...item, ...convertedFile };
+            }),
+        );
+        this.$emit('updateDocumentsToUpload', documentsToUpload);
       },
       deep: true,
     },
     loading: {
       handler(value) {
         if (value) return;
-        this.documents = [];
+        this.resetDocuments();
+        this.addFile();
       },
     },
   },
@@ -182,15 +170,13 @@ export default {
       { title: 'Description', key: 'description', width: '60%' },
       { title: '', key: 'actionButtons', sortable: false, width: '6%' },
     ];
-    if (!this.disabled && !this.readonly && !this.uploadLimitReached) {
-      this.addFile();
-    }
+    this.addFile();
   },
   methods: {
     addFile() {
+      if (this.readonly) return;
       this.documents.push({
         id: uuid.v1(),
-        entityName: this.entityName,
         isValidFile: true,
         documentType: this.documentType,
       });
@@ -210,7 +196,6 @@ export default {
       );
     },
 
-    // Need to add this validation because isValidForm is not responsive when file is updated
     validateFile(updatedItemId) {
       const document = this.documents.find((item) => item.id === updatedItemId);
       const file = document?.file;
@@ -227,6 +212,32 @@ export default {
 
     resetDocuments() {
       this.documents = [];
+    },
+
+    readFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = () => {
+          const arrayBuffer = reader.result;
+          const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+          const base64String = window.btoa(binaryString); // Convert to Base64
+          const doc = {
+            fileName: getFileNameWithMaxNameLength(file.name),
+            fileSize: file.size,
+            documentBody: base64String,
+          };
+          resolve(doc);
+        };
+        reader.onabort = () => {
+          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+          reject();
+        };
+        reader.onerror = () => {
+          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
+          reject();
+        };
+      });
     },
   },
 };

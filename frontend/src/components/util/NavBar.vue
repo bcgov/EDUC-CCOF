@@ -190,6 +190,10 @@ export default {
     expandedNavBarItems() {
       return this.items?.filter((item) => item.expanded)?.map((item) => item.title);
     },
+
+    isApplication() {
+      return this.$route.path?.includes(`${PATHS.PREFIX.PCF}/`);
+    },
   },
   watch: {
     navRefresh: {
@@ -209,12 +213,25 @@ export default {
   },
 
   async created() {
-    await this.loadApprovableFeeSchedules();
+    await this.loadData();
   },
 
   methods: {
+    ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
     ...mapActions(useNavBarStore, ['checkApprovableFeeSchedulesComplete', 'setNavBarItems', 'setCanSubmit']),
+    async loadData() {
+      try {
+        if (this.isApplication) {
+          await this.getApprovableFeeSchedulesForFacilities(this.userProfileList);
+          await this.getApplicationUploadedDocuments();
+          this.checkApprovableFeeSchedulesComplete();
+        }
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
+      }
+    },
     setActive(item) {
       let index = this.items.findIndex((obj) => obj.title === item.title);
       if (item.active) {
@@ -1031,11 +1048,6 @@ export default {
       if (page?.isAccessible) {
         this.$router.push(page.link);
       }
-    },
-    async loadApprovableFeeSchedules() {
-      if (!this.$route.path?.includes(`${PATHS.PREFIX.PCF}/`)) return;
-      await this.getApprovableFeeSchedulesForFacilities(this.userProfileList);
-      this.checkApprovableFeeSchedulesComplete();
     },
   },
 };
