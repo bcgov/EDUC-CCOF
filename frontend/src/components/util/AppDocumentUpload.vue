@@ -1,6 +1,6 @@
 <template>
   <v-form>
-    <template v-if="!readonly">
+    <template v-if="title">
       <div class="mb-2">
         <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
         <span> (Required)</span>
@@ -10,7 +10,7 @@
         xls, and xlsx.
       </div>
     </template>
-    <v-card elevation="2" :class="!readonly ? 'pa-4 my-4' : ''">
+    <v-card elevation="2" :class="!readonly ? 'pa-4 my-4' : 'pb-6'">
       <AppButton
         v-if="showAddFileButton"
         id="add-new-file"
@@ -18,8 +18,9 @@
         size="large"
         class="add-file-button"
         @click="addFile"
-        >Add File</AppButton
       >
+        Add File
+      </AppButton>
       <div v-if="documents.length > 0" class="mt-6">
         <v-row v-for="item in documents" :key="item.id" no-gutters>
           <v-col cols="12" md="4" class="pr-4">

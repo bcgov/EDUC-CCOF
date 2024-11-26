@@ -3,12 +3,12 @@
     <div class="mb-2">Please select one of the following options regarding the approvable fee schedule:</div>
     <v-radio-group v-model="updatedValue" :rules="rules.required" :disabled="readonly" color="primary">
       <v-radio label="I accept" :value="AFS_STATUSES.ACCEPT" />
-      <div v-if="updatedValue === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
+      <div v-if="!readonly && updatedValue === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
         After submission please wait to receive notification confirming your approval to participate in CCFRI.
       </div>
       <v-radio label="I want to upload supporting documents" :value="AFS_STATUSES.UPLOAD_DOCUMENTS" />
       <v-radio label="I decline" :value="AFS_STATUSES.DECLINE" />
-      <div v-if="updatedValue === AFS_STATUSES.DECLINE" class="text-body-2 pl-2">
+      <div v-if="!readonly && updatedValue === AFS_STATUSES.DECLINE" class="text-body-2 pl-2">
         After submission please wait to receive confirmation from the ministry on the results of your CCFRI application.
       </div>
     </v-radio-group>

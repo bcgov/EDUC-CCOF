@@ -67,10 +67,11 @@
           </div>
           <v-skeleton-loader :loading="isEmpty(afs)" type="table-tbody">
             <v-container fluid class="pa-0">
-              <AfsDecisionCard v-model="afs.afsStatus" />
+              <AfsDecisionCard v-model="afs.afsStatus" :readonly="isReadOnly" />
               <AppDocumentUpload
                 v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS"
                 :loading="isLoading"
+                :readonly="isReadOnly"
                 :uploaded-documents="filteredUploadedDocuments"
                 :document-type="DOCUMENT_TYPES.APPLICATION_AFS"
                 :show-error-message="showErrorMessage && !isSupportingDocumentsUploaded"
@@ -213,7 +214,6 @@ export default {
     back() {
       this.$router.push(this.previousPath);
     },
-    // TODO (vietle-cgi) - CCFRI-3756 - work in progress
     async save(showMessage) {
       try {
         if (this.isReadOnly) return;
