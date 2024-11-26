@@ -93,6 +93,7 @@
                 title="Upload Supporting Documents (for example receipts, quotes, invoices and/or budget/finance documents here)."
                 class="mt-8"
                 @update-documents-to-upload="updateDocumentsToUpload"
+                @delete-uploaded-document="updateUploadedDocumentsToDelete"
               />
             </v-container>
           </v-skeleton-loader>
@@ -141,10 +142,25 @@ export default {
     await this.save(false);
     next();
   },
+  props: {
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+    ccfriApplicationId: {
+      type: String,
+      default: '',
+    },
+    facilityId: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       afs: {},
       documentsToUpload: [],
+      uploadedDocumentsToDelete: [],
       isValidForm: false,
       processing: false,
     };
@@ -156,15 +172,17 @@ export default {
       'formattedProgramYear',
       'isApplicationSubmitted',
       'programYearId',
-      'uploadedDocuments',
+      'applicationUploadedDocuments',
     ]),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     currentFacility() {
-      return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
+      return this.facilityId
+        ? this.navBarList?.find((el) => el.facilityId === this.facilityId)
+        : this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     filteredUploadedDocuments() {
-      return this.uploadedDocuments?.filter(
+      return this.applicationUploadedDocuments?.filter(
         (document) =>
           document.documentType === DOCUMENT_TYPES.APPLICATION_AFS &&
           document.facilityId === this.currentFacility?.facilityId,
@@ -175,7 +193,7 @@ export default {
     },
     // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
     isReadOnly() {
-      return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
+      return this.readonly || this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
     },
     isSupportingDocumentsUploaded() {
       return this.filteredUploadedDocuments?.length + this.documentsToUpload?.length > 0;
@@ -212,7 +230,9 @@ export default {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments']),
     isEmpty,
     reloadAfs() {
-      this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
+      this.afs = this.ccfriApplicationId
+        ? this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriApplicationId)
+        : this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
     },
     next() {
       this.$router.push(this.nextPath);
@@ -233,6 +253,8 @@ export default {
         };
         await this.updateApplicationCCFRI(this.$route.params.urlGuid, payload);
         await this.processDocumentsToUpload();
+        await DocumentService.deleteDocuments(this.uploadedDocumentsToDelete);
+        await this.getApplicationUploadedDocuments();
         this.setNavBarAfsComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete });
         if (showMessage) {
           this.setSuccessAlert('Changes Successfully Saved');
@@ -248,18 +270,20 @@ export default {
       this.documentsToUpload = updatedDocuments;
     },
     async processDocumentsToUpload() {
-      try {
-        const payload = cloneDeep(this.documentsToUpload);
-        payload.forEach((document) => {
-          document.ccof_applicationid = this.applicationId;
-          document.ccof_facility = this.currentFacility?.facilityId;
-          delete document.file;
-        });
-        await DocumentService.createDocuments(payload);
-        await this.getApplicationUploadedDocuments();
-      } catch {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      const payload = cloneDeep(this.documentsToUpload);
+      payload.forEach((document) => {
+        document.ccof_applicationid = this.applicationId;
+        document.ccof_facility = this.currentFacility?.facilityId;
+        delete document.file;
+      });
+      await DocumentService.createDocuments(payload);
+    },
+    updateUploadedDocumentsToDelete(annotationId) {
+      const index = this.applicationUploadedDocuments?.findIndex((item) => item.annotationId === annotationId);
+      if (index > -1) {
+        this.applicationUploadedDocuments?.splice(index, 1);
       }
+      this.uploadedDocumentsToDelete?.push(annotationId);
     },
   },
 };

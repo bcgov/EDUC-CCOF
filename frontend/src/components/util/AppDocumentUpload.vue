@@ -4,7 +4,10 @@
       <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
       <span> (Required)</span>
     </div>
-    <div class="mb-4">{{ DOCUMENTS_REQUIREMENT_MESSAGE }}</div>
+    <div class="mb-4">
+      The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls,
+      and xlsx.
+    </div>
     <v-card elevation="2" class="pa-4 my-4">
       <AppButton
         v-if="showAddFileButton"
@@ -49,17 +52,14 @@
         <v-data-table
           :headers="headersUploadedDocuments"
           :items="uploadedDocuments"
-          item-key="documentId"
+          item-key="annotationId"
           items-per-page="-1"
           density="compact"
         >
           <template #item.actionButtons="{ item }">
-            <v-icon
-              v-if="!loading && !readonly"
-              small
-              @click="$emit('deleteUploadedDocument', item.documentId, documentType)"
-              >mdi-delete</v-icon
-            >
+            <v-icon v-if="!loading && !readonly" small @click="$emit('deleteUploadedDocument', item.annotationId)">
+              mdi-delete
+            </v-icon>
           </template>
           <template #bottom><!-- no paging --></template>
         </v-data-table>
@@ -79,7 +79,6 @@ import { uuid } from 'vue-uuid';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import { DOCUMENTS_REQUIREMENT_MESSAGE } from '@/utils/constants';
 import { humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength } from '@/utils/file';
 
 export default {
@@ -143,8 +142,7 @@ export default {
     },
   },
   created() {
-    this.DOCUMENTS_REQUIREMENT_MESSAGE = DOCUMENTS_REQUIREMENT_MESSAGE;
-    this.MAX_FILE_SIZE = 4194304; // 4 MB
+    this.MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
     this.fileExtensionAccept = ['.pdf', '.png', '.jpg', '.jpeg', '.heic', '.doc', '.docx', '.xls', '.xlsx'];
     this.fileFormats = 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS, and XLSX';
     this.fileRules = [

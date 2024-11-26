@@ -41,10 +41,12 @@ async function getApplicationDocuments(req, res) {
 
 async function deleteUploadedDocuments(req, res) {
   try {
-    let deletedDocuments = req.body;
-    for (let annotationid of deletedDocuments) {
-      await deleteDocument(annotationid);
-    }
+    const deletedDocuments = req.body;
+    await Promise.all(
+      deletedDocuments.map(async (annotationId) => {
+        await deleteDocument(annotationId);
+      }),
+    );
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
     log.error(e);

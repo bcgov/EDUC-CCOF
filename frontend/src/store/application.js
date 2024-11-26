@@ -30,7 +30,7 @@ export const useApplicationStore = defineStore('application', {
     ccofConfirmationEnabled: false,
     applicationMap: new Map(),
 
-    uploadedDocuments: [],
+    applicationUploadedDocuments: [],
   }),
   actions: {
     setApplicationId(value) {
@@ -148,7 +148,7 @@ export const useApplicationStore = defineStore('application', {
     },
     async getApplicationUploadedDocuments() {
       try {
-        this.uploadedDocuments = await DocumentService.getApplicationUploadedDocuments(this.applicationId);
+        this.applicationUploadedDocuments = await DocumentService.getApplicationUploadedDocuments(this.applicationId);
       } catch (error) {
         console.log(error);
         throw error;

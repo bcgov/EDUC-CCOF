@@ -172,6 +172,14 @@
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
+                  <v-expansion-panel v-if="facility?.ccfri?.enableAfs" variant="accordion" value="afs-summary">
+                    <AFSSummary
+                      :ccfri-id="facility?.ccfri?.ccfriId"
+                      :facility-id="facility.facilityId"
+                      :program-year-id="summaryModel?.application?.programYearId"
+                      @is-summary-valid="isFormComplete"
+                    />
+                  </v-expansion-panel>
                   <v-expansion-panel variant="accordion" value="ecewe-summary-a">
                     <ECEWESummary
                       :ecewe="{}"
@@ -449,6 +457,7 @@ import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
@@ -461,6 +470,7 @@ export default {
     UploadedDocumentsSummary,
     NMFSummary,
     RFISummary,
+    AFSSummary,
     FacilityInformationSummary,
     CCOFSummary,
     CCFRISummary,
@@ -830,6 +840,7 @@ export default {
         'ccfri-summary',
         'rfi-summary',
         'nmf-summary',
+        'afs-summary',
         'ecewe-summary-a',
         'ecewe-summary-b',
         'uploaded-documents-summary',

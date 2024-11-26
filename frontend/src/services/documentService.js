@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
@@ -22,6 +24,7 @@ export default {
 
   async createDocuments(payload) {
     try {
+      if (isEmpty(payload)) return;
       await ApiService.apiAxios.post(ApiRoutes.DOCUMENT_APPLICATION, payload);
     } catch (error) {
       console.log(`Failed to create application's documents - ${error}`);
@@ -29,9 +32,10 @@ export default {
     }
   },
 
-  async deleteDocuments(payload) {
+  async deleteDocuments(deletedFiles) {
     try {
-      await ApiService.apiAxios.delete(ApiRoutes.DOCUMENT_APPLICATION, payload);
+      if (isEmpty(deletedFiles)) return;
+      await ApiService.apiAxios.delete(ApiRoutes.DOCUMENT_APPLICATION, { data: deletedFiles });
     } catch (error) {
       console.log(`Failed to delete application's documents - ${error}`);
       throw error;

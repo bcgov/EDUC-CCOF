@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -110,7 +111,14 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
+import {
+  AFS_STATUSES,
+  DOCUMENT_TYPES,
+  NAV_BAR_GROUPS,
+  CHANGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+} from '@/utils/constants.js';
 import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
@@ -136,6 +144,7 @@ export default {
     ...mapState(useAppStore, ['pageTitle', 'programYearList']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
+      'applicationUploadedDocuments',
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
@@ -219,7 +228,7 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
-    ...mapActions(useNavBarStore, ['checkApprovableFeeSchedulesComplete', 'setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
     async loadData() {
       try {
         if (this.isApplication) {
@@ -1048,6 +1057,21 @@ export default {
       if (page?.isAccessible) {
         this.$router.push(page.link);
       }
+    },
+    checkApprovableFeeSchedulesComplete() {
+      this.userProfileList?.forEach((facility) => {
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
+        );
+        const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
+          (document) =>
+            document.documentType === DOCUMENT_TYPES.APPLICATION_AFS && document.facilityId === facility.facilityId,
+        );
+        facility.isAFSComplete =
+          [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
+          (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+      });
+      this.refreshNavBarList();
     },
   },
 };

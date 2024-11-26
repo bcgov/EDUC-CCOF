@@ -3,10 +3,9 @@ import { defineStore } from 'pinia';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { filterFacilityListForPCF } from '@/utils/common.js';
-import { AFS_STATUSES, CHANGE_REQUEST_TYPES, PATHS } from '@/utils/constants.js';
+import { CHANGE_REQUEST_TYPES, PATHS } from '@/utils/constants.js';
 
 function getActiveIndex(items) {
   let foundIndex = -1;
@@ -390,16 +389,6 @@ export const useNavBarStore = defineStore('navBar', {
             : this.applicationStatus;
         this.navBarList = filterFacilityListForPCF(this.userProfileList, this.isRenewal, applicationStatus);
       }
-    },
-    checkApprovableFeeSchedulesComplete() {
-      const ccfriApStore = useCcfriAppStore();
-      this.userProfileList?.forEach((facility) => {
-        const afs = ccfriApStore?.approvableFeeSchedules?.find(
-          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
-        );
-        facility.isAFSComplete = [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus);
-      });
-      this.refreshNavBarList();
     },
   },
 });

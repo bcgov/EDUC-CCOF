@@ -57,6 +57,8 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
   { back: 'ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' },
+  { back: 'ccof_unlock_afs', front: 'unlockAfs' },
+  { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
 ];
 
