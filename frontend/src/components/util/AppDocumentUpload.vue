@@ -1,14 +1,16 @@
 <template>
   <v-form>
-    <div class="mb-2">
-      <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
-      <span> (Required)</span>
-    </div>
-    <div class="mb-4">
-      The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls,
-      and xlsx.
-    </div>
-    <v-card elevation="2" class="pa-4 my-4">
+    <template v-if="!readonly">
+      <div class="mb-2">
+        <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
+        <span> (Required)</span>
+      </div>
+      <div class="mb-4">
+        The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
+        xls, and xlsx.
+      </div>
+    </template>
+    <v-card elevation="2" :class="!readonly ? 'pa-4 my-4' : ''">
       <AppButton
         v-if="showAddFileButton"
         id="add-new-file"
@@ -64,13 +66,7 @@
           <template #bottom><!-- no paging --></template>
         </v-data-table>
       </div>
-      <div>
-        <v-row>
-          <v-col>
-            <slot></slot>
-          </v-col>
-        </v-row>
-      </div>
+      <div v-if="showErrorMessage" class="error-message">Required</div>
     </v-card>
   </v-form>
 </template>
@@ -98,6 +94,10 @@ export default {
       default: false,
     },
     readonly: {
+      type: Boolean,
+      default: false,
+    },
+    showErrorMessage: {
       type: Boolean,
       default: false,
     },
@@ -248,5 +248,9 @@ export default {
 :deep(.v-field__input) {
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.error-message {
+  color: #ff5252;
 }
 </style>

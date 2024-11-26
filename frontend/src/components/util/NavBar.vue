@@ -232,8 +232,10 @@ export default {
     async loadData() {
       try {
         if (this.isApplication) {
-          await this.getApprovableFeeSchedulesForFacilities(this.userProfileList);
-          await this.getApplicationUploadedDocuments();
+          await Promise.all([
+            this.getApprovableFeeSchedulesForFacilities(this.userProfileList),
+            this.getApplicationUploadedDocuments(),
+          ]);
           this.checkApprovableFeeSchedulesComplete();
         }
       } catch (error) {

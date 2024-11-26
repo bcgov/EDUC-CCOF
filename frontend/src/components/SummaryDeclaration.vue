@@ -441,9 +441,11 @@ import { useAppStore } from '@/store/app.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import {
+  AFS_STATUSES,
   PATHS,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -529,6 +531,7 @@ export default {
       'isEceweComplete',
       'applicationMap',
     ]),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isCREceweComplete', 'isCRLicenseComplete']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -809,14 +812,22 @@ export default {
           unlockCcfri: facility.unlockCcfri,
           unlockNmf: facility.unlockNmf,
           unlockRfi: facility.unlockRfi,
+          unlockAfs: facility.unlockAfs,
         };
         // Create payload with only unlock propteries set to 1.
-
         unlockPayload = Object.fromEntries(Object.entries(unlockPayload).filter(([_, v]) => v == 1));
         // Update payload unlock properties from 1 to 0.
         Object.keys(unlockPayload).forEach((key) => {
           unlockPayload[key] = '0';
         });
+
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility.ccfriApplicationId,
+        );
+        if (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
+          unlockPayload.enableAfs = '0';
+        }
+
         if (Object.keys(unlockPayload).length > 0) {
           ccrfiRelockPayload.push({ ...applicationIdPayload, ...unlockPayload });
         }
