@@ -120,7 +120,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
     async saveECEWEFacilities() {
       const sortedLoadedFacilities = sortByFacilityId(this.loadedFacilities);
       const sortedFacilities = sortByFacilityId(this.facilities);
-      let payload = [];
+      const payload = [];
       // check if there is any new/updated facility
       sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility, sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
@@ -129,13 +129,13 @@ export const useEceweAppStore = defineStore('eceweApp', {
       });
       if (payload?.length > 0) {
         checkSession();
-        payload = { ...payload };
         try {
           const navBarStore = useNavBarStore();
           const response = await ApiService.apiAxios.post(
             ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + this.applicationId,
             payload,
           );
+          console.log(response);
           const updatedFacilities = this.facilities;
           response?.data?.facilities?.forEach((facility) => {
             updatedFacilities[updatedFacilities.findIndex((el) => el.facilityId === facility.facilityId)] = facility;

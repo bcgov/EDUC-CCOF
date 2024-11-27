@@ -64,7 +64,7 @@
                       />
                       <v-radio
                         class="pt-2 pr-8"
-                        label="We are a member of the Community Social Services Employers' Association (CSSEA)"
+                        label="We are a member of the Community Social Services Employers' Association (CSSEA)."
                         :value="ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA"
                         @click="model.isUnionAgreementReached = null ; model.applicableSector = null"
                       />
@@ -78,7 +78,7 @@
                   <v-col align-self="start">
                     <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
                       <template #label>
-                      <div class="radio-label text-left">Please Select</div>
+                      <div class="radio-label text-left">Please select a response</div>
                     </template>
                       <div class="flex-left">
                         <v-radio
@@ -89,7 +89,7 @@
                         />
                         <v-radio
                           class="pt-2 pr-8"
-                          label="Some or all of our facilities are unionized"
+                          label="Some or all of our facilities are unionized."
                           :value="ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED"
                           @click="model.isUnionAgreementReached = null"
                         />
@@ -138,17 +138,17 @@
                     </template>
                     <div class="flex-left">
                       <v-radio
-                        :label="fundingModelTypeList[0].description"
+                        :label="fundingModelTypeList[0].description + '.'"
                         :value="fundingModelTypeList[0].id"
                         class="pt-2 pr-8"
                       />
                       <v-radio
-                        :label="fundingModelTypeList[1].description"
+                        :label="fundingModelTypeList[1].description+ '.'"
                         :value="fundingModelTypeList[1].id"
                         class="pt-1 pr-8"
                       />
                       <v-radio
-                        :label="fundingModelTypeList[2].description"
+                        :label="'Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non-provincially funded ECEs that do not receive Low - Wage Redress Funding.'"
                         :value="fundingModelTypeList[2].id"
                         class="pt-1 pr-8"
                       />

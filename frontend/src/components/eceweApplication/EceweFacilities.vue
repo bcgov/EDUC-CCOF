@@ -95,10 +95,10 @@
                         :disabled="isReadOnly"
                         :rules="rules.required"
                       >
-                        <v-col cols="12" md="6" class="d-flex">
+                        <v-col cols="12" md="4" class="d-flex ml-16">
                           <v-radio label="Opt-In" :value="ECEWE_OPT_IN_TYPES.OPT_IN" />
                         </v-col>
-                        <v-col cols="12" md="6" class="d-flex">
+                        <v-col cols="12" md="4" class="d-flex ml-16">
                           <v-radio label="Opt-Out" :value="ECEWE_OPT_IN_TYPES.OPT_OUT" />
                         </v-col>
                       </v-radio-group>
@@ -114,20 +114,24 @@
                         :disabled="isReadOnly"
                         :rules="rules.required"
                       >
-                        <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Unionized" :value="100000001" />
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Unionized" :value="ECEWE_FACILITY_UNION_TYPES.UNIONIZED" />
                         </v-col>
-                        <v-col cols="12" md="6" class="d-flex">
-                          <v-radio label="Non-Unionized" :value="100000002" />
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Non-Unionized" :value="ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED" />
                         </v-col>
                       </v-radio-group>
                     </v-row>
                   </template>
 
-                  <v-row v-if="showUnionQuestion">
+                  <v-row v-if="uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion">
                     <v-col cols="12">
                       <strong>
-                        {{ uiFacilities[index].facilityUnionStatus === 100000001 ? 'Unionized' : 'Non-Unionized' }}
+                        {{
+                          uiFacilities[index].facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.UNIONIZED
+                            ? 'Unionized'
+                            : 'Non-Unionized'
+                        }}
                       </strong>
                     </v-col>
                   </v-row>
@@ -176,6 +180,7 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ECEWE_OPT_IN_TYPES,
+  ECEWE_FACILITY_UNION_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
@@ -227,6 +232,9 @@ export default {
       });
     },
     isSaveBtnDisabled() {
+      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        return false;
+      }
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
     isReadOnly() {
@@ -248,7 +256,6 @@ export default {
       return this.uiFacilities.every((fac) => fac.optInOrOut);
     },
     showUnionQuestion() {
-      console.log(this.model?.fundingModel);
       return this.model?.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
   },
@@ -265,6 +272,7 @@ export default {
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
+    this.ECEWE_FACILITY_UNION_TYPES = ECEWE_FACILITY_UNION_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [
@@ -341,15 +349,27 @@ export default {
         }
       }
     },
+    //if a facility decides to opt-out of ecewe - we should reset the union respone to 'non unionzed' before save
+    resetUnionResponse() {
+      this.uiFacilities.forEach((el) => {
+        if (el.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_OUT)
+          el.facilityUnionStatus = ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED;
+      });
+    },
     async saveFacilities(showConfirmation) {
       if (this.isReadOnly) {
         return;
       }
       this.isProcessing = true;
       try {
+        if (this.showUnionQuestion) {
+          this.resetUnionResponse();
+        }
         let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
+
         this.setFacilities(uiFacilitiesCopy);
         let response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {

@@ -198,6 +198,12 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   NO: 0,
 };
 
+//these are used at the facility level - other codes are at ORG level
+export const ECEWE_FACILITY_UNION_TYPES = {
+  UNIONIZED: 100000001,
+  NON_UNIONIZED: 100000002,
+};
+
 export const ECEWE_UNION_AGREEMENT_REACHED = 100000000;
 
 export const MINISTRY_NAME = 'Ministry of Education and Child Care';

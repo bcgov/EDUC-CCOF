@@ -13,15 +13,28 @@
     <v-expansion-panel-text eager>
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
         <v-container fluid class="pa-0">
-          {{ ecewe }}
-          {{ describeCSSEA }}
           <div>
             <v-row v-if="facilityInformationExists" no-gutters>
-              <v-col cols="12">
+              <v-col cols="12" md="6">
                 <span class="summary-label pt-3">Facility Opt-In/Opt-Out for ECE-WE:</span>
                 <v-text-field
                   placeholder="Required"
                   :model-value="optInOptOut"
+                  class="summary-value"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+
+              <v-col cols="12" md="6" v-if="eceweFacility?.optInOrOut === 1">
+                <span class="summary-label pt-3">Union Status:</span>
+                <v-text-field
+                  placeholder="Required"
+                  :model-value="facilityUnionStatus"
                   class="summary-value"
                   density="compact"
                   flat
@@ -88,6 +101,23 @@
                       :rules="rules.required"
                     />
                   </v-col>
+
+                  <template v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
+                    <v-col cols="12">
+                      <span class="summary-label pt-3"> Please Select </span>
+                      <v-text-field
+                        placeholder="Required"
+                        :model-value="sectorValue"
+                        class="summary-value"
+                        density="compact"
+                        flat
+                        variant="solo"
+                        hide-details
+                        readonly
+                        :rules="rules.required"
+                      />
+                    </v-col>
+                  </template>
                 </v-row>
               </template>
 
@@ -331,12 +361,17 @@ export default {
       return !!this.eceweFacility;
     },
     sectorValue() {
-      if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
-        return 'Other Unionized Employee';
-      } else if (this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
-        return "Community Social Services Employers' Association (CSSEA) Member";
-      } else {
-        return null;
+      switch (this.ecewe?.applicableSector) {
+        case ECEWE_SECTOR_TYPES.CSSEA:
+          return "Community Social Services Employers' Association (CSSEA) Member";
+        case ECEWE_SECTOR_TYPES.OTHER_UNION:
+          return 'Other Unionized Employee';
+        case ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED:
+          return 'None of our facilities are unionized';
+        case ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED:
+          return 'Some or all of our facilities are unionized';
+        default:
+          return null;
       }
     },
     routingPath() {
@@ -362,12 +397,26 @@ export default {
           return '';
       }
     },
+    facilityUnionStatus() {
+      console.log(this.eceweFacility);
+      return 'Unionized';
+      // switch (this.eceweFacility?.facilityUnionStatus) {
+      //   case 0:
+      //     return 'Opt-Out';
+      //   case 1:
+      //     return 'Opt-In';
+      //   default:
+      //     return '';
+      // }
+    },
     fundingModel() {
       switch (this.ecewe?.fundingModel) {
         case 100000000:
           return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
         case 100000001:
           return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding';
+        case 100000002 && this.languageYearLabel === this.programYearTypes.FY2025_26:
+          return 'Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non -provincially funded ECEs that do not receive Low - Wage Redress Funding.';
         case 100000002:
           return 'Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding';
         default:
@@ -379,11 +428,21 @@ export default {
         case ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA:
           return "We are not a member of the Community Social Services Employers' Association (CSSEA).";
         case ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA:
-          return "We are a member of the Community Social Services Employers' Association (CSSEA)";
+          return "We are a member of the Community Social Services Employers' Association (CSSEA).";
         default:
           return null;
       }
     },
+    // describeCSSEA() {
+    //   switch (this.ecewe?.describeOrgCSSEA) {
+    //     case ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA:
+    //       return "We are not a member of the Community Social Services Employers' Association (CSSEA).";
+    //     case ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA:
+    //       return "We are a member of the Community Social Services Employers' Association (CSSEA)";
+    //     default:
+    //       return null;
+    //   }
+    // },
   },
   watch: {
     isValidForm: {
