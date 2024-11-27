@@ -3,13 +3,6 @@ import { isEmpty } from 'lodash';
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
-// function sortDocuments(documents) {
-//   documents?.sort((doc1, doc2) => {
-//     return new Date(doc1.lastUpdatedTime) - new Date(doc2.lastUpdatedTime);
-//   });
-//   return documents;
-// }
-
 export default {
   async getApplicationUploadedDocuments(applicationId) {
     try {

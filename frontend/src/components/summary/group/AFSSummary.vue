@@ -132,37 +132,6 @@ export default {
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-:deep(::placeholder) {
-  color: red !important;
-  opacity: 1 !important;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
-}
-
 .error-message {
   color: #ff5252;
 }
