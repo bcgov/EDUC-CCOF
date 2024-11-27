@@ -91,7 +91,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
           return;
         }
         checkSession();
-        const payload = JSON.parse(JSON.stringify(this.eceweModel));
+        const payload = { ...this.eceweModel };
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
         this.setLoadedModel({ ...this.eceweModel });
@@ -129,7 +129,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       });
       if (payload?.length > 0) {
         checkSession();
-        payload = JSON.parse(JSON.stringify(payload));
+        payload = { ...payload };
         try {
           const navBarStore = useNavBarStore();
           const response = await ApiService.apiAxios.post(
