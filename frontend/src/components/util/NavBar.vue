@@ -1067,7 +1067,9 @@ export default {
         );
         const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
           (document) =>
-            document.documentType === DOCUMENT_TYPES.APPLICATION_AFS && document.facilityId === facility.facilityId,
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.facilityId === facility.facilityId,
         );
         facility.isAFSComplete =
           [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||

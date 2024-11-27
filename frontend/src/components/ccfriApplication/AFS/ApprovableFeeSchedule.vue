@@ -155,7 +155,7 @@ export default {
     filteredUploadedDocuments() {
       return this.applicationUploadedDocuments?.filter(
         (document) =>
-          document.documentType === DOCUMENT_TYPES.APPLICATION_AFS &&
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
           document.facilityId === this.currentFacility?.facilityId,
       );
     },
@@ -248,7 +248,7 @@ export default {
         document.ccof_facility = this.currentFacility?.facilityId;
         delete document.file;
       });
-      await DocumentService.createDocuments(payload);
+      await DocumentService.createApplicationDocuments(payload);
     },
     updateUploadedDocumentsToDelete(annotationId) {
       const index = this.applicationUploadedDocuments?.findIndex((item) => item.annotationId === annotationId);

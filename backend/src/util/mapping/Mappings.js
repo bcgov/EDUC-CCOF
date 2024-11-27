@@ -473,18 +473,20 @@ const fundingAgreementMappings = [
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
 ];
 
-const ApplicationDocumentsMappings = [
+const DocumentsMappings = [
   { back: 'annotationid', front: 'annotationId' },
   { back: 'filesize', front: 'fileSize' },
   { back: 'filename', front: 'fileName' },
   { back: 'documentbody', front: 'documentBody' },
   { back: 'notetext', front: 'description' },
   { back: 'subject', front: 'documentType' },
-  { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' },
 ];
+
+const ApplicationDocumentsMappings = [...DocumentsMappings, { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' }];
 
 module.exports = {
   ApplicationDocumentsMappings,
+  DocumentsMappings,
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,

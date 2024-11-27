@@ -50,6 +50,7 @@ export const ApiRoutes = Object.freeze({
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
   PDF: baseRoot + '/pdf/getDocument/',
+  DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
 });
 
@@ -297,4 +298,5 @@ export const PARENT_FEE_FREQUENCIES = Object.freeze({
 
 export const DOCUMENT_TYPES = Object.freeze({
   APPLICATION_AFS: 'AFS - Supporting Documents',
+  APPLICATION_AFS_SUBMITTED: 'AFS - Supporting Documents - Submitted',
 });

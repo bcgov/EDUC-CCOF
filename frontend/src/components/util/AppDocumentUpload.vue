@@ -60,14 +60,14 @@
           density="compact"
         >
           <template #item.actionButtons="{ item }">
-            <v-icon v-if="!loading && !readonly" small @click="$emit('deleteUploadedDocument', item.annotationId)">
+            <v-icon v-if="isDeletable(item)" small @click="$emit('deleteUploadedDocument', item.annotationId)">
               mdi-delete
             </v-icon>
           </template>
           <template #bottom><!-- no paging --></template>
         </v-data-table>
       </div>
-      <div v-if="showErrorMessage" class="error-message">Required</div>
+      <div v-if="showErrorMessage" class="error-message mt-4">Required</div>
     </v-card>
   </v-form>
 </template>
@@ -76,6 +76,7 @@ import { uuid } from 'vue-uuid';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import { DOCUMENT_TYPES } from '@/utils/constants';
 import { humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength } from '@/utils/file';
 
 export default {
@@ -237,6 +238,10 @@ export default {
           reject();
         };
       });
+    },
+
+    isDeletable(document) {
+      return !this.loading && !this.readonly && document?.documentType !== DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED;
     },
   },
 };

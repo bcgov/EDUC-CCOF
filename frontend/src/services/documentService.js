@@ -15,7 +15,7 @@ export default {
     }
   },
 
-  async createDocuments(payload) {
+  async createApplicationDocuments(payload) {
     try {
       if (isEmpty(payload)) return;
       await ApiService.apiAxios.post(ApiRoutes.DOCUMENT_APPLICATION, payload);
@@ -25,12 +25,24 @@ export default {
     }
   },
 
+  async updateDocument(annotationId, payload) {
+    try {
+      if (isEmpty(annotationId) || isEmpty(payload)) return;
+      console.log('updateDocument');
+      console.log(annotationId);
+      await ApiService.apiAxios.patch(`${ApiRoutes.DOCUMENT}/${annotationId}`, payload);
+    } catch (error) {
+      console.log(`Failed to update document - ${error}`);
+      throw error;
+    }
+  },
+
   async deleteDocuments(deletedFiles) {
     try {
       if (isEmpty(deletedFiles)) return;
-      await ApiService.apiAxios.delete(ApiRoutes.DOCUMENT_APPLICATION, { data: deletedFiles });
+      await ApiService.apiAxios.delete(ApiRoutes.DOCUMENT, { data: deletedFiles });
     } catch (error) {
-      console.log(`Failed to delete application's documents - ${error}`);
+      console.log(`Failed to delete documents - ${error}`);
       throw error;
     }
   },

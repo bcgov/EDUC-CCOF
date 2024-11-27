@@ -1,7 +1,7 @@
 'use strict';
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ApplicationDocumentsMappings } = require('../util/mapping/Mappings');
-const { postApplicationDocument, getApplicationDocument, deleteDocument } = require('./utils');
+const { ApplicationDocumentsMappings, DocumentsMappings } = require('../util/mapping/Mappings');
+const { postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 
@@ -39,7 +39,18 @@ async function getApplicationDocuments(req, res) {
   }
 }
 
-async function deleteUploadedDocuments(req, res) {
+async function updateDocument(req, res) {
+  try {
+    const payload = new MappableObjectForBack(req.body, DocumentsMappings).toJSON();
+    const response = await patchOperationWithObjectId('annotations', req.params.annotationId, payload);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function deleteDocuments(req, res) {
   try {
     const deletedDocuments = req.body;
     await Promise.all(
@@ -57,5 +68,6 @@ async function deleteUploadedDocuments(req, res) {
 module.exports = {
   createApplicationDocuments,
   getApplicationDocuments,
-  deleteUploadedDocuments,
+  updateDocument,
+  deleteDocuments,
 };

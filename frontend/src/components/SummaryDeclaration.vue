@@ -443,9 +443,11 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import DocumentService from '@/services/documentService';
 
 import {
   AFS_STATUSES,
+  DOCUMENT_TYPES,
   PATHS,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -518,6 +520,7 @@ export default {
       'isLoadingComplete',
     ]),
     ...mapState(useApplicationStore, [
+      'applicationUploadedDocuments',
       'formattedProgramYear',
       'isRenewal',
       'programYearId',
@@ -744,6 +747,7 @@ export default {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
+          await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
         this.dialog = true;
@@ -968,6 +972,22 @@ export default {
         }
       }
       this.forceNavBarRefresh();
+    },
+
+    // CCFRI-3756 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.
+    // i.e.: Documents with documentType = APPLICATION_AFS_SUBMITTED are not deletable.
+    async updateAfsSupportingDocuments() {
+      const afsDocuments = this.applicationUploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationId, payload);
+        }),
+      );
     },
   },
 };

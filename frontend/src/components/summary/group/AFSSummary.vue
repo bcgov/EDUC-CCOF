@@ -89,7 +89,8 @@ export default {
     filteredUploadedDocuments() {
       return this.applicationUploadedDocuments?.filter(
         (document) =>
-          document.documentType === DOCUMENT_TYPES.APPLICATION_AFS && document.facilityId === this.facilityId,
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
+          document.facilityId === this.facilityId,
       );
     },
     isValidForm() {

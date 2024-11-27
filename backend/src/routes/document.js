@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const { param, validationResult } = require('express-validator');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createApplicationDocuments, getApplicationDocuments, deleteUploadedDocuments } = require('../components/document');
+const { createApplicationDocuments, getApplicationDocuments, deleteDocuments, updateDocument } = require('../components/document');
 
 module.exports = router;
 
@@ -21,4 +21,15 @@ router.get(
   },
 );
 
-router.delete('/application/', passport.authenticate('jwt', { session: false }), isValidBackendToken, deleteUploadedDocuments);
+router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, deleteDocuments);
+
+router.patch(
+  '/:annotationId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('annotationId', 'URL param: [annotationId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateDocument(req, res);
+  },
+);
