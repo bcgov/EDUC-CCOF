@@ -107,88 +107,121 @@
                 />
 
                 <div v-else>
-                  <v-expansion-panel v-if="facility?.facilityInfo" variant="accordion" value="facility-information">
-                    <FacilityInformationSummary
-                      :facility-info="facility?.facilityInfo"
-                      :funding="facility?.funding"
-                      :facility-id="facility.facilityId"
-                      :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                      :ecewe-status="facility?.ecewe?.optInOrOut"
-                      :license-categories="facility?.licenseCategories"
-                      :provider-type="summaryModel?.application?.organizationProviderType"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion" value="ccof-summary">
-                    <div v-if="!facility.funding || isRenewal" />
-                    <div v-else>
-                      <CCOFSummaryFamily
-                        v-if="
-                          summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
-                        "
-                        :funding="facility.funding"
+                  <v-expansion-panels>
+                    <v-expansion-panel
+                      v-if="facility?.facilityInfo"
+                      :key="`${facility.facilityId}-facility-information`"
+                      variant="accordion"
+                      value="facility-information"
+                    >
+                      <FacilityInformationSummary
+                        :facility-info="facility?.facilityInfo"
+                        :funding="facility?.funding"
                         :facility-id="facility.facilityId"
+                        :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+                        :ecewe-status="facility?.ecewe?.optInOrOut"
+                        :license-categories="facility?.licenseCategories"
+                        :provider-type="summaryModel?.application?.organizationProviderType"
+                        :change-rec-guid="facility?.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
-                      <CCOFSummary
-                        v-else
-                        :funding="facility.funding"
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-ccof-summary`"
+                      variant="accordion"
+                      value="ccof-summary"
+                    >
+                      <div v-if="!facility.funding || isRenewal" />
+                      <div v-else>
+                        <CCOFSummaryFamily
+                          v-if="
+                            summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+                          "
+                          :funding="facility.funding"
+                          :facility-id="facility.facilityId"
+                          :program-year-id="summaryModel?.application?.programYearId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                        <CCOFSummary
+                          v-else
+                          :funding="facility.funding"
+                          :facility-id="facility.facilityId"
+                          :change-rec-guid="facility.changeRequestId"
+                          :program-year-id="summaryModel?.application?.programYearId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </div>
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-ccfri-summary`"
+                      variant="accordion"
+                      value="ccfri-summary"
+                    >
+                      <CCFRISummary
+                        :ccfri="facility?.ccfri"
                         :facility-id="facility.facilityId"
+                        :change-rec-guid="facility?.changeRequestId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      v-if="facility?.rfiApp"
+                      :key="`${facility.facilityId}-rfi-summary`"
+                      variant="accordion"
+                      value="rfi-summary"
+                    >
+                      <RFISummary
+                        :rfi-app="facility?.rfiApp"
+                        :ccfri-id="facility?.ccfri?.ccfriId"
+                        :facility-id="facility.facilityId"
+                        :change-rec-guid="facility?.changeRequestId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      v-if="facility?.nmfApp"
+                      :key="`${facility.facilityId}-nmf-summary`"
+                      variant="accordion"
+                      value="nmf-summary"
+                    >
+                      <NMFSummary
+                        :nmf-app="facility?.nmfApp"
+                        :ccfri-id="facility?.ccfri?.ccfriId"
+                        :facility-id="facility.facilityId"
+                        :change-rec-guid="facility?.changeRequestId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-ecewe-summary-a`"
+                      variant="accordion"
+                      value="ecewe-summary-a"
+                    >
+                      <ECEWESummary
+                        :ecewe="{}"
+                        :ecewe-facility="facility.ecewe"
+                        :is-processing="isProcessing"
                         :change-rec-guid="facility.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
-                    </div>
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion" value="ccfri-summary">
-                    <CCFRISummary
-                      :ccfri="facility?.ccfri"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel v-if="facility?.rfiApp" variant="accordion" value="rfi-summary">
-                    <RFISummary
-                      :rfi-app="facility?.rfiApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel v-if="facility?.nmfApp" variant="accordion" value="nmf-summary">
-                    <NMFSummary
-                      :nmf-app="facility?.nmfApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion" value="ecewe-summary-a">
-                    <ECEWESummary
-                      :ecewe="{}"
-                      :ecewe-facility="facility.ecewe"
-                      :is-processing="isProcessing"
-                      :change-rec-guid="facility.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel variant="accordion" value="uploaded-documents-summary">
-                    <UploadedDocumentsSummary
-                      :documents="facility.documents"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-uploaded-documents-summary`"
+                      variant="accordion"
+                      value="uploaded-documents-summary"
+                    >
+                      <UploadedDocumentsSummary
+                        :documents="facility.documents"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                  </v-expansion-panels>
                 </div>
               </div>
               <div v-if="!isRenewal" class="mt-10">
