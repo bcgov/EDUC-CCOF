@@ -31,7 +31,7 @@
         </template>
 
         <div class="mt-6">
-          <router-link v-if="!isValidForm" :to="getLink()">
+          <router-link v-if="!isValidForm" :to="pcfLink">
             <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
@@ -99,6 +99,9 @@ export default {
         (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(this.filteredUploadedDocuments))
       );
     },
+    pcfLink() {
+      return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -118,7 +121,6 @@ export default {
   created() {
     this.AFS_STATUSES = AFS_STATUSES;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
-    this.PATHS = PATHS;
     this.reloadAfs();
   },
   methods: {
@@ -126,14 +128,6 @@ export default {
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);
     },
-    getLink() {
-      return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
-    },
   },
 };
 </script>
-<style scoped>
-.error-message {
-  color: #ff5252;
-}
-</style>
