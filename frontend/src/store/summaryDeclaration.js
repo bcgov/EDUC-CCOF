@@ -190,8 +190,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setIsMainLoading(true);
         //get application ID from the appMap so the page doesn't break when viewing historical CR records.
         let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
-
-        console.log('payload fac ', payload.facilities);
         let summaryModel = {
           organization: undefined,
           application: payload.application,
@@ -202,8 +200,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         summaryModel.facilities = summaryModel.facilities?.filter((fac) => {
           return navBarStore.navBarList?.findIndex((item) => item.facilityId === fac.facilityId) > -1;
         });
-
-        console.log('summary fac at start ', summaryModel.facilities);
 
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
@@ -222,7 +218,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)
           ).data;
 
-          console.log('hello this is summary model ', summaryModel.ecewe);
           this.setSummaryModel(summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)

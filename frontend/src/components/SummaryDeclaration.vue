@@ -193,7 +193,6 @@
                 </div>
               </div>
               <div v-if="!isRenewal" class="mt-10">
-                {{ summaryModel.ecewe }}
                 <v-expansion-panel variant="accordion" value="ecewe-summary-b">
                   <ECEWESummary
                     :ecewe="summaryModel.ecewe"
@@ -583,7 +582,6 @@ export default {
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
-      console.log(isAnyApplicationUnlocked(applicationList));
       return isAnyApplicationUnlocked(applicationList);
     },
     isFacilitiesAvailable() {
@@ -618,10 +616,8 @@ export default {
         if (val) {
           setTimeout(() => {
             const keys = Object.keys(this.payload);
-            console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
             if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
-              console.log('sending updates to server');
               this.updateApplicationStatus(this.payload);
               this.forceNavBarRefresh();
             }
@@ -819,6 +815,8 @@ export default {
       this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
+      console.log('form obj?', formObj);
+      console.log('form c?', isComplete);
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }

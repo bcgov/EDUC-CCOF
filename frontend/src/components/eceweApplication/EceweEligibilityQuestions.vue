@@ -83,7 +83,7 @@
                       <div class="flex-left">
                         <v-radio
                           class="pt-1"
-                          label="None of our facilities are unionized"
+                          label="None of our facilities are unionized."
                           :value="ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED"
                           @click="model.isUnionAgreementReached = null"
                         />
@@ -432,6 +432,7 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     showCSSEAWarning(){
+      //this is only for 2025-26
       return this.model?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO && this.model?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA
     },
     showApplicableSectorQuestion() {
