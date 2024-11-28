@@ -483,9 +483,9 @@ export default {
     facilityUnionStatus() {
       switch (this.eceweFacility?.facilityUnionStatus) {
         case ECEWE_FACILITY_UNION_TYPES.UNIONIZED:
-          return 'Unionized.';
+          return 'Unionized';
         case ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED:
-          return 'Non-Unionized.';
+          return 'Non-Unionized';
         default:
           return null;
       }

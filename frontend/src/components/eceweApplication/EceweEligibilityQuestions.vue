@@ -167,7 +167,8 @@
                       <v-checkbox
                         v-model="model.isUnionAgreementReached"
                         class="pa-0"
-                        :value="ECEWE_UNION_AGREEMENT_REACHED"
+                        :true-value="ECEWE_UNION_AGREEMENT_REACHED"
+                        :false-value="null"
                         label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
                         :disabled="isReadOnly"
                         :rules="rules.required"

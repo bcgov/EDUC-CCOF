@@ -128,7 +128,9 @@
                         {{
                           uiFacilities[index].facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.UNIONIZED
                             ? 'Unionized'
-                            : 'Non-Unionized'
+                            : uiFacilities[index].facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED
+                              ? 'Non-Unionized'
+                              : ''
                         }}
                       </strong>
                     </v-col>
