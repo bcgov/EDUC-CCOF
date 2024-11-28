@@ -115,7 +115,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import { AFS_STATUSES, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
@@ -133,7 +132,6 @@ export default {
       afs: {},
       documentsToUpload: [],
       uploadedDocumentsToDelete: [],
-      isValidForm: false,
       processing: false,
       showErrorMessage: false,
     };
@@ -199,7 +197,6 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete']),
-    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments']),
     isEmpty,
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
