@@ -97,18 +97,18 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useAppStore } from '../../store/app.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAppStore } from '@/store/app.js';
 
-import { PATHS, changeUrl } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import { isNullOrBlank } from '../../utils/common.js';
-import { CHANGE_TYPES } from '../../utils/constants.js';
+import { PATHS, changeUrl } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { isNullOrBlank } from '@/utils/common.js';
+import { CHANGE_TYPES } from '@/utils/constants.js';
 
-import NavButton from '../../components/util/NavButton.vue';
-import ChangeFileUpload from './ChangeFileUpload.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import ChangeFileUpload from '@/components/requestChanges/ChangeFileUpload.vue';
 
 export default {
   name: 'ReportChange',

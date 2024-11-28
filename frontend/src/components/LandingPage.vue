@@ -179,7 +179,7 @@
         </SmallCard>
       </v-col>
       <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
-        <SmallCard :disable="!isReportChangeButtonEnabled">
+        <SmallCard>
           <template #content>
             <p class="text-h6">Request a change</p>
             <p>Submit a request to change your Organization, licence, service details, or Parent Fee information.</p>

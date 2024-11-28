@@ -12,22 +12,16 @@
       </v-row>
       <GroupChangeDialogueContent v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" />
       <FamilyChangeDialogueContent v-else />
-      <v-row class="d-flex justify-center">
-        <p>
-          For more information about reporting changes,
-          <a
-            href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes "
-            >visit the Child Care Operating Funding Website</a
-          >.
-        </p>
-      </v-row>
-      <NavButton
-        :is-processing="processing"
-        :is-next-displayed="true"
-        class="mt-10"
-        @previous="previous"
-        @next="next"
-      />
+
+      <div class="text-center mt-4 mb-8">
+        For more information about reporting changes,
+        <a
+          href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes "
+          >visit the Child Care Operating Funding Website</a
+        >.
+      </div>
+
+      <NavButton :is-processing="processing" :is-next-displayed="true" @previous="previous" @next="next" />
     </v-form>
   </v-container>
 </template>

@@ -85,7 +85,10 @@
             <v-skeleton-loader :loading="true" type="button" />
             <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
           </v-card>
-          <v-row v-if="changeType == 'NOTIFICATION_FORM' && !isFileUploaded" class="px-3 pt-4 text-body-1 text-red">
+          <v-row
+            v-if="changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM && !isFileUploaded"
+            class="px-3 pt-4 text-body-1 text-red"
+          >
             Please upload the Change Notification Form.
           </v-row>
         </v-col>
@@ -96,15 +99,16 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useAuthStore } from '../../store/auth.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
-import rules from '../../utils/rules.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '../../utils/file.js';
-import { deepCloneObject, getFileExtension } from '../../utils/common.js';
+import rules from '@/utils/rules.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { deepCloneObject, getFileExtension } from '@/utils/common.js';
+import { DOCUMENT_TYPES } from '@/utils/constants.js';
 
 export default {
   components: {},
@@ -207,7 +211,7 @@ export default {
       return this.uploadedDocuments.filter((el) => el.subject == this.changeType);
     },
     isReadOnly() {
-      if (this.changeType === 'NOTIFICATION_FORM') {
+      if (this.changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM) {
         if (this.isChangeRequestUnlocked) {
           return false;
         }
@@ -220,9 +224,9 @@ export default {
       return currentCR?.externalStatus !== 'INCOMPLETE';
     },
   },
-  async mounted() {
+  created() {
     const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
+    this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.fileRules = [
       (v) => !!v || 'This is required',
       (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
@@ -378,7 +382,7 @@ export default {
       return unsavedDocumentsCount;
     },
     async checkUploadCompleteStatus() {
-      if (this.changeType == 'NOTIFICATION_FORM') {
+      if (this.changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM) {
         let savedDocumentsCount = await this.getSavedDocumentsCount();
         let unsavedDocumentsCount = await this.getUnsavedDocumentsCount();
         this.isFileUploaded = savedDocumentsCount + unsavedDocumentsCount > 0;
