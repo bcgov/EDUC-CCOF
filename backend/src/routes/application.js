@@ -11,7 +11,6 @@ const {
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
-  getCCFRIApplication,
   getDeclaration,
   submitApplication,
   updateStatusForApplicationComponents,
@@ -26,10 +25,6 @@ router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isV
 /* CREATE or UPDATE an existing CCFRI application for opt-in and out
   CCOF application guid and facility guid are defined in the payload
 */
-router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getCCFRIApplication(req, res);
-});
 
 router.get('/ccfri/:ccfriId/afs', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
   validationResult(req).throw();
@@ -67,7 +62,7 @@ router.patch('/ccfri', passport.authenticate('jwt', { session: false }), isValid
 });
 
 router.patch('/ccfri/:ccfriId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  //validationResult(req).throw();
+  validationResult(req).throw();
   return patchCCFRIApplication(req, res);
 });
 
