@@ -69,9 +69,7 @@
                       <strong>Facility Name: {{ navBarList[index].facilityName }}</strong>
                     </v-col>
                     <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                      <strong>
-                        Status: Opt-{{ uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN ? 'In' : 'Out' }}
-                      </strong>
+                      <strong> Status: Opt-{{ uiFacilities[index].optInOrOut === 1 ? 'In' : 'Out' }} </strong>
                     </v-col>
 
                     <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">

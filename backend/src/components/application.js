@@ -594,7 +594,7 @@ async function getApplicationSummary(req, res) {
   try {
     let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
       ApplicationSummaryCcfriMappings,
-    )}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode),ccof_application_basefunding_Application`;
+    )}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode,ccof_facilityunionstatus),ccof_application_basefunding_Application`;
     let results = await getOperation(operation);
 
     let applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;

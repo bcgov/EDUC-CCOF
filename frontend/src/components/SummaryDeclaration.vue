@@ -176,6 +176,7 @@
                     <ECEWESummary
                       :ecewe="{}"
                       :ecewe-facility="facility.ecewe"
+                      :funding-model="summaryModel?.ecewe?.fundingModel"
                       :is-processing="isProcessing"
                       :change-rec-guid="facility.changeRequestId"
                       :program-year-id="summaryModel?.application?.programYearId"
@@ -192,6 +193,7 @@
                 </div>
               </div>
               <div v-if="!isRenewal" class="mt-10">
+                {{ summaryModel.ecewe }}
                 <v-expansion-panel variant="accordion" value="ecewe-summary-b">
                   <ECEWESummary
                     :ecewe="summaryModel.ecewe"

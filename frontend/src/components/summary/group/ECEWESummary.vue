@@ -14,6 +14,8 @@
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
         <v-container fluid class="pa-0">
           <div>
+            <!-- This is facility level information. Because this component is rendered twice but with two models, this is slightly different.
+            This information must be updated in backend/application getApplicationSummary -->
             <v-row v-if="facilityInformationExists" no-gutters>
               <v-col cols="12" md="6">
                 <span class="summary-label pt-3">Facility Opt-In/Opt-Out for ECE-WE:</span>
@@ -29,8 +31,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-
-              <v-col cols="12" md="6" v-if="eceweFacility?.optInOrOut === 1">
+              <v-col cols="12" md="6" v-if="eceweFacility?.optInOrOut === 1 && showUnionQuestion">
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field
                   placeholder="Required"
@@ -45,6 +46,7 @@
                 />
               </v-col>
             </v-row>
+            <!-- These are the org level questions below. They differ based on program year. -->
             <v-row v-if="!facilityInformationExists" no-gutters>
               <v-col cols="12">
                 <span class="summary-label pt-2">
@@ -102,7 +104,7 @@
                     />
                   </v-col>
 
-                  <template v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
+                  <template v-if="ecewe?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
                     <v-col cols="12">
                       <span class="summary-label pt-3"> Please Select </span>
                       <v-text-field
@@ -184,7 +186,7 @@
                         <span class="summary-label pt-3">Funding model:</span>
                         <v-textarea
                           placeholder="Required"
-                          :model-value="fundingModel"
+                          :model-value="fundingModelLabel"
                           class="summary-value"
                           density="compact"
                           flat
@@ -270,8 +272,11 @@ import {
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
-  ECEWE_OPT_IN_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
+  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
+  ECEWE_UNION_AGREEMENT_REACHED,
+  ECEWE_OPT_IN_TYPES,
+  ECEWE_FACILITY_UNION_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -302,6 +307,11 @@ export default {
       required: false,
       default: '',
     },
+    fundingModel: {
+      type: Number,
+      required: false,
+      default: null,
+    },
   },
   emits: ['isSummaryValid'],
   data() {
@@ -325,6 +335,9 @@ export default {
     },
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
+    },
+    showUnionQuestion() {
+      return this.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
     showApplicableSector() {
       return (
@@ -399,17 +412,16 @@ export default {
     },
     facilityUnionStatus() {
       console.log(this.eceweFacility);
-      return 'Unionized';
-      // switch (this.eceweFacility?.facilityUnionStatus) {
-      //   case 0:
-      //     return 'Opt-Out';
-      //   case 1:
-      //     return 'Opt-In';
-      //   default:
-      //     return '';
-      // }
+      switch (this.eceweFacility?.facilityUnionStatus) {
+        case ECEWE_FACILITY_UNION_TYPES.UNIONIZED:
+          return 'Unionized';
+        case ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED:
+          return 'Non-Unionized';
+        default:
+          return null;
+      }
     },
-    fundingModel() {
+    fundingModelLabel() {
       switch (this.ecewe?.fundingModel) {
         case 100000000:
           return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding';
@@ -456,6 +468,7 @@ export default {
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
+    this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
   },
   methods: {
     getYesNoValue(value) {
