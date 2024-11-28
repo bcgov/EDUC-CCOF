@@ -667,8 +667,6 @@ async function getFacilityChangeData(changeActionId) {
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
   let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
   let newFacData = await getOperation(newFacOperation);
-  log.info(newFacData, 'new fac data before mapping');
-
   newFacData.value.forEach((fac) => {
     if (fac.ccof_facility) {
       let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
@@ -678,7 +676,6 @@ async function getFacilityChangeData(changeActionId) {
     }
   });
 
-  log.info('faccccc data post mapping', mappedData);
   return mappedData;
 }
 
@@ -704,8 +701,6 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
     }
   });
 
-  log.info(str);
-
   try {
     let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
       ChangeRequestMappings,
@@ -714,12 +709,7 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
-    // log.info('ALL CHANGE REQZ');
-    // log.info(changeRequests);
-
     let payload = [];
-
-    //log.verbose(changeRequests);
     await Promise.all(
       changeRequests.map(async (request) => {
         let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
@@ -741,8 +731,6 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
         payload.push(req);
       }),
     );
-
-    //log.info('final payload', payload);
     return payload;
   } catch (e) {
     log.error('An error occurred while getting change request', e);
@@ -754,8 +742,6 @@ async function getChangeRequest(req, res) {
   try {
     //pulled the logic out into a seperate function so it can be called from somewhere else
     const payload = await getChangeRequestsFromApplicationId(req.params.applicationId);
-
-    //log.info('final payload', payload);
     return res.status(HttpStatus.OK).json(payload);
   } catch (e) {
     log.error('An error occurred while getting change request', e);
@@ -772,7 +758,6 @@ async function deletePcfApplication(req, res) {
     await Promise.all(
       application['ccof_application_basefunding_Application'].map(async (facility) => {
         await deleteOperationWithObjectId('accounts', facility['_ccof_facility_value']);
-        //log.info(response);
       }),
     );
 
