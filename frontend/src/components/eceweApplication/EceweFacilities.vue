@@ -260,7 +260,7 @@ export default {
   async mounted() {
     this.setFundingModelTypes({ ...this.fundingModelTypeList });
     this.setApplicationId(this.applicationId);
-    let response = await this.loadData();
+    const response = await this.loadData();
     if (response) {
       this.initECEWEFacilities(this.navBarList);
       this.setupUiFacilities();
@@ -338,7 +338,7 @@ export default {
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          let response = await this.loadECEWE();
+          const response = await this.loadECEWE();
           this.isLoading = false;
           return response;
         } catch (error) {
@@ -363,23 +363,23 @@ export default {
         if (this.showUnionQuestion) {
           this.resetUnionResponse();
         }
-        let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+        let uiFacilitiesCopy = [...this.uiFacilities];
 
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
 
         this.setFacilities(uiFacilitiesCopy);
-        let response = await this.saveECEWEFacilities();
+        const response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach((el) => {
-            let facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
+            const facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
             }
 
             //update the CR map with the data so navbar will work properly for CR new fac
             if (this.isChangeRequest) {
-              let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
+              const newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
               newFac.ecewe = {
                 eceweOptInStatus: el.optInOrOut,
                 eceweApplicationId: el.eceweApplicationId,

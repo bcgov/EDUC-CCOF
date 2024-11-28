@@ -31,7 +31,11 @@
                   :rules="rules.required"
                 />
               </v-col>
-              <v-col cols="12" md="6" v-if="eceweFacility?.optInOrOut === 1 && showUnionQuestion">
+              <v-col
+                cols="12"
+                md="6"
+                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
+              >
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field
                   placeholder="Required"
@@ -184,7 +188,7 @@
 
               <!-- previous year's ECE-WE question logic below -->
               <template v-else>
-                <v-row v-if="ecewe?.optInECEWE === 1" no-gutters>
+                <v-row v-if="ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" no-gutters>
                   <v-col cols="12">
                     <span class="summary-label pt-3">
                       Do any of the ECE employees at any facility in your organization belong to a union
@@ -203,7 +207,13 @@
                   </v-col>
                 </v-row>
                 <v-row v-if="!facilityInformationExists" no-gutters>
-                  <v-col v-if="languageYearLabel !== programYearTypes.HISTORICAL && ecewe?.optInECEWE === 1" cols="12">
+                  <v-col
+                    v-if="
+                      languageYearLabel !== programYearTypes.HISTORICAL &&
+                      ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+                    "
+                    cols="12"
+                  >
                     <span class="summary-label pt-3">
                       Are you a public sector employer, as defined in the Public Sector Employers Act?
                     </span>
@@ -333,9 +343,9 @@ import {
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  ECEWE_UNION_AGREEMENT_REACHED,
   ECEWE_OPT_IN_TYPES,
   ECEWE_FACILITY_UNION_TYPES,
+  ECEWE_BELONGS_TO_UNION,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -366,6 +376,7 @@ export default {
       required: false,
       default: '',
     },
+    //we need this prop so at the facility level we have the required data from org level to show unionized question
     fundingModel: {
       type: Number,
       required: false,
@@ -400,19 +411,19 @@ export default {
     },
     showApplicableSector() {
       return (
-        (this.ecewe?.belongsToUnion === 1 &&
-          this.ecewe?.optInECEWE === 1 &&
-          this.ecewe?.publicSector === 1 &&
+        (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
+          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+          this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
           this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
-        (this.ecewe?.belongsToUnion === 1 &&
-          this.ecewe?.optInECEWE === 1 &&
+        (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
+          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
           this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showFundingModel() {
       return (
-        this.ecewe?.optInECEWE === 1 &&
-        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
       );
     },
@@ -424,8 +435,8 @@ export default {
     },
     showWageConfirmation() {
       return (
-        this.ecewe?.optInECEWE === 1 &&
-        this.ecewe?.belongsToUnion === 1 &&
+        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
     },
@@ -461,16 +472,15 @@ export default {
     },
     optInOptOut() {
       switch (this.eceweFacility?.optInOrOut) {
-        case 0:
+        case ECEWE_OPT_IN_TYPES.OPT_OUT:
           return 'Opt-Out';
-        case 1:
+        case ECEWE_OPT_IN_TYPES.OPT_IN:
           return 'Opt-In';
         default:
           return '';
       }
     },
     facilityUnionStatus() {
-      console.log(this.eceweFacility);
       switch (this.eceweFacility?.facilityUnionStatus) {
         case ECEWE_FACILITY_UNION_TYPES.UNIONIZED:
           return 'Unionized.';
@@ -482,11 +492,11 @@ export default {
     },
     fundingModelLabel() {
       switch (this.ecewe?.fundingModel) {
-        case 100000000:
+        case this.fundingModelTypeList[0].id:
           return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.';
-        case 100000001:
+        case this.fundingModelTypeList[1].id:
           return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.';
-        case 100000002:
+        case this.fundingModelTypeList[2].id:
           return 'Our facilities have both provincially funded ECEs receiving Low-Wage Redress Funding and non-provincially funded ECEs that do not receive Low-Wage Redress Funding.';
 
         default:
@@ -514,7 +524,6 @@ export default {
   watch: {
     isValidForm: {
       handler() {
-        console.log(this.showCSSEAWarning);
         if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm && !this.showCSSEAWarning);
         }

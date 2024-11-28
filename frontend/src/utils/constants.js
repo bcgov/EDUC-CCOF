@@ -183,6 +183,12 @@ export const ECEWE_SECTOR_TYPES = {
   SOME_FACILITIES_UNIONIZED: 100000003, // only for 2025-26
 };
 
+//2024 and previous ONLY - question to be removed in future years
+export const ECEWE_BELONGS_TO_UNION = {
+  YES: 1,
+  NO: 0,
+};
+
 export const ECEWE_OPT_IN_TYPES = {
   OPT_IN: 1,
   OPT_OUT: 0,

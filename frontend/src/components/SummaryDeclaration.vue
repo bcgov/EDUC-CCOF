@@ -815,8 +815,6 @@ export default {
       this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
-      console.log('form obj?', formObj);
-      console.log('form c?', isComplete);
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
