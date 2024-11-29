@@ -235,7 +235,12 @@
                   />
                 </v-expansion-panel>
               </div>
-              <v-expansion-panel v-if="hasChangeNotificationFormDocuments" variant="accordion" class="mt-10">
+              <v-expansion-panel
+                v-if="hasChangeNotificationFormDocuments"
+                variant="accordion"
+                value="change-notification-form-summary"
+                class="mt-10"
+              >
                 <ChangeNotificationFormSummary
                   :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
                   @is-summary-valid="isFormComplete"
