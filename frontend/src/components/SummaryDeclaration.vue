@@ -175,7 +175,7 @@
                   <v-expansion-panel v-if="facility?.ccfri?.enableAfs" variant="accordion" value="afs-summary">
                     <AFSSummary
                       :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
+                      :facility-id="facility?.facilityId"
                       :program-year-id="summaryModel?.application?.programYearId"
                       @is-summary-valid="isFormComplete"
                     />
@@ -974,7 +974,7 @@ export default {
       this.forceNavBarRefresh();
     },
 
-    // CCFRI-3756 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.
+    // CCFRI-3808 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.
     // i.e.: Documents with documentType = APPLICATION_AFS_SUBMITTED are not deletable.
     async updateAfsSupportingDocuments() {
       const afsDocuments = this.applicationUploadedDocuments?.filter(

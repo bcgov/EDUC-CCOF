@@ -108,3 +108,7 @@ input[type="number"] {
 .v-table .v-table__wrapper {
   font-size: 1rem;
 }
+
+.error-message {
+  color: #ff5252;
+}

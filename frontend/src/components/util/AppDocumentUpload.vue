@@ -255,8 +255,4 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.error-message {
-  color: #ff5252;
-}
 </style>
