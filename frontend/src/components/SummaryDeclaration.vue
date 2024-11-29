@@ -76,7 +76,7 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-expansion-panels v-model="expand" multiple variant="accordion">
+          <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
             <v-row v-if="isMainLoading">
               <v-col>
                 <v-skeleton-loader
@@ -107,12 +107,12 @@
                 />
 
                 <div v-else>
-                  <v-expansion-panels>
+                  <v-expansion-panels v-model="expand[facility.facilityId]" multiple>
                     <v-expansion-panel
                       v-if="facility?.facilityInfo"
                       :key="`${facility.facilityId}-facility-information`"
+                      :value="`${facility.facilityId}-facility-information`"
                       variant="accordion"
-                      value="facility-information"
                     >
                       <FacilityInformationSummary
                         :facility-info="facility?.facilityInfo"
@@ -129,8 +129,8 @@
                     </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-ccof-summary`"
+                      :value="`${facility.facilityId}-ccof-summary`"
                       variant="accordion"
-                      value="ccof-summary"
                     >
                       <div v-if="!facility.funding || isRenewal" />
                       <div v-else>
@@ -155,8 +155,8 @@
                     </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-ccfri-summary`"
+                      :value="`${facility.facilityId}-ccfri-summary`"
                       variant="accordion"
-                      value="ccfri-summary"
                     >
                       <CCFRISummary
                         :ccfri="facility?.ccfri"
@@ -169,8 +169,8 @@
                     <v-expansion-panel
                       v-if="facility?.rfiApp"
                       :key="`${facility.facilityId}-rfi-summary`"
+                      :value="`${facility.facilityId}-rfi-summary`"
                       variant="accordion"
-                      value="rfi-summary"
                     >
                       <RFISummary
                         :rfi-app="facility?.rfiApp"
@@ -184,8 +184,8 @@
                     <v-expansion-panel
                       v-if="facility?.nmfApp"
                       :key="`${facility.facilityId}-nmf-summary`"
+                      :value="`${facility.facilityId}-nmf-summary`"
                       variant="accordion"
-                      value="nmf-summary"
                     >
                       <NMFSummary
                         :nmf-app="facility?.nmfApp"
@@ -198,8 +198,8 @@
                     </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-ecewe-summary-a`"
+                      :value="`${facility.facilityId}-ecewe-summary-a`"
                       variant="accordion"
-                      value="ecewe-summary-a"
                     >
                       <ECEWESummary
                         :ecewe="{}"
@@ -212,8 +212,8 @@
                     </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-uploaded-documents-summary`"
+                      :value="`${facility.facilityId}-uploaded-documents-summary`"
                       variant="accordion"
-                      value="uploaded-documents-summary"
                     >
                       <UploadedDocumentsSummary
                         :documents="facility.documents"
@@ -856,17 +856,20 @@ export default {
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {
-      this.expand = [
-        'organization-summary',
-        'facility-information',
-        'ccof-summary',
-        'ccfri-summary',
-        'rfi-summary',
-        'nmf-summary',
-        'ecewe-summary-a',
-        'ecewe-summary-b',
-        'uploaded-documents-summary',
-      ];
+      this.summaryModel.facilities.forEach((facility) => {
+        const facilityId = facility.facilityId;
+        this.expand[facilityId] = [
+          `${facilityId}-facility-information`,
+          `${facilityId}-ccof-summary`,
+          `${facilityId}-ccfri-summary`,
+          `${facilityId}-rfi-summary`,
+          `${facilityId}-nmf-summary`,
+          `${facilityId}-ecewe-summary-a`,
+          `${facilityId}-uploaded-documents-summary`,
+        ];
+      });
+
+      this.expand['global'] = ['organization-summary', 'ecewe-summary-b', 'change-notification-form-summary'];
     },
     updateNavBarStatus(formObj, isComplete) {
       if (formObj && !this.isReadOnly) {
