@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -110,7 +111,14 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { NAV_BAR_GROUPS, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import {
+  AFS_STATUSES,
+  DOCUMENT_TYPES,
+  NAV_BAR_GROUPS,
+  CHANGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+} from '@/utils/constants.js';
 import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
@@ -136,6 +144,7 @@ export default {
     ...mapState(useAppStore, ['pageTitle', 'programYearList']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
+      'applicationUploadedDocuments',
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
@@ -143,7 +152,7 @@ export default {
       'isRenewal',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useCcfriAppStore, ['getCCFRIById']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
     ...mapState(useFacilityStore, ['isNewFacilityStarted']),
     ...mapState(useFundingStore, ['isNewFundingStarted']),
     ...mapState(useNavBarStore, [
@@ -190,6 +199,10 @@ export default {
     expandedNavBarItems() {
       return this.items?.filter((item) => item.expanded)?.map((item) => item.title);
     },
+
+    isApplication() {
+      return this.$route.path?.includes(`${PATHS.PREFIX.PCF}/`);
+    },
   },
   watch: {
     navRefresh: {
@@ -207,8 +220,29 @@ export default {
       deep: true,
     },
   },
+
+  async created() {
+    await this.loadData();
+  },
+
   methods: {
-    ...mapActions(useNavBarStore, ['setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
+    ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
+    async loadData() {
+      try {
+        if (this.isApplication) {
+          await Promise.all([
+            this.getApprovableFeeSchedulesForFacilities(this.userProfileList),
+            this.getApplicationUploadedDocuments(),
+          ]);
+          this.checkApprovableFeeSchedulesComplete();
+        }
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
+      }
+    },
     setActive(item) {
       let index = this.items.findIndex((obj) => obj.title === item.title);
       if (item.active) {
@@ -576,7 +610,7 @@ export default {
                 id: item.facilityId,
                 link: { name: 'ccfri-afs', params: { urlGuid: item.ccfriApplicationId } },
                 isAccessible: true,
-                icon: this.getCheckbox(item.isAfsComplete), // TODO (vietle-cgi) - CCFRI-3756 - work in progress
+                icon: this.getCheckbox(item.isAFSComplete),
                 isActive: this.$route.params.urlGuid === item.ccfriApplicationId && 'ccfri-afs' === this.$route.name,
                 position: positionIndex++,
                 navBarId: navBarId++,
@@ -1025,6 +1059,23 @@ export default {
       if (page?.isAccessible) {
         this.$router.push(page.link);
       }
+    },
+    checkApprovableFeeSchedulesComplete() {
+      this.userProfileList?.forEach((facility) => {
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
+        );
+        const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
+          (document) =>
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.facilityId === facility.facilityId,
+        );
+        facility.isAFSComplete =
+          [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
+          (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+      });
+      this.refreshNavBarList();
     },
   },
 };

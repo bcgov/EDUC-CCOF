@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -112,6 +112,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     ccfriStore: {},
     ccfriMedianStore: {},
     previousFeeStore: {},
+    approvableFeeSchedules: null,
   }),
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
@@ -571,12 +572,43 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       }
     },
 
-    async getApprovableFeeSchedules(ccfriId) {
+    async getApprovableFeeSchedulesForFacilities(facilities) {
       try {
-        const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_CCFRI}/${ccfriId}/afs`);
-        return response?.data;
+        if (isEmpty(facilities)) return;
+        const appStore = useAppStore();
+        this.approvableFeeSchedules = [];
+        const enabledAfsFacilities = facilities?.filter((facility) => facility.enableAfs);
+        if (isEmpty(enabledAfsFacilities)) return;
+        await Promise.all(
+          enabledAfsFacilities?.map(async (facility) => {
+            const response = await ApiService.apiAxios.get(
+              `${ApiRoutes.APPLICATION_CCFRI}/${facility.ccfriApplicationId}/afs`,
+            );
+            const afs = response?.data;
+            afs?.approvableFeeSchedules?.forEach((item) => {
+              item.programYearOrder = appStore.getProgramYearOrderById(item.programYearId);
+              item.childCareCategoryNumber = appStore.getChildCareCategoryNumberById(item.childCareCategoryId);
+            });
+            afs?.approvableFeeSchedules?.sort(
+              (a, b) =>
+                a.programYearOrder - b.programYearOrder || a.childCareCategoryNumber - b.childCareCategoryNumber,
+            );
+            this.approvableFeeSchedules = this.approvableFeeSchedules?.concat(afs);
+          }),
+        );
       } catch (e) {
-        console.log(`Failed to get existing approvable parent fees with error - ${e}`);
+        console.log(`Failed to Approvable Fee Schedules for facilities with error - ${e}`);
+        throw e;
+      }
+    },
+
+    async updateApplicationCCFRI(ccfriId, payload) {
+      try {
+        if (!ccfriId || isEmpty(payload)) return;
+        const response = await ApiService.apiAxios.patch(`${ApiRoutes.APPLICATION_CCFRI}/${ccfriId}`, payload);
+        return response;
+      } catch (e) {
+        console.log(`Failed to update Application CCFRI with error - ${e}`);
         throw e;
       }
     },

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
@@ -28,6 +29,8 @@ export const useApplicationStore = defineStore('application', {
 
     ccofConfirmationEnabled: false,
     applicationMap: new Map(),
+
+    applicationUploadedDocuments: [],
   }),
   actions: {
     setApplicationId(value) {
@@ -143,8 +146,17 @@ export const useApplicationStore = defineStore('application', {
         throw error;
       }
     },
+    async getApplicationUploadedDocuments() {
+      try {
+        this.applicationUploadedDocuments = await DocumentService.getApplicationUploadedDocuments(this.applicationId);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
   },
   getters: {
+    isApplicationSubmitted: (state) => state.applicationStatus !== 'INCOMPLETE',
     formattedProgramYear: (state) => formatFiscalYearName(state.programYearLabel),
     fiscalStartAndEndDates: (state) => {
       //set fiscal year dates to prevent user from choosing dates outside the current FY

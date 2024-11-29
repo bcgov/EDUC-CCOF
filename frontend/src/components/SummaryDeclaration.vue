@@ -197,6 +197,19 @@
                       />
                     </v-expansion-panel>
                     <v-expansion-panel
+                      v-if="facility?.ccfri?.enableAfs"
+                      :key="`${facility.facilityId}-afs-summary`"
+                      :value="`${facility.facilityId}-afs-summary`"
+                      variant="accordion"
+                    >
+                      <AFSSummary
+                        :ccfri-id="facility?.ccfri?.ccfriId"
+                        :facility-id="facility?.facilityId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
                       :key="`${facility.facilityId}-ecewe-summary-a`"
                       :value="`${facility.facilityId}-ecewe-summary-a`"
                       variant="accordion"
@@ -471,9 +484,13 @@ import { useAppStore } from '@/store/app.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import DocumentService from '@/services/documentService';
 
 import {
+  AFS_STATUSES,
+  DOCUMENT_TYPES,
   PATHS,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -487,6 +504,7 @@ import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
@@ -499,6 +517,7 @@ export default {
     UploadedDocumentsSummary,
     NMFSummary,
     RFISummary,
+    AFSSummary,
     FacilityInformationSummary,
     CCOFSummary,
     CCFRISummary,
@@ -544,6 +563,7 @@ export default {
       'isLoadingComplete',
     ]),
     ...mapState(useApplicationStore, [
+      'applicationUploadedDocuments',
       'formattedProgramYear',
       'isRenewal',
       'programYearId',
@@ -557,6 +577,7 @@ export default {
       'isEceweComplete',
       'applicationMap',
     ]),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isCREceweComplete', 'isCRLicenseComplete']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -769,6 +790,7 @@ export default {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
+          await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
         this.dialog = true;
@@ -837,14 +859,22 @@ export default {
           unlockCcfri: facility.unlockCcfri,
           unlockNmf: facility.unlockNmf,
           unlockRfi: facility.unlockRfi,
+          unlockAfs: facility.unlockAfs,
         };
         // Create payload with only unlock propteries set to 1.
-
         unlockPayload = Object.fromEntries(Object.entries(unlockPayload).filter(([_, v]) => v == 1));
         // Update payload unlock properties from 1 to 0.
         Object.keys(unlockPayload).forEach((key) => {
           unlockPayload[key] = '0';
         });
+
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility.ccfriApplicationId,
+        );
+        if (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
+          unlockPayload.enableAfs = '0';
+        }
+
         if (Object.keys(unlockPayload).length > 0) {
           ccrfiRelockPayload.push({ ...applicationIdPayload, ...unlockPayload });
         }
@@ -869,6 +899,7 @@ export default {
           `${facilityId}-ccfri-summary`,
           `${facilityId}-rfi-summary`,
           `${facilityId}-nmf-summary`,
+          `${facilityId}-afs-summary`,
           `${facilityId}-ecewe-summary-a`,
           `${facilityId}-uploaded-documents-summary`,
         ];
@@ -987,6 +1018,22 @@ export default {
         }
       }
       this.forceNavBarRefresh();
+    },
+
+    // CCFRI-3808 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.
+    // i.e.: Documents with documentType = APPLICATION_AFS_SUBMITTED are not deletable.
+    async updateAfsSupportingDocuments() {
+      const afsDocuments = this.applicationUploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationId, payload);
+        }),
+      );
     },
   },
 };
