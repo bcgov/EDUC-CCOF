@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import { useAppStore } from '@/store/app.js';
@@ -257,6 +258,12 @@ export const useNavBarStore = defineStore('navBar', {
         this.filterNavBar();
         this.refreshNavBar++;
       }
+    },
+    setNavBarAfsComplete({ ccfriId, complete }) {
+      const userProfileItem = this.userProfileList?.find((item) => item.ccfriApplicationId === ccfriId);
+      if (isEmpty(userProfileItem)) return;
+      userProfileItem.isAFSComplete = complete;
+      this.refreshNavBarList();
     },
     addToNavBar(payload) {
       this.userProfileList.push(payload);

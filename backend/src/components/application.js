@@ -57,17 +57,14 @@ async function renewCCOFApplication(req, res) {
 }
 
 async function patchCCFRIApplication(req, res) {
-  let payload = req.body;
-  payload = new MappableObjectForBack(payload, CCFRIFacilityMappings);
-  payload = payload.toJSON();
-
   try {
-    await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, payload);
+    const payload = new MappableObjectForBack(req.body, CCFRIFacilityMappings).toJSON();
+    const response = await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, payload);
+    return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
-  return res.status(HttpStatus.OK).json(payload);
 }
 
 async function deleteCCFRIApplication(req, res) {

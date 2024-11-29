@@ -57,9 +57,9 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_chargefeeccfri', front: 'hasClosureFees' },
   { back: 'ccof_applicationccfriid', front: 'ccfriApplicationId' },
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' },
-
-  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+  { back: 'ccof_unlock_afs', front: 'unlockAfs' },
+  { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
+  { back: 'ccof_afs_status', front: 'afsStatus' },
 ];
 
 const RFIApplicationMappings = [
@@ -319,6 +319,7 @@ const UserProfileCCFRIMappings = [
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' },
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
+  { back: 'ccof_afs_status', front: 'afsStatus' },
   ...UserProfileBaseCCFRIMappings,
 ];
 const UserProfileECEWEMappings = [
@@ -429,7 +430,6 @@ const ApplicationSummaryCcfriMappings = [
   { back: 'ccof_has_rfi', front: 'hasRfi' }, // false,
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' }, // null,
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete' }, // false,
-  { back: 'ccof_afs_status', front: 'afsStatus' },
 ];
 
 const CCFRIApprovableFeeSchedulesMappings = [
@@ -473,7 +473,20 @@ const fundingAgreementMappings = [
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
 ];
 
+const DocumentsMappings = [
+  { back: 'annotationid', front: 'annotationId' },
+  { back: 'filesize', front: 'fileSize' },
+  { back: 'filename', front: 'fileName' },
+  { back: 'documentbody', front: 'documentBody' },
+  { back: 'notetext', front: 'description' },
+  { back: 'subject', front: 'documentType' },
+];
+
+const ApplicationDocumentsMappings = [...DocumentsMappings, { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' }];
+
 module.exports = {
+  ApplicationDocumentsMappings,
+  DocumentsMappings,
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,
