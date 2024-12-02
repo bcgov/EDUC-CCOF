@@ -1,113 +1,111 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form">
     <v-container class="pa-0">
-      <v-row no-gutters>
-        <v-col class="col-12 mb-6">
-          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
-          xls, and xlsx.
-        </v-col>
-        <v-col class="col-12">
-          <v-data-table
-            v-if="!isLoading"
-            :headers="headers"
-            :items="getFilteredDocs"
-            class="elevation-1"
-            hide-default-header
-            hide-default-footer
-            :items-per-page="-1"
-          >
-            <template #top>
-              <v-col flex>
-                <v-toolbar flat color="white">
-                  <div class="d-flex">
-                    <v-btn
-                      color="primary"
-                      class="ml-2 text-white v-skeleton-loader-small-button"
-                      :disabled="isReadOnly"
-                      @click="addNew"
-                    >
-                      <v-icon dark> mdi-plus </v-icon>
-                      Add
-                    </v-btn>
-                  </div>
-                </v-toolbar>
-              </v-col>
-            </template>
+      <div class="mt-2 mb-4">
+        The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
+        xls, and xlsx.
+      </div>
+      <v-data-table
+        v-if="!isLoading"
+        :headers="headers"
+        :items="getFilteredDocs"
+        class="elevation-1 pa-2"
+        hide-default-header
+        hide-default-footer
+        :items-per-page="-1"
+      >
+        <template #top>
+          <v-col flex>
+            <AppButton
+              v-if="!isReadOnly"
+              id="add-new-file"
+              :primary="false"
+              size="large"
+              class="add-file-button mb-2"
+              @click="addNew"
+            >
+              Add File
+            </AppButton>
+          </v-col>
+        </template>
 
-            <template #item.document="{ item }">
-              <div v-if="item?.annotationid">
-                <span> {{ item?.filename }} </span>
-              </div>
-              <v-file-input
-                v-else
-                :id="String(item.id)"
-                color="#003366"
-                :rules="[...fileRules, ...rules.required]"
-                prepend-icon="mdi-file-upload"
-                :clearable="false"
-                class="pt-0"
-                :accept="fileAccept"
-                :disabled="isReadOnly"
-                placeholder="Select your file"
-                :error-messages="fileInputError"
-                required
-                @click:clear="deleteItem(item)"
-                @change="selectFile"
-                @click="uploadDocumentClicked($event)"
-              />
-            </template>
-            <template #item.notetext="{ item }">
-              <div v-if="item?.annotationid">
-                <span> {{ item?.notetext }} </span>
-              </div>
-              <v-text-field
-                v-else
-                v-model="item.notetext"
-                placeholder="Enter a description (Optional)"
-                density="compact"
-                clearable
-                :rules="[rules.maxLength(255)]"
-                @change="updateDescription(item)"
-              />
-            </template>
+        <template #item.document="{ item }">
+          <div v-if="item?.annotationid">
+            <span> {{ item?.filename }} </span>
+          </div>
+          <v-file-input
+            v-else
+            :id="item.id"
+            color="#003366"
+            :rules="[...fileRules, ...rules.required]"
+            prepend-icon="mdi-file-upload"
+            :clearable="false"
+            class="pt-6 file-input"
+            :accept="fileAccept"
+            :disabled="isReadOnly"
+            placeholder="Select your file"
+            :error-messages="fileInputError"
+            @click:clear="deleteItem(item)"
+            @change="selectFile"
+          />
+        </template>
+        <template #item.notetext="{ item }">
+          <div v-if="item?.annotationid">
+            <span> {{ item?.notetext }} </span>
+          </div>
+          <v-text-field
+            v-else
+            v-model="item.notetext"
+            placeholder="Enter a description (Optional)"
+            clearable
+            :rules="[rules.maxLength(255)]"
+            class="pt-6"
+            @change="updateDescription(item)"
+          />
+        </template>
 
-            <template #item.actions="{ item }">
-              <v-icon v-if="!isReadOnly" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
-            </template>
+        <template #item.actions="{ item }">
+          <v-icon v-if="!isReadOnly" size="small" @click="deleteItem(item)"> mdi-delete </v-icon>
+        </template>
 
-            <template #no-data>
-              <div class="text-body-1">
-                {{ noDataDefaultText }}
-              </div>
-            </template>
-          </v-data-table>
-          <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-            <v-skeleton-loader :loading="true" type="button" />
-            <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
-          </v-card>
-          <v-row v-if="changeType == 'NOTIFICATION_FORM' && !isFileUploaded" class="px-3 pt-4 text-body-1 text-red">
-            Please upload the Change Notification Form.
-          </v-row>
-        </v-col>
-      </v-row>
+        <template #no-data>
+          <div class="text-body-1">
+            {{ noDataDefaultText }}
+          </div>
+        </template>
+      </v-data-table>
+      <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
+        <v-skeleton-loader :loading="true" type="button" />
+        <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
+      </v-card>
+      <div v-if="showErrorMessage && !isFileUploaded" class="px-3 pt-4 text-body-1 error-message">
+        Please upload the Change Notification Form.
+      </div>
     </v-container>
   </v-form>
 </template>
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useAuthStore } from '../../store/auth.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useNavBarStore } from '../../store/navBar.js';
+import { uuid } from 'vue-uuid';
 
-import rules from '../../utils/rules.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '../../utils/file.js';
-import { deepCloneObject, getFileExtension } from '../../utils/common.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+
+import DocumentService from '@/services/documentService';
+
+import rules from '@/utils/rules.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { deepCloneObject, getFileExtension } from '@/utils/common.js';
+import { DOCUMENT_TYPES } from '@/utils/constants.js';
 
 export default {
-  components: {},
+  components: { AppButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     if (!this.isReadOnly) {
@@ -125,6 +123,10 @@ export default {
       required: false,
       default: '',
     },
+    showErrorMessage: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ['fileChange'],
   data() {
@@ -136,29 +138,25 @@ export default {
       facilityNames: [],
       model: {},
       tempFacilityId: null,
-      isValidForm: false,
       currentrow: null,
       headers: [
         {
           title: 'Document',
-          align: 'left',
           sortable: false,
-          value: 'document',
-          class: 'table-header',
+          key: 'document',
+          width: '40%',
         },
         {
           title: 'Description',
-          align: 'left',
           sortable: false,
-          value: 'notetext',
-          class: 'table-header',
+          key: 'notetext',
+          width: '54%',
         },
         {
           title: 'Actions',
-          align: 'left',
           sortable: false,
-          value: 'actions',
-          class: 'table-header',
+          key: 'actions',
+          width: '6%',
         },
       ],
       fileAccept: [
@@ -188,7 +186,6 @@ export default {
         ccof_change_action_id: this.$route.params.urlGuid,
         subject: this.changeType,
       },
-      isFileUploaded: true,
     };
   },
 
@@ -207,11 +204,11 @@ export default {
       return this.uploadedDocuments.filter((el) => el.subject == this.changeType);
     },
     isReadOnly() {
-      if (this.changeType === 'NOTIFICATION_FORM') {
+      if (this.changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM) {
         if (this.isChangeRequestUnlocked) {
           return false;
         }
-      } else if (this.changeType === 'SUPPORTING_DOC') {
+      } else if (this.changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM_SUPPORTING) {
         if (this.isOtherDocumentsUnlocked) {
           return false;
         }
@@ -219,38 +216,67 @@ export default {
       let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
       return currentCR?.externalStatus !== 'INCOMPLETE';
     },
+    savedDocumentsCount() {
+      const savedDocuments = this.uploadedDocuments.filter((document) => {
+        return document.annotationid && document.subject == this.changeType;
+      });
+      return savedDocuments?.length;
+    },
+    unsavedDocumentsCount() {
+      const unsavedDocuments = this.uploadedDocuments.filter((document) => {
+        return !document.annotationid && document.subject == this.changeType && this.fileMap.has(document.id);
+      });
+      return unsavedDocuments?.length;
+    },
+    isFileUploaded() {
+      return this.savedDocumentsCount + this.unsavedDocumentsCount > 0;
+    },
   },
-  async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
 
+  watch: {
+    isFileUploaded: {
+      handler() {
+        if (this.changeType === DOCUMENT_TYPES.CR_NOTIFICATION_FORM) {
+          this.$emit('fileChange', this.isFileUploaded);
+        }
+      },
+    },
+  },
+
+  created() {
+    this.MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
     this.fileRules = [
       (v) => !!v || 'This is required',
-      (value) => !value || value.name.length < 255 || 'File name can be max 255 characters.',
-      (value) =>
-        !value || value.size < maxSize || `The maximum file size is ${humanFileSize(maxSize)} for each document.`,
-      (value) =>
-        !value ||
-        this.fileExtensionAccept.includes(getFileExtension(value.name)?.toLowerCase()) ||
-        `Accepted file types are ${this.fileFormats}.`,
+      (value) => {
+        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          value[0].size < this.MAX_FILE_SIZE ||
+          `The maximum file size is ${humanFileSize(this.MAX_FILE_SIZE)} for each document.`
+        );
+      },
+      (value) => {
+        return (
+          !value ||
+          !value.length ||
+          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+          `Accepted file types are ${this.fileFormats}.`
+        );
+      },
     ];
   },
   methods: {
-    ...mapActions(useReportChangesStore, [
-      'createChangeRequest',
-      'loadChangeRequestDocs',
-      'saveUploadedDocuments',
-      'setUploadedDocuments',
-      'deleteDocuments',
-    ]),
+    ...mapActions(useReportChangesStore, ['createChangeRequest', 'loadChangeRequestDocs']),
 
     async save(showConfirmation = true) {
       this.isProcessing = true;
       try {
         await this.processDocumentFileDelete();
-
         if (this.fileMap.size > 0) {
           const newFilesAdded = this.uploadedDocuments.filter((el) => !!el.id);
-          console.log('newFilesAdded', newFilesAdded);
           if (newFilesAdded.length > 0) {
             await this.processDocumentFilesSave(newFilesAdded);
             this.fileMap?.clear();
@@ -258,12 +284,9 @@ export default {
           if (showConfirmation) {
             this.setSuccessAlert('Changes Successfully Saved');
           }
-        } else {
-          console.log('returning...');
-          return;
         }
       } catch {
-        this.setFailureAlert('error in CHILD');
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.isProcessing = false;
       }
@@ -275,7 +298,7 @@ export default {
           ccof_change_action_id: this.$route.params?.urlGuid,
           subject: this.changeType,
           notetext: file.notetext,
-          ...this.fileMap.get(String(file.id)),
+          ...this.fileMap.get(file.id),
         };
 
         //only add objects from this component to the payload
@@ -285,33 +308,44 @@ export default {
         }
       }
       try {
-        await this.saveUploadedDocuments(payload);
+        await DocumentService.createChangeActionDocuments(payload);
       } catch {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       }
     },
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
-        await this.deleteDocuments(this.uploadedDocuments.deletedItems);
+        await DocumentService.deleteDocuments(this.uploadedDocuments.deletedItems);
         this.uploadedDocuments.deletedItems = [];
       }
     },
-    async selectFile(file) {
-      if (file) {
+    isValidFile(file) {
+      const isLessThanMaxSize = file.size < this.MAX_FILE_SIZE;
+      const isFileExtensionAccepted = this.fileExtensionAccept.includes(getFileExtension(file.name)?.toLowerCase());
+      return isLessThanMaxSize && isFileExtensionAccepted;
+    },
+    async selectFile(event) {
+      this.currentrow = event.target.id;
+      const file = event?.target?.files[0];
+      if (file && this.isValidFile(file)) {
         const doc = await this.readFile(file);
         this.fileMap.set(this.currentrow, deepCloneObject(doc));
-        await this.checkUploadCompleteStatus();
+      } else {
+        this.fileMap.delete(this.currentrow);
       }
     },
     readFile(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
         reader.onload = () => {
+          const arrayBuffer = reader.result;
+          const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+          const base64String = window.btoa(binaryString); // Convert to Base64
           const doc = {
             filename: getFileNameWithMaxNameLength(file.name),
             filesize: file.size,
-            documentbody: window.btoa(reader.result),
+            documentbody: base64String,
           };
           resolve(doc);
         };
@@ -324,12 +358,6 @@ export default {
           reject();
         };
       });
-    },
-    uploadDocumentClicked(event) {
-      this.currentrow = event.target.id;
-    },
-    handleFileReadErr() {
-      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
     editItem(item) {
       this.editedIndex = this.filteredDocs.indexOf(item);
@@ -350,42 +378,16 @@ export default {
       }
       this.fileMap.delete('' + item.id);
       this.uploadedDocuments.splice(index, 1);
-      await this.checkUploadCompleteStatus();
     },
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
-      addObj.id = Math.floor(Math.random() * 1000000); //TODO: i think this where we need UUID
+      addObj.id = uuid.v1();
       this.uploadedDocuments.unshift(addObj);
-      //this.testUploadedDocs.unshift(addObj); //this is the prop from parent, might not do anything, idk this point
       this.editItem(addObj);
     },
     updateDescription(item) {
       const index = this.uploadedDocuments.indexOf(item);
       this.uploadedDocuments[index].notetext = item.notetext;
-    },
-    async getSavedDocumentsCount() {
-      let savedDocuments = this.uploadedDocuments.filter((document) => {
-        return document.annotationid && document.subject == this.changeType;
-      });
-      let savedDocumentsCount = savedDocuments?.length ? savedDocuments?.length : 0;
-      return savedDocumentsCount;
-    },
-    async getUnsavedDocumentsCount() {
-      let unsavedDocuments = this.uploadedDocuments.filter((document) => {
-        return !document.annotationid && document.subject == this.changeType && this.fileMap.has('' + document.id);
-      });
-      let unsavedDocumentsCount = unsavedDocuments?.length ? unsavedDocuments?.length : 0;
-      return unsavedDocumentsCount;
-    },
-    async checkUploadCompleteStatus() {
-      if (this.changeType == 'NOTIFICATION_FORM') {
-        let savedDocumentsCount = await this.getSavedDocumentsCount();
-        let unsavedDocumentsCount = await this.getUnsavedDocumentsCount();
-        this.isFileUploaded = savedDocumentsCount + unsavedDocumentsCount > 0;
-        this.$emit('fileChange', this.isFileUploaded && this.isValidForm);
-      } else {
-        this.$emit('fileChange', this.isValidForm);
-      }
     },
   },
 };
@@ -394,7 +396,7 @@ export default {
 .table-header {
   background-color: #f2f2f2;
 }
-.drop-down-select {
+.file-input {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

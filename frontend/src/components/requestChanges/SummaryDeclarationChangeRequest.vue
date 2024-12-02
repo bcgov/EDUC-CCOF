@@ -73,7 +73,7 @@
           <div v-else>
             <v-expansion-panels
               v-model="expand"
-              class="mt-6 rounded facility-info"
+              class="mt-6 rounded"
               focusable
               multiple
               variant="accordion"
@@ -84,7 +84,7 @@
                 <v-expansion-panel
                   v-if="hasChangeRequestType('PDF_CHANGE')"
                   variant="accordion"
-                  class="mb-8 mt-8"
+                  class="mb-8"
                   value="change-notification-form-summary"
                 >
                   <ChangeNotificationFormSummary
@@ -516,6 +516,7 @@ export default {
       }
     },
     previous() {
+      this.isProcessing = true;
       if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
         this.$router.push(
           changeUrlGuid(
@@ -525,8 +526,9 @@ export default {
             CHANGE_TYPES.CHANGE_NOTIFICATION,
           ),
         );
+      } else {
+        this.$router.push(this.previousPath);
       }
-      this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {

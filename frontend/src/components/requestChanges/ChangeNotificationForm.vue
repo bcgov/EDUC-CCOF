@@ -1,54 +1,52 @@
 <template>
-  <v-container>
-    <div class="row py-8 justify-center text-center">
+  <v-container fluid>
+    <div class="text-center mb-md-8">
       <span class="text-h4">Change Notification Form</span>
     </div>
-    <br />
-    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
-      <v-container>
+    <v-form ref="isValidForm" v-model="isValidForm">
+      <v-container fluid class="px-md-16">
         <v-row class="justify-space-around">
-          <v-col class="col-lg-7">
-            <v-row>
-              <v-col class="col-lg-12">
-                <a href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428" target="_blank">
-                  <v-btn dark class="blueButton mb-10" size="x-large">
-                    <strong>Download a Change Notification Form</strong>
-                  </v-btn>
-                </a>
-              </v-col>
-            </v-row>
-            <v-row class="mb-12">
-              <v-col class="col-lg-12">
-                <p class="text-h5 mb-1">
-                  <strong>Upload the completed Change Notification Form below.</strong>
-                </p>
-                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image" />
-                <ChangeFileUpload
-                  v-show="!isLoading"
-                  ref="childRef"
-                  :change-type="changeTypeForm"
-                  no-data-default-text="Upload Change Notification Form (Required)"
-                  @file-change="updateChangeNotificationFormCompleteStatus($event)"
-                />
-              </v-col>
-            </v-row>
-            <v-row class="mb-12">
-              <v-col class="col-lg-12">
-                <p class="text-h5 mb-1">
-                  <strong>Upload supporting documents for your requested changes.</strong>
-                </p>
-                <v-skeleton-loader v-show="isLoading" max-height="375px" :loading="true" type="image" />
-                <ChangeFileUpload
-                  v-show="!isLoading"
-                  ref="childRef2"
-                  :change-type="changeTypeSupportingDoc"
-                  no-data-default-text="Upload supporting documents"
-                  @file-change="updateSupportingDocumentCompleteStatus($event)"
-                />
-              </v-col>
-            </v-row>
+          <v-col cols="12" md="8" :class="borderClass" class="pa-8">
+            <a href="https://www2.gov.bc.ca/assets/download/E7A1C3009EA24111A7EFB93554D08428" target="_blank">
+              <AppButton class="mb-10">
+                <strong>Download a Change Notification Form</strong>
+              </AppButton>
+            </a>
+            <div class="mb-12">
+              <p class="text-h5 font-weight-bold">Upload the completed Change Notification Form below.</p>
+              <v-skeleton-loader
+                v-show="isLoading || processing"
+                max-height="375px"
+                :loading="isLoading"
+                type="image"
+              />
+              <ChangeFileUpload
+                v-show="!isLoading && !processing"
+                ref="childRef"
+                :show-error-message="showErrorMessage"
+                :change-type="DOCUMENT_TYPES.CR_NOTIFICATION_FORM"
+                no-data-default-text="Upload Change Notification Form (Required)"
+                @file-change="updateChangeNotificationFormCompleteStatus($event)"
+              />
+            </div>
+            <div>
+              <p class="text-h5 font-weight-bold">Upload supporting documents for your requested changes.</p>
+              <v-skeleton-loader
+                v-show="isLoading || processing"
+                max-height="375px"
+                :loading="isLoading"
+                type="image"
+              />
+              <ChangeFileUpload
+                v-show="!isLoading && !processing"
+                ref="childRef2"
+                :change-type="DOCUMENT_TYPES.CR_NOTIFICATION_FORM_SUPPORTING"
+                no-data-default-text="Upload supporting documents"
+                @file-change="updateSupportingDocumentCompleteStatus($event)"
+              />
+            </div>
           </v-col>
-          <v-col class="col-lg-4 col-sm-12 boarder pl-10">
+          <v-col cols="12" md="4" class="pa-8">
             <p class="text--primary font-weight-bold mb-10">Supporting Documents</p>
             <p>The Change Notification Form will specify what supporting documents to upload.</p>
             <p class="mt-10">These could include:</p>
@@ -80,13 +78,12 @@
         </v-row>
       </v-container>
     </v-form>
-
     <NavButton
       :is-next-displayed="true"
       :is-save-displayed="true"
       :is-save-disabled="isReadOnly"
       :is-next-disabled="!isChangeNotificationFormComplete || !isSupportingDocumentComplete"
-      :is-processing="isLoading"
+      :is-processing="isLoading || processing"
       @previous="previous"
       @next="next"
       @validate-form="validateForm"
@@ -97,25 +94,26 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useReportChangesStore } from '../../store/reportChanges.js';
-import { useNavBarStore } from '../../store/navBar.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useAppStore } from '../../store/app.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAppStore } from '@/store/app.js';
 
-import { PATHS, changeUrl } from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import { isNullOrBlank } from '../../utils/common.js';
-import { CHANGE_TYPES } from '../../utils/constants.js';
+import { PATHS, changeUrl } from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { isNullOrBlank } from '@/utils/common.js';
+import { CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
 
-import NavButton from '../../components/util/NavButton.vue';
-import ChangeFileUpload from './ChangeFileUpload.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import ChangeFileUpload from '@/components/requestChanges/ChangeFileUpload.vue';
 
 export default {
-  name: 'ReportChange',
-  components: { NavButton, ChangeFileUpload },
+  name: 'ChangeNotificationForm',
+  components: { AppButton, NavButton, ChangeFileUpload },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
-    this.isLoading = true;
+    this.processing = true;
     if (!this.isReadOnly) {
       await this.save(false);
     }
@@ -124,14 +122,13 @@ export default {
   data() {
     return {
       isLoading: true,
-      changeTypeForm: 'NOTIFICATION_FORM',
-      changeTypeSupportingDoc: 'SUPPORTING_DOC',
       isUnlocked: false,
       isValidForm: false,
       processing: false,
       loading: false,
       isChangeNotificationFormComplete: false,
       isSupportingDocumentComplete: true,
+      showErrorMessage: false,
     };
   },
   computed: {
@@ -158,8 +155,12 @@ export default {
 
       return this.loadedChangeRequest?.externalStatus !== 'INCOMPLETE';
     },
+    borderClass() {
+      return this.$vuetify.display.mdAndUp ? 'border-right' : 'border-bottom';
+    },
   },
-  async mounted() {
+  async created() {
+    this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     if (this.$route.params?.urlGuid) {
       this.isLoading = true;
       await this.getChangeRequest(this.$route.params?.changeRecGuid);
@@ -175,9 +176,7 @@ export default {
       'createChangeRequest',
       'getChangeRequestList',
       'loadChangeRequestDocs',
-      'saveUploadedDocuments',
       'getChangeRequest',
-      'setUploadedDocument',
     ]),
     previous() {
       if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
@@ -213,14 +212,13 @@ export default {
         );
       }
     },
-    async validateForm() {
-      await this.$refs.childRef.checkUploadCompleteStatus();
-      await this.$refs.childRef2.checkUploadCompleteStatus();
+    validateForm() {
+      this.showErrorMessage = true;
     },
     updateChangeNotificationFormCompleteStatus(newStatus) {
       if (isNullOrBlank(newStatus)) {
         let savedChangeNotificationFormDocuments = this.uploadedDocuments?.filter((document) => {
-          return document.annotationid && document.subject == this.changeTypeForm;
+          return document.annotationid && document.subject === DOCUMENT_TYPES.CR_NOTIFICATION_FORM;
         });
         this.isChangeNotificationFormComplete = savedChangeNotificationFormDocuments?.length > 0;
       } else {
@@ -233,17 +231,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.blueBorder {
-  border-top: 5px solid #003366 !important;
-}
-.boarder {
-  border-left: 1px solid #efefef !important;
-}
-.blueButton {
-  background-color: #003366 !important;
-}
-.blueText {
-  color: rgb(0, 52, 102) !important;
-}
-</style>

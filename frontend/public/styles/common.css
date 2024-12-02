@@ -112,3 +112,22 @@ input[type="number"] {
 .error-message {
   color: #ff5252;
 }
+
+.add-file-button {
+  font-size: 16px;
+}
+
+.border-right {
+  border-right: 0.5px solid lightgray;
+}
+
+.border-bottom {
+  border-bottom: 0.5px solid lightgray;
+}
+
+.card-title {
+  color: #003466;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #e5e4e4;
+}

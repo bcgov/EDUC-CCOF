@@ -7,7 +7,7 @@
             <div class="text-h5">
               Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
             </div>
-            <div class="text-h5 mt-6"><strong>Approvable Fee Schedule</strong></div>
+            <div class="text-h5 my-6"><strong>Approvable Fee Schedule</strong></div>
           </div>
           <FacilityHeader
             v-if="currentFacility"

@@ -52,6 +52,7 @@ export const ApiRoutes = Object.freeze({
   PDF: baseRoot + '/pdf/getDocument/',
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
+  DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -330,4 +331,6 @@ export const PARENT_FEE_FREQUENCIES = Object.freeze({
 export const DOCUMENT_TYPES = Object.freeze({
   APPLICATION_AFS: 'AFS - Supporting Documents',
   APPLICATION_AFS_SUBMITTED: 'AFS - Supporting Documents - Submitted',
+  CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
+  CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
 });

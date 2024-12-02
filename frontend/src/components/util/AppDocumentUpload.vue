@@ -247,10 +247,6 @@ export default {
 };
 </script>
 <style scoped>
-.add-file-button {
-  font-size: 16px;
-}
-
 :deep(.v-field__input) {
   overflow: hidden;
   text-overflow: ellipsis;
