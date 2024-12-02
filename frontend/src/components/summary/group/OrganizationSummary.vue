@@ -46,7 +46,7 @@
                 :rules="rules.required"
               />
             </v-col>
-            <div v-if="summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+            <template v-if="summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
               <v-col cols="12" md="4">
                 <div class="summary-label">Organization Contact Name</div>
                 <v-text-field
@@ -74,7 +74,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-            </div>
+            </template>
           </v-row>
           <v-row no-gutters>
             <v-col cols="12" md="4">

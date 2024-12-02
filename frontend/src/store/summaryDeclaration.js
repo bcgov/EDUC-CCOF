@@ -4,6 +4,7 @@ import ApiService from '@/common/apiService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
@@ -172,6 +173,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       const appStore = useAppStore();
       const applicationStore = useApplicationStore();
+      const ccfriAppStore = useCcfriAppStore();
       const navBarStore = useNavBarStore();
 
       let appID = applicationStore?.applicationMap?.get(applicationStore?.programYearId)?.applicationId;
@@ -200,6 +202,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         let isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
 
         this.setIsSummaryLoading(isSummaryLoading);
+        await Promise.all([
+          ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
+          applicationStore.getApplicationUploadedDocuments(),
+        ]);
 
         //new app only?
         if (!applicationStore.isRenewal && payload.application?.organizationId) {
@@ -226,7 +232,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
               config,
             )
           ).data;
-          console.info('allDocuments', summaryModel['allDocuments'].length);
         }
 
         for (const facility of summaryModel.facilities) {

@@ -50,6 +50,8 @@ export const ApiRoutes = Object.freeze({
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
   PDF: baseRoot + '/pdf/getDocument/',
+  DOCUMENT: baseRoot + '/document',
+  DOCUMENT_APPLICATION: baseRoot + '/document/application',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -323,4 +325,9 @@ export const PARENT_FEE_FREQUENCIES = Object.freeze({
   MONTHLY: 100000000,
   WEEKLY: 100000001,
   DAILY: 100000002,
+});
+
+export const DOCUMENT_TYPES = Object.freeze({
+  APPLICATION_AFS: 'AFS - Supporting Documents',
+  APPLICATION_AFS_SUBMITTED: 'AFS - Supporting Documents - Submitted',
 });
