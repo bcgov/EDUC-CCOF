@@ -491,17 +491,10 @@ export default {
       }
     },
     fundingModelLabel() {
-      switch (this.ecewe?.fundingModel) {
-        case this.fundingModelTypeList[0].id:
-          return 'All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.';
-        case this.fundingModelTypeList[1].id:
-          return 'All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.';
-        case this.fundingModelTypeList[2].id:
-          return 'Our facilities have both provincially funded ECEs receiving Low-Wage Redress Funding and non-provincially funded ECEs that do not receive Low-Wage Redress Funding.';
-
-        default:
-          return null;
+      if (this.ecewe?.fundingModel) {
+        return this.fundingModelTypeList?.find((el) => el.id === this.ecewe.fundingModel)?.description;
       }
+      return null;
     },
     describeCSSEA() {
       switch (this.ecewe?.describeOrgCSSEA) {

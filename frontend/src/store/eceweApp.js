@@ -222,13 +222,13 @@ export const useEceweAppStore = defineStore('eceweApp', {
       ) {
         return 0;
       } else {
-        const index = this.facilities.map((facilty) => facilty.facilityId).indexOf(facilityId);
-        return index >= 0 ? this.facilities[index].optInOrOut : null;
+        const facility = this.facilities?.find((fac) => fac.facilityId === facilityId);
+        return facility ? facility.optInOrOut : null;
       }
     },
     getFacilityUnionizedStatus(facilityId) {
-      const index = this.facilities?.map((facilty) => facilty.facilityId).indexOf(facilityId);
-      return index >= 0 ? this.facilities[index].facilityUnionStatus : null;
+      const facility = this.facilities?.find((fac) => fac.facilityId === facilityId);
+      return facility ? facility.facilityUnionStatus : null;
     },
   },
 });

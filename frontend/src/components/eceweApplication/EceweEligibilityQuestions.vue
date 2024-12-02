@@ -138,18 +138,18 @@
                     </template>
                     <div class="flex-left">
                       <v-radio
-                        :label="fundingModelTypeList[0].description + '.'"
+                        :label="fundingModelTypeList[0].description"
                         :value="fundingModelTypeList[0].id"
                         class="pt-2 pr-8"
                       />
                       <v-radio
-                        :label="fundingModelTypeList[1].description+ '.'"
+                        :label="fundingModelTypeList[1].description"
                         :value="fundingModelTypeList[1].id"
                         class="pt-1 pr-8"
                       />
                       <v-radio
-                        :label="'Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non-provincially funded ECEs that do not receive Low - Wage Redress Funding.'"
-                        :value="fundingModelTypeList[2].id"
+                        :label="fundingModelTypeList[3].description"
+                        :value="fundingModelTypeList[3].id"
                         class="pt-1 pr-8"
                       />
                     </div>
