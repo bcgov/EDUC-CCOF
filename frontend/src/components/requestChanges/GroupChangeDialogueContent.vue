@@ -13,7 +13,7 @@
             <li>Permanent facility closure</li>
             <li>Service category</li>
             <li>Service details:</li>
-            <ul class="pl-4">
+            <ul class="pl-6">
               <li>Days per week</li>
               <li>Extended hours</li>
               <li>Maximum spaces offered</li>
