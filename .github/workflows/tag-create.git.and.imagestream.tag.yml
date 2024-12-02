@@ -28,6 +28,12 @@ jobs:
     environment: dev
 
     steps:
+    - name: Print Workflow Dispatch Inputs and Env Vars
+      uses: shayki5/print-workflow-dispatch-inputs@v1
+      with:
+        add_to_summary: 'true'
+        print_env_vars: 'false'
+
     - name: Check out repository
       uses: actions/checkout@v2
 

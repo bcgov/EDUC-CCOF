@@ -1,4 +1,4 @@
-name: 3 UAT - Deploy Frontend
+name: 4 EFX - Deploy Frontend
 
 env:
   # EDIT your repository secrets to log into your OpenShift cluster and set up the context.
@@ -25,7 +25,7 @@ env:
   #grabs the branch name from github dynamically
   BRANCH: ${{ github.ref_name }}
   IMAGE_NAME: "frontend"
-  APP_ENVIRONMENT: "uat"
+  APP_ENVIRONMENT: "efx"
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
@@ -51,9 +51,9 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy Frontend to UAT
+    name: Deploy Frontend to EFX
     runs-on: ubuntu-24.04
-    environment: test
+    environment: efx
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
