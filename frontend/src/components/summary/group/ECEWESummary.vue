@@ -132,7 +132,7 @@
                       <v-col cols="12">
                         <span class="summary-label pt-3">
                           I confirm our organization/facilities has reached a local agreement with the union to amend
-                          the collective agreement(s) in order to implement the ECE -WE.
+                          the collective agreement(s) in order to implement the ECE-WE.
                         </span>
                         <v-text-field
                           placeholder="Required"
@@ -168,7 +168,7 @@
                     <v-col v-if="ecewe?.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED" cols="12">
                       <span class="summary-label pt-3">
                         I confirm our organization/facilities has reached a local agreement with the union to amend the
-                        collective agreement(s) in order to implement the ECE -WE.
+                        collective agreement(s) in order to implement the ECE-WE.
                       </span>
                       <v-text-field
                         placeholder="Required"

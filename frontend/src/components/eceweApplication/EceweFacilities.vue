@@ -56,7 +56,7 @@
             Opt-In All Facilities
           </v-btn>
           <div>
-            <div v-for="(_facility, index) in uiFacilities" :key="index">
+            <div v-for="(facility, index) in uiFacilities" :key="index">
               <v-row justify="center" class="pa-4">
                 <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
                   <v-row>
@@ -68,8 +68,8 @@
                     <v-col cols="5" class="flex-column">
                       <strong>Facility Name: {{ navBarList[index].facilityName }}</strong>
                     </v-col>
-                    <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                      <strong> Status: Opt-{{ uiFacilities[index].optInOrOut === 1 ? 'In' : 'Out' }} </strong>
+                    <v-col v-if="!facility.update" cols="4" class="flex-column text-center">
+                      <strong> Status: Opt-{{ getOptInString(facility) }} </strong>
                     </v-col>
 
                     <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
@@ -78,16 +78,16 @@
                         color="#003366"
                         dark
                         :disabled="isReadOnly"
-                        @click="uiFacilities[index].update = uiFacilities[index].update == false ? true : false"
+                        @click="facility.update = facility.update == false ? true : false"
                       >
                         Update
                       </v-btn>
                     </v-col>
                   </v-row>
-                  <template v-if="uiFacilities[index].update">
+                  <template v-if="facility.update">
                     <v-row class="ml-16">
                       <v-radio-group
-                        v-model="uiFacilities[index].optInOrOut"
+                        v-model="facility.optInOrOut"
                         class="justify-space-around"
                         inline
                         :disabled="isReadOnly"
@@ -101,12 +101,9 @@
                         </v-col>
                       </v-radio-group>
                     </v-row>
-                    <v-row
-                      v-if="uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
-                      class="ml-16"
-                    >
+                    <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion" class="ml-16">
                       <v-radio-group
-                        v-model="uiFacilities[index].facilityUnionStatus"
+                        v-model="facility.facilityUnionStatus"
                         class=""
                         inline
                         :disabled="isReadOnly"
@@ -122,13 +119,13 @@
                     </v-row>
                   </template>
 
-                  <v-row v-if="uiFacilities[index].optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion">
+                  <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion">
                     <v-col cols="12">
                       <strong>
                         {{
-                          uiFacilities[index].facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.UNIONIZED
+                          facility.facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.UNIONIZED
                             ? 'Unionized'
-                            : uiFacilities[index].facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED
+                            : facility.facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED
                               ? 'Non-Unionized'
                               : ''
                         }}
@@ -286,6 +283,9 @@ export default {
       'setFundingModelTypes',
     ]),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    getOptInString(facility) {
+      return facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN ? 'In' : 'Out';
+    },
     showUpdateButton(index) {
       if (this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
         return (
@@ -297,7 +297,7 @@ export default {
       return !this.uiFacilities?.[index].update && !this.isLoading;
     },
     setupUiFacilities() {
-      let copyFacilities = cloneDeep(this.facilities);
+      const copyFacilities = cloneDeep(this.facilities);
       copyFacilities?.forEach((element) => (element.update = element.optInOrOut == null));
       this.uiFacilities = copyFacilities;
       this.setLoadedFacilities([...this.facilities]);

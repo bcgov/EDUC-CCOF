@@ -164,10 +164,6 @@ export default {
       this.isLoading = false;
     }
   },
-
-  created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-  },
   methods: {
     ...mapActions(useEceweAppStore, [
       'loadECEWE',
@@ -245,7 +241,7 @@ export default {
       });
     },
     /* NOTE: ece-we model and ece-we change request are TWO TOTALLY SEPERATE TABLES.
-      If you happen to need to update the model with new questions - you have to update the intergration in two places:
+      If you happen to need to update the model with new questions - you have to update the integration in two places:
       backend / application.js - getECEWEApplication
       backend / changeRequest.js - getChangeActionNewFacilitityDetails
 
@@ -265,7 +261,7 @@ export default {
       }
       if (this.applicationId) {
         try {
-          let response = await this.loadECEWE();
+          const response = await this.loadECEWE();
           if (this.isChangeRequest) {
             await this.getChangeRequest(this.$route.params.changeRecGuid);
             if (this.loadedChangeRequest && !isNullOrBlank(this.loadedChangeRequest.optInECEWE)) {
@@ -343,7 +339,7 @@ export default {
           this.facilities.forEach((facility) => {
             facility.optInOrOut = this.model?.optInECEWE;
             //update the next page navbar checkmark
-            let fac = this.navBarList.find((f) => f.facilityId === facility.facilityId);
+            const fac = this.navBarList.find((f) => f.facilityId === facility.facilityId);
             if (fac) {
               fac.eceweOptInStatus = this.model?.optInECEWE;
             }

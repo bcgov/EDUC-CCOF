@@ -34,7 +34,7 @@
                     <template #label>
                       <div class="radio-label text-left">
                         Are you a public sector employer, as defined in the
-                        <u><i>Public Sector Employers Act?</i></u>
+                        Public Sector Employers Act?
                       </div>
                     </template>
                     <div class="flex-left">
@@ -385,7 +385,7 @@ import {
   ECEWE_UNION_AGREEMENT_REACHED
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import AppAlertBanner from '../guiComponents/AppAlertBanner.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 
 export default {
   components: {AppAlertBanner},

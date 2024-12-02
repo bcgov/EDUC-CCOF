@@ -428,7 +428,7 @@ async function postPdf(req, buffer) {
 }
 
 async function printPdf(req, numOfRetries = 0) {
-  let url = `${req.headers.referer}/printable`;
+  const url = `${req.headers.referer}/printable`;
 
   log.info('printPdf :: user is', req.session?.passport?.user?.displayName);
   log.verbose('printPdf :: correlationId is', req.session.correlationID);
@@ -514,7 +514,7 @@ function getFacilityInMap(map, facilityId) {
 
 async function updateStatusForApplicationComponents(req, res) {
   const promises = [];
-  let request = req.body;
+  const request = req.body;
   try {
     if (request.organizationId && request.isOrganizationComplete !== null && request.isOrganizationComplete !== undefined) {
       let organizationReq = {
@@ -541,7 +541,7 @@ async function updateStatusForApplicationComponents(req, res) {
       }
     }
     if (request.facilities) {
-      for (let facility of request.facilities) {
+      for (const facility of request.facilities) {
         if (facility.facilityId && facility.isFacilityComplete !== null && facility.isFacilityComplete !== undefined) {
           let facilityReq = {
             isFacilityComplete: facility.isFacilityComplete,
@@ -552,7 +552,7 @@ async function updateStatusForApplicationComponents(req, res) {
       }
     }
     if (request.fundings) {
-      for (let funding of request.fundings) {
+      for (const funding of request.fundings) {
         if (funding.basefundingId && funding.isCCOFComplete !== null && funding.isCCOFComplete !== undefined) {
           let ccofBaseFundingReq = {
             isCCOFComplete: funding.isCCOFComplete,
@@ -563,7 +563,7 @@ async function updateStatusForApplicationComponents(req, res) {
       }
     }
     if (request.ccfris) {
-      for (let ccfri of request.ccfris) {
+      for (const ccfri of request.ccfris) {
         if (
           ccfri.ccfriId &&
           ((ccfri.isCCFRIComplete !== null && ccfri.isCCFRIComplete !== undefined) ||
@@ -592,12 +592,12 @@ async function updateStatusForApplicationComponents(req, res) {
 
 async function getApplicationSummary(req, res) {
   try {
-    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
+    const operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
       ApplicationSummaryCcfriMappings,
     )}),ccof_ccof_application_ccof_applicationecewe_application($select=ccof_name,_ccof_facility_value,ccof_optintoecewe,statuscode,ccof_facilityunionstatus),ccof_application_basefunding_Application`;
-    let results = await getOperation(operation);
+    const results = await getOperation(operation);
 
-    let applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;
+    const applicationSummary = new MappableObjectForFront(results, ApplicationSummaryMappings).data;
     applicationSummary.organizationProviderType = getLabelFromValue(applicationSummary.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
     applicationSummary.applicationType = getLabelFromValue(applicationSummary.applicationType, CCOF_APPLICATION_TYPES);
     applicationSummary.ccofStatus = getLabelFromValue(applicationSummary.ccofStatus, CCOF_STATUS_CODES, 'NEW');
@@ -624,7 +624,7 @@ async function getApplicationSummary(req, res) {
     });
 
     //add the change request ID to the facility so we can filter by it on the front end
-    let allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
+    const allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
     if (allChangeRequests.length > 0) {
       allChangeRequests.forEach((changeRequest) => {
         changeRequest.changeActions.forEach((changeAction) => {
@@ -649,7 +649,7 @@ async function getApplicationSummary(req, res) {
 
 /* Checks if object attrubte name exists in payload */
 function checkKey(key, obj) {
-  for (let name in obj) {
+  for (const name in obj) {
     if (name === key) {
       return true;
     }
@@ -663,13 +663,13 @@ function checkKey(key, obj) {
 }
 
 async function getFacilityChangeData(changeActionId) {
-  let mappedData = [];
+  const mappedData = [];
   //also grab some facility data so we can use the CCOF page.We might also be able to grab CCFRI ID from here?
-  let newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
-  let newFacData = await getOperation(newFacOperation);
+  const newFacOperation = `ccof_change_request_new_facilities?$select=_ccof_facility_value,ccof_change_request_new_facilityid&$expand=ccof_facility($select=name,ccof_facilitystatus)&$filter=_ccof_change_action_value eq ${changeActionId}`;
+  const newFacData = await getOperation(newFacOperation);
   newFacData.value.forEach((fac) => {
     if (fac.ccof_facility) {
-      let mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
+      const mappedFacility = new MappableObjectForFront(fac, NewFacilityMappings).toJSON();
       mappedFacility.facilityName = fac.ccof_facility['name'];
       mappedFacility.facilityStatus = fac.ccof_facility['ccof_facilitystatus@OData.Community.Display.V1.FormattedValue'];
       mappedData.push(mappedFacility);
@@ -680,7 +680,7 @@ async function getFacilityChangeData(changeActionId) {
 }
 
 async function getMTFIChangeData(changeActionId) {
-  let mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings);
+  const mtfi = await getChangeActionDetails(changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings);
   mtfi?.forEach((item) => {
     item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
   });
@@ -702,17 +702,16 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
   });
 
   try {
-    let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
+    const operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
       ChangeRequestMappings,
     )}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
-    //let operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(ChangeRequestMappings)}&$filter=_ccof_application_value eq ${applicationId}`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
-    let payload = [];
+    const payload = [];
     await Promise.all(
       changeRequests.map(async (request) => {
-        let req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
+        const req = new MappableObjectForFront(request, ChangeRequestMappings).toJSON();
 
         //go through the array of change ACTIONS and map them. Depending on the type of change action - we might need to load more data.
         req.changeActions = await Promise.all(
@@ -751,8 +750,8 @@ async function getChangeRequest(req, res) {
 
 async function deletePcfApplication(req, res) {
   try {
-    let operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
-    let application = await getOperation(operation);
+    const operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_application_basefunding_Application($select=_ccof_facility_value)`;
+    const application = await getOperation(operation);
 
     //loop thru to grab facility ID's and delete all of them
     await Promise.all(
