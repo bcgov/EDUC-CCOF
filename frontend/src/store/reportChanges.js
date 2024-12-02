@@ -33,7 +33,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
       return state.changeRequestMap.get(useNavBarStore().changeRequestId)?.isLicenseUploadComplete;
     },
     isChangeNotificationFormComplete: (state) => {
-      let index = state.uploadedDocuments?.findIndex(
+      const index = state.uploadedDocuments?.findIndex(
         (document) => document.subject === DOCUMENT_TYPES.CR_NOTIFICATION_FORM,
       );
       return index > -1;
