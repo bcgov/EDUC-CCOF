@@ -242,13 +242,13 @@
                       <v-radio
                         class="pt-2 pr-8"
                         label="Community Social Services Employers' Association (CSSEA) Member"
-                        :value="100000000"
+                        :value="ECEWE_SECTOR_TYPES.CSSEA"
                         @click="model.confirmation = null"
                       />
                       <v-radio
                         class="pt-1"
                         label="Other Unionized Employer"
-                        :value="100000001"
+                        :value="ECEWE_SECTOR_TYPES.OTHER_UNION"
                         @click="model.confirmation = null"
                       />
                     </div>

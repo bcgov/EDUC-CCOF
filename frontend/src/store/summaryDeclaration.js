@@ -50,14 +50,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           )
         : false;
     },
-    isECEWEComplete: (state) => {
-      //TODO - update logic for facility level and union question
-      return state.summaryModel?.application?.isEceweComplete && state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every(
-            (facility) => facility.ecewe?.optInOrOut === 1 || facility.ecewe?.optInOrOut === 0,
-          )
-        : false;
-    },
+
     isFacilityComplete: (state) => {
       return state.summaryModel?.facilities?.length > 0
         ? state.summaryModel?.facilities.every((facility) => facility.facilityInfo?.isFacilityComplete == true)
