@@ -244,12 +244,15 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_ecewe_selecttheapplicablesector', front: 'applicableSector' },
   { back: 'ccof_public_sector_employer', front: 'publicSector' }, //null,
+  { back: 'ccof_union_agreement_reached', front: 'isUnionAgreementReached' }, //null,
+  { back: 'ccof_describe_your_org', front: 'describeOrgCSSEA' }, //null,
 ];
 
 const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_optintoecewe', front: 'optInOrOut' },
+  { back: 'ccof_facilityunionstatus', front: 'facilityUnionStatus' },
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 

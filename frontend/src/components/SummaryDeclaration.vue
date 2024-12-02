@@ -209,6 +209,27 @@
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
+
+                    <v-expansion-panel v-if="facility?.rfiApp" variant="accordion" value="rfi-summary">
+                      <RFISummary
+                        :rfi-app="facility?.rfiApp"
+                        :ccfri-id="facility?.ccfri?.ccfriId"
+                        :facility-id="facility.facilityId"
+                        :change-rec-guid="facility?.changeRequestId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel v-if="facility?.nmfApp" variant="accordion" value="nmf-summary">
+                      <NMFSummary
+                        :nmf-app="facility?.nmfApp"
+                        :ccfri-id="facility?.ccfri?.ccfriId"
+                        :facility-id="facility.facilityId"
+                        :change-rec-guid="facility?.changeRequestId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-ecewe-summary-a`"
                       :value="`${facility.facilityId}-ecewe-summary-a`"
@@ -217,12 +238,14 @@
                       <ECEWESummary
                         :ecewe="{}"
                         :ecewe-facility="facility.ecewe"
+                        :funding-model="summaryModel?.ecewe?.fundingModel"
                         :is-processing="isProcessing"
                         :change-rec-guid="facility.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
+
                     <v-expansion-panel
                       :key="`${facility.facilityId}-uploaded-documents-summary`"
                       :value="`${facility.facilityId}-uploaded-documents-summary`"
@@ -640,7 +663,6 @@ export default {
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
-      console.log(isAnyApplicationUnlocked(applicationList));
       return isAnyApplicationUnlocked(applicationList);
     },
     isFacilitiesAvailable() {
@@ -675,10 +697,8 @@ export default {
         if (val) {
           setTimeout(() => {
             const keys = Object.keys(this.payload);
-            console.log('calling after 1 second');
             //If this is a change request, we'll have 2 items in the payload.
             if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
-              console.log('sending updates to server');
               this.updateApplicationStatus(this.payload);
               this.forceNavBarRefresh();
             }

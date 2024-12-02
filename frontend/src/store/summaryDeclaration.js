@@ -51,13 +51,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           )
         : false;
     },
-    isECEWEComplete: (state) => {
-      return state.summaryModel?.application?.isEceweComplete && state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every(
-            (facility) => facility.ecewe?.optInOrOut === 1 || facility.ecewe?.optInOrOut === 0,
-          )
-        : false;
-    },
+
     isFacilityComplete: (state) => {
       return state.summaryModel?.facilities?.length > 0
         ? state.summaryModel?.facilities.every((facility) => facility.facilityInfo?.isFacilityComplete == true)
@@ -222,6 +216,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           summaryModel.ecewe = (
             await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)
           ).data;
+
           this.setSummaryModel(summaryModel);
         }
         //new app only (i think this if block could be part of the one above?)

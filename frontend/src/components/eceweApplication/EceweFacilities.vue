@@ -11,7 +11,12 @@
         </div>
       </div>
       <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-        <v-row justify="center" class="pb-6">Please select each facility you would like to opt-in to ECE-WE:</v-row>
+        <v-row v-if="showUnionQuestion" justify="center" class="pb-6"
+          >Please select each facility you would like to opt-in to ECE-WE and indicate if they are unionized.</v-row
+        >
+        <v-row v-else justify="center" class="pb-6"
+          >Please select each facility you would like to opt-in to ECE-WE:</v-row
+        >
 
         <v-row justify="center">
           <v-alert class="col-11" variant="outlined" prominent>
@@ -51,7 +56,7 @@
             Opt-In All Facilities
           </v-btn>
           <div>
-            <div v-for="(_facility, index) in uiFacilities" :key="index">
+            <div v-for="(facility, index) in uiFacilities" :key="index">
               <v-row justify="center" class="pa-4">
                 <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
                   <v-row>
@@ -63,40 +68,68 @@
                     <v-col cols="5" class="flex-column">
                       <strong>Facility Name: {{ navBarList[index].facilityName }}</strong>
                     </v-col>
-                    <v-col v-if="!uiFacilities[index].update" cols="4" class="flex-column text-center">
-                      <strong> Status: Opt-{{ uiFacilities[index].optInOrOut == 1 ? 'In' : 'Out' }} </strong>
+                    <v-col v-if="!facility.update" cols="4" class="flex-column text-center">
+                      <strong> Status: Opt-{{ getOptInString(facility) }} </strong>
                     </v-col>
-                    <v-col
-                      v-else-if="uiFacilities[index].update"
-                      cols="3"
-                      class="d-flex justify-center align-center pt-0"
-                    >
-                      <v-radio-group
-                        v-model="uiFacilities[index].optInOrOut"
-                        class="pt-0 my-0"
-                        inline
-                        :disabled="isReadOnly"
-                        :rules="rules.required"
-                        @update:modelValue="toggleRadio(index)"
-                      >
-                        <v-radio label="Opt-In" :value="1" />
-                        <v-radio label="Opt-Out" :value="0" />
-                      </v-radio-group>
-                    </v-col>
+
                     <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="3">
                       <v-btn
-                        v-if="
-                          !uiFacilities?.[index].update &&
-                          !isLoading &&
-                          model.fundingModel != fundingModelTypeList[0].id
-                        "
+                        v-if="showUpdateButton(index)"
                         color="#003366"
                         dark
                         :disabled="isReadOnly"
-                        @click="uiFacilities[index].update = uiFacilities[index].update == false ? true : false"
+                        @click="facility.update = facility.update == false ? true : false"
                       >
                         Update
                       </v-btn>
+                    </v-col>
+                  </v-row>
+                  <template v-if="facility.update">
+                    <v-row class="ml-16">
+                      <v-radio-group
+                        v-model="facility.optInOrOut"
+                        class="justify-space-around"
+                        inline
+                        :disabled="isReadOnly"
+                        :rules="rules.required"
+                      >
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Opt-In" :value="ECEWE_OPT_IN_TYPES.OPT_IN" />
+                        </v-col>
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Opt-Out" :value="ECEWE_OPT_IN_TYPES.OPT_OUT" />
+                        </v-col>
+                      </v-radio-group>
+                    </v-row>
+                    <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion" class="ml-16">
+                      <v-radio-group
+                        v-model="facility.facilityUnionStatus"
+                        class=""
+                        inline
+                        :disabled="isReadOnly"
+                        :rules="rules.required"
+                      >
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Unionized" :value="ECEWE_FACILITY_UNION_TYPES.UNIONIZED" />
+                        </v-col>
+                        <v-col cols="12" md="4" class="d-flex ml-16">
+                          <v-radio label="Non-Unionized" :value="ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED" />
+                        </v-col>
+                      </v-radio-group>
+                    </v-row>
+                  </template>
+
+                  <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion">
+                    <v-col cols="12">
+                      <strong>
+                        {{
+                          facility.facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.UNIONIZED
+                            ? 'Unionized'
+                            : facility.facilityUnionStatus === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED
+                              ? 'Non-Unionized'
+                              : ''
+                        }}
+                      </strong>
                     </v-col>
                   </v-row>
                   <v-row>
@@ -137,7 +170,15 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, changeUrl, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  changeUrl,
+  pcfUrl,
+  ORGANIZATION_PROVIDER_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ECEWE_OPT_IN_TYPES,
+  ECEWE_FACILITY_UNION_TYPES,
+} from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import rules from '@/utils/rules.js';
@@ -162,7 +203,7 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel', 'facilities']),
-    ...mapState(useAppStore, ['fundingModelTypeList']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, [
       'navBarList',
       'userProfileList',
@@ -180,9 +221,17 @@ export default {
     ]),
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     isNextBtnDisabled() {
-      return this.uiFacilities.some((item) => item.optInOrOut === null);
+      return this.uiFacilities.some((item) => {
+        if (this.showUnionQuestion) {
+          return item.optInOrOut === null || item.facilityUnionStatus === null;
+        }
+        return item.optInOrOut === null;
+      });
     },
     isSaveBtnDisabled() {
+      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        return false;
+      }
       return this.model.fundingModel === this.fundingModelTypeList[0].id;
     },
     isReadOnly() {
@@ -203,11 +252,14 @@ export default {
     isFamilyFacilityOptIn() {
       return this.uiFacilities.every((fac) => fac.optInOrOut);
     },
+    showUnionQuestion() {
+      return this.model?.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+    },
   },
   async mounted() {
     this.setFundingModelTypes({ ...this.fundingModelTypeList });
     this.setApplicationId(this.applicationId);
-    let response = await this.loadData();
+    const response = await this.loadData();
     if (response) {
       this.initECEWEFacilities(this.navBarList);
       this.setupUiFacilities();
@@ -216,6 +268,8 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
+    this.ECEWE_FACILITY_UNION_TYPES = ECEWE_FACILITY_UNION_TYPES;
   },
   methods: {
     ...mapActions(useEceweAppStore, [
@@ -229,8 +283,21 @@ export default {
       'setFundingModelTypes',
     ]),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    getOptInString(facility) {
+      return facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN ? 'In' : 'Out';
+    },
+    showUpdateButton(index) {
+      if (this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        return (
+          !this.uiFacilities?.[index].update &&
+          !this.isLoading &&
+          this.model.fundingModel != this.fundingModelTypeList[0].id
+        );
+      }
+      return !this.uiFacilities?.[index].update && !this.isLoading;
+    },
     setupUiFacilities() {
-      let copyFacilities = cloneDeep(this.facilities);
+      const copyFacilities = cloneDeep(this.facilities);
       copyFacilities?.forEach((element) => (element.update = element.optInOrOut == null));
       this.uiFacilities = copyFacilities;
       this.setLoadedFacilities([...this.facilities]);
@@ -242,7 +309,7 @@ export default {
     toggleAll() {
       this.uiFacilities.forEach((_fac, index) => {
         this.toggleRadio(index);
-        this.uiFacilities[index].optInOrOut = 1;
+        this.uiFacilities[index].optInOrOut = ECEWE_OPT_IN_TYPES.OPT_IN;
       });
     },
     previous() {
@@ -273,7 +340,7 @@ export default {
       if (this.applicationId) {
         this.isLoading = true;
         try {
-          let response = await this.loadECEWE();
+          const response = await this.loadECEWE();
           this.isLoading = false;
           return response;
         } catch (error) {
@@ -282,27 +349,39 @@ export default {
         }
       }
     },
+    //if a facility decides to opt-out of ecewe - we should reset the union respone to 'non unionzed' before save
+    resetUnionResponse() {
+      this.uiFacilities.forEach((el) => {
+        if (el.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_OUT)
+          el.facilityUnionStatus = ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED;
+      });
+    },
     async saveFacilities(showConfirmation) {
       if (this.isReadOnly) {
         return;
       }
       this.isProcessing = true;
       try {
-        let uiFacilitiesCopy = JSON.parse(JSON.stringify(this.uiFacilities));
+        if (this.showUnionQuestion) {
+          this.resetUnionResponse();
+        }
+        let uiFacilitiesCopy = [...this.uiFacilities];
+
         // eslint-disable-next-line no-unused-vars
         uiFacilitiesCopy = uiFacilitiesCopy.map(({ update, ...item }) => item);
+
         this.setFacilities(uiFacilitiesCopy);
-        let response = await this.saveECEWEFacilities();
+        const response = await this.saveECEWEFacilities();
         if (response?.data?.facilities) {
           response.data.facilities?.forEach((el) => {
-            let facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
+            const facility = this.userProfileList.find((f) => f.facilityId === el.facilityId);
             if (facility) {
               facility.eceweOptInStatus = el.optInOrOut;
             }
 
             //update the CR map with the data so navbar will work properly for CR new fac
             if (this.isChangeRequest) {
-              let newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
+              const newFac = this.getChangeActionNewFacByFacilityId(el.facilityId);
               newFac.ecewe = {
                 eceweOptInStatus: el.optInOrOut,
                 eceweApplicationId: el.eceweApplicationId,

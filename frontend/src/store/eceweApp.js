@@ -2,10 +2,12 @@ import { isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { isNullOrBlank, sortByFacilityId } from '@/utils/common.js';
 import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 export const useEceweAppStore = defineStore('eceweApp', {
@@ -42,17 +44,19 @@ export const useEceweAppStore = defineStore('eceweApp', {
     setFundingModelTypes(fundingModelTypes) {
       this.fundingModelTypes = fundingModelTypes;
     },
+    //if org has already opted-in to ECE-WE on the core application, they cannot change it on CR new facility
     setOptinECEWEChangeRequestReadonly(optinECEWEChangeRequestReadonly) {
       this.optinECEWEChangeRequestReadonly = optinECEWEChangeRequestReadonly;
     },
+    //if org has already stated they are in a union, they cannot change it on CR new facility (2024 and previous question)
     setBelongsToUnionChangeRequestReadonly(belongsToUnionChangeRequestReadonly) {
       this.belongsToUnionChangeRequestReadonly = belongsToUnionChangeRequestReadonly;
     },
     async loadECEWE() {
       checkSession();
       try {
-        let response = await ApiService.apiAxios.get('/api/application/ecewe/' + this.applicationId);
-        let payload = response?.data;
+        const response = await ApiService.apiAxios.get('/api/application/ecewe/' + this.applicationId);
+        const payload = response?.data;
         this.setOptinECEWEChangeRequestReadonly(payload?.optInECEWE === 1);
         this.setBelongsToUnionChangeRequestReadonly(payload?.belongsToUnion === 1);
         this.setEceweModel(payload);
@@ -66,6 +70,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
         throw error;
       }
     },
+
     async loadECEWEModelFromChangeRequest(loadedChangeRequest) {
       if (!isNullOrBlank(loadedChangeRequest?.optInECEWE)) {
         let eceweModel = {
@@ -88,7 +93,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
           return;
         }
         checkSession();
-        let payload = JSON.parse(JSON.stringify(this.eceweModel));
+        const payload = { ...this.eceweModel };
         delete payload.facilities;
         payload.isEceweComplete = isFormComplete;
         this.setLoadedModel({ ...this.eceweModel });
@@ -96,7 +101,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
         if (isChangeRequest) {
           delete payload.applicationId;
           //update the ChangeRequest Map with new ECEWE values
-          let existingChangeRequest = await useReportChangesStore().getChangeRequest(changeRequestId);
+          const existingChangeRequest = await useReportChangesStore().getChangeRequest(changeRequestId);
           existingChangeRequest.optInECEWE = payload.optInECEWE;
           existingChangeRequest.belongsToUnion = payload.belongsToUnion;
           existingChangeRequest.applicableSector = payload.applicableSector;
@@ -115,9 +120,9 @@ export const useEceweAppStore = defineStore('eceweApp', {
       }
     },
     async saveECEWEFacilities() {
-      let sortedLoadedFacilities = sortByFacilityId(this.loadedFacilities);
-      let sortedFacilities = sortByFacilityId(this.facilities);
-      let payload = [];
+      const sortedLoadedFacilities = sortByFacilityId(this.loadedFacilities);
+      const sortedFacilities = sortByFacilityId(this.facilities);
+      const payload = [];
       // check if there is any new/updated facility
       sortedFacilities?.forEach((facility, index) => {
         if (!isEqual(facility, sortedLoadedFacilities[index]) || !facility.eceweApplicationId) {
@@ -126,14 +131,13 @@ export const useEceweAppStore = defineStore('eceweApp', {
       });
       if (payload?.length > 0) {
         checkSession();
-        payload = JSON.parse(JSON.stringify(payload));
         try {
           const navBarStore = useNavBarStore();
-          let response = await ApiService.apiAxios.post(
+          const response = await ApiService.apiAxios.post(
             ApiRoutes.APPLICATION_ECEWE_FACILITY + '/' + this.applicationId,
             payload,
           );
-          let updatedFacilities = this.facilities;
+          const updatedFacilities = this.facilities;
           response?.data?.facilities?.forEach((facility) => {
             updatedFacilities[updatedFacilities.findIndex((el) => el.facilityId === facility.facilityId)] = facility;
             navBarStore.setNavBarValue({
@@ -158,15 +162,15 @@ export const useEceweAppStore = defineStore('eceweApp', {
       const navBarStore = useNavBarStore();
       let facilityPayload;
 
-      if (this.facilities?.length == 0) {
+      if (this.facilities?.length === 0) {
         if (navBarStore.isChangeRequest) {
-          let newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
+          const newFac = reportChangesStore?.changeRequestMap?.get(navBarStore?.changeRequestId).changeActions[0]
             ?.newFacilities;
 
           facilityPayload = newFac?.map((facility) => ({
             eceweApplicationId: null,
             facilityId: facility.facilityId,
-            optInOrOut: this.eceweModel.fundingModel === this.fundingModelTypes[0].id ? 0 : null,
+            optInOrOut: this.getOptInOrOut(facility?.facilityId),
             changeRequestId: navBarStore.changeRequestId ? navBarStore.changeRequestId : null,
             changeRequestNewFacilityId: facility.changeRequestNewFacilityId
               ? facility.changeRequestNewFacilityId
@@ -175,9 +179,10 @@ export const useEceweAppStore = defineStore('eceweApp', {
         } else {
           // No facilities payload, create from the narBarList.
           facilityPayload = navBarList.map((facility) => ({
+            facilityUnionStatus: facility?.facilityUnionStatus ?? null,
             eceweApplicationId: null,
             facilityId: facility.facilityId,
-            optInOrOut: this.eceweModel.fundingModel === this.fundingModelTypes[0].id ? 0 : null,
+            optInOrOut: this.getOptInOrOut(facility?.facilityId),
           }));
         }
       }
@@ -197,6 +202,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       } else {
         facilityPayload = navBarList.map((facility) => ({
           facilityId: facility.facilityId,
+          facilityUnionStatus: this.getFacilityUnionizedStatus(facility.facilityId),
           eceweApplicationId: this.getEceweApplicationId(facility.facilityId),
           optInOrOut: this.getOptInOrOut(facility.facilityId),
         }));
@@ -209,12 +215,20 @@ export const useEceweAppStore = defineStore('eceweApp', {
       return index >= 0 ? this.facilities[index].eceweApplicationId : null;
     },
     getOptInOrOut(facilityId) {
-      if (this.eceweModel.fundingModel == this.fundingModelTypes[0].id) {
+      const appStore = useAppStore(); // Access the other store
+      if (
+        appStore.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 &&
+        this.eceweModel.fundingModel == this.fundingModelTypes[0].id
+      ) {
         return 0;
       } else {
-        const index = this.facilities.map((facilty) => facilty.facilityId).indexOf(facilityId);
-        return index >= 0 ? this.facilities[index].optInOrOut : null;
+        const facility = this.facilities?.find((fac) => fac.facilityId === facilityId);
+        return facility ? facility.optInOrOut : null;
       }
+    },
+    getFacilityUnionizedStatus(facilityId) {
+      const facility = this.facilities?.find((fac) => fac.facilityId === facilityId);
+      return facility ? facility.facilityUnionStatus : null;
     },
   },
 });
