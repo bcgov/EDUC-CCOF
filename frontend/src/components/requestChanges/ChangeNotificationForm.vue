@@ -109,7 +109,7 @@ import NavButton from '@/components/util/NavButton.vue';
 import ChangeFileUpload from '@/components/requestChanges/ChangeFileUpload.vue';
 
 export default {
-  name: 'ReportChange',
+  name: 'ChangeNotificationForm',
   components: { AppButton, NavButton, ChangeFileUpload },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {

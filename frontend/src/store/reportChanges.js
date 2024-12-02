@@ -241,7 +241,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
     async getChangeRequest(changeRequestId) {
       const navBarStore = useNavBarStore();
 
-      console.log('trying to get change req for: ', changeRequestId);
       let changeRequest = this.changeRequestMap.get(changeRequestId);
       if (changeRequest) {
         this.setLoadedChangeRequest(changeRequest);
@@ -305,7 +304,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
     async createChangeRequest(changeType) {
       const applicationStore = useApplicationStore();
       const organizationStore = useOrganizationStore();
-      console.log('creating a change REQ');
 
       checkSession();
       let payload = {
@@ -320,7 +318,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
         this.setChangeRequestId(response?.data?.changeRequestId);
         this.setChangeActionId(response?.data?.changeActionId);
         this.addNewChangeRequestToMap(response?.data?.changeRequestId);
-        console.log(response);
         return response.data;
       } catch (error) {
         console.info(`Failed to create a change request  - ${error}`);
@@ -328,7 +325,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async deleteChangeRequest(changeRequestId) {
-      console.log('trying to delete req for: ', changeRequestId);
       checkSession();
       try {
         await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
@@ -341,11 +337,9 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async createChangeAction({ changeRequestId, type }) {
-      console.log('creating change Type');
       checkSession();
       try {
         let response = await ApiService.apiAxios.post(`/api/changeRequest/${changeRequestId}/${type}`);
-        console.log(response);
         return response.data;
       } catch (error) {
         console.info(`Failed to create a change request  - ${error}`);
@@ -353,7 +347,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async deleteChangeAction(changeActionId) {
-      console.log('trying to delete changeActionId: ', changeActionId);
       checkSession();
       try {
         await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/changeAction/' + changeActionId);
@@ -363,7 +356,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async cancelChangeRequest(changeRequestId) {
-      console.log('CANCEL Change request: ', changeRequestId);
       checkSession();
       if (changeRequestId) {
         try {
@@ -401,7 +393,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
     //to load the documents, you need the change action ID. Everything else so far... you need the change REQUEST ID.
     //change action id will return arr of docs
     async loadChangeRequestDocs(changeActionId) {
-      console.log('loading change req DOCS for: ', changeActionId);
       checkSession();
       try {
         let response = await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/documents/' + changeActionId);
@@ -413,11 +404,9 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async createChangeRequestMTFI(payload) {
-      console.log('Create MTFI Change Request:', payload);
       checkSession();
       try {
         let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
-        console.log(ccfriResponse);
         await Promise.all(
           ccfriResponse?.data?.map(async (ccfri) => {
             let mtfiResponse = await ApiService.apiAxios.get(
@@ -432,7 +421,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async deleteChangeRequestMTFI(payload) {
-      console.log('Delete MTFI Change Request:', payload);
       checkSession();
       try {
         await Promise.all(
@@ -457,7 +445,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       }
     },
     async updateChangeRequestMTFI(payload) {
-      console.log('updating change req MTFI');
       checkSession();
       try {
         await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST_MTFI + '/' + payload.changeRequestMtfiId);

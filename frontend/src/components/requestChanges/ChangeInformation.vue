@@ -65,7 +65,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
-  name: 'ReportChange',
+  name: 'ChangeInformation',
   components: { NavButton },
   mixins: [alertMixin],
   data() {

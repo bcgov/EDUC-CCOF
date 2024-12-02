@@ -111,12 +111,12 @@ export default {
     },
     supportingDocuments() {
       return this.changeNotificationFormDocuments?.filter(
-        (document) => document.subject == DOCUMENT_TYPES.CR_NOTIFICATION_FORM_SUPPORTING,
+        (document) => document.subject === DOCUMENT_TYPES.CR_NOTIFICATION_FORM_SUPPORTING,
       );
     },
     notificationFormDocuments() {
       return this.changeNotificationFormDocuments?.filter(
-        (document) => document.subject == DOCUMENT_TYPES.CR_NOTIFICATION_FORM,
+        (document) => document.subject === DOCUMENT_TYPES.CR_NOTIFICATION_FORM,
       );
     },
   },
