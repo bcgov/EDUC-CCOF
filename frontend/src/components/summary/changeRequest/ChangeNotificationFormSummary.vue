@@ -67,11 +67,11 @@
 
 <script>
 import { mapState } from 'pinia';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useNavBarStore } from '../../../store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '../../../utils/constants.js';
+import { PATHS, changeUrlGuid, CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
 
 export default {
   props: {
@@ -110,10 +110,14 @@ export default {
       );
     },
     supportingDocuments() {
-      return this.changeNotificationFormDocuments?.filter((document) => document.subject == 'SUPPORTING_DOC');
+      return this.changeNotificationFormDocuments?.filter(
+        (document) => document.subject == DOCUMENT_TYPES.CR_NOTIFICATION_FORM_SUPPORTING,
+      );
     },
     notificationFormDocuments() {
-      return this.changeNotificationFormDocuments?.filter((document) => document.subject == 'NOTIFICATION_FORM');
+      return this.changeNotificationFormDocuments?.filter(
+        (document) => document.subject == DOCUMENT_TYPES.CR_NOTIFICATION_FORM,
+      );
     },
   },
   watch: {

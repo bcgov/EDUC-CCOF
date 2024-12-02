@@ -1,15 +1,13 @@
 <template>
   <v-container fluid>
     <v-form ref="form">
-      <v-row class="d-flex justify-center">
-        <span class="text-h4">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
-      </v-row>
-      <v-row class="d-flex justify-center">
-        <h2>Funding Agreement Change Notification</h2>
-      </v-row>
-      <v-row class="d-flex justify-center text-h5" style="color: #003466">
-        {{ userInfo.organizationName }}
-      </v-row>
+      <div class="text-center">
+        <div class="text-h4">Child Care Operating Funding Program - {{ formattedProgramYear }}</div>
+        <h2 class="my-4">Funding Agreement Change Notification</h2>
+        <div class="text-h5" style="color: #003466">
+          {{ userInfo.organizationName }}
+        </div>
+      </div>
       <GroupChangeDialogueContent v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" />
       <FamilyChangeDialogueContent v-else />
 
@@ -28,17 +26,17 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '../../store/auth.js';
-import { useOrganizationStore } from '../../store/ccof/organization.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useReportChangesStore } from '../../store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, CHANGE_TYPES, changeUrlGuid } from '../../utils/constants.js';
-import NavButton from '../../components/util/NavButton.vue';
+import { PATHS, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
+import NavButton from '@/components/util/NavButton.vue';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
-import GroupChangeDialogueContent from '../../components/requestChanges/GroupChangeDialogueContent.vue';
-import FamilyChangeDialogueContent from '../../components/requestChanges/FamilyChangeDialogueContent.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent.vue';
+import FamilyChangeDialogueContent from '@/components/requestChanges/FamilyChangeDialogueContent.vue';
 
 export default {
   name: 'ChangeNotificationDialogue',

@@ -76,18 +76,6 @@ export default {
 };
 </script>
 <style scoped>
-.border-right {
-  border-right: 2px solid #003366;
-}
-.border-bottom {
-  border-bottom: 2px solid #003366;
-}
-.card-title {
-  color: #003466;
-  font-size: 20px;
-  font-weight: bold;
-  background-color: #e5e4e4;
-}
 li {
   padding: 0.2em;
 }

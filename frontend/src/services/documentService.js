@@ -25,6 +25,16 @@ export default {
     }
   },
 
+  async createChangeActionDocuments(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      await ApiService.apiAxios.post(ApiRoutes.DOCUMENT_CHANGE_ACTION, payload);
+    } catch (error) {
+      console.log(`Failed to create change action's documents - ${error}`);
+      throw error;
+    }
+  },
+
   async updateDocument(annotationId, payload) {
     try {
       if (isEmpty(annotationId) || isEmpty(payload)) return;

@@ -1,7 +1,8 @@
 'use strict';
+const { cloneDeep } = require('lodash');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ApplicationDocumentsMappings, DocumentsMappings } = require('../util/mapping/Mappings');
-const { postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId } = require('./utils');
+const { postApplicationDocument, postChangeActionDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 
@@ -20,7 +21,25 @@ async function createApplicationDocuments(req, res) {
       }
       await postApplicationDocument(payload);
     }
-    return res.sendStatus(HttpStatus.OK);
+    return res.status(HttpStatus.CREATED).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function createChangeActionDocuments(req, res) {
+  try {
+    const documents = req.body;
+    for (let document of documents) {
+      let documentClone = cloneDeep(document);
+      if (getFileExtension(documentClone.filename) === 'heic') {
+        log.verbose(`createChangeActionDocuments :: heic detected for file name ${documentClone.filename} starting conversion`);
+        documentClone = await convertHeicDocumentToJpg(documentClone);
+      }
+      await postChangeActionDocument(documentClone);
+    }
+    return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -67,6 +86,7 @@ async function deleteDocuments(req, res) {
 
 module.exports = {
   createApplicationDocuments,
+  createChangeActionDocuments,
   getApplicationDocuments,
   updateDocument,
   deleteDocuments,

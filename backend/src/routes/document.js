@@ -4,11 +4,13 @@ const router = express.Router();
 const auth = require('../components/auth');
 const { param, validationResult } = require('express-validator');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createApplicationDocuments, getApplicationDocuments, deleteDocuments, updateDocument } = require('../components/document');
+const { createApplicationDocuments, createChangeActionDocuments, getApplicationDocuments, deleteDocuments, updateDocument } = require('../components/document');
 
 module.exports = router;
 
 router.post('/application/', passport.authenticate('jwt', { session: false }), isValidBackendToken, createApplicationDocuments);
+
+router.post('/change-action/', passport.authenticate('jwt', { session: false }), isValidBackendToken, createChangeActionDocuments);
 
 router.get(
   '/application/:applicationId',

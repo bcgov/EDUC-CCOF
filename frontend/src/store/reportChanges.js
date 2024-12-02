@@ -1,14 +1,13 @@
 import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
+import ApiService from '@/common/apiService.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import { ApiRoutes } from '@/utils/constants.js';
-
-import ApiService from '../common/apiService.js';
-import { CHANGE_REQUEST_TYPES, CHANGE_TYPES } from '../utils/constants.js';
-import { checkSession } from '../utils/session.js';
-import { useApplicationStore } from './application.js';
-import { useOrganizationStore } from './ccof/organization.js';
-import { useNavBarStore } from './navBar.js';
+import { CHANGE_REQUEST_TYPES, CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 /*
 change REQUEST guid is what we need for saving and loading.
@@ -34,7 +33,9 @@ export const useReportChangesStore = defineStore('reportChanges', {
       return state.changeRequestMap.get(useNavBarStore().changeRequestId)?.isLicenseUploadComplete;
     },
     isChangeNotificationFormComplete: (state) => {
-      let index = state.uploadedDocuments?.findIndex((document) => document.subject === 'NOTIFICATION_FORM');
+      let index = state.uploadedDocuments?.findIndex(
+        (document) => document.subject === DOCUMENT_TYPES.CR_NOTIFICATION_FORM,
+      );
       return index > -1;
     },
     changeRequestStatus: (state) => {
@@ -409,29 +410,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
       } catch (e) {
         console.log(`Failed to get load req docs with error - ${e}`);
         throw e;
-      }
-    },
-    async saveUploadedDocuments(payload) {
-      console.log('save uploaded documents called');
-      console.log('this is the payload:');
-      console.log(payload);
-
-      try {
-        let response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST + '/documentUpload', payload);
-        return response;
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    },
-    async deleteDocuments(deletedFiles) {
-      console.log('DELETE files payload:', deletedFiles);
-      try {
-        await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles });
-        console.log('delete uploaded documents called');
-      } catch (error) {
-        console.error(error);
-        throw error;
       }
     },
     async createChangeRequestMTFI(payload) {
