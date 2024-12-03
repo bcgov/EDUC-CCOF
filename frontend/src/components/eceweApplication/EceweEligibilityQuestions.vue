@@ -431,7 +431,7 @@ export default {
       'unlockEcewe',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus' ]),
     showCSSEAWarning(){
       //this is only for 2025-26
       return this.model?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO && this.model?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA

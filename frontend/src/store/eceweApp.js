@@ -82,6 +82,8 @@ export const useEceweAppStore = defineStore('eceweApp', {
           confirmation: loadedChangeRequest.confirmation,
           publicSector: loadedChangeRequest.publicSector,
           facilities: this.eceweModel?.facilities,
+          describeOrgCSSEA: loadedChangeRequest.describeOrgCSSEA,
+          isUnionAgreementReached: loadedChangeRequest.isUnionAgreementReached,
         };
         this.setEceweModel(eceweModel);
         this.setLoadedModel(eceweModel);

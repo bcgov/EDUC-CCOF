@@ -111,7 +111,7 @@ export default {
       'applicationId',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked']),
+    ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
 
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
@@ -135,9 +135,15 @@ export default {
       //checkbox status is managed by form validation
       return this.isValidForm && !this.$refs?.eligibilityQuestions?.showCSSEAWarning;
     },
+
     //isEceweUnlocked is for change requests - unlockEcewe is for the core application
     isReadOnly() {
-      if (this.isEceweUnlocked || this.unlockEcewe) {
+      if (
+        this.isEceweUnlocked ||
+        this.unlockEcewe ||
+        this.changeRequestStatus === 'INCOMPLETE' ||
+        this.changeRequestStatus === 'ACTION_REQUIRED'
+      ) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;
