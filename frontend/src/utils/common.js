@@ -32,10 +32,6 @@ export function deepCloneObject(objectToBeCloned) {
   return clone(objectToBeCloned);
 }
 
-export function getFileExtension(fileName) {
-  if (fileName) return fileName.slice(fileName.lastIndexOf('.') + 1);
-  return '';
-}
 export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
 }

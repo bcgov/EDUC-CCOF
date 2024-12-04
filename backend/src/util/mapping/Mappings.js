@@ -485,7 +485,11 @@ const DocumentsMappings = [
   { back: 'subject', front: 'documentType' },
 ];
 
-const ApplicationDocumentsMappings = [...DocumentsMappings, { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' }];
+const ApplicationDocumentsMappings = [
+  ...DocumentsMappings,
+  { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' },
+  { back: 'ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+];
 
 module.exports = {
   ApplicationDocumentsMappings,

@@ -6,8 +6,7 @@
         <span> (Required)</span>
       </div>
       <div class="mb-4">
-        The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
-        xls, and xlsx.
+        {{ FILE_REQUIREMENTS_TEXT }}
       </div>
     </template>
     <v-card elevation="2" :class="!readonly ? 'pa-4 my-4' : 'pb-6'">
@@ -28,8 +27,8 @@
               v-model="item.file"
               label="Select a file"
               prepend-icon="mdi-file-upload"
-              :rules="[...fileRules]"
-              :accept="fileExtensionAccept"
+              :rules="rules.fileRules"
+              :accept="FILE_TYPES_ACCEPT"
               :disabled="loading"
               @update:model-value="validateFile(item.id)"
             />
@@ -73,11 +72,13 @@
 </template>
 <script>
 import { uuid } from 'vue-uuid';
+import { isEmpty } from 'lodash';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import { DOCUMENT_TYPES } from '@/utils/constants';
-import { humanFileSize, getFileExtensionWithDot, getFileNameWithMaxNameLength } from '@/utils/file';
+import rules from '@/utils/rules.js';
+import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants';
+import { isValidFile, readFile } from '@/utils/file';
 
 export default {
   components: { AppButton },
@@ -127,7 +128,7 @@ export default {
           this.documents
             ?.filter((document) => document.isValidFile && document.file)
             ?.map(async (item) => {
-              const convertedFile = await this.readFile(item.file);
+              const convertedFile = await readFile(item.file);
               return { ...item, ...convertedFile };
             }),
         );
@@ -144,27 +145,9 @@ export default {
     },
   },
   created() {
-    this.MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-    this.fileExtensionAccept = ['.pdf', '.png', '.jpg', '.jpeg', '.heic', '.doc', '.docx', '.xls', '.xlsx'];
-    this.fileFormats = 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS, and XLSX';
-    this.fileRules = [
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          value[0].size < this.MAX_FILE_SIZE ||
-          `The maximum file size is ${humanFileSize(this.MAX_FILE_SIZE)} for each document.`
-        );
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          this.fileExtensionAccept.includes(getFileExtensionWithDot(value[0].name)?.toLowerCase()) ||
-          `Accepted file types are ${this.fileFormats}.`
-        );
-      },
-    ];
+    this.FILE_REQUIREMENTS_TEXT = FILE_REQUIREMENTS_TEXT;
+    this.FILE_TYPES_ACCEPT = FILE_TYPES_ACCEPT;
+    this.rules = rules;
     this.headersUploadedDocuments = [
       { title: 'File Name', key: 'fileName', width: '34%' },
       { title: 'Description', key: 'description', width: '60%' },
@@ -198,46 +181,11 @@ export default {
 
     validateFile(updatedItemId) {
       const document = this.documents.find((item) => item.id === updatedItemId);
-      const file = document?.file;
-      if (file) {
-        const isLessThanMaxSize = file.size < this.MAX_FILE_SIZE;
-        const isFileExtensionAccepted = this.fileExtensionAccept.includes(
-          getFileExtensionWithDot(file.name)?.toLowerCase(),
-        );
-        document.isValidFile = isLessThanMaxSize && isFileExtensionAccepted;
-      } else {
-        document.isValidFile = true;
-      }
+      document.isValidFile = isEmpty(document?.file) || isValidFile(document?.file);
     },
 
     resetDocuments() {
       this.documents = [];
-    },
-
-    readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = () => {
-          const arrayBuffer = reader.result;
-          const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-          const base64String = window.btoa(binaryString); // Convert to Base64
-          const doc = {
-            fileName: getFileNameWithMaxNameLength(file.name),
-            fileSize: file.size,
-            documentBody: base64String,
-          };
-          resolve(doc);
-        };
-        reader.onabort = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-        reader.onerror = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-      });
     },
 
     isDeletable(document) {

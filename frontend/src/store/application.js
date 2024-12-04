@@ -31,6 +31,7 @@ export const useApplicationStore = defineStore('application', {
     applicationMap: new Map(),
 
     applicationUploadedDocuments: [],
+    isApplicationDocumentsLoading: false,
   }),
   actions: {
     setApplicationId(value) {
@@ -148,10 +149,13 @@ export const useApplicationStore = defineStore('application', {
     },
     async getApplicationUploadedDocuments() {
       try {
+        this.isApplicationDocumentsLoading = true;
         this.applicationUploadedDocuments = await DocumentService.getApplicationUploadedDocuments(this.applicationId);
       } catch (error) {
         console.log(error);
         throw error;
+      } finally {
+        this.isApplicationDocumentsLoading = false;
       }
     },
   },

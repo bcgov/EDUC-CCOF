@@ -252,7 +252,7 @@
                       variant="accordion"
                     >
                       <UploadedDocumentsSummary
-                        :documents="facility.documents"
+                        :documents="getDocumentsByFacility(facility)"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
                       />
@@ -1038,6 +1038,10 @@ export default {
         }
       }
       this.forceNavBarRefresh();
+    },
+
+    getDocumentsByFacility(facility) {
+      return this.applicationUploadedDocuments?.filter((document) => facility?.facilityId === document.facilityId);
     },
 
     // CCFRI-3808 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.

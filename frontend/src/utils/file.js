@@ -1,3 +1,5 @@
+import { FILE_EXTENSIONS_ACCEPT, MAX_FILE_SIZE } from '@/utils/constants.js';
+
 /**
  * Converting bytes to human readable values (KB, MB, GB, TB, PB, EB, ZB, YB)
  * @param {*} bytes
@@ -13,18 +15,9 @@ export function humanFileSize(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
-/**
- * Get extension from file name
- * https://stackoverflow.com/a/12900504
- * ""                            -->   ""
- * "name"                        -->   ""
- * "name.txt"                    -->   "txt"
- * ".htpasswd"                   -->   ""
- * "name.with.many.dots.myext"   -->   "myext"
- * @param {*} fileName
- */
 export function getFileExtension(fileName) {
-  return fileName.slice(((fileName.lastIndexOf('.') - 1) >>> 0) + 2);
+  if (fileName) return fileName.slice(fileName.lastIndexOf('.') + 1);
+  return '';
 }
 
 export function getFileExtensionWithDot(fileName) {
@@ -38,4 +31,34 @@ export function getFileNameWithMaxNameLength(fileName, nameLength = 30, extensio
   const extension = getFileExtensionWithDot(fileName).substring(0, extensionLength);
 
   return name + extension;
+}
+
+export function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(file);
+    reader.onload = () => {
+      const arrayBuffer = reader.result;
+      const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+      const base64String = window.btoa(binaryString); // Convert to Base64
+      const doc = {
+        filename: getFileNameWithMaxNameLength(file.name),
+        filesize: file.size,
+        documentbody: base64String,
+      };
+      resolve(doc);
+    };
+    reader.onabort = () => {
+      reject(new Error(`Error reading file: ${reader.error?.message || 'Unknown error'}`));
+    };
+    reader.onerror = () => {
+      reject(new Error(`Error reading file: ${reader.error?.message || 'Unknown error'}`));
+    };
+  });
+}
+
+export function isValidFile(file) {
+  const isLessThanMaxSize = file?.size < MAX_FILE_SIZE;
+  const isFileExtensionAccepted = FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(file?.name)?.toLowerCase());
+  return isLessThanMaxSize && isFileExtensionAccepted;
 }
