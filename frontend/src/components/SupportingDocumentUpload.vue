@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { uuid } from 'vue-uuid';
 
@@ -287,9 +288,7 @@ export default {
     },
     isSaveDisabled() {
       const newFilesAdded = this.uploadedSupportingDocuments.filter((el) => !!el.id);
-      return (
-        this.isValidForm && (newFilesAdded.length > 0 || this.uploadedSupportingDocuments?.deletedItems?.length > 0)
-      );
+      return this.isValidForm && (!isEmpty(newFilesAdded) || !isEmpty(this.uploadedSupportingDocuments?.deletedItems));
     },
     isNextEnabled() {
       if (this.isChangeRequest) return this.isValidForm;
@@ -330,7 +329,7 @@ export default {
     loadSupportingDocuments() {
       this.uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter((document) => {
         return (
-          this.navBarList?.findIndex((item) => item.facilityId === document.facilityId) > -1 &&
+          this.navBarList?.some((item) => item.facilityId === document.facilityId) &&
           document?.documentType === DOCUMENT_TYPES.APPLICATION_SUPPORTING
         );
       });
@@ -402,7 +401,7 @@ export default {
       try {
         await this.processDocumentFileDelete();
         const newFilesAdded = this.uploadedSupportingDocuments?.filter((el) => !!el.id);
-        if (newFilesAdded?.length > 0) {
+        if (!isEmpty(newFilesAdded)) {
           await this.processDocumentFilesSave(newFilesAdded);
           this.fileMap?.clear();
         }
@@ -438,7 +437,7 @@ export default {
       }
     },
     async processDocumentFileDelete() {
-      if (this.uploadedSupportingDocuments?.deletedItems?.length > 0) {
+      if (!isEmpty(this.uploadedSupportingDocuments?.deletedItems)) {
         await DocumentService.deleteDocuments(this.uploadedSupportingDocuments.deletedItems);
         this.uploadedSupportingDocuments.deletedItems = [];
       }
@@ -467,7 +466,7 @@ export default {
       const index = this.uploadedSupportingDocuments.indexOf(item);
       if (item.annotationId) {
         let deletedItems = this.uploadedSupportingDocuments['deletedItems'];
-        if (deletedItems?.length > 0) {
+        if (!isEmpty(deletedItems)) {
           deletedItems.push(item.annotationId);
           this.uploadedSupportingDocuments['deletedItems'] = deletedItems;
         } else {
