@@ -49,7 +49,7 @@
               :rules="rules.fileRules"
               prepend-icon="mdi-file-upload"
               :clearable="false"
-              class="pt-0"
+              class="mt-4"
               :accept="FILE_TYPES_ACCEPT"
               :disabled="false"
               placeholder="Select your file"
@@ -67,10 +67,10 @@
               v-else
               v-model="item.description"
               placeholder="Enter a description (Optional)"
-              density="compact"
               clearable
               :rules="[rules.maxLength(255)]"
               max-length="255"
+              class="mt-4"
               @change="descriptionChanged(item)"
             />
           </template>
@@ -84,6 +84,9 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
@@ -95,7 +98,7 @@ import { deepCloneObject } from '@/utils/common.js';
 import { CHANGE_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
 
 export default {
-  components: {},
+  components: { AppButton },
   mixins: [alertMixin],
   props: {
     currentFacility: {

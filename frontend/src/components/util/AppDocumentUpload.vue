@@ -72,7 +72,6 @@
 </template>
 <script>
 import { uuid } from 'vue-uuid';
-import { isEmpty } from 'lodash';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -129,6 +128,10 @@ export default {
             ?.filter((document) => document.isValidFile && document.file)
             ?.map(async (item) => {
               const convertedFile = await readFile(item.file);
+              // XXX (vietle-cgi) - We need this part because the field names differ between the legacy code and AFS, and I want to avoid making too many changes to the legacy code.
+              convertedFile.fileName = convertedFile.filename;
+              convertedFile.fileSize = convertedFile.filesize;
+              convertedFile.documentBody = convertedFile.documentbody;
               return { ...item, ...convertedFile };
             }),
         );
@@ -181,7 +184,7 @@ export default {
 
     validateFile(updatedItemId) {
       const document = this.documents.find((item) => item.id === updatedItemId);
-      document.isValidFile = isEmpty(document?.file) || isValidFile(document?.file);
+      document.isValidFile = isValidFile(document?.file);
     },
 
     resetDocuments() {
