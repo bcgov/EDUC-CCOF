@@ -10,21 +10,20 @@
         <p class="px-10 text-h6">
           Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
           increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to
-          submit any request to increase your parent fees in the 2023-24 Fiscal Year. To complete this form, you will
-          need the following:
-          <br /><br />
+          submit any request to increase your parent fees in the {{ formattedProgramYear }} Fiscal Year. To complete
+          this form, you will need the following: <br /><br />
         </p>
 
-        <ul class="px-10">
+        <ul class="px-10 text-h6">
           <li>A proposed Parent Fee Schedule; and</li>
           <li>
-            if the increase you are requesting is above the Fee Increase Limit for your
+            If the increase you are requesting is above the Fee Increase Limit for your
             <a
               href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/ccfri_funding_guidelines_23_24.pdf"
             >
-              Service Delivery Area </a
+              Service Delivery Area</a
             >, you are required to complete a Request for Information and will be required to submit supporting
-            documentation..
+            documentation.
           </li>
         </ul>
 
@@ -77,7 +76,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['programYearId', 'applicationId']),
+    ...mapState(useApplicationStore, ['programYearId', 'applicationId', 'formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName', 'organizationProviderType']),
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),

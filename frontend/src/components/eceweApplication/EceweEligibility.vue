@@ -191,6 +191,7 @@ export default {
       this.$router.push(this.previousPath);
     },
     async next() {
+      await this.saveECEWEApplication(false);
       if (this.isChangeRequest) {
         if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
@@ -227,7 +228,7 @@ export default {
         }
       } else {
         if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
-          this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation']);
+          this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation', 'publicSector']);
         } else if (!this.model.belongsToUnion) {
           this.resetModel(['fundingModel', 'confirmation']);
         } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
