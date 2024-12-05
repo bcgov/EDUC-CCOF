@@ -6,9 +6,7 @@
         <v-col cols="12" align="center" class="pt-0">
           <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end" cover>
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85)">
-              <span class="text-h4 text-white font-weight-bold" style="font-family: BCSans">
-                My ChildCareBC Services
-              </span>
+              <span class="text-h4 text-white font-weight-bold"> My ChildCareBC Services </span>
               <br />
               <span class="text-h6 text-white">Welcome</span>
             </v-col>
@@ -39,13 +37,13 @@
         <p class="pt-4">
           <strong>NOTE:</strong> The information collected through My ChildCareBC Services is collected under the
           authority of the <i>Freedom of Information and Protection of Privacy Act</i> (FOIPPA) and the
-          <i>Early Learning and Child Care Act</i> and will be used for the purpose of administering
-          the Child Care Operating Funding Program, which includes the Child Care Fee Reduction Initiative and the Early
-          Childhood Educator (ECE) Wage Enhancement for successfully enrolled applicants. Personal information is
-          protected from unauthorized use and disclosure in accordance with FOIPPA. Any questions or concerns about the
-          collection of this information can be directed to the Director, Child Care Operating Funding Program, PO Box
-          9965 Stn Prov Govt, Victoria BC V8W 9R4, Phone: in Greater Victoria: 250 356-6501, outside of Greater
-          Victoria, Toll Free: 1 888 338-6622 (option 2).
+          <i>Early Learning and Child Care Act</i> and will be used for the purpose of administering the Child Care
+          Operating Funding Program, which includes the Child Care Fee Reduction Initiative and the Early Childhood
+          Educator (ECE) Wage Enhancement for successfully enrolled applicants. Personal information is protected from
+          unauthorized use and disclosure in accordance with FOIPPA. Any questions or concerns about the collection of
+          this information can be directed to the Director, Child Care Operating Funding Program, PO Box 9965 Stn Prov
+          Govt, Victoria BC V8W 9R4, Phone: in Greater Victoria: 250 356-6501, outside of Greater Victoria, Toll Free: 1
+          888 338-6622 (option 2).
         </p>
         <v-row>
           <v-col class="xs-12 lg-4 xl-2">
