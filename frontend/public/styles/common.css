@@ -139,6 +139,12 @@ span.text-h4,
 div.text-h5,
 h5.text-h5,
 p.text-h5,
-span.text-h5 {
+span.text-h6,
+div.text-h6,
+h5.text-h6,
+p.text-h6,
+span.text-h6,
+div.text-body-1,
+div.text-body-2 {
   font-family: "BCSans", Verdana, Arial, sans-serif;
 }
