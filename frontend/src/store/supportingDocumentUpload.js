@@ -30,13 +30,5 @@ export const useSupportingDocumentUploadStore = defineStore('supportingDocumentU
         throw error;
       }
     },
-    async deleteDocuments(deletedFiles) {
-      try {
-        await ApiService.apiAxios.delete(ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD, { data: deletedFiles });
-      } catch (error) {
-        console.error(error);
-        throw error;
-      }
-    },
   },
 });

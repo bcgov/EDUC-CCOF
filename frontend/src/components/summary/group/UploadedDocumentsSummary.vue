@@ -12,68 +12,47 @@
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
-        <v-row no-gutters class="d-flex flex-column">
-          <v-row class="d-flex justify-start">
-            <v-col cols="6" lg="4" class="pb-0 pt-2">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3">Licence: </span>
-                  <v-text-field
-                    placeholder="Required"
-                    class="summary-value"
-                    :model-value="getLicenceDocumentFileName()"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col v-if="supportingDocumentItems?.length > 0" cols="6" lg="4" class="pb-0 pt-2">
-              <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3">Supporting Documents:</span>
-                </v-col>
-                <v-col cols="12" class="d-flex justify-start">
-                  <v-data-table
-                    :headers="headers"
-                    :items="supportingDocumentItems"
-                    item-key="annotationid"
-                    hide-default-footer
-                    :items-per-page="-1"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getLink()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-              </v-col>
-            </v-row>
+        <v-row no-gutters>
+          <v-col cols="12" lg="6">
+            <span class="summary-label">Licence:</span>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="licenceDocumentFileName"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+          <v-col v-if="supportingDocuments?.length > 0" cols="12" lg="6">
+            <span class="summary-label">Supporting Documents:</span>
+            <v-data-table
+              :headers="headers"
+              :items="supportingDocuments"
+              item-key="annotationId"
+              hide-default-footer
+              :items-per-page="-1"
+            />
           </v-col>
         </v-row>
+        <div v-if="!isValidForm" class="mt-6">
+          <router-link :to="pcfLink">
+            <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useSummaryDeclarationStore } from '../../../store/summaryDeclaration.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-
-import { PATHS, pcfUrl, changeUrl } from '../../../utils/constants.js';
-import rules from '../../../utils/rules.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { DOCUMENT_TYPES, PATHS, pcfUrl, changeUrl } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'UploadedDocumentsSummary',
@@ -91,17 +70,13 @@ export default {
   emits: ['isSummaryValid'],
   data() {
     return {
-      PATHS,
       rules,
       isValidForm: true,
-      legal: null,
-      supportingDocumentItems: [],
       headers: [
         {
           title: 'Document',
-          align: 'start',
           sortable: false,
-          value: 'filename',
+          value: 'fileName',
         },
         {
           title: 'Description',
@@ -117,6 +92,17 @@ export default {
   computed: {
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
+    supportingDocuments() {
+      return this.documents?.filter((doc) => doc.documentType === DOCUMENT_TYPES.APPLICATION_SUPPORTING);
+    },
+    licenceDocumentFileName() {
+      return this.documents?.find((doc) => doc.documentType === DOCUMENT_TYPES.APPLICATION_LICENCE)?.fileName;
+    },
+    pcfLink() {
+      return this.isChangeRequest
+        ? changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params?.changeRecGuid)
+        : pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId);
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -125,23 +111,6 @@ export default {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
-    },
-  },
-  mounted() {
-    this.getSupportingDocuments();
-  },
-  methods: {
-    getLink() {
-      if (this.isChangeRequest) {
-        return changeUrl(PATHS.LICENSE_UPLOAD, this.$route.params?.changeRecGuid);
-      }
-      return pcfUrl(PATHS.LICENSE_UPLOAD, this.programYearId);
-    },
-    getLicenceDocumentFileName() {
-      return this.documents.find((doc) => doc.documentType === 'Facility License')?.filename;
-    },
-    getSupportingDocuments() {
-      this.supportingDocumentItems = this.documents.filter((doc) => doc.documentType !== 'Facility License');
     },
   },
 };
@@ -178,8 +147,12 @@ export default {
   background-color: #f2f2f2;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
+}
+
+:deep(.v-field__input) {
+  padding-left: 0px;
 }
 </style>

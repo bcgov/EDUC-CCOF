@@ -1,3 +1,6 @@
+import { FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
+import { getFileExtension, humanFileSize } from '@/utils/file';
+
 const rules = {
   email: [(v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'A valid email is required'],
   required: [
@@ -34,6 +37,28 @@ const rules = {
   },
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(v) || 'A valid phone number is required', // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
+  fileRules: [
+    (v) => !!v || 'This is required',
+    (value) => {
+      return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+    },
+    (value) => {
+      return (
+        !value ||
+        !value.length ||
+        value[0].size < MAX_FILE_SIZE ||
+        `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
+      );
+    },
+    (value) => {
+      return (
+        !value ||
+        !value.length ||
+        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
+        `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`
+      );
+    },
+  ],
 };
 
 export default rules;

@@ -219,20 +219,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
           this.setSummaryModel(summaryModel);
         }
-        //new app only (i think this if block could be part of the one above?)
-        if (payload.application?.organizationId) {
-          const config = {
-            params: {
-              allFiles: true,
-            },
-          };
-          summaryModel['allDocuments'] = (
-            await ApiService.apiAxios.get(
-              ApiRoutes.SUPPORTING_DOCUMENT_UPLOAD + '/' + payload.application.applicationId,
-              config,
-            )
-          ).data;
-        }
 
         for (const facility of summaryModel.facilities) {
           const index = summaryModel.facilities.indexOf(facility);
@@ -288,19 +274,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           ).data;
           this.setSummaryModel(summaryModel);
 
-          if (summaryModel.allDocuments && summaryModel.allDocuments.length > 0) {
-            const allDocuments = summaryModel.allDocuments;
-            summaryModel.facilities[index].documents = allDocuments.filter(
-              (document) => document.ccof_facility === facility.facilityId,
-            );
-            this.setSummaryModel(summaryModel);
-          }
-
           isSummaryLoading.splice(index, 1, false);
           this.setIsSummaryLoading(isSummaryLoading);
         } // end FOR loop. FIXME: make loop brief enough to read in one view
 
-        summaryModel.allDocuments = null;
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);

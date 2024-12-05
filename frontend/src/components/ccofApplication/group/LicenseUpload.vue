@@ -20,9 +20,8 @@
           </h3>
         </v-card-title>
         <div class="licence-upload-hint pb-5 mx-10 text-center">
-          Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility. The maximum
-          file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and
-          xlsx.
+          Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility.
+          {{ FILE_REQUIREMENTS_TEXT }}
         </div>
         <v-data-table
           v-if="!isLoading"
@@ -43,13 +42,12 @@
               v-else
               :id="item.facilityId"
               color="#003366"
-              :rules="[...fileRules, ...rules.required]"
+              :rules="rules.fileRules"
               prepend-icon="mdi-file-upload"
               class="pt-4"
-              :accept="fileAccept"
+              :accept="FILE_TYPES_ACCEPT"
               :disabled="isLocked"
               placeholder="Select your file"
-              :error-messages="fileInputError"
               @click:clear="deleteFile(item)"
               @change="selectFile"
             />
@@ -86,9 +84,10 @@ import { useLicenseUploadStore } from '@/store/licenseUpload.js';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
-import { deepCloneObject, getFileExtension, isAnyChangeRequestActive } from '@/utils/common.js';
+import { deepCloneObject, isAnyChangeRequestActive } from '@/utils/common.js';
+import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { isValidFile, readFile } from '@/utils/file.js';
 
 export default {
   components: { NavButton },
@@ -105,7 +104,6 @@ export default {
       isLoading: false,
       isProcessing: false,
       licenseUploadData: [],
-      rules,
       model: {},
       tempFacilityId: null,
       isValidForm: true,
@@ -136,25 +134,7 @@ export default {
           width: '30%',
         },
       ],
-      fileAccept: [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        '.pdf',
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.heic',
-        '.doc',
-        '.docx',
-        '.xls',
-        '.xlsx',
-      ],
-      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
-      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
-      fileInputError: [],
       fileMap: new Map(), // this is not reactive
-      fileRules: [],
       fileAdded: false,
     };
   },
@@ -220,31 +200,12 @@ export default {
       return false; // enable next button if at least 1 licence exists per facility
     },
   },
+  created() {
+    this.FILE_REQUIREMENTS_TEXT = FILE_REQUIREMENTS_TEXT;
+    this.FILE_TYPES_ACCEPT = FILE_TYPES_ACCEPT;
+    this.rules = rules;
+  },
   async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      (value) => {
-        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          value[0].size < maxSize ||
-          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
-        );
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
-          `Accepted file types are ${this.fileFormats}.`
-        );
-      },
-    ];
-
     await this.createTable();
   },
   methods: {
@@ -316,7 +277,7 @@ export default {
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
-          subject: 'Facility License',
+          subject: DOCUMENT_TYPES.APPLICATION_LICENCE,
           changeRequestNewFacilityId: this.isChangeRequest ? currFac.changeRequestNewFacilityId : undefined,
           ...file,
         };
@@ -344,43 +305,25 @@ export default {
       }
     },
     async selectFile(event) {
-      this.currentrow = event.target.id;
-      const file = event?.target?.files[0];
-      if (file) {
-        const doc = await this.readFile(file);
-        const map = new Map();
-        this.fileMap.forEach((value, key) => {
-          map.set(key, value);
-        });
-        map.set(this.currentrow, deepCloneObject(doc));
-        this.fileMap = map;
-        this.$refs.form.validate();
+      try {
+        this.currentrow = event.target.id;
+        const file = event?.target?.files[0];
+        if (file && isValidFile(file)) {
+          const doc = await readFile(file);
+          const map = new Map();
+          this.fileMap.forEach((value, key) => {
+            map.set(key, value);
+          });
+          map.set(this.currentrow, deepCloneObject(doc));
+          this.fileMap = map;
+          this.$refs.form.validate();
+        } else {
+          this.fileMap.delete(this.currentrow);
+        }
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('An error occurred while uploading file. Please try again later.');
       }
-    },
-    readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = () => {
-          const doc = {
-            filename: getFileNameWithMaxNameLength(file.name),
-            filesize: file.size,
-            documentbody: window.btoa(reader.result),
-          };
-          resolve(doc);
-        };
-        reader.onabort = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-        reader.onerror = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-      });
-    },
-    handleFileReadErr() {
-      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
     async createTable() {
       this.isLoading = true;

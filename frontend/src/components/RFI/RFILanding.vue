@@ -1241,25 +1241,30 @@
   </v-form>
 </template>
 <script>
+import { isEqual } from 'lodash';
 import { mapActions, mapState } from 'pinia';
+
 import { useRfiAppStore } from '@/store/rfiApp.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+
 import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
+import DocumentService from '@/services/documentService';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import { deepCloneObject } from '@/utils/common.js';
-import { isEqual } from 'lodash';
 import rules from '@/utils/rules.js';
-import RFIDocumentUpload from '@/components/RFI/RFIDocumentUpload.vue';
-import NavButton from '@/components/util/NavButton.vue';
+
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
-import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
 let model = {
   expansionList: [],
@@ -1441,7 +1446,7 @@ export default {
   methods: {
     ...mapActions(useRfiAppStore, ['loadRfi', 'saveRfi', 'setRfiModel']),
     ...mapActions(useNavBarStore, ['setNavBarRFIComplete']),
-    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments', 'deleteDocuments']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     nextBtnClicked() {
       this.$router.push(this.nextPath);
     },
@@ -1614,7 +1619,8 @@ export default {
     },
     async processDocumentFileDelete() {
       if (this.uploadedDocuments?.deletedItems?.length > 0) {
-        await this.deleteDocuments(this.uploadedDocuments.deletedItems);
+        await DocumentService.deleteDocuments(this.uploadedDocuments.deletedItems);
+        this.uploadedDocuments.deletedItems = [];
       }
     },
     async processDocumentFilesSave(newFilesAdded) {

@@ -9,8 +9,7 @@
           Upload supporting documents (for example, receipts, quotes, invoices, and/or budget/finance documents)
         </v-row>
         <v-row class="pa-6 pt-2 text-body-2">
-          The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
-          xls, and xlsx.
+          {{ FILE_REQUIREMENTS_TEXT }}
         </v-row>
       </div>
       <div class="px-md-12 px-7 pb-10">
@@ -27,12 +26,16 @@
         >
           <template #top>
             <v-col flex>
-              <div class="d-flex">
-                <v-btn class="my-5" dark color="#003366" :disabled="isLocked" @click="addNew">
-                  <v-icon dark> mdi-plus </v-icon>
-                  Add
-                </v-btn>
-              </div>
+              <AppButton
+                v-if="!isLocked"
+                id="add-new-file"
+                :primary="false"
+                size="large"
+                class="add-file-button mb-2"
+                @click="addNew"
+              >
+                Add File
+              </AppButton>
             </v-col>
           </template>
           <template #item.document="{ item }">
@@ -42,19 +45,18 @@
             <v-file-input
               v-else
               :id="String(item.id)"
-              @update:model-value="selectFile"
               color="#003366"
-              :rules="fileRules"
+              :rules="rules.fileRules"
               prepend-icon="mdi-file-upload"
               :clearable="false"
-              class="pt-0"
-              :accept="fileAccept"
+              class="mt-4"
+              :accept="FILE_TYPES_ACCEPT"
               :disabled="false"
               placeholder="Select your file"
-              :error-messages="fileInputError"
               required
               @click:clear="deleteItem(item)"
               @click="uploadDocumentClicked($event)"
+              @update:model-value="selectFile"
             />
           </template>
           <template #item.description="{ item }">
@@ -65,10 +67,10 @@
               v-else
               v-model="item.description"
               placeholder="Enter a description (Optional)"
-              density="compact"
               clearable
               :rules="[rules.maxLength(255)]"
               max-length="255"
+              class="mt-4"
               @change="descriptionChanged(item)"
             />
           </template>
@@ -82,18 +84,21 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { getFileExtension, getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
+import { getFileNameWithMaxNameLength } from '@/utils/file.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
 import { deepCloneObject } from '@/utils/common.js';
-import { CHANGE_TYPES } from '@/utils/constants.js';
+import { CHANGE_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
 
 export default {
-  components: {},
+  components: { AppButton },
   mixins: [alertMixin],
   props: {
     currentFacility: {
@@ -139,24 +144,6 @@ export default {
           class: 'table-header',
         },
       ],
-      fileAccept: [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        '.pdf',
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.heic',
-        '.doc',
-        '.docx',
-        '.xls',
-        '.xlsx',
-      ],
-      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
-      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
-      fileInputError: [],
-      fileRules: [],
       uploadedRFITypeDocuments: [],
       editedIndex: -1,
       editedItem: {
@@ -169,7 +156,6 @@ export default {
         description: '',
         id: null,
       },
-      selectRules: [(v) => !!v || 'This is required'],
     };
   },
   computed: {
@@ -198,31 +184,12 @@ export default {
       },
     },
   },
+  created() {
+    this.FILE_REQUIREMENTS_TEXT = FILE_REQUIREMENTS_TEXT;
+    this.FILE_TYPES_ACCEPT = FILE_TYPES_ACCEPT;
+    this.rules = rules;
+  },
   async mounted() {
-    const maxSize = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-
-    this.fileRules = [
-      (v) => !!v || 'This is required',
-      (value) => {
-        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          value[0].size < maxSize ||
-          `The maximum file size is ${humanFileSize(maxSize)} for each document.`
-        );
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
-          `Accepted file types are ${this.fileFormats}.`
-        );
-      },
-    ];
     await this.createTable();
   },
   methods: {
@@ -286,10 +253,6 @@ export default {
 
     uploadDocumentClicked(event) {
       this.currentrow = event.target.id;
-    },
-
-    handleFileReadErr() {
-      this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
     },
     async createTable() {
       this.isLoading = true;

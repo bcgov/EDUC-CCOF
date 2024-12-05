@@ -2,8 +2,7 @@
   <v-form ref="form">
     <v-container class="pa-0">
       <div class="mt-2 mb-4">
-        The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc,
-        xls, and xlsx.
+        {{ FILE_REQUIREMENTS_TEXT }}
       </div>
       <v-data-table
         v-if="!isLoading"
@@ -37,14 +36,13 @@
             v-else
             :id="item.id"
             color="#003366"
-            :rules="[...fileRules, ...rules.required]"
+            :rules="rules.fileRules"
             prepend-icon="mdi-file-upload"
             :clearable="false"
             class="pt-6 file-input"
-            :accept="fileAccept"
+            :accept="FILE_TYPES_ACCEPT"
             :disabled="isReadOnly"
             placeholder="Select your file"
-            :error-messages="fileInputError"
             @click:clear="deleteItem(item)"
             @change="selectFile"
           />
@@ -100,9 +98,9 @@ import DocumentService from '@/services/documentService';
 
 import rules from '@/utils/rules.js';
 import alertMixin from '@/mixins/alertMixin.js';
-import { getFileNameWithMaxNameLength, humanFileSize } from '@/utils/file.js';
-import { deepCloneObject, getFileExtension } from '@/utils/common.js';
-import { DOCUMENT_TYPES } from '@/utils/constants.js';
+import { isValidFile, readFile } from '@/utils/file.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
 
 export default {
   components: { AppButton },
@@ -134,7 +132,6 @@ export default {
       filteredDocs: [],
       isLoading: false,
       isProcessing: false,
-      rules,
       facilityNames: [],
       model: {},
       tempFacilityId: null,
@@ -159,25 +156,7 @@ export default {
           width: '6%',
         },
       ],
-      fileAccept: [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        '.pdf',
-        '.png',
-        '.jpg',
-        '.jpeg',
-        '.heic',
-        '.doc',
-        '.docx',
-        '.xls',
-        '.xlsx',
-      ],
-      fileExtensionAccept: ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'doc', 'docx', 'xls', 'xlsx'],
-      fileFormats: 'PDF, JPEG, JPG, PNG, HEIC, DOC, DOCX, XLS and XLSX',
-      fileInputError: [],
       fileMap: new Map(),
-      fileRules: [],
       editedIndex: -1,
       editedItem: {
         ccof_change_action_id: '',
@@ -244,29 +223,9 @@ export default {
   },
 
   created() {
-    this.MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
-    this.fileRules = [
-      (v) => !!v || 'This is required',
-      (value) => {
-        return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          value[0].size < this.MAX_FILE_SIZE ||
-          `The maximum file size is ${humanFileSize(this.MAX_FILE_SIZE)} for each document.`
-        );
-      },
-      (value) => {
-        return (
-          !value ||
-          !value.length ||
-          this.fileExtensionAccept.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
-          `Accepted file types are ${this.fileFormats}.`
-        );
-      },
-    ];
+    this.FILE_REQUIREMENTS_TEXT = FILE_REQUIREMENTS_TEXT;
+    this.FILE_TYPES_ACCEPT = FILE_TYPES_ACCEPT;
+    this.rules = rules;
   },
   methods: {
     ...mapActions(useReportChangesStore, ['createChangeRequest', 'loadChangeRequestDocs']),
@@ -319,45 +278,20 @@ export default {
         this.uploadedDocuments.deletedItems = [];
       }
     },
-    isValidFile(file) {
-      const isLessThanMaxSize = file.size < this.MAX_FILE_SIZE;
-      const isFileExtensionAccepted = this.fileExtensionAccept.includes(getFileExtension(file.name)?.toLowerCase());
-      return isLessThanMaxSize && isFileExtensionAccepted;
-    },
     async selectFile(event) {
-      this.currentrow = event.target.id;
-      const file = event?.target?.files[0];
-      if (file && this.isValidFile(file)) {
-        const doc = await this.readFile(file);
-        this.fileMap.set(this.currentrow, deepCloneObject(doc));
-      } else {
-        this.fileMap.delete(this.currentrow);
+      try {
+        this.currentrow = event.target.id;
+        const file = event?.target?.files[0];
+        if (file && isValidFile(file)) {
+          const doc = await readFile(file);
+          this.fileMap.set(this.currentrow, deepCloneObject(doc));
+        } else {
+          this.fileMap.delete(this.currentrow);
+        }
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('An error occurred while uploading file. Please try again later.');
       }
-    },
-    readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = () => {
-          const arrayBuffer = reader.result;
-          const binaryString = new Uint8Array(arrayBuffer).reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-          const base64String = window.btoa(binaryString); // Convert to Base64
-          const doc = {
-            filename: getFileNameWithMaxNameLength(file.name),
-            filesize: file.size,
-            documentbody: base64String,
-          };
-          resolve(doc);
-        };
-        reader.onabort = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-        reader.onerror = () => {
-          this.setErrorAlert('Sorry, an unexpected error seems to have occurred. Try uploading your files later.');
-          reject();
-        };
-      });
     },
     editItem(item) {
       this.editedIndex = this.filteredDocs.indexOf(item);
