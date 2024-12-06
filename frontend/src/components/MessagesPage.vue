@@ -38,11 +38,11 @@
               <v-col cols="12" sm="8">
                 {{ message.sender }}
               </v-col>
-              <v-col align="right" cols="12" sm="4">
+              <v-col cols="12" sm="4" class="text-right">
                 {{ message.dateReceived }}
               </v-col>
             </v-row>
-            <div>
+            <div class="pt-2">
               <strong>{{ message.subject }}</strong>
             </div>
           </div>
