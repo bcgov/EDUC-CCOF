@@ -287,7 +287,7 @@ export default {
       return false;
     },
     isSaveDisabled() {
-      const newFilesAdded = this.uploadedSupportingDocuments.filter((el) => !!el.id);
+      const newFilesAdded = this.uploadedSupportingDocuments?.filter((el) => !!el.id);
       return this.isValidForm && (!isEmpty(newFilesAdded) || !isEmpty(this.uploadedSupportingDocuments?.deletedItems));
     },
     isNextEnabled() {
@@ -480,7 +480,7 @@ export default {
     addNew() {
       const addObj = Object.assign({}, this.defaultItem);
       addObj.id = uuid.v1();
-      this.uploadedSupportingDocuments.unshift(addObj);
+      this.uploadedSupportingDocuments?.unshift(addObj);
       this.editItem(addObj);
     },
     updateDescription(item) {

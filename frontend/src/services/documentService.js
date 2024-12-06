@@ -6,7 +6,7 @@ import { ApiRoutes } from '@/utils/constants';
 export default {
   async getApplicationUploadedDocuments(applicationId) {
     try {
-      if (!applicationId) return;
+      if (!applicationId) return [];
       const response = await ApiService.apiAxios.get(`${ApiRoutes.DOCUMENT_APPLICATION}/${applicationId}`);
       return response?.data;
     } catch (error) {
