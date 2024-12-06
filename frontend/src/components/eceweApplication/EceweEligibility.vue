@@ -330,13 +330,9 @@ export default {
         // If funding model is option 1, opt out all facilities and save. (2024 and previous ONLY) OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (
-          (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT &&
-            this.facilities.some(
-              (facility) => facility.eceweApplicationId != null && facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN,
-            )) ||
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT ||
           (this.model.fundingModel === this.fundingModelTypeList[0].id &&
-            this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) ||
-          this.isChangeRequest
+            this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26)
         ) {
           this.optOutFacilities();
         }
