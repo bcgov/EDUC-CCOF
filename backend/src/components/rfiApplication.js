@@ -31,12 +31,29 @@ async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) 
   }
 }
 
+//CCFRI-3850 - timing issue with getting Median fees attached to CCFRI ID. Add in some sleeper code to retry if median fees return blank.
+//ideally, this should only take 2-4 seconds but dynamics is slow.
+//CCFRI's should always have a median attached, so if no median is found, throw an error.
 async function getRFIMedian(req, res) {
   try {
-    let operation = `ccof_applicationccfris?$select=_ccof_region3pctmedian_value,_ccof_region_value&$expand=ccof_Region3PctMedian($select=ccof_3percentageof0to18,ccof_3percentageof18to36,ccof_3percentageof3ytok,ccof_3percentageofoosctok,ccof_3percentageofoosctog,ccof_3percentageofpre,ccof_0to18months,ccof_18to36months,ccof_3yearstokindergarten,ccof_outofschoolcarekindergarten,ccof_outofschoolcaregrade1,ccof_preschool),ccof_Region($select=ccof_name,ccof_regionnumber)&$filter=(ccof_applicationccfriid eq ${req.params.ccfriId}) and (ccof_Region3PctMedian/ccof_median_fee_sdaid ne null) and (ccof_Region/ccof_fee_regionid ne null)`;
-    let rfiMedian = await getOperation(operation);
-    rfiMedian = rfiMedian.value;
-    let medians = {};
+    const MAX_RETRIES = 4;
+    const SLEEP_DURATION = 5000; // in ms
+    const operation = `ccof_applicationccfris?$select=_ccof_region3pctmedian_value,_ccof_region_value&$expand=ccof_Region3PctMedian($select=ccof_3percentageof0to18,ccof_3percentageof18to36,ccof_3percentageof3ytok,ccof_3percentageofoosctok,ccof_3percentageofoosctog,ccof_3percentageofpre,ccof_0to18months,ccof_18to36months,ccof_3yearstokindergarten,ccof_outofschoolcarekindergarten,ccof_outofschoolcaregrade1,ccof_preschool),ccof_Region($select=ccof_name,ccof_regionnumber)&$filter=(ccof_applicationccfriid eq ${req.params.ccfriId}) and (ccof_Region3PctMedian/ccof_median_fee_sdaid ne null) and (ccof_Region/ccof_fee_regionid ne null)`;
+
+    let rfiMedian = (await getOperation(operation)).value;
+    let retryCount = 0;
+    const medians = {};
+
+    while (rfiMedian?.length === 0 && retryCount < MAX_RETRIES) {
+      log.info(`No median found. Retrying in ${SLEEP_DURATION}ms (Attempt ${retryCount + 1}/${MAX_RETRIES})`);
+      await sleep(SLEEP_DURATION);
+      rfiMedian = (await getOperation(operation)).value;
+      retryCount++;
+    }
+    if (rfiMedian?.length === 0) {
+      log.error('Median fees not found after retrying.');
+      throw new Error('Median fees not found');
+    }
     if (rfiMedian?.length > 0) {
       medians['0 to 18 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof0to18;
       medians['18 to 36 months'] = rfiMedian[0].ccof_Region3PctMedian?.ccof_3percentageof18to36;
@@ -47,6 +64,7 @@ async function getRFIMedian(req, res) {
     } else if (rfiMedian?.length > 1) {
       log.error('Expected 1 set of RFI Medians got more: ', rfiMedian);
     }
+
     return res.status(HttpStatus.OK).json(medians);
   } catch (e) {
     log.error('An error occurred while getting getRFIMedian', e);
