@@ -210,26 +210,6 @@
                       />
                     </v-expansion-panel>
 
-                    <v-expansion-panel v-if="facility?.rfiApp" variant="accordion" value="rfi-summary">
-                      <RFISummary
-                        :rfi-app="facility?.rfiApp"
-                        :ccfri-id="facility?.ccfri?.ccfriId"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility?.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
-                    <v-expansion-panel v-if="facility?.nmfApp" variant="accordion" value="nmf-summary">
-                      <NMFSummary
-                        :nmf-app="facility?.nmfApp"
-                        :ccfri-id="facility?.ccfri?.ccfriId"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility?.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </v-expansion-panel>
                     <v-expansion-panel
                       :key="`${facility.facilityId}-ecewe-summary-a`"
                       :value="`${facility.facilityId}-ecewe-summary-a`"

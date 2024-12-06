@@ -191,6 +191,7 @@ export default {
       this.$router.push(this.previousPath);
     },
     async next() {
+      await this.saveECEWEApplication(false);
       if (this.isChangeRequest) {
         if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
@@ -227,7 +228,7 @@ export default {
         }
       } else {
         if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
-          this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation']);
+          this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation', 'publicSector']);
         } else if (!this.model.belongsToUnion) {
           this.resetModel(['fundingModel', 'confirmation']);
         } else if (this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION) {
@@ -296,6 +297,7 @@ export default {
       if (this.isReadOnly) {
         return;
       }
+
       this.model = this.$refs.eligibilityQuestions.getFormData();
       this.isProcessing = true;
       try {
@@ -328,10 +330,7 @@ export default {
         // If funding model is option 1, opt out all facilities and save. (2024 and previous ONLY) OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (
-          (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT &&
-            this.facilities.some(
-              (facility) => facility.eceweApplicationId != null && facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN,
-            )) ||
+          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT ||
           (this.model.fundingModel === this.fundingModelTypeList[0].id &&
             this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26)
         ) {
