@@ -321,8 +321,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         this.setIsLoadingComplete(false);
         if (!this.summaryModel) this.setIsMainLoading(true);
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
-        let changeRequestTypes = [];
+        const payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+        const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
           if (!changeRequestTypes.includes(item.changeType)) {
             changeRequestTypes.push(item.changeType);
@@ -330,7 +330,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         });
 
         // Load Declaration model
-        let declarationModel = {
+        const declarationModel = {
           unlockDeclaration: payload?.unlockDeclaration,
           agreeConsentCertify: payload?.unlockDeclaration ? null : payload?.agreeConsentCertify,
           orgContactName: payload?.unlockDeclaration ? null : payload?.orgContactName,
@@ -342,7 +342,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setDeclarationModel(declarationModel);
 
         // Load Summary model
-        let summaryModel = {
+        const summaryModel = {
           ...this.summaryModel,
           changeActions: payload?.changeActions,
           changeRequestTypes: changeRequestTypes,
@@ -374,14 +374,16 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
     async loadChangeRequestSummaryForAddNewFacility(payload) {
       try {
-        let summaryModel = this.summaryModel;
-        let changeRequestECEWE = {
+        const summaryModel = this.summaryModel;
+        const changeRequestECEWE = {
           optInECEWE: payload?.optInECEWE,
           belongsToUnion: payload?.belongsToUnion,
           publicSector: payload?.publicSector,
           applicableSector: payload?.applicableSector,
           fundingModel: payload?.fundingModel,
           confirmation: payload?.confirmation,
+          describeOrgCSSEA: payload?.describeOrgCSSEA,
+          isUnionAgreementReached: payload?.isUnionAgreementReached,
         };
         summaryModel.ecewe = changeRequestECEWE;
         this.setSummaryModel(summaryModel);

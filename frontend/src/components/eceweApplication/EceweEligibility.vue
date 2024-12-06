@@ -297,6 +297,7 @@ export default {
       if (this.isReadOnly) {
         return;
       }
+
       this.model = this.$refs.eligibilityQuestions.getFormData();
       this.isProcessing = true;
       try {
@@ -334,7 +335,8 @@ export default {
               (facility) => facility.eceweApplicationId != null && facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN,
             )) ||
           (this.model.fundingModel === this.fundingModelTypeList[0].id &&
-            this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26)
+            this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) ||
+          this.isChangeRequest
         ) {
           this.optOutFacilities();
         }

@@ -114,7 +114,7 @@
                   <template v-if="ecewe?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA">
                     <v-row no-gutters>
                       <v-col cols="10">
-                        <span class="summary-label pt-3">Select your funding model:</span>
+                        <span class="summary-label pt-3">Select your funding model: </span>
                         <v-textarea
                           placeholder="Required"
                           :model-value="fundingModelLabel"
@@ -389,7 +389,7 @@ export default {
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'ECEWESummary',
       },
@@ -517,6 +517,7 @@ export default {
   watch: {
     isValidForm: {
       handler() {
+        this.$refs.eceweSummaryForm.validate();
         if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm && !this.showCSSEAWarning);
         }
