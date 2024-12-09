@@ -173,8 +173,7 @@ export default {
   watch: {
     '$route.params.urlGuid': {
       async handler() {
-        let ccfriId = this.$route.params.urlGuid;
-        await this.loadNmf(ccfriId);
+        await this.loadNmf(this.$route.params.urlGuid);
         this.isLoading = false;
       },
       immediate: true,
@@ -208,12 +207,11 @@ export default {
       this.isProcessing = true;
       try {
         this.setNmfModel({ ...this.model, isNmfComplete: this.isValidForm });
-        let ccfriId = this.$route.params.urlGuid;
-        let nmfId = await this.saveNmf(ccfriId);
+        const nmfId = await this.saveNmf(this.$route.params.urlGuid);
         if (nmfId) {
           this.model.nmfId = nmfId;
         }
-        this.setNavBarNMFComplete({ ccfriId: ccfriId, complete: this.isValidForm });
+        this.setNavBarNMFComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isValidForm });
         if (showNotification) {
           this.setSuccessAlert('Success! RFI information has been saved.');
         }
