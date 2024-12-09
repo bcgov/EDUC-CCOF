@@ -50,6 +50,7 @@
                   label="Type here"
                   :disabled="isReadOnly"
                   :rules="rules.required"
+                  class="pt-2"
                 />
               </div>
             </div>
@@ -72,6 +73,7 @@
                 label="Type here"
                 :disabled="isReadOnly"
                 :rules="rules.required"
+                class="pt-2"
               />
             </div>
           </div>
@@ -92,6 +94,7 @@
                 label="Type here"
                 :disabled="isReadOnly"
                 :rules="rules.required"
+                class="pt-2"
               />
             </div>
           </div>
@@ -102,9 +105,13 @@
               setting fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
               <a :href="fundingUrl" target="_blank">Funding Guidelines</a>.
             </p>
-            <div class="pt-6">
-              <v-textarea v-model="model.otherComments" variant="outlined" label="Type here" :disabled="isReadOnly" />
-            </div>
+            <v-textarea
+              v-model="model.otherComments"
+              variant="outlined"
+              label="Type here"
+              :disabled="isReadOnly"
+              class="pt-2"
+            />
           </div>
         </v-card-text>
       </v-card>
