@@ -137,8 +137,6 @@ import { useNavBarStore } from '@/store/navBar.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
 
-let model = { x: [] };
-
 export default {
   name: 'NmfRequestMoreInfo',
   components: { NavButton, FacilityHeader },
@@ -149,7 +147,7 @@ export default {
   },
   data() {
     return {
-      model,
+      model: {},
       isLoading: true,
       isProcessing: false,
       isValidForm: false,
@@ -161,7 +159,7 @@ export default {
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     ...mapState(useAppStore, ['getFundingUrl']),
     currentFacility() {
-      return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.navBarList.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     isReadOnly() {
       return !this.currentFacility.unlockNmf;
