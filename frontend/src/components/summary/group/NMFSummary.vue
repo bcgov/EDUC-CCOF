@@ -170,27 +170,22 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getLink()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div class="mt-6">
+          <router-link v-if="!isValidForm" :to="pcfLink">
+            <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
-import rules from '../../../utils/rules.js';
-import { PATHS, pcfUrlGuid } from '../../../utils/constants.js';
 import { mapState } from 'pinia';
+
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+
+import rules from '@/utils/rules.js';
+import { PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'NMFSummary',
@@ -227,7 +222,11 @@ export default {
     };
   },
   computed: {
-    ...mapState('summaryDeclaration', ['isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+
+    pcfLink() {
+      return pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.ccfriId);
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -238,11 +237,6 @@ export default {
       },
     },
   },
-  methods: {
-    getLink() {
-      return pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.ccfriId);
-    },
-  },
 };
 </script>
 <style scoped>
@@ -251,9 +245,9 @@ export default {
   font-size: small;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: red !important;
+  opacity: 1 !important;
 }
 
 .summary-value {
