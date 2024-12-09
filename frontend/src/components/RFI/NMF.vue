@@ -5,7 +5,7 @@
         <p class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </p>
-        <p class="text-h5 font-weight-bold">Parent Fees – Request for Information</p>
+        <p class="text-h5 font-weight-bold mt-4">Parent Fees – Request for Information</p>
         <br />
         <FacilityHeader
           :facility-account-number="currentFacility?.facilityAccountNumber"
@@ -34,7 +34,7 @@
               1. Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021 (e.g. New
               Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?
             </p>
-            <v-radio-group v-model="model.supportNeeds" required inline label="" :disabled="isReadOnly" :rules="rules">
+            <v-radio-group v-model="model.supportNeeds" inline :disabled="isReadOnly" :rules="rules.required">
               <v-radio label="Yes" value="Yes" />
               <v-radio label="No" value="No" />
             </v-radio-group>
@@ -46,12 +46,11 @@
                 </p>
                 <v-textarea
                   v-model="model.supportNeedsComments"
-                  required
                   variant="outlined"
-                  name="input-7-4"
                   label="Type here"
                   :disabled="isReadOnly"
-                  :rules="rules"
+                  :rules="rules.required"
+                  class="pt-2"
                 />
               </div>
             </div>
@@ -62,14 +61,7 @@
               support families experiencing vulnerability and/or underserved populations, such as Indigenous or
               low-income families?
             </p>
-            <v-radio-group
-              v-model="model.lowIncomeFamilies"
-              required
-              inline
-              label=""
-              :disabled="isReadOnly"
-              :rules="rules"
-            >
+            <v-radio-group v-model="model.lowIncomeFamilies" inline :disabled="isReadOnly" :rules="rules.required">
               <v-radio label="Yes" value="Yes" />
               <v-radio label="No" value="No" />
             </v-radio-group>
@@ -77,12 +69,11 @@
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
                 v-model="model.lowIncomeFamiliesComments"
-                required
                 variant="outlined"
-                name="input-7-4"
                 label="Type here"
                 :disabled="isReadOnly"
-                :rules="rules"
+                :rules="rules.required"
+                class="pt-2"
               />
             </div>
           </div>
@@ -91,14 +82,7 @@
               3. Do you provide transportation to/from your facility to support families in rural or remote communities
               who may not otherwise be able to access child care?
             </p>
-            <v-radio-group
-              v-model="model.remoteCommunities"
-              required
-              inline
-              label=""
-              :disabled="isReadOnly"
-              :rules="rules"
-            >
+            <v-radio-group v-model="model.remoteCommunities" inline :disabled="isReadOnly" :rules="rules.required">
               <v-radio label="Yes" value="Yes" />
               <v-radio label="No" value="No" />
             </v-radio-group>
@@ -106,12 +90,11 @@
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
                 v-model="model.remoteCommunitiesComments"
-                required
                 variant="outlined"
-                name="input-7-4"
                 label="Type here"
                 :disabled="isReadOnly"
-                :rules="rules"
+                :rules="rules.required"
+                class="pt-2"
               />
             </div>
           </div>
@@ -119,18 +102,16 @@
           <div class="px-md-12 px-7 pb-10">
             <p class="text-h6 text--primary my-0">
               4. Please tell us anything else you’d like us to know about how your facility’s business case supports
-              setting fees higher than the Affordability Benchmarks outlined in the 2023-24
-              <a :href="fundingUrl" target="_blank">Funding Guidelines</a>
+              setting fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
+              <a :href="fundingUrl" target="_blank">Funding Guidelines</a>.
             </p>
-            <div class="pt-6">
-              <v-textarea
-                v-model="model.otherComments"
-                variant="outlined"
-                name="input-7-4"
-                label="Type here"
-                :disabled="isReadOnly"
-              />
-            </div>
+            <v-textarea
+              v-model="model.otherComments"
+              variant="outlined"
+              label="Type here"
+              :disabled="isReadOnly"
+              class="pt-2"
+            />
           </div>
         </v-card-text>
       </v-card>
@@ -151,19 +132,20 @@
 
 <script>
 import { mapActions, mapState } from 'pinia';
-import { useAppStore } from '../../store/app.js';
-import { useApplicationStore } from '../../store/application.js';
-import { useNmfAppStore } from '../../store/nmfApp.js';
-import { useNavBarStore } from '../../store/navBar.js';
 
-import alertMixin from '../../mixins/alertMixin.js';
-import NavButton from '../../components/util/NavButton.vue';
-import FacilityHeader from '../guiComponents/FacilityHeader.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 
-let model = { x: [] };
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNmfAppStore } from '@/store/nmfApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+
+import alertMixin from '@/mixins/alertMixin.js';
+import rules from '@/utils/rules.js';
 
 export default {
-  name: 'CcfriRequestMoreInfo',
+  name: 'NmfRequestMoreInfo',
   components: { NavButton, FacilityHeader },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
@@ -172,21 +154,19 @@ export default {
   },
   data() {
     return {
-      model,
-      rules: [(v) => !!v || 'Required.'],
+      model: {},
       isLoading: true,
       isProcessing: false,
       isValidForm: false,
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['formattedProgramYear']),
+    ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId']),
     ...mapState(useNmfAppStore, ['nmfModel']),
-    ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath', 'getNavByCCFRIId']),
+    ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     ...mapState(useAppStore, ['getFundingUrl']),
     currentFacility() {
-      //return this.getNavByCCFRIId(this.$route.params.urlGuid);
-      return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.navBarList.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     isReadOnly() {
       return !this.currentFacility.unlockNmf;
@@ -198,9 +178,7 @@ export default {
   watch: {
     '$route.params.urlGuid': {
       async handler() {
-        let ccfriId = this.$route.params.urlGuid;
-        console.log('ccfriId = ', ccfriId);
-        await this.loadNmf(ccfriId);
+        await this.loadNmf(this.$route.params.urlGuid);
         this.isLoading = false;
       },
       immediate: true,
@@ -214,6 +192,9 @@ export default {
       immediate: true,
       deep: true,
     },
+  },
+  created() {
+    this.rules = rules;
   },
   methods: {
     ...mapActions(useNavBarStore, ['setNavBarNMFComplete']),
@@ -231,12 +212,11 @@ export default {
       this.isProcessing = true;
       try {
         this.setNmfModel({ ...this.model, isNmfComplete: this.isValidForm });
-        let ccfriId = this.$route.params.urlGuid;
-        let nmfId = await this.saveNmf(ccfriId);
+        const nmfId = await this.saveNmf(this.$route.params.urlGuid);
         if (nmfId) {
           this.model.nmfId = nmfId;
         }
-        this.setNavBarNMFComplete({ ccfriId: ccfriId, complete: this.isValidForm });
+        this.setNavBarNMFComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isValidForm });
         if (showNotification) {
           this.setSuccessAlert('Success! RFI information has been saved.');
         }
