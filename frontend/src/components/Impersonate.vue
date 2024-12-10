@@ -1,63 +1,59 @@
 <template>
   <v-container>
-    <v-row justify="center">
-      <div class="pa-10" :class="'text-h4'" v-text="`Welcome ${userInfo.displayName}`" />
-    </v-row>
-    <v-row>
-      <v-form ref="form" v-model="isValidForm" @submit.prevent>
-        <v-row>
-          <v-card>
-            <v-container>
-              <v-row>
-                <v-col cols="8">
-                  <v-text-field
-                    id="businessBCeId-field"
-                    v-model="businessBCeId"
-                    variant="outlined"
-                    required
-                    :rules="rules.required"
-                    label="Business BCeID"
-                    @keydown.enter="setBCeID()"
-                  />
-                </v-col>
-                <v-col cols="2">
-                  <v-btn
-                    color="primary"
-                    variant="outlined"
-                    size="x-large"
-                    :loading="processing"
-                    :disabled="!businessBCeId"
-                    @click="setBCeID()"
-                  >
-                    Search
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-row>
+    <div class="text-h4 pa-10 text-center">Welcome {{ userInfo.displayName }}</div>
+    <v-container class="d-flex justify-center">
+      <v-form ref="form" @submit.prevent>
+        <v-card width="400" class="pa-6 elevation-4">
+          <v-row>
+            <v-col cols="12" sm="8">
+              <v-text-field
+                id="businessBCeId-field"
+                v-model="businessBCeId"
+                variant="outlined"
+                :rules="rules.required"
+                label="Business BCeID"
+                @keydown.enter="setBCeID()"
+              />
+            </v-col>
+            <v-col cols="12" sm="4">
+              <AppButton
+                id="search-button"
+                :loading="processing"
+                :primary="false"
+                :disabled="!businessBCeId"
+                class="mt-sm-1"
+                @click="setBCeID()"
+              >
+                Search
+              </AppButton>
+            </v-col>
+          </v-row>
+        </v-card>
       </v-form>
-    </v-row>
+    </v-container>
   </v-container>
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useEceweAppStore } from '../store/eceweApp.js';
 
-import { PATHS } from '../utils/constants.js';
-import rules from '../utils/rules.js';
-import alertMixin from '../mixins/alertMixin.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
+import { useAuthStore } from '@/store/auth.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useEceweAppStore } from '@/store/eceweApp.js';
+
+import { PATHS } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
+import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
   name: 'ImpersonateAccount',
+  components: { AppButton },
   mixins: [alertMixin],
   data() {
     return {
       rules,
       businessBCeId: undefined,
-      isValidForm: true,
       processing: false,
     };
   },
@@ -94,5 +90,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>
