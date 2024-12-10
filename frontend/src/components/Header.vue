@@ -35,10 +35,10 @@
                 <v-avatar start color="info">
                   {{ userInfo.displayName[0] }}
                 </v-avatar>
-                <span class="display-name">{{ userInfo.displayName }}</span>
+                <span class="display-name text-white">{{ userInfo.displayName }}</span>
               </v-chip>
             </template>
-            <v-list dark color="#003366">
+            <v-list bg-color="#003366">
               <v-list-item id="home_button" style="min-height: 4vh" :to="authRoutes.DASHBOARD">
                 <v-list-item-title>Home</v-list-item-title>
               </v-list-item>
@@ -157,6 +157,8 @@ a {
 }
 
 @media print {
-  #app-header { display: none; }
+  #app-header {
+    display: none;
+  }
 }
 </style>
