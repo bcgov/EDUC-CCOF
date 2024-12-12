@@ -220,10 +220,10 @@
     required: true
   - name: BANNER_ENVIRONMENT
     description: Environment label for the portal banner
-    required: true
+    required: false
   - name: BANNER_COLOR
     description: The color for the environment label in the portal
-    required: true
+    required: false
   - name: VUE_APP_BCEID_REG_URL
     description: The bceid registration URL
     required: true
