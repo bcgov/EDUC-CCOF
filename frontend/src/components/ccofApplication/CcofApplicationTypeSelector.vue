@@ -10,13 +10,15 @@
         If you are unsure which type to select, you can view a PDF version of the
         <a
           class="text-decoration-underline"
-          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1320_ccof_family_application.pdf"
+          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1320_ccof_family_application.pdf"
+          target="_blank"
           >family form</a
         >
         and the
         <a
           class="text-decoration-underline"
-          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/cf1321_ccof_group_application.pdf"
+          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1321_ccof_group_application.pdf"
+          target="_blank"
           >group form</a
         >.
       </p>
