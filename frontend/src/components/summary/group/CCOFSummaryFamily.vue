@@ -6,7 +6,9 @@
           Child Care Operating Funding (CCOF)
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
           <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252">CCOF Information has errors please check - Text TBD</span>
+          <span v-if="!isValidForm" style="color: #ff5252">
+            Your form is missing required information. Click here to view.
+          </span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
