@@ -810,6 +810,7 @@ export default {
 
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item) => {
+          item.enableAfs = true; //TODO-JB remove when dynamics is done updating
           items.push({
             title: 'Parent Fee Verification',
             subTitle: item.facilityName,
@@ -830,6 +831,7 @@ export default {
             position: positionIndex++,
             navBarId: navBarId++,
           });
+
           if (item.hasRfi || item.unlockRfi) {
             items.push({
               title: 'Parent Fee Increase – RFI',
@@ -842,6 +844,26 @@ export default {
               },
               isAccessible: true,
               icon: this.getCheckbox(item.isRfiComplete),
+              isActive:
+                'mtfi-change-request-ccfri-request-info' === this.$route.name &&
+                this.$route.params.urlGuid === item.ccfriApplicationId,
+              position: positionIndex++,
+              navBarId: navBarId++,
+            });
+          }
+          if (item.enableAfs) {
+            //TODO-JB change with the actual flag
+            items.push({
+              title: 'Approvable Fee Schedule',
+              subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
+              id: item.facilityId,
+              link: {
+                name: 'mtfi-afs',
+                params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
+              },
+              isAccessible: true,
+              icon: this.getCheckbox(item.isAFSComplete), //different logic for CR
               isActive:
                 'mtfi-change-request-ccfri-request-info' === this.$route.name &&
                 this.$route.params.urlGuid === item.ccfriApplicationId,

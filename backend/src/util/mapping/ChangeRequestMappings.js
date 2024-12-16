@@ -58,6 +58,9 @@ const MtfiMappings = [
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' },
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' },
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri' },
+  { back: 'ccof_unlock_afs', front: 'unlockAfs' },
+  { back: 'ccof_unlock_afs_enable', front: 'enableAfs' },
+  //{ back: 'ccof_afs_status', front: 'afsStatus' }, doesn't exist yet
 ];
 
 const ChangeRequestUnlockMapping = [

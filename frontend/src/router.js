@@ -19,6 +19,7 @@ import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
+import MTFIApprovableFeeSchedule from '@/components/ccfriApplication/AFS/MTFIApprovableFeeSchedule.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
@@ -771,6 +772,18 @@ const router = createRouter({
       path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'CCFRI Fee Verification',
       component: MtfiFeeVerification,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_AFS, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'mtfi-afs',
+      component: MTFIApprovableFeeSchedule,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
