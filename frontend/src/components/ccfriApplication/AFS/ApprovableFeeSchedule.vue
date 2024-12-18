@@ -3,12 +3,24 @@
     <v-container fluid>
       <v-row justify="space-around">
         <v-card class="mx-12 mb-12 pa-8">
-          <div class="text-center">
-            <div class="text-h5">
-              Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+          <template v-if="isChangeRequest">
+            <div class="row pt-4 text-center">
+              <span class="text-h5">Child Care Operating Funding Program - Request a Parent Fee Increase</span>
             </div>
-            <div class="text-h5 my-6"><strong>Approvable Fee Schedule</strong></div>
-          </div>
+            <br />
+            <div class="row pt-4 text-center">
+              <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
+            </div>
+          </template>
+          <template v-else>
+            <div class="text-center">
+              <div class="text-h5">
+                Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+              </div>
+              <div class="text-h5 my-6"><strong>Approvable Fee Schedule</strong></div>
+            </div>
+          </template>
+          <br />
           <FacilityHeader
             v-if="currentFacility"
             :facility-account-number="currentFacility?.facilityAccountNumber"
@@ -54,7 +66,7 @@
                 upload supporting documents", you confirm that you decline the approvable fee schedule and have new
                 information to submit for review. This will require additional processing time for your application.
               </li>
-              <li>
+              <li v-if="!isChangeRequest">
                 <strong class="text-decoration-underline">Decline the fee schedule</strong>: By selecting "I decline",
                 you confirm that you decline the approvable fee schedule and confirm your decision not to participate in
                 the Child Care Fee Reduction Initiative (CCFRI). Your facility will remain eligible to receive Child
@@ -67,7 +79,7 @@
           </div>
           <v-skeleton-loader :loading="isEmpty(afs)" type="table-tbody">
             <v-container fluid class="pa-0">
-              <AfsDecisionCard v-model="afs.afsStatus" :readonly="isReadOnly" />
+              <AfsDecisionCard v-model="afs.afsStatus" :readonly="isReadOnly" :is-change-request="isChangeRequest" />
               <AppDocumentUpload
                 v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS"
                 :loading="isLoading"
@@ -115,6 +127,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import { AFS_STATUSES, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
@@ -134,10 +147,12 @@ export default {
       uploadedDocumentsToDelete: [],
       processing: false,
       showErrorMessage: false,
+      changeRequestDocs: [],
     };
   },
   computed: {
     ...mapState(useAppStore, ['getFundingUrl']),
+    ...mapState(useReportChangesStore, ['changeActionId']),
     ...mapState(useApplicationStore, [
       'applicationId',
       'formattedProgramYear',
@@ -146,23 +161,32 @@ export default {
       'applicationUploadedDocuments',
     ]),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
-    ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
+    ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath', 'isChangeRequest']),
     currentFacility() {
       return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     filteredUploadedDocuments() {
-      return this.applicationUploadedDocuments?.filter(
-        (document) =>
-          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
-          document.facilityId === this.currentFacility?.facilityId,
-      );
+      if (this.isChangeRequest) {
+        console.log(this.changeRequestDocs);
+        return this.changeRequestDocs;
+      } else {
+        return this.applicationUploadedDocuments?.filter(
+          (document) =>
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.facilityId === this.currentFacility?.facilityId,
+        );
+      }
     },
     isLoading() {
       return isEmpty(this.afs) || this.processing;
     },
     // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
     isReadOnly() {
-      return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
+      if (!this.isChangeRequest) {
+        return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
+      }
+      return false;
     },
     isSupportingDocumentsUploaded() {
       return this.filteredUploadedDocuments?.length + this.documentsToUpload?.length > 0;
@@ -187,17 +211,32 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.rules = rules;
     this.AFS_STATUSES = AFS_STATUSES;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.reloadAfs();
+
+    if (this.isChangeRequest) {
+      await this.getChangeDocs();
+    }
   },
   methods: {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete']),
+    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
     isEmpty,
+
+    async getChangeDocs() {
+      this.processing = true;
+      this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
+
+      this.changeRequestDocs.forEach((document) => {
+        document.fileName = document.filename;
+      });
+      this.processing = false;
+    },
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.$route.params.urlGuid);
     },
@@ -223,7 +262,13 @@ export default {
           this.processDocumentsToUpload(),
           DocumentService.deleteDocuments(this.uploadedDocumentsToDelete),
         ]);
-        await this.getApplicationUploadedDocuments();
+
+        if (this.isChangeRequest) {
+          await this.getChangeDocs();
+        } else {
+          await this.getApplicationUploadedDocuments();
+        }
+
         this.setNavBarAfsComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete });
         if (showMessage) {
           this.setSuccessAlert('Changes Successfully Saved');
@@ -240,12 +285,23 @@ export default {
     },
     async processDocumentsToUpload() {
       const payload = cloneDeep(this.documentsToUpload);
-      payload.forEach((document) => {
-        document.ccof_applicationid = this.applicationId;
-        document.ccof_facility = this.currentFacility?.facilityId;
-        delete document.file;
-      });
-      await DocumentService.createApplicationDocuments(payload);
+      if (this.isChangeRequest) {
+        payload.forEach((document) => {
+          console.log(document);
+          document.ccof_change_action_id = this.changeActionId;
+          document.ccof_facility = this.currentFacility?.facilityId;
+          delete document.file;
+          //delete
+        });
+        await DocumentService.createChangeActionDocuments(payload);
+      } else {
+        payload.forEach((document) => {
+          document.ccof_applicationid = this.applicationId;
+          document.ccof_facility = this.currentFacility?.facilityId;
+          delete document.file;
+        });
+        await DocumentService.createApplicationDocuments(payload);
+      }
     },
     updateUploadedDocumentsToDelete(annotationId) {
       const index = this.applicationUploadedDocuments?.findIndex((item) => item.annotationId === annotationId);

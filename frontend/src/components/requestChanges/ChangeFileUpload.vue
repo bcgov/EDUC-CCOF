@@ -228,7 +228,7 @@ export default {
     this.rules = rules;
   },
   methods: {
-    ...mapActions(useReportChangesStore, ['createChangeRequest', 'loadChangeRequestDocs']),
+    ...mapActions(useReportChangesStore, ['createChangeRequest']),
 
     async save(showConfirmation = true) {
       this.isProcessing = true;

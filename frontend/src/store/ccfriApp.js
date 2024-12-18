@@ -573,6 +573,8 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     },
 
     async getApprovableFeeSchedulesForFacilities(facilities) {
+      console.log('called');
+      console.log(facilities);
       try {
         if (isEmpty(facilities)) return;
         const appStore = useAppStore();

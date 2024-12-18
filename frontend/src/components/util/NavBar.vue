@@ -237,6 +237,10 @@ export default {
             this.getApplicationUploadedDocuments(),
           ]);
           this.checkApprovableFeeSchedulesComplete();
+        } else if (this.changeType === 'mtfi') {
+          await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities),
+            //this.getApplicationUploadedDocuments(),
+            console.log(this.mtfiFacilities);
         }
       } catch (error) {
         console.log(error);
@@ -852,7 +856,6 @@ export default {
             });
           }
           if (item.enableAfs) {
-            //TODO-JB change with the actual flag
             items.push({
               title: 'Approvable Fee Schedule',
               subTitle: item.facilityName,
@@ -864,9 +867,7 @@ export default {
               },
               isAccessible: true,
               icon: this.getCheckbox(item.isAFSComplete), //different logic for CR
-              isActive:
-                'mtfi-change-request-ccfri-request-info' === this.$route.name &&
-                this.$route.params.urlGuid === item.ccfriApplicationId,
+              isActive: 'mtfi-afs' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
               position: positionIndex++,
               navBarId: navBarId++,
             });
