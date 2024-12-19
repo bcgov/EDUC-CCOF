@@ -32,7 +32,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col cols="12" md="6">
+            <v-col cols="12">
               <div class="summary-label">Organization Mailing Address</div>
               <v-text-field
                 placeholder="Required"
