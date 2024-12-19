@@ -32,7 +32,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-col cols="12" md="4">
+            <v-col cols="12" md="6">
               <div class="summary-label">Organization Mailing Address</div>
               <v-text-field
                 placeholder="Required"
@@ -47,7 +47,7 @@
               />
             </v-col>
             <template v-if="summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="6">
                 <div class="summary-label">Organization Contact Name</div>
                 <v-text-field
                   placeholder="Required"
@@ -60,7 +60,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-              <v-col cols="12" md="4">
+              <v-col cols="12" md="6">
                 <div class="summary-label">Position</div>
                 <v-text-field
                   placeholder="Required"
