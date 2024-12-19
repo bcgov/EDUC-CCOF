@@ -35,19 +35,15 @@ export const useFacilityStore = defineStore('facility', {
     isValidForm(value) {
       this.isValidForm = value;
     },
-    // setFacilityList: (facilityList) => { this.facilityList = facilityList; },
-    // addToFacilityList: (payload) => { this.facilityList.push (payload); },
     setFacilityModel(facilityModel) {
       this.facilityModel = facilityModel;
     },
     setLoadedModel(model) {
       this.loadedModel = model;
     },
-    // setCCFRIFacilityModel: (CCFRIFacilityModel) => { this.CCFRIFacilityModel = CCFRIFacilityModel; }, //jb
     setFacilityId(facilityId) {
       this.facilityId = facilityId;
     },
-    // setCcfriId: (ccfriId) => { this.ccfriId = ccfriId; },
     addFacilityToStore({ facilityId, facilityModel }) {
       if (facilityId) {
         this.facilityStore[facilityId] = facilityModel;
@@ -56,11 +52,6 @@ export const useFacilityStore = defineStore('facility', {
     deleteFromStore(facilityId) {
       delete this.facilityStore[facilityId];
     },
-    // addCCFRIToStore: ({ccfriId, CCFRIFacilityModel} ) => {
-    //   if (ccfriId) {
-    //     this.ccfriStore[ccfriId] = CCFRIFacilityModel;
-    //   }
-    // }
     async saveFacility({ isChangeRequest, changeRequestId }) {
       checkSession();
       const applicationStore = useApplicationStore();
@@ -68,16 +59,12 @@ export const useFacilityStore = defineStore('facility', {
       const reportChangesStore = useReportChangesStore();
       const organizationStore = useOrganizationStore();
 
-      // console.log('saveFacility- state model: ', this.facilityModel);
-      // console.log('saveFacility- loaded model: ', this.loadedModel);
       if (isEqual(this.facilityModel, this.loadedModel)) {
-        console.info('no model changes');
         return;
       }
 
       let organizationId = organizationStore.organizationId;
       if (!organizationId) {
-        console.log('unable to save facility because you are not associated to an organization');
         throw 'unable to save facility because you are not associated to an organization';
       }
 
@@ -89,7 +76,6 @@ export const useFacilityStore = defineStore('facility', {
           this?.facilityModel?.postalCode?.replace(/\s/g, '').toUpperCase() ==
           this?.loadedModel?.postalCode?.replace(/\s/g, '').toUpperCase()
         ) {
-          console.info('no post code changes, do not save post code');
           delete payload.postalCode;
         } else {
           //format the post code nice for Dynamics
@@ -98,7 +84,6 @@ export const useFacilityStore = defineStore('facility', {
       } catch (e) {
         console.log(e);
       }
-      console.log(payload);
       this.setLoadedModel(this.facilityModel);
 
       if (this.facilityId) {
@@ -118,10 +103,8 @@ export const useFacilityStore = defineStore('facility', {
           throw error;
         }
       } else {
-        console.log('creating change request?', isChangeRequest);
         // else create a new facility.  If is a change request, hit the change request endpoint
         if (isChangeRequest) {
-          // console.log('changeRequestId: ', changeRequestId);
           try {
             let changeActionId;
             if (changeRequestId) {
@@ -133,7 +116,6 @@ export const useFacilityStore = defineStore('facility', {
                   (el) => el.changeRequestId == changeRequestId,
                 )?.changeActionId;
               }
-              console.log('Change ActionId is ', changeActionId);
             }
             if (!changeActionId) {
               const changeRequestPayload = {
@@ -141,7 +123,6 @@ export const useFacilityStore = defineStore('facility', {
                 programYearId: applicationStore.programYearId,
                 changeType: 'NEW_FACILITY',
               };
-              console.log('calling create change rec new fac');
               const changeRequestResponse = await ApiService.apiAxios.post(
                 ApiRoutes.CHANGE_REQUEST_NEW_FAC,
                 changeRequestPayload,
@@ -215,7 +196,6 @@ export const useFacilityStore = defineStore('facility', {
             throw error;
           }
         } else {
-          console.log('trying new facility');
           try {
             let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
             this.setFacilityId(response.data?.facilityId);
@@ -243,7 +223,6 @@ export const useFacilityStore = defineStore('facility', {
       this.setFacilityId(facilityId);
       let facilityModel = this.getFacilityById(facilityId);
       if (facilityModel) {
-        console.log('found facility for guid: ', facilityId);
         this.setFacilityModel(facilityModel);
         this.setLoadedModel(facilityModel);
       } else {

@@ -151,7 +151,6 @@ export default {
         baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
       }
 
-      console.log('basefunding: ', baseFundingId);
       if (baseFundingId) {
         if (this.isChangeRequest) {
           this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));
