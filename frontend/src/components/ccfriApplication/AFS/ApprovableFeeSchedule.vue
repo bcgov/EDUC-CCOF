@@ -186,7 +186,7 @@ export default {
       if (!this.isChangeRequest) {
         return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
       }
-      return false;
+      return this.isLoading || !this.currentFacility?.unlockAfs;
     },
     isSupportingDocumentsUploaded() {
       return this.filteredUploadedDocuments?.length + this.documentsToUpload?.length > 0;

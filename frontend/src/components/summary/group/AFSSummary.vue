@@ -52,6 +52,7 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
 export default {
+  //JB TO DO - Add load and verifcations for AFS
   name: 'AFSSummary',
   components: {
     AfsDecisionCard,

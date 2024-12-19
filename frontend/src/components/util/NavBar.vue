@@ -238,9 +238,11 @@ export default {
           ]);
           this.checkApprovableFeeSchedulesComplete();
         } else if (this.changeType === 'mtfi') {
-          await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities),
-            //this.getApplicationUploadedDocuments(),
-            console.log(this.mtfiFacilities);
+          await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities);
+          //this.getApplicationUploadedDocuments(),
+          //CR documents are obtained by the change action ID - then they neeed to be filtered by facilityID
+          //not done in CMS yet
+          this.checkMTFIApprovableFeeSchedulesComplete();
         }
       } catch (error) {
         console.log(error);
@@ -814,7 +816,6 @@ export default {
 
       if (this.navBarList?.length > 0) {
         this.navBarList?.forEach((item) => {
-          item.enableAfs = true; //TODO-JB remove when dynamics is done updating
           items.push({
             title: 'Parent Fee Verification',
             subTitle: item.facilityName,
@@ -1097,6 +1098,29 @@ export default {
         facility.isAFSComplete =
           [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+      });
+      this.refreshNavBarList();
+    },
+    checkMTFIApprovableFeeSchedulesComplete() {
+      //JB TO DO - replace with proper code once document upload is complete in CMS.
+      //like PCF - we will set the checkbox on load by checking if doc upload / radio buttons are complete for each mtfi fac
+      this.navBarList?.forEach((facility) => {
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
+        );
+
+        if (afs) {
+          facility.isAFSComplete = true;
+        }
+        // const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
+        //   (document) =>
+        //     [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+        //       document.documentType,
+        //     ) && document.facilityId === facility.facilityId,
+        // );
+        // facility.isAFSComplete =
+        //   [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
+        //   (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
       });
       this.refreshNavBarList();
     },

@@ -102,7 +102,13 @@
                       type="paragraph, text@3, paragraph, text@3, paragraph"
                     />
                     <div v-else>
-                      <v-expansion-panel variant="accordion" value="facility-name">
+                      {{ facility.enableAfs }}
+                      <v-expansion-panel
+                        v-if="facility"
+                        :key="`${facility.facilityId}-facility-information`"
+                        value="facility-name"
+                        variant="accordion"
+                      >
                         <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
                             <p class="summary-label">Facility Name</p>
@@ -124,7 +130,11 @@
                           </v-col>
                         </v-row>
                       </v-expansion-panel>
-                      <v-expansion-panel variant="accordion" value="mtfi-summary">
+                      <v-expansion-panel
+                        :key="`${facility.facilityId}-mtfi-summary`"
+                        :value="`${facility.facilityId}-mtfi-summary`"
+                        variant="accordion"
+                      >
                         <MTFISummary
                           v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
                           :old-ccfri="facility?.oldCcfri"
@@ -135,13 +145,27 @@
                       </v-expansion-panel>
                       <v-expansion-panel
                         v-if="facility?.hasRfi && !isSummaryLoading[index]"
+                        :key="`${facility.facilityId}-ccfri-summary`"
+                        :value="`${facility.facilityId}-ccfri-summary`"
                         variant="accordion"
-                        value="rfi-summary"
                       >
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
                           :ccfri-id="facility?.ccfriApplicationId"
                           :facility-id="facility.facilityId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </v-expansion-panel>
+                      <v-expansion-panel
+                        v-if="facility?.enableAfs"
+                        :key="`${facility.facilityId}-afs-summary`"
+                        :value="`${facility.facilityId}-afs-summary`"
+                        variant="accordion"
+                      >
+                        <AFSSummary
+                          :ccfri-id="facility?.newCcfri?.ccfriId"
+                          :facility-id="facility?.facilityId"
+                          :program-year-id="summaryModel?.application?.programYearId"
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
@@ -379,6 +403,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
 
@@ -388,6 +413,7 @@ export default {
     ChangeNotificationFormSummary,
     RFISummary,
     NavButton,
+    AFSSummary,
   },
   mixins: [alertMixin],
   data() {
@@ -443,6 +469,7 @@ export default {
     },
     facilities() {
       if (this.summaryModel?.mtfiFacilities) {
+        console.log('booop');
         return this.summaryModel?.mtfiFacilities;
       }
       return null;
