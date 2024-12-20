@@ -357,7 +357,7 @@
                   />
                 </v-col>
 
-                <v-col cols="12" md="2">
+                <v-col cols="12" md="3">
                   <v-text-field
                     v-model="obj.closureReason"
                     :disabled="isReadOnly"
@@ -369,7 +369,7 @@
                   />
                 </v-col>
 
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="2" class="mt-n1">
                   <span style="color: grey; font-style: normal; font-family: BCSans; font-size: 14px"
                     >Did parents pay for this closure?</span
                   >
