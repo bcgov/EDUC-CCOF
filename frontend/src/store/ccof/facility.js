@@ -7,6 +7,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
@@ -102,120 +103,117 @@ export const useFacilityStore = defineStore('facility', {
           console.log(`Failed to update existing Facility - ${error}`);
           throw error;
         }
-      } else {
-        // else create a new facility.  If is a change request, hit the change request endpoint
-        if (isChangeRequest) {
-          try {
-            let changeActionId;
-            if (changeRequestId) {
-              //If there is a changeRequestId, get the change action from the store.
-              changeActionId = reportChangesStore.changeActionId;
-              if (!changeActionId) {
-                //If there is no changeActionID, then maybe the user refreshed.  Get it from the navBar
-                changeActionId = navBarStore.navBarList.find(
-                  (el) => el.changeRequestId == changeRequestId,
-                )?.changeActionId;
-              }
-            }
+      } else if (isChangeRequest) {
+        try {
+          let changeActionId;
+          if (changeRequestId) {
+            //If there is a changeRequestId, get the change action from the store.
+            changeActionId = reportChangesStore.changeActionId;
             if (!changeActionId) {
-              const changeRequestPayload = {
-                applicationId: applicationStore.applicationId,
-                programYearId: applicationStore.programYearId,
-                changeType: 'NEW_FACILITY',
-              };
-              const changeRequestResponse = await ApiService.apiAxios.post(
-                ApiRoutes.CHANGE_REQUEST_NEW_FAC,
-                changeRequestPayload,
-              );
-              reportChangesStore.setChangeRequestId(changeRequestResponse.data?.changeRequestId);
-              reportChangesStore.setChangeActionId(changeRequestResponse.data?.changeActionId);
-              navBarStore.setChangeRequestId(changeRequestResponse.data?.changeRequestId);
-              const changeRequestNewFacilityModel = {
-                changeRequestId: changeRequestResponse.data?.changeRequestId,
-                agreeConsentCertify: null,
-                applicableSector: null,
-                applicationId: applicationStore.applicationId,
-                belongsToUnion: null,
-                changeActions: [
-                  {
-                    applicationStatus: 1,
-                    changeActionId: changeRequestResponse.data?.changeActionId,
-                    changeType: 100000005,
-                    isCCOFUnlocked: false,
-                    isChangeRequestUnlocked: false,
-                    isEceweUnlocked: false,
-                    isLicenseUploadUnlocked: false,
-                    isOtherDocumentsUnlocked: false,
-                    isSupportingDocumentsUnlocked: false,
-                    newFacilities: [],
-                  },
-                ],
-                confirmation: null,
-                enabledDeclarationB: false,
-                externalStatus: 'INCOMPLETE',
-                firstSubmissionDate: null,
-                fundingModel: null,
-                isChangeRequestUnlocked: false,
-                isEceweComplete: false,
-                isLicenseUploadComplete: false,
-                latestSubmissionDate: null,
-                optInECEWE: null,
-                orgContactName: null,
-                programYearId: applicationStore.programYearId,
-                providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-                status: 1,
-                unlockDeclaration: false,
-              };
-              reportChangesStore.addNewChangeRequestToMap(changeRequestNewFacilityModel);
-              changeActionId = changeRequestResponse.data?.changeActionId;
+              //If there is no changeActionID, then maybe the user refreshed.  Get it from the navBar
+              changeActionId = navBarStore.navBarList.find(
+                (el) => el.changeRequestId == changeRequestId,
+              )?.changeActionId;
             }
-            let response = await ApiService.apiAxios.post(
-              `${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`,
-              payload,
+          }
+          if (!changeActionId) {
+            const changeRequestPayload = {
+              applicationId: applicationStore.applicationId,
+              programYearId: applicationStore.programYearId,
+              changeType: 'NEW_FACILITY',
+            };
+            const changeRequestResponse = await ApiService.apiAxios.post(
+              ApiRoutes.CHANGE_REQUEST_NEW_FAC,
+              changeRequestPayload,
             );
-            this.setFacilityId(response.data?.facilityId);
-            const navBarPayload = {
-              facilityName: this.facilityModel.facilityName,
-              facilityId: this.facilityId,
-              ccofBaseFundingId: response.data?.ccofBaseFundingId,
-              ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
-              licenseNumber: this.facilityModel.licenseNumber,
-              changeRequestId: reportChangesStore.changeRequestId,
-              changeActionId: reportChangesStore.changeActionId,
-              changeRequestNewFacilityId: response.data?.changeRequestNewFacilityId,
-              facilityStatus: 'New',
-              isCCOFComplete: false, //funding page must be complete to be true
+            reportChangesStore.setChangeRequestId(changeRequestResponse.data?.changeRequestId);
+            reportChangesStore.setChangeActionId(changeRequestResponse.data?.changeActionId);
+            navBarStore.setChangeRequestId(changeRequestResponse.data?.changeRequestId);
+            const changeRequestNewFacilityModel = {
+              changeRequestId: changeRequestResponse.data?.changeRequestId,
+              agreeConsentCertify: null,
+              applicableSector: null,
+              applicationId: applicationStore.applicationId,
+              belongsToUnion: null,
+              changeActions: [
+                {
+                  applicationStatus: 1,
+                  changeActionId: changeRequestResponse.data?.changeActionId,
+                  changeType: CHANGE_REQUEST_TYPES.NEW_FACILITY,
+                  isCCOFUnlocked: false,
+                  isChangeRequestUnlocked: false,
+                  isEceweUnlocked: false,
+                  isLicenseUploadUnlocked: false,
+                  isOtherDocumentsUnlocked: false,
+                  isSupportingDocumentsUnlocked: false,
+                  newFacilities: [],
+                },
+              ],
+              confirmation: null,
+              enabledDeclarationB: false,
+              externalStatus: 'INCOMPLETE',
+              firstSubmissionDate: null,
+              fundingModel: null,
+              isChangeRequestUnlocked: false,
+              isEceweComplete: false,
+              isLicenseUploadComplete: false,
+              latestSubmissionDate: null,
+              optInECEWE: null,
+              orgContactName: null,
+              programYearId: applicationStore.programYearId,
+              providerType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+              status: 1,
+              unlockDeclaration: false,
             };
-            reportChangesStore.addNewFacilityDataToCRMap(navBarPayload);
-            navBarStore.addToNavBar(navBarPayload);
-            this.addFacilityToStore({ facilityId: response.data?.facilityId, facilityModel: this.facilityModel });
-
-            return response;
-          } catch (error) {
-            console.log(`Failed to save new Facility - ${error}`);
-            throw error;
+            reportChangesStore.addNewChangeRequestToMap(changeRequestNewFacilityModel);
+            changeActionId = changeRequestResponse.data?.changeActionId;
           }
-        } else {
-          try {
-            let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
-            this.setFacilityId(response.data?.facilityId);
-            const navBarPayload = {
-              facilityName: this.facilityModel.facilityName,
-              facilityId: this.facilityId,
-              ccofBaseFundingId: response.data?.ccofBaseFundingId,
-              ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
-              licenseNumber: this.facilityModel.licenseNumber,
-              facilityStatus: 'New',
-              isCCOFComplete: false, //funding page must be complete to be true
-            };
-            navBarStore.addToNavBar(navBarPayload);
-            this.addFacilityToStore({ facilityId: response.data?.facilityId, facilityModel: this.facilityModel });
+          let response = await ApiService.apiAxios.post(
+            `${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`,
+            payload,
+          );
+          this.setFacilityId(response.data?.facilityId);
+          const navBarPayload = {
+            facilityName: this.facilityModel.facilityName,
+            facilityId: this.facilityId,
+            ccofBaseFundingId: response.data?.ccofBaseFundingId,
+            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            licenseNumber: this.facilityModel.licenseNumber,
+            changeRequestId: reportChangesStore.changeRequestId,
+            changeActionId: reportChangesStore.changeActionId,
+            changeRequestNewFacilityId: response.data?.changeRequestNewFacilityId,
+            facilityStatus: 'New',
+            isCCOFComplete: false, //funding page must be complete to be true
+          };
+          reportChangesStore.addNewFacilityDataToCRMap(navBarPayload);
+          navBarStore.addToNavBar(navBarPayload);
+          this.addFacilityToStore({ facilityId: response.data?.facilityId, facilityModel: this.facilityModel });
 
-            return response;
-          } catch (error) {
-            console.log(`Failed to save new Facility - ${error}`);
-            throw error;
-          }
+          return response;
+        } catch (error) {
+          console.log(`Failed to save new Facility - ${error}`);
+          throw error;
+        }
+      } else {
+        try {
+          let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+          this.setFacilityId(response.data?.facilityId);
+          const navBarPayload = {
+            facilityName: this.facilityModel.facilityName,
+            facilityId: this.facilityId,
+            ccofBaseFundingId: response.data?.ccofBaseFundingId,
+            ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            licenseNumber: this.facilityModel.licenseNumber,
+            facilityStatus: 'New',
+            isCCOFComplete: false, //funding page must be complete to be true
+          };
+          navBarStore.addToNavBar(navBarPayload);
+          this.addFacilityToStore({ facilityId: response.data?.facilityId, facilityModel: this.facilityModel });
+
+          return response;
+        } catch (error) {
+          console.log(`Failed to save new Facility - ${error}`);
+          throw error;
         }
       }
     },

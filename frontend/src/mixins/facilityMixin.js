@@ -134,7 +134,6 @@ export default {
       }
     },
     async next() {
-      // await this.save();
       if (!this.$route.params.urlGuid) {
         //we won't have the funding guid until we save, so save first.
         await this.save(false);
