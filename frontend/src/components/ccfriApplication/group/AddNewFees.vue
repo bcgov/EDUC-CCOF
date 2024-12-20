@@ -1,7 +1,7 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
-      <div align="center">
+      <div class="text-center">
         <div class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </div>
@@ -119,7 +119,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="April"
+                        label="Apr"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -145,7 +145,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="June"
+                        label="Jun"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
@@ -158,7 +158,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="July"
+                        label="Jul"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
@@ -171,7 +171,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="August"
+                        label="Aug"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
@@ -184,7 +184,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="September"
+                        label="Sep"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
@@ -200,7 +200,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="October"
+                        label="Oct"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeOct')"
@@ -213,7 +213,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="November"
+                        label="Nov"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeNov')"
@@ -226,7 +226,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="December"
+                        label="Dec"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeDec')"
@@ -265,7 +265,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="March"
+                        label="Mar"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMar')"
@@ -313,13 +313,13 @@
             </div>
             <v-radio-group v-model="CCFRIFacilityModel.hasClosureFees" required :disabled="isReadOnly" :rules="rules">
               <br />
-              <v-radio label="Yes" :value="100000000" />
-              <v-radio label="No" :value="100000001" />
+              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" />
+              <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
             <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
               <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                <v-col color="#003366" class="col-md-1 col-12 mx-0">
+                <v-col color="#003366" cols="auto">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -331,73 +331,33 @@
                   </v-icon>
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="obj.calendarMenu1"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.formattedStartDate"
-                        :disabled="isReadOnly"
-                        variant="outlined"
-                        :rules="rules"
-                        label="Select Start Date (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                        @click="updateChosenDates()"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.formattedStartDate"
-                      :min="fiscalStartAndEndDates.startDate"
-                      :max="fiscalStartAndEndDates.endDate"
-                      :allowed-dates="allowedDates"
-                      clearable
-                      @input="obj.calendarMenu1 = false"
-                    />
-                  </v-menu>
+                <v-col cols="12" md="3">
+                  <AppDateInput
+                    v-model="obj.formattedStartDate"
+                    :min="fiscalStartAndEndDates.startDate"
+                    :max="fiscalStartAndEndDates.endDate"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="obj.calendarMenu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.formattedEndDate"
-                        :disabled="isReadOnly"
-                        variant="outlined"
-                        required
-                        label="Select End Date (YYYY-MM-DD)"
-                        readonly
-                        :rules="rules"
-                        v-bind="props"
-                        @click="updateChosenDates()"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.formattedEndDate"
-                      clearable
-                      :min="obj.formattedStartDate"
-                      :max="fiscalStartAndEndDates.endDate"
-                      :allowed-dates="allowedDates"
-                      @input="obj.calendarMenu2 = false"
-                      @click:date="isDateLegal(obj)"
-                    />
-                  </v-menu>
+                <v-col cols="12" md="3">
+                  <AppDateInput
+                    v-model="obj.formattedEndDate"
+                    :min="obj.formattedStartDate"
+                    :max="fiscalStartAndEndDates.endDate"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    clearable
+                    @input="isDateLegal(obj)"
+                  />
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
+                <v-col cols="12" md="2">
                   <v-text-field
                     v-model="obj.closureReason"
                     :disabled="isReadOnly"
@@ -409,14 +369,11 @@
                   />
                 </v-col>
 
-                <v-col class="col-md-2 col-12 mt-n10">
-                  <v-radio-group
-                    v-model="obj.feesPaidWhileClosed"
-                    :disabled="isReadOnly"
-                    inline
-                    label="Did parents pay for this closure?"
-                    :rules="dateRules"
+                <v-col cols="12" md="3">
+                  <span style="color: grey; font-style: normal; font-family: BCSans; font-size: 14px"
+                    >Did parents pay for this closure?</span
                   >
+                  <v-radio-group v-model="obj.feesPaidWhileClosed" :disabled="isReadOnly" inline :rules="dateRules">
                     <v-radio label="Yes" :value="1" />
                     <v-radio label="No" :value="0" />
                   </v-radio-group>
@@ -565,6 +522,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 
 import {
   PATHS,
@@ -575,6 +533,7 @@ import {
   CHANGE_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ApiRoutes,
+  CCFRI_HAS_CLOSURE_FEE_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -597,7 +556,7 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader },
+  components: { NavButton, FacilityHeader, AppDateInput },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);
@@ -609,8 +568,6 @@ export default {
       closureFees: 'No',
       prevFeesCorrect: undefined,
       dateObj: {
-        datePicker1: undefined,
-        datePicker2: undefined,
         closureReason: '',
         feesPaidWhileClosed: undefined,
       },
@@ -671,11 +628,6 @@ export default {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     currentFacility() {
-      // if (this.getNavByCCFRIId(this.$route.params.urlGuid)){
-      //   return this.getNavByCCFRIId(this.$route.params.urlGuid);
-      // }
-      // //if viewing historical CR - getNavByCCFRID will not work because fac won't be in userProfile. Load from navBarList instead
-      // else
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     fundingUrl() {
@@ -709,24 +661,21 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
-
           this.prevFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect == 100000000 ? 'Yes' : 'No';
-          if (this.getClosureDateLength > 0) {
-            //this.closureFees = 'Yes';
-          }
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
           this.updateChosenDates();
           this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
-          //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics
-          // window.location.reload(); //TODO-RLO: removed this, review with Jen
         }
       },
       immediate: true,
       deep: true,
     },
+  },
+  created() {
+    this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [
@@ -761,6 +710,7 @@ export default {
       });
     },
     isDateLegal(obj) {
+      console.log(obj);
       let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
       obj.isIllegal = false;
 
@@ -847,8 +797,10 @@ export default {
       this.$refs.isValidForm?.validate();
     },
     isFormComplete() {
-      //100000000 == YES
-      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0) {
+      if (
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
+        this.CCFRIFacilityModel.dates.length === 0
+      ) {
         return false;
       }
       return this.isValidForm; //false makes button clickable, true disables button
