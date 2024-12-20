@@ -309,7 +309,7 @@
   </v-container>
 </template>
 <script>
-import { isEmpty } from 'lodash';
+import { isEmpty, orderBy } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
@@ -805,7 +805,7 @@ export default {
           return false;
         });
         if (mtfiChangeRequestListForFacility?.length > 0) {
-          mtfiChangeRequestListForFacility = _.orderBy(mtfiChangeRequestListForFacility, 'firstSubmissionDate', 'desc');
+          mtfiChangeRequestListForFacility = orderBy(mtfiChangeRequestListForFacility, 'firstSubmissionDate', 'desc');
           lastMTFIChangeRequest = mtfiChangeRequestListForFacility[0];
         }
       }

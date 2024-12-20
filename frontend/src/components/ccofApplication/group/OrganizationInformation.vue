@@ -61,7 +61,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="rules.required"
+                    :rules="[...rules.required, rules.maxLength(MAX_CHAR_LENGTH)]"
                     label="Mailing Address"
                   />
                 </v-col>
@@ -163,7 +163,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="rules.required"
+                    :rules="[...rules.required, rules.maxLength(MAX_CHAR_LENGTH)]"
                     label="Organization Contact Name"
                   />
                 </v-col>
@@ -173,7 +173,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="rules.required"
+                    :rules="[...rules.required, rules.maxLength(MAX_CHAR_LENGTH)]"
                     label="Position"
                   />
                 </v-col>
@@ -272,6 +272,8 @@ export default {
   },
   created() {
     this.PROVINCES = PROVINCES;
+    //ccfri 4269 - prevent certain text box values from getting cut off on summary decleration page
+    this.MAX_CHAR_LENGTH = 60;
     this.model.province1 = this.model.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
     this.model.province2 = this.model.province2 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
   },

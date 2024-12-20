@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import { isEmpty, isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
 import ApiService from '../../common/apiService.js';
 import { ApiRoutes } from '../../utils/constants.js';
@@ -45,7 +45,6 @@ export const useFundingStore = defineStore('funding', {
       checkSession();
 
       if (isEqual(this.fundingModel, this.loadedModel)) {
-        console.info('no model changes');
         return;
       }
 
@@ -70,8 +69,6 @@ export const useFundingStore = defineStore('funding', {
       }
 
       deleteFields.forEach((field) => delete payload[field]);
-
-      console.log('save group funding', payload);
       let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + this.ccofBaseFundingId, payload);
       return response;
     },
@@ -79,7 +76,6 @@ export const useFundingStore = defineStore('funding', {
       this.setCcofBaseFundingId(fundingId);
       let model = this.getModelById(fundingId);
       if (model) {
-        console.log('found model for guid: ', fundingId);
         this.setFundingModel(model);
         this.setLoadedModel(model);
       } else {
@@ -90,7 +86,6 @@ export const useFundingStore = defineStore('funding', {
           if (model.familyLicenseType) {
             model.familyLicenseType = '' + model.familyLicenseType;
           }
-          console.log('response', model);
           this.setFundingModel(model);
           this.setLoadedModel(model);
           this.addModelToStore({ fundingId, model });

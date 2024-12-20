@@ -103,7 +103,6 @@
           :height="maxChangeHistoryTableHeight"
           mobile-breakpoint="md"
           fixed-header
-          :item-class="getChangeRequestStyle"
           class="elevation-4 my-4"
           disable-pagination
           hide-default-footer
@@ -121,6 +120,11 @@
                 {{ item.facilityNames }}
               </div>
             </v-tooltip>
+          </template>
+          <template #item.externalStatus="{ item }">
+            <span :class="['tableText', getChangeRequestStyle(item.externalStatus)]">
+              {{ item.externalStatus }}
+            </span>
           </template>
           <template #item.actions="{ item }">
             <v-btn
@@ -492,8 +496,8 @@ export default {
       }
       return '- - - -';
     },
-    getChangeRequestStyle(changeRequest) {
-      return changeRequest.externalStatus === 'Action Required' ? 'redText' : '';
+    getChangeRequestStyle(status) {
+      return status === 'Action Required' ? 'redText' : '';
     },
     next() {
       this.$router.push(PATHS.ROOT.HOME);

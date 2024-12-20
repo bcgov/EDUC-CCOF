@@ -85,47 +85,121 @@
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.hasClosedMonth === 'yes'">
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn1" :disabled="isLocked" label="Jan" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn2" :disabled="isLocked" label="Feb" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn3" :disabled="isLocked" label="Mar" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn4" :disabled="isLocked" label="Apr" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn5" :disabled="isLocked" label="May" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn6" :disabled="isLocked" label="Jun" />
-                  </v-col>
-                </v-row>
+                <template v-if="model.hasClosedMonth === 'yes'">
+                  <v-row>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn1"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Jan"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn2"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Feb"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn3"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Mar"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn4"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Apr"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn5"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="May"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn6"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Jun"
+                      />
+                    </v-col>
+                  </v-row>
 
-                <v-row v-show="model.hasClosedMonth === 'yes'">
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn7" :disabled="isLocked" label="Jul" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn8" :disabled="isLocked" label="Aug" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn9" :disabled="isLocked" label="Sep" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn10" :disabled="isLocked" label="Oct" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn11" :disabled="isLocked" label="Nov" />
-                  </v-col>
-                  <v-col>
-                    <v-checkbox v-model="model.closedIn12" :disabled="isLocked" label="Dec" />
-                  </v-col>
-                </v-row>
+                  <v-row>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn7"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Jul"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn8"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Aug"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn9"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Sep"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn10"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Oct"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn11"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Nov"
+                      />
+                    </v-col>
+                    <v-col>
+                      <v-checkbox
+                        v-model="model.closedIn12"
+                        :true-value="1"
+                        :false-value="0"
+                        :disabled="isLocked"
+                        label="Dec"
+                      />
+                    </v-col>
+                  </v-row>
+                </template>
 
                 <v-row>
                   <v-col cols="12" md="6">

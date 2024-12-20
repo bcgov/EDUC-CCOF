@@ -2,7 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-card class="facility-info pa-4 pb-2">
       <v-row no-gutters>
-        <v-col cols="12" md="6">
+        <v-col cols="12">
           <div class="summary-label">Facility Name</div>
           <v-textarea
             placeholder="Required"
@@ -112,7 +112,7 @@
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">
         <v-row no-gutters>
-          <v-col cols="12" md="4" class="pr-2">
+          <v-col cols="12" md="8" class="pr-2">
             <div class="summary-label">
               Facility Name (as it appears on the Community Care Assisted Living Act Licence)
             </div>
@@ -130,7 +130,7 @@
               :rules="rules.required"
             />
           </v-col>
-          <v-col cols="12" md="4">
+          <v-col cols="12" md="2">
             <div class="summary-label">Year Facility Began Operation (YYYY)</div>
             <v-text-field
               placeholder="Required"
@@ -372,7 +372,7 @@
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">
         <v-row no-gutters>
-          <v-col cols="12" lg="6">
+          <v-col cols="12">
             <v-row no-gutters>
               <v-col cols="12">
                 <span class="summary-label"
