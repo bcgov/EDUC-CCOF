@@ -313,7 +313,6 @@
                       hide-details
                       :rules="rules.required"
                       readonly
-                      v-bind="props"
                     />
                   </v-col>
 
@@ -328,7 +327,6 @@
                       required
                       readonly
                       :rules="rules.required"
-                      v-bind="props"
                     />
                   </v-col>
 
@@ -419,7 +417,15 @@
 <script>
 import _ from 'lodash';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CCFRI_HAS_CLOSURE_FEE_TYPES } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrlGuid,
+  pcfUrl,
+  changeUrl,
+  changeUrlGuid,
+  CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_FEE_CORRECT_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import { mapActions, mapState } from 'pinia';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -455,7 +461,7 @@ export default {
     return {
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'CCFRISummary',
         formId: this.ccfri?.ccfriId,
@@ -508,12 +514,20 @@ export default {
         findChildCareTypes(this.ccfri.currentYear);
 
         //only show last year fees if new app or previous year fees are incorrect
-        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId) {
+        if (
+          !this.isRenewal ||
+          this.ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.NO ||
+          !this.ccfri.previousCcfriId
+        ) {
           findChildCareTypes(this.ccfri.prevYear);
         }
 
         //check if we are missing any feed cards from the last year if previous fees are correct
-        else if (this.isRenewal && this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId) {
+        else if (
+          this.isRenewal &&
+          this.ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES &&
+          this.ccfri.previousCcfriId
+        ) {
           findChildCareTypes(this.ccfri.prevYear, true);
         }
 
@@ -549,11 +563,11 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
+    isValidForm: {
+      handler() {
+        console.log(this.isValidForm);
+        this.$refs.ccfriSummaryForm.validate();
+        this.$emit('isSummaryValid', this.formObj, this.isValidForm);
       },
     },
   },

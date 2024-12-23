@@ -47,7 +47,7 @@
               <p class="text-h5 text--primary">Are the previous year's fees correct for this facility?</p>
               <br />
 
-              <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules">
+              <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules.required">
                 <v-radio label="Yes" value="Yes" />
                 <v-radio label="No" value="No" />
               </v-radio-group>
@@ -75,14 +75,10 @@
               </div>
               <div class="px-md-12 px-7">
                 <br />
-                <!-- <p class="text-h6 text--primary">
-                    Are your parent fees
 
-                  </p> -->
-                <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
                 <v-radio-group
                   v-model="item.feeFrequency"
-                  :rules="rules"
+                  :rules="rules.required"
                   label="Parent fee frequency"
                   :disabled="isReadOnly"
                 >
@@ -111,8 +107,6 @@
                   </v-row>
                   <v-row>
                     <v-col class="col-6 col-md-2">
-                      <!-- childCareTypes[index].approvedFeeApr
-                      I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
                       <v-text-field
                         v-model.number="item.approvedFeeApr"
                         type="number"
@@ -311,15 +305,20 @@
                 statutory holidays)? Only indicate the date of closures where parent fees are charged.
               </p>
             </div>
-            <v-radio-group v-model="CCFRIFacilityModel.hasClosureFees" required :disabled="isReadOnly" :rules="rules">
+            <v-radio-group
+              v-model="CCFRIFacilityModel.hasClosureFees"
+              required
+              :disabled="isReadOnly"
+              :rules="rules.required"
+            >
               <br />
               <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" />
               <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
-            <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
+            <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
               <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                <v-col color="#003366" cols="auto">
+                <v-col color="#003366" cols="auto" xl="1">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -364,8 +363,7 @@
                     label="Closure Reason"
                     variant="outlined"
                     clearable
-                    :rules="rules"
-                    color="red"
+                    :rules="rules.required"
                   />
                 </v-col>
 
@@ -373,7 +371,12 @@
                   <span style="color: grey; font-style: normal; font-family: BCSans; font-size: 14px"
                     >Did parents pay for this closure?</span
                   >
-                  <v-radio-group v-model="obj.feesPaidWhileClosed" :disabled="isReadOnly" inline :rules="dateRules">
+                  <v-radio-group
+                    v-model="obj.feesPaidWhileClosed"
+                    :disabled="isReadOnly"
+                    inline
+                    :rules="rules.required"
+                  >
                     <v-radio label="Yes" :value="1" />
                     <v-radio label="No" :value="0" />
                   </v-radio-group>
@@ -407,9 +410,6 @@
                     </v-card-text>
                   </v-card>
                 </v-row>
-                <!-- <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
-                </v-row> -->
-
                 <v-divider />
               </v-row>
               <!-- end v for-->
@@ -523,6 +523,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import rules from '@/utils/rules.js';
 
 import {
   PATHS,
@@ -534,6 +535,7 @@ import {
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ApiRoutes,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_FEE_CORRECT_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -543,9 +545,9 @@ function dateFunction(date1, date2) {
   const startDate = new Date(date1);
   const endDate = new Date(date2);
 
-  let dates = [];
+  const dates = [];
 
-  let currentDate = new Date(startDate.getTime());
+  const currentDate = new Date(startDate.getTime());
 
   while (currentDate <= endDate) {
     dates.push(currentDate.toISOString().substring(0, 10));
@@ -564,6 +566,7 @@ export default {
   },
   data() {
     return {
+      rules,
       pastCcfriGuid: undefined,
       closureFees: 'No',
       prevFeesCorrect: undefined,
@@ -587,10 +590,6 @@ export default {
         (v) => v <= 9999 || 'Max fee is $9999.00',
         (v) => v >= 0 || 'Input a positve number',
       ],
-
-      rules: [(v) => !!v || 'Required.'],
-      calenderRules: [(v) => !!v || 'Required.'],
-      dateRules: [(v) => typeof v === 'number' || 'Required.'],
     };
   },
   computed: {
@@ -661,7 +660,8 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
-          this.prevFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect == 100000000 ? 'Yes' : 'No';
+          this.prevFeesCorrect =
+            this.CCFRIFacilityModel.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES ? 'Yes' : 'No';
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
           this.updateChosenDates();
           this.loading = false;
@@ -676,6 +676,7 @@ export default {
   },
   created() {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
+    this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [
@@ -710,8 +711,7 @@ export default {
       });
     },
     isDateLegal(obj) {
-      console.log(obj);
-      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+      const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
       obj.isIllegal = false;
 
       dates.forEach((date) => {
@@ -806,32 +806,24 @@ export default {
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged() {
-      if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
-        console.info('no model changes');
-        return false;
-      } else {
-        console.info('change in the model!');
-      }
-      return true;
+      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()) {
         this.processing = true;
-        // this.processing = true;
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete() });
 
         if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
-          let newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+          const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
           newFac.ccfri.isCCFRIComplete = this.isFormComplete();
         }
         try {
           this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          let res = await this.saveCcfri({
+          await this.saveCcfri({
             isFormComplete: this.isFormComplete(),
             hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
           });
-          console.log('the res is:', res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           }
@@ -840,14 +832,8 @@ export default {
         } catch (error) {
           console.info(error);
           this.setFailureAlert('An error occurred while saving.');
-
-          //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
-          //and life will be good :)
-          //window.location.reload(true);
         }
         this.processing = false;
-
-        //this.refreshNavBarList();
         this.forceNavBarRefresh();
       }
     },

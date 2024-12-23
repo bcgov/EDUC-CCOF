@@ -287,6 +287,7 @@ export default {
     },
     addSummaryAndDeclarationToNavBar() {
       let declarationAccessible = this.areChildrenComplete(this.items);
+      console.log('is this ???', this.isDeclarationB());
       if (
         StaticConfig.DECB_VALIDATION_BYPASS &&
         this.isDeclarationB() &&
@@ -428,6 +429,7 @@ export default {
         const serverTime = new Date(this.userInfo.serverTime);
         if (programYear) {
           let declarationBStart = new Date(programYear.declarationbStart);
+          console.log(serverTime >= declarationBStart);
           return serverTime >= declarationBStart && this.organizationAccountNumber;
         }
       }
