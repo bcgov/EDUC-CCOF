@@ -497,7 +497,6 @@ export default {
     },
     ccofRenewStatus() {
       if (this.applicationType === 'RENEW') {
-        console.log(this.applicationStatus);
         if (this.applicationStatus === 'DRAFT') {
           return this.RENEW_STATUS_CONTINUE;
         } else if (this.isWithinRenewDate) {
