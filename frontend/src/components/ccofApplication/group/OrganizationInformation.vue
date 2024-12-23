@@ -61,7 +61,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="[...rules.required]"
+                    :rules="rules.required"
                     label="Mailing Address"
                   />
                 </v-col>
@@ -163,7 +163,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="[...rules.required]"
+                    :rules="rules.required"
                     label="Organization Contact Name"
                   />
                 </v-col>
@@ -173,7 +173,7 @@
                     :disabled="isLocked"
                     variant="outlined"
                     required
-                    :rules="[...rules.required]"
+                    :rules="rules.required"
                     label="Position"
                   />
                 </v-col>
