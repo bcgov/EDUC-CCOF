@@ -272,7 +272,6 @@ export default {
   },
   created() {
     this.PROVINCES = PROVINCES;
-
     this.model.province1 = this.model.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
     this.model.province2 = this.model.province2 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
   },
