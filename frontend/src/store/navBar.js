@@ -195,7 +195,6 @@ export const useNavBarStore = defineStore('navBar', {
      * and reforce the navbar to refresh
      ************************************************/
     setNavBarValue({ facilityId, property, value }) {
-      //console.log('set navBar called with value: ' + property + ' , ' + value);
       let userProfileItem;
       if (this.changeType === 'mtfi') {
         userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriFacilityId', facilityId);

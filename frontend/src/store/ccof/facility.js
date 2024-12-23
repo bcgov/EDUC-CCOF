@@ -196,7 +196,7 @@ export const useFacilityStore = defineStore('facility', {
         }
       } else {
         try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+          const response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
           this.setFacilityId(response.data?.facilityId);
           const navBarPayload = {
             facilityName: this.facilityModel.facilityName,
