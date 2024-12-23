@@ -42,7 +42,6 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
     changeAction.newFacilities?.forEach((el) => {
       const facility = userProfileList.find((f) => f.facilityId === el.facilityId);
       if (facility) {
-        console.log(el.baseFunding?.ccofBaseFundingId);
         navBarFacilities.push({
           facilityId: facility.facilityId,
           facilityName: facility.facilityName,
@@ -196,7 +195,6 @@ export const useNavBarStore = defineStore('navBar', {
      * and reforce the navbar to refresh
      ************************************************/
     setNavBarValue({ facilityId, property, value }) {
-      console.log('set navBar called with value: ' + property + ' , ' + value);
       let userProfileItem;
       if (this.changeType === 'mtfi') {
         userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriFacilityId', facilityId);

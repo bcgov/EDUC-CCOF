@@ -134,7 +134,6 @@ export default {
       }
     },
     async next() {
-      // await this.save();
       if (!this.$route.params.urlGuid) {
         //we won't have the funding guid until we save, so save first.
         await this.save(false);
@@ -151,7 +150,6 @@ export default {
         baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
       }
 
-      console.log('basefunding: ', baseFundingId);
       if (baseFundingId) {
         if (this.isChangeRequest) {
           this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));

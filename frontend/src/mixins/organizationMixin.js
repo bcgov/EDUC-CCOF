@@ -39,11 +39,9 @@ export default {
     };
   },
   async mounted() {
-    console.log('org mounted called');
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {
-      console.log('org mounted called2');
       this.model = { ...this.organizationModel };
       this.processing = false;
       this.loading = false;
