@@ -428,7 +428,7 @@ import {
   CCFRI_FEE_CORRECT_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 import globalMixin from '@/mixins/globalMixin.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
