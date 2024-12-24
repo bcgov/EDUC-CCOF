@@ -163,6 +163,7 @@
                         :facility-id="facility.facilityId"
                         :change-rec-guid="facility?.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
+                        :is-processing="isProcessing"
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
@@ -440,8 +441,7 @@
           </v-row>
         </v-card>
       </v-row>
-      {{ !isPageComplete() }}
-      {{ isReadOnly }}
+
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"
@@ -651,7 +651,6 @@ export default {
       return this.summaryModel?.facilities?.length > 0;
     },
     isSummaryComplete() {
-      console.log('len? ', this.invalidSummaryForms.length);
       return this.invalidSummaryForms.length < 1;
     },
     allFacilitiesApproved() {
@@ -750,10 +749,6 @@ export default {
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
     isPageComplete() {
-      console.log('is it complete here? ', this.isSummaryComplete);
-      console.log(this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete);
-      console.log(this.canSubmit);
-
       if (
         (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) ||
         (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)
@@ -892,13 +887,9 @@ export default {
       this.$router.push(this.previousPath);
     },
     async isFormComplete(formObj, isComplete) {
-      console.log(formObj);
-      console.log(isComplete);
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
       }
-
-      console.log(this.invalidSummaryForms);
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {

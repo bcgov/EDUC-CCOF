@@ -377,24 +377,25 @@
               />
             </v-row>
           </v-col>
-          <v-col cols="12" class="pb-2 pt-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <span class="summary-label"
-                >Is there any other information about this facility you would like us to know?</span
-              >
-              <v-textarea
-                class="col-12 summary-value-small"
-                :model-value="ccfri.ccfriApplicationNotes"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                no-resize
-                readonly
-                rows="3"
-              />
-            </v-row>
-          </v-col>
+
+          <v-row no-gutters class="d-flex justify-start">
+            <span class="summary-label"
+              >Is there any other information about this facility you would like us to know?</span
+            >
+          </v-row>
+          <v-row>
+            <v-textarea
+              class="col-10 summary-value-small"
+              :model-value="ccfri.ccfriApplicationNotes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              readonly
+              rows="3"
+            />
+          </v-row>
         </v-row>
 
         <v-row v-if="!isValidForm" class="d-flex justify-start">
@@ -454,6 +455,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    isProcessing: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   emits: ['isSummaryValid'],
@@ -565,9 +571,12 @@ export default {
   watch: {
     isValidForm: {
       handler() {
-        console.log(this.isValidForm);
         this.$refs.ccfriSummaryForm.validate();
-        this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
+        //if form is invalid, it will be set to false and the emit will still fire.
+        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     },
   },
@@ -575,7 +584,6 @@ export default {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     getRoutingPath() {
       if (!this.ccfri && isChangeRequest(this)) {
         return changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid);

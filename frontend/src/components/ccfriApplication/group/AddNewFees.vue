@@ -316,16 +316,10 @@
               <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
-            <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
-              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                <v-col color="#003366" cols="auto" xl="1">
-                  <v-icon
-                    :disabled="isReadOnly"
-                    size="large"
-                    color="blue-darken-4"
-                    class=""
-                    @click="removeIndex(index)"
-                  >
+            <div v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
+              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="obj.id" color="#003366">
+                <v-col color="#003366" cols="auto">
+                  <v-icon :disabled="isReadOnly" size="large" color="blue-darken-4" @click="removeIndex(index)">
                     mdi-close
                   </v-icon>
                 </v-col>
@@ -385,16 +379,8 @@
                 <span class="text-white"> . </span>
                 <v-row v-if="obj.isIllegal">
                   <v-card width="100%" class="mx-3 my-10">
-                    <v-row>
-                      <v-col class="py-0">
-                        <v-card-title class="py-1 noticeAlert">
-                          <span style="float: left">
-                            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                          </span>
-                          Invalid Dates
-                        </v-card-title>
-                      </v-col>
-                    </v-row>
+                    <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
+
                     <v-card-text>
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
@@ -423,7 +409,7 @@
                 </v-row>
               </v-container>
               <br />
-            </v-row>
+            </div>
           </div>
         </v-card-text>
       </v-card>
@@ -513,6 +499,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { isEqual, cloneDeep } from 'lodash';
+import { uuid } from 'vue-uuid';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -523,6 +510,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import rules from '@/utils/rules.js';
 
 import {
@@ -558,7 +546,7 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader, AppDateInput },
+  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);
@@ -699,7 +687,8 @@ export default {
     ]),
     addRow() {
       this.updateChosenDates();
-      this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
+      const newObj = { ...this.dateObj, id: uuid.v1() };
+      this.CCFRIFacilityModel.dates.push(newObj);
     },
     allowedDates(val) {
       return !this.chosenDates.includes(val);
