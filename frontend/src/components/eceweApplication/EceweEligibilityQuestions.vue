@@ -159,8 +159,7 @@
                <div v-if="model.fundingModel">
                   <v-row class="justify-left">
                     <AppAlertBanner  type="info" class="ma-2 mb-4 w-100"
-                      >Please Confirm</AppAlertBanner
-                    />
+                      >Please Confirm</AppAlertBanner>
                   </v-row>
                   <v-row>
                     <v-col class="pl-6 d-flex py-0">
