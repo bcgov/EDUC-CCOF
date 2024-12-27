@@ -268,7 +268,7 @@
           md="6"
         >
           <v-card class="blueBorder rounded-lg elevation-4" min-height="230">
-            <v-card-text class="">
+            <v-card-text>
               <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
                 Facility ID: {{ facility?.facilityAccountNumber }}
               </p>
