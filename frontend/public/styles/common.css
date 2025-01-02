@@ -132,6 +132,13 @@ input[type="number"] {
   background-color: #e5e4e4;
 }
 
+.span-label {
+  color: grey;
+  font-style: normal;
+  font-family: "BCSans", Verdana, Arial, sans-serif;
+  font-size: 14px;
+}
+
 div.text-h4,
 h4.text-h4,
 p.text-h4,

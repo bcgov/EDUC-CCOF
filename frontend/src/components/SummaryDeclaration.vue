@@ -163,6 +163,7 @@
                         :facility-id="facility.facilityId"
                         :change-rec-guid="facility?.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
+                        :is-processing="isProcessing"
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
@@ -443,6 +444,7 @@
           </v-row>
         </v-card>
       </v-row>
+
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"

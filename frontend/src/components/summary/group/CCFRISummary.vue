@@ -287,55 +287,47 @@
                   />
                 </v-col>
               </v-row>
-              <v-row v-if="ccfri.hasClosureFees == 100000000">
-                <v-col class="col-md-3 col-12">
-                  <span class="summary-label">Closure Start Date</span>
-                </v-col>
-                <v-col class="col-md-3 col-12">
-                  <span class="summary-label">End Date</span>
-                </v-col>
-                <v-col class="col-md-3 col-12">
-                  <span class="summary-label">Reason</span>
-                </v-col>
-                <v-col class="col-md-3 col-12">
-                  <span class="summary-label">Did parents pay for this closure?</span>
-                </v-col>
-                <v-row v-for="(obj, index) in ccfri.dates" :key="index">
+              <template v-if="ccfri.hasClosureFees == CCFRI_HAS_CLOSURE_FEE_TYPES.YES">
+                <v-row>
                   <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu1" :nudge-right="40" min-width="auto">
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="obj.formattedStartDate"
-                          placeholder="Required"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          :rules="rules.required"
-                          readonly
-                          v-bind="props"
-                        />
-                      </template>
-                    </v-menu>
+                    <span class="summary-label">Closure Start Date</span>
+                  </v-col>
+                  <v-col class="col-md-3 col-12">
+                    <span class="summary-label">End Date</span>
+                  </v-col>
+                  <v-col class="col-md-3 col-12">
+                    <span class="summary-label">Reason</span>
+                  </v-col>
+                  <v-col class="col-md-3 col-12">
+                    <span class="summary-label">Did parents pay for this closure?</span>
+                  </v-col>
+                </v-row>
+                <v-row v-for="(obj, index) in ccfri.dates" :key="index">
+                  <v-col class="col-md-3 col-12 px-0">
+                    <v-text-field
+                      v-model="obj.formattedStartDate"
+                      placeholder="Required"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      :rules="rules.required"
+                      readonly
+                    />
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
-                    <v-menu v-model="obj.calendarMenu2" :nudge-right="40" min-width="auto">
-                      <template #activator="{ props }">
-                        <v-text-field
-                          v-model="obj.formattedEndDate"
-                          placeholder="Required"
-                          density="compact"
-                          flat
-                          variant="solo"
-                          hide-details
-                          required
-                          readonly
-                          :rules="rules.required"
-                          v-bind="props"
-                        />
-                      </template>
-                    </v-menu>
+                    <v-text-field
+                      v-model="obj.formattedEndDate"
+                      placeholder="Required"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      required
+                      readonly
+                      :rules="rules.required"
+                    />
                   </v-col>
 
                   <v-col class="col-md-3 col-12">
@@ -365,7 +357,7 @@
                   </v-col>
                 </v-row>
                 <!-- end v for-->
-              </v-row>
+              </template>
               <!-- end v if -->
             </v-col>
           </v-row>
@@ -385,25 +377,25 @@
               />
             </v-row>
           </v-col>
-          <v-col cols="12" class="pb-2 pt-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <span class="summary-label"
-                >Is there any other information about this facility you would like us to know?</span
-              >
-              <v-textarea
-                label="--"
-                class="col-12 summary-value-small"
-                :model-value="ccfri.ccfriApplicationNotes"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                no-resize
-                readonly
-                rows="3"
-              />
-            </v-row>
-          </v-col>
+
+          <v-row no-gutters class="d-flex justify-start">
+            <span class="summary-label"
+              >Is there any other information about this facility you would like us to know?</span
+            >
+          </v-row>
+          <v-row>
+            <v-textarea
+              class="col-10 summary-value-small"
+              :model-value="ccfri.ccfriApplicationNotes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              readonly
+              rows="3"
+            />
+          </v-row>
         </v-row>
 
         <v-row v-if="!isValidForm" class="d-flex justify-start">
@@ -426,9 +418,17 @@
 <script>
 import _ from 'lodash';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants.js';
+import {
+  PATHS,
+  pcfUrlGuid,
+  pcfUrl,
+  changeUrl,
+  changeUrlGuid,
+  CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_FEE_CORRECT_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 import globalMixin from '@/mixins/globalMixin.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -456,13 +456,18 @@ export default {
       required: false,
       default: '',
     },
+    isProcessing: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   emits: ['isSummaryValid'],
   data() {
     return {
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'CCFRISummary',
         formId: this.ccfri?.ccfriId,
@@ -515,12 +520,20 @@ export default {
         findChildCareTypes(this.ccfri.currentYear);
 
         //only show last year fees if new app or previous year fees are incorrect
-        if (!this.isRenewal || this.ccfri.existingFeesCorrect == 100000001 || !this.ccfri.previousCcfriId) {
+        if (
+          !this.isRenewal ||
+          this.ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.NO ||
+          !this.ccfri.previousCcfriId
+        ) {
           findChildCareTypes(this.ccfri.prevYear);
         }
 
         //check if we are missing any feed cards from the last year if previous fees are correct
-        else if (this.isRenewal && this.ccfri.existingFeesCorrect == 100000000 && this.ccfri.previousCcfriId) {
+        else if (
+          this.isRenewal &&
+          this.ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES &&
+          this.ccfri.previousCcfriId
+        ) {
           findChildCareTypes(this.ccfri.prevYear, true);
         }
 
@@ -556,16 +569,21 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.ccfriSummaryForm.validate();
+        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
+        //if form is invalid, it will be set to false and the emit will still fire.
+        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
     },
   },
+  created() {
+    this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
+  },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     getRoutingPath() {
       if (!this.ccfri && isChangeRequest(this)) {
         return changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid);
@@ -580,9 +598,9 @@ export default {
       }
     },
     getClosureFees(value) {
-      if (value === 100000000) {
+      if (value === CCFRI_HAS_CLOSURE_FEE_TYPES.YES) {
         return 'Yes';
-      } else if (value === 100000001) {
+      } else if (value === CCFRI_HAS_CLOSURE_FEE_TYPES.NO) {
         return 'No';
       }
     },
