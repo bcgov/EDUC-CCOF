@@ -11,15 +11,13 @@ const { getLicenseCategory } = require('./lookup');
 
 function buildNewFacilityPayload(req) {
   let facility = req.body;
-  const organizationString = '/accounts(' + facility.organizationId + ')';
-  const applicationString = '/ccof_applications(' + facility.applicationId + ')';
 
   facility = mapFacilityObjectForBack(facility);
   facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
-  facility['parentaccountid@odata.bind'] = organizationString;
+  facility['parentaccountid@odata.bind'] = `/accounts(${facility.organizationId})`;
   facility['ccof_application_basefunding_Facility'] = [
     {
-      'ccof_Application@odata.bind': applicationString,
+      'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationId})`,
     },
   ];
 
