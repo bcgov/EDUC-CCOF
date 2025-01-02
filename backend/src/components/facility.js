@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument, deleteDocument } = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -12,12 +12,15 @@ const { getLicenseCategory } = require('./lookup');
 function buildNewFacilityPayload(req) {
   let facility = req.body;
 
+  const organizationString = `/accounts(${facility.organizationId})`;
+  const applicationString = `/ccof_applications(${facility.applicationId})`;
+
   facility = mapFacilityObjectForBack(facility);
   facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
-  facility['parentaccountid@odata.bind'] = `/accounts(${facility.organizationId})`;
+  facility['parentaccountid@odata.bind'] = organizationString;
   facility['ccof_application_basefunding_Facility'] = [
     {
-      'ccof_Application@odata.bind': `/ccof_applications(${facility.applicationId})`,
+      'ccof_Application@odata.bind': applicationString,
     },
   ];
 
@@ -81,11 +84,7 @@ function mapCCFRIObjectForFront(data) {
 
 async function getFacility(req, res) {
   try {
-    //,_ccof_change_request_value
-    const operation =
-      'accounts(' +
-      req.params.facilityId +
-      ')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
+    const operation = `accounts(${req.params.facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus`;
     let facility = await getOperation(operation);
 
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
@@ -119,15 +118,22 @@ async function getLicenseCategories(req, res) {
   }
 }
 
+function getFeeFrequency(feeCode) {
+  if (feeCode === 100000000) {
+    return 'Monthly';
+  } else if (feeCode === 100000001) {
+    return 'Weekly';
+  } else if (feeCode === 100000002) {
+    return 'Daily';
+  }
+  return '';
+}
+
 async function getFacilityChildCareTypes(req, res) {
   try {
-    //this is actually the CCFRI guid rn
-    const operation =
-      'ccof_applicationccfris(' +
-      req.params.ccfriId +
-      ')?$select=' +
-      getMappingString(CCFRIFacilityMappings) +
-      '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
+    const operation = `ccof_applicationccfris(${req.params.ccfriId})?$select=${getMappingString(
+      CCFRIFacilityMappings,
+    )}&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)`;
     let ccfriData = await getOperation(operation);
 
     const childCareTypes = [];
@@ -150,13 +156,12 @@ async function getFacilityChildCareTypes(req, res) {
         approvedFeeNov: item.ccof_nov,
         approvedFeeOct: item.ccof_oct,
         approvedFeeSep: item.ccof_sep,
-        feeFrequency: item.ccof_frequency == '100000000' ? 'Monthly' : item.ccof_frequency == '100000001' ? 'Weekly' : item.ccof_frequency == '100000002' ? 'Daily' : '',
+        feeFrequency: getFeeFrequency(item.ccof_frequency),
         orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
       });
-      // }
     }); //end for each
 
-    ccfriData = mapCCFRIObjectForFront(ccfriData); //////
+    ccfriData = mapCCFRIObjectForFront(ccfriData);
 
     ccfriData.childCareTypes = childCareTypes;
     ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
@@ -371,7 +376,7 @@ async function getApprovedParentFees(req, res) {
         approvedFeeNov: item.ccof_nov,
         approvedFeeOct: item.ccof_oct,
         approvedFeeSep: item.ccof_sep,
-        feeFrequency: item.ccof_frequency == '100000000' ? 'Monthly' : item.ccof_frequency == '100000001' ? 'Weekly' : item.ccof_frequency == '100000002' ? 'Daily' : '',
+        feeFrequency: getFeeFrequency(item.ccof_frequency),
         orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
       });
     }); //end for each
