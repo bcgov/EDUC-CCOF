@@ -113,8 +113,16 @@ input[type="number"] {
   color: #ff5252;
 }
 
-.add-file-button {
+.font-large {
+  font-size: 18px;
+}
+
+.font-regular {
   font-size: 16px;
+}
+
+.font-small {
+  font-size: 14px;
 }
 
 .border-right {
@@ -136,7 +144,6 @@ input[type="number"] {
   color: grey;
   font-style: normal;
   font-family: "BCSans", Verdana, Arial, sans-serif;
-  font-size: 14px;
 }
 
 div.text-h4,

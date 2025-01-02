@@ -31,7 +31,7 @@
                 id="add-new-file"
                 :primary="false"
                 size="large"
-                class="add-file-button mb-2"
+                class="font-regular mb-2"
                 @click="addNew"
               >
                 Add File

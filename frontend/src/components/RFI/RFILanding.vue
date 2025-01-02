@@ -52,6 +52,7 @@
               <li>occur within six months of the requested fee increase.</li>
             </ul>
             <br />
+
             <v-radio-group
               v-model="model.exceptionalCircumstances"
               class="radio-label"
@@ -750,15 +751,17 @@
 
           <div class="px-md-12 px-7">
             <br />
+            <label for="feeIncreaseExtendedHours" class="span-label font-large"
+              >Is your fee increase due to expenses related to expanding or extending the hours of child care service
+              available for all enrolled children?</label
+            >
             <v-radio-group
               v-model="model.feeIncreaseExtendedHours"
               class="radio-label"
-              :disabled="isReadOnly"
-              :rules="rules.required"
+              :disabled="isRearequired"
               required
               inline
-              label="Is your fee increase due to expenses related to expanding or extending the hours of child care service available for all
-              enrolled children?"
+              id="feeIncreaseExtendedHours"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
@@ -954,11 +957,15 @@
 
           <div class="px-md-12 px-7">
             <br />
+            <label for="IndigenousConnection" class="span-label font-large"
+              >Is your fee increase due to an increased connection to Indigenous community, culture, or language for all
+              enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?</label
+            >
             <v-radio-group
+              id="IndigenousConnection"
               v-model="model.IndigenousConnection"
               class="radio-label"
               :disabled="isReadOnly"
-              label="Is your fee increase due to an increased connection to Indigenous community, culture, or language for all enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?"
               required
               :rules="rules.required"
               inline
@@ -977,7 +984,7 @@
               <li>
                 participation of an Elder, culture/language teacher, and/or family members in the child care program;
               </li>
-              <li>children’s participation in community, language, and/or cultural events or activities; or</li>
+              <li>children's participation in community, language, and/or cultural events or activities; or</li>
               <li>language or culture resources for use in the child care program.</li>
             </ul>
             <br />
