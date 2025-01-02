@@ -125,7 +125,7 @@ function getFeeFrequency(feeCode) {
     case 100000001:
       return 'Weekly';
     case 100000002:
-      return 'daily';
+      return 'Daily';
     default:
       return '';
   }
