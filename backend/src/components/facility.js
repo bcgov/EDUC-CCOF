@@ -1,34 +1,34 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument, deleteDocument} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, getHttpHeader, deleteOperationWithObjectId, getApplicationDocument } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
-const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER} = require('../util/constants');
+const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
-
 
 function buildNewFacilityPayload(req) {
   let facility = req.body;
-  let organizationString = '/accounts(' + facility.organizationId + ')';
-  let applicationString = '/ccof_applications(' + facility.applicationId + ')';
+
+  const organizationString = `/accounts(${facility.organizationId})`;
+  const applicationString = `/ccof_applications(${facility.applicationId})`;
 
   facility = mapFacilityObjectForBack(facility);
   facility['ccof_accounttype'] = ACCOUNT_TYPE.FACILITY;
   facility['parentaccountid@odata.bind'] = organizationString;
   facility['ccof_application_basefunding_Facility'] = [
     {
-      'ccof_Application@odata.bind': applicationString
-    }
+      'ccof_Application@odata.bind': applicationString,
+    },
   ];
 
   return facility;
 }
 
 function mapFacilityObjectForBack(data) {
-  let facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
+  const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
 
   if (facilityForBack.ccof_facilitystartdate) {
     facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
@@ -51,7 +51,7 @@ function mapFacilityObjectForBack(data) {
 
 function mapFacilityObjectForFront(data) {
   if (data.ccof_facilitystartdate) {
-    let year = data.ccof_facilitystartdate.split('-')[0];
+    const year = data.ccof_facilitystartdate.split('-')[0];
     data.ccof_facilitystartdate = year;
   }
 
@@ -59,7 +59,7 @@ function mapFacilityObjectForFront(data) {
     data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
   }
 
-  let obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
+  const obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
 
   //TODO: map this if it is returned from dynamics
   if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
@@ -79,37 +79,31 @@ function mapFacilityObjectForFront(data) {
 }
 
 function mapCCFRIObjectForFront(data) {
-
   return new MappableObjectForFront(data, CCFRIFacilityMappings).toJSON();
 }
 
 async function getFacility(req, res) {
   try {
-    //,_ccof_change_request_value
-    let operation = 'accounts('+req.params.facilityId+')?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus'; //+ getMappingString(FacilityMappings);
-    log.info('operation: ', operation);
+    const operation = `accounts(${req.params.facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus`;
     let facility = await getOperation(operation);
 
     if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
-      return res.status(HttpStatus.NOT_FOUND).json({message: 'Account found but is not facility.'});
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not facility.' });
     }
     facility = mapFacilityObjectForFront(facility);
     return res.status(HttpStatus.OK).json(facility);
   } catch (e) {
     log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-async function getLicenseCategories(req, res){
+async function getLicenseCategories(req, res) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Facility?id=' + req.params.facilityId;
-    log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
-    let map = new Map();
-
-    log.info(CHILD_AGE_CATEGORY_TYPES);
-    response.data.value.forEach(item => {
+    const map = new Map();
+    response.data.value.forEach((item) => {
       map.set(item['CareType.ccof_childcare_categoryid'], {
         childCareCategoryId: item['CareType.ccof_childcare_categoryid'],
         childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['CareType.ccof_name']),
@@ -120,47 +114,56 @@ async function getLicenseCategories(req, res){
     return res.status(HttpStatus.OK).json(Array.from(map.values()));
   } catch (e) {
     log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-async function getFacilityChildCareTypes(req, res){
+function getFeeFrequency(feeCode) {
+  switch (feeCode) {
+    case 100000000:
+      return 'Monthly';
+    case 100000001:
+      return 'Weekly';
+    case 100000002:
+      return 'Daily';
+    default:
+      return '';
+  }
+}
+
+async function getFacilityChildCareTypes(req, res) {
   try {
-    //this is actually the CCFRI guid rn
-    let operation = 'ccof_applicationccfris('+req.params.ccfriId+')?$select='+ getMappingString(CCFRIFacilityMappings) + '&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)';
-    log.info('operation: ', operation);
+    const operation = `ccof_applicationccfris(${req.params.ccfriId})?$select=${getMappingString(
+      CCFRIFacilityMappings,
+    )}&$expand=ccof_application_ccfri_ccc($select=ccof_name,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar,_ccof_childcarecategory_value,_ccof_programyear_value,ccof_frequency,ccof_application_ccfri_childcarecategoryid)`;
     let ccfriData = await getOperation(operation);
 
-    let childCareTypes = [];
-    ccfriData.ccof_application_ccfri_ccc.forEach(item =>{
-      childCareTypes.push(
-        {
-          parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
-          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-          childCareCategoryId: item._ccof_childcarecategory_value,
-          programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
-          programYearId: item._ccof_programyear_value,
-          approvedFeeApr: item.ccof_apr ,
-          approvedFeeAug: item.ccof_aug,
-          approvedFeeDec: item.ccof_dec,
-          approvedFeeFeb: item.ccof_feb,
-          approvedFeeJan: item.ccof_jan,
-          approvedFeeJul: item.ccof_jul,
-          approvedFeeJun: item.ccof_jun,
-          approvedFeeMar: item.ccof_mar,
-          approvedFeeMay: item.ccof_may,
-          approvedFeeNov: item.ccof_nov,
-          approvedFeeOct: item.ccof_oct,
-          approvedFeeSep: item.ccof_sep,
-          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') ),
-          orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-        }
-      );
-      // }
+    const childCareTypes = [];
+    ccfriData.ccof_application_ccfri_ccc.forEach((item) => {
+      childCareTypes.push({
+        parentFeeGUID: item.ccof_application_ccfri_childcarecategoryid,
+        childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+        childCareCategoryId: item._ccof_childcarecategory_value,
+        programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
+        programYearId: item._ccof_programyear_value,
+        approvedFeeApr: item.ccof_apr,
+        approvedFeeAug: item.ccof_aug,
+        approvedFeeDec: item.ccof_dec,
+        approvedFeeFeb: item.ccof_feb,
+        approvedFeeJan: item.ccof_jan,
+        approvedFeeJul: item.ccof_jul,
+        approvedFeeJun: item.ccof_jun,
+        approvedFeeMar: item.ccof_mar,
+        approvedFeeMay: item.ccof_may,
+        approvedFeeNov: item.ccof_nov,
+        approvedFeeOct: item.ccof_oct,
+        approvedFeeSep: item.ccof_sep,
+        feeFrequency: getFeeFrequency(item.ccof_frequency),
+        orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+      });
     }); //end for each
 
-    ccfriData = mapCCFRIObjectForFront(ccfriData); //////
+    ccfriData = mapCCFRIObjectForFront(ccfriData);
 
     ccfriData.childCareTypes = childCareTypes;
     ccfriData.dates = await getCCFRIClosureDates(req.params.ccfriId);
@@ -168,91 +171,84 @@ async function getFacilityChildCareTypes(req, res){
     return res.status(HttpStatus.OK).json(ccfriData);
   } catch (e) {
     log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
-async function returnCCFRIClosureDates(req, res){
+async function returnCCFRIClosureDates(req, res) {
   try {
-    const dateData = {dates: await getCCFRIClosureDates(req.params.ccfriId)};
+    const dateData = { dates: await getCCFRIClosureDates(req.params.ccfriId) };
     return res.status(HttpStatus.OK).json(dateData);
-
   } catch (e) {
     log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
-async function getCCFRIClosureDates(ccfriId){
+async function getCCFRIClosureDates(ccfriId) {
   const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
   let data = await getOperation(url);
-  log.info('get CCFRI closure dates url', url);
   data = data.ccof_ccfri_closure_application_ccfri;
 
-  let closureDates = [];
+  const closureDates = [];
 
   data.forEach((date) => {
-
-    let formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
-    let formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
+    const formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
+    const formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
 
     closureDates.push({
-      'closureDateId' : date.ccof_application_ccfri_closureid,
-      'startDate' : date.ccof_startdate,
-      'endDate' : date.ccof_enddate,
-      'feesPaidWhileClosed' : date.ccof_paidclosure,
-      'closureReason' : date.ccof_comment,
-      'formattedStartDate': formattedStartDate,
-      'formattedEndDate' : formattedEndDate
+      closureDateId: date.ccof_application_ccfri_closureid,
+      startDate: date.ccof_startdate,
+      endDate: date.ccof_enddate,
+      feesPaidWhileClosed: date.ccof_paidclosure,
+      closureReason: date.ccof_comment,
+      formattedStartDate: formattedStartDate,
+      formattedEndDate: formattedEndDate,
+      id: date.ccof_application_ccfri_closureid,
     });
-    //Mapping does not work i don't know why! :(
-    //closureDates.push( new MappableObjectForFront(date, CCFRIClosureDateMappings).toJSON());
   });
-
-  log.info('returned closed dates: ' , closureDates);
-
   return closureDates;
-
 }
 
 async function updateFacilityLicenseType(facilityId, data) {
   // Load the license categories from Lookup
-  let categories = await getLicenseCategory();
-  let groupLicenseCategory = categories.groupLicenseCategory;
+  const categories = await getLicenseCategory();
+  const groupLicenseCategory = categories.groupLicenseCategory;
 
   console.log('GroupLicenseCategory list: ', groupLicenseCategory);
   // Figure out new License categories from data form
-  let newLicenseCategories = [];
+  const newLicenseCategories = [];
   if (data.familyLicenseType) {
-    newLicenseCategories.push(categories.familyLicenseCategory.find(item => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
+    newLicenseCategories.push(categories.familyLicenseCategory.find((item) => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
   } else {
     if (data.maxGroupChildCareUnder36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 1)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 1)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCare36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 2)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 2)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareMultiAge > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 4)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 4)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareSchool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
     }
     if (data.maxPreschool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find(item => item.ccof_categorynumber == 8)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 8)?.ccof_license_categoryid);
     }
   }
 
   // Find the current License Categories associated with this facility
-  let toDelete = [];
+  const toDelete = [];
   log.verbose('New license categories: ', newLicenseCategories);
   try {
-    let currentCategoryList = await getOperation(`ccof_facility_licenseses?$select=ccof_facility_licensesid,_ccof_licensecategory_value,_ccof_facility_value&$filter=_ccof_facility_value eq '${facilityId}'`);
+    let currentCategoryList = await getOperation(
+      `ccof_facility_licenseses?$select=ccof_facility_licensesid,_ccof_licensecategory_value,_ccof_facility_value&$filter=_ccof_facility_value eq '${facilityId}'`,
+    );
     currentCategoryList = currentCategoryList.value;
-    log.verbose('current categories: ', currentCategoryList);
     if (currentCategoryList?.length) {
-      currentCategoryList.forEach(currentItem => {
-        let index = newLicenseCategories.indexOf(currentItem._ccof_licensecategory_value);
+      currentCategoryList.forEach((currentItem) => {
+        const index = newLicenseCategories.indexOf(currentItem._ccof_licensecategory_value);
         if (index > -1) {
           // item found, so no need to add it, remove for list
           log.verbose(`Found category for ${currentItem._ccof_licensecategory_value}, removing it from newLicenseCategories`);
@@ -266,46 +262,44 @@ async function updateFacilityLicenseType(facilityId, data) {
     }
     // delete old unneeded categories
     log.verbose(`Number of items to delete: [${toDelete.length}]`);
-    toDelete.forEach( async itemId =>  {
+    toDelete.forEach(async (itemId) => {
       await deleteOperationWithObjectId('ccof_facility_licenseses', itemId);
     });
     // add new reccords
     log.verbose(`Number of items to add: [${newLicenseCategories.length}]`);
-    newLicenseCategories.forEach ( async item => {
+    newLicenseCategories.forEach(async (item) => {
       await postOperation('ccof_facility_licenseses', {
         'ccof_LicenseCategory@odata.bind': `/ccof_license_categories(${item})`,
-        'ccof_Facility@odata.bind': `/accounts(${facilityId})`
+        'ccof_Facility@odata.bind': `/accounts(${facilityId})`,
       });
     });
-
   } catch (e) {
     log.error('Error while trying to get list of FacilityLicenses.', e);
     throw e;
   }
 }
 
-
 async function createFacility(req, res) {
-  let facility = buildNewFacilityPayload(req);
+  const facility = buildNewFacilityPayload(req);
   try {
-    let facilityGuid = await postOperation('accounts', facility);
+    const facilityGuid = await postOperation('accounts', facility);
     //After the base ccof application is created, get the application guid
-    let operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
-    let ccofApplicationPayload = await getOperation(operation);
+    const operation = 'accounts(' + facilityGuid + ')?$select=accountid&$expand=ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
+    const ccofApplicationPayload = await getOperation(operation);
     let ccofBaseFundingId = undefined;
     let ccofBaseFundingStatus = undefined;
-    if ( ccofApplicationPayload?.ccof_application_basefunding_Facility?.length > 0) {
+    if (ccofApplicationPayload?.ccof_application_basefunding_Facility?.length > 0) {
       ccofBaseFundingId = ccofApplicationPayload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
       ccofBaseFundingStatus = getLabelFromValue(ccofApplicationPayload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);
     }
-    return res.status(HttpStatus.CREATED).json({facilityId: facilityGuid, ccofBaseFundingId: ccofBaseFundingId, ccofBaseFundingStatus: ccofBaseFundingStatus});
+    return res.status(HttpStatus.CREATED).json({ facilityId: facilityGuid, ccofBaseFundingId: ccofBaseFundingId, ccofBaseFundingStatus: ccofBaseFundingStatus });
   } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function updateFacility(req, res) {
-  let facility = mapFacilityObjectForBack(req.body);
+  const facility = mapFacilityObjectForBack(req.body);
   try {
     log.verbose('updateFacility: Payload is: ', minify(facility));
     let response = await patchOperationWithObjectId('accounts', req.params.facilityId, facility);
@@ -313,26 +307,25 @@ async function updateFacility(req, res) {
     log.verbose('updateFacility: Response is: ', minify(response));
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function deleteFacility(req, res) {
-  let { facilityId } = req.params;
-  let { changeRequestNewFacilityId, ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
-  log.info('deleting facility', facilityId);
+  const { facilityId } = req.params;
+  const { changeRequestNewFacilityId, ccfriId, eceweId, ccofBaseFundingId, applicationId } = req.body;
 
-  if (ccfriId){
+  if (ccfriId) {
     log.verbose('deleting facilitys CCFRI application', facilityId);
     await deleteOperationWithObjectId('ccof_applicationccfris', ccfriId);
   }
 
-  if (eceweId){
+  if (eceweId) {
     log.verbose('deleting facilitys eceweId application', eceweId);
     await deleteOperationWithObjectId('ccof_applicationecewes', eceweId);
   }
 
-  if (ccofBaseFundingId){
+  if (ccofBaseFundingId) {
     log.verbose('deleting facilitys ccofBaseFundingId application', ccofBaseFundingId);
     await deleteOperationWithObjectId('ccof_application_basefundings', ccofBaseFundingId);
   }
@@ -344,13 +337,12 @@ async function deleteFacility(req, res) {
   const document = organizationUploadedDocuments.find((document) => document['ApplicationFacilityDocument.ccof_facility'] == facilityId);
 
   //if at least 1 document exists for the facility, get the parent 'folder' GUID. Deleteing the parent entity removes all documents associated with the facility.
-  if (document){
-    log.verbose('deleting all documents associated with ' +  document['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue'] );
-    await deleteOperationWithObjectId ( 'ccof_application_facility_documents', document['ApplicationFacilityDocument.ccof_application_facility_documentid']);
+  if (document) {
+    log.verbose('deleting all documents associated with ' + document['ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue']);
+    await deleteOperationWithObjectId('ccof_application_facility_documents', document['ApplicationFacilityDocument.ccof_application_facility_documentid']);
   }
 
   await deleteOperationWithObjectId('accounts', facilityId);
-  log.info('facility deleted successfully', facilityId);
 
   if (changeRequestNewFacilityId) {
     log.verbose('deleting change request facility', changeRequestNewFacilityId);
@@ -366,31 +358,29 @@ async function getApprovedParentFees(req, res) {
   const response = await getOperation(operation);
 
   try {
-    let childCareTypes = [];
-    response.ccof_account_ccof_parent_fees_Facility.forEach(item =>{
-      childCareTypes.push(
-        {
-          parentFeeGUID : item.ccof_application_ccfri_childcarecategoryid,
-          childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-          childCareCategoryId: item._ccof_childcarecategory_value,
-          programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
-          programYearId: item._ccof_programyear_value,
-          approvedFeeApr: item.ccof_apr ,
-          approvedFeeAug: item.ccof_aug,
-          approvedFeeDec: item.ccof_dec,
-          approvedFeeFeb: item.ccof_feb,
-          approvedFeeJan: item.ccof_jan,
-          approvedFeeJul: item.ccof_jul,
-          approvedFeeJun: item.ccof_jun,
-          approvedFeeMar: item.ccof_mar,
-          approvedFeeMay: item.ccof_may,
-          approvedFeeNov: item.ccof_nov,
-          approvedFeeOct: item.ccof_oct,
-          approvedFeeSep: item.ccof_sep,
-          feeFrequency: (item.ccof_frequency == '100000000') ? 'Monthly' : ((item.ccof_frequency == '100000001') ? 'Weekly' : ((item.ccof_frequency == '100000002') ? 'Daily' : '') ),
-          orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
-        }
-      );
+    const childCareTypes = [];
+    response.ccof_account_ccof_parent_fees_Facility.forEach((item) => {
+      childCareTypes.push({
+        parentFeeGUID: item.ccof_application_ccfri_childcarecategoryid,
+        childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+        childCareCategoryId: item._ccof_childcarecategory_value,
+        programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
+        programYearId: item._ccof_programyear_value,
+        approvedFeeApr: item.ccof_apr,
+        approvedFeeAug: item.ccof_aug,
+        approvedFeeDec: item.ccof_dec,
+        approvedFeeFeb: item.ccof_feb,
+        approvedFeeJan: item.ccof_jan,
+        approvedFeeJul: item.ccof_jul,
+        approvedFeeJun: item.ccof_jun,
+        approvedFeeMar: item.ccof_mar,
+        approvedFeeMay: item.ccof_may,
+        approvedFeeNov: item.ccof_nov,
+        approvedFeeOct: item.ccof_oct,
+        approvedFeeSep: item.ccof_sep,
+        feeFrequency: getFeeFrequency(item.ccof_frequency),
+        orderNumber: CHILD_AGE_CATEGORY_ORDER.get(item['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
+      });
     }); //end for each
 
     const retVal = {
@@ -400,11 +390,9 @@ async function getApprovedParentFees(req, res) {
     return res.status(200).json(retVal);
   } catch (e) {
     log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
-
-
 
 module.exports = {
   getFacility,
@@ -417,6 +405,5 @@ module.exports = {
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
   getApprovedParentFees,
-  returnCCFRIClosureDates
+  returnCCFRIClosureDates,
 };
-
