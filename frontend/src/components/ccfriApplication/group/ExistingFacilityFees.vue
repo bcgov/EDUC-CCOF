@@ -154,7 +154,8 @@ export default {
       if (this.loading) {
         //we need this to disable button while the page is loading
         return false;
-      } else if (this.feeList.length === 0) {
+      }
+      if (this.feeList.length === 0) {
         return true;
       }
       return this.isValidForm;
