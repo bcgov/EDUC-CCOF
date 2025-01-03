@@ -982,23 +982,22 @@
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
             </v-radio-group>
-            <div class="ml-10">
-              <p>
-                As outlined in the
-                <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank"
-                  >Funding Guidelines</a
-                >, this may include:
-              </p>
-              <ul>
-                <li>
-                  Participation of an Elder, culture/language teacher, and/or family members in the child care program;
-                </li>
-                <li>Children's participation in community, language, and/or cultural events or activities; or</li>
-                <li>Language or culture resources for use in the child care program.</li>
-              </ul>
-            </div>
-            <br />
+            <p>
+              As outlined in the
+              <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank"
+                >Funding Guidelines</a
+              >, this may include:
+            </p>
+
+            <ul class="ml-10">
+              <li>
+                Participation of an Elder, culture/language teacher, and/or family members in the child care program;
+              </li>
+              <li>Children's participation in community, language, and/or cultural events or activities; or</li>
+              <li>Language or culture resources for use in the child care program.</li>
+            </ul>
           </div>
+          <br />
         </div>
 
         <div v-if="model.IndigenousConnection == 1">
