@@ -46,35 +46,41 @@
           </p>
           <div class="px-md-14 px-7 text--primary">
             <br />
-            <ul>
-              <li>are outside of the organization’s control and/or outside of the scope of regular cost increases;</li>
-              <li>address an immediate health or safety concern or are needed for the facility to operate; and</li>
-              <li>occur within six months of the requested fee increase.</li>
+            <ul class="ml-6">
+              <li>Are outside of the organization's control and/or outside of the scope of regular cost increases;</li>
+              <li>Address an immediate health or safety concern or are needed for the facility to operate; and</li>
+              <li>Occur within six months of the requested fee increase.</li>
             </ul>
             <br />
 
+            <label for="exceptionalCircumstances" class="span-label font-large"
+              >Is your fee increase due to an exceptional circumstance?</label
+            >
             <v-radio-group
+              id="exceptionalCircumstances"
               v-model="model.exceptionalCircumstances"
               class="radio-label"
               :disabled="isReadOnly"
               required
               :rules="rules.required"
               inline
-              label="Is your fee increase due to an exceptional circumstance?"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
             <div v-if="model?.exceptionalCircumstances == 1">
+              <label for="circumstanceOccurWithin6Month" class="span-label font-large"
+                >Does the exceptional circumstance occur within 6 months of the fee increase?</label
+              >
               <v-radio-group
+                id="circumstanceOccurWithin6Month"
                 v-model.number="model.circumstanceOccurWithin6Month"
                 class="radio-label"
                 :disabled="isReadOnly"
                 required
                 :rules="rules.required"
                 inline
-                label="Does the exceptional circumstance occur within 6 months of the fee increase?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -88,20 +94,18 @@
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
             </div>
-            <v-banner class="ma-4" color="blue-lighten-4" elevation="5">
-              <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
-              <strong
-                >Note: See the <a :href="fundingUrl" target="_blank">Funding Guidelines</a> for the list of eligible
-                expenses</strong
+            <v-row class="justify-left mx-4">
+              <AppAlertBanner type="info" class="ma-2 mb-4 w-100">
+                <strong
+                  >Note: See the <a :href="fundingUrl" target="_blank">Funding Guidelines</a> for the list of eligible
+                  expenses</strong
+                ></AppAlertBanner
               >
-            </v-banner>
+            </v-row>
+
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
-
-                <v-col class="col-md-3 col-12">
+                <v-col class="col-md-3 col-12 ml-md-6">
                   <h3 class="text-center">Expense Description</h3>
                 </v-col>
 
@@ -118,8 +122,8 @@
                 </v-col>
               </v-row>
 
-              <v-row v-for="(expense, index) in model.expenseList" :key="index">
-                <v-col class="col-md-1 col-12 mx-0">
+              <v-row v-for="(expense, index) in model.expenseList" :key="expense.id">
+                <v-col cols="auto">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -176,9 +180,6 @@
                     @update:model-value="convertBlankNumberToNull(expense, 'expense')"
                   />
                 </v-col>
-
-                <span class="text-white"> . </span>
-                <v-divider />
               </v-row>
               <!-- end v for-->
 
@@ -220,7 +221,12 @@
               <p class="text-h5 text--primary px-5 py-0 my-0">Other Sources of Ministry Funding</p>
             </div>
             <br />
+
             <div class="px-md-12 px-7">
+              <label for="q3" class="span-label font-large"
+                >Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
+                for any of the expenses you listed?</label
+              >
               <v-radio-group
                 v-model="model.q3"
                 class="radio-label"
@@ -228,8 +234,6 @@
                 required
                 :rules="rules.required"
                 inline
-                label="Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
-              for any of the expenses you listed?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -237,11 +241,7 @@
 
               <div v-if="model.q3 === 1">
                 <v-row class="hidden-sm-and-down">
-                  <v-col class="col-md-1 col-12 mx-0">
-                    <!--here for spacing-->
-                  </v-col>
-
-                  <v-col class="col-md-3 col-12">
+                  <v-col class="col-md-3 col-12 ml-md-10">
                     <h3 class="text-center">Funding Program</h3>
                   </v-col>
 
@@ -262,8 +262,8 @@
                   </v-col>
                 </v-row>
 
-                <v-row v-for="(fundInfo, index) in model.fundingList" :key="index">
-                  <v-col class="col-md-1 col-12 mx-0">
+                <v-row v-for="(fundInfo, index) in model.fundingList" :key="fundInfo.id">
+                  <v-col cols="auto">
                     <v-icon
                       :disabled="isReadOnly"
                       size="large"
@@ -336,9 +336,6 @@
                       @update:model-value="convertBlankNumberToNull(fundInfo, 'expenses')"
                     />
                   </v-col>
-
-                  <span class="text-white"> . </span>
-                  <v-divider />
                 </v-row>
                 <!-- end v for-->
 
@@ -380,16 +377,18 @@
             <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care staff Wages Increases</p>
           </div>
 
-          <v-banner two-line class="ma-4" color="blue-lighten-4" elevation="5">
-            <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
-            <strong
-              >Note: if your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you must apply for
-              ECE-WE before being approved for a fee increase under this policy.</strong
+          <v-row class="justify-left mx-4">
+            <AppAlertBanner type="info" class="ma-2 mb-4 w-100">
+              <strong
+                >Note: If your facility has ECE employees eligible for ECE Wage Enhancement (ECE-WE), you must apply for
+                ECE-WE before being approved for a fee increase under this policy.</strong
+              ></AppAlertBanner
             >
-          </v-banner>
+          </v-row>
+
           <br />
 
-          <p class="text-h6 text--primary px-5 py-0 my-0">
+          <p class="text-h6 text--primary px-10 py-0 my-0">
             This exception applies to wage increases for Direct Care staff employed at the facility on a full-time,
             part-time or casual basis. Direct Care staff are staff who spend at least 50% of their working time directly
             responsible for and engaged in the care and supervision of children at the Facility.
@@ -398,14 +397,17 @@
           <br />
           <div class="px-md-12 px-7">
             <br />
+            <label for="feeIncreaseDueToWage" class="span-label font-large"
+              >Is your fee increase due to a wage increase for Direct Care staff?</label
+            >
             <v-radio-group
+              id="feeIncreaseDueToWage"
               v-model="model.feeIncreaseDueToWage"
               class="radio-label"
               :disabled="isReadOnly"
               :rules="rules.required"
               required
               inline
-              label="Is your fee increase due to a wage increase for Direct Care staff?"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
@@ -414,14 +416,18 @@
             <div v-if="model?.feeIncreaseDueToWage == 1">
               <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
                 <br />
+                <label for="increaseInWriting" class="span-label font-large"
+                  >Was the wage increase committed to (in writing) before the January 2022 release of the Funding
+                  Guidelines?</label
+                >
                 <v-radio-group
+                  id="increaseInWriting"
                   v-model="model.increaseInWriting"
                   class="radio-label"
                   :disabled="isReadOnly"
                   :rules="rules.required"
                   required
                   inline
-                  label="Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?"
                 >
                   <v-radio label="Yes" :value="1" />
                   <v-radio label="No" :value="0" />
@@ -429,14 +435,19 @@
               </div>
               <br />
 
+              <label for="isBargainingAgreement" class="span-label font-large"
+                >Is the wage increase part of a collective bargaining agreement for Direct Care staff at the
+                facility?</label
+              >
+
               <v-radio-group
+                id="isBargainingAgreement"
                 v-model="model.isBargainingAgreement"
                 class="radio-label"
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 required
                 inline
-                label="Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -444,14 +455,18 @@
 
               <br />
 
+              <label for="lossOfCareStaff" class="span-label font-large"
+                >Has the facility been unable to hire and/or retain Direct Care staff due to wages?</label
+              >
+
               <v-radio-group
+                id="lossOfCareStaff"
                 v-model="model.lossOfCareStaff"
                 class="radio-label"
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 required
                 inline
-                label="Has the facility been unable to hire and/or retain Direct Care staff due to wages?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -459,14 +474,18 @@
 
               <br />
 
+              <label for="lossOfCareStaff" class="span-label font-large"
+                >Is this creating challenges in maintaining the staff-to-child ratios required under the facility
+                licence?</label
+              >
               <v-radio-group
+                id="healthAndSafetyConcerns"
                 v-model="model.healthAndSafetyConcerns"
                 class="radio-label"
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 required
                 inline
-                label="Is this creating challenges in maintaining the staff-to-child ratios required under the facility licence?"
               >
                 <v-radio label="Yes" :value="1" />
                 <v-radio label="No" :value="0" />
@@ -482,40 +501,37 @@
             </div>
             <br />
 
-            <v-banner two-line class="ma-4" color="blue-lighten-4" elevation="5">
-              <v-icon size="large" color="blue-darken-4" class="mr-5"> mdi-information </v-icon>
-              <strong
-                >Note: If two or more staff have the same information for every column, they can be included in one row.
-              </strong>
-            </v-banner>
+            <v-row class="justify-left mx-4"
+              ><AppAlertBanner type="info" class="ma-2 mb-4 w-100">
+                <strong
+                  >Note: If two or more staff have the same information for every column, they can be included in one
+                  row.</strong
+                ></AppAlertBanner
+              ></v-row
+            >
 
             <div class="px-md-12 px-10">
-              <v-row class="hidden-sm-and-down">
-                <v-col class="col-md-1 col-12">
-                  <!-- <h3> Number of staff receiving wage increase</h3>
-                  here for spacing! -->
-                </v-col>
-
-                <v-col class="col-md-2 col-12">
+              <v-row class="hidden-sm-and-down mb-md-6">
+                <v-col class="col-md-2 col-12 ml-md-8">
                   <h3 class="text-center">Number of staff receiving wage increase</h3>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
                   <h3 class="text-center">Direct Care staff role</h3>
                   <br />
-                  <p class="text-center">(e.g. Responsible Adult, ECE, ECEA, etc)</p>
+                  <p class="text-center font-small">(e.g. Responsible Adult, ECE, ECEA, etc)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
                   <h3 class="text-center">Wage before increase</h3>
                   <br />
-                  <p class="text-center">(not including ECE-WE)</p>
+                  <p class="text-center font-small">(not including ECE-WE)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
                   <h3 class="text-center">Wage after increase</h3>
                   <br />
-                  <p class="text-center">(not including ECE-WE)</p>
+                  <p class="text-center font-small">(not including ECE-WE)</p>
                 </v-col>
 
                 <v-col class="col-md-2 col-12">
@@ -526,11 +542,9 @@
                   <h3 class="text-center">Date</h3>
                 </v-col>
               </v-row>
-              <span class="text-white"> . </span>
-              <v-divider />
 
-              <v-row v-for="(obj, index) in model.wageList" :key="index">
-                <v-col class="col-md-1 col-12 mx-0">
+              <v-row v-for="(obj, index) in model.wageList" :key="obj.id" class="mt-md-10">
+                <v-col cols="auto">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -612,7 +626,7 @@
                   />
                 </v-col>
 
-                <v-col class="col-md-1 col-12">
+                <v-col cols="auto">
                   <AppDateInput
                     v-model="obj.wageDate"
                     :rules="rules.required"
@@ -622,9 +636,6 @@
                     clearable
                   />
                 </v-col>
-
-                <span class="text-white"> . </span>
-                <v-divider />
               </v-row>
               <!-- end v for-->
 
@@ -758,7 +769,7 @@
             <v-radio-group
               v-model="model.feeIncreaseExtendedHours"
               class="radio-label"
-              :disabled="isRearequired"
+              :disabled="isReadOnly"
               required
               inline
               id="feeIncreaseExtendedHours"
@@ -780,30 +791,29 @@
               <v-row class="hidden-sm-and-down">
                 <div class="mt-md-6 mx-md-6"></div>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>Facility's previous hours of operation</h3>
+                  <h3>Facility's previous hours of operation</h3>
                   <br />
                   <p>(e.g. 9:00 am - 4:00 pm)</p>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>Facility's new hours of operation</h3>
+                  <h3>Facility's new hours of operation</h3>
                   <br />
                   <p>(e.g. 6:00 am - 5:00 pm)</p>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>Date of Change</h3>
+                  <h3 class="text-center">Date of Change</h3>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>Amount of Expense</h3>
+                  <h3 class="text-center">Amount of Expense</h3>
                 </v-col>
                 <v-col class="col-md-2 col-12">
-                  <h3 class>Payment frequency</h3>
+                  <h3 class="text-center">Payment frequency</h3>
                 </v-col>
               </v-row>
-              <span class="text-white"> . </span>
-              <v-divider />
 
-              <v-row v-for="(obj, index) in model.expansionList" :key="index">
+              <v-row v-for="(obj, index) in model.expansionList" :key="obj.id">
                 <v-icon
+                  cols="auto"
                   :disabled="isReadOnly"
                   size="large"
                   color="blue-darken-4"
@@ -845,7 +855,7 @@
                   />
                 </v-col>
 
-                <v-col class="col-md-2 col-xl-1 col-12">
+                <v-col class="cols-md-auto col-lg-2 col-xl-1 col-12">
                   <AppDateInput
                     v-model="obj.date"
                     :disabled="isReadOnly"
@@ -879,8 +889,6 @@
                     :rules="rules.required"
                   />
                 </v-col>
-
-                <v-divider></v-divider>
               </v-row>
               <!-- end v for-->
 
@@ -974,19 +982,21 @@
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
             </v-radio-group>
-            <p>
-              As outlined in the
-              <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank"
-                >Funding Guidelines</a
-              >, this may include:
-            </p>
-            <ul>
-              <li>
-                participation of an Elder, culture/language teacher, and/or family members in the child care program;
-              </li>
-              <li>children's participation in community, language, and/or cultural events or activities; or</li>
-              <li>language or culture resources for use in the child care program.</li>
-            </ul>
+            <div class="ml-10">
+              <p>
+                As outlined in the
+                <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank"
+                  >Funding Guidelines</a
+                >, this may include:
+              </p>
+              <ul>
+                <li>
+                  Participation of an Elder, culture/language teacher, and/or family members in the child care program;
+                </li>
+                <li>Children's participation in community, language, and/or cultural events or activities; or</li>
+                <li>Language or culture resources for use in the child care program.</li>
+              </ul>
+            </div>
             <br />
           </div>
         </div>
@@ -1000,11 +1010,7 @@
 
             <div class="px-md-12 px-7">
               <v-row class="hidden-sm-and-down">
-                <v-col class="col-md-1 col-12 mx-0">
-                  <!--here for spacing-->
-                </v-col>
-
-                <v-col class="col-md-3 col-12">
+                <v-col class="col-md-3 col-12 ml-md-6">
                   <h3 class="text-center">Expense Description</h3>
                 </v-col>
 
@@ -1020,8 +1026,8 @@
                   <h3 class="text-center">Expense amount</h3>
                 </v-col>
               </v-row>
-              <v-row v-for="(indigExpense, index) in model.indigenousExpenseList" :key="index">
-                <v-col class="col-md-1 col-12 mx-0">
+              <v-row v-for="(indigExpense, index) in model.indigenousExpenseList" :key="indigExpense.id">
+                <v-col cols="auto">
                   <v-icon
                     :disabled="isReadOnly"
                     size="large"
@@ -1078,9 +1084,6 @@
                     @update:model-value="convertBlankNumberToNull(indigExpense, 'expense')"
                   />
                 </v-col>
-
-                <span class="text-white"> . </span>
-                <v-divider />
               </v-row>
               <!-- end v for-->
 
@@ -1148,23 +1151,26 @@
           <div class="px-md-12 px-7">
             <br />
             <p>Fee increases may be considered under this exception if:</p>
-            <ul>
+            <ul class="ml-md-8">
               <li>
-                the facility has historically provided care to underserved populations - including Indigenous or
+                The facility has historically provided care to underserved populations - including Indigenous or
                 low-income families - at significantly below the regional median fees for their area or at no fee;
               </li>
-              <li>the fee increase will contribute to the operational sustainability of the organization; and</li>
-              <li>the fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
+              <li>The fee increase will contribute to the operational sustainability of the organization; and</li>
+              <li>The fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
             </ul>
             <br />
+            <label for="underservedPop" class="span-label font-large"
+              >Does this Facility meet all the above criteria?</label
+            >
             <v-radio-group
+              id="underservedPop"
               v-model="model.underservedPop"
               class="radio-label"
               :disabled="isReadOnly"
               required
               :rules="rules.required"
               inline
-              label="Does this Facility meet all the above criteria?"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
@@ -1250,6 +1256,7 @@
 <script>
 import { isEqual } from 'lodash';
 import { mapActions, mapState } from 'pinia';
+import { uuid } from 'vue-uuid';
 
 import { useRfiAppStore } from '@/store/rfiApp.js';
 import { useAppStore } from '@/store/app.js';
@@ -1271,6 +1278,8 @@ import globalMixin from '@/mixins/globalMixin.js';
 import { deepCloneObject } from '@/utils/common.js';
 import rules from '@/utils/rules.js';
 
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 
 let model = {
@@ -1283,7 +1292,7 @@ let model = {
 
 export default {
   name: 'CcfriRequestMoreInfo',
-  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput, AppDateInput },
+  components: { FacilityHeader, RFIDocumentUpload, NavButton, AppTimeInput, AppDateInput, AppAlertBanner },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     const rfiAppStore = useRfiAppStore();
@@ -1513,7 +1522,8 @@ export default {
       this.processing = false;
     },
     addObjToList(obj, list) {
-      list.push(Object.assign({}, obj));
+      const newObj = { ...obj, id: uuid.v1() };
+      list.push(newObj);
     },
     removeObjFromList(index, list) {
       if (index == -1) {

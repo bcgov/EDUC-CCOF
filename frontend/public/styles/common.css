@@ -125,6 +125,10 @@ input[type="number"] {
   font-size: 14px;
 }
 
+.font-xsmall {
+  font-size: 12px;
+}
+
 .border-right {
   border-right: 0.5px solid lightgray;
 }
@@ -141,7 +145,7 @@ input[type="number"] {
 }
 
 .span-label {
-  color: grey;
+  color: #636262;
   font-style: normal;
   font-family: "BCSans", Verdana, Arial, sans-serif;
 }

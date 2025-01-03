@@ -107,6 +107,7 @@ const ServiceExpansionDetailsMappings = [
   { back: 'ccof_paymentfrequencydetails', front: 'frequency' },
   { back: 'ccof_dateofchange', front: 'date' },
   { back: 'ccof_amountofexpense', front: 'expense' },
+  { back: 'ccof_rfipfiserviceexpansiondetailid', front: 'expense' },
 ];
 
 const DCSWageIncreaseMappings = [
@@ -117,6 +118,7 @@ const DCSWageIncreaseMappings = [
   { back: 'ccof_wageafterincrease', front: 'wageAfterIncrease' },
   { back: 'ccof_averagehoursperweek', front: 'averageHours' },
   { back: 'ccof_wageincreasedate', front: 'wageDate' },
+  { back: 'ccof_rfi_pfi_dcs_wi_detailid', front: 'id' },
 ];
 
 const ExpenseInformationMappings = [
@@ -124,6 +126,7 @@ const ExpenseInformationMappings = [
   { back: 'ccof_dateofexpense', front: 'date' },
   { back: 'ccof_paymentfrequencydetails', front: 'frequency' },
   { back: 'ccof_expenseamountt', front: 'expense' },
+  { back: 'ccof_rfipfiexpenseinfoid', front: 'id' },
 ];
 
 const OtherFundingProgramMappings = [
@@ -132,6 +135,7 @@ const OtherFundingProgramMappings = [
   { back: 'ccof_statusofapplication', front: 'status' },
   { back: 'ccof_amountreceived', front: 'amount' },
   { back: 'ccof_expense', front: 'expenses' },
+  { back: 'ccof_rfi_pfi_other_fundingid', front: 'id' },
 ];
 
 const IndigenousExpenseMappings = [
@@ -139,6 +143,7 @@ const IndigenousExpenseMappings = [
   { back: 'ccof_date', front: 'date' },
   { back: 'ccof_paymentfrequency', front: 'frequency' },
   { back: 'ccof_amount', front: 'expense' },
+  { back: 'ccof_rfipfiserviceexpansionindigenouscommunityid', front: 'id' },
 ];
 
 const NMFApplicationMappings = [
