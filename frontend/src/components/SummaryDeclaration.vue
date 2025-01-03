@@ -163,6 +163,7 @@
                         :facility-id="facility.facilityId"
                         :change-rec-guid="facility?.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
+                        :is-processing="isProcessing"
                         @is-summary-valid="isFormComplete"
                       />
                     </v-expansion-panel>
@@ -211,8 +212,22 @@
                     </v-expansion-panel>
 
                     <v-expansion-panel
-                      :key="`${facility.facilityId}-ecewe-summary-a`"
-                      :value="`${facility.facilityId}-ecewe-summary-a`"
+                      :key="`${facility.facilityId}-ecewe-summary-org`"
+                      :value="`${facility.facilityId}-ecewe-summary-org`"
+                      variant="accordion"
+                    >
+                      <ECEWESummary
+                        :ecewe="summaryModel.ecewe"
+                        :ecewe-facility="null"
+                        :is-processing="isProcessing"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-ecewe-summary-facility`"
+                      :value="`${facility.facilityId}-ecewe-summary-facility`"
                       variant="accordion"
                     >
                       <ECEWESummary
@@ -239,17 +254,6 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
                 </div>
-              </div>
-              <div v-if="!isRenewal" class="mt-10">
-                <v-expansion-panel variant="accordion" value="ecewe-summary-b">
-                  <ECEWESummary
-                    :ecewe="summaryModel.ecewe"
-                    :ecewe-facility="null"
-                    :is-processing="isProcessing"
-                    :program-year-id="summaryModel?.application?.programYearId"
-                    @is-summary-valid="isFormComplete"
-                  />
-                </v-expansion-panel>
               </div>
               <v-expansion-panel
                 v-if="hasChangeNotificationFormDocuments"
@@ -440,6 +444,7 @@
           </v-row>
         </v-card>
       </v-row>
+
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"

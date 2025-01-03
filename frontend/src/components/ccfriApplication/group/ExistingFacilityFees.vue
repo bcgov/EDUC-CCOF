@@ -9,7 +9,7 @@
     <div class="row pt-4 justify-center">
       <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
     </div>
-    <v-form ref="isValidForm" v-model="isValidForm" model-value="false">
+    <v-form ref="isValidForm" v-model="isValidForm">
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image, image" />
       <br />
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image" class="pb-6">
@@ -71,10 +71,8 @@
         </v-card-text>
       </v-card>
 
-      <div v-if="loading" :loading="loading" />
-      <div v-else-if="feeList.length == 0" />
       <v-card
-        v-else
+        v-if="!loading && feeList.length > 0"
         elevation="6"
         class="pa-4 mx-auto my-10 rounded-lg col-12"
         min-height="230"
@@ -87,7 +85,7 @@
         <v-card-text>
           <p class="text-h6 text--primary">Are these fees listed above correct for this facility?</p>
           <br />
-          <v-radio-group v-model="model.q1" :rules="rules" inline>
+          <v-radio-group v-model="model.q1" :rules="rules.required" inline>
             <v-radio label="Yes" value="Yes" />
             <v-radio label="No" value="No" />
           </v-radio-group>
@@ -96,8 +94,7 @@
 
       <NavButton
         :is-next-displayed="true"
-        :is-next-disabled="!isFormValidAndLoaded()"
-        :is-processing="processing"
+        :is-next-disabled="!isFormValidAndLoaded"
         @previous="previous"
         @next="next"
         @validate-form="validateForm"
@@ -108,31 +105,29 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '../../../store/app.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useCcfriAppStore } from '../../../store/ccfriApp.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
-import { PATHS, pcfUrlGuid } from '../../../utils/constants.js';
-import { deepCloneObject } from '../../../utils/common.js';
-import alertMixin from '../../../mixins/alertMixin.js';
-import NavButton from '../../../components/util/NavButton.vue';
-import ApiService from '../../../common/apiService.js';
-import FacilityHeader from '../../guiComponents/FacilityHeader.vue';
+import { PATHS, pcfUrlGuid, CCFRI_FEE_CORRECT_TYPES, ApiRoutes } from '@/utils/constants.js';
+import { deepCloneObject } from '@/utils/common.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import ApiService from '@/common/apiService.js';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton, FacilityHeader },
   mixins: [alertMixin],
   data() {
     return {
-      processing: false,
       prevFees: {},
-      input: '',
       loading: true,
       model: {},
       isValidForm: false,
       feeList: [],
-      rules: [(v) => !!v || 'Required.'],
       currentCCFRI: undefined,
     };
   },
@@ -155,6 +150,16 @@ export default {
       //if no RegEx match is found, this will return whatever the name is in full. Might look weird if the user set field is changed to something different.
       return programYear?.name.replace(/^.*\b(\d{4})\b.*$/, '$1');
     },
+    isFormValidAndLoaded() {
+      if (this.loading) {
+        //we need this to disable button while the page is loading
+        return false;
+      }
+      if (this.feeList.length === 0) {
+        return true;
+      }
+      return this.isValidForm;
+    },
   },
   watch: {
     //get facilityID from here and then set it !
@@ -163,10 +168,9 @@ export default {
         try {
           this.loading = true;
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
-          console.log('fees correct handler', this.CCFRIFacilityModel.existingFeesCorrect);
-          if (this.CCFRIFacilityModel.existingFeesCorrect == 100000000) {
+          if (this.CCFRIFacilityModel.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES) {
             this.model.q1 = 'Yes';
-          } else if (this.CCFRIFacilityModel.existingFeesCorrect == 100000001) {
+          } else if (this.CCFRIFacilityModel.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.NO) {
             this.model.q1 = 'No';
           } else {
             this.model.q1 = undefined;
@@ -183,17 +187,12 @@ export default {
               this.feeList.push(item);
             }
           });
-
           this.feeList.sort((a, b) => a.orderNumber - b.orderNumber);
-
-          console.log(this.feeList);
-
-          //will have to only display the previous years fee - some logic will have to be done here for that
           this.loading = false;
         } catch (error) {
           console.log(error);
           if (this.CCFRIFacilityModel.previousCcfriId) {
-            this.setFailureAlert('An error occured while getting.');
+            this.setFailureAlert('An error occured while getting CCFRI data');
           } else {
             this.setFailureAlert('The server was busy.  Please wait 10 seconds and refresh this screen.');
           }
@@ -202,6 +201,9 @@ export default {
       immediate: true,
       deep: true,
     },
+  },
+  created() {
+    this.rules = rules;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [
@@ -218,14 +220,8 @@ export default {
     setFees(areFeesCorrect) {
       this.currentCCFRI = deepCloneObject(this.getCCFRIById(this.$route.params.urlGuid));
       this.currentCCFRI.prevYearFeesCorrect = areFeesCorrect;
-      this.currentCCFRI.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
-      //this.CCFRIFacilityModel.existingFeesCorrect = areFeesCorrect ? 100000000 : 100000001;
-      console.log('existing fees POST set', this.currentCCFRI.existingFeesCorrect);
+      this.currentCCFRI.existingFeesCorrect = areFeesCorrect ? CCFRI_FEE_CORRECT_TYPES.YES : CCFRI_FEE_CORRECT_TYPES.NO;
       this.addCCFRIToStore({ ccfriId: this.$route.params.urlGuid, CCFRIFacilityModel: this.currentCCFRI });
-    },
-    isFormValidAndLoaded() {
-      //we need this to disable button while the page is loading
-      return this.isValidForm && this.loading == false;
     },
     async next() {
       this.loading = true;
@@ -237,16 +233,12 @@ export default {
         this.setFees(true);
         await this.save();
       }
-
-      //console.log('before NEXT', this.CCFRIFacilityModel.existingFeesCorrect);
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.$route.params.urlGuid));
     },
     async save() {
-      console.log('da feez payload', this.currentCCFRI.existingFeesCorrect);
       if (this.currentCCFRI.existingFeesCorrect) {
-        let payload = { existingFeesCorrect: this.currentCCFRI.existingFeesCorrect };
-        let res = await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, payload);
-        console.log(res);
+        const payload = { existingFeesCorrect: this.currentCCFRI.existingFeesCorrect };
+        await ApiService.apiAxios.patch(`${ApiRoutes.APPLICATION_CCFRI}/${this.$route.params.urlGuid}`, payload);
       }
     },
     validateForm() {

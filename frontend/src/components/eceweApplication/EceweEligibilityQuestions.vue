@@ -102,8 +102,7 @@
                 <div v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
                   <v-row class="justify-left">
                     <AppAlertBanner  type="info" class="ma-2 mb-4 w-100"
-                      >Please Confirm</AppAlertBanner
-                    />
+                      >Please Confirm</AppAlertBanner>
                   </v-row>
                   <v-row>
                     <v-col class="pl-6 d-flex py-0">
@@ -122,8 +121,7 @@
               <v-row>
                 <AppAlertBanner v-if="showCSSEAWarning" type="error" class="ma-2 mb-4"
                   >If you are a member of the Community Social Services Employers' Association (CSSEA), you are a public
-                  sector employer. Please update your response to the previous question.</AppAlertBanner
-                />
+                  sector employer. Please update your response to the previous question.</AppAlertBanner>
               </v-row>
             </v-container>
           </v-card>
@@ -159,8 +157,7 @@
                <div v-if="model.fundingModel">
                   <v-row class="justify-left">
                     <AppAlertBanner  type="info" class="ma-2 mb-4 w-100"
-                      >Please Confirm</AppAlertBanner
-                    />
+                      >Please Confirm</AppAlertBanner>
                   </v-row>
                   <v-row>
                     <v-col class="pl-6 d-flex py-0">

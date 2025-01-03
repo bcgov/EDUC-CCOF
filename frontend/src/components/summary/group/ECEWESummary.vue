@@ -2,7 +2,9 @@
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
       <h4 style="color: #003466">
-        Early Childhood Educator-Wage Enhancement (ECE-WE)
+        Early Childhood Educator-Wage Enhancement (ECE-WE) -
+        {{ facilityInformationExists ? 'Facility Information' : 'Organization Information' }}
+
         <template v-if="(!isValidForm || showCSSEAWarning) && !isProcessing">
           <v-icon color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
           <span style="color: #ff5252">Your form is missing required information. Click here to view.</span>
@@ -518,7 +520,9 @@ export default {
     isValidForm: {
       handler() {
         this.$refs.eceweSummaryForm.validate();
-        if (!this.isProcessing && this.isLoadingComplete && !this.facilityInformationExists) {
+        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
+        //if form is invalid, it will be set to false and the emit will still fire.
+        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm && !this.showCSSEAWarning);
         }
       },

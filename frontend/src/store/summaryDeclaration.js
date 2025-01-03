@@ -207,8 +207,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           applicationStore.getApplicationUploadedDocuments(),
         ]);
 
-        //new app only?
-        if (!applicationStore.isRenewal && payload.application?.organizationId) {
+        //ccfri 3912 show ECEWE org questions for all applications
+        if (payload.application?.organizationId) {
           summaryModel.organization = (
             await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)
           ).data;
