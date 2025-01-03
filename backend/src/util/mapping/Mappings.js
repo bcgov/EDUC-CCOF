@@ -107,7 +107,7 @@ const ServiceExpansionDetailsMappings = [
   { back: 'ccof_paymentfrequencydetails', front: 'frequency' },
   { back: 'ccof_dateofchange', front: 'date' },
   { back: 'ccof_amountofexpense', front: 'expense' },
-  { back: 'ccof_rfipfiserviceexpansiondetailid', front: 'expense' },
+  { back: 'ccof_rfipfiserviceexpansiondetailid', front: 'id' },
 ];
 
 const DCSWageIncreaseMappings = [
