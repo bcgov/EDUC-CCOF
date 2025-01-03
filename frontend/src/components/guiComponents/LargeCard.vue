@@ -22,8 +22,11 @@
             <h2> Status: Draft</h2> <br><br> -->
 
       <!--If buttons are required, slot them in at the parent-->
-      <slot />
+      <slot name="content" />
     </v-card-text>
+    <v-card-actions class="mt-auto pb-4 pl-4">
+      <slot name="button" />
+    </v-card-actions>
   </v-card>
 </template>
 

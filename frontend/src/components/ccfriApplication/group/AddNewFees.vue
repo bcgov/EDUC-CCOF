@@ -1,7 +1,7 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
-      <div align="center">
+      <div class="text-center">
         <div class="text-h5">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </div>
@@ -47,7 +47,7 @@
               <p class="text-h5 text--primary">Are the previous year's fees correct for this facility?</p>
               <br />
 
-              <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules">
+              <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules.required">
                 <v-radio label="Yes" value="Yes" />
                 <v-radio label="No" value="No" />
               </v-radio-group>
@@ -75,14 +75,10 @@
               </div>
               <div class="px-md-12 px-7">
                 <br />
-                <!-- <p class="text-h6 text--primary">
-                    Are your parent fees
 
-                  </p> -->
-                <!-- qqq: {{childCareTypes[index].approvedFeeApr}} -->
                 <v-radio-group
                   v-model="item.feeFrequency"
-                  :rules="rules"
+                  :rules="rules.required"
                   label="Parent fee frequency"
                   :disabled="isReadOnly"
                 >
@@ -111,15 +107,13 @@
                   </v-row>
                   <v-row>
                     <v-col class="col-6 col-md-2">
-                      <!-- childCareTypes[index].approvedFeeApr
-                      I think I can replace all the model with childCareTypes data... I'd like to test and make sure it doesn't break if fees do not exist yet.-->
                       <v-text-field
                         v-model.number="item.approvedFeeApr"
                         type="number"
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="April"
+                        label="Apr"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
@@ -145,7 +139,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="June"
+                        label="Jun"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
@@ -158,7 +152,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="July"
+                        label="Jul"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
@@ -171,7 +165,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="August"
+                        label="Aug"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
@@ -184,7 +178,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="September"
+                        label="Sep"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
@@ -200,7 +194,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="October"
+                        label="Oct"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeOct')"
@@ -213,7 +207,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="November"
+                        label="Nov"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeNov')"
@@ -226,7 +220,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="December"
+                        label="Dec"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeDec')"
@@ -265,7 +259,7 @@
                         :disabled="isReadOnly"
                         variant="outlined"
                         :rules="feeRules"
-                        label="March"
+                        label="Mar"
                         prefix="$"
                         @wheel="$event.target.blur()"
                         @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMar')"
@@ -311,111 +305,69 @@
                 statutory holidays)? Only indicate the date of closures where parent fees are charged.
               </p>
             </div>
-            <v-radio-group v-model="CCFRIFacilityModel.hasClosureFees" required :disabled="isReadOnly" :rules="rules">
+            <v-radio-group
+              v-model="CCFRIFacilityModel.hasClosureFees"
+              required
+              :disabled="isReadOnly"
+              :rules="rules.required"
+            >
               <br />
-              <v-radio label="Yes" :value="100000000" />
-              <v-radio label="No" :value="100000001" />
+              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" />
+              <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
-            <v-row v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees == 100000000">
-              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="index" color="#003366">
-                <v-col color="#003366" class="col-md-1 col-12 mx-0">
-                  <v-icon
-                    :disabled="isReadOnly"
-                    size="large"
-                    color="blue-darken-4"
-                    class=""
-                    @click="removeIndex(index)"
-                  >
+            <div v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
+              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="obj.id" color="#003366">
+                <v-col color="#003366" cols="auto">
+                  <v-icon :disabled="isReadOnly" size="large" color="blue-darken-4" @click="removeIndex(index)">
                     mdi-close
                   </v-icon>
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="obj.calendarMenu1"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.formattedStartDate"
-                        :disabled="isReadOnly"
-                        variant="outlined"
-                        :rules="rules"
-                        label="Select Start Date (YYYY-MM-DD)"
-                        readonly
-                        v-bind="props"
-                        @click="updateChosenDates()"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.formattedStartDate"
-                      :min="fiscalStartAndEndDates.startDate"
-                      :max="fiscalStartAndEndDates.endDate"
-                      :allowed-dates="allowedDates"
-                      clearable
-                      @input="obj.calendarMenu1 = false"
-                    />
-                  </v-menu>
+                <v-col cols="12" md="3">
+                  <AppDateInput
+                    v-model="obj.formattedStartDate"
+                    :min="fiscalStartAndEndDates.startDate"
+                    :max="fiscalStartAndEndDates.endDate"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
-                  <v-menu
-                    v-model="obj.calendarMenu2"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
-                    <template #activator="{ props }">
-                      <v-text-field
-                        v-model="obj.formattedEndDate"
-                        :disabled="isReadOnly"
-                        variant="outlined"
-                        required
-                        label="Select End Date (YYYY-MM-DD)"
-                        readonly
-                        :rules="rules"
-                        v-bind="props"
-                        @click="updateChosenDates()"
-                      />
-                    </template>
-                    <v-date-picker
-                      v-model="obj.formattedEndDate"
-                      clearable
-                      :min="obj.formattedStartDate"
-                      :max="fiscalStartAndEndDates.endDate"
-                      :allowed-dates="allowedDates"
-                      @input="obj.calendarMenu2 = false"
-                      @click:date="isDateLegal(obj)"
-                    />
-                  </v-menu>
+                <v-col cols="12" md="3">
+                  <AppDateInput
+                    v-model="obj.formattedEndDate"
+                    :min="obj.formattedStartDate"
+                    :max="fiscalStartAndEndDates.endDate"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    clearable
+                    @input="isDateLegal(obj)"
+                  />
                 </v-col>
 
-                <v-col class="col-md-3 col-12">
+                <v-col cols="12" md="3">
                   <v-text-field
                     v-model="obj.closureReason"
                     :disabled="isReadOnly"
                     label="Closure Reason"
                     variant="outlined"
                     clearable
-                    :rules="rules"
-                    color="red"
+                    :rules="rules.required"
                   />
                 </v-col>
 
-                <v-col class="col-md-2 col-12 mt-n10">
+                <v-col cols="12" md="2" class="mt-n1">
+                  <span class="span-label font-small">Did parents pay for this closure?</span>
                   <v-radio-group
                     v-model="obj.feesPaidWhileClosed"
                     :disabled="isReadOnly"
                     inline
-                    label="Did parents pay for this closure?"
-                    :rules="dateRules"
+                    :rules="rules.required"
                   >
                     <v-radio label="Yes" :value="1" />
                     <v-radio label="No" :value="0" />
@@ -425,16 +377,8 @@
                 <span class="text-white"> . </span>
                 <v-row v-if="obj.isIllegal">
                   <v-card width="100%" class="mx-3 my-10">
-                    <v-row>
-                      <v-col class="py-0">
-                        <v-card-title class="py-1 noticeAlert">
-                          <span style="float: left">
-                            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                          </span>
-                          Invalid Dates
-                        </v-card-title>
-                      </v-col>
-                    </v-row>
+                    <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
+
                     <v-card-text>
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
@@ -450,9 +394,6 @@
                     </v-card-text>
                   </v-card>
                 </v-row>
-                <!-- <v-card color="red" > It appears that the closure start and end dates you've selected for this facility overlap with dates you've previously selected. Please review your existing Facility closure dates to ensure consistency and avoid any potential overlap of Facility closure dates. </v-card>
-                </v-row> -->
-
                 <v-divider />
               </v-row>
               <!-- end v for-->
@@ -466,7 +407,7 @@
                 </v-row>
               </v-container>
               <br />
-            </v-row>
+            </div>
           </div>
         </v-card-text>
       </v-card>
@@ -556,6 +497,7 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 import { isEqual, cloneDeep } from 'lodash';
+import { uuid } from 'vue-uuid';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -565,6 +507,9 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import rules from '@/utils/rules.js';
 
 import {
   PATHS,
@@ -575,6 +520,8 @@ import {
   CHANGE_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ApiRoutes,
+  CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_FEE_CORRECT_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -584,9 +531,9 @@ function dateFunction(date1, date2) {
   const startDate = new Date(date1);
   const endDate = new Date(date2);
 
-  let dates = [];
+  const dates = [];
 
-  let currentDate = new Date(startDate.getTime());
+  const currentDate = new Date(startDate.getTime());
 
   while (currentDate <= endDate) {
     dates.push(currentDate.toISOString().substring(0, 10));
@@ -597,7 +544,7 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader },
+  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);
@@ -605,12 +552,11 @@ export default {
   },
   data() {
     return {
+      rules,
       pastCcfriGuid: undefined,
       closureFees: 'No',
       prevFeesCorrect: undefined,
       dateObj: {
-        datePicker1: undefined,
-        datePicker2: undefined,
         closureReason: '',
         feesPaidWhileClosed: undefined,
       },
@@ -630,10 +576,6 @@ export default {
         (v) => v <= 9999 || 'Max fee is $9999.00',
         (v) => v >= 0 || 'Input a positve number',
       ],
-
-      rules: [(v) => !!v || 'Required.'],
-      calenderRules: [(v) => !!v || 'Required.'],
-      dateRules: [(v) => typeof v === 'number' || 'Required.'],
     };
   },
   computed: {
@@ -671,11 +613,6 @@ export default {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     currentFacility() {
-      // if (this.getNavByCCFRIId(this.$route.params.urlGuid)){
-      //   return this.getNavByCCFRIId(this.$route.params.urlGuid);
-      // }
-      // //if viewing historical CR - getNavByCCFRID will not work because fac won't be in userProfile. Load from navBarList instead
-      // else
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     fundingUrl() {
@@ -709,24 +646,23 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           await this.decorateWithCareTypes(this.currentFacility.facilityId);
           this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
-
-          this.prevFeesCorrect = this.CCFRIFacilityModel.existingFeesCorrect == 100000000 ? 'Yes' : 'No';
-          if (this.getClosureDateLength > 0) {
-            //this.closureFees = 'Yes';
-          }
+          this.prevFeesCorrect =
+            this.CCFRIFacilityModel.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES ? 'Yes' : 'No';
           this.pastCcfriGuid = cloneDeep(this.$route.params.urlGuid);
           this.updateChosenDates();
           this.loading = false;
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occured while getting.');
-          //this solves for the edge case bug where fees that need to be deleted cannot be deleted because the GUID has not been loaded from dynamics
-          // window.location.reload(); //TODO-RLO: removed this, review with Jen
         }
       },
       immediate: true,
       deep: true,
     },
+  },
+  created() {
+    this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
+    this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [
@@ -749,7 +685,8 @@ export default {
     ]),
     addRow() {
       this.updateChosenDates();
-      this.CCFRIFacilityModel.dates.push(Object.assign({}, this.dateObj));
+      const newObj = { ...this.dateObj, id: uuid.v1() };
+      this.CCFRIFacilityModel.dates.push(newObj);
     },
     allowedDates(val) {
       return !this.chosenDates.includes(val);
@@ -761,7 +698,7 @@ export default {
       });
     },
     isDateLegal(obj) {
-      let dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+      const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
       obj.isIllegal = false;
 
       dates.forEach((date) => {
@@ -847,39 +784,33 @@ export default {
       this.$refs.isValidForm?.validate();
     },
     isFormComplete() {
-      //100000000 == YES
-      if (this.CCFRIFacilityModel.hasClosureFees == 100000000 && this.CCFRIFacilityModel.dates.length === 0) {
+      if (
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
+        this.CCFRIFacilityModel.dates.length === 0
+      ) {
         return false;
       }
       return this.isValidForm; //false makes button clickable, true disables button
     },
     hasModelChanged() {
-      if (isEqual(this.CCFRIFacilityModel, this.loadedModel)) {
-        console.info('no model changes');
-        return false;
-      } else {
-        console.info('change in the model!');
-      }
-      return true;
+      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
     async save(showMessage) {
       //only save data to Dynamics if the form has changed.
       if (this.hasModelChanged() || this.hasDataToDelete()) {
         this.processing = true;
-        // this.processing = true;
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete() });
 
         if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
-          let newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+          const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
           newFac.ccfri.isCCFRIComplete = this.isFormComplete();
         }
         try {
           this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          let res = await this.saveCcfri({
+          await this.saveCcfri({
             isFormComplete: this.isFormComplete(),
             hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
           });
-          console.log('the res is:', res);
           if (showMessage) {
             this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
           }
@@ -888,14 +819,8 @@ export default {
         } catch (error) {
           console.info(error);
           this.setFailureAlert('An error occurred while saving.');
-
-          //This fixes the edge case of fees needing be deleted without a guid - force a refesh. Then when the user clicks next, the guid will exist, it will be deleted,
-          //and life will be good :)
-          //window.location.reload(true);
         }
         this.processing = false;
-
-        //this.refreshNavBarList();
         this.forceNavBarRefresh();
       }
     },

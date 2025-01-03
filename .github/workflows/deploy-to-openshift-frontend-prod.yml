@@ -150,9 +150,7 @@ jobs:
           -p CERTIFICATE="${{ env.CERTIFICATE }}" \
           -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
           -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
-          -p BANNER_COLOR='' \
-          -p BANNER_ENVIRONMENT='' \
-          -p VUE_APP_BCEID_REG_URL='' \
+          -p VUE_APP_BCEID_REG_URL='${{ secrets.VUE_APP_BCEID_REG_URL }}' \
           | oc apply -f -
 
         # Start rollout (if necessary) and follow it

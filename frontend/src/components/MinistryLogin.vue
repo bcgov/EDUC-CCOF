@@ -4,7 +4,7 @@
       <!-- This Heading bar came from the Estimator... It could be potentially broken out into a component if we want to reuse it?-->
       <v-row>
         <v-col cols="12" align="center" class="pt-0">
-          <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end">
+          <v-img :src="headerImage" max-height="300" max-width="1448" class="align-end" cover>
             <v-col align="center" style="background-color: rgb(28, 115, 158, 0.85)">
               <span class="text-h4 text-white font-weight-bold">My ChildCareBC Services</span>
               <br />
@@ -35,7 +35,7 @@
                     id="login-button"
                     :href="authRoutes.LOGIN_IDIR"
                     class="ma-5"
-                    theme="dark"
+                    variant="elevated"
                     color="#003366"
                     @click="clearStorage"
                   >
@@ -85,7 +85,7 @@
               <v-spacer />
               <v-card-actions>
                 <v-row>
-                  <v-btn id="login-button" class="ma-5" theme="dark" color="#003366" @click="toEstimator">
+                  <v-btn id="login-button" class="ma-5" color="#003366" variant="elevated" @click="toEstimator">
                     Go to Estimator
                   </v-btn>
                 </v-row>

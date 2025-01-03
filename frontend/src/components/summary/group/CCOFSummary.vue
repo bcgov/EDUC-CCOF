@@ -14,7 +14,7 @@
       <v-expansion-panel-text eager>
         <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" md="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
@@ -34,7 +34,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-col cols="12" md="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
@@ -56,14 +56,14 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row v-if="funding?.hasClosedMonth?.toUpperCase() === 'YES'" no-gutters class="d-flex justify-start">
+            <v-col v-if="funding?.hasClosedMonth?.toUpperCase() === 'YES'" cols="12" lg="6" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Months where ALL of the programs at this facility are closed for the entire month:
                   </span>
                 </v-col>
-                <v-col v-if="funding?.closedIn1" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn1" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="January"
                     class="summary-value"
@@ -75,7 +75,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn2" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn2" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="February"
                     class="summary-value"
@@ -87,7 +87,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn3" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn3" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="March"
                     class="summary-value"
@@ -99,7 +99,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn4" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn4" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="April"
                     class="summary-value"
@@ -111,7 +111,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn5" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn5" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="May"
                     class="summary-value"
@@ -123,7 +123,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn6" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn6" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="June"
                     class="summary-value"
@@ -135,7 +135,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn7" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn7" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="July"
                     class="summary-value"
@@ -147,7 +147,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn8" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn8" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="August"
                     class="summary-value"
@@ -159,7 +159,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn9" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn9" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="September"
                     class="summary-value"
@@ -171,7 +171,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn10" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn10" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="October"
                     class="summary-value"
@@ -183,7 +183,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn11" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn11" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="November"
                     class="summary-value"
@@ -195,7 +195,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn12" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn12" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="December"
                     class="summary-value"
@@ -209,12 +209,12 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="4" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="4" class="d-flex justify-start flex-nowrap">
+                <v-col cols="12" md="4" class="d-flex justify-start flex-nowrap">
                   <span class="summary-label pt-3">Facility hours of operation:</span>
                 </v-col>
-                <v-col class="d-flex justify-start">
+                <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
@@ -228,7 +228,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col class="d-flex justify-start">
+                <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
@@ -246,7 +246,7 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
+            <v-col cols="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="10" class="d-flex justify-start">
                   <span class="summary-value">Type of Service</span>
@@ -271,7 +271,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="6" lg="6" class="pb-0 pt-0">
+            <v-col cols="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="10" class="d-flex justify-start">
                   <span class="summary-value">Maximum Number</span>
@@ -484,16 +484,16 @@
             </v-row>
           </span>
           <v-row v-if="funding?.maxGroupChildCareSchool > 0" class="pb-0 pt-0">
-            <v-col cols="6" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="6" class="d-flex justify-start">
+                <v-col cols="12" sm="6" lg="4" xl="3" class="d-flex justify-start">
                   <span class="summary-label pt-1">Is the facility located on school property?</span>
                 </v-col>
-                <v-col cols="6" class="d-flex justify-start">
+                <v-col cols="12" sm="6" lg="8" xl="9" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     :model-value="funding?.isSchoolProperty?.toUpperCase()"
-                    class="summary-value ml-n5"
+                    class="summary-value"
                     density="compact"
                     flat
                     variant="solo"
@@ -530,11 +530,13 @@
           <v-row class="d-flex justify-start">
             <v-col cols="12" lg="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start pt-2">
-                <v-col cols="12" class="d-flex justify-start">
+                <v-col cols="12" sm="6" class="d-flex justify-start">
                   <span class="summary-label pt-2"
                     >Do you <b>regularly offer</b> extended daily hours of child care
                     <b>(before 6am, after 7pm or overnight)</b>?</span
                   >
+                </v-col>
+                <v-col cols="12" sm="6" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     :model-value="funding?.isExtendedHours?.toUpperCase()"
