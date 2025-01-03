@@ -119,14 +119,16 @@ async function getLicenseCategories(req, res) {
 }
 
 function getFeeFrequency(feeCode) {
-  if (feeCode === 100000000) {
-    return 'Monthly';
-  } else if (feeCode === 100000001) {
-    return 'Weekly';
-  } else if (feeCode === 100000002) {
-    return 'Daily';
+  switch (feeCode) {
+    case 100000000:
+      return 'Monthly';
+    case 100000001:
+      return 'Weekly';
+    case 100000002:
+      return 'Daily';
+    default:
+      return '';
   }
-  return '';
 }
 
 async function getFacilityChildCareTypes(req, res) {
