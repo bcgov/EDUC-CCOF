@@ -362,7 +362,7 @@
                 </v-col>
 
                 <v-col cols="12" md="2" class="mt-n1">
-                  <span class="span-label">Did parents pay for this closure?</span>
+                  <span class="span-label font-small">Did parents pay for this closure?</span>
                   <v-radio-group
                     v-model="obj.feesPaidWhileClosed"
                     :disabled="isReadOnly"

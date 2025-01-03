@@ -15,14 +15,7 @@
       >
         <template #top>
           <v-col flex>
-            <AppButton
-              v-if="!isReadOnly"
-              id="add-new-file"
-              :primary="false"
-              size="large"
-              class="add-file-button mb-2"
-              @click="addNew"
-            >
+            <AppButton v-if="!isReadOnly" id="add-new-file" :primary="false" size="large" class="mb-2" @click="addNew">
               Add File
             </AppButton>
           </v-col>
