@@ -312,7 +312,11 @@
               :rules="rules.required"
             >
               <br />
-              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(true)" />
+              <v-radio
+                label="Yes"
+                :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES"
+                @click="addRow(CCFRIFacilityModel.dates.length > 0)"
+              />
               <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
@@ -683,8 +687,10 @@ export default {
       'setNavBarValue',
       'setNavBarCCFRIComplete',
     ]),
-    addRow(checkLength = false) {
-      if (checkLength && this.CCFRIFacilityModel.dates.length > 0) {
+    addRow(arrayHasItems = false) {
+      //when opening table for the first time, add a row so it always populates with one.
+      //check below so if user hits the radio button multiple times, it won't keep adding rows
+      if (arrayHasItems) {
         return;
       }
       this.updateChosenDates();

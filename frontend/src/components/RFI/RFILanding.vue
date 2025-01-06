@@ -82,7 +82,11 @@
                 :rules="rules.required"
                 inline
               >
-                <v-radio label="Yes" :value="1" @click="addObjToList(expenseObj, model.expenseList, true)" />
+                <v-radio
+                  label="Yes"
+                  :value="1"
+                  @click="addObjToList(expenseObj, model.expenseList, model.expenseList.length > 0)"
+                />
                 <v-radio label="No" :value="0" />
               </v-radio-group>
             </div>
@@ -235,7 +239,11 @@
                 :rules="rules.required"
                 inline
               >
-                <v-radio label="Yes" :value="1" @click="addObjToList(fundingObj, model.fundingList, true)" />
+                <v-radio
+                  label="Yes"
+                  :value="1"
+                  @click="addObjToList(fundingObj, model.fundingList, model.fundingList.length > 0)"
+                />
                 <v-radio label="No" :value="0" />
               </v-radio-group>
 
@@ -409,7 +417,11 @@
               required
               inline
             >
-              <v-radio label="Yes" :value="1" @click="addObjToList(wageObj, model.wageList, true)" />
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="addObjToList(wageObj, model.wageList, model.wageList.length > 0)"
+              />
               <v-radio label="No" :value="0" />
             </v-radio-group>
 
@@ -774,7 +786,11 @@
               required
               inline
             >
-              <v-radio label="Yes" :value="1" @click="addObjToList(expansionObj, model.expansionList, true)" />
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="addObjToList(expansionObj, model.expansionList, model.expansionList.length > 0)"
+              />
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
@@ -982,7 +998,13 @@
               <v-radio
                 label="Yes"
                 :value="1"
-                @click="addObjToList(indigenousExpenseObj, model.indigenousExpenseList, true)"
+                @click="
+                  addObjToList(
+                    indigenousExpenseObj,
+                    model.indigenousExpenseList,
+                    model.indigenousExpenseList.length > 0,
+                  )
+                "
               />
               <v-radio label="No" :value="0" />
             </v-radio-group>
@@ -1524,8 +1546,10 @@ export default {
       }
       this.processing = false;
     },
-    addObjToList(obj, list, checkLength = false) {
-      if (checkLength && list.length > 0) {
+    addObjToList(obj, list, arrayHasItems = false) {
+      //when opening table for the first time, add a row so it always populates with one.
+      //check below so if user hits the radio button multiple times, it won't keep adding rows
+      if (arrayHasItems) {
         return;
       }
       const newObj = { ...obj, id: uuid.v1() };
