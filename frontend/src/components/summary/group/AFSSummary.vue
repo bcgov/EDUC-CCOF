@@ -41,7 +41,7 @@
 </template>
 <script>
 import { isEmpty } from 'lodash';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 
 import AfsDecisionCard from '@/components/ccfriApplication/AFS/AfsDecisionCard.vue';
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
@@ -49,10 +49,13 @@ import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
 export default {
   //JB TO DO - Add load and verifcations for AFS
+  //
   name: 'AFSSummary',
   components: {
     AfsDecisionCard,
@@ -87,6 +90,8 @@ export default {
     ...mapState(useApplicationStore, ['applicationUploadedDocuments']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+    ...mapState(useNavBarStore, ['isChangeRequest']),
+    ...mapState(useReportChangesStore, ['changeActionId']),
     filteredUploadedDocuments() {
       return this.applicationUploadedDocuments?.filter(
         (document) =>
@@ -119,15 +124,31 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.AFS_STATUSES = AFS_STATUSES;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.reloadAfs();
+
+    if (this.isChangeRequest) {
+      await this.getChangeDocs();
+    }
   },
   methods: {
+    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
     isEmpty,
     reloadAfs() {
+      console.log(this.ccfriId);
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);
+      console.log('?', this.afs);
+    },
+    async getChangeDocs() {
+      this.processing = true;
+      this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
+
+      this.changeRequestDocs.forEach((document) => {
+        document.fileName = document.filename;
+      });
+      this.processing = false;
     },
   },
 };

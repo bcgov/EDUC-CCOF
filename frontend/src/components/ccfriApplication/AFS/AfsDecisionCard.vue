@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import { AFS_STATUSES } from '@/utils/constants.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -30,16 +32,15 @@ export default {
       type: Number,
       default: null,
     },
-    isChangeRequest: {
-      type: Boolean,
-      default: false,
-    },
   },
   emits: ['update:modelValue'],
   data() {
     return {
       updatedValue: null,
     };
+  },
+  computed: {
+    ...mapState(useNavBarStore, ['isChangeRequest']),
   },
   watch: {
     modelValue: {

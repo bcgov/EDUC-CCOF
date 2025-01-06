@@ -163,7 +163,7 @@
                         variant="accordion"
                       >
                         <AFSSummary
-                          :ccfri-id="facility?.newCcfri?.ccfriId"
+                          :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
                           :facility-id="facility?.facilityId"
                           :program-year-id="summaryModel?.application?.programYearId"
                           @is-summary-valid="isFormComplete"

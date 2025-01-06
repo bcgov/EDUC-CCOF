@@ -79,7 +79,7 @@
           </div>
           <v-skeleton-loader :loading="isEmpty(afs)" type="table-tbody">
             <v-container fluid class="pa-0">
-              <AfsDecisionCard v-model="afs.afsStatus" :readonly="isReadOnly" :is-change-request="isChangeRequest" />
+              <AfsDecisionCard v-model="afs.afsStatus" :readonly="isReadOnly" />
               <AppDocumentUpload
                 v-if="afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS"
                 :loading="isLoading"

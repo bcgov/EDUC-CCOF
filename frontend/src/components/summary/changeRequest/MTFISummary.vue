@@ -184,7 +184,7 @@
                   </div>
 
                   <div no-gutters class="feeTitle summary-label justify-start ma-0">
-                    July
+                    Jul
                     <v-text-field
                       v-model.number="newModel.childCareTypes[index].approvedFeeJul"
                       type="number"
