@@ -312,7 +312,7 @@
               :rules="rules.required"
             >
               <br />
-              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" />
+              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(true)" />
               <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
             </v-radio-group>
 
@@ -683,7 +683,10 @@ export default {
       'setNavBarValue',
       'setNavBarCCFRIComplete',
     ]),
-    addRow() {
+    addRow(checkLength = false) {
+      if (checkLength && this.CCFRIFacilityModel.dates.length > 0) {
+        return;
+      }
       this.updateChosenDates();
       const newObj = { ...this.dateObj, id: uuid.v1() };
       this.CCFRIFacilityModel.dates.push(newObj);
