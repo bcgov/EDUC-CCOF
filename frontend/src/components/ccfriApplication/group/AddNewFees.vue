@@ -394,7 +394,7 @@
                       <br />
                       Closure End Date: {{ obj.formattedEndDate }} <br /><br />
 
-                      Please review your existing facility closure dates.
+                      Please review your facility closure dates.
                       <br />
                     </v-card-text>
                     <v-card-text v-else-if="obj.datesOverlap">
