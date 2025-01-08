@@ -718,14 +718,23 @@ export default {
       });
     },
     isDateLegal(obj) {
-      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
-      //datesInvalid is true if user breaks any other date rule.
-      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
+      // Get all dates from chosenDates except for the currently edited row
+      const otherChosenDates = this.CCFRIFacilityModel.dates
+        .filter((dateObj) => dateObj.id !== obj.id)
+        .reduce((acc, dateObj) => {
+          return [...acc, ...dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate)];
+        }, []);
+
       const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
 
-      //end date cannot be before start date
+      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
+      //datesInvalid is true if user breaks any other date rule.
+
+      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
+      //Rules are: end date cannot be before start date
       //start date for either field cannot be before the start of fiscal year
       //end dates for either field cannot be after end of fiscal year
+
       if (
         obj.formattedEndDate < obj.formattedStartDate ||
         obj.formattedStartDate < this.fiscalStartAndEndDates.startDate ||
@@ -739,9 +748,8 @@ export default {
 
       obj.datesOverlap = false;
       obj.datesInvalid = false;
-
       dates.forEach((date) => {
-        if (this.chosenDates.includes(date)) {
+        if (otherChosenDates.includes(date)) {
           obj.datesOverlap = true;
         }
       });
