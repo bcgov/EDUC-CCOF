@@ -719,27 +719,20 @@ export default {
     },
     isDateLegal(obj) {
       //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
-      //datesInvalid is true if user types an end date that is before the start date
+      //datesInvalid is true if user breaks any other date rule.
+      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
       const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
 
-      if (obj.formattedEndDate < obj.formattedStartDate) {
-        //end date cannot be before start date
-        obj.datesInvalid = true;
-        return;
-      }
-      if (obj.formattedStartDate < this.fiscalStartAndEndDates.startDate) {
-        //start date cannot be before the start of fiscal year
-        console.log('Must exceed fiscal year start date');
-        obj.datesInvalid = true;
-        return;
-      }
-
+      //end date cannot be before start date
+      //start date for either field cannot be before the start of fiscal year
+      //end dates for either field cannot be after end of fiscal year
       if (
+        obj.formattedEndDate < obj.formattedStartDate ||
+        obj.formattedStartDate < this.fiscalStartAndEndDates.startDate ||
+        obj.formattedEndDate < this.fiscalStartAndEndDates.startDate ||
         obj.formattedStartDate > this.fiscalStartAndEndDates.endDate ||
         obj.formattedEndDate > this.fiscalStartAndEndDates.endDate
       ) {
-        //end dates cannot be after end of fiscal term
-        console.log('Must be earlier');
         obj.datesInvalid = true;
         return;
       }
