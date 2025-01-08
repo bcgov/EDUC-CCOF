@@ -329,11 +329,15 @@
                     v-model="obj.formattedStartDate"
                     :min="fiscalStartAndEndDates.startDate"
                     :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
+                    :rules="[
+                      ...rules.required,
+                      rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                    ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date"
+                    label="Start Date"
                     clearable
+                    @input="isStartEndDatesValid(obj)"
                   />
                 </v-col>
 
@@ -342,10 +346,15 @@
                     v-model="obj.formattedEndDate"
                     :min="obj.formattedStartDate"
                     :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
+                    :rules="[
+                      ...rules.required,
+                      rules.min(obj.formattedStartDate, 'Must exceed start date'),
+                      rules.max(fiscalStartAndEndDates.endDate),
+                    ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     clearable
+                    label="End Date"
                     @input="isDateLegal(obj)"
                   />
                 </v-col>
@@ -379,7 +388,17 @@
                   <v-card width="100%" class="mx-3 my-10">
                     <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
 
-                    <v-card-text>
+                    <v-card-text v-if="obj.illegalMessage">
+                      Your end date cannot be before your start date.
+                      <br /><br />
+                      Closure Start Date: {{ obj.formattedStartDate }}
+                      <br />
+                      Closure End Date: {{ obj.formattedEndDate }} <br /><br />
+
+                      Please review your existing facility closure dates.
+                      <br />
+                    </v-card-text>
+                    <v-card-text v-else>
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
                       <br /><br />
@@ -390,7 +409,6 @@
                       Please review your existing facility closure dates to ensure consistency and avoid any potential
                       overlap of Facility closure dates.
                       <br />
-                      Thank you for your attention
                     </v-card-text>
                   </v-card>
                 </v-row>
@@ -527,12 +545,12 @@ import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import ApiService from '@/common/apiService.js';
 
+//builds an array of dates to keep track of all days of the selected closure period.
+//this array is used to check if a user selects an overlapping date
 function dateFunction(date1, date2) {
   const startDate = new Date(date1);
   const endDate = new Date(date2);
-
   const dates = [];
-
   const currentDate = new Date(startDate.getTime());
 
   while (currentDate <= endDate) {
@@ -702,6 +720,8 @@ export default {
     },
     isDateLegal(obj) {
       const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+
+      if (!this.isStartEndDatesValid(obj)) return;
       obj.isIllegal = false;
 
       dates.forEach((date) => {
@@ -709,6 +729,17 @@ export default {
           obj.isIllegal = true;
         }
       });
+    },
+    isStartEndDatesValid(obj) {
+      if (obj.formattedEndDate < obj.formattedStartDate) {
+        obj.isIllegal = true;
+
+        obj.illegalMessage = 'Your end date cannot be before your start date.';
+        return false;
+      }
+      obj.illegalMessage = null;
+      obj.isIllegal = false;
+      return true;
     },
     hasIllegalDates() {
       return this.CCFRIFacilityModel?.dates?.some((el) => el.isIllegal);

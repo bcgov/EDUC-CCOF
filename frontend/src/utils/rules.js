@@ -29,8 +29,8 @@ const rules = {
   max(number) {
     return (v) => !v || v <= number || 'Max exceeded';
   },
-  min(number) {
-    return (v) => !v || v >= number || 'Min exceeded';
+  min(number, message = 'Min exceeded') {
+    return (v) => !v || v >= number || message;
   },
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';
