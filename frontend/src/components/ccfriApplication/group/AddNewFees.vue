@@ -733,8 +733,7 @@ export default {
     isStartEndDatesValid(obj) {
       if (obj.formattedEndDate < obj.formattedStartDate) {
         obj.isIllegal = true;
-
-        obj.illegalMessage = 'Your end date cannot be before your start date.';
+        obj.illegalMessage = true;
         return false;
       }
       obj.illegalMessage = null;
