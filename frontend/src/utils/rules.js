@@ -26,11 +26,11 @@ const rules = {
     return (v) => !v || v > hourFrom || 'Hours To must be after Hours From';
   },
   notRequired: [() => true],
-  max(number) {
-    return (v) => !v || v <= number || 'Max exceeded';
+  max(number, message = 'Max exceeded') {
+    return (v) => !v || v <= number || message;
   },
-  min(number) {
-    return (v) => !v || v >= number || 'Min exceeded';
+  min(number, message = 'Min exceeded') {
+    return (v) => !v || v >= number || message;
   },
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';

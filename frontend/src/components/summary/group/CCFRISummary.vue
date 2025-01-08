@@ -302,6 +302,18 @@
                     <span class="summary-label">Did parents pay for this closure?</span>
                   </v-col>
                 </v-row>
+
+                <v-text-field
+                  v-if="ccfri.dates.length === 0"
+                  placeholder="Required"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  :rules="rules.required"
+                  readonly
+                />
+
                 <v-row v-for="(obj, index) in ccfri.dates" :key="index">
                   <v-col class="col-md-3 col-12 px-0">
                     <v-text-field

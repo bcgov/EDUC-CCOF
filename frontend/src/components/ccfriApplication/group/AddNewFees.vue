@@ -329,11 +329,16 @@
                     v-model="obj.formattedStartDate"
                     :min="fiscalStartAndEndDates.startDate"
                     :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
+                    :rules="[
+                      ...rules.required,
+                      rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                    ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
-                    label="Date"
+                    label="Start Date"
                     clearable
+                    @input="isDateLegal(obj)"
                   />
                 </v-col>
 
@@ -342,10 +347,15 @@
                     v-model="obj.formattedEndDate"
                     :min="obj.formattedStartDate"
                     :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
+                    :rules="[
+                      ...rules.required,
+                      rules.min(obj.formattedStartDate, 'Must exceed start date'),
+                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                    ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
                     clearable
+                    label="End Date"
                     @input="isDateLegal(obj)"
                   />
                 </v-col>
@@ -375,11 +385,19 @@
                 </v-col>
 
                 <span class="text-white"> . </span>
-                <v-row v-if="obj.isIllegal">
+                <v-row v-if="obj.datesOverlap || obj.datesInvalid">
                   <v-card width="100%" class="mx-3 my-10">
                     <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
 
-                    <v-card-text>
+                    <v-card-text v-if="obj.datesInvalid">
+                      Closure Start Date: {{ obj.formattedStartDate }}
+                      <br />
+                      Closure End Date: {{ obj.formattedEndDate }} <br /><br />
+
+                      Please review your facility closure dates.
+                      <br />
+                    </v-card-text>
+                    <v-card-text v-else-if="obj.datesOverlap">
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
                       <br /><br />
@@ -390,7 +408,6 @@
                       Please review your existing facility closure dates to ensure consistency and avoid any potential
                       overlap of Facility closure dates.
                       <br />
-                      Thank you for your attention
                     </v-card-text>
                   </v-card>
                 </v-row>
@@ -527,12 +544,12 @@ import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import ApiService from '@/common/apiService.js';
 
+//builds an array of dates to keep track of all days of the selected closure period.
+//this array is used to check if a user selects an overlapping date
 function dateFunction(date1, date2) {
   const startDate = new Date(date1);
   const endDate = new Date(date2);
-
   const dates = [];
-
   const currentDate = new Date(startDate.getTime());
 
   while (currentDate <= endDate) {
@@ -701,17 +718,44 @@ export default {
       });
     },
     isDateLegal(obj) {
-      const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
-      obj.isIllegal = false;
+      // Get all dates from chosenDates except for the currently edited row
+      const otherChosenDates = this.CCFRIFacilityModel.dates
+        .filter((dateObj) => dateObj.id !== obj.id)
+        .reduce((acc, dateObj) => {
+          return [...acc, ...dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate)];
+        }, []);
 
+      const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+
+      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
+      //datesInvalid is true if user breaks any other date rule.
+
+      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
+      //Rules are: end date cannot be before start date
+      //start date for either field cannot be before the start of fiscal year
+      //end dates for either field cannot be after end of fiscal year
+
+      if (
+        obj.formattedEndDate < obj.formattedStartDate ||
+        obj.formattedStartDate < this.fiscalStartAndEndDates.startDate ||
+        obj.formattedEndDate < this.fiscalStartAndEndDates.startDate ||
+        obj.formattedStartDate > this.fiscalStartAndEndDates.endDate ||
+        obj.formattedEndDate > this.fiscalStartAndEndDates.endDate
+      ) {
+        obj.datesInvalid = true;
+        return;
+      }
+
+      obj.datesOverlap = false;
+      obj.datesInvalid = false;
       dates.forEach((date) => {
-        if (this.chosenDates.includes(date)) {
-          obj.isIllegal = true;
+        if (otherChosenDates.includes(date)) {
+          obj.datesOverlap = true;
         }
       });
     },
     hasIllegalDates() {
-      return this.CCFRIFacilityModel?.dates?.some((el) => el.isIllegal);
+      return this.CCFRIFacilityModel?.dates?.some((el) => el.datesOverlap || el.datesInvalid);
     },
     hasDataToDelete() {
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
