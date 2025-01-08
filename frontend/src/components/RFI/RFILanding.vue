@@ -69,7 +69,7 @@
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
-            <div v-if="model?.exceptionalCircumstances == 1">
+            <div v-if="model?.exceptionalCircumstances === 1">
               <label for="circumstanceOccurWithin6Month" class="span-label font-large"
                 >Does the exceptional circumstance occur within 6 months of the fee increase?</label
               >
@@ -82,14 +82,18 @@
                 :rules="rules.required"
                 inline
               >
-                <v-radio label="Yes" :value="1" />
+                <v-radio
+                  label="Yes"
+                  :value="1"
+                  @click="addObjToList(expenseObj, model.expenseList, model.expenseList.length > 0)"
+                />
                 <v-radio label="No" :value="0" />
               </v-radio-group>
             </div>
           </div>
         </div>
 
-        <div v-if="model?.exceptionalCircumstances == 1 && model.circumstanceOccurWithin6Month == 1">
+        <div v-if="model?.exceptionalCircumstances === 1 && model.circumstanceOccurWithin6Month === 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
@@ -235,7 +239,11 @@
                 :rules="rules.required"
                 inline
               >
-                <v-radio label="Yes" :value="1" />
+                <v-radio
+                  label="Yes"
+                  :value="1"
+                  @click="addObjToList(fundingObj, model.fundingList, model.fundingList.length > 0)"
+                />
                 <v-radio label="No" :value="0" />
               </v-radio-group>
 
@@ -409,12 +417,16 @@
               required
               inline
             >
-              <v-radio label="Yes" :value="1" />
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="addObjToList(wageObj, model.wageList, model.wageList.length > 0)"
+              />
               <v-radio label="No" :value="0" />
             </v-radio-group>
 
-            <div v-if="model?.feeIncreaseDueToWage == 1">
-              <div v-if="languageYearLabel == programYearTypes.HISTORICAL">
+            <div v-if="model?.feeIncreaseDueToWage === 1">
+              <div v-if="languageYearLabel === programYearTypes.HISTORICAL">
                 <br />
                 <label for="increaseInWriting" class="span-label font-large"
                   >Was the wage increase committed to (in writing) before the January 2022 release of the Funding
@@ -494,7 +506,7 @@
           </div>
         </div>
 
-        <div v-if="model.feeIncreaseDueToWage == 1">
+        <div v-if="model.feeIncreaseDueToWage === 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Direct Care staff Wages Increases</p>
@@ -767,21 +779,25 @@
               available for all enrolled children?</label
             >
             <v-radio-group
+              id="feeIncreaseExtendedHours"
               v-model="model.feeIncreaseExtendedHours"
               class="radio-label"
               :disabled="isReadOnly"
               required
               inline
-              id="feeIncreaseExtendedHours"
             >
-              <v-radio label="Yes" :value="1" />
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="addObjToList(expansionObj, model.expansionList, model.expansionList.length > 0)"
+              />
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <br />
           </div>
         </div>
 
-        <div v-if="model.feeIncreaseExtendedHours == 1">
+        <div v-if="model.feeIncreaseExtendedHours === 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Service Expansion Details</p>
@@ -979,7 +995,17 @@
               inline
             >
               <br />
-              <v-radio label="Yes" :value="1" />
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="
+                  addObjToList(
+                    indigenousExpenseObj,
+                    model.indigenousExpenseList,
+                    model.indigenousExpenseList.length > 0,
+                  )
+                "
+              />
               <v-radio label="No" :value="0" />
             </v-radio-group>
             <p>
@@ -1000,7 +1026,7 @@
           <br />
         </div>
 
-        <div v-if="model.IndigenousConnection == 1">
+        <div v-if="model.IndigenousConnection === 1">
           <div class="pa-0">
             <div class="pa-2 pa-md-4 ma-0">
               <p class="text-h5 text--primary px-5 py-0 my-0">Expense Information</p>
@@ -1176,7 +1202,7 @@
             </v-radio-group>
             <br />
 
-            <div v-if="model.underservedPop == 1">
+            <div v-if="model.underservedPop === 1">
               <br />
               <div class="pa-0">
                 <div class="pa-2 pa-md-4 ma-0">
@@ -1381,7 +1407,7 @@ export default {
     ...mapState(useRfiAppStore, ['rfiModel', 'loadedModel']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     currentFacility() {
-      return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
+      return this.navBarList.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     fundingUrl() {
       return this.getFundingUrl(this.programYearId);
@@ -1410,27 +1436,27 @@ export default {
     isFormComplete() {
       let done = true;
       if (
-        this.model.exceptionalCircumstances == 1 &&
-        this.model.circumstanceOccurWithin6Month == 1 &&
-        this.model.expenseList.length == 0
+        this.model.exceptionalCircumstances === 1 &&
+        this.model.circumstanceOccurWithin6Month === 1 &&
+        this.model.expenseList.length === 0
       ) {
         done = false;
       }
       if (
         this.model.q3 === 1 &&
-        this.model.exceptionalCircumstances == 1 &&
-        this.model.circumstanceOccurWithin6Month == 1 &&
-        this.model.fundingList.length == 0
+        this.model.exceptionalCircumstances === 1 &&
+        this.model.circumstanceOccurWithin6Month === 1 &&
+        this.model.fundingList.length === 0
       ) {
         done = false;
       }
-      if (this.model.feeIncreaseDueToWage == 1 && this.model.wageList.length == 0) {
+      if (this.model.feeIncreaseDueToWage === 1 && this.model.wageList.length === 0) {
         done = false;
       }
-      if (this.model.feeIncreaseExtendedHours == 1 && this.model.expansionList.length == 0) {
+      if (this.model.feeIncreaseExtendedHours === 1 && this.model.expansionList.length === 0) {
         done = false;
       }
-      if (this.model.IndigenousConnection == 1 && this.model.indigenousExpenseList.length == 0) {
+      if (this.model.IndigenousConnection === 1 && this.model.indigenousExpenseList.length === 0) {
         done = false;
       }
       return this.isValidForm && done; //false makes button clickable, true disables button
@@ -1520,12 +1546,17 @@ export default {
       }
       this.processing = false;
     },
-    addObjToList(obj, list) {
+    addObjToList(obj, list, arrayHasItems = false) {
+      //when opening table for the first time, add a row so it always populates with one.
+      //check below so if user hits the radio button multiple times, it won't keep adding rows
+      if (arrayHasItems) {
+        return;
+      }
       const newObj = { ...obj, id: uuid.v1() };
       list.push(newObj);
     },
     removeObjFromList(index, list) {
-      if (index == -1) {
+      if (index === -1) {
         return;
       }
       list.splice(index, 1);
