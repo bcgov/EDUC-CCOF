@@ -337,7 +337,7 @@
                     :hide-details="isReadOnly"
                     label="Start Date"
                     clearable
-                    @input="isStartEndDatesValid(obj)"
+                    @input="isDateLegal(obj)"
                   />
                 </v-col>
 
@@ -388,7 +388,7 @@
                   <v-card width="100%" class="mx-3 my-10">
                     <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
 
-                    <v-card-text v-if="obj.illegalMessage">
+                    <v-card-text v-if="obj.illegalStartEndDate">
                       Your end date cannot be before your start date.
                       <br /><br />
                       Closure Start Date: {{ obj.formattedStartDate }}
@@ -719,26 +719,24 @@ export default {
       });
     },
     isDateLegal(obj) {
+      //isIllegal flag is true if the selected dates are part of an overlap of other dates.
+      //illegalStartEndDate is true if user types an end date that is before the start date
       const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
 
-      if (!this.isStartEndDatesValid(obj)) return;
+      if (obj.formattedEndDate < obj.formattedStartDate) {
+        obj.isIllegal = true;
+        obj.illegalStartEndDate = true;
+        return;
+      }
+
       obj.isIllegal = false;
+      obj.illegalStartEndDate = false;
 
       dates.forEach((date) => {
         if (this.chosenDates.includes(date)) {
           obj.isIllegal = true;
         }
       });
-    },
-    isStartEndDatesValid(obj) {
-      if (obj.formattedEndDate < obj.formattedStartDate) {
-        obj.isIllegal = true;
-        obj.illegalMessage = true;
-        return false;
-      }
-      obj.illegalMessage = null;
-      obj.isIllegal = false;
-      return true;
     },
     hasIllegalDates() {
       return this.CCFRIFacilityModel?.dates?.some((el) => el.isIllegal);
