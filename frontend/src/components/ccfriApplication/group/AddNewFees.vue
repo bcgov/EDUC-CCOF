@@ -332,6 +332,7 @@
                     :rules="[
                       ...rules.required,
                       rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                     ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
@@ -349,7 +350,7 @@
                     :rules="[
                       ...rules.required,
                       rules.min(obj.formattedStartDate, 'Must exceed start date'),
-                      rules.max(fiscalStartAndEndDates.endDate),
+                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                     ]"
                     :disabled="isReadOnly"
                     :hide-details="isReadOnly"
@@ -384,13 +385,11 @@
                 </v-col>
 
                 <span class="text-white"> . </span>
-                <v-row v-if="obj.isIllegal">
+                <v-row v-if="obj.datesOverlap || obj.datesInvalid">
                   <v-card width="100%" class="mx-3 my-10">
                     <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
 
-                    <v-card-text v-if="obj.illegalStartEndDate">
-                      Your end date cannot be before your start date.
-                      <br /><br />
+                    <v-card-text v-if="obj.datesInvalid">
                       Closure Start Date: {{ obj.formattedStartDate }}
                       <br />
                       Closure End Date: {{ obj.formattedEndDate }} <br /><br />
@@ -398,7 +397,7 @@
                       Please review your existing facility closure dates.
                       <br />
                     </v-card-text>
-                    <v-card-text v-else>
+                    <v-card-text v-else-if="obj.datesOverlap">
                       It appears that the closure start and end dates you've selected for this facility overlap with
                       dates you've previously selected.
                       <br /><br />
@@ -719,27 +718,43 @@ export default {
       });
     },
     isDateLegal(obj) {
-      //isIllegal flag is true if the selected dates are part of an overlap of other dates.
-      //illegalStartEndDate is true if user types an end date that is before the start date
+      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
+      //datesInvalid is true if user types an end date that is before the start date
       const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
 
       if (obj.formattedEndDate < obj.formattedStartDate) {
-        obj.isIllegal = true;
-        obj.illegalStartEndDate = true;
+        //end date cannot be before start date
+        obj.datesInvalid = true;
+        return;
+      }
+      if (obj.formattedStartDate < this.fiscalStartAndEndDates.startDate) {
+        //start date cannot be before the start of fiscal year
+        console.log('Must exceed fiscal year start date');
+        obj.datesInvalid = true;
         return;
       }
 
-      obj.isIllegal = false;
-      obj.illegalStartEndDate = false;
+      if (
+        obj.formattedStartDate > this.fiscalStartAndEndDates.endDate ||
+        obj.formattedEndDate > this.fiscalStartAndEndDates.endDate
+      ) {
+        //end dates cannot be after end of fiscal term
+        console.log('Must be earlier');
+        obj.datesInvalid = true;
+        return;
+      }
+
+      obj.datesOverlap = false;
+      obj.datesInvalid = false;
 
       dates.forEach((date) => {
         if (this.chosenDates.includes(date)) {
-          obj.isIllegal = true;
+          obj.datesOverlap = true;
         }
       });
     },
     hasIllegalDates() {
-      return this.CCFRIFacilityModel?.dates?.some((el) => el.isIllegal);
+      return this.CCFRIFacilityModel?.dates?.some((el) => el.datesOverlap || el.datesInvalid);
     },
     hasDataToDelete() {
       //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
