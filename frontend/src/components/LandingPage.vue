@@ -259,13 +259,15 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row no-gutters justify="space-around">
+      <v-row no-gutters class="justify-space-around">
         <v-col
           v-for="facility in filteredFacilityListForFacilityCards"
-          :key="facility?.facilityId"
-          class="col-12 col-xl-6 pa-4 flex d-flex flex-column"
+          :key="facility.facilityId"
+          class="pa-2"
+          cols="12"
+          md="6"
         >
-          <v-card class="elevation-4 pa-2 rounded-lg blueBorder flex d-flex flex-column" min-height="230">
+          <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
             <v-card-text>
               <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
                 Facility ID: {{ facility?.facilityAccountNumber }}

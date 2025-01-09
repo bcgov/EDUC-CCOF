@@ -1,4 +1,3 @@
-
 //TODO: this really should be a lookup in dynamics
 const CHILD_AGE_CATEGORY_TYPES = new Map();
 CHILD_AGE_CATEGORY_TYPES.set('0-18', '0 to 18 months');
@@ -16,21 +15,17 @@ CHILD_AGE_CATEGORY_ORDER.set('OOSC-K', 4);
 CHILD_AGE_CATEGORY_ORDER.set('OOSC-G', 5);
 CHILD_AGE_CATEGORY_ORDER.set('PRE', 6);
 
-
-
-
 //Jen changed these string values ^^ for the lookup mapping to work -- now they match EXACTLY what comes back from the Dynamics API
 
 const ACCOUNT_TYPE = Object.freeze({
   FACILITY: 100000001,
-  ORGANIZATION: 100000000
+  ORGANIZATION: 100000000,
 });
-
 
 const CCOF_APPLICATION_TYPES = Object.freeze({
   NEW: 100000000,
   FACILITY: 100000001,
-  RENEW: 100000002
+  RENEW: 100000002,
 });
 
 const CHANGE_REQUEST_STATUS_CODES = Object.freeze({
@@ -40,7 +35,7 @@ const CHANGE_REQUEST_STATUS_CODES = Object.freeze({
   WITH_PROVIDER: 5,
   INELIGIBLE: 6,
   APPROVED: 7,
-  CANCELLED: 8
+  CANCELLED: 8,
 });
 
 const APPLICATION_STATUS_CODES = Object.freeze({
@@ -50,24 +45,24 @@ const APPLICATION_STATUS_CODES = Object.freeze({
   WITHDRAWN: 4,
   // Additional status codes not from Dynamics
   APPROVED: 10,
-  ACTION_REQUIRED: 11
+  'ACTION REQUIRED': 11,
 });
 
 const CHANGE_REQUEST_EXTERNAL_STATUS_CODES = Object.freeze({
   INCOMPLETE: 1,
   SUBMITTED: 2,
-  ACTION_REQUIRED: 3,
+  'ACTION REQUIRED': 3,
   INELIGIBLE: 4,
   APPROVED: 5,
-  CANCELLED: 6
+  CANCELLED: 6,
 });
 
 const CCOF_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
-  ACTION_REQUIRED: 2,
+  'ACTION REQUIRED': 2,
   ACTIVE: 3,
   INACTIVE: 4,
-  CANCELLED: 5
+  CANCELLED: 5,
 });
 
 const ORGANIZATION_PROVIDER_TYPES = Object.freeze({
@@ -75,10 +70,9 @@ const ORGANIZATION_PROVIDER_TYPES = Object.freeze({
   FAMILY: 100000001,
 });
 
-
 const OPTIN_STATUS_CODES = Object.freeze({
   OUT: 0,
-  IN:  1,
+  IN: 1,
 });
 
 const CCFRI_STATUS_CODES = Object.freeze({
@@ -87,43 +81,42 @@ const CCFRI_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
   NOT_APPROVED: 4,
   INELIGIBLE: 5,
-  ACTION_REQUIRED: 6,
+  'ACTION REQUIRED': 6,
   'Opt-Out': 7,
-  'New': 8,
+  NEW: 8,
   'MTFI Requested': 9,
   'MTFI Approved': 10,
   'MTFI Action Required': 13,
 });
 
 const ECEWE_STATUS_CODES = Object.freeze({
+  SUBMITTED: 1,
   APPROVED: 3,
   DRAFT: 2,
-  SUBMITTED: 1,
-  NOT_APPROVED: 4,
-  INELIGIBLE: 5,
-  ACTION_REQUIRED: 6
+  INELIGIBLE: 4,
+  'ACTION REQUIRED': 5,
+  'Opt-Out': 6,
+  NEW: 7,
 });
 
 const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
-  CURRENT:	1,
-  INACTIVE:	2,
-  FUTURE:	3,
-  HISTORICAL:	4,
+  CURRENT: 1,
+  INACTIVE: 2,
+  FUTURE: 3,
+  HISTORICAL: 4,
 });
 
-
-
 const FACILITY_AGE_GROUP_CODES = Object.freeze({
-  '1': '0 to 18 months',
-  '2': '18 to 36 months',
-  '3': '3 Years to Kindergarten',
-  '4': 'Out of School Care - Kindergarten',
-  '5': 'Out of School Care - Grade 1+' ,
-  '6': 'Preschool'
+  1: '0 to 18 months',
+  2: '18 to 36 months',
+  3: '3 Years to Kindergarten',
+  4: 'Out of School Care - Kindergarten',
+  5: 'Out of School Care - Grade 1+',
+  6: 'Preschool',
 });
 
 const CHANGE_REQUEST_TYPES = Object.freeze({
-  LEGAL_ORG_NAME_CHANGE: 100000000 ,
+  LEGAL_ORG_NAME_CHANGE: 100000000,
   ORG_MAILING_ADDRESS: 100000001,
   FACILITY_ADDRESS: 100000002,
   FACILITY_NAME: 100000003,
@@ -155,6 +148,5 @@ module.exports = {
   CHILD_AGE_CATEGORY_ORDER,
   CHANGE_REQUEST_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS_CODES,
-  CHANGE_REQUEST_STATUS_CODES
+  CHANGE_REQUEST_STATUS_CODES,
 };
-
