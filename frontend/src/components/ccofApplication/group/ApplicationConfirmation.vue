@@ -40,24 +40,19 @@
           <v-row justify="center"> Do you want to add another facility? </v-row>
 
           <v-row justify="center">
-            <v-btn
-              color="primary"
-              variant="outlined"
-              size="x-large"
-              style="margin: 2em"
-              :disabled="isLocked"
-              @click="addAnotherFacility()"
-            >
-              Yes
-            </v-btn>
-            <v-btn color="secondary" variant="outlined" size="x-large" style="margin: 2em" @click="next()"> No </v-btn>
+            <v-col cols="auto">
+              <AppButton :primary="true" @click="addAnotherFacility()"> Yes </AppButton>
+            </v-col>
+            <v-col cols="auto">
+              <AppButton :primary="true" @click="next()"> No </AppButton>
+            </v-col>
           </v-row>
         </v-container>
       </v-card>
     </v-row>
 
     <v-row justify="space-around">
-      <v-btn color="info" variant="outlined" required size="x-large" @click="previous()"> Back </v-btn>
+      <AppButton :primary="true" @click="previous()"> Back </AppButton>
     </v-row>
 
     <v-dialog v-model="dialog" persistent max-width="525px">
@@ -100,8 +95,12 @@ import { useReportChangesStore } from '../../../store/reportChanges.js';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
 
 import alertMixin from '../../../mixins/alertMixin.js';
+import AppButton from '../../guiComponents/AppButton.vue';
 
 export default {
+  components: {
+    AppButton,
+  },
   mixins: [alertMixin],
   data() {
     return {
