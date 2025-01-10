@@ -41,7 +41,7 @@
 
           <v-row justify="center">
             <v-col cols="auto">
-              <AppButton :primary="true" @click="addAnotherFacility()"> Yes </AppButton>
+              <AppButton :primary="true" :disabled="isLocked" @click="addAnotherFacility()"> Yes </AppButton>
             </v-col>
             <v-col cols="auto">
               <AppButton :primary="true" @click="next()"> No </AppButton>
