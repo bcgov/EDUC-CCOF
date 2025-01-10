@@ -51,8 +51,6 @@
           <p>You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
           <br />
           <br />
-
-          <!-- <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
 

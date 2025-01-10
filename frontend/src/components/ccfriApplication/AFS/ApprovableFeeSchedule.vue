@@ -168,7 +168,7 @@ export default {
     filteredUploadedDocuments() {
       if (this.isChangeRequest) {
         console.log(this.changeRequestDocs);
-        return this.changeRequestDocs;
+        return this.changeRequestDocs.filter((document) => document.notetext === this.currentFacility?.facilityId);
       } else {
         return this.applicationUploadedDocuments?.filter(
           (document) =>
@@ -233,7 +233,9 @@ export default {
       this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
 
       this.changeRequestDocs.forEach((document) => {
+        document.annotationId = document.annotationid;
         document.fileName = document.filename;
+        document.description = document.subject;
       });
       this.processing = false;
     },
@@ -289,7 +291,8 @@ export default {
         payload.forEach((document) => {
           console.log(document);
           document.ccof_change_action_id = this.changeActionId;
-          document.ccof_facility = this.currentFacility?.facilityId;
+          document.subject = document.description;
+          document.notetext = this.currentFacility?.facilityId;
           delete document.file;
           //delete
         });
@@ -304,6 +307,20 @@ export default {
       }
     },
     updateUploadedDocumentsToDelete(annotationId) {
+      if (this.isChangeRequest) {
+        //console.log(this.changeRequestDocs);
+        console.log(annotationId);
+        //return this.changeRequestDocs;
+
+        const index = this.changeRequestDocs?.findIndex((item) => item.annotationId === annotationId);
+        console.log(index);
+        if (index > -1) {
+          this.changeRequestDocs?.splice(index, 1);
+        }
+        this.uploadedDocumentsToDelete?.push(annotationId);
+        return;
+      }
+
       const index = this.applicationUploadedDocuments?.findIndex((item) => item.annotationId === annotationId);
       if (index > -1) {
         this.applicationUploadedDocuments?.splice(index, 1);

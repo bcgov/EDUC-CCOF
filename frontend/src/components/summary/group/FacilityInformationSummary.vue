@@ -22,7 +22,7 @@
           <div class="summary-label">Facility ID</div>
           <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
           <v-text-field
-            placeholder="--"
+            label="--"
             :model-value="facilityInfo?.facilityAccountNumber"
             class="summary-value"
             density="compact"
