@@ -590,8 +590,24 @@
                 for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for
                 4 days or fewer per week.
               </p>
-              <v-btn dark color="secondary" class="mr-10" @click="closeDialog()"> Back </v-btn>
-              <v-btn dark color="primary" @click="toRfi()"> Continue </v-btn>
+              <v-row justify="center" class="pb-4">
+                <v-col cols="auto" class="pb-3">
+                  <AppButton
+                    :primary="false"
+                    required
+                    size="large"
+                    style="width: 120px; height: 48px"
+                    @click="closeDialog()"
+                  >
+                    Back
+                  </AppButton>
+                </v-col>
+                <v-col cols="auto" class="pb-3">
+                  <AppButton :primary="true" required size="large" style="width: 120px; height: 48px" @click="toRfi()">
+                    Continue
+                  </AppButton>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-container>
@@ -608,6 +624,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import {
   PATHS,
@@ -629,7 +646,7 @@ let model = {};
 
 export default {
   name: 'MTFIFees',
-  components: { NavButton, FacilityHeader },
+  components: { NavButton, AppButton, FacilityHeader },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     next();

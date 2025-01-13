@@ -93,6 +93,7 @@ export default {
 .BC-Gov-PrimaryButton:hover,
 .BC-Gov-SecondaryButton:hover {
   opacity: 0.8;
+  text-decoration: underline;
 }
 
 .BC-Gov-SecondaryButton:hover {

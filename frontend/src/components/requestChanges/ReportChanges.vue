@@ -202,10 +202,10 @@
                 </p>
               </v-row>
               <v-row class="d-flex justify-right">
-                <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">
+                <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false">
                   Cancel
-                </v-btn>
-                <v-btn dark color="primary" :loading="processing" @click="cancel()"> Continue </v-btn>
+                </AppButton>
+                <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
               </v-row>
             </v-container>
           </v-card>
@@ -241,10 +241,11 @@ import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
+import AppButton from '../guiComponents/AppButton.vue';
 
 export default {
   name: 'ReportChange',
-  components: { SmallCard, NavButton },
+  components: { SmallCard, AppButton, NavButton },
   mixins: [alertMixin],
   beforeRouteLeave(_to, _from, next) {
     next();
