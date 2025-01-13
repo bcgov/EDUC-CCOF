@@ -177,6 +177,8 @@ export default {
       'mtfiFacilities',
       'changeRequestMap',
       'changeRequestId',
+      'changeActionId',
+      'uploadedDocuments',
     ]),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
@@ -229,6 +231,8 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
     ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
+
     async loadData() {
       try {
         if (this.isApplication) {
@@ -239,9 +243,7 @@ export default {
           this.checkApprovableFeeSchedulesComplete();
         } else if (this.changeType === 'mtfi') {
           await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities);
-          //this.getApplicationUploadedDocuments(),
-          //CR documents are obtained by the change action ID - then they neeed to be filtered by facilityID
-          //not done in CMS yet
+          await this.loadChangeRequestDocs(this.changeActionId);
           this.checkMTFIApprovableFeeSchedulesComplete();
         }
       } catch (error) {
@@ -1089,6 +1091,7 @@ export default {
         const afs = this.approvableFeeSchedules?.find(
           (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
         );
+
         const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
           (document) =>
             [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
@@ -1096,32 +1099,29 @@ export default {
             ) && document.facilityId === facility.facilityId,
         );
         facility.isAFSComplete =
-          [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
+          [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
       });
       this.refreshNavBarList();
     },
     checkMTFIApprovableFeeSchedulesComplete() {
-      //JB TO DO - replace with proper code once document upload is complete in CMS.
-      //like PCF - we will set the checkbox on load by checking if doc upload / radio buttons are complete for each mtfi fac
       this.navBarList?.forEach((facility) => {
         const afs = this.approvableFeeSchedules?.find(
           (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
         );
 
-        if (afs) {
-          facility.isAFSComplete = true;
-        }
-        // const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
-        //   (document) =>
-        //     [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
-        //       document.documentType,
-        //     ) && document.facilityId === facility.facilityId,
-        // );
-        // facility.isAFSComplete =
-        //   [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
-        //   (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+        const uploadedSupportingDocuments = this.uploadedDocuments?.filter((document) =>
+          document?.notetext.includes(facility.facilityId),
+        );
+
+        console.log(uploadedSupportingDocuments, ' in navBar');
+        facility.isAFSComplete =
+          [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
+          (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+
+        console.log('is fac complete? ', facility.isAFSComplete);
       });
+
       this.refreshNavBarList();
     },
   },

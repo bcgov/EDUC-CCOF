@@ -84,6 +84,7 @@ export default {
         formName: 'AFSSummary',
         formId: this.facilityId,
       },
+      processing: false,
     };
   },
   computed: {
@@ -91,8 +92,11 @@ export default {
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
-    ...mapState(useReportChangesStore, ['changeActionId']),
+    ...mapState(useReportChangesStore, ['changeActionId', 'uploadedDocuments']),
     filteredUploadedDocuments() {
+      if (this.isChangeRequest) {
+        return this.uploadedDocuments;
+      }
       return this.applicationUploadedDocuments?.filter(
         (document) =>
           [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
@@ -112,7 +116,7 @@ export default {
   watch: {
     isLoadingComplete: {
       handler: function (val) {
-        if (val) {
+        if (val && !this.processing) {
           this.$refs.afsSummaryForm?.validate();
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
@@ -137,15 +141,13 @@ export default {
     ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
     isEmpty,
     reloadAfs() {
-      console.log(this.ccfriId);
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);
-      console.log('?', this.afs);
     },
     async getChangeDocs() {
       this.processing = true;
-      this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
+      await this.loadChangeRequestDocs(this.changeActionId);
 
-      this.changeRequestDocs.forEach((document) => {
+      this.uploadedDocuments.forEach((document) => {
         document.fileName = document.filename;
       });
       this.processing = false;

@@ -167,8 +167,9 @@ export default {
     },
     filteredUploadedDocuments() {
       if (this.isChangeRequest) {
-        console.log(this.changeRequestDocs);
-        return this.changeRequestDocs.filter((document) => document.notetext === this.currentFacility?.facilityId);
+        return this.changeRequestDocs.filter((document) =>
+          document?.notetext.includes(this.currentFacility?.facilityId),
+        );
       } else {
         return this.applicationUploadedDocuments?.filter(
           (document) =>
@@ -224,8 +225,9 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
-    ...mapActions(useNavBarStore, ['setNavBarAfsComplete']),
+    ...mapActions(useNavBarStore, ['setNavBarAfsComplete', 'refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
+    ...mapActions(useNavBarStore, [,]),
     isEmpty,
 
     async getChangeDocs() {
@@ -233,6 +235,13 @@ export default {
       this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
 
       this.changeRequestDocs.forEach((document) => {
+        if (document?.notetext.includes('SUBMITTED')) {
+          console.log('one found');
+          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED;
+        } else {
+          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS;
+        }
+
         document.annotationId = document.annotationid;
         document.fileName = document.filename;
         document.description = document.subject;
@@ -289,12 +298,10 @@ export default {
       const payload = cloneDeep(this.documentsToUpload);
       if (this.isChangeRequest) {
         payload.forEach((document) => {
-          console.log(document);
           document.ccof_change_action_id = this.changeActionId;
           document.subject = document.description;
           document.notetext = this.currentFacility?.facilityId;
           delete document.file;
-          //delete
         });
         await DocumentService.createChangeActionDocuments(payload);
       } else {
@@ -308,12 +315,7 @@ export default {
     },
     updateUploadedDocumentsToDelete(annotationId) {
       if (this.isChangeRequest) {
-        //console.log(this.changeRequestDocs);
-        console.log(annotationId);
-        //return this.changeRequestDocs;
-
         const index = this.changeRequestDocs?.findIndex((item) => item.annotationId === annotationId);
-        console.log(index);
         if (index > -1) {
           this.changeRequestDocs?.splice(index, 1);
         }

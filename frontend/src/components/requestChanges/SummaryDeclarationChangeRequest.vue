@@ -469,13 +469,12 @@ export default {
     },
     facilities() {
       if (this.summaryModel?.mtfiFacilities) {
-        console.log('booop');
         return this.summaryModel?.mtfiFacilities;
       }
       return null;
     },
     relockPayload() {
-      let relockPayload = {
+      const relockPayload = {
         unlockDeclaration: this.model.unlockDeclaration,
       };
       return relockPayload;

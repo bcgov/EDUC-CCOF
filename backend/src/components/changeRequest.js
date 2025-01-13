@@ -155,7 +155,7 @@ async function updateChangeRequest(req, res) {
 
   try {
     log.verbose('update change Request: payload', changeRequest);
-    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+    const response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
 
     //is change req complete ? (status 2 i think )
 
