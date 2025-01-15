@@ -178,38 +178,29 @@
           <p v-else class="ma-0 pa-0">View Current</p>
         </v-btn>
 
-        <v-dialog v-model="dialog" persistent max-width="525px">
-          <v-card>
-            <v-container class="pt-0">
-              <v-row>
-                <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                  <v-card-title class="text-white font-weight-bold"> Cancel a change request </v-card-title>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-              </v-row>
-              <v-row>
-                <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-              </v-row>
-              <v-row class="pa-6">
-                <p>Are you sure you want to cancel this change request?</p>
-                <p class="pt-2">
-                  [{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}] [{{
-                    cancelChangeRequestSubmissionDate
-                  }}]
-                </p>
-                <p class="pt-2">
-                  You will not be able to resume a cancelled request. They will be viewable in your change history.
-                </p>
-              </v-row>
-              <v-row class="d-flex justify-right">
-                <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false">
-                  Cancel
-                </AppButton>
-                <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-dialog>
+        <AppDialog
+          v-model="dialog"
+          persistent
+          max-width="525px"
+          :title="'Cancel a change request'"
+          @close="dialog = false"
+        >
+          <template #content>
+            <p style="margin-bottom: 16px">Are you sure you want to cancel this change request?</p>
+            <p style="margin-bottom: 16px">
+              [{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}] [{{
+                cancelChangeRequestSubmissionDate
+              }}]
+            </p>
+            <p style="margin-bottom: 16px">
+              You will not be able to resume a cancelled request. They will be viewable in your change history.
+            </p>
+          </template>
+          <template #button>
+            <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </AppButton>
+            <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
+          </template>
+        </AppDialog>
       </v-container>
     </v-form>
 
@@ -241,11 +232,12 @@ import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
-import AppButton from '../guiComponents/AppButton.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
   name: 'ReportChange',
-  components: { SmallCard, AppButton, NavButton },
+  components: { SmallCard, AppButton, AppDialog, NavButton },
   mixins: [alertMixin],
   beforeRouteLeave(_to, _from, next) {
     next();

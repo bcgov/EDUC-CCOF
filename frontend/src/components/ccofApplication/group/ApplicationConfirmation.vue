@@ -13,8 +13,8 @@
                 </router-link>
                 <v-btn
                   v-if="!isLocked && navBarList.length > 1"
-                  variant="outlined"
-                  icon
+                  variant="text"
+                  :icon="'mdi-trash-can-outline'"
                   color="red"
                   @click="
                     confirmDeleteApplication(
@@ -27,7 +27,6 @@
                     )
                   "
                 >
-                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
             </ul>
@@ -41,12 +40,12 @@
 
           <v-row justify="center" class="pb-4">
             <v-col cols="auto" class="px-3">
-              <AppButton :primary="true" required size="large" :disabled="isLocked" @click="addAnotherFacility()">
+              <AppButton :primary="true" required size="x-large" :disabled="isLocked" @click="addAnotherFacility()">
                 Yes
               </AppButton>
             </v-col>
             <v-col cols="auto" class="px-3">
-              <AppButton :primary="false" required size="large" @click="next()"> No </AppButton>
+              <AppButton :primary="false" required size="x-large" @click="next()"> No </AppButton>
             </v-col>
           </v-row>
         </v-container>
@@ -54,37 +53,35 @@
     </v-row>
 
     <v-row justify="space-around" class="pb-4">
-      <AppButton :primary="false" required size="large" @click="previous()"> Back </AppButton>
+      <AppButton :primary="false" required size="x-large" @click="previous()"> Back </AppButton>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent max-width="525px">
-      <v-card>
-        <v-container class="pt-0">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="text-white"> Delete Application </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: left">
-              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false">
-                Cancel
-              </AppButton>
-              <AppButton :primary="true" :loading="processing" @click="deleteApplication()"> Continue </AppButton>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <AppDialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+      title="Delete Application"
+      :loading="isLoading"
+      @close="dialog = false"
+    >
+      <template #content>
+        <v-row>
+          <v-col cols="12" style="text-align: left">
+            <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
+          </v-col>
+        </v-row>
+      </template>
+      <template #button>
+        <v-row justify="space-around">
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </AppButton>
+          </v-col>
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="true" :loading="processing" @click="deleteApplication()"> Continue </AppButton>
+          </v-col>
+        </v-row>
+      </template>
+    </AppDialog>
   </v-container>
 </template>
 
@@ -100,9 +97,10 @@ import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/con
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
-  components: { AppButton },
+  components: { AppButton, AppDialog },
   mixins: [alertMixin],
   data() {
     return {
