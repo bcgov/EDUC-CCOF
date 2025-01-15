@@ -38,21 +38,19 @@ export default {
 };
 </script>
 <style scoped>
+.v-dialog {
+  font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif';
+}
 .dialog-header {
   color: white;
-  font-family: 'BCSans';
 }
 .dialog-title {
   background-color: #003366;
   color: white;
   padding: 10px 30px;
-  font-family: 'BCSans';
 }
 .yellow-line {
   background-color: #ffc72c;
   padding: 2px;
-}
-.v-card-text .v-card-actions {
-  font-family: 'BCSans';
 }
 </style>
