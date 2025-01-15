@@ -782,7 +782,6 @@ export default {
       'setCCFRIFacilityModel',
       'setModel',
     ]),
-    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
     ...mapActions(useNavBarStore, ['setNavBarCCFRIComplete', 'setNavBarValue']),
 
     cancel() {

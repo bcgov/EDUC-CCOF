@@ -9,7 +9,7 @@ async function saveDocument(req, res) {
     let documents = req.body;
     for (let document of documents) {
       let documentClone = document;
-      let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId;
+      let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId ?? null;
       delete documentClone.changeRequestNewFacilityId;
       if (getFileExtension(documentClone.filename) === 'heic') {
         log.verbose(`saveDocument :: heic detected for file name ${documentClone.filename} starting conversion`);

@@ -127,7 +127,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import { AFS_STATUSES, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
@@ -152,7 +152,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getFundingUrl']),
-    ...mapState(useReportChangesStore, ['changeActionId']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useApplicationStore, [
       'applicationId',
       'formattedProgramYear',
@@ -166,23 +166,19 @@ export default {
       return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     filteredUploadedDocuments() {
+      //console.log(this.applicationUploadedDocuments);
       if (this.isChangeRequest) {
-        return this.changeRequestDocs.filter((document) =>
-          document?.notetext.includes(this.currentFacility?.facilityId),
-        );
-      } else {
-        return this.applicationUploadedDocuments?.filter(
-          (document) =>
-            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
-              document.documentType,
-            ) && document.facilityId === this.currentFacility?.facilityId,
-        );
+        return this.changeRequestDocs;
       }
+      return this.applicationUploadedDocuments?.filter(
+        (document) =>
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
+          document.facilityId === this.currentFacility?.facilityId,
+      );
     },
     isLoading() {
       return isEmpty(this.afs) || this.processing;
     },
-    // Note: CCFRI-3752 - AFS for change request is not in scope at this time.
     isReadOnly() {
       if (!this.isChangeRequest) {
         return this.isLoading || (this.isApplicationSubmitted && !this.currentFacility?.unlockAfs);
@@ -226,25 +222,23 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete', 'refreshNavBarList']),
-    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
-    ...mapActions(useNavBarStore, [,]),
+    //...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,
 
     async getChangeDocs() {
       this.processing = true;
-      this.changeRequestDocs = await this.loadChangeRequestDocs(this.changeActionId);
+      await this.getDocuments(this.applicationId);
+
+      this.changeRequestDocs = this.uploadedDocuments?.filter(
+        (document) =>
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
+          document.ccof_facility === this.currentFacility?.facilityId,
+      );
 
       this.changeRequestDocs.forEach((document) => {
-        if (document?.notetext.includes('SUBMITTED')) {
-          console.log('one found');
-          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED;
-        } else {
-          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS;
-        }
-
-        document.annotationId = document.annotationid;
         document.fileName = document.filename;
-        document.description = document.subject;
+        document.annotationId = document.annotationid;
       });
       this.processing = false;
     },
@@ -298,12 +292,15 @@ export default {
       const payload = cloneDeep(this.documentsToUpload);
       if (this.isChangeRequest) {
         payload.forEach((document) => {
-          document.ccof_change_action_id = this.changeActionId;
-          document.subject = document.description;
-          document.notetext = this.currentFacility?.facilityId;
+          document.ccof_applicationid = this.applicationId;
+          document.ccof_facility = this.currentFacility?.facilityId;
+          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS;
+          document.subject = DOCUMENT_TYPES.APPLICATION_AFS;
+          document.notetext = document.description;
           delete document.file;
         });
-        await DocumentService.createChangeActionDocuments(payload);
+
+        await this.saveUploadedDocuments(payload);
       } else {
         payload.forEach((document) => {
           document.ccof_applicationid = this.applicationId;
@@ -315,7 +312,11 @@ export default {
     },
     updateUploadedDocumentsToDelete(annotationId) {
       if (this.isChangeRequest) {
-        const index = this.changeRequestDocs?.findIndex((item) => item.annotationId === annotationId);
+        console.log(annotationId, 'from params');
+        const index = this.changeRequestDocs?.findIndex((item) => item.annotationid === annotationId);
+        console.log('indexx');
+        console.log(index);
+        console.log(annotationId);
         if (index > -1) {
           this.changeRequestDocs?.splice(index, 1);
         }

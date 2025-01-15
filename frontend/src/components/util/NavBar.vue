@@ -110,6 +110,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import {
   AFS_STATUSES,
@@ -141,6 +142,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useAppStore, ['pageTitle', 'programYearList']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
@@ -150,6 +152,7 @@ export default {
       'programYearId',
       'isLicenseUploadComplete',
       'isRenewal',
+      'applicationId',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -177,8 +180,6 @@ export default {
       'mtfiFacilities',
       'changeRequestMap',
       'changeRequestId',
-      'changeActionId',
-      'uploadedDocuments',
     ]),
     navRefresh() {
       return this.$route.name + this.$route.params.urlGuid;
@@ -231,7 +232,7 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
     ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
-    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
 
     async loadData() {
       try {
@@ -243,12 +244,12 @@ export default {
           this.checkApprovableFeeSchedulesComplete();
         } else if (this.changeType === 'mtfi') {
           await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities);
-          await this.loadChangeRequestDocs(this.changeActionId);
+          await this.getDocuments(this.applicationId);
           this.checkMTFIApprovableFeeSchedulesComplete();
         }
       } catch (error) {
         console.log(error);
-        this.setFailureAlert('An error occurred while loading. Please try again later.');
+        //this.setFailureAlert('An error occurred while loading. Please try again later.');
       }
     },
     setActive(item) {
@@ -1099,7 +1100,7 @@ export default {
             ) && document.facilityId === facility.facilityId,
         );
         facility.isAFSComplete =
-          [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
+          [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
       });
       this.refreshNavBarList();
@@ -1109,17 +1110,15 @@ export default {
         const afs = this.approvableFeeSchedules?.find(
           (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
         );
-
-        const uploadedSupportingDocuments = this.uploadedDocuments?.filter((document) =>
-          document?.notetext.includes(facility.facilityId),
+        const uploadedSupportingDocuments = this.uploadedDocuments?.filter(
+          (document) =>
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.ccof_facility === facility.facilityId,
         );
-
-        console.log(uploadedSupportingDocuments, ' in navBar');
         facility.isAFSComplete =
           [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
-
-        console.log('is fac complete? ', facility.isAFSComplete);
       });
 
       this.refreshNavBarList();

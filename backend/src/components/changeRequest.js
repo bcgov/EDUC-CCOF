@@ -12,16 +12,7 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 
 const HttpStatus = require('http-status-codes');
 
-const {
-  getLabelFromValue,
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  deleteOperationWithObjectId,
-  getChangeActionDocument,
-  postChangeActionDocument,
-  postChangeRequestSummaryDocument,
-} = require('./utils');
+const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 
 function mapChangeRequestForBack(data, changeType) {
@@ -377,7 +368,9 @@ async function deleteChangeRequestMTFI(req, res) {
 
 async function updateChangeRequestMTFI(req, res) {
   try {
-    let response = await patchOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId, req.body);
+    const payload = new MappableObjectForBack(req?.body, MtfiMappings);
+    log.info(payload);
+    await patchOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId, payload);
     return res.status(HttpStatus.OK).json();
   } catch (e) {
     log.error('error', e);

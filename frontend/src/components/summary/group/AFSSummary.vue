@@ -49,7 +49,7 @@ import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
@@ -85,17 +85,20 @@ export default {
         formId: this.facilityId,
       },
       processing: false,
+      changeRequestDocs: [],
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['applicationUploadedDocuments']),
+    ...mapState(useApplicationStore, ['applicationUploadedDocuments', 'applicationId']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
-    ...mapState(useReportChangesStore, ['changeActionId', 'uploadedDocuments']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+
     filteredUploadedDocuments() {
       if (this.isChangeRequest) {
-        return this.uploadedDocuments;
+        console.log(this.changeRequestDocs);
+        return this.changeRequestDocs;
       }
       return this.applicationUploadedDocuments?.filter(
         (document) =>
@@ -138,17 +141,24 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);
     },
     async getChangeDocs() {
       this.processing = true;
-      await this.loadChangeRequestDocs(this.changeActionId);
+      await this.getDocuments(this.applicationId);
 
-      this.uploadedDocuments.forEach((document) => {
+      this.changeRequestDocs = this.uploadedDocuments?.filter(
+        (document) =>
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
+          document.ccof_facility === this.facilityId,
+      );
+
+      this.changeRequestDocs.forEach((document) => {
         document.fileName = document.filename;
+        console.log(document);
       });
       this.processing = false;
     },

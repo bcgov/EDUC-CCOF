@@ -122,6 +122,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       const applicationStore = useApplicationStore();
       const reportChangesStore = useReportChangesStore();
 
+      console.log('why');
+      console.log(reLockPayload);
+
       let payload = {
         agreeConsentCertify: this.declarationModel?.agreeConsentCertify,
         orgContactName: this.declarationModel?.orgContactName,

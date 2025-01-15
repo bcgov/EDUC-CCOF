@@ -5,7 +5,7 @@
         <span class="text-h5">Child Care Operating Funding Program{{ pageTitle }}</span>
       </v-row>
       <v-row class="d-flex justify-center">
-        <h2>Summary and Declaration</h2>
+        <h2>Summary and Declaration change REQ</h2>
       </v-row>
       <v-row class="d-flex justify-center text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
@@ -391,6 +391,8 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
 import {
   PATHS,
@@ -398,6 +400,8 @@ import {
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  DOCUMENT_TYPES,
+  AFS_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
@@ -406,6 +410,7 @@ import RFISummary from '@/components/summary/group/RFISummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
+import DocumentService from '@/services/documentService';
 
 export default {
   components: {
@@ -436,6 +441,8 @@ export default {
     ...mapState(useNavBarStore, ['changeType', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, [
       'isSummaryLoading',
       'isMainLoading',
@@ -518,6 +525,7 @@ export default {
       'loadChangeRequestSummaryDeclaration',
       'setDeclarationModel',
     ]),
+    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
     expandAllPanels() {
       this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
@@ -533,28 +541,77 @@ export default {
       this.isProcessing = true;
       try {
         this.setDeclarationModel(this.model);
+        console.log(this.relockPayload);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
+
+        if (this.facilities?.some((fac) => fac.enableAfs)) {
+          console.log('lock the afs up');
+          await this.lockAFS();
+        }
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while submitting the change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
     },
+    async lockAFS() {
+      //TODO - update store
+      await Promise.all(
+        this.facilities.map(async (mtfiFac) => {
+          if (mtfiFac.enableAfs) {
+            const payload = {
+              changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
+              unlockAfs: false,
+              enableAfs: true,
+            };
+            const afs = this.approvableFeeSchedules?.find(
+              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
+            );
+            if (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
+              payload.enableAfs = false;
+            }
+
+            console.log('updating mtfi');
+            this.updateChangeRequestMTFI(payload);
+          }
+        }),
+      );
+
+      const afsDocuments = this.uploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+
+      console.log('this.up', this.uploadedDocuments);
+      console.log(afsDocuments);
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationid, payload);
+        }),
+      );
+    },
     previous() {
-      this.isProcessing = true;
-      if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
-        this.$router.push(
-          changeUrlGuid(
-            PATHS.CHANGE_NOTIFICATION_FORM,
-            this.$route.params?.changeRecGuid,
-            this.getChangeNotificationActionId,
-            CHANGE_TYPES.CHANGE_NOTIFICATION,
-          ),
-        );
-      } else {
-        this.$router.push(this.previousPath);
-      }
+      this.facilities.forEach((fac) => {
+        console.log(fac);
+      });
+
+      const someAfs = console.log('someAfs?', someAfs);
+      // this.isProcessing = true;
+      // if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
+      //   this.$router.push(
+      //     changeUrlGuid(
+      //       PATHS.CHANGE_NOTIFICATION_FORM,
+      //       this.$route.params?.changeRecGuid,
+      //       this.getChangeNotificationActionId,
+      //       CHANGE_TYPES.CHANGE_NOTIFICATION,
+      //     ),
+      //   );
+      // } else {
+      //   this.$router.push(this.previousPath);
+      // }
     },
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {
