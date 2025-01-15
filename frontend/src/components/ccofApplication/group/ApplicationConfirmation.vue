@@ -40,12 +40,12 @@
 
           <v-row justify="center" class="pb-4">
             <v-col cols="auto" class="px-3">
-              <AppButton :primary="true" required size="x-large" :disabled="isLocked" @click="addAnotherFacility()">
+              <AppButton :primary="true" required size="large" :disabled="isLocked" @click="addAnotherFacility()">
                 Yes
               </AppButton>
             </v-col>
             <v-col cols="auto" class="px-3">
-              <AppButton :primary="false" required size="x-large" @click="next()"> No </AppButton>
+              <AppButton :primary="false" required size="large" @click="next()"> No </AppButton>
             </v-col>
           </v-row>
         </v-container>
