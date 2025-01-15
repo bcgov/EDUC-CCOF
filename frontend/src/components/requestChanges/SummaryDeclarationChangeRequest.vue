@@ -5,7 +5,7 @@
         <span class="text-h5">Child Care Operating Funding Program{{ pageTitle }}</span>
       </v-row>
       <v-row class="d-flex justify-center">
-        <h2>Summary and Declaration change REQ</h2>
+        <h2>Summary and Declaration</h2>
       </v-row>
       <v-row class="d-flex justify-center text-h5" style="color: #003466">
         {{ userInfo.organizationName }}
@@ -101,8 +101,7 @@
                       :loading="isSummaryLoading[index]"
                       type="paragraph, text@3, paragraph, text@3, paragraph"
                     />
-                    <div v-else>
-                      {{ facility.enableAfs }}
+                    <div v-else class="mb-4">
                       <v-expansion-panel
                         v-if="facility"
                         :key="`${facility.facilityId}-facility-information`"
@@ -526,6 +525,7 @@ export default {
       'setDeclarationModel',
     ]),
     ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
+    ...mapActions(useNavBarStore, ['setNavBarValue']),
     expandAllPanels() {
       this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
@@ -541,11 +541,9 @@ export default {
       this.isProcessing = true;
       try {
         this.setDeclarationModel(this.model);
-        console.log(this.relockPayload);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
 
         if (this.facilities?.some((fac) => fac.enableAfs)) {
-          console.log('lock the afs up');
           await this.lockAFS();
         }
         this.dialog = true;
@@ -560,19 +558,21 @@ export default {
       await Promise.all(
         this.facilities.map(async (mtfiFac) => {
           if (mtfiFac.enableAfs) {
+            const afs = this.approvableFeeSchedules?.find(
+              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
+            );
             const payload = {
               changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
               unlockAfs: false,
               enableAfs: true,
+              afsStatus: afs?.afsStatus,
             };
-            const afs = this.approvableFeeSchedules?.find(
-              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
-            );
+
             if (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
               payload.enableAfs = false;
             }
-
-            console.log('updating mtfi');
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
             this.updateChangeRequestMTFI(payload);
           }
         }),
@@ -581,9 +581,6 @@ export default {
       const afsDocuments = this.uploadedDocuments?.filter(
         (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
       );
-
-      console.log('this.up', this.uploadedDocuments);
-      console.log(afsDocuments);
       await Promise.all(
         afsDocuments?.map(async (document) => {
           const payload = {
@@ -594,24 +591,19 @@ export default {
       );
     },
     previous() {
-      this.facilities.forEach((fac) => {
-        console.log(fac);
-      });
-
-      const someAfs = console.log('someAfs?', someAfs);
-      // this.isProcessing = true;
-      // if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
-      //   this.$router.push(
-      //     changeUrlGuid(
-      //       PATHS.CHANGE_NOTIFICATION_FORM,
-      //       this.$route.params?.changeRecGuid,
-      //       this.getChangeNotificationActionId,
-      //       CHANGE_TYPES.CHANGE_NOTIFICATION,
-      //     ),
-      //   );
-      // } else {
-      //   this.$router.push(this.previousPath);
-      // }
+      this.isProcessing = true;
+      if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
+        this.$router.push(
+          changeUrlGuid(
+            PATHS.CHANGE_NOTIFICATION_FORM,
+            this.$route.params?.changeRecGuid,
+            this.getChangeNotificationActionId,
+            CHANGE_TYPES.CHANGE_NOTIFICATION,
+          ),
+        );
+      } else {
+        this.$router.push(this.previousPath);
+      }
     },
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {

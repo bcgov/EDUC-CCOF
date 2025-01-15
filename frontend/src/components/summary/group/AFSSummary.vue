@@ -31,7 +31,7 @@
         </template>
 
         <div class="mt-6">
-          <router-link v-if="!isValidForm" :to="pcfLink">
+          <router-link v-if="!isValidForm" :to="afsLink">
             <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
@@ -51,7 +51,7 @@ import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid } from '@/utils/constants.js';
+import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   //JB TO DO - Add load and verifcations for AFS
@@ -112,7 +112,10 @@ export default {
         (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(this.filteredUploadedDocuments))
       );
     },
-    pcfLink() {
+    afsLink() {
+      if (this.isChangeRequest) {
+        return changeUrlGuid(PATHS.MTFI_AFS, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI);
+      }
       return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
     },
   },
