@@ -570,7 +570,7 @@
       @close="closeDialog()"
     >
       <template #content>
-        <v-col cols="12" style="text-align: center">
+        <v-col cols="12">
           <p>
             You have entered a parent fee above the {{ formattedProgramYear }} parent fee increase limit for the
             following care categories:<br /><br />

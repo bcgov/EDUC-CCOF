@@ -12,7 +12,7 @@
       @close="clicked()"
     >
       <template #content>
-        <v-col cols="12" style="text-align: center">
+        <v-col cols="12">
           <p>
             Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds. Please
             click on the "Stay logged in" button to continue with this session.

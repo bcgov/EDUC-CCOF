@@ -6,16 +6,16 @@
           <v-col cols="10" md="11">
             <h3 class="dialog-header">{{ title }}</h3>
           </v-col>
-          <v-col cols="2" md="1" align="right">
+          <v-col cols="2" md="1" align="center">
             <v-btn v-if="!loading" variant="text" icon="mdi-window-close" @click="$emit('close')" />
           </v-col>
         </v-row>
       </v-card-title>
       <div class="yellow-line"></div>
-      <v-card-text>
+      <v-card-text align="center">
         <slot name="content"></slot>
       </v-card-text>
-      <v-card-actions class="mb-4">
+      <v-card-actions align="center" class="mb-4">
         <slot name="button"></slot>
       </v-card-actions>
     </v-card>
@@ -40,14 +40,19 @@ export default {
 <style scoped>
 .dialog-header {
   color: white;
+  font-family: 'BCSans';
 }
 .dialog-title {
   background-color: #003366;
   color: white;
   padding: 10px 30px;
+  font-family: 'BCSans';
 }
 .yellow-line {
   background-color: #ffc72c;
   padding: 2px;
+}
+.v-card-text .v-card-actions {
+  font-family: 'BCSans';
 }
 </style>
