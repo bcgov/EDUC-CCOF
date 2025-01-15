@@ -249,7 +249,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        //this.setFailureAlert('An error occurred while loading. Please try again later.');
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
       }
     },
     setActive(item) {

@@ -166,7 +166,6 @@ export default {
       return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
     },
     filteredUploadedDocuments() {
-      //console.log(this.applicationUploadedDocuments);
       if (this.isChangeRequest) {
         return this.changeRequestDocs;
       }
@@ -222,7 +221,6 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete', 'refreshNavBarList']),
-    //...mapActions(useReportChangesStore, ['loadChangeRequestDocs']),
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,
 
@@ -261,7 +259,12 @@ export default {
         this.processing = true;
         const payload = {
           afsStatus: this.afs?.afsStatus,
+          afsStatusMtfi: null,
         };
+        if (this.isChangeRequest) {
+          payload.afsStatusMtfi = this.afs?.afsStatus;
+        }
+
         await Promise.all([
           this.updateApplicationCCFRI(this.$route.params.urlGuid, payload),
           this.processDocumentsToUpload(),
@@ -312,11 +315,7 @@ export default {
     },
     updateUploadedDocumentsToDelete(annotationId) {
       if (this.isChangeRequest) {
-        console.log(annotationId, 'from params');
-        const index = this.changeRequestDocs?.findIndex((item) => item.annotationid === annotationId);
-        console.log('indexx');
-        console.log(index);
-        console.log(annotationId);
+        const index = this.changeRequestDocs?.findIndex((item) => item.annotationId === annotationId);
         if (index > -1) {
           this.changeRequestDocs?.splice(index, 1);
         }

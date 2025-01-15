@@ -14,7 +14,7 @@ function parseLicenseCategories(licenseCategories) {
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];
-  let categories = lookupCategories
+  const categories = lookupCategories
     .filter((item) => uniqueLicenseCategories.includes(item.ccof_license_categoryid))
     .map((a) => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -58,7 +58,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         : false;
     },
     areCheckBoxesComplete: (state, getters) => {
-      let isComplete =
+      const isComplete =
         state.summaryModel?.application?.isEceweComplete &&
         state.summaryModel?.application?.isLicenseUploadComplete &&
         getters.isCCFRIComplete;
@@ -88,7 +88,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       const applicationStore = useApplicationStore();
       try {
-        let payload = (
+        const payload = (
           await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + applicationStore.applicationId)
         ).data;
         if (payload && applicationStore.unlockDeclaration) {
@@ -104,7 +104,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestDeclaration(changeRequestId) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
+        const payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
         //clear the old decleration data out so provider can sign again for Dec B
         if (payload.unlockDeclaration) {
           payload.agreeConsentCertify = null;
@@ -121,9 +121,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       const authStore = useAuthStore();
       const applicationStore = useApplicationStore();
       const reportChangesStore = useReportChangesStore();
-
-      console.log('why');
-      console.log(reLockPayload);
 
       let payload = {
         agreeConsentCertify: this.declarationModel?.agreeConsentCertify,
@@ -143,7 +140,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             payload.externalStatus = 2;
           }
 
-          let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+          const response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
           this.declarationModel.externalStatus = 'SUBMITTED';
           this.setDeclarationModel(this.declarationModel);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
@@ -158,7 +155,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           return response;
         } else {
           //PCF application submit
-          let response = await ApiService.apiAxios.patch(
+          const response = await ApiService.apiAxios.patch(
             ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + applicationStore.applicationId,
             payload,
           );
@@ -187,8 +184,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         this.setIsMainLoading(true);
         //get application ID from the appMap so the page doesn't break when viewing historical CR records.
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
-        let summaryModel = {
+        const payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
+        const summaryModel = {
           organization: undefined,
           application: payload.application,
           facilities: payload.facilities,
@@ -202,7 +199,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
 
-        let isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
+        const isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
 
         this.setIsSummaryLoading(isSummaryLoading);
         await Promise.all([
@@ -238,8 +235,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
           //check for opt out - no need for more calls if opt-out
           if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-            let ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId))
-              .data;
+            const ccfriResponse = (
+              await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)
+            ).data;
             facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
             facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
             facility.ccfri.dates = ccfriResponse.dates;
@@ -251,7 +249,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
               programYearList,
             );
 
-            //jb
             //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
             if (facility.ccfri.previousCcfriId) {
               facility.ccfri.prevYearCcfriApp = (
@@ -378,18 +375,18 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       const applicationStore = useApplicationStore();
 
       try {
-        let summaryModel = this.summaryModel;
-        let mtfiChangeAction = payload.changeActions?.find(
+        const summaryModel = this.summaryModel;
+        const mtfiChangeAction = payload.changeActions?.find(
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
-        let isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
+        const isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
         this.setIsSummaryLoading(isSummaryLoading);
 
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
-            let userProfileListFacility = navBarStore.userProfileList.find(
+            const userProfileListFacility = navBarStore.userProfileList.find(
               (item) => item.facilityId === mtfiFacility.facilityId,
             );
             if (userProfileListFacility) {
@@ -436,8 +433,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryForChangeNotiForm(payload) {
       const reportChangesStore = useReportChangesStore();
       try {
-        let summaryModel = this.summaryModel;
-        let changeNotiChangeAction = payload.changeActions?.find(
+        const summaryModel = this.summaryModel;
+        const changeNotiChangeAction = payload.changeActions?.find(
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,
         );
         summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(

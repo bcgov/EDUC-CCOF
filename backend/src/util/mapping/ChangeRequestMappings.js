@@ -59,7 +59,6 @@ const MtfiMappings = [
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afs_enable', front: 'enableAfs' },
   { back: 'ccof_facilityid_mapped', front: 'facilityAccountNumber' },
-  { back: 'ccof_afs_status_Mtfi', front: 'afsStatus' },
 ];
 
 const ChangeRequestUnlockMapping = [

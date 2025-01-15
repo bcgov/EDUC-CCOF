@@ -201,6 +201,7 @@ export const useNavBarStore = defineStore('navBar', {
       } else {
         userProfileItem = this.userProfileList.find((item) => item.facilityId === facilityId);
       }
+      console.log(userProfileItem);
       if (userProfileItem) {
         userProfileItem[property] = value;
         this.filterNavBar();

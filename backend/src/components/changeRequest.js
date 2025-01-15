@@ -265,7 +265,6 @@ async function createChangeRequestFacility(req, res) {
       facilityGuid +
       ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode),ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
     let payload = await getOperation(operation);
-    console.log(payload);
     let changeRequestNewFacilityId = undefined;
     let ccofBaseFundingId = undefined;
     let ccofBaseFundingStatus = undefined;

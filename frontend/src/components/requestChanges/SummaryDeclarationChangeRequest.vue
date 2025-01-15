@@ -554,7 +554,6 @@ export default {
       }
     },
     async lockAFS() {
-      //TODO - update store
       await Promise.all(
         this.facilities.map(async (mtfiFac) => {
           if (mtfiFac.enableAfs) {

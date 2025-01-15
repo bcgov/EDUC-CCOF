@@ -97,7 +97,6 @@ export default {
 
     filteredUploadedDocuments() {
       if (this.isChangeRequest) {
-        console.log(this.changeRequestDocs);
         return this.changeRequestDocs;
       }
       return this.applicationUploadedDocuments?.filter(
@@ -161,7 +160,6 @@ export default {
 
       this.changeRequestDocs.forEach((document) => {
         document.fileName = document.filename;
-        console.log(document);
       });
       this.processing = false;
     },
