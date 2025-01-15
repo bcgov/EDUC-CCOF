@@ -197,8 +197,12 @@
             </p>
           </template>
           <template #button>
-            <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </AppButton>
-            <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
+            <v-col cols="12" class="d-flex justify-center">
+              <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false">
+                Cancel
+              </AppButton>
+              <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
+            </v-col>
           </template>
         </AppDialog>
       </v-container>

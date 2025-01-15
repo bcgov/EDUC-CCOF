@@ -39,7 +39,7 @@ export default {
 </script>
 <style scoped>
 .v-dialog {
-  font-family: 'BCSans', 'Noto Sans', 'Verdana', 'Arial', 'sans-serif';
+  font-family: 'BCSans', 'Noto Sans', Verdana, Arial, sans-serif;
 }
 .dialog-header {
   color: white;
