@@ -9,6 +9,7 @@ async function saveDocument(req, res) {
     let documents = req.body;
     for (let document of documents) {
       let documentClone = document;
+      //ccfri-3755 saved document can now be for MTFI AFS - so it may not have a NewFacilityId
       let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId ?? null;
       delete documentClone.changeRequestNewFacilityId;
       if (getFileExtension(documentClone.filename) === 'heic') {

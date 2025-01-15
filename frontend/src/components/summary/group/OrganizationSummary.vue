@@ -248,7 +248,7 @@
               <div class="summary-label">Province</div>
               <v-text-field
                 class="summary-value"
-                :model-value="summaryModel?.organization?.province22 || 'BC'"
+                :model-value="summaryModel?.organization?.province2"
                 :rules="rules.required"
                 density="compact"
                 flat

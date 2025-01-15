@@ -870,7 +870,7 @@ export default {
                 params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
               },
               isAccessible: true,
-              icon: this.getCheckbox(item.isAFSComplete), //different logic for CR
+              icon: this.getCheckbox(item.isAFSComplete),
               isActive: 'mtfi-afs' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
               position: positionIndex++,
               navBarId: navBarId++,

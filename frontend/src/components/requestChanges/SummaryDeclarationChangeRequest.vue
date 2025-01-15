@@ -563,13 +563,9 @@ export default {
             const payload = {
               changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
               unlockAfs: false,
-              enableAfs: true,
+              enableAfs: afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS ? false : true,
               afsStatus: afs?.afsStatus,
             };
-
-            if (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
-              payload.enableAfs = false;
-            }
             this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
             this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
             this.updateChangeRequestMTFI(payload);

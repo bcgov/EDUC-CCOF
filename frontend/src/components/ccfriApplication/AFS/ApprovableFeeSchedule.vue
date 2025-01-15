@@ -297,7 +297,6 @@ export default {
         payload.forEach((document) => {
           document.ccof_applicationid = this.applicationId;
           document.ccof_facility = this.currentFacility?.facilityId;
-          document.documentType = DOCUMENT_TYPES.APPLICATION_AFS;
           document.subject = DOCUMENT_TYPES.APPLICATION_AFS;
           document.notetext = document.description;
           delete document.file;

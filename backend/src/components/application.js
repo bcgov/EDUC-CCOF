@@ -58,7 +58,6 @@ async function renewCCOFApplication(req, res) {
 
 async function patchCCFRIApplication(req, res) {
   try {
-    log.info('in patch');
     const payload = new MappableObjectForBack(req.body, CCFRIFacilityMappings).toJSON();
     const response = await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, payload);
     return res.status(HttpStatus.OK).json(response);
@@ -80,7 +79,6 @@ async function deleteCCFRIApplication(req, res) {
 
 //creates or updates CCFRI application.
 async function updateCCFRIApplication(req, res) {
-  log.info('in update');
   const body = req.body;
   const retVal = [];
   try {
