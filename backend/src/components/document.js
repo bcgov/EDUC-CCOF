@@ -32,7 +32,6 @@ async function createChangeActionDocuments(req, res) {
   try {
     const documents = req.body;
     for (const document of documents) {
-      console.log(document);
       let documentClone = cloneDeep(document);
       if (getFileExtension(documentClone.filename) === 'heic') {
         log.verbose(`createChangeActionDocuments :: heic detected for file name ${documentClone.filename} starting conversion`);
