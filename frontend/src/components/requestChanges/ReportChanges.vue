@@ -187,11 +187,7 @@
         >
           <template #content>
             <p style="margin-bottom: 16px">Are you sure you want to cancel this change request?</p>
-            <p style="margin-bottom: 16px">
-              [{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}] [{{
-                cancelChangeRequestSubmissionDate
-              }}]
-            </p>
+            <p style="margin-bottom: 16px">[{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}]</p>
             <p style="margin-bottom: 16px">
               You will not be able to resume a cancelled request. They will be viewable in your change history.
             </p>
