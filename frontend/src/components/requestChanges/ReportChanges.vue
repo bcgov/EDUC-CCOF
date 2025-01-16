@@ -241,12 +241,10 @@ import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
   name: 'ReportChange',
-  components: { SmallCard, AppButton, AppDialog, NavButton },
+  components: { SmallCard, NavButton },
   mixins: [alertMixin],
   beforeRouteLeave(_to, _from, next) {
     next();
