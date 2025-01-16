@@ -3,32 +3,32 @@
     <div style="display: none">
       <a id="logout_href" :href="routes.SESSION_EXPIRED" />
     </div>
-    <v-dialog v-model="dialog" persistent max-width="525px">
-      <v-card>
-        <v-container class="pt-0 px-0 pb-2">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-2" style="background-color: #234075">
-              <v-card-title class="text-white"> Session Time-out </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <p class="pt-0 px-2">
-                Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds. Please
-                click on the "Stay logged in" button to continue with this session.
-              </p>
-              <p>
-                <v-btn color="primary" @click="clicked()"> Stay logged in </v-btn>
-              </p>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <AppDialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+      title="Session Time-out"
+      :loading="false"
+      @close="clicked()"
+    >
+      <template #content>
+        <v-col cols="12">
+          <p>
+            Due to inactivity, you will be logged out of your current session in {{ logoutCounter }} seconds. Please
+            click on the "Stay logged in" button to continue with this session.
+          </p>
+        </v-col>
+      </template>
+      <template #button>
+        <v-row justify="space-around">
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <p>
+              <AppButton :primary="true" @click="clicked()"> Stay logged in </AppButton>
+            </p>
+          </v-col>
+        </v-row>
+      </template>
+    </AppDialog>
   </v-container>
 </template>
 
@@ -39,6 +39,8 @@ import { useAppStore } from '@/store/app.js';
 
 import { AuthRoutes } from '@/utils/constants.js';
 import ApiService from '@/common/apiService.js';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 
 function getTokenExpiredTime(jwtToken) {
   const now = Date.now().valueOf();
@@ -51,6 +53,7 @@ function getTokenExpiredTime(jwtToken) {
 }
 
 export default {
+  components: { AppButton, AppDialog },
   data() {
     return {
       routes: AuthRoutes,

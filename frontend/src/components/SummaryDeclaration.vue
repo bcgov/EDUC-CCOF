@@ -454,32 +454,24 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog v-model="dialog" persistent max-width="525px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Submission Complete </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  Your submission has been received. Please refer to your dashboard for updates on the progress of your
-                  application. We will contact you if more information is required.
-                </p>
-                <p>
-                  <router-link :to="landingPage"> Return to your dashboard </router-link>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="dialog"
+        persistent
+        max-width="525px"
+        title="Submission Complete"
+        :loading="false"
+        @close="dialog = false"
+      >
+        <template #content>
+          <p>
+            Your submission has been received. Please refer to your dashboard for updates on the progress of your
+            application. We will contact you if more information is required.
+          </p>
+          <p>
+            <router-link :to="landingPage"> Return to your dashboard </router-link>
+          </p>
+        </template>
+      </AppDialog>
     </v-form>
   </v-container>
 </template>
@@ -495,6 +487,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import DocumentService from '@/services/documentService';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 import {
   AFS_STATUSES,
@@ -521,6 +514,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 
 export default {
   components: {
+    AppDialog,
     OrganizationSummary,
     UploadedDocumentsSummary,
     NMFSummary,
