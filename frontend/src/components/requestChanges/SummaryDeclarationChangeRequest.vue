@@ -560,15 +560,18 @@ export default {
             const afs = this.approvableFeeSchedules?.find(
               (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
             );
+
+            console.log(afs.afsStatus);
+            console.log(afs?.afsStatus === AFS_STATUSES.ACCEPT);
             const payload = {
               changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
               unlockAfs: false,
-              enableAfs: afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS ? false : true,
+              enableAfs: afs?.afsStatus === AFS_STATUSES.ACCEPT,
               afsStatus: afs?.afsStatus,
             };
             this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
             this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
-            this.updateChangeRequestMTFI(payload);
+            await this.updateChangeRequestMTFI(payload);
           }
         }),
       );

@@ -54,8 +54,6 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
-  //JB TO DO - Add load and verifcations for AFS
-  //
   name: 'AFSSummary',
   components: {
     AfsDecisionCard,
