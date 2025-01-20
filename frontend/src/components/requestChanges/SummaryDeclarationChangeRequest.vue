@@ -234,7 +234,7 @@
                     Educators (ECEs); and</v-col
                   >
                 </v-row>
-                <v-row dense>
+                <v-row>
                   <v-col cols="1" />
                   <v-col cols="10">
                     ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
