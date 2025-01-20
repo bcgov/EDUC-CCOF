@@ -382,13 +382,10 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-<<<<<<< HEAD
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
-=======
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
->>>>>>> 1de49e5ada869ce552aac40f3472b89a77a68c6a
 import {
   PATHS,
   CHANGE_REQUEST_TYPES,
