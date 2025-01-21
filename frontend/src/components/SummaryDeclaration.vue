@@ -385,16 +385,14 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="10">
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
                     i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
                     Educators (ECEs); and</v-col
                   >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="10">
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
                     ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
