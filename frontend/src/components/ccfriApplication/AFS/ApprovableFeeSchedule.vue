@@ -314,17 +314,19 @@ export default {
     },
     updateUploadedDocumentsToDelete(annotationId) {
       if (this.isChangeRequest) {
-        const index = this.changeRequestDocs?.findIndex((item) => item.annotationId === annotationId);
-        if (index > -1) {
-          this.changeRequestDocs?.splice(index, 1);
+        const exists = this.changeRequestDocs?.some((item) => item.annotationId === annotationId);
+        if (exists) {
+          this.changeRequestDocs = this.changeRequestDocs.filter((item) => item.annotationId !== annotationId);
         }
         this.uploadedDocumentsToDelete?.push(annotationId);
         return;
       }
 
-      const index = this.applicationUploadedDocuments?.findIndex((item) => item.annotationId === annotationId);
-      if (index > -1) {
-        this.applicationUploadedDocuments?.splice(index, 1);
+      const exists = this.applicationUploadedDocuments?.some((item) => item.annotationId === annotationId);
+      if (exists) {
+        this.applicationUploadedDocuments = this.applicationUploadedDocuments.filter(
+          (item) => item.annotationId !== annotationId,
+        );
       }
       this.uploadedDocumentsToDelete?.push(annotationId);
     },

@@ -447,7 +447,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
     async updateChangeRequestMTFI(payload) {
       checkSession();
       try {
-        await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST_MTFI + '/' + payload.changeRequestMtfiId, payload);
+        await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST_MTFI}/${payload.changeRequestMtfiId}`, payload);
       } catch (error) {
         console.info(`Failed to delete MTFI Change Requests - ${error}`);
         throw error;
