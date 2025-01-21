@@ -173,40 +173,6 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0 px-8">
-              <div v-show="!isRenewal && !organizationAccountNumber">
-                <p>
-                  I hereby confirm that the information I have provided in this application is complete and accurate. I
-                  certify that I have read and understand the following requirements:
-                </p>
-                <ul style="padding-top: 10px">
-                  <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
-                  <li>
-                    Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care
-                    Licensing Regulation;
-                  </li>
-                  <li>
-                    Each facility must be willing to provide services to families who receive the Affordable Child Care
-                    Benefit;
-                  </li>
-                  <li>
-                    The organization must be in good standing with BC Corporate Registry (if a nonprofit society or a
-                    registered company); and
-                  </li>
-                  <li>
-                    The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
-                    Applicant must either have no outstanding balances owing to the Ministry OR the Applicant must have
-                    established payment plans for outstanding balances and these must be in good standing).
-                  </li>
-                </ul>
-                <p style="padding-top: 10px">
-                  Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
-                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
-                  all or part of any amount received under the child care grant.
-                </p>
-              </div>
-
               <!-- Declaration A -->
               <div v-show="!isDeclarationBDisplayed">
                 <p>
@@ -235,9 +201,9 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px">
+                <ol type="a" style="padding-top: 10px; padding-left: 20px">
                   <li>
-                    I am the authorized representative and signing authority of the Provider as named in the CCOF
+                    I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);
                   </li>
                   <li>
@@ -261,19 +227,15 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> i. </v-col>
-                  <v-col cols="10">
-                    permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
-                    (ECEs); and
-                  </v-col>
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
+                    Educators (ECEs); and</v-col
+                  >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> ii. </v-col>
-                  <v-col cols="10">
-                    able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
                 <p style="padding-top: 10px">
