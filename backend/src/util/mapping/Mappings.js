@@ -60,6 +60,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
+  { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
 ];
 
 const RFIApplicationMappings = [

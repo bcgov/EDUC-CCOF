@@ -101,8 +101,13 @@
                       :loading="isSummaryLoading[index]"
                       type="paragraph, text@3, paragraph, text@3, paragraph"
                     />
-                    <div v-else>
-                      <v-expansion-panel variant="accordion" value="facility-name">
+                    <div v-else class="mb-4">
+                      <v-expansion-panel
+                        v-if="facility"
+                        :key="`${facility.facilityId}-facility-information`"
+                        value="facility-name"
+                        variant="accordion"
+                      >
                         <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
                             <p class="summary-label">Facility Name</p>
@@ -124,7 +129,11 @@
                           </v-col>
                         </v-row>
                       </v-expansion-panel>
-                      <v-expansion-panel variant="accordion" value="mtfi-summary">
+                      <v-expansion-panel
+                        :key="`${facility.facilityId}-mtfi-summary`"
+                        :value="`${facility.facilityId}-mtfi-summary`"
+                        variant="accordion"
+                      >
                         <MTFISummary
                           v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
                           :old-ccfri="facility?.oldCcfri"
@@ -135,13 +144,27 @@
                       </v-expansion-panel>
                       <v-expansion-panel
                         v-if="facility?.hasRfi && !isSummaryLoading[index]"
+                        :key="`${facility.facilityId}-ccfri-summary`"
+                        :value="`${facility.facilityId}-ccfri-summary`"
                         variant="accordion"
-                        value="rfi-summary"
                       >
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
                           :ccfri-id="facility?.ccfriApplicationId"
                           :facility-id="facility.facilityId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </v-expansion-panel>
+                      <v-expansion-panel
+                        v-if="facility?.enableAfs"
+                        :key="`${facility.facilityId}-afs-summary`"
+                        :value="`${facility.facilityId}-afs-summary`"
+                        variant="accordion"
+                      >
+                        <AFSSummary
+                          :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
+                          :facility-id="facility?.facilityId"
+                          :program-year-id="summaryModel?.application?.programYearId"
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
@@ -321,6 +344,9 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import {
   PATHS,
@@ -328,13 +354,17 @@ import {
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  DOCUMENT_TYPES,
+  AFS_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
+import DocumentService from '@/services/documentService';
 
 export default {
   components: {
@@ -343,6 +373,7 @@ export default {
     ChangeNotificationFormSummary,
     RFISummary,
     NavButton,
+    AFSSummary,
   },
   mixins: [alertMixin],
   data() {
@@ -365,6 +396,8 @@ export default {
     ...mapState(useNavBarStore, ['changeType', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, [
       'isSummaryLoading',
       'isMainLoading',
@@ -403,7 +436,7 @@ export default {
       return null;
     },
     relockPayload() {
-      let relockPayload = {
+      const relockPayload = {
         unlockDeclaration: this.model.unlockDeclaration,
       };
       return relockPayload;
@@ -447,6 +480,8 @@ export default {
       'loadChangeRequestSummaryDeclaration',
       'setDeclarationModel',
     ]),
+    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
+    ...mapActions(useNavBarStore, ['setNavBarValue']),
     expandAllPanels() {
       this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
@@ -463,12 +498,51 @@ export default {
       try {
         this.setDeclarationModel(this.model);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
+
+        if (this.facilities?.some((fac) => fac.enableAfs)) {
+          await this.lockAFS();
+        }
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while submitting the change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
+    },
+    async lockAFS() {
+      await Promise.all(
+        this.facilities.map(async (mtfiFac) => {
+          if (mtfiFac.enableAfs) {
+            const afs = this.approvableFeeSchedules?.find(
+              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
+            );
+
+            console.log(afs.afsStatus);
+            console.log(afs?.afsStatus === AFS_STATUSES.ACCEPT);
+            const payload = {
+              changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
+              unlockAfs: false,
+              enableAfs: afs?.afsStatus === AFS_STATUSES.ACCEPT,
+              afsStatus: afs?.afsStatus,
+            };
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
+            await this.updateChangeRequestMTFI(payload);
+          }
+        }),
+      );
+
+      const afsDocuments = this.uploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationid, payload);
+        }),
+      );
     },
     previous() {
       this.isProcessing = true;

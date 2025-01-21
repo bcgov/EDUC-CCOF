@@ -110,6 +110,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import {
   AFS_STATUSES,
@@ -141,6 +142,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useAppStore, ['pageTitle', 'programYearList']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
@@ -150,6 +152,7 @@ export default {
       'programYearId',
       'isLicenseUploadComplete',
       'isRenewal',
+      'applicationId',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -229,6 +232,8 @@ export default {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
     ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
+
     async loadData() {
       try {
         if (this.isApplication) {
@@ -237,6 +242,10 @@ export default {
             this.getApplicationUploadedDocuments(),
           ]);
           this.checkApprovableFeeSchedulesComplete();
+        } else if (this.changeType === 'mtfi') {
+          await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities);
+          await this.getDocuments(this.applicationId);
+          this.checkMTFIApprovableFeeSchedulesComplete();
         }
       } catch (error) {
         console.log(error);
@@ -830,6 +839,7 @@ export default {
             position: positionIndex++,
             navBarId: navBarId++,
           });
+
           if (item.hasRfi || item.unlockRfi) {
             items.push({
               title: 'Parent Fee Increase – RFI',
@@ -845,6 +855,23 @@ export default {
               isActive:
                 'mtfi-change-request-ccfri-request-info' === this.$route.name &&
                 this.$route.params.urlGuid === item.ccfriApplicationId,
+              position: positionIndex++,
+              navBarId: navBarId++,
+            });
+          }
+          if (item.enableAfs) {
+            items.push({
+              title: 'Approvable Fee Schedule',
+              subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
+              id: item.facilityId,
+              link: {
+                name: 'mtfi-afs',
+                params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
+              },
+              isAccessible: true,
+              icon: this.getCheckbox(item.isAFSComplete),
+              isActive: 'mtfi-afs' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
               position: positionIndex++,
               navBarId: navBarId++,
             });
@@ -1065,6 +1092,7 @@ export default {
         const afs = this.approvableFeeSchedules?.find(
           (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
         );
+
         const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
           (document) =>
             [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
@@ -1075,6 +1103,24 @@ export default {
           [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
       });
+      this.refreshNavBarList();
+    },
+    checkMTFIApprovableFeeSchedulesComplete() {
+      this.navBarList?.forEach((facility) => {
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
+        );
+        const uploadedSupportingDocuments = this.uploadedDocuments?.filter(
+          (document) =>
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.ccof_facility === facility.facilityId,
+        );
+        facility.isAFSComplete =
+          [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
+          (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+      });
+
       this.refreshNavBarList();
     },
   },

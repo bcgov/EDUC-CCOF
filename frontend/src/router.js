@@ -780,6 +780,18 @@ const router = createRouter({
       },
     },
     {
+      path: changeUrlGuid(PATHS.MTFI_AFS, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'mtfi-afs',
+      component: ApprovableFeeSchedule,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
+    },
+    {
       path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION),
       name: 'Summary and Declaration Change Notification Form',
       component: SummaryDeclarationChangeRequest,

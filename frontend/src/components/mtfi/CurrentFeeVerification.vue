@@ -57,7 +57,7 @@
                 <br />
 
                 <v-row class="d-flex">
-                  <v-col cols="6">
+                  <v-col cols="12" md="3" lg="4">
                     <v-select
                       v-model="CCFRIFacilityModel.childCareTypes[index].feeFrequency"
                       label="Parent fee frequency: "
@@ -73,15 +73,23 @@
                     </v-select>
                   </v-col>
 
-                  <v-col v-if="!isReadOnly" cols="1" class="pb-0 pt-4 pl-16">
+                  <v-col
+                    v-if="!isReadOnly"
+                    cols="12"
+                    sm="8"
+                    md="5"
+                    xl="4"
+                    class="pb-0 pt-3"
+                    style="display: flex; justify-content: flex-start; align-items: flex-start"
+                  >
                     <v-tooltip location="top" color="#003366">
                       <template #activator="{ props }">
                         <v-card
                           style="background-color: #003366 !important; color: #313131"
-                          class="tooltip ml-xl-6"
+                          class="tooltip ml-xl-6 mt-1"
                           v-bind="props"
                         >
-                          <v-icon class="pt-1" size="small" style="color: #ffffff !important"> mdi-help </v-icon>
+                          <v-icon class="pt-2" size="small" style="color: #ffffff !important"> mdi-help </v-icon>
                         </v-card>
                       </template>
                       <span v-if="isButtonActive(index)">
@@ -94,25 +102,18 @@
                         Note: Auto-fill is not available if you change the parent fee frequency
                       </span>
                     </v-tooltip>
-                  </v-col>
-
-                  <v-col cols="3">
                     <v-btn
                       v-if="!isReadOnly"
-                      class="blueButton mb-10"
+                      class="blueButton mb-10 ml-2"
                       :disabled="!isButtonActive(index)"
                       @click="copyFees(index)"
                     >
                       Auto-fill approved parent fees
                     </v-btn>
                   </v-col>
-                  <v-col cols="2">
-                    <v-btn
-                      v-if="!isReadOnly"
-                      class="mb-10"
-                      :disabled="!isButtonActive(index)"
-                      @click="clearFees(index)"
-                    >
+
+                  <v-col cols="12" sm="4" md="4" lg="3">
+                    <v-btn v-if="!isReadOnly" :disabled="!isButtonActive(index)" @click="clearFees(index)">
                       Clear parent fees
                     </v-btn>
                   </v-col>
@@ -797,7 +798,6 @@ export default {
       'setCCFRIFacilityModel',
       'setModel',
     ]),
-    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
     ...mapActions(useNavBarStore, ['setNavBarCCFRIComplete', 'setNavBarValue']),
 
     cancel() {
