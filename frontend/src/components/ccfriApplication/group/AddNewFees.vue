@@ -13,7 +13,7 @@
         :license-number="currentFacility?.licenseNumber"
         class="mb-10"
       />
-      <p>
+      <p class="text-center">
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
         <br /><br />
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br /><br />
