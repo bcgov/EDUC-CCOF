@@ -166,3 +166,8 @@ div.text-body-1,
 div.text-body-2 {
   font-family: "BCSans", Verdana, Arial, sans-serif;
 }
+ol[type="a"] {
+  padding-top: 10px;
+  padding-left: 20px;
+  list-style-position: inside;
+}
