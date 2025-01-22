@@ -5,29 +5,26 @@
     </v-row>
     <v-row>
       <v-container>
-        <span class="text-h4">Instructions:</span>
+        <span class="text-h4">Important:</span>
         <br /><br /><br />
         <p class="px-10 text-h6">
-          Under the Child Care Operating Funding (CCOF) Agreement, section 4.1 f and g, you must submit a request to
-          increase parent fees after approval for the Child Care Fee Reduction Initiative (CCFRI). Use this form to
-          submit any request to increase your parent fees in the {{ formattedProgramYear }} Fiscal Year. To complete
-          this form, you will need the following: <br /><br />
+          Under the Child Care Operating Funding (CCOF) Agreement you must receive written approval to increase parent
+          fees for the Child Care Fee Reduction Initiative (CCFRI). Use this form to submit a request to increase your
+          parent fees after you have received approval for the CCFRI. <br />
         </p>
-
-        <ul class="px-10 text-h6">
-          <li>A proposed Parent Fee Schedule; and</li>
+        <br />
+        <p class="px-10 text-h6">To complete this form, you will need the following:</p>
+        <br />
+        <ul class="px-10 text-h6 ml-10">
+          <li>A proposed parent fee schedule; and</li>
           <li>
-            If the increase you are requesting is above the Fee Increase Limit for your
-            <a
-              href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/child-care-operating-funding/ccfri_funding_guidelines_23_24.pdf"
-            >
-              Service Delivery Area</a
-            >, you are required to complete a Request for Information and will be required to submit supporting
-            documentation.
+            If the total parent fee increase you are requesting for the funding term, including any prior approved fee
+            increases, is above the Fee Increase Limit for your region, you may be required to submit supporting
+            documentation. CCFRI Regions align with the BCSSA's grouping of school districts into 6 regional chapters.
+            Use the <a :href="getLookupLink" target="_blank">BCSSA region lookup</a> to find your region and applicable
+            Fee Increase Limits.
           </li>
         </ul>
-
-        <p class="px-15 text-h6">* The facilities that are not opted in to CCFRI cannot be selected</p>
       </v-container>
     </v-row>
     <v-row justify="space-around">
@@ -52,6 +49,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useAppStore } from '@/store/app.js';
 
 import {
   PATHS,
@@ -60,10 +58,12 @@ import {
   CHANGE_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_PROVIDER_TYPES,
-} from '../../utils/constants.js';
-import alertMixin from '../../mixins/alertMixin.js';
+  BCSSA_REGION_LINKS,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
 
-import NavButton from '../../components/util/NavButton.vue';
+import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   components: { NavButton },
@@ -76,10 +76,21 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAppStore, ['getLanguageYearLabel']),
     ...mapState(useApplicationStore, ['programYearId', 'applicationId', 'formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName', 'organizationProviderType']),
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),
+    getLookupLink() {
+      console.log(this.getLanguageYearLabel);
+      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25) {
+        return BCSSA_REGION_LINKS.FY2024_25;
+      }
+      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+        return BCSSA_REGION_LINKS.FY2025_26;
+      }
+      return '#';
+    },
   },
   async beforeMount() {
     this.loading = true;

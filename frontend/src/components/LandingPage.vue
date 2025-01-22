@@ -182,7 +182,7 @@
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
             <p class="text-h6">Request a change</p>
-            <p>Submit a request to change your Organization, licence, service details, or Parent Fee information.</p>
+            <p>Submit a request to change your Organization, licence, service detail, or parent fee information.</p>
           </template>
           <template #button>
             <v-row no-gutters>
@@ -192,7 +192,11 @@
                 </v-btn>
               </v-col>
               <v-col class="col-12">
-                <v-btn :class="buttonColor(!isReportChangeButtonEnabled)" theme="dark" @click="goToReportChange()">
+                <v-btn
+                  :class="buttonColor(!isReportChangeButtonEnabled)"
+                  theme="dark"
+                  @click="goToChangeRequestHistory()"
+                >
                   Request a change
                 </v-btn>
               </v-col>
@@ -617,9 +621,6 @@ export default {
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.getNextProgramYear?.programYearId));
-    },
-    goToReportChange() {
-      this.$router.push(PATHS.ROOT.CHANGE_INFO);
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');

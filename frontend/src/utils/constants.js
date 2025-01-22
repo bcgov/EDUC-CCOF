@@ -92,7 +92,6 @@ export const PATHS = {
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
-    CHANGE_INFO: '/change/information',
     SUBMISSION_HISTORY: '/submission-history',
   },
   PREFIX: {
@@ -381,3 +380,8 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xls',
   '.xlsx',
 ]);
+
+export const BCSSA_REGION_LINKS = Object.freeze({
+  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
+  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
+});

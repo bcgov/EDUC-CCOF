@@ -38,7 +38,6 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
-import ChangeInformation from '@/components/requestChanges/ChangeInformation.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -730,16 +729,6 @@ const router = createRouter({
       component: SummaryDeclaration,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false,
-      },
-    },
-    {
-      path: PATHS.ROOT.CHANGE_INFO,
-      name: 'Change Request Information',
-      component: ChangeInformation,
-      meta: {
-        pageTitle: 'Change Request Information',
         requiresAuth: true,
         showNavBar: false,
       },
