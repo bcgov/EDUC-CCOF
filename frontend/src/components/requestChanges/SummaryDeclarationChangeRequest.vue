@@ -224,7 +224,7 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px; padding-left: 20px">
+                <ol class="declarationBList" type="a">
                   <li>
                     I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);

@@ -25,9 +25,6 @@
     </div>
 
     <br /><br />
-    <div class="row pt-4">
-      <span class="text-h6">Our records show this facility's approved parent fees are as follows:</span>
-    </div>
     <v-form ref="isValidForm" v-model="isValidForm">
       <div v-if="loading">
         <v-skeleton-loader max-height="475px" :loading="loading" type="image, image" />
@@ -82,6 +79,15 @@
                     class="pb-0 pt-3"
                     style="display: flex; justify-content: flex-start; align-items: flex-start"
                   >
+                    <v-btn
+                      v-if="!isReadOnly"
+                      style="margin-right: 1px"
+                      class="blueButton mb-10 ml-2"
+                      :disabled="!isButtonActive(index)"
+                      @click="copyFees(index)"
+                    >
+                      Auto-fill approved parent fees
+                    </v-btn>
                     <v-tooltip location="top" color="#003366">
                       <template #activator="{ props }">
                         <v-card
@@ -102,14 +108,6 @@
                         Note: Auto-fill is not available if you change the parent fee frequency
                       </span>
                     </v-tooltip>
-                    <v-btn
-                      v-if="!isReadOnly"
-                      class="blueButton mb-10 ml-2"
-                      :disabled="!isButtonActive(index)"
-                      @click="copyFees(index)"
-                    >
-                      Auto-fill approved parent fees
-                    </v-btn>
                   </v-col>
 
                   <v-col cols="12" sm="4" md="4" lg="3">
