@@ -28,7 +28,7 @@
             :license-number="currentFacility?.licenseNumber"
             class="mb-10"
           />
-          <div class="mt-8">
+          <div class="mt-8 text-center">
             <div class="mb-4">
               Thank you for working with us while we completed the assessment of your application for the Child Care Fee
               Reduction Initiative (CCFRI). This schedule is to inform you of the approvable parent fees for your
