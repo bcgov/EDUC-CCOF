@@ -51,6 +51,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useAppStore } from '@/store/app.js';
 
+import { getBCSSALink } from '@/utils/common.js';
 import {
   PATHS,
   changeUrlGuid,
@@ -58,8 +59,6 @@ import {
   CHANGE_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_PROVIDER_TYPES,
-  BCSSA_REGION_LINKS,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 
@@ -82,14 +81,7 @@ export default {
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),
     getLookupLink() {
-      console.log(this.getLanguageYearLabel);
-      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25) {
-        return BCSSA_REGION_LINKS.FY2024_25;
-      }
-      if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
-        return BCSSA_REGION_LINKS.FY2025_26;
-      }
-      return '#';
+      return getBCSSALink(this.getLanguageYearLabel);
     },
   },
   async beforeMount() {
