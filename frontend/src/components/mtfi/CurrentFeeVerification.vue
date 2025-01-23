@@ -554,6 +554,26 @@
             >
           </div>
         </div>
+
+        <v-card v-if="!loading" elevation="6">
+          <v-card-text class="pa-0">
+            <div class="pa-2 pa-md-4 ma-0 backG">
+              <p class="text-h5 text--primary px-5 py-0 my-0">
+                Is there any other information about this facility you would like us to know?
+              </p>
+            </div>
+            <div class="px-md-12 px-7">
+              <br />
+              <v-textarea
+                v-model="CCFRIFacilityModel.ccfriApplicationNotes"
+                :disabled="isReadOnly"
+                variant="outlined"
+                name="input-7-4"
+                label="Describe here"
+              />
+            </div>
+          </v-card-text>
+        </v-card>
       </v-form>
     </v-card>
 
