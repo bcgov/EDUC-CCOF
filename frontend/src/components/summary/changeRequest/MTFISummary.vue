@@ -445,7 +445,26 @@
               </div>
             </div>
           </div>
+          <v-row no-gutters class="d-flex justify-start">
+            <span class="summary-label"
+              >Is there any other information about this facility you would like us to know?</span
+            >
+          </v-row>
+          <v-row>
+            <v-textarea
+              class="col-10 summary-value"
+              :model-value="newCcfri.ccfriApplicationNotes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              readonly
+              rows="3"
+            />
+          </v-row>
         </div>
+
         <v-row v-if="!isValidForm || !isNewCcfriValid" class="d-flex justify-start pt-4">
           <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
             <v-row no-gutters class="d-flex justify-start">

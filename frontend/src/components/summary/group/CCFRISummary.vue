@@ -397,7 +397,7 @@
           </v-row>
           <v-row>
             <v-textarea
-              class="col-10 summary-value-small"
+              class="col-10 summary-value"
               :model-value="ccfri.ccfriApplicationNotes"
               density="compact"
               flat
