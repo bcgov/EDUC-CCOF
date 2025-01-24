@@ -21,8 +21,8 @@
             If the total parent fee increase you are requesting for the funding term, including any prior approved fee
             increases, is above the Fee Increase Limit for your region, you may be required to submit supporting
             documentation. CCFRI Regions align with the BCSSA's grouping of school districts into 6 regional chapters.
-            Use the <a :href="getLookupLink" target="_blank">BCSSA region lookup</a> to find your region and applicable
-            Fee Increase Limits.
+            Use the <a :href="BCSSALink" target="_blank">BCSSA region lookup</a> to find your region and applicable Fee
+            Increase Limits.
           </li>
         </ul>
       </v-container>
@@ -80,7 +80,7 @@ export default {
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName', 'organizationProviderType']),
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),
-    getLookupLink() {
+    BCSSALink() {
       return getBCSSALink(this.getLanguageYearLabel);
     },
   },

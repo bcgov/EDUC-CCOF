@@ -20,7 +20,7 @@
         <strong>Enter the fee before CCFRI is applied. </strong> <br /><br />
         <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
           CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
-          <a :href="getLookupLink" target="_blank">BCSSA region lookup</a>
+          <a :href="BCSSALink" target="_blank">BCSSA region lookup</a>
           to find your region.</span
         >
         <br /><br />
@@ -642,7 +642,7 @@ export default {
     languageYearLabel() {
       return this.getLanguageYearLabel;
     },
-    getLookupLink() {
+    BCSSALink() {
       return getBCSSALink(this.getLanguageYearLabel);
     },
     programYearTypes() {

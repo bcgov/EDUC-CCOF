@@ -17,29 +17,28 @@
       <br />
 
       <div v-if="languageYearLabel != programYearTypes.HISTORICAL" class="row pt-4 text-center">
-        <span>
+        <p>
           CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
-          <a :href="getLookupLink" target="_blank">BCSSA region lookup</a> to find your region.</span
-        >
+          <a :href="BCSSALink" target="_blank">BCSSA region lookup</a> to find your region.
+        </p>
         <br />
         <br />
-        <span>
+        <p>
           Note: Parent fee increases will be reviewed and additional information may be requested, which may result in
-          increased processing times. If approved, this parent fee will be posted on the Ministry website.</span
-        >
+          increased processing times. If approved, this parent fee will be posted on the Ministry website.
+        </p>
         <br /><br />
       </div>
 
       <br /><br />
       <v-form ref="isValidForm" v-model="isValidForm">
         <div v-if="loading">
-          <v-skeleton-loader max-height="475px" :loading="loading" type="image, image" />
+          <v-skeleton-loader max-height="475px" :loading="loading" type="table-heading, card, card" />
           <br /><br />
-          <v-skeleton-loader max-height="475px" :loading="loading" type="image, image" />
         </div>
 
         <div v-else-if="currentPcfCcfri.childCareTypes?.length > 0">
-          <div v-for="(item, index) in currentPcfCcfri.childCareTypes" :key="index">
+          <div v-for="(item, index) in currentPcfCcfri.childCareTypes" :key="item.childCareCategoryId">
             <v-card
               elevation="6"
               class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
@@ -724,7 +723,7 @@ export default {
       'getNavByCCFRIId',
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStatus']),
-    getLookupLink() {
+    BCSSALink() {
       return getBCSSALink(this.getLanguageYearLabel);
     },
     languageYearLabel() {
