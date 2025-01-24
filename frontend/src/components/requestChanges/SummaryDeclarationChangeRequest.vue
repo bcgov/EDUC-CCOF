@@ -173,12 +173,13 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0 px-8">
-              <div v-show="!isRenewal && !organizationAccountNumber">
+              <!-- Declaration A   should always been shown for Report Other Changes -->
+              <div v-if="isDeclarationADisplayed">
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
                   certify that I have read and understand the following requirements:
                 </p>
-                <ul style="padding-top: 10px">
+                <ul class="ml-5 pt-5">
                   <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
                   <li>
                     Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care
@@ -207,19 +208,8 @@
                 </p>
               </div>
 
-              <!-- Declaration A -->
-              <div v-show="!isDeclarationBDisplayed">
-                <p>
-                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
-                  information provided is true and complete to the best of my knowledge and belief.
-                </p>
-                <p>
-                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
-                  to validate the accuracy of any information that I have provided.
-                </p>
-              </div>
               <!-- Declaration B -->
-              <div v-show="isDeclarationBDisplayed">
+              <div v-else-if="isDeclarationBDisplayed">
                 <p>
                   I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.
@@ -455,6 +445,9 @@ export default {
     },
     isDeclarationBDisplayed() {
       return this.model.enabledDeclarationB || this.hasChangeRequestType('MTFI');
+    },
+    isDeclarationADisplayed() {
+      return this.hasChangeRequestType('PDF_CHANGE') && !this.model.enabledDeclarationB;
     },
     pageTitle() {
       let changeRequestTypes = this.summaryModel?.changeRequestTypes;
