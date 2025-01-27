@@ -299,7 +299,7 @@
             <v-col class="pb-0">
               <div v-if="isDeclarationADisplayed">
                 <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
-                <!-- always show Dec A first for any new rogs completing PCF for the first time-->
+                <!-- always show Dec A first for any new orgs completing PCF for the first time-->
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
                   certify that I have read and understand the following requirements:

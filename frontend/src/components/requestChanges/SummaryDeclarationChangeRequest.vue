@@ -173,6 +173,7 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0 px-8">
+              <!-- Currently this component is only used for Report Other Changes or MTFI change Requests. Add New Facility uses PCF Summary Dec-->
               <!-- Declaration A   should always been shown for Report Other Changes -->
               <div v-if="isDeclarationADisplayed">
                 <p>
@@ -208,7 +209,7 @@
                 </p>
               </div>
 
-              <!-- Declaration B -->
+              <!-- Declaration B should always been shown for MTFI-->
               <div v-else-if="isDeclarationBDisplayed">
                 <p>
                   I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
