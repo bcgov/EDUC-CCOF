@@ -298,7 +298,7 @@
           <v-row v-if="!isProcessing" class="px-8">
             <v-col class="pb-0">
               <div v-if="isDeclarationADisplayed">
-                <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
+                <!-- Ministry Requirements for Change Request Add New Facility is always show Dec A first -->
                 <!-- always show Dec A first for any new orgs completing PCF for the first time-->
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
@@ -395,11 +395,11 @@
                   approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
                   formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
                   Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments
-                  made are at the Provider’s own risk.
+                  made are at the Provider's own risk.
                 </p>
               </div>
               <div v-else>
-                <!-- show for early renwals who do not have a FA yet -->
+                <!-- show for early renewals who do not have a FA yet -->
                 <p>
                   I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.

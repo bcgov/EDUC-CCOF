@@ -272,7 +272,7 @@
                   approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
                   formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
                   Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments
-                  made are at the Provider’s own risk.
+                  made are at the Provider's own risk.
                 </p>
               </div>
             </v-col>
