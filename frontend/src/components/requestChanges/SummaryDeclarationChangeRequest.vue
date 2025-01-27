@@ -212,8 +212,8 @@
                     Benefit;
                   </li>
                   <li>
-                    The organization must be in good standing with BC Corporate Registry (if a nonprofit society or a
-                    registered company); and
+                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
+                    a registered company); and
                   </li>
                   <li>
                     The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
@@ -223,10 +223,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
-                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
-                  all or part of any amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
+                  punishment imposed, the court may order you to pay to the government all or part of any amount you
+                  received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
 
