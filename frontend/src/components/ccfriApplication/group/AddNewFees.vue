@@ -13,14 +13,14 @@
         :license-number="currentFacility?.licenseNumber"
         class="mb-10"
       />
-      <p>
+      <p class="text-center">
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
         <br /><br />
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br /><br />
         <strong>Enter the fee before CCFRI is applied. </strong> <br /><br />
         <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
           CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
-          <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a>
+          <a :href="BCSSALink" target="_blank">BCSSA region lookup</a>
           to find your region.</span
         >
         <br /><br />
@@ -472,42 +472,56 @@
         @save="save(true)"
       />
 
-      <v-dialog v-model="showRfiDialog" persistent max-width="700px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Request for Information </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  You have entered a parent fee above the {{ formattedProgramYear }} parent fee increase limit for the
-                  following care categories:<br /><br />
-                  <span v-for="item in rfi3percentCategories" :key="item">{{ item }}<br /></span>
-                </p>
-                <p>
-                  Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy
-                  in the {{ formattedProgramYear }} <a :href="fundingUrl" target="_blank">Funding Guidelines</a>. You
-                  can continue to the Request for Information section or press back to update your fees.
-                </p>
-                <p class="pt-4">
-                  Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee
-                  for each care category before CCFRI is applied. Submit your daily parent fee if you only offer care
-                  for 4 days or fewer per week.
-                </p>
-                <v-btn dark color="secondary" class="mr-10" @click="closeDialog()"> Back </v-btn>
-                <v-btn dark color="primary" @click="toRfi()"> Continue </v-btn>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="showRfiDialog"
+        persistent
+        max-width="700px"
+        title="Request for Information"
+        :loading="false"
+        @close="closeDialog()"
+      >
+        <template #content>
+          <v-col cols="12">
+            <p>
+              You have entered a parent fee above the {{ formattedProgramYear }} parent fee increase limit for the
+              following care categories:<br /><br />
+              <span v-for="item in rfi3percentCategories" :key="item">{{ item }}<br /></span>
+            </p>
+            <p>
+              Parent fee increases over the limit will be assessed under the Parent Fee Increase Exceptions policy in
+              the
+              {{ formattedProgramYear }} <a :href="fundingUrl" target="_blank">Funding Guidelines</a>. You can continue
+              to the Request for Information section or press back to update your fees.
+            </p>
+            <p>
+              Please confirm you have provided your highest full-time (i.e. over 4 hours, 5 days a week) parent fee for
+              each care category before CCFRI is applied. Submit your daily parent fee if you only offer care for 4 days
+              or fewer per week.
+            </p>
+          </v-col>
+        </template>
+
+        <template #button>
+          <v-row justify="center" class="pb-4">
+            <v-col cols="auto" class="pb-3">
+              <AppButton
+                :primary="false"
+                required
+                size="x-large"
+                style="width: 120px; height: 48px"
+                @click="closeDialog()"
+              >
+                Back
+              </AppButton>
+            </v-col>
+            <v-col cols="auto" class="pb-3">
+              <AppButton :primary="true" required size="large" style="width: 120px; height: 48px" @click="toRfi()">
+                Continue
+              </AppButton>
+            </v-col>
+          </v-row>
+        </template>
+      </AppDialog>
     </v-container>
   </v-form>
 </template>
@@ -527,6 +541,8 @@ import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import rules from '@/utils/rules.js';
+
+import { getBCSSALink } from '@/utils/common.js';
 
 import {
   PATHS,
@@ -625,6 +641,9 @@ export default {
     ...mapState(useReportChangesStore, ['userProfileChangeRequests', 'changeRequestStatus']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
+    },
+    BCSSALink() {
+      return getBCSSALink(this.getLanguageYearLabel);
     },
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;

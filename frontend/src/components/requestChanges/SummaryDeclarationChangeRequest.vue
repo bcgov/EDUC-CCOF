@@ -50,8 +50,6 @@
           </p>
           <br />
           <br />
-
-          <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
       <div>
@@ -101,8 +99,13 @@
                       :loading="isSummaryLoading[index]"
                       type="paragraph, text@3, paragraph, text@3, paragraph"
                     />
-                    <div v-else>
-                      <v-expansion-panel variant="accordion" value="facility-name">
+                    <div v-else class="mb-4">
+                      <v-expansion-panel
+                        v-if="facility"
+                        :key="`${facility.facilityId}-facility-information`"
+                        value="facility-name"
+                        variant="accordion"
+                      >
                         <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
                             <p class="summary-label">Facility Name</p>
@@ -124,7 +127,11 @@
                           </v-col>
                         </v-row>
                       </v-expansion-panel>
-                      <v-expansion-panel variant="accordion" value="mtfi-summary">
+                      <v-expansion-panel
+                        :key="`${facility.facilityId}-mtfi-summary`"
+                        :value="`${facility.facilityId}-mtfi-summary`"
+                        variant="accordion"
+                      >
                         <MTFISummary
                           v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
                           :old-ccfri="facility?.oldCcfri"
@@ -135,13 +142,27 @@
                       </v-expansion-panel>
                       <v-expansion-panel
                         v-if="facility?.hasRfi && !isSummaryLoading[index]"
+                        :key="`${facility.facilityId}-ccfri-summary`"
+                        :value="`${facility.facilityId}-ccfri-summary`"
                         variant="accordion"
-                        value="rfi-summary"
                       >
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
                           :ccfri-id="facility?.ccfriApplicationId"
                           :facility-id="facility.facilityId"
+                          @is-summary-valid="isFormComplete"
+                        />
+                      </v-expansion-panel>
+                      <v-expansion-panel
+                        v-if="facility?.enableAfs"
+                        :key="`${facility.facilityId}-afs-summary`"
+                        :value="`${facility.facilityId}-afs-summary`"
+                        variant="accordion"
+                      >
+                        <AFSSummary
+                          :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
+                          :facility-id="facility?.facilityId"
+                          :program-year-id="summaryModel?.application?.programYearId"
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
@@ -226,9 +247,9 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px">
+                <ol class="declarationBList" type="a">
                   <li>
-                    I am the authorized representative and signing authority of the Provider as named in the CCOF
+                    I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);
                   </li>
                   <li>
@@ -252,19 +273,15 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> i. </v-col>
-                  <v-col cols="10">
-                    permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
-                    (ECEs); and
-                  </v-col>
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
+                    Educators (ECEs); and</v-col
+                  >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> ii. </v-col>
-                  <v-col cols="10">
-                    able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
                 <p style="padding-top: 10px">
@@ -320,32 +337,24 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog v-model="dialog" persistent max-width="525px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Submission Complete </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  Your submission has been received. Please refer to your dashboard for updates on the progress of your
-                  application. We will contact you if more information is required.
-                </p>
-                <p>
-                  <router-link :to="landingPage"> Return to your dashboard </router-link>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="dialog"
+        persistent
+        max-width="525px"
+        title="Submission Complete"
+        :loading="false"
+        @close="dialog = false"
+      >
+        <template #content>
+          <p class="pt-4">
+            Your submission has been received. Please refer to your dashboard for updates on the progress of your
+            application. We will contact you if more information is required.
+          </p>
+          <p>
+            <router-link :to="landingPage"> Return to your dashboard </router-link>
+          </p>
+        </template>
+      </AppDialog>
     </v-form>
   </v-container>
 </template>
@@ -358,27 +367,36 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import {
   PATHS,
   CHANGE_REQUEST_TYPES,
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  DOCUMENT_TYPES,
+  AFS_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
+import DocumentService from '@/services/documentService';
 
 export default {
   components: {
+    AppDialog,
     MTFISummary,
     ChangeNotificationFormSummary,
     RFISummary,
     NavButton,
+    AFSSummary,
   },
   mixins: [alertMixin],
   data() {
@@ -401,6 +419,8 @@ export default {
     ...mapState(useNavBarStore, ['changeType', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, [
       'isSummaryLoading',
       'isMainLoading',
@@ -439,7 +459,7 @@ export default {
       return null;
     },
     relockPayload() {
-      let relockPayload = {
+      const relockPayload = {
         unlockDeclaration: this.model.unlockDeclaration,
       };
       return relockPayload;
@@ -486,6 +506,8 @@ export default {
       'loadChangeRequestSummaryDeclaration',
       'setDeclarationModel',
     ]),
+    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
+    ...mapActions(useNavBarStore, ['setNavBarValue']),
     expandAllPanels() {
       this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
@@ -502,12 +524,51 @@ export default {
       try {
         this.setDeclarationModel(this.model);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
+
+        if (this.facilities?.some((fac) => fac.enableAfs)) {
+          await this.lockAFS();
+        }
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while submitting the change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
+    },
+    async lockAFS() {
+      await Promise.all(
+        this.facilities.map(async (mtfiFac) => {
+          if (mtfiFac.enableAfs) {
+            const afs = this.approvableFeeSchedules?.find(
+              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
+            );
+
+            console.log(afs.afsStatus);
+            console.log(afs?.afsStatus === AFS_STATUSES.ACCEPT);
+            const payload = {
+              changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
+              unlockAfs: false,
+              enableAfs: afs?.afsStatus === AFS_STATUSES.ACCEPT,
+              afsStatus: afs?.afsStatus,
+            };
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
+            await this.updateChangeRequestMTFI(payload);
+          }
+        }),
+      );
+
+      const afsDocuments = this.uploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationid, payload);
+        }),
+      );
     },
     previous() {
       this.isProcessing = true;

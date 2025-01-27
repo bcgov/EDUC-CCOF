@@ -38,7 +38,6 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
-import ChangeInformation from '@/components/requestChanges/ChangeInformation.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -735,16 +734,6 @@ const router = createRouter({
       },
     },
     {
-      path: PATHS.ROOT.CHANGE_INFO,
-      name: 'Change Request Information',
-      component: ChangeInformation,
-      meta: {
-        pageTitle: 'Change Request Information',
-        requiresAuth: true,
-        showNavBar: false,
-      },
-    },
-    {
       path: PATHS.MTFI_INFO,
       name: 'Midterm-Fee-Increase-Information',
       component: MtfiInfo,
@@ -771,6 +760,18 @@ const router = createRouter({
       path: changeUrlGuid(PATHS.MTFI_GROUP_FEE_VERIFICATION, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
       name: 'CCFRI Fee Verification',
       component: MtfiFeeVerification,
+      meta: {
+        pageTitle: PAGE_TITLES.MTFI,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.MTFI,
+        subtitleBanner: Subtitle_Banners.MTFI,
+      },
+    },
+    {
+      path: changeUrlGuid(PATHS.MTFI_AFS, ':changeRecGuid', ':urlGuid', CHANGE_TYPES.MTFI),
+      name: 'mtfi-afs',
+      component: ApprovableFeeSchedule,
       meta: {
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,

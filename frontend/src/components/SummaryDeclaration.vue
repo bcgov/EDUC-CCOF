@@ -51,8 +51,6 @@
           <p>You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
           <br />
           <br />
-
-          <!-- <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
 
@@ -315,8 +313,8 @@
                     Benefit;
                   </li>
                   <li>
-                    The organization must be in good standing with BC Corporate Registry (if a nonprofit society or a
-                    registered company); and
+                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
+                    a registered company); and
                   </li>
                   <li>
                     The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
@@ -326,10 +324,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
-                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
-                  all or part of any amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
+                  punishment imposed, the court may order you to pay to the government all or part of any amount you
+                  received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
               <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
@@ -349,9 +347,9 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px">
+                <ol class="declarationBList" type="a">
                   <li>
-                    I am the authorized representative and signing authority of the Provider as named in the CCOF
+                    I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);
                   </li>
                   <li>
@@ -375,19 +373,15 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="11">
-                    <span>i.</span>
-                    permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
-                    (ECEs); and
-                  </v-col>
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
+                    Educators (ECEs); and</v-col
+                  >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="11">
-                    <span>ii.</span>
-                    able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
                 <p style="padding-top: 10px">
@@ -455,32 +449,24 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog v-model="dialog" persistent max-width="525px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Submission Complete </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  Your submission has been received. Please refer to your dashboard for updates on the progress of your
-                  application. We will contact you if more information is required.
-                </p>
-                <p>
-                  <router-link :to="landingPage"> Return to your dashboard </router-link>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="dialog"
+        persistent
+        max-width="525px"
+        title="Submission Complete"
+        :loading="false"
+        @close="dialog = false"
+      >
+        <template #content>
+          <p>
+            Your submission has been received. Please refer to your dashboard for updates on the progress of your
+            application. We will contact you if more information is required.
+          </p>
+          <p>
+            <router-link :to="landingPage"> Return to your dashboard </router-link>
+          </p>
+        </template>
+      </AppDialog>
     </v-form>
   </v-container>
 </template>
@@ -496,6 +482,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import DocumentService from '@/services/documentService';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 import {
   AFS_STATUSES,
@@ -522,6 +509,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 
 export default {
   components: {
+    AppDialog,
     OrganizationSummary,
     UploadedDocumentsSummary,
     NMFSummary,
