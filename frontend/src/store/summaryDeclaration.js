@@ -30,6 +30,59 @@ function getProgramYear(selectedGuid, programYearList) {
   return programYear;
 }
 
+/**
+ * Contact the various endpoints to summarize all the details that a client needs to know about any given facility in
+ * their summary declaration.
+ *
+ * @param {Object} facility - The facility to fill with details
+ */
+async function mapFacility(facility) {
+  const applicationStore = useApplicationStore();
+  const appStore = useAppStore();
+  let facilityLicenseResponse = undefined;
+  try {
+    facilityLicenseResponse = (
+      await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)
+    ).data;
+    facility.licenseCategories = parseLicenseCategories(facilityLicenseResponse);
+  } catch {
+    console.log('error, unable to get childcare category for provider: ', facility.facilityId);
+  }
+
+  //check for opt out - no need for more calls if opt-out
+  if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
+    const ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
+    facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
+    facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
+    facility.ccfri.dates = ccfriResponse.dates;
+    const ccofProgramYearId = applicationStore.programYearId;
+    const programYearList = appStore.programYearList.list;
+    facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
+    facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
+
+    //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
+    if (facility.ccfri.previousCcfriId) {
+      facility.ccfri.prevYearCcfriApp = (
+        await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)
+      ).data;
+    }
+    if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
+      facility.rfiApp = (
+        await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')
+      ).data;
+    if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
+      facility.nmfApp = (
+        await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')
+      ).data;
+    //summaryModel.faciliities[index].isNMFLoading=false
+  }
+
+  //jb changed below to work with renewel apps
+  facility.facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
+
+  return facility;
+}
+
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
   state: () => ({
     isValidForm: undefined,
@@ -171,7 +224,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
     async loadSummary(changeRecGuid = undefined) {
       checkSession();
-      const appStore = useAppStore();
       const applicationStore = useApplicationStore();
       const ccfriAppStore = useCcfriAppStore();
       const navBarStore = useNavBarStore();
@@ -220,63 +272,18 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           this.setSummaryModel(summaryModel);
         }
 
-        for (const facility of summaryModel.facilities) {
-          const index = summaryModel.facilities.indexOf(facility);
-          this.setSummaryModel(summaryModel);
-          let facilityLicenseResponse = undefined;
-          try {
-            facilityLicenseResponse = (
-              await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)
-            ).data;
-            summaryModel.facilities[index].licenseCategories = parseLicenseCategories(facilityLicenseResponse);
-          } catch {
-            console.log('error, unable to get childcare category for provider: ', facility.facilityId);
+        try {
+          const mappedFacilities = [];
+          for (const facility of summaryModel.facilities) {
+            mappedFacilities.push(mapFacility(facility));
           }
+          summaryModel.facilities = await Promise.all(mappedFacilities);
+        } catch {
+          throw Error('One or more facility summaries failed to load');
+        }
 
-          //check for opt out - no need for more calls if opt-out
-          if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-            const ccfriResponse = (
-              await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)
-            ).data;
-            facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
-            facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
-            facility.ccfri.dates = ccfriResponse.dates;
-            const ccofProgramYearId = applicationStore.programYearId;
-            const programYearList = appStore.programYearList.list;
-            facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
-            facility.ccfri.prevYear = getProgramYear(
-              summaryModel.facilities[index].ccfri.currentYear.previousYearId,
-              programYearList,
-            );
-
-            //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
-            if (facility.ccfri.previousCcfriId) {
-              facility.ccfri.prevYearCcfriApp = (
-                await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)
-              ).data;
-            }
-            if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
-              summaryModel.facilities[index].rfiApp = (
-                await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')
-              ).data;
-            this.setSummaryModel(summaryModel);
-            if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
-              summaryModel.facilities[index].nmfApp = (
-                await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')
-              ).data;
-            //summaryModel.faciliities[index].isNMFLoading=false
-            this.setSummaryModel(summaryModel);
-          }
-
-          //jb changed below to work with renewel apps
-          summaryModel.facilities[index].facilityInfo = (
-            await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)
-          ).data;
-          this.setSummaryModel(summaryModel);
-
-          isSummaryLoading.splice(index, 1, false);
-          this.setIsSummaryLoading(isSummaryLoading);
-        } // end FOR loop. FIXME: make loop brief enough to read in one view
+        this.setSummaryModel(summaryModel);
+        this.setIsSummaryLoading(false);
 
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
