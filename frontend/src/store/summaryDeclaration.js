@@ -49,35 +49,50 @@ async function mapFacility(facility) {
     console.log('error, unable to get childcare category for provider: ', facility.facilityId);
   }
 
-  //check for opt out - no need for more calls if opt-out
+  // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-    const ccfriResponse = (await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)).data;
-    facility.ccfri.childCareLicenses = facilityLicenseResponse; //jb - so I can build the CCFRI section
-    facility.ccfri.childCareTypes = ccfriResponse.childCareTypes;
-    facility.ccfri.dates = ccfriResponse.dates;
+    const ccfriPromises = [ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)];
+    const afterLoadHooks = [
+      (data) => {
+        facility.ccfri.childCareTypes = data.childCareTypes;
+        facility.ccfri.dates = data.dates;
+      },
+    ];
+
+    // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
+    // categories from the last year.
+    if (facility.ccfri.previousCcfriId) {
+      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId));
+      afterLoadHooks.push((data) => (facility.ccfri.prevYearCcfriApp = data));
+    }
+
+    if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi) {
+      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi'));
+      afterLoadHooks.push((data) => (facility.rfiApp = data));
+    }
+
+    if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) {
+      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf'));
+      afterLoadHooks.push((data) => (facility.nmfApp = data));
+    }
+
+    const APIResponses = await Promise.all(ccfriPromises);
+    const dataFromResponses = APIResponses.map((res) => res.data);
+
+    facility.ccfri.childCareLicenses = facilityLicenseResponse; // jb - so I can build the CCFRI section
     const ccofProgramYearId = applicationStore.programYearId;
     const programYearList = appStore.programYearList.list;
     facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
     facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
 
-    //load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee categories from the last year.
-    if (facility.ccfri.previousCcfriId) {
-      facility.ccfri.prevYearCcfriApp = (
-        await ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId)
-      ).data;
+    for (let i = 0; i < afterLoadHooks.length; i++) {
+      const hook = afterLoadHooks[i];
+      const data = dataFromResponses[i];
+      hook(data);
     }
-    if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi)
-      facility.rfiApp = (
-        await ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi')
-      ).data;
-    if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf)
-      facility.nmfApp = (
-        await ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf')
-      ).data;
-    //summaryModel.faciliities[index].isNMFLoading=false
   }
 
-  //jb changed below to work with renewel apps
+  // jb changed below to work with renewel apps
   facility.facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
 
   return facility;
@@ -279,7 +294,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           }
           summaryModel.facilities = await Promise.all(mappedFacilities);
         } catch {
-          throw Error('One or more facility summaries failed to load');
+          console.warn('One or more facilities may not have loaded properly');
         }
 
         this.setSummaryModel(summaryModel);
