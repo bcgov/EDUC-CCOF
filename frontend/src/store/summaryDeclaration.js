@@ -293,8 +293,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             mappedFacilities.push(mapFacility(facility));
           }
           summaryModel.facilities = await Promise.all(mappedFacilities);
-        } catch {
-          console.warn('One or more facilities may not have loaded properly');
+        } catch (error) {
+          console.log(`Failed to load Summary - ${error}`);
+          throw error;
         }
 
         this.setSummaryModel(summaryModel);
