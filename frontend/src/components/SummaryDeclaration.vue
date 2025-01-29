@@ -906,7 +906,8 @@ export default {
           `${facilityId}-rfi-summary`,
           `${facilityId}-nmf-summary`,
           `${facilityId}-afs-summary`,
-          `${facilityId}-ecewe-summary-a`,
+          `${facilityId}-ecewe-summary-facility`,
+          `${facilityId}-ecewe-summary-org`,
           `${facilityId}-uploaded-documents-summary`,
         ];
       });
