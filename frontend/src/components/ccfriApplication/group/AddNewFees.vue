@@ -538,8 +538,10 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import rules from '@/utils/rules.js';
 
 import { getBCSSALink } from '@/utils/common.js';
@@ -577,7 +579,7 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner },
+  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner, AppDialog, AppButton },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);

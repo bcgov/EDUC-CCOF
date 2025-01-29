@@ -573,6 +573,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     },
 
     async getApprovableFeeSchedulesForFacilities(facilities) {
+      const navBarStore = useNavBarStore();
       try {
         if (isEmpty(facilities)) return;
         const appStore = useAppStore();
@@ -594,6 +595,10 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
                 a.programYearOrder - b.programYearOrder || a.childCareCategoryNumber - b.childCareCategoryNumber,
             );
             this.approvableFeeSchedules = this.approvableFeeSchedules?.concat(afs);
+
+            if (navBarStore.isChangeRequest) {
+              afs.afsStatus = afs.afsStatusMtfi;
+            }
           }),
         );
       } catch (e) {
