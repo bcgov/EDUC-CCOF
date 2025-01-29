@@ -50,8 +50,6 @@
           </p>
           <br />
           <br />
-
-          <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
       <div>
@@ -196,19 +194,44 @@
           </v-row>
           <v-row v-if="!isProcessing">
             <v-col class="pb-0 px-8">
-              <!-- Declaration A -->
-              <div v-show="!isDeclarationBDisplayed">
+              <!-- Currently this component is only used for Report Other Changes or MTFI change Requests. Add New Facility uses PCF Summary Dec-->
+              <!-- Declaration A   should always been shown for Report Other Changes -->
+              <div v-if="isDeclarationADisplayed">
                 <p>
-                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
-                  information provided is true and complete to the best of my knowledge and belief.
+                  I hereby confirm that the information I have provided in this application is complete and accurate. I
+                  certify that I have read and understand the following requirements:
                 </p>
-                <p>
-                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
-                  to validate the accuracy of any information that I have provided.
+                <ul class="ml-5 pt-5">
+                  <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
+                  <li>
+                    Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care
+                    Licensing Regulation;
+                  </li>
+                  <li>
+                    Each facility must be willing to provide services to families who receive the Affordable Child Care
+                    Benefit;
+                  </li>
+                  <li>
+                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
+                    a registered company); and
+                  </li>
+                  <li>
+                    The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
+                    Applicant must either have no outstanding balances owing to the Ministry OR the Applicant must have
+                    established payment plans for outstanding balances and these must be in good standing).
+                  </li>
+                </ul>
+                <p style="padding-top: 10px">
+                  Intentionally supplying information that is false or misleading with respect to a material fact in
+                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
+                  punishment imposed, the court may order you to pay to the government all or part of any amount you
+                  received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
-              <!-- Declaration B -->
-              <div v-show="isDeclarationBDisplayed">
+
+              <!-- Declaration B should always been shown for MTFI-->
+              <div v-else-if="isDeclarationBDisplayed">
                 <p>
                   I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.
@@ -266,7 +289,7 @@
                   approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
                   formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
                   Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments
-                  made are at the Provider’s own risk.
+                  made are at the Provider's own risk.
                 </p>
               </div>
             </v-col>
@@ -443,6 +466,9 @@ export default {
     },
     isDeclarationBDisplayed() {
       return this.model.enabledDeclarationB || this.hasChangeRequestType('MTFI');
+    },
+    isDeclarationADisplayed() {
+      return this.hasChangeRequestType('PDF_CHANGE') && !this.model.enabledDeclarationB;
     },
     pageTitle() {
       let changeRequestTypes = this.summaryModel?.changeRequestTypes;

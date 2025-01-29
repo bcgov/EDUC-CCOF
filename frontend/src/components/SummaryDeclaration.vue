@@ -295,7 +295,9 @@
           </v-row>
           <v-row v-if="!isProcessing" class="px-8">
             <v-col class="pb-0">
-              <div v-show="!isRenewal && !organizationAccountNumber && !isChangeRequest">
+              <div v-if="isDeclarationADisplayed">
+                <!-- Ministry Requirements for Change Request Add New Facility is always show Dec A first -->
+                <!-- always show Dec A first for any new orgs completing PCF for the first time-->
                 <p>
                   I hereby confirm that the information I have provided in this application is complete and accurate. I
                   certify that I have read and understand the following requirements:
@@ -328,20 +330,8 @@
                   received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
-              <!-- show for new org after ministry unlocks -->
-              <!-- Minstry Requirements for Change Request Add New Facility is always show Dec A first -->
-              <div v-show="!isDeclarationBDisplayed">
-                <p>
-                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
-                  information provided is true and complete to the best of my knowledge and belief.
-                </p>
-                <p>
-                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
-                  to validate the accuracy of any information that I have provided.
-                </p>
-              </div>
               <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-              <div v-show="isDeclarationBDisplayed">
+              <div v-else-if="isDeclarationBDisplayed">
                 <p>
                   I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                   information provided is true and complete to the best of my knowledge and belief.
@@ -399,7 +389,18 @@
                   approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
                   formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
                   Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments
-                  made are at the Provider’s own risk.
+                  made are at the Provider's own risk.
+                </p>
+              </div>
+              <div v-else>
+                <!-- show for early renewals who do not have a FA yet -->
+                <p>
+                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                  information provided is true and complete to the best of my knowledge and belief.
+                </p>
+                <p>
+                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
+                  to validate the accuracy of any information that I have provided.
                 </p>
               </div>
             </v-col>
@@ -655,13 +656,14 @@ export default {
     isDeclarationBDisplayed() {
       if (this.isChangeRequest) {
         return this.model?.enabledDeclarationB;
-      } else {
-        if (this.isRenewal) {
-          return this.model.declarationBStatus == 1;
-        } else {
-          return this.model.declarationBStatus == 1 && this.unlockDeclaration && this.organizationAccountNumber;
-        }
       }
+      //ccfri-4447 - show DEC B to any new org with FA number. This will also show DecB after submission
+      return this.getFundingAgreementNumber && this.organizationAccountNumber;
+    },
+    isDeclarationADisplayed() {
+      return (
+        (!this.isRenewal && !this.organizationAccountNumber) || (this.isChangeRequest && !this.isDeclarationBDisplayed)
+      );
     },
   },
   watch: {
@@ -692,7 +694,6 @@ export default {
       this.model = cloneDeep(this.declarationModel);
     }
 
-    // if (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber)) {
     if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
       // Establish the server time
       const serverTime = new Date(this.userInfo.serverTime);
