@@ -699,9 +699,12 @@ export default {
     if (this.$route.path.endsWith('printable')) {
       this.printableVersion = true;
     }
-    await this.getChangeRequestList();
-    await this.loadSummary(this.$route.params?.changeRecGuid);
-    await this.loadData();
+    await Promise.all([
+      this.getChangeRequestList(),
+      this.loadSummary(this.$route.params?.changeRecGuid),
+      this.loadData(),
+    ]);
+
     if (!isEmpty(this.declarationModel)) {
       this.model = cloneDeep(this.declarationModel);
     }
