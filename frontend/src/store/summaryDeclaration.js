@@ -51,7 +51,7 @@ async function mapFacility(facility) {
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-    const ccfriPromises = [ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.ccfriId)];
+    const ccfriPromises = [ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.ccfriId}`)];
     const afterLoadHooks = [
       (data) => {
         facility.ccfri.childCareTypes = data.childCareTypes;
@@ -62,17 +62,17 @@ async function mapFacility(facility) {
     // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
     // categories from the last year.
     if (facility.ccfri.previousCcfriId) {
-      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.CCFRIFACILITY + '/' + facility.ccfri.previousCcfriId));
+      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.previousCcfriId}`));
       afterLoadHooks.push((data) => (facility.ccfri.prevYearCcfriApp = data));
     }
 
     if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi) {
-      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.APPLICATION_RFI + '/' + facility.ccfri.ccfriId + '/rfi'));
+      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${facility.ccfri.ccfriId}/rfi`));
       afterLoadHooks.push((data) => (facility.rfiApp = data));
     }
 
     if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) {
-      ccfriPromises.push(ApiService.apiAxios.get(ApiRoutes.APPLICATION_NMF + '/' + facility.ccfri.ccfriId + '/nmf'));
+      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_NMF}/${facility.ccfri.ccfriId}/nmf`));
       afterLoadHooks.push((data) => (facility.nmfApp = data));
     }
 
@@ -93,7 +93,7 @@ async function mapFacility(facility) {
   }
 
   // jb changed below to work with renewel apps
-  facility.facilityInfo = (await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facility.facilityId)).data;
+  facility.facilityInfo = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}`)).data;
 
   return facility;
 }
@@ -157,7 +157,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       const applicationStore = useApplicationStore();
       try {
         let payload = (
-          await ApiService.apiAxios.get(ApiRoutes.APPLICATION_DECLARATION + '/' + applicationStore.applicationId)
+          await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_DECLARATION}/${applicationStore.applicationId}`)
         ).data;
         if (payload && applicationStore.unlockDeclaration) {
           payload.agreeConsentCertify = null;
@@ -172,7 +172,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestDeclaration(changeRequestId) {
       checkSession();
       try {
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId)).data;
+        let payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`)).data;
         //clear the old decleration data out so provider can sign again for Dec B
         if (payload.unlockDeclaration) {
           payload.agreeConsentCertify = null;
@@ -208,7 +208,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             payload.externalStatus = 2;
           }
 
-          let response = await ApiService.apiAxios.patch(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId, payload);
+          let response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
           this.declarationModel.externalStatus = 'SUBMITTED';
           this.setDeclarationModel(this.declarationModel);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
@@ -224,7 +224,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         } else {
           //PCF application submit
           let response = await ApiService.apiAxios.patch(
-            ApiRoutes.APPLICATION_DECLARATION_SUBMIT + '/' + applicationStore.applicationId,
+            `${ApiRoutes.APPLICATION_DECLARATION_SUBMIT}/${applicationStore.applicationId}`,
             payload,
           );
 
@@ -251,7 +251,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         this.setIsMainLoading(true);
         //get application ID from the appMap so the page doesn't break when viewing historical CR records.
-        let payload = (await ApiService.apiAxios.get(ApiRoutes.APPLICATION_SUMMARY + '/' + appID)).data;
+        let payload = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`)).data;
         let summaryModel = {
           organization: undefined,
           application: payload.application,
@@ -277,11 +277,11 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {
           summaryModel.organization = (
-            await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + payload.application.organizationId)
+            await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${payload.application.organizationId}`)
           ).data;
           this.setSummaryModel(summaryModel);
           summaryModel.ecewe = (
-            await ApiService.apiAxios.get('/api/application/ecewe/' + payload.application.applicationId)
+            await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${payload.application.applicationId}`)
           ).data;
 
           this.setSummaryModel(summaryModel);
@@ -310,7 +310,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async updateApplicationStatus(applicationObj) {
       checkSession();
       try {
-        await ApiService.apiAxios.put('/api/application/status/' + applicationObj.applicationId, applicationObj);
+        await ApiService.apiAxios.put(
+          `${ApiRoutes.APPLICATION_STATUS}/${applicationObj.applicationId}`,
+          applicationObj,
+        );
       } catch (error) {
         console.log(`Failed to update application status - ${error}`);
         throw error;
@@ -321,7 +324,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         this.setIsLoadingComplete(false);
         if (!this.summaryModel) this.setIsMainLoading(true);
-        const payload = (await ApiService.apiAxios.get(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId))?.data;
+        const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
           if (!changeRequestTypes.includes(item.changeType)) {
