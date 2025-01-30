@@ -58,8 +58,6 @@ const fundingModelType = [
 function parseProgramYear(value) {
   const programYears = {
     current: undefined,
-    future: undefined,
-    previous: undefined,
     renewal: undefined,
     newApp: undefined,
     list: [],
@@ -71,15 +69,17 @@ function parseProgramYear(value) {
     if (currentStatus == PROGRAM_YEAR_STATUS_CODES.CURRENT) {
       programYears.current = p;
     } else if (currentStatus == PROGRAM_YEAR_STATUS_CODES.FUTURE) {
-      programYears.future = p;
+      programYears.renewal = p;
     }
     programYears.list.push(p);
   });
-  programYears.previous = programYears.list.find((p) => p.programYearId == programYears.current.previousYearId);
+
   programYears.list.sort((a, b) => {
     return b.order - a.order;
   });
-  programYears.renewal = programYears.future ? programYears.future : programYears.list[0];
+
+  //this shouldn't happen - but if year not found, default it to the first year?
+  if (!programYears.renewal) programYears.renewal = programYears.list[0];
 
   // Set the program year for a new application
   if (programYears.current?.intakeEnd) {
