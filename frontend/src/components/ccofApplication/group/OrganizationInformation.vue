@@ -56,13 +56,12 @@
 
               <v-row>
                 <v-col>
-                  <v-text-field
-                    v-model="model.address1"
+                  <AppAddressLookup
+                    :model-value="model.address1"
                     :disabled="isLocked"
-                    variant="outlined"
-                    required
                     :rules="rules.required"
                     label="Mailing Address"
+                    @update-address="updateMailingAddress"
                   />
                 </v-col>
               </v-row>
@@ -279,6 +278,15 @@ export default {
     isSomeChangeRequestActive() {
       //Status of : "Submitted" "Action Required";
       return isAnyChangeRequestActive(this.changeRequestStore);
+    },
+
+    updateMailingAddress(value) {
+      if (!value || !(value instanceof Object)) return;
+      this.model.address1 = value.Text;
+      const address = value.Description?.split(',');
+      this.model.city1 = address[0]?.trim();
+      this.model.province1 = address[1]?.trim();
+      this.model.postalCode1 = address[2]?.trim();
     },
   },
 };

@@ -1,5 +1,6 @@
 import { mapActions, mapState } from 'pinia';
 
+import AppAddressLookup from '@/components/guiComponents/AppAddressLookup.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -12,7 +13,7 @@ import { ORGANIZATION_PROVIDER_TYPES, PROVINCES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton },
+  components: { AppAddressLookup, NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState(useAppStore, ['organizationTypeList', 'navBarList']),

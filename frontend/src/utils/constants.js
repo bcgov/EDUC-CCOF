@@ -53,6 +53,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CANADA_POST: baseRoot + '/canadaPost',
 });
 
 export const PAGE_TITLES = Object.freeze({
