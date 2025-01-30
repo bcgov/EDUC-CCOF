@@ -51,7 +51,7 @@ export const useOrganizationStore = defineStore('organization', {
       const appStore = useAppStore();
       const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
-      const authStore = useAuthStore();
+      //const authStore = useAuthStore();
 
       if (isEqual({ ...this.organizationModel, providerType: null }, { ...this.loadedModel, providerType: null })) {
         return;
@@ -72,15 +72,15 @@ export const useOrganizationStore = defineStore('organization', {
           throw error;
         }
       } else {
-        let serverTime = authStore.userInfo?.serverTime;
-        let currentProgramYearIntakeEnd = appStore.programYearList.current?.intakeEnd;
-        let programYear = appStore.programYearList.current;
-        if (serverTime > currentProgramYearIntakeEnd) programYear = appStore.programYearList.renewal;
+        //let serverTime = authStore.userInfo?.serverTime;
+        //let currentProgramYearIntakeEnd = appStore.programYearList.current?.intakeEnd;
+        const programYear = appStore.programYearList.newApp;
+        //if (serverTime > currentProgramYearIntakeEnd) programYear = appStore.programYearList.renewal;
         payload.programYearId = programYear.programYearId;
         applicationStore.setProgramYearId(programYear.programYearId);
         applicationStore.setProgramYearLabel(programYear.name);
         try {
-          let response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
+          const response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
           this.setOrganizationId(response.data?.organizationId);
           this.setOrganizationProviderType(response.data?.organizationProviderType);
           applicationStore.setApplicationId(response.data?.applicationId);
