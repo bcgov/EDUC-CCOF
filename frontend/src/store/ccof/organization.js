@@ -65,17 +65,15 @@ export const useOrganizationStore = defineStore('organization', {
       if (this.organizationId) {
         // has an orgaization ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(ApiRoutes.ORGANIZATION + '/' + this.organizationId, payload);
+          let response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
           throw error;
         }
       } else {
-        //let serverTime = authStore.userInfo?.serverTime;
-        //let currentProgramYearIntakeEnd = appStore.programYearList.current?.intakeEnd;
+        //we calculate which app to use in lookup - no need to do it again here
         const programYear = appStore.programYearList.newApp;
-        //if (serverTime > currentProgramYearIntakeEnd) programYear = appStore.programYearList.renewal;
         payload.programYearId = programYear.programYearId;
         applicationStore.setProgramYearId(programYear.programYearId);
         applicationStore.setProgramYearLabel(programYear.name);
