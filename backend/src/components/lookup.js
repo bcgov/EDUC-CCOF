@@ -57,7 +57,6 @@ const fundingModelType = [
 
 function parseProgramYear(value) {
   const programYears = {
-    //current: undefined,
     renewal: undefined,
     newApp: undefined,
     list: [],
