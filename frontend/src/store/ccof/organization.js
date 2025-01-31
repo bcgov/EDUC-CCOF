@@ -51,7 +51,6 @@ export const useOrganizationStore = defineStore('organization', {
       const appStore = useAppStore();
       const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
-      //const authStore = useAuthStore();
 
       if (isEqual({ ...this.organizationModel, providerType: null }, { ...this.loadedModel, providerType: null })) {
         return;
@@ -65,7 +64,7 @@ export const useOrganizationStore = defineStore('organization', {
       if (this.organizationId) {
         // has an orgaization ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
+          const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
