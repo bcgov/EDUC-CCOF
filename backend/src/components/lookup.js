@@ -55,22 +55,24 @@ const fundingModelType = [
   },
 ];
 
-function parseProgramYear(value) {
+function parseProgramYear(programYearList) {
   const programYears = {
     renewal: undefined,
     newApp: undefined,
     list: [],
   };
-  value.forEach((item) => {
-    const p = new MappableObjectForFront(item, ProgramYearMappings).data;
-    const currentStatus = p.status;
-    p.status = getLabelFromValue(p.status, PROGRAM_YEAR_STATUS_CODES);
+
+  programYearList.forEach((item) => {
+    const year = new MappableObjectForFront(item, ProgramYearMappings).data;
+    const currentStatus = year.status;
+
+    year.status = getLabelFromValue(year.status, PROGRAM_YEAR_STATUS_CODES);
     if (currentStatus == PROGRAM_YEAR_STATUS_CODES.CURRENT) {
-      programYears.current = p;
+      programYears.current = year;
     } else if (currentStatus == PROGRAM_YEAR_STATUS_CODES.FUTURE) {
-      programYears.renewal = p;
+      programYears.renewal = year;
     }
-    programYears.list.push(p);
+    programYears.list.push(year);
   });
 
   programYears.list.sort((a, b) => {
