@@ -56,44 +56,6 @@ const fundingModelType = [
   },
 ];
 
-// function parseProgramYear(programYearList) {
-//   const programYears = {
-//     renewal: undefined,
-//     newApp: undefined,
-//     list: [],
-//   };
-
-//   programYearList.forEach((item) => {
-//     const year = new MappableObjectForFront(item, ProgramYearMappings).data;
-
-//     log.info('!!!!');
-//     log.info(year.status);
-
-//     year.status = getLabelFromValue(year.status, PROGRAM_YEAR_STATUS_CODES);
-//     if (year.status == PROGRAM_YEAR_STATUS_CODES.CURRENT) {
-//       programYears.newApp = year;
-//     } else if (year.status == PROGRAM_YEAR_STATUS_CODES.FUTURE) {
-//       programYears.renewal = year;
-//     }
-//     programYears.list.push(year);
-//   });
-
-//   programYears.list.sort((a, b) => {
-//     return b.order - a.order;
-//   });
-
-//   //this shouldn't happen - but if year not found, default it to the first year?
-//   if (!programYears.renewal) programYears.renewal = programYears.list[0];
-
-//   // Set the program year for a new application
-//   if (programYears.newApp?.intakeEnd) {
-//     const intakeDate = new Date(programYears.newApp?.intakeEnd);
-//     programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.newApp;
-//   }
-
-//   return programYears;
-// }
-
 async function getLicenseCategory() {
   let resData = lookupCache.get('licenseCategory');
   if (!resData) {
