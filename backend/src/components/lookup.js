@@ -7,7 +7,6 @@ const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_T
 const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
-const log = require('./logger');
 const lookupCache = new cache.Cache();
 
 const organizationType = [
