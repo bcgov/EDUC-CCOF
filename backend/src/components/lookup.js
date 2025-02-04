@@ -80,6 +80,44 @@ async function getLicenseCategory() {
   return resData;
 }
 
+async function getProgramYear() {
+  const programYearList = (await getOperation('ccof_program_years')).value;
+
+  const programYears = {
+    renewal: undefined,
+    newApp: undefined,
+    list: [],
+  };
+
+  //parse the list of program years from Dynamics. Renewal and NewApp will be used to create their respective applications
+  programYearList.forEach((item) => {
+    const year = new MappableObjectForFront(item, ProgramYearMappings).data;
+    const currentStatus = year.status;
+
+    year.status = getLabelFromValue(currentStatus, PROGRAM_YEAR_STATUS_CODES);
+    if (currentStatus === PROGRAM_YEAR_STATUS_CODES.CURRENT) {
+      programYears.newApp = year;
+    } else if (currentStatus === PROGRAM_YEAR_STATUS_CODES.FUTURE) {
+      programYears.renewal = year;
+    }
+    programYears.list.push(year);
+  });
+
+  programYears.list.sort((a, b) => {
+    return b.order - a.order;
+  });
+
+  //this shouldn't happen - but if year not found, default it to the first year?
+  if (!programYears.renewal) programYears.renewal = programYears.list[0];
+
+  // Set the program year for a new application
+  if (programYears.newApp?.intakeEnd) {
+    const intakeDate = new Date(programYears.newApp?.intakeEnd);
+    programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.newApp;
+  }
+  return programYears;
+}
+
 async function getLookupInfo(req, res) {
   /**
    * Look ups from Dynamics365.
@@ -91,40 +129,7 @@ async function getLookupInfo(req, res) {
    */
   let resData = lookupCache.get('lookups');
   if (!resData) {
-    const programYearList = (await getOperation('ccof_program_years')).value;
-
-    const programYears = {
-      renewal: undefined,
-      newApp: undefined,
-      list: [],
-    };
-
-    //parse the list of program years from Dynamics. Renewal and NewApp will be used to create their respective applications
-    programYearList.forEach((item) => {
-      const year = new MappableObjectForFront(item, ProgramYearMappings).data;
-      const currentStatus = year.status;
-
-      year.status = getLabelFromValue(currentStatus, PROGRAM_YEAR_STATUS_CODES);
-      if (currentStatus === PROGRAM_YEAR_STATUS_CODES.CURRENT) {
-        programYears.newApp = year;
-      } else if (currentStatus === PROGRAM_YEAR_STATUS_CODES.FUTURE) {
-        programYears.renewal = year;
-      }
-      programYears.list.push(year);
-    });
-
-    programYears.list.sort((a, b) => {
-      return b.order - a.order;
-    });
-
-    //this shouldn't happen - but if year not found, default it to the first year?
-    if (!programYears.renewal) programYears.renewal = programYears.list[0];
-
-    // Set the program year for a new application
-    if (programYears.newApp?.intakeEnd) {
-      const intakeDate = new Date(programYears.newApp?.intakeEnd);
-      programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.newApp;
-    }
+    const programYears = await getProgramYear();
 
     const childCareCategory = (await getOperation('ccof_childcare_categories')).value
       .filter((item) => item.statuscode === 1)
