@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import pLimit from 'p-limit';
 
 import ApiService from '@/common/apiService.js';
 import { useAppStore } from '@/store/app.js';
@@ -279,9 +280,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         try {
           const mappedFacilities = [];
+          const limit = pLimit(3);
+
           for (const facility of summaryModel.facilities) {
-            mappedFacilities.push(mapFacility(facility));
+            mappedFacilities.push(limit(() => mapFacility(facility)));
           }
+
           summaryModel.facilities = await Promise.all(mappedFacilities);
         } catch (error) {
           console.log(`Failed to load Summary - ${error}`);
