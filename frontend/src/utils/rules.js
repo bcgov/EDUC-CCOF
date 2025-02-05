@@ -5,7 +5,7 @@ const rules = {
   email: [(v) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'A valid email is required'],
   required: [
     function (v) {
-      if (v === 0) {
+      if (v === 0 || v === false) {
         return true;
       } else if (!v) {
         return 'This field is required';
@@ -14,6 +14,9 @@ const rules = {
       return true;
     },
   ],
+  equalTo(expectedValue, message = 'Invalid value') {
+    return (v) => v === expectedValue || message;
+  },
   postalCode: [
     (v) =>
       !v ||

@@ -34,6 +34,7 @@ const licenseUploadRouter = require('./routes/licenseUpload');
 const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
 const changeRequestRouter = require('./routes/changeRequest');
 const pdfRouter = require('./routes/pdf');
+const canadaPostRouter = require('./routes/canadaPost');
 const connectRedis = require('connect-redis');
 
 const promMid = require('express-prometheus-middleware');
@@ -206,6 +207,7 @@ apiRouter.use('/licenseUpload', licenseUploadRouter);
 apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
 apiRouter.use('/changeRequest', changeRequestRouter);
 apiRouter.use('/pdf', pdfRouter);
+apiRouter.use('/canadaPost', canadaPostRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {

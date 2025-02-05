@@ -54,6 +54,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CANADA_POST: baseRoot + '/canadaPost',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -93,7 +94,6 @@ export const PATHS = {
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
-    CHANGE_INFO: '/change/information',
     SUBMISSION_HISTORY: '/submission-history',
   },
   PREFIX: {
@@ -139,6 +139,7 @@ export const PATHS = {
   MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
+  MTFI_AFS: '/mtfi-afs',
 };
 
 //Some helper classes to build the URL consistently
@@ -381,3 +382,8 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xls',
   '.xlsx',
 ]);
+
+export const BCSSA_REGION_LINKS = Object.freeze({
+  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
+  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
+});

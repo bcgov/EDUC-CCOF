@@ -60,6 +60,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
+  { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
 ];
 
 const RFIApplicationMappings = [
@@ -471,12 +472,6 @@ const CCFRIApprovableFeeSchedulesMappings = [
   { back: 'ccof_mar', front: 'approvedFeeMar' },
 ];
 
-//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
-const ChangeRequestMappings = [
-  { back: 'ccof_change_requestid', front: 'changeRequestId' }, // null,
-  //{ back: '', front: ''}, // null,
-];
-
 const PdfDocumentMappings = [
   { back: 'annotationid', front: 'annotationId' },
   { back: 'filename', front: 'fileName' },
@@ -540,7 +535,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
-  ChangeRequestMappings,
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
   fundingAgreementMappings,

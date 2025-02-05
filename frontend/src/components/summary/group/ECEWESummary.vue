@@ -34,9 +34,9 @@
                 />
               </v-col>
               <v-col
+                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
                 cols="12"
                 md="6"
-                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
               >
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field

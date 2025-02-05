@@ -45,6 +45,7 @@ export default {
   border: none;
   border-radius: 4px;
   color: white;
+  padding: 12px 32px;
   text-align: center;
   text-decoration: none;
   display: block;
@@ -64,6 +65,7 @@ export default {
   border: 2px solid #003366;
   border-radius: 4px;
   color: #003366;
+  padding: 10px 30px;
   text-align: center;
   text-decoration: none;
   display: block;
@@ -81,7 +83,6 @@ export default {
 .BC-Gov-PrimaryButton-disabled,
 .BC-Gov-SecondaryButton,
 .BC-Gov-SecondaryButton-disabled {
-  padding: 10px 32px;
   font-size: 18px;
 }
 
