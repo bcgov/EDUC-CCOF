@@ -449,39 +449,50 @@ async function printPdf(req, numOfRetries = 0) {
     });
 
     log.info('printPdf :: starting page load');
+    const startTime = Date.now();
     await page.goto(url, { waitUntil: 'networkidle0' });
+    log.info(`printPdf :: Page loaded successfully in ${Date.now() - startTime}ms`);
+
+    log.info('printPdf :: Waiting for signature field to appear');
     await page.waitForSelector('#signatureTextField', { visible: true });
 
-    log.info('printPdf :: page loaded starting pdf creation');
+    log.info('printPdf :: Begin Generating PDF');
+    const pdfStartTime = Date.now();
     const pdfBuffer = await page.pdf({
       displayHeaderFooter: false,
       printBackground: true,
       timeout: 300000,
       width: 1280,
     });
+    log.info(`printPdf :: PDF generated in ${Date.now() - pdfStartTime}ms`);
 
-    log.info('printPdf :: pdf buffer created starting compression');
+    log.info('printPdf :: Compressing PDF');
     const compressedPdfBuffer = await compress(pdfBuffer, {
       gsModule: process.env.GHOSTSCRIPT_PATH, // this is set in dockerfile to fix ghostscript error on deploy
     });
-    log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
+    log.info(`printPdf :: Compression completed for applicationId=${req.params.applicationId}`);
 
+    log.info('printPdf :: Sending PDF to storage');
     const payload = await postPdf(req, compressedPdfBuffer);
+
+    log.info(`printPdf :: PDF successfully stored for applicationId=${req.params.applicationId}`);
     await browserContext.close();
     closeBrowser();
 
     return payload;
   } catch (e) {
-    log.error(e);
+    const errorMessage = e instanceof Error ? e.stack || e.message : JSON.stringify(e);
+    log.error(`printPdf :: Error occurred for applicationId=${req.params.applicationId}, ${errorMessage}`);
+
     await browserContext?.close();
 
-    if (numOfRetries >= 3) {
-      log.info('printPdf :: maximum number of retries reached');
-      log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
+    if (numOfRetries >= 5) {
+      log.error(`printPdf :: Maximum retries reached for applicationId=${req.params.applicationId}. Aborting.`);
+      closeBrowser();
     } else {
-      let retryCount = numOfRetries + 1;
-      log.info('printPdf :: failed retrying');
-      log.info(`printPdf :: retry count ${retryCount}`);
+      const retryCount = numOfRetries + 1;
+      await sleep(5000);
+      log.info(`printPdf :: Retrying (${retryCount}/5) for applicationId=${req.params.applicationId}`);
       await printPdf(req, retryCount);
     }
   }
