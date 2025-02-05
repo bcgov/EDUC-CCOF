@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import pLimit from 'p-limit';
 
 import ApiService from '@/common/apiService.js';
 import { useAppStore } from '@/store/app.js';
@@ -41,59 +42,49 @@ async function mapFacility(facility) {
   const appStore = useAppStore();
   let facilityLicenseResponse = undefined;
   try {
-    facilityLicenseResponse = (
-      await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`)
-    ).data;
-    facility.licenseCategories = parseLicenseCategories(facilityLicenseResponse);
+    facilityLicenseResponse = await ApiService.apiAxios.get(
+      `${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`,
+    );
+    facility.licenseCategories = parseLicenseCategories(facilityLicenseResponse.data);
   } catch {
     console.log('error, unable to get childcare category for provider: ', facility.facilityId);
   }
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-    const ccfriPromises = [ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.ccfriId}`)];
-    const afterLoadHooks = [
-      (data) => {
-        facility.ccfri.childCareTypes = data.childCareTypes;
-        facility.ccfri.dates = data.dates;
-      },
-    ];
+    const ccfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.ccfriId}`);
+    facility.ccfri.childCareTypes = ccfri.data.childCareTypes;
+    facility.ccfri.dates = ccfri.data.dates;
 
     // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
     // categories from the last year.
     if (facility.ccfri.previousCcfriId) {
-      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.previousCcfriId}`));
-      afterLoadHooks.push((data) => (facility.ccfri.prevYearCcfriApp = data));
+      const previousCcfriid = await ApiService.apiAxios.get(
+        `${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.previousCcfriId}`,
+      );
+      facility.ccfri.prevYearCcfriApp = previousCcfriid.data;
     }
 
     if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi) {
-      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${facility.ccfri.ccfriId}/rfi`));
-      afterLoadHooks.push((data) => (facility.rfiApp = data));
+      const rfiApp = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${facility.ccfri.ccfriId}/rfi`);
+      facility.rfiApp = rfiApp.data;
     }
 
     if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) {
-      ccfriPromises.push(ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_NMF}/${facility.ccfri.ccfriId}/nmf`));
-      afterLoadHooks.push((data) => (facility.nmfApp = data));
+      const nmfApp = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_NMF}/${facility.ccfri.ccfriId}/nmf`);
+      facility.nmfApp = nmfApp.data;
     }
-
-    const APIResponses = await Promise.all(ccfriPromises);
-    const dataFromResponses = APIResponses.map((res) => res.data);
 
     facility.ccfri.childCareLicenses = facilityLicenseResponse; // jb - so I can build the CCFRI section
     const ccofProgramYearId = applicationStore.programYearId;
     const programYearList = appStore.programYearList.list;
     facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
     facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
-
-    for (let i = 0; i < afterLoadHooks.length; i++) {
-      const hook = afterLoadHooks[i];
-      const data = dataFromResponses[i];
-      hook(data);
-    }
   }
 
   // jb changed below to work with renewel apps
-  facility.facilityInfo = (await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}`)).data;
+  const facilityInfo = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}`);
+  facility.facilityInfo = facilityInfo.data;
 
   return facility;
 }
@@ -289,9 +280,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         try {
           const mappedFacilities = [];
+          const limit = pLimit(3);
+
           for (const facility of summaryModel.facilities) {
-            mappedFacilities.push(mapFacility(facility));
+            mappedFacilities.push(limit(() => mapFacility(facility)));
           }
+
           summaryModel.facilities = await Promise.all(mappedFacilities);
         } catch (error) {
           console.log(`Failed to load Summary - ${error}`);
