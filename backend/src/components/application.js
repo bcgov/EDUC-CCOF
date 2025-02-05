@@ -488,9 +488,10 @@ async function printPdf(req, numOfRetries = 0) {
 
     if (numOfRetries >= 5) {
       log.error(`printPdf :: Maximum retries reached for applicationId=${req.params.applicationId}. Aborting.`);
+      closeBrowser();
     } else {
       const retryCount = numOfRetries + 1;
-      await sleep(1000);
+      await sleep(5000);
       log.info(`printPdf :: Retrying (${retryCount}/5) for applicationId=${req.params.applicationId}`);
       await printPdf(req, retryCount);
     }
