@@ -1,17 +1,16 @@
 import { mapActions, mapState } from 'pinia';
 
-import NavButton from '../components/util/NavButton.vue';
-import { useAppStore } from '../store/app.js';
-import { useApplicationStore } from '../store/application.js';
-import { useFundingStore } from '../store/ccof/funding.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useNavBarStore } from '../store/navBar.js';
-import { useReportChangesStore } from '../store/reportChanges.js';
-import { isNullOrBlank } from '../utils/common.js';
-import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '../utils/constants.js';
-import formatTime from '../utils/formatTime.js';
-import rules from '../utils/rules.js';
-import alertMixin from './alertMixin.js';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useFundingStore } from '@/store/ccof/funding.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import formatTime from '@/utils/formatTime.js';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { NavButton },
@@ -44,11 +43,32 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
+    hasLicenceCategory() {
+      return (
+        this.model.hasUnder36Months ||
+        this.model.has30MonthToSchoolAge ||
+        this.model.hasSchoolAgeCareOnSchoolGrounds ||
+        this.model.hasPreschool ||
+        this.model.hasMultiAge
+      );
+    },
+    hasExtendedHoursChildCare() {
+      return this.model.isExtendedHours === 'yes';
+    },
+    hasLicenceCategoryWithExtendedChildCare() {
+      return (
+        this.model.hasUnder36MonthsExtendedCC ||
+        this.model.has30MonthToSchoolAgeExtendedCC ||
+        this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
+        this.model.hasMultiAgeExtendedCC
+      );
+    },
   },
   data() {
     return {
       processing: false,
       loading: true,
+      isValidated: false,
       model: {},
       rules,
     };
@@ -66,6 +86,7 @@ export default {
       this.$router.push(this.nextPath);
     },
     validateForm() {
+      this.isValidated = true;
       this.$refs.form?.validate();
     },
     async save(isSave) {
@@ -91,80 +112,7 @@ export default {
       }
       this.processing = false;
     },
-    allowedStep: (m) => m % 5 === 0,
     formatTime,
-    groupValueRuleMaxGroupChildCareUnder36() {
-      return this.groupValueRule(
-        'maxGroupChildCareUnder36',
-        'maxGroupChildCare36',
-        'maxPreschool',
-        'maxGroupChildCareSchool',
-        'maxGroupChildCareMultiAge',
-      );
-    },
-    groupValueRuleMaxGroupChildCare36() {
-      return this.groupValueRule(
-        'maxGroupChildCare36',
-        'maxGroupChildCareUnder36',
-        'maxPreschool',
-        'maxGroupChildCareSchool',
-        'maxGroupChildCareMultiAge',
-      );
-    },
-    groupValueRuleMaxPreschool() {
-      return this.groupValueRule(
-        'maxPreschool',
-        'maxGroupChildCareUnder36',
-        'maxGroupChildCare36',
-        'maxGroupChildCareSchool',
-        'maxGroupChildCareMultiAge',
-      );
-    },
-    groupValueRuleMaxGroupChildCareSchool() {
-      return this.groupValueRule(
-        'maxGroupChildCareSchool',
-        'maxGroupChildCareUnder36',
-        'maxGroupChildCare36',
-        'maxPreschool',
-        'maxGroupChildCareMultiAge',
-      );
-    },
-    groupValueRuleMaxGroupChildCareMultiAge() {
-      return this.groupValueRule(
-        'maxGroupChildCareMultiAge',
-        'maxGroupChildCareUnder36',
-        'maxGroupChildCare36',
-        'maxPreschool',
-        'maxGroupChildCareSchool',
-      );
-    },
-    groupValueRule(forFieldName, otherFieldNAme1, otherFieldNAme2, otherFieldNAme3, otherFieldNAme4) {
-      if (!isNullOrBlank(this.model[`${forFieldName}`])) {
-        if (this.model[`${forFieldName}`] > 0) {
-          return true;
-        } else if (
-          !isNullOrBlank(this.model[`${otherFieldNAme1}`]) &&
-          !isNullOrBlank(this.model[`${otherFieldNAme2}`]) &&
-          !isNullOrBlank(this.model[`${otherFieldNAme3}`]) &&
-          !isNullOrBlank(this.model[`${otherFieldNAme4}`])
-        ) {
-          const sum =
-            (this.model[`${otherFieldNAme1}`] || 0) +
-            (this.model[`${otherFieldNAme2}`] || 0) +
-            (this.model[`${otherFieldNAme3}`] || 0) +
-            (this.model[`${otherFieldNAme4}`] || 0);
-          if (sum > 0) {
-            return true;
-          } else {
-            return 'At least one Licence Type should have a maximum capacity above zero.';
-          }
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    },
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

@@ -40,7 +40,7 @@
         </v-row>
         <div v-if="!isValidForm" class="mt-6">
           <router-link :to="pcfLink">
-            <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
       </v-expansion-panel-text>

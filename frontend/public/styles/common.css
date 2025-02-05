@@ -110,7 +110,19 @@ input[type="number"] {
 }
 
 .error-message {
-  color: #ff5252;
+  color: #d8292f !important;
+  font-size: 12px;
+  animation: 1s move-from-top linear;
+}
+@keyframes move-from-top {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
 }
 
 .font-large {

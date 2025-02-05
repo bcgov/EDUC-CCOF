@@ -200,10 +200,16 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo' },
   { back: 'ccof_maximumnumberofchildcarespacesyouoffer', front: 'maxSpaces' },
+
+  { back: 'ccof_has_under36months', front: 'hasUnder36Months' },
+  { back: 'ccof_has_30monthtoschoolage', front: 'has30MonthToSchoolAge' },
+  { back: 'ccof_has_schoolagecareonschoolground', front: 'hasSchoolAgeCareOnSchoolGrounds' },
+  { back: 'ccof_has_preschool', front: 'hasPreschool' },
+  { back: 'ccof_has_multiagechildcare', front: 'hasMultiAge' },
+
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
-
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
@@ -221,6 +227,11 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maximumnumberofspacesyouofferextendedhours', front: 'maxCapacityExtended' },
   { back: 'ccof_maxnoofdaysperweekextendedhoursoffered', front: 'maxDaysPerWeekExtended' },
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
+
+  { back: 'ccof_has_under36months_extendedcc', front: 'hasUnder36MonthsExtendedCC' },
+  { back: 'ccof_has_30monthtoschoolage_extendedcc', front: 'has30MonthToSchoolAgeExtendedCC' },
+  { back: 'ccof_has_schoolagecareonschoolground_extendedc', front: 'hasSchoolAgeCareOnSchoolGroundsExtendedCC' },
+  { back: 'ccof_has_multiagechildcare_extendedcc', front: 'hasMultiAgeExtendedCC' },
 
   { back: 'ccof_under36months4hoursoflessextendedcc', front: 'extendedChildCareUnder36Months4OrLess' },
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
