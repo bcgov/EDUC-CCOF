@@ -3,7 +3,7 @@
     <v-container>
       <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
         <v-row justify="space-around">
-          <v-card class="cc-top-level-card mx-12" width="100%">
+          <v-card class="cc-top-level-card mx-12 pa-2" width="100%">
             <v-card-title class="text-center pb-0">
               <h3>Organization Information</h3>
             </v-card-title>
@@ -52,109 +52,48 @@
               </v-row>
               <v-divider />
 
-              <v-card-subtitle class="my-2">Organization Mailing Address</v-card-subtitle>
-
-              <v-row>
-                <v-col>
-                  <AppAddressLookup
-                    :model-value="model.address1"
-                    :disabled="isLocked"
-                    :rules="rules.required"
-                    label="Mailing Address"
-                    @update-address="updateMailingAddress"
-                  />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field
-                    v-model="model.city1"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    :rules="rules.required"
-                    label="City/Town"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-select
-                    v-model="model.province1"
-                    :items="PROVINCES"
-                    item-value="value"
-                    :rules="rules.required"
-                    :disabled="isLocked"
-                    label="Province"
-                    variant="outlined"
-                  />
-                </v-col>
-                <v-col cols="12" md="4">
-                  <v-text-field
-                    v-model="model.postalCode1"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    :rules="[...rules.required, ...rules.postalCode]"
-                    label="Postal Code"
-                  />
-                </v-col>
-              </v-row>
+              <div class="ma-4 mb-0">Organization Mailing Address</div>
+              <AppAddressForm
+                :disabled="isLocked"
+                :address="model.address1"
+                :city="model.city1"
+                :province="model.province1"
+                :postal-code="model.postalCode1"
+                address-label="Mailing Address"
+                @update="updateMailingAddress"
+              />
 
               <v-divider />
 
-              <v-card-subtitle
-                ><v-checkbox
-                  v-model="model.isSameAsMailing"
-                  :disabled="isLocked"
-                  label="Organization Street Address same as Mailing Address"
-                  @click="isSameAddressChecked()"
-              /></v-card-subtitle>
-              <div v-if="!model.isSameAsMailing">
-                <v-row>
-                  <v-col>
-                    <v-text-field
-                      v-model="model.address2"
-                      :disabled="isLocked"
-                      :rules="rules.required"
-                      variant="outlined"
-                      label="Street Address"
-                    />
-                  </v-col>
-                </v-row>
+              <v-radio-group
+                id="same-mailing-address-button"
+                v-model="model.isSameAsMailing"
+                :disabled="isLocked"
+                :rules="rules.required"
+                inline
+                color="primary"
+                label="Organization Street Address same as Mailing Address"
+                class="mt-4"
+                @update:model-value="resetStreetAddress"
+              >
+                <v-radio label="Yes" :value="true" />
+                <v-radio label="No" :value="false" />
+              </v-radio-group>
 
-                <v-row>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="model.city2"
-                      :disabled="isLocked"
-                      variant="outlined"
-                      :rules="rules.required"
-                      label="City/Town"
-                    />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-select
-                      v-model="model.province2"
-                      :items="PROVINCES"
-                      item-value="value"
-                      :rules="rules.required"
-                      :disabled="isLocked"
-                      label="Province"
-                      variant="outlined"
-                    />
-                  </v-col>
-                  <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      v-model="model.postalCode2"
-                      :disabled="isLocked"
-                      variant="outlined"
-                      :rules="[...rules.required, ...rules.postalCode]"
-                      label="Postal Code"
-                    />
-                  </v-col>
-                </v-row>
-              </div>
+              <AppAddressForm
+                v-if="model.isSameAsMailing === false"
+                :disabled="isLocked"
+                :address="model.address2"
+                :city="model.city2"
+                :province="model.province2"
+                :postal-code="model.postalCode2"
+                address-label="Street Address"
+                @update="updateStreetAddress"
+              />
 
               <v-divider />
 
-              <v-card-subtitle class="my-2">Contact Information</v-card-subtitle>
+              <div class="ma-4 mb-2">Contact Information</div>
               <v-row>
                 <v-col cols="12" md="6">
                   <v-text-field
@@ -201,7 +140,7 @@
                 </v-col>
               </v-row>
 
-              <v-divider />
+              <v-divider class="mb-4" />
 
               <v-row>
                 <v-col cols="12" md="6">
@@ -220,7 +159,7 @@
               <v-divider />
 
               <div>
-                <v-card-subtitle class="my-2">Type of Organization</v-card-subtitle>
+                <div class="ma-4 mb-2">Type of Organization</div>
                 <v-radio-group
                   v-model="model.organizationType"
                   :disabled="isLocked"
@@ -251,11 +190,8 @@
 
 <script>
 import { mapState } from 'pinia';
-import { useAppStore } from '@/store/app.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-
 import organizationMixin from '@/mixins/organizationMixin.js';
-import { PROVINCES } from '@/utils/constants.js';
 import { isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
@@ -264,29 +200,13 @@ export default {
     await this.save(false);
     next();
   },
-
   computed: {
-    ...mapState(useAppStore, ['renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-  },
-  created() {
-    this.PROVINCES = PROVINCES;
-    this.model.province1 = this.model.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
-    this.model.province2 = this.model.province2 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
   },
   methods: {
     isSomeChangeRequestActive() {
       //Status of : "Submitted" "Action Required";
       return isAnyChangeRequestActive(this.changeRequestStore);
-    },
-
-    updateMailingAddress(value) {
-      if (!value || !(value instanceof Object)) return;
-      this.model.address1 = value.Text;
-      const address = value.Description?.split(',');
-      this.model.city1 = address[0]?.trim();
-      this.model.province1 = address[1]?.trim();
-      this.model.postalCode1 = address[2]?.trim();
     },
   },
 };
