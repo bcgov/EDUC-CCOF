@@ -28,7 +28,7 @@
             :license-number="currentFacility?.licenseNumber"
             class="mb-10"
           />
-          <div class="mt-8">
+          <div class="mt-8 text-center">
             <div class="mb-4">
               Thank you for working with us while we completed the assessment of your application for the Child Care Fee
               Reduction Initiative (CCFRI). This schedule is to inform you of the approvable parent fees for your
@@ -161,9 +161,19 @@ export default {
       'applicationUploadedDocuments',
     ]),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
-    ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'nextPath',
+      'previousPath',
+      'isChangeRequest',
+      'getNavByCCFRIId',
+      'userProfileList',
+    ]),
     currentFacility() {
-      return this.navBarList?.find((el) => el.ccfriApplicationId === this.$route.params.urlGuid);
+      //navBarList populates from the Change Action entity for MTFI. This entity does not store licenseNumber, so find it in userProfileList so it can be displayed
+      const fac = this.getNavByCCFRIId(this.$route.params.urlGuid);
+      fac.licenseNumber = this.userProfileList.find((el) => el.facilityId === fac.facilityId)?.licenseNumber;
+      return fac;
     },
     filteredUploadedDocuments() {
       if (this.isChangeRequest) {

@@ -13,14 +13,14 @@
         :license-number="currentFacility?.licenseNumber"
         class="mb-10"
       />
-      <p>
+      <p class="text-center">
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
         <br /><br />
         If you have more than one fee for the same category, <strong> enter the highest fee. </strong><br /><br />
         <strong>Enter the fee before CCFRI is applied. </strong> <br /><br />
         <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
           CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
-          <a href="https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS" target="_blank">BCSSA region lookup</a>
+          <a :href="BCSSALink" target="_blank">BCSSA region lookup</a>
           to find your region.</span
         >
         <br /><br />
@@ -538,9 +538,13 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import rules from '@/utils/rules.js';
+
+import { getBCSSALink } from '@/utils/common.js';
 
 import {
   PATHS,
@@ -575,7 +579,7 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner },
+  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner, AppDialog, AppButton },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);
@@ -639,6 +643,9 @@ export default {
     ...mapState(useReportChangesStore, ['userProfileChangeRequests', 'changeRequestStatus']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
+    },
+    BCSSALink() {
+      return getBCSSALink(this.getLanguageYearLabel);
     },
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;

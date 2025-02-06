@@ -1,29 +1,27 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center text-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
+      <span class="text-h5">Child Care Operating Funding Program</span>
     </div>
     <br />
-    <div class="row pt-4 justify-center">
-      <!-- <span class="text-h5">What would you like to change?</span> -->
-    </div>
+    <br />
 
     <v-form ref="isValidForm" v-model="isValidForm">
       <v-container>
-        <p class="text-h6 text-center">What changes do you want to make?</p>
+        <p class="text-h6 text-center">What changes do you want to request?</p>
         <v-row>
           <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="12" md="6" xl="4">
             <SmallCard>
               <template #content>
                 <div class="px-10">
-                  <p class="text-h6 text-center">Add a New facility to an existing organization</p>
+                  <p class="text-h6 text-center">Add a new facility to an existing organization</p>
                   <p class="px-2 text-center">
                     This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
                     information ready.
                   </p>
+                  <br />
                   <p class="px-2 text-center">
-                    You need to attach an <strong>updated</strong
-                    ><i> Community Care And Assisted Living Act</i> licence.
+                    You will need to attach a Community Care and Assisted Living Act licence.
                   </p>
                 </div>
               </template>
@@ -60,10 +58,11 @@
             <SmallCard :disable="!isMtfiEnabled()">
               <template #content>
                 <div class="px-10">
-                  <p class="text-h6 text-center">Mid-Term Fee Increase</p>
+                  <p class="text-h6 text-center">Mid-Term Fee Increase (MTFI)</p>
                   <p class="px-2 text-center">
                     Request a parent fee increase for a facility after you have received approval for the CCFRI.
                   </p>
+                  <br />
                   <p class="px-2 text-center">You may need to provide details about your expenses.</p>
                 </div>
               </template>
@@ -77,7 +76,7 @@
                     :loading="processing"
                     @click="goToMTFI()"
                   >
-                    Update parent fees
+                    Request change to parent fees
                   </v-btn>
                 </v-row>
               </template>

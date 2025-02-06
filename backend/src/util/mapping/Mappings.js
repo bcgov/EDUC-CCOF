@@ -461,12 +461,6 @@ const CCFRIApprovableFeeSchedulesMappings = [
   { back: 'ccof_mar', front: 'approvedFeeMar' },
 ];
 
-//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
-const ChangeRequestMappings = [
-  { back: 'ccof_change_requestid', front: 'changeRequestId' }, // null,
-  //{ back: '', front: ''}, // null,
-];
-
 const PdfDocumentMappings = [
   { back: 'annotationid', front: 'annotationId' },
   { back: 'filename', front: 'fileName' },
@@ -530,7 +524,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
-  ChangeRequestMappings,
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
   fundingAgreementMappings,
