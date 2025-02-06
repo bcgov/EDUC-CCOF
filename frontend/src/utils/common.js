@@ -36,6 +36,27 @@ export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
 }
 
+/**
+ * Checks if the time difference between `from` and `to` is greater than or equal to the specified number of hours.
+ *
+ * @param {string} from - The starting time in "HH:mm" format (e.g., "09:40").
+ * @param {string} to - The ending time in "HH:mm" format (e.g., "10:30").
+ * @param {number} difference - The minimum number of hours that `to` should be after `from` (e.g., 1 for 1 hour).
+ *
+ * @returns {boolean} - Returns `true` if the time difference between `from` and `to` is greater than or equal to `difference` hours,
+ *                     otherwise returns `false`.
+ */
+export function validateHourDifference(from, to, difference) {
+  // Extract and convert the time to minutes from "HH:mm" format
+  const minutesFrom = parseInt(from.split(':')[0], 10) * 60 + parseInt(from.split(':')[1], 10);
+  const minutesTo = parseInt(to.split(':')[0], 10) * 60 + parseInt(to.split(':')[1], 10);
+  if (isNaN(minutesFrom) || isNaN(minutesTo)) {
+    console.error('Invalid time format');
+    return false;
+  }
+  return minutesTo >= minutesFrom + difference * 60;
+}
+
 export function isChangeRequest(vueForm) {
   return vueForm?.$route?.path?.startsWith(PATHS.PREFIX.CHANGE_REQUEST);
 }

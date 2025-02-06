@@ -43,6 +43,9 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
+    showErrorMessage() {
+      return !this.isLocked && this.isValidated;
+    },
     hasLicenceCategory() {
       return (
         this.model.hasUnder36Months ||
@@ -62,6 +65,35 @@ export default {
         this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
         this.model.hasMultiAgeExtendedCC
       );
+    },
+    totalMaxSpacesUnder36ExtendedChildCare() {
+      return this.model.extendedChildCareUnder36Months4OrLess + this.model.extendedChildCareUnder36Months4OrMore;
+    },
+    totalMaxSpaces30MonthToSchoolAgeExtendedChildCare() {
+      return (
+        this.model.extendedChildCare36MonthsToSchoolAge4OrLess + this.model.extendedChildCare36MonthsToSchoolAge4OrMore
+      );
+    },
+    totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare() {
+      return this.model.extendedChildCareSchoolAge4OrLess + this.model.extendedChildCareSchoolAge4OrMore;
+    },
+    totalMaxSpacesMultiAgeExtendedChildCare() {
+      return this.model.multiAgeCare4OrLess + this.model.multiAgeCare4more;
+    },
+    isUnder36ExtendedChildCareValid() {
+      return !this.model.hasUnder36MonthsExtendedCC || this.totalMaxSpacesUnder36ExtendedChildCare > 0;
+    },
+    is30MonthToSchoolAgeExtendedChildCareValid() {
+      return !this.model.has30MonthToSchoolAgeExtendedCC || this.totalMaxSpaces30MonthToSchoolAgeExtendedChildCare > 0;
+    },
+    isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
+      return (
+        !this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
+        this.totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare > 0
+      );
+    },
+    isMultiAgeExtendedChildCareValid() {
+      return !this.model.hasMultiAgeExtendedCC || this.totalMaxSpacesMultiAgeExtendedChildCare > 0;
     },
   },
   data() {

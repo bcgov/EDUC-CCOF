@@ -198,12 +198,11 @@
               <v-checkbox
                 id="under-36months-checkbox"
                 v-model="model.hasUnder36Months"
+                label="Under 36 months"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Under 36 months</template>
-              </v-checkbox>
+              />
               <v-text-field
                 v-if="model.hasUnder36Months"
                 v-model.number="model.maxGroupChildCareUnder36"
@@ -219,12 +218,11 @@
               <v-checkbox
                 id="30months-to-schoolage-checkbox"
                 v-model="model.has30MonthToSchoolAge"
+                label="Group Child Care (30 months to School Age)"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Group Child Care (30 months to School Age)</template>
-              </v-checkbox>
+              />
               <v-text-field
                 v-if="model.has30MonthToSchoolAge"
                 v-model.number="model.maxGroupChildCare36"
@@ -240,18 +238,16 @@
               <v-checkbox
                 id="schoolage-care-checkbox"
                 v-model="model.hasSchoolAgeCareOnSchoolGrounds"
+                label="Group Child Care (School Age / School Age Care on School Grounds)"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Group Child Care (School Age / School Age Care on School Grounds)</template>
-              </v-checkbox>
+              />
               <v-text-field
                 v-if="model.hasSchoolAgeCareOnSchoolGrounds"
                 v-model.number="model.maxGroupChildCareSchool"
                 :disabled="isLocked"
                 type="number"
-                min="0"
                 variant="outlined"
                 :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                 label="Maximum Number for Group Child Care (School Age / School Age Care on School Grounds)"
@@ -262,12 +258,11 @@
               <v-checkbox
                 id="preschool-checkbox"
                 v-model="model.hasPreschool"
+                label="Preschool"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Preschool</template>
-              </v-checkbox>
+              />
               <v-text-field
                 v-if="model.hasPreschool"
                 v-model.number="model.maxPreschool"
@@ -283,12 +278,11 @@
               <v-checkbox
                 id="multi-age-checkbox"
                 v-model="model.hasMultiAge"
+                label="Multi-Age Child Care"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Multi-Age Child Care</template>
-              </v-checkbox>
+              />
               <v-text-field
                 v-if="model.hasMultiAge"
                 v-model.number="model.maxGroupChildCareMultiAge"
@@ -296,13 +290,13 @@
                 type="number"
                 variant="outlined"
                 :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
-                label="Maximum Multi-Age Child Care"
+                label="Maximum Number for Multi-Age Child Care"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(model, 'maxGroupChildCareMultiAge')"
               />
 
-              <div v-if="!isLocked && isValidated && !hasLicenceCategory" class="error-message pl-4">
-                At least one of the Licence Categories should be selected.
+              <div v-if="!isLocked && showErrorMessage && !hasLicenceCategory" class="error-message pl-4">
+                {{ ERROR_MESSAGES.REQUIRED }}
               </div>
 
               <div v-if="hasLicenceCategory" class="mt-4">
@@ -474,7 +468,6 @@
                   :disabled="isLocked"
                   type="number"
                   variant="outlined"
-                  min="1"
                   :rules="[...rules.required, rules.min(1), rules.max(7), rules.wholeNumber]"
                   label="Maximum number of days per week you offer extended hours of child care?"
                   @wheel="$event.target.blur()"
@@ -502,168 +495,204 @@
               <v-checkbox
                 id="under-36months-extendedCC-checkbox"
                 v-model="model.hasUnder36MonthsExtendedCC"
+                label="Under 36 months"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Under 36 months</template>
-              </v-checkbox>
-              <v-row v-if="model.hasUnder36MonthsExtendedCC">
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCareUnder36Months4OrLess"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrLess')"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCareUnder36Months4OrMore"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrMore')"
-                  />
-                </v-col>
-              </v-row>
+              />
+              <template v-if="model.hasUnder36MonthsExtendedCC">
+                <v-row>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCareUnder36Months4OrLess"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareUnder36)]"
+                      :error="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrLess')"
+                    />
+                  </v-col>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCareUnder36Months4OrMore"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareUnder36)]"
+                      :error="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareUnder36Months4OrMore')"
+                    />
+                  </v-col>
+                </v-row>
+                <div v-if="showErrorMessage && !isUnder36ExtendedChildCareValid" class="error-message pl-4">
+                  {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                </div>
+              </template>
 
               <v-checkbox
                 id="30months-to-schoolage-extendedCC-checkbox"
                 v-model="model.has30MonthToSchoolAgeExtendedCC"
+                label="Group Child Care (30 months to School Age)"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Group Child Care (30 months to School Age)</template>
-              </v-checkbox>
-              <v-row v-if="model.has30MonthToSchoolAgeExtendedCC">
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrLess')"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrMore')"
-                  />
-                </v-col>
-              </v-row>
+              />
+              <template v-if="model.has30MonthToSchoolAgeExtendedCC">
+                <v-row>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrLess"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCare36)]"
+                      :error="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="
+                        convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrLess')
+                      "
+                    />
+                  </v-col>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCare36MonthsToSchoolAge4OrMore"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCare36)]"
+                      :error="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="
+                        convertBlankNumberToNull(model, 'extendedChildCare36MonthsToSchoolAge4OrMore')
+                      "
+                    />
+                  </v-col>
+                </v-row>
+                <div v-if="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid" class="error-message pl-4">
+                  {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                </div>
+              </template>
 
               <v-checkbox
                 id="schoolage-care-extendedCC-checkbox"
                 v-model="model.hasSchoolAgeCareOnSchoolGroundsExtendedCC"
+                label="Group Child Care (School Age / School Age Care on School Grounds)"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Group Child Care (School Age / School Age Care on School Grounds)</template>
-              </v-checkbox>
-              <v-row v-if="model.hasSchoolAgeCareOnSchoolGroundsExtendedCC">
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCareSchoolAge4OrLess"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrLess')"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.extendedChildCareSchoolAge4OrMore"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrMore')"
-                  />
-                </v-col>
-              </v-row>
+              />
+              <template v-if="model.hasSchoolAgeCareOnSchoolGroundsExtendedCC">
+                <v-row>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCareSchoolAge4OrLess"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareSchool)]"
+                      :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrLess')"
+                    />
+                  </v-col>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.extendedChildCareSchoolAge4OrMore"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareSchool)]"
+                      :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'extendedChildCareSchoolAge4OrMore')"
+                    />
+                  </v-col>
+                </v-row>
+                <div
+                  v-if="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                  class="error-message pl-4"
+                >
+                  {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                </div>
+              </template>
 
               <v-checkbox
                 id="multi-age-extendedCC-checkbox"
                 v-model="model.hasMultiAgeExtendedCC"
+                label="Multi-Age Child Care"
                 color="primary"
                 :disabled="isLocked"
                 hide-details
-              >
-                <template #label>Multi-Age Child Care</template>
-              </v-checkbox>
-              <v-row v-if="model.hasMultiAgeExtendedCC">
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.multiAgeCare4OrLess"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareUnder36)]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4OrLess')"
-                  />
-                </v-col>
-                <v-col cols="12" lg="6">
-                  <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
-                  <v-text-field
-                    v-model.number="model.multiAgeCare4more"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    type="number"
-                    :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareUnder36)]"
-                    label="Maximum Spaces Offered"
-                    class="my-2"
-                    @wheel="$event.target.blur()"
-                    @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4more')"
-                  />
-                </v-col>
-              </v-row>
+              />
+              <template v-if="model.hasMultiAgeExtendedCC">
+                <v-row>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.multiAgeCare4OrLess"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareMultiAge)]"
+                      :error="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4OrLess')"
+                    />
+                  </v-col>
+                  <v-col cols="12" lg="6" class="py-0">
+                    <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
+                    <v-text-field
+                      v-model.number="model.multiAgeCare4more"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      type="number"
+                      :rules="[rules.wholeNumber, rules.max(model.maxGroupChildCareMultiAge)]"
+                      :error="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                      :hide-details="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                      label="Maximum Spaces Offered"
+                      class="my-2"
+                      @wheel="$event.target.blur()"
+                      @update:model-value="convertBlankNumberToNull(model, 'multiAgeCare4more')"
+                    />
+                  </v-col>
+                </v-row>
+                <div v-if="showErrorMessage && !isMultiAgeExtendedChildCareValid" class="error-message pl-4">
+                  {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                </div>
+              </template>
 
-              <div
-                v-if="!isLocked && isValidated && !hasLicenceCategoryWithExtendedChildCare"
-                class="error-message pl-4"
-              >
-                At least one of the Licence Categories should be selected.
+              <div v-if="showErrorMessage && !hasLicenceCategoryWithExtendedChildCare" class="error-message pl-4">
+                {{ ERROR_MESSAGES.REQUIRED }}
               </div>
             </v-container>
           </v-card>
@@ -690,6 +719,7 @@ import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 
 import fundMixing from '@/mixins/fundMixing.js';
 import globalMixin from '@/mixins/globalMixin.js';
+import { ERROR_MESSAGES } from '@/utils/constants.js';
 
 export default {
   components: { AppTimeInput },
@@ -703,9 +733,17 @@ export default {
       return (
         this.model.isCCOFComplete &&
         this.hasLicenceCategory &&
-        (this.model.isExtendedHours !== 'yes' || this.hasLicenceCategoryWithExtendedChildCare)
+        (this.model.isExtendedHours !== 'yes' ||
+          (this.hasLicenceCategoryWithExtendedChildCare &&
+            this.isUnder36ExtendedChildCareValid &&
+            this.is30MonthToSchoolAgeExtendedChildCareValid &&
+            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
+            this.isMultiAgeExtendedChildCareValid))
       );
     },
+  },
+  created() {
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
   },
 };
 </script>

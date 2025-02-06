@@ -387,3 +387,8 @@ export const BCSSA_REGION_LINKS = Object.freeze({
   FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
   FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
 });
+
+export const ERROR_MESSAGES = Object.freeze({
+  REQUIRED: 'This field is required',
+  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+});
