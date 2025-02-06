@@ -1,12 +1,13 @@
-const { defineConfig } = require('cypress')
+const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
     experimentalModifyObstructiveThirdPartyCode: true,
     defaultCommandTimeout: 10000,
-    reporter: 'mochawesome',
+    reporter: "mochawesome",
+    supportFile: false,
     reporterOptions: {
-      reportDir: 'cypress/reports',
+      reportDir: "cypress/reports",
       overwrite: true,
       charts: true,
       html: true,
@@ -14,4 +15,4 @@ module.exports = defineConfig({
     },
     setupNodeEvents(on, config) {},
   },
-})
+});
