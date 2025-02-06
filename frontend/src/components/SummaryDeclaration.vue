@@ -99,10 +99,10 @@
                 </v-expansion-panel>
               </div>
 
-              <div v-for="(facility, index) in summaryModel?.facilities" :key="facility?.facilityId" class="special">
+              <div v-for="facility in facilities" :key="facility?.facilityId" class="special">
                 <v-skeleton-loader
-                  v-if="isSummaryLoading[index]"
-                  :loading="isSummaryLoading[index]"
+                  v-if="facility.loading"
+                  :loading="facility.loading"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
 
@@ -567,6 +567,7 @@ export default {
     ...mapState(useSummaryDeclarationStore, [
       'declarationModel',
       'summaryModel',
+      'facilities',
       'isSummaryLoading',
       'isMainLoading',
       'isLoadingComplete',
@@ -652,13 +653,13 @@ export default {
       return isAnyApplicationUnlocked(applicationList);
     },
     isFacilitiesAvailable() {
-      return this.summaryModel?.facilities?.length > 0;
+      return this.facilities?.length > 0;
     },
     isSummaryComplete() {
       return this.invalidSummaryForms.length < 1;
     },
     allFacilitiesApproved() {
-      return this.summaryModel?.facilities?.every((facility) => {
+      return this.facilities?.every((facility) => {
         return facility.facilityInfo.facilityAccountNumber;
       });
     },
@@ -900,7 +901,7 @@ export default {
       this.updateNavBarStatus(formObj, isComplete);
     },
     expandAllPanels() {
-      this.summaryModel.facilities.forEach((facility) => {
+      this.facilities.forEach((facility) => {
         const facilityId = facility.facilityId;
         this.expand[facilityId] = [
           `${facilityId}-facility-information`,
