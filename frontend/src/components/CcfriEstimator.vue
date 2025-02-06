@@ -232,6 +232,7 @@
                 <v-col cols="4" class="pb-0">
                   <v-select
                     id="childAgeCategory"
+                    data-cy="childAgeCategoryDropdown"
                     v-model="child.childAgeCategory"
                     style="font-size: 16px !important"
                     :items="filteredChildAgeCategoryList"

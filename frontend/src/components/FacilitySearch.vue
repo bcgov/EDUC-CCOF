@@ -33,6 +33,7 @@
           <v-row>
             <v-col cols="10" sm="9" class="py-0 pr-0">
               <v-text-field
+                data-cy="facilitySearch"
                 ref="searchCriteria"
                 v-model="searchCriteria"
                 style="padding-left: 34px"
