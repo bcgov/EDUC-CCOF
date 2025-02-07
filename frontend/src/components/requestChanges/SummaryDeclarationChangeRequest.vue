@@ -461,6 +461,7 @@ export default {
     },
   },
   async created() {
+    this.isProcessing = true;
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
     this.model = deepCloneObject(this.declarationModel);
     // Determine:
@@ -474,6 +475,7 @@ export default {
       this.model.declarationAStatus = 1;
       this.model.declarationBStatus = undefined;
     }
+    this.isProcessing = false;
   },
   async mounted() {
     if (this.$route.path.endsWith('printable')) {
