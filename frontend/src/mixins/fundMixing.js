@@ -55,6 +55,14 @@ export default {
         this.model.hasMultiAge
       );
     },
+    hasSchoolAgeCareServices() {
+      return (
+        this.model.beforeSchool ||
+        this.model.afterSchool ||
+        this.model.beforeKindergarten ||
+        this.model.afterKindergarten
+      );
+    },
     hasExtendedHoursChildCare() {
       return this.model.isExtendedHours === 'yes';
     },
