@@ -19,22 +19,33 @@ function mapNMFApplicationObjectForBack(data) {
   data.remoteCommunities = data.remoteCommunities ? ((data.remoteCommunities === "Yes") ? 1 : 0) : null;
   return new MappableObjectForBack(data, NMFApplicationMappings).toJSON();
 }
-  
-async function getNMFApplication(req, res) {
-  let query = `ccof_rfi_pfi_nmfs?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId})`;
+
+async function getNmfApplicationByCcfriId(ccfriId) {
+  let query = `ccof_rfi_pfi_nmfs?$filter=(_ccof_applicationccfri_value eq ${ccfriId})`;
   log.info('GET NMF query ' + query);
+
+  const response = await getOperation(query);
+  console.log('response: ', minify(response.value));
+  console.log('response length: ', response.value.length);
+  if (response.value.length === 1) {
+    let nmfApplication = mapNMFApplicationObjectForFront(response.value[0]);
+    return nmfApplication;
+  } else if (response.value.length === 0) {
+    return {};
+  } else {
+    return null;
+  }
+}
+
+async function getNMFApplication(req, res) {
   try {
-    const response = await getOperation(query);
-    console.log('response: ', minify(response.value));
-    console.log('response length: ', response.value.length);
-    if (response.value.length === 1) {
-      let nmfApplication = mapNMFApplicationObjectForFront(response.value[0]);
-      return res.status(HttpStatus.OK).json(nmfApplication);
-    } else if (response.value.length === 0) {
-      return res.status(HttpStatus.OK).json({});
-    } else {
+    const nmfApplication = await getNmfApplicationByCcfriId(req.params.ccfriId);
+
+    if (nmfApplication === null) {
       return res.status(HttpStatus.NOT_FOUND).json({message: 'There is more than 1 NMF application'});
     }
+
+    return res.status(HttpStatus.OK).json(nmfApplication);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
@@ -45,7 +56,7 @@ async function updateNMFApplication(req, res) {
   try {
     const nmfApplication = mapNMFApplicationObjectForBack(req.body.nmfModel);
     const nmfpfiid = req.params.nmfpfiid;
-    
+
     delete nmfApplication.ccof_rfi_pfi_nmfid;
 
     // update isComplete status
@@ -88,4 +99,5 @@ module.exports = {
   getNMFApplication,
   createNMFApplication,
   updateNMFApplication,
+  getNmfApplicationByCcfriId
 };
