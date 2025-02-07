@@ -461,7 +461,6 @@ export default {
     },
   },
   async created() {
-    console.log('created called');
     this.isProcessing = true;
     await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
     this.model = deepCloneObject(this.declarationModel);
