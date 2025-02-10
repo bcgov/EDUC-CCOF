@@ -456,6 +456,15 @@ async function printPdf(req, numOfRetries = 0) {
     log.info('printPdf :: Waiting for signature field to appear');
     await page.waitForSelector('#signatureTextField', { visible: true });
 
+    const signatureContent = await page.$eval('#signatureTextField', (el) => el.value.trim());
+
+    if (!signatureContent) {
+      await sleep(2000);
+      throw new Error('printPdf :: ERROR: No signature found on Declaration.');
+    }
+
+    log.info(`printPdf :: signatureTextField content is: ${signatureContent}`);
+
     log.info('printPdf :: Begin Generating PDF');
     const pdfStartTime = Date.now();
     const pdfBuffer = await page.pdf({
