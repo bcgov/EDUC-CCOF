@@ -460,7 +460,7 @@ async function printPdf(req, numOfRetries = 0) {
 
     if (!signatureContent) {
       await sleep(2000);
-      throw new Error('printPdf :: ERROR: No signature found on Decleration.');
+      throw new Error('printPdf :: ERROR: No signature found on Declaration.');
     }
 
     log.info(`printPdf :: signatureTextField content is: ${signatureContent}`);
