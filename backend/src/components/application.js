@@ -456,6 +456,26 @@ async function printPdf(req, numOfRetries = 0) {
     log.info('printPdf :: Waiting for signature field to appear');
     await page.waitForSelector('#signatureTextField', { visible: true });
 
+    let signatureContent = '';
+    let signatureRetryCount = 0;
+
+    while (signatureRetryCount < 5) {
+      signatureContent = await page.$eval('#signatureTextField', (el) => el.value.trim());
+
+      if (signatureContent) {
+        log.info(`printPdf :: Signature field has content: "${signatureContent}"`);
+        break;
+      }
+
+      signatureRetryCount++;
+      log.warn(`printPdf :: WARN: Signature field is empty (Attempt ${signatureRetryCount}/5). Retrying in 2s...`);
+      await sleep(2000);
+    }
+
+    if (!signatureContent) {
+      throw new Error('printPdf :: ERROR: No signature found after 5 retries');
+    }
+
     log.info('printPdf :: Begin Generating PDF');
     const pdfStartTime = Date.now();
     const pdfBuffer = await page.pdf({
