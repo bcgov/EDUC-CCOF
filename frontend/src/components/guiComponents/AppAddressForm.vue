@@ -111,7 +111,7 @@ export default {
       type: String,
       default: null,
     },
-    hasBCProvinceValidation: {
+    hasBcProvinceValidation: {
       type: Boolean,
       default: false,
     },
@@ -128,7 +128,7 @@ export default {
   },
   computed: {
     provinceRules() {
-      return this.hasBCProvinceValidation
+      return this.hasBcProvinceValidation
         ? [...rules.required, rules.equalTo('BC', 'Facilities must be located within BC')]
         : rules.required;
     },

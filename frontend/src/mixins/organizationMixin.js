@@ -94,6 +94,7 @@ export default {
 
     updateMailingAddress(updatedModel) {
       if (isEmpty(updatedModel)) return;
+      this.model.isOrgMailingAddressEnteredManually = updatedModel.manualEntry;
       this.model.address1 = updatedModel.address;
       this.model.city1 = updatedModel.city;
       this.model.province1 = updatedModel.province;
@@ -101,6 +102,7 @@ export default {
     },
     updateStreetAddress(updatedModel) {
       if (isEmpty(updatedModel)) return;
+      this.model.isOrgStreetAddressEnteredManually = updatedModel.manualEntry;
       this.model.address2 = updatedModel.address;
       this.model.city2 = updatedModel.city;
       this.model.province2 = updatedModel.province;

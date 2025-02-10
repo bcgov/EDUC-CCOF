@@ -35,11 +35,12 @@
 
             <AppAddressForm
               :disabled="isLocked"
+              :manual-entry="model.isFacilityAddressEnteredManually"
               :address="model.facilityAddress"
               :city="model.city"
               :province="model.province"
               :postal-code="model.postalCode"
-              :has-BC-province-validation="true"
+              :has-bc-province-validation="true"
               address-label="Facility Street Address"
               @update="updateStreetAddress"
             />
@@ -179,6 +180,7 @@ export default {
   methods: {
     updateStreetAddress(updatedModel) {
       if (isEmpty(updatedModel)) return;
+      this.model.isFacilityAddressEnteredManually = updatedModel.manualEntry;
       this.model.facilityAddress = updatedModel.address;
       this.model.city = updatedModel.city;
       this.model.province = updatedModel.province;
