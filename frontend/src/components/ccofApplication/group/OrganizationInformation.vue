@@ -55,6 +55,7 @@
               <div class="ma-4 mb-0">Organization Mailing Address</div>
               <AppAddressForm
                 :disabled="isLocked"
+                :manual-entry="model.isOrgMailingAddressEnteredManually"
                 :address="model.address1"
                 :city="model.city1"
                 :province="model.province1"
@@ -83,6 +84,7 @@
               <AppAddressForm
                 v-if="model.isSameAsMailing === false"
                 :disabled="isLocked"
+                :manual-entry="model.isOrgStreetAddressEnteredManually"
                 :address="model.address2"
                 :city="model.city2"
                 :province="model.province2"

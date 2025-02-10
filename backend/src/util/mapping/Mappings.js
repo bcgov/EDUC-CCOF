@@ -19,10 +19,9 @@ const OrganizationMappings = [
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
-  { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
+  { back: 'ccof_is_org_mailing_address_entered_manually', front: 'isOrgMailingAddressEnteredManually' },
+  { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
 const FacilityMappings = [
@@ -42,9 +41,7 @@ const FacilityMappings = [
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
-
-  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+  { back: 'ccof_is_facility_address_entered_manually', front: 'isFacilityAddressEnteredManually' },
 ];
 
 const CCFRIFacilityMappings = [
