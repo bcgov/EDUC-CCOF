@@ -104,8 +104,8 @@
         <h4 style="color: #003466">
           Facility Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error"
             >Your form is missing required information. Click here to view.</span
           >
         </h4>
@@ -347,9 +347,7 @@
         <v-row v-if="!isValidForm" no-gutters>
           <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
           <router-link :to="getRoutingPathGroup()">
-            <span style="color: #ff5252; text-underline: black">
-              <u>To add this information, click here. This will bring you to a different page.</u>
-            </span>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </v-row>
       </v-expansion-panel-text>
@@ -364,8 +362,8 @@
         <h4 style="color: #003466">
           Facility Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error"
             >Your form is missing required information. Click here to view.</span
           >
         </h4>
@@ -507,9 +505,9 @@
                 <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
 
                 <router-link :to="getRoutingPathFamily()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
+                  <u class="text-error">
+                    To add this information, click here. This will bring you to a different page.
+                  </u>
                 </router-link>
               </v-col>
             </v-row>
@@ -663,7 +661,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

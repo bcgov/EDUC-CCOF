@@ -1,78 +1,87 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-checkbox
-      v-model="model.manualEntry"
-      :disabled="disabled"
-      hide-details
-      color="primary"
-      label="I want to enter my address manually"
-    />
-    <v-row>
-      <v-col>
-        <v-text-field
-          v-if="model.manualEntry"
-          v-model="model.address"
-          :disabled="disabled"
-          variant="outlined"
-          :rules="rules.required"
-          :label="addressLabel"
-        />
-        <AppAddressLookup
-          v-else
-          :model-value="model.address"
-          :disabled="disabled"
-          :rules="rules.required"
-          :label="addressLabel"
-          @update-address="updateAddress"
-        />
-      </v-col>
+    <v-row no-gutters align="center">
+      <AppTooltip
+        tooltip-content="Select this option if your address is incorrect or missing from the address lookup tool"
+      />
+      <v-checkbox
+        v-model="model.manualEntry"
+        :disabled="disabled"
+        hide-details
+        color="primary"
+        label="Enter address manually"
+        class="ml-2"
+      />
     </v-row>
-    <v-row>
-      <v-col cols="12" sm="6" md="4">
-        <v-text-field
-          v-model="model.city"
-          :disabled="disabled"
-          :readonly="!model.manualEntry"
-          variant="outlined"
-          :rules="rules.required"
-          label="City/Town"
-        />
-      </v-col>
-      <v-col cols="12" sm="6" md="4">
-        <v-select
-          v-model="model.province"
-          :items="PROVINCES"
-          item-value="value"
-          :rules="provinceRules"
-          :disabled="disabled"
-          :readonly="!model.manualEntry"
-          label="Province"
-          variant="outlined"
-        />
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-text-field
-          v-model="model.postalCode"
-          :disabled="disabled"
-          :readonly="!model.manualEntry"
-          variant="outlined"
-          :rules="[...rules.required, ...rules.postalCode]"
-          label="Postal Code"
-        />
-      </v-col>
-    </v-row>
+    <div :class="hasLeftPadding ? 'pl-lg-11' : ''">
+      <v-row>
+        <v-col>
+          <v-text-field
+            v-if="model.manualEntry"
+            v-model="model.address"
+            :disabled="disabled"
+            variant="outlined"
+            :rules="rules.required"
+            :label="addressLabel"
+          />
+          <AppAddressLookup
+            v-else
+            :model-value="model.address"
+            :disabled="disabled"
+            :rules="rules.required"
+            :label="addressLabel"
+            @update-address="updateAddress"
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" sm="6" md="4">
+          <v-text-field
+            v-model="model.city"
+            :disabled="disabled"
+            :readonly="!model.manualEntry"
+            variant="outlined"
+            :rules="rules.required"
+            label="City/Town"
+          />
+        </v-col>
+        <v-col cols="12" sm="6" md="4">
+          <v-select
+            v-model="model.province"
+            :items="PROVINCES"
+            item-value="value"
+            :rules="provinceRules"
+            :disabled="disabled"
+            :readonly="!model.manualEntry"
+            label="Province"
+            variant="outlined"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <v-text-field
+            v-model="model.postalCode"
+            :disabled="disabled"
+            :readonly="!model.manualEntry"
+            variant="outlined"
+            :rules="[...rules.required, ...rules.postalCode]"
+            label="Postal Code"
+          />
+        </v-col>
+      </v-row>
+    </div>
   </v-container>
 </template>
 
 <script>
 import { cloneDeep, isEmpty } from 'lodash';
 import AppAddressLookup from '@/components/guiComponents/AppAddressLookup.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import { PROVINCES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'AppAddressForm',
-  components: { AppAddressLookup },
+  components: { AppAddressLookup, AppTooltip },
   props: {
     disabled: {
       type: Boolean,
@@ -103,6 +112,10 @@ export default {
       default: null,
     },
     hasBCProvinceValidation: {
+      type: Boolean,
+      default: false,
+    },
+    hasLeftPadding: {
       type: Boolean,
       default: false,
     },

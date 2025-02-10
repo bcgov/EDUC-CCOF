@@ -390,5 +390,15 @@ export const BCSSA_REGION_LINKS = Object.freeze({
 
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
+  LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
   INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+});
+
+export const ORGANIZATION_TYPES = Object.freeze({
+  NON_PROFIT_SOCIETY: 100000000,
+  PUBLIC_INSTITUTION: 100000001,
+  REGISTERED_COMPANY: 100000002,
+  LOCAL_GOVERNMENT: 100000003,
+  FIRST_NATIONS_GOVERNMENT: 100000004,
+  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
 });

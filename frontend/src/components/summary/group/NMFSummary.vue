@@ -5,8 +5,8 @@
         <h4 style="color: #003466">
           NMF
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error"
             >Your form is missing required information. Click here to view</span
           >
         </h4>
@@ -172,7 +172,7 @@
         </v-row>
         <div class="mt-6">
           <router-link v-if="!isValidForm" :to="pcfLink">
-            <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
       </v-expansion-panel-text>
@@ -246,7 +246,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

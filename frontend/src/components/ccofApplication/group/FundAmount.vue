@@ -1,8 +1,11 @@
 <template>
   <v-form ref="form" v-model="model.isCCOFComplete">
     <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
-      <v-container class="mx-lg-12">
+      <v-container class="mx-lg-16">
         <v-card class="cc-top-level-card pa-2">
+          <v-card-title class="text-center pb-0">
+            <h3>Facility Licence and Service Details</h3>
+          </v-card-title>
           <v-container>
             <v-row>
               <v-col cols="12" md="6">
@@ -59,7 +62,7 @@
                   inline
                   label="Are there months when ALL of the programs at this facility are closed for the entire month?"
                   color="primary"
-                  class="no-margin-left"
+                  class="application-label"
                 >
                   <v-radio label="Yes" value="yes" />
                   <v-radio label="No" value="no" />
@@ -200,11 +203,14 @@
 
         <v-card class="cc-top-level-card pa-2">
           <v-container>
-            <div>Select the licence category(ies) that apply to your facility(ies).</div>
+            <div>
+              Select each licence category that is listed on your Community Care and Assisted Living Act Facility
+              Licence
+            </div>
             <v-checkbox
               id="under-36months-checkbox"
               v-model="model.hasUnder36Months"
-              label="Under 36 months"
+              label="Group Child Care (Under 36 Months)"
               color="primary"
               :disabled="isLocked"
               hide-details
@@ -216,7 +222,7 @@
               type="number"
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
-              label="Maximum Number for Group Child Care (under 36 months)"
+              label="Maximum Number for Group Child Care (Under 36 Months)"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(model, 'maxGroupChildCareUnder36')"
             />
@@ -224,7 +230,7 @@
             <v-checkbox
               id="30months-to-schoolage-checkbox"
               v-model="model.has30MonthToSchoolAge"
-              label="Group Child Care (30 months to School Age)"
+              label="Group Child Care (30 Months to School Age)"
               color="primary"
               :disabled="isLocked"
               hide-details
@@ -236,7 +242,7 @@
               type="number"
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
-              label="Maximum Number for Group Child Care (30 months to School Age)"
+              label="Maximum Number for Group Child Care (30 Months to School Age)"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(model, 'maxGroupChildCare36')"
             />
@@ -302,7 +308,7 @@
             />
 
             <div v-if="showErrorMessage && !hasLicenceCategory" class="error-message pl-4">
-              {{ ERROR_MESSAGES.REQUIRED }}
+              {{ ERROR_MESSAGES.LICENCE_CATEGORY_REQUIRED }}
             </div>
 
             <div v-if="hasLicenceCategory" class="mt-4">
@@ -417,7 +423,7 @@
               inline
               label="Is the facility located on school property?"
               color="primary"
-              class="no-margin-left"
+              class="application-label"
             >
               <v-radio label="Yes" value="yes" />
               <v-radio label="No" value="no" />
@@ -468,7 +474,7 @@
               inline
               label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?"
               color="primary"
-              class="no-margin-left"
+              class="application-label"
             >
               <v-radio label="Yes" value="yes" />
               <v-radio label="No" value="no" />
@@ -502,12 +508,15 @@
 
         <v-card v-if="hasExtendedHoursChildCare" class="cc-top-level-card pa-2">
           <v-container>
-            <div>Select the licence category(ies) that you provide extended hours of child care.</div>
+            <div>
+              Select each licence category for which you offer extended hours (care before 6:00 am, after 7:00pm or
+              overnight service regularly offered)
+            </div>
 
             <v-checkbox
               id="under-36months-extendedCC-checkbox"
               v-model="model.hasUnder36MonthsExtendedCC"
-              label="Under 36 months"
+              label="Group Child Care (Under 36 Months)"
               color="primary"
               :disabled="isLocked"
               hide-details
@@ -555,7 +564,7 @@
             <v-checkbox
               id="30months-to-schoolage-extendedCC-checkbox"
               v-model="model.has30MonthToSchoolAgeExtendedCC"
-              label="Group Child Care (30 months to School Age)"
+              label="Group Child Care (30 Months to School Age)"
               color="primary"
               :disabled="isLocked"
               hide-details
@@ -700,7 +709,7 @@
             </template>
 
             <div v-if="showErrorMessage && !hasLicenceCategoryWithExtendedChildCare" class="error-message pl-4">
-              {{ ERROR_MESSAGES.REQUIRED }}
+              {{ ERROR_MESSAGES.LICENCE_CATEGORY_REQUIRED }}
             </div>
           </v-container>
         </v-card>
@@ -756,9 +765,6 @@ export default {
 </script>
 
 <style scoped>
-:deep(.no-margin-left .v-label) {
-  margin-left: 0 !important;
-}
 :deep(.v-selection-control-group) {
   padding-left: 0 !important;
 }

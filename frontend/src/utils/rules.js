@@ -34,10 +34,10 @@ const rules = {
     return (v) => !v || validateHourDifference(hourFrom, v, difference) || message;
   },
   notRequired: [() => true],
-  max(number, message = number != null ? `Max exceeded: ${number}` : 'Max exceeded') {
+  max(number, message = number != null ? `Maximum entry: ${number}` : 'Max exceeded') {
     return (v) => !v || v <= number || message;
   },
-  min(number, message = `Min exceeded: ${number}`) {
+  min(number, message = number != null ? `Minimum entry: ${number}` : 'Min exceeded') {
     return (v) => v >= number || message;
   },
   maxLength(number) {

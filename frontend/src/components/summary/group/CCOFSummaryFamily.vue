@@ -5,8 +5,8 @@
         <h4 style="color: #003466">
           Child Care Operating Funding (CCOF)
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252">
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error">
             Your form is missing required information. Click here to view.
           </span>
         </h4>
@@ -535,22 +535,11 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-                <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-                <!-- <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div v-if="!isValidForm">
+          <router-link :to="getRoutingPath()">
+            <u class="text-error"> To add this information, click here. This will bring you to a different page. </u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
@@ -642,11 +631,11 @@ export default {
   color: black;
 }
 :deep(.summary-value .v-label) {
-  color: red;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 .summary-label-smaller {

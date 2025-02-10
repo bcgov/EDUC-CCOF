@@ -5,10 +5,10 @@
         <h4 class="blueText">
           Parent fees
           <v-icon v-if="isValidForm && isNewCcfriValid" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm || !isNewCcfriValid" color="#ff5252" size="large">
+          <v-icon v-if="!isValidForm || !isNewCcfriValid" class="text-error" size="large">
             mdi-alert-circle-outline
           </v-icon>
-          <span v-if="!isValidForm || !isNewCcfriValid" style="color: #ff5252"
+          <span v-if="!isValidForm || !isNewCcfriValid" class="text-error"
             >Your form is missing required information. Click here to view.
           </span>
         </h4>
@@ -465,19 +465,11 @@
           </v-row>
         </div>
 
-        <v-row v-if="!isValidForm || !isNewCcfriValid" class="d-flex justify-start pt-4">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col class="d-flex justify-start">
-                <router-link :to="getRoutingPath">
-                  <span style="color: #ff5252; text-underline: black">
-                    <u>To add this information, click here. This will bring you to a different page.</u>
-                  </span>
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div v-if="!isValidForm || !isNewCcfriValid">
+          <router-link :to="getRoutingPath">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
@@ -598,8 +590,8 @@ export default {
   color: #003466 !important;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: #d8292f !important;
+  opacity: 1 !important;
 }
 </style>

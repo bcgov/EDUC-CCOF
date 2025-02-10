@@ -5,8 +5,8 @@
         <h4 style="color: #003466">
           RFI
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error"
             >Your form is missing required information. Click here to view.</span
           >
         </h4>
@@ -772,7 +772,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

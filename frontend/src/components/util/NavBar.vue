@@ -960,7 +960,7 @@ export default {
         this.navBarList?.forEach((item) => {
           items.push(
             {
-              title: 'Facility',
+              title: 'Facility Information',
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
@@ -973,7 +973,7 @@ export default {
               navBarId: navBarId++,
             },
             {
-              title: 'Funding',
+              title: 'Licence and Service Details',
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               link: { name: 'Funding Amount Guid', params: { urlGuid: item.ccofBaseFundingId } },

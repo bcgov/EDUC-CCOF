@@ -7,10 +7,10 @@
           <v-icon v-if="isLoadingComplete && isChangeNotificationFormComplete" color="green" size="large">
             mdi-check-circle-outline
           </v-icon>
-          <v-icon v-if="isLoadingComplete && !isChangeNotificationFormComplete" color="#ff5252" size="large">
+          <v-icon v-if="isLoadingComplete && !isChangeNotificationFormComplete" class="text-error" size="large">
             mdi-alert-circle-outline
           </v-icon>
-          <span v-if="isLoadingComplete && !isChangeNotificationFormComplete" style="color: #ff5252"
+          <span v-if="isLoadingComplete && !isChangeNotificationFormComplete" class="text-error"
             >Your form is missing required information. Click here to view.
           </span>
         </h4>
@@ -56,9 +56,7 @@
           </div>
         </div>
         <router-link v-if="!isChangeNotificationFormComplete" :to="getRoutingPath">
-          <span style="color: #ff5252">
-            <u>To add this information, click here. This will bring you to a different page.</u>
-          </span>
+          <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
         </router-link>
       </v-expansion-panel-text>
     </v-form>
@@ -145,7 +143,7 @@ export default {
 
 .summary-value-missing {
   font-size: medium;
-  color: #ff5252 !important;
+  color: #d8292f !important;
 }
 
 .blueText {

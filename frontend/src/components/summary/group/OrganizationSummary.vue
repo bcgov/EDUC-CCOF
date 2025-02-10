@@ -5,10 +5,12 @@
         <h4 style="color: #003466">
           Organization Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm && !isProcessing" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm && !isProcessing" style="color: #ff5252"
-            >Your form is missing required information. Click here to view</span
-          >
+          <v-icon v-if="!isValidForm && !isProcessing" class="text-error" size="large">
+            mdi-alert-circle-outline
+          </v-icon>
+          <span v-if="!isValidForm && !isProcessing" class="text-error">
+            Your form is missing required information. Click here to view
+          </span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
@@ -195,8 +197,8 @@
             </v-col>
             <v-col
               v-if="
-                summaryModel?.organization?.organizationType == 100000000 ||
-                summaryModel?.organization?.organizationType == 100000002
+                summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
+                summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.REGISTERED_COMPANY
               "
               cols="12"
               md="4"
@@ -274,9 +276,7 @@
         </div>
         <div v-if="!isValidForm">
           <router-link :to="getRoutingPath()">
-            <span style="color: #ff5252; text-underline: black">
-              <u>To add this information, click here. This will bring you to a different page.</u>
-            </span>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
       </v-expansion-panel-text>
@@ -288,7 +288,7 @@ import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
-import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationSummary',
@@ -339,6 +339,7 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
   },
   methods: {
     getRoutingPath() {
@@ -350,19 +351,17 @@ export default {
     },
     getOrgTypeString() {
       switch (this.summaryModel?.organization?.organizationType) {
-        case !this.summaryModel?.organization?.organizationType:
-          return '';
-        case 100000000:
+        case ORGANIZATION_TYPES.NON_PROFIT_SOCIETY:
           return 'Non-Profit Society';
-        case 100000001:
+        case ORGANIZATION_TYPES.PUBLIC_INSTITUTION:
           return 'Public Institution(college/university)';
-        case 100000002:
+        case ORGANIZATION_TYPES.REGISTERED_COMPANY:
           return 'Registered Company';
-        case 100000003:
+        case ORGANIZATION_TYPES.LOCAL_GOVERNMENT:
           return 'Local Government';
-        case 100000004:
+        case ORGANIZATION_TYPES.FIRST_NATIONS_GOVERNMENT:
           return 'First Nations Government';
-        case 100000005:
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP:
           return 'Sole Proprietorship or Partnership';
         default:
           return '';
@@ -384,12 +383,12 @@ export default {
 
 *:disabled {
   background-color: dimgrey !important;
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

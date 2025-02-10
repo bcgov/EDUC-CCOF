@@ -239,7 +239,7 @@
                     variant="solo"
                     hide-details
                     readonly
-                    :rules="rules.required"
+                    :rules="[...rules.required, rules.validHourTo(funding?.hoursFrom)]"
                   />
                 </v-col>
               </v-row>
@@ -255,7 +255,7 @@
                   <span class="summary-label">Maximum Licensed Capacity</span>
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start pb-2 pt-2">
-                  <span class="summary-label">Group Child Care (Under 36 months)</span>
+                  <span class="summary-label">Group Child Care (Under 36 Months)</span>
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start pb-2 pt-3">
                   <span class="summary-label">Group Child Care (30 Months to School Age)</span>
@@ -619,7 +619,7 @@
                   <span class="summary-value pt-1">Type of Service</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                  <span class="summary-label">Group Child Care (Under 36 months)</span>
+                  <span class="summary-label">Group Child Care (Under 36 Months)</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
                   <span class="summary-label">Group Child Care (30 Months to School Age)</span>

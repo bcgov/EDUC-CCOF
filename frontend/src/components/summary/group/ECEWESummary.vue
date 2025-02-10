@@ -6,8 +6,8 @@
         {{ facilityInformationExists ? 'Facility Information' : 'Organization Information' }}
 
         <template v-if="(!isValidForm || showCSSEAWarning) && !isProcessing">
-          <v-icon color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span style="color: #ff5252">Your form is missing required information. Click here to view.</span>
+          <v-icon class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span class="text-error">Your form is missing required information. Click here to view.</span>
         </template>
         <v-icon v-else-if="isValidForm && !isProcessing" color="green" size="large"> mdi-check-circle-outline </v-icon>
       </h4>
@@ -83,7 +83,7 @@
                     <span class="summary-label pt-3">
                       Are you a public sector employer, as defined in the Public Sector Employers Act?
                     </span>
-                    <span v-if="showCSSEAWarning" style="color: red" class="ml-5">
+                    <span v-if="showCSSEAWarning" class="ml-5 text-error">
                       <u>Invalid Response</u>
                     </span>
                     <v-text-field
@@ -318,9 +318,7 @@
           </div>
           <div v-if="!isValidForm || showCSSEAWarning">
             <router-link :to="routingPath">
-              <span style="color: red">
-                <u>To add this information, click here. This will bring you to a different page.</u>
-              </span>
+              <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
             </router-link>
           </div>
         </v-container>
@@ -574,7 +572,7 @@ export default {
   font-weight: bold;
 }
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 </style>
