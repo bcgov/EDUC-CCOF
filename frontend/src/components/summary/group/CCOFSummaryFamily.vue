@@ -66,7 +66,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hasClosedMonth?.toUpperCase()"
+                    :model-value="funding?.hasClosedMonth ? 'YES' : 'NO'"
                     class="summary-value"
                     density="compact"
                     flat
@@ -79,7 +79,7 @@
               </v-row>
             </v-col>
             <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row v-if="funding?.hasClosedMonth?.toUpperCase() == 'YES'" no-gutters class="d-flex justify-start">
+              <v-row v-if="funding?.hasClosedMonth" no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Months where ALL of the programs at this facility are closed for the entire month:
@@ -322,7 +322,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isExtendedHours?.toUpperCase()"
+                    :model-value="funding?.isExtendedHours ? 'YES' : 'NO'"
                     class="summary-value"
                     density="compact"
                     flat
@@ -335,7 +335,7 @@
               </v-row>
             </v-col>
           </v-row>
-          <span v-if="funding?.isExtendedHours?.toUpperCase() === 'YES'">
+          <span v-if="funding?.isExtendedHours">
             <v-row class="d-flex justify-start">
               <v-col cols="6" lg="6" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">

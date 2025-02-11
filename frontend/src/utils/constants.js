@@ -68,6 +68,8 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
   MTFI: 'Midterm Parent Fee Increase',
+  FACILITY_INFO: 'Facility Information',
+  LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
 });
 
 export const CHANGE_TYPES = Object.freeze({

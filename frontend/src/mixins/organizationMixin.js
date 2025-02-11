@@ -49,7 +49,7 @@ export default {
       businessId: this.businessId,
     };
   },
-  async mounted() {
+  async created() {
     this.businessId = this.userInfo.userName;
 
     if (this.isStarted) {

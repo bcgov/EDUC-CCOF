@@ -47,7 +47,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 :rules="rules.required"
-                label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)"
+                label="Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)"
                 class="my-4"
               >
                 <template #prepend>
@@ -62,7 +62,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 :rules="rules.required"
-                label="Incorporation Number (as it appears in BC Corporate Registry)"
+                label="Incorporation Number (as it appears in BC Registries and Online Services)"
               >
                 <template #prepend>
                   <AppTooltip
@@ -118,7 +118,7 @@
               />
               <div class="pl-lg-11">
                 <v-divider />
-                <div class="my-4">Signing Authority Information</div>
+                <div class="my-4">Organization's Authorized Signing Authority Information</div>
               </div>
 
               <v-row v-if="!isSoleProprietorshipPartnership">
@@ -157,7 +157,7 @@
                     variant="outlined"
                     required
                     :rules="[...rules.required, rules.phone]"
-                    label="Phone Number of the Signing Authority"
+                    label="Phone Number of the Organization's Authorized Signing Authority"
                   />
                 </v-col>
                 <v-col cols="12" md="6">
@@ -171,9 +171,6 @@
                   />
                 </v-col>
               </v-row>
-
-              <v-divider class="ml-lg-11 mb-4" />
-
               <v-row>
                 <v-col cols="12" md="6" class="pl-lg-14">
                   <v-text-field
@@ -183,7 +180,7 @@
                     required
                     type="email"
                     :rules="[...rules.required, ...rules.email]"
-                    label="Email Address of Organization Signing Authority"
+                    label="Email Address of the Organization's Authorized Signing Authority"
                   />
                 </v-col>
               </v-row>

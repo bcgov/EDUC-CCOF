@@ -63,9 +63,6 @@ export default {
         this.model.afterKindergarten
       );
     },
-    hasExtendedHoursChildCare() {
-      return this.model.isExtendedHours === 'yes';
-    },
     hasLicenceCategoryWithExtendedChildCare() {
       return (
         this.model.hasUnder36MonthsExtendedCC ||

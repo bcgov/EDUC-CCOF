@@ -56,7 +56,7 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col v-if="funding?.hasClosedMonth?.toUpperCase() === 'YES'" cols="12" lg="6" class="pb-0 pt-0">
+            <v-col v-if="funding?.hasClosedMonth" cols="12" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
@@ -245,6 +245,28 @@
               </v-row>
             </v-col>
           </v-row>
+          <div>
+            <v-row no-gutters class="mt-4 mb-4">
+              <v-col cols="6" class="summary-value">Type of Service</v-col>
+              <v-col cols="6" class="summary-value">Maximum Number</v-col>
+            </v-row>
+            <v-row v-if="funding?.hasUnder36Months" no-gutters>
+              <v-col cols="6" class="summary-label">Group Child Care (Under 36 Months)</v-col>
+              <v-col cols="6" class="summary-value">
+                <v-text-field
+                  placeholder="Required"
+                  :model-value="funding?.maxGroupChildCareUnder36"
+                  class="summary-value"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+            </v-row>
+          </div>
           <v-row class="d-flex justify-start">
             <v-col cols="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
@@ -291,6 +313,7 @@
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
+                    v-if="funding?.hasUnder36Months"
                     placeholder="Required"
                     :model-value="funding?.maxGroupChildCareUnder36"
                     class="summary-value"
@@ -304,6 +327,7 @@
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
+                    v-if="funding?.has30MonthToSchoolAge"
                     placeholder="Required"
                     :model-value="funding?.maxGroupChildCare36"
                     class="summary-value"
@@ -317,6 +341,7 @@
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
+                    v-if="funding?.hasPreschool"
                     placeholder="Required"
                     :model-value="funding?.maxPreschool"
                     class="summary-value"
@@ -330,6 +355,7 @@
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
+                    v-if="funding?.hasSchoolAgeCareOnSchoolGrounds"
                     placeholder="Required"
                     :model-value="funding?.maxGroupChildCareSchool"
                     class="summary-value"
@@ -343,6 +369,7 @@
                 </v-col>
                 <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
+                    v-if="funding?.hasMultiAge"
                     placeholder="Required"
                     :model-value="funding?.maxGroupChildCareMultiAge"
                     class="summary-value"
@@ -483,7 +510,7 @@
               </v-col>
             </v-row>
           </span>
-          <v-row v-if="funding?.maxGroupChildCareSchool > 0" class="pb-0 pt-0">
+          <v-row class="pb-0 pt-0">
             <v-col cols="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" sm="6" lg="4" xl="3" class="d-flex justify-start">
@@ -492,7 +519,7 @@
                 <v-col cols="12" sm="6" lg="8" xl="9" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isSchoolProperty?.toUpperCase()"
+                    :model-value="funding?.isSchoolProperty ? 'YES' : 'NO'"
                     class="summary-value"
                     density="compact"
                     flat
@@ -539,7 +566,7 @@
                 <v-col cols="12" sm="6" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isExtendedHours?.toUpperCase()"
+                    :model-value="funding?.isExtendedHours ? 'YES' : 'NO'"
                     class="summary-value"
                     density="compact"
                     flat
@@ -552,7 +579,7 @@
               </v-row>
             </v-col>
           </v-row>
-          <span v-if="funding?.isExtendedHours?.toUpperCase() === 'YES'">
+          <span v-if="funding?.isExtendedHours">
             <v-row class="d-flex justify-start">
               <v-col cols="6" lg="6" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
@@ -842,7 +869,7 @@ export default {
       return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
     },
     showSchoolPropertyQuestion() {
-      return this.funding?.maxGroupChildCareSchool > 0 && this.funding?.isSchoolProperty?.toUpperCase() === 'YES';
+      return this.funding?.maxGroupChildCareSchool > 0;
     },
   },
   watch: {

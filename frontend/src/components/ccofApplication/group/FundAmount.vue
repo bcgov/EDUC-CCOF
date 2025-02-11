@@ -64,13 +64,13 @@
                   color="primary"
                   class="application-label"
                 >
-                  <v-radio label="Yes" value="yes" />
-                  <v-radio label="No" value="no" />
+                  <v-radio label="Yes" :value="1" />
+                  <v-radio label="No" :value="0" />
                 </v-radio-group>
               </v-col>
             </v-row>
 
-            <template v-if="model.hasClosedMonth === 'yes'">
+            <template v-if="model.hasClosedMonth">
               <div>If YES, check all the applicable months:</div>
               <v-row>
                 <v-col cols="4" md="2" class="py-0">
@@ -425,8 +425,8 @@
               color="primary"
               class="application-label"
             >
-              <v-radio label="Yes" value="yes" />
-              <v-radio label="No" value="no" />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
 
             <template v-if="model.hasSchoolAgeCareOnSchoolGrounds">
@@ -472,15 +472,15 @@
               :rules="rules.required"
               :disabled="isLocked"
               inline
-              label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?"
+              label="Do you regularly offer extended hours of child care (care before 6:00 am, after 7:00pm or overnight service regularly offered)?"
               color="primary"
               class="application-label"
             >
-              <v-radio label="Yes" value="yes" />
-              <v-radio label="No" value="no" />
+              <v-radio label="Yes" :value="1" />
+              <v-radio label="No" :value="0" />
             </v-radio-group>
 
-            <template v-if="hasExtendedHoursChildCare">
+            <template v-if="model.isExtendedHours">
               <v-text-field
                 v-model.number="model.maxDaysPerWeekExtended"
                 :disabled="isLocked"
@@ -506,7 +506,7 @@
           </v-container>
         </v-card>
 
-        <v-card v-if="hasExtendedHoursChildCare" class="cc-top-level-card pa-2">
+        <v-card v-if="model.isExtendedHours" class="cc-top-level-card pa-2">
           <v-container>
             <div>
               Select each licence category for which you offer extended hours (care before 6:00 am, after 7:00pm or
@@ -749,7 +749,7 @@ export default {
         this.model.isCCOFComplete &&
         this.hasLicenceCategory &&
         (!this.model.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
-        (this.model.isExtendedHours !== 'yes' ||
+        (this.model.isExtendedHours === 0 ||
           (this.hasLicenceCategoryWithExtendedChildCare &&
             this.isUnder36ExtendedChildCareValid &&
             this.is30MonthToSchoolAgeExtendedChildCareValid &&

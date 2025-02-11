@@ -73,19 +73,19 @@
                       inline
                       label="Are there months when ALL of the programs at this facility are closed for the entire month?"
                     >
-                      <v-radio label="Yes" value="yes" />
-                      <v-radio label="No" value="no" />
+                      <v-radio label="Yes" :value="1" />
+                      <v-radio label="No" :value="0" />
                     </v-radio-group>
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.hasClosedMonth === 'yes'">
+                <v-row v-show="model.hasClosedMonth">
                   <v-col>
                     <label>If YES, check all the applicable months:</label>
                   </v-col>
                 </v-row>
 
-                <template v-if="model.hasClosedMonth === 'yes'">
+                <template v-if="model.hasClosedMonth">
                   <v-row>
                     <v-col>
                       <v-checkbox
@@ -281,13 +281,13 @@
                       inline
                       label="Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?"
                     >
-                      <v-radio label="Yes" value="yes" />
-                      <v-radio label="No" value="no" />
+                      <v-radio label="Yes" :value="1" />
+                      <v-radio label="No" :value="0" />
                     </v-radio-group>
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.isExtendedHours === 'yes'">
+                <v-row v-show="model.isExtendedHours">
                   <v-col>
                     <v-text-field
                       v-model.number="model.maxCapacityExtended"
@@ -295,7 +295,7 @@
                       type="number"
                       variant="outlined"
                       required
-                      :rules="model.isExtendedHours === 'yes' ? [...rules.required, rules.wholeNumber] : []"
+                      :rules="model.isExtendedHours ? [...rules.required, rules.wholeNumber] : []"
                       label="Maximum number of spaces you offer extended hours of child care?"
                       @wheel="$event.target.blur()"
                       @update:model-value="convertBlankNumberToNull(model, 'maxCapacityExtended')"
@@ -303,7 +303,7 @@
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.isExtendedHours === 'yes'">
+                <v-row v-show="model.isExtendedHours">
                   <v-col>
                     <v-text-field
                       v-model.number="model.maxDaysPerWeekExtended"
@@ -314,9 +314,7 @@
                       variant="outlined"
                       required
                       :rules="
-                        model.isExtendedHours === 'yes'
-                          ? [...rules.required, rules.min(0), rules.max(7), rules.wholeNumber]
-                          : []
+                        model.isExtendedHours ? [...rules.required, rules.min(0), rules.max(7), rules.wholeNumber] : []
                       "
                       label="Maximum number of days per week you offer extended hours of child care?"
                       @wheel="$event.target.blur()"
@@ -325,7 +323,7 @@
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.isExtendedHours === 'yes'">
+                <v-row v-show="model.isExtendedHours">
                   <v-col>
                     <v-text-field
                       v-model.number="model.maxWeeksPerYearExtended"
@@ -336,9 +334,7 @@
                       variant="outlined"
                       required
                       :rules="
-                        model.isExtendedHours === 'yes'
-                          ? [...rules.required, rules.min(0), rules.max(52), rules.wholeNumber]
-                          : []
+                        model.isExtendedHours ? [...rules.required, rules.min(0), rules.max(52), rules.wholeNumber] : []
                       "
                       label="Maximum number of weeks per year you offer extended hours of child care?"
                       @wheel="$event.target.blur()"
