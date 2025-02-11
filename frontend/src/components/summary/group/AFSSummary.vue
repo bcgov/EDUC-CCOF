@@ -31,7 +31,7 @@
         </template>
 
         <div class="mt-6">
-          <router-link v-if="!isValidForm" :to="pcfLink">
+          <router-link v-if="!isValidForm" :to="afsLink">
             <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
@@ -41,7 +41,7 @@
 </template>
 <script>
 import { isEmpty } from 'lodash';
-import { mapState } from 'pinia';
+import { mapState, mapActions } from 'pinia';
 
 import AfsDecisionCard from '@/components/ccfriApplication/AFS/AfsDecisionCard.vue';
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
@@ -49,7 +49,9 @@ import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid } from '@/utils/constants.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'AFSSummary',
@@ -80,13 +82,21 @@ export default {
         formName: 'AFSSummary',
         formId: this.facilityId,
       },
+      processing: false,
+      changeRequestDocs: [],
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['applicationUploadedDocuments']),
+    ...mapState(useApplicationStore, ['applicationUploadedDocuments', 'applicationId']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+    ...mapState(useNavBarStore, ['isChangeRequest']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+
     filteredUploadedDocuments() {
+      if (this.isChangeRequest) {
+        return this.changeRequestDocs;
+      }
       return this.applicationUploadedDocuments?.filter(
         (document) =>
           [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
@@ -99,14 +109,17 @@ export default {
         (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(this.filteredUploadedDocuments))
       );
     },
-    pcfLink() {
+    afsLink() {
+      if (this.isChangeRequest) {
+        return changeUrlGuid(PATHS.MTFI_AFS, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI);
+      }
       return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
     },
   },
   watch: {
     isLoadingComplete: {
       handler: function (val) {
-        if (val) {
+        if (val && !this.processing) {
           this.$refs.afsSummaryForm?.validate();
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
@@ -118,15 +131,35 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.AFS_STATUSES = AFS_STATUSES;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.reloadAfs();
+
+    if (this.isChangeRequest) {
+      await this.getChangeDocs();
+    }
   },
   methods: {
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);
+    },
+    async getChangeDocs() {
+      this.processing = true;
+      await this.getDocuments(this.applicationId);
+
+      this.changeRequestDocs = this.uploadedDocuments?.filter(
+        (document) =>
+          [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType) &&
+          document.ccof_facility === this.facilityId,
+      );
+
+      this.changeRequestDocs.forEach((document) => {
+        document.fileName = document.filename;
+      });
+      this.processing = false;
     },
   },
 };

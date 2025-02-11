@@ -14,13 +14,6 @@
       </p>
       <h2>{{ subtitle }}</h2>
       <br /><br />
-
-      <!-- this is another styling choice.... leaving this here in case we want to switch it back.
-          <p class="text-h5 text--primary">
-              CCOF, CCFRI, ECE-WE
-            </p>
-            <h2> Status: Draft</h2> <br><br> -->
-
       <!--If buttons are required, slot them in at the parent-->
       <slot name="content" />
     </v-card-text>
@@ -35,7 +28,7 @@ export default {
   props: {
     title: { type: String, required: true },
     subtitle: { type: String, default: '' },
-    pText: { type: String, required: true },
+    pText: { type: String, default: '' },
   },
 };
 </script>

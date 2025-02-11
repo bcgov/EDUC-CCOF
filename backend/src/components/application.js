@@ -30,7 +30,6 @@ const {
   OrganizationMappings,
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
-  //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
 const { getCCFRIClosureDates } = require('./facility');
 const { mapFundingObjectForFront } = require('./funding');
@@ -144,7 +143,7 @@ async function updateCCFRIApplication(req, res) {
 
 async function getApprovableFeeSchedules(req, res) {
   try {
-    const response = await getOperation(`ccof_applicationccfris(${req.params.ccfriId})?$select=ccof_afs_status&$expand=ccof_afs_applicationccfri`);
+    const response = await getOperation(`ccof_applicationccfris(${req.params.ccfriId})?$select=ccof_afs_status,ccof_afs_status_mtfi&$expand=ccof_afs_applicationccfri`);
     const afs = new MappableObjectForFront(response, ApplicationSummaryCcfriMappings).toJSON();
     afs.approvableFeeSchedules = response?.ccof_afs_applicationccfri?.map((item) => new MappableObjectForFront(item, CCFRIApprovableFeeSchedulesMappings).toJSON());
     return res.status(HttpStatus.OK).json(afs);

@@ -7,7 +7,7 @@
         After submission please wait to receive notification confirming your approval to participate in CCFRI.
       </div>
       <v-radio label="I want to upload supporting documents" :value="AFS_STATUSES.UPLOAD_DOCUMENTS" />
-      <v-radio label="I decline" :value="AFS_STATUSES.DECLINE" />
+      <v-radio v-if="!isChangeRequest" label="I decline" :value="AFS_STATUSES.DECLINE" />
       <div v-if="!readonly && updatedValue === AFS_STATUSES.DECLINE" class="text-body-2 pl-2">
         After submission please wait to receive confirmation from the ministry on the results of your CCFRI application.
       </div>
@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import { AFS_STATUSES } from '@/utils/constants.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -36,6 +38,9 @@ export default {
     return {
       updatedValue: null,
     };
+  },
+  computed: {
+    ...mapState(useNavBarStore, ['isChangeRequest']),
   },
   watch: {
     modelValue: {

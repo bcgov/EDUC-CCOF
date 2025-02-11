@@ -24,10 +24,10 @@ function getActiveIndex(items) {
 function getNavBarAtPositionIndex(items, index) {
   let foundItem = null;
   for (let i = 0; i < items.length && !foundItem; i++) {
-    if (items[i].position == index) {
+    if (items[i].position === index) {
       foundItem = items[i];
     } else if (items[i].items) {
-      let navBarItem = getNavBarAtPositionIndex(items[i].items, index);
+      const navBarItem = getNavBarAtPositionIndex(items[i].items, index);
       if (navBarItem) {
         foundItem = navBarItem;
       }
@@ -108,13 +108,13 @@ export const useNavBarStore = defineStore('navBar', {
       if (!facilityId) {
         return null;
       }
-      return state.userProfileList.find((item) => item.facilityId == facilityId);
+      return state.userProfileList.find((item) => item.facilityId === facilityId);
     },
     getNavByFundingId: (state) => (fundingId) => {
       if (!fundingId) {
         return null;
       }
-      return state.userProfileList.find((item) => item.ccofBaseFundingId == fundingId);
+      return state.userProfileList.find((item) => item.ccofBaseFundingId === fundingId);
     },
     getNavByCCFRIId: (state) => (ccfriId) => {
       if (!ccfriId) {
@@ -123,7 +123,7 @@ export const useNavBarStore = defineStore('navBar', {
       if (state.changeType === 'mtfi') {
         return state.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
-        return state.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
+        return state.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
       }
     },
     getChangeActionNewFacByFacilityId: (state) => (facilityId) => {
@@ -131,16 +131,16 @@ export const useNavBarStore = defineStore('navBar', {
       //correctly before refresh and reload from dynamics.
       return state?.changeRequestMap
         .get(state.changeRequestId)
-        ?.changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.NEW_FACILITY)
-        .newFacilities?.find((el) => el.facilityId == facilityId);
+        ?.changeActions?.find((el) => el.changeType === CHANGE_REQUEST_TYPES.NEW_FACILITY)
+        .newFacilities?.find((el) => el.facilityId === facilityId);
     },
     //find the change action details details(the data element below change Action)
     getChangeActionDetails: (state) => (detailsProperty, detailsKey, detailsId) => {
       let item = null;
-      let change = state.changeRequestMap.get(state.changeRequestId);
+      const change = state.changeRequestMap.get(state.changeRequestId);
       if (change?.changeActions && change.changeActions.length > 0) {
-        let details = change.changeActions[0][detailsProperty];
-        item = details?.find((el) => el[detailsKey] == detailsId);
+        const details = change.changeActions[0][detailsProperty];
+        item = details?.find((el) => el[detailsKey] === detailsId);
       }
       return item;
     },
@@ -199,7 +199,7 @@ export const useNavBarStore = defineStore('navBar', {
       if (this.changeType === 'mtfi') {
         userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriFacilityId', facilityId);
       } else {
-        userProfileItem = this.userProfileList.find((item) => item.facilityId == facilityId);
+        userProfileItem = this.userProfileList.find((item) => item.facilityId === facilityId);
       }
       if (userProfileItem) {
         userProfileItem[property] = value;
@@ -208,7 +208,7 @@ export const useNavBarStore = defineStore('navBar', {
       }
     },
     setNavBarFacilityComplete({ facilityId, complete }) {
-      let userProfileItem = this.userProfileList.find((item) => item.facilityId == facilityId);
+      const userProfileItem = this.userProfileList.find((item) => item.facilityId === facilityId);
       if (userProfileItem) {
         userProfileItem.isFacilityComplete = complete;
         this.filterNavBar();
@@ -216,7 +216,7 @@ export const useNavBarStore = defineStore('navBar', {
       }
     },
     setNavBarFundingComplete({ fundingId, complete }) {
-      let userProfileItem = this.userProfileList.find((item) => item.ccofBaseFundingId == fundingId);
+      const userProfileItem = this.userProfileList.find((item) => item.ccofBaseFundingId === fundingId);
       if (userProfileItem) {
         userProfileItem.isCCOFComplete = complete;
         this.filterNavBar();
@@ -228,7 +228,7 @@ export const useNavBarStore = defineStore('navBar', {
       if (this.changeType === 'mtfi') {
         userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
-        userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
+        userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
       }
       if (userProfileItem) {
         userProfileItem.isCCFRIComplete = complete;
@@ -237,7 +237,7 @@ export const useNavBarStore = defineStore('navBar', {
       }
     },
     setNavBarNMFComplete({ ccfriId, complete }) {
-      let userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
+      const userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
       if (userProfileItem) {
         userProfileItem.isNmfComplete = complete;
         this.filterNavBar();
@@ -249,7 +249,7 @@ export const useNavBarStore = defineStore('navBar', {
       if (this.changeType === 'mtfi') {
         userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
       } else {
-        userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId == ccfriId);
+        userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
       }
       if (userProfileItem) {
         userProfileItem.isRfiComplete = complete;
@@ -258,7 +258,12 @@ export const useNavBarStore = defineStore('navBar', {
       }
     },
     setNavBarAfsComplete({ ccfriId, complete }) {
-      const userProfileItem = this.userProfileList?.find((item) => item.ccfriApplicationId === ccfriId);
+      let userProfileItem;
+      if (this.changeType === 'mtfi') {
+        userProfileItem = this.getChangeActionDetails('mtfi', 'ccfriApplicationId', ccfriId);
+      } else {
+        userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
+      }
       if (isEmpty(userProfileItem)) return;
       userProfileItem.isAFSComplete = complete;
       this.refreshNavBarList();
@@ -269,7 +274,7 @@ export const useNavBarStore = defineStore('navBar', {
       this.refreshNavBar++;
     },
     updateNavBar(payload) {
-      let navBarItem = this.userProfileList.find((item) => item.facilityId == payload.facilityId);
+      const navBarItem = this.userProfileList.find((item) => item.facilityId === payload.facilityId);
       if (navBarItem) {
         navBarItem.facilityName = payload.facilityName;
         navBarItem.licenseNumber = payload.licenseNumber;
@@ -283,7 +288,7 @@ export const useNavBarStore = defineStore('navBar', {
       this.refreshNavBar++;
     },
     setNavBarFacilityChangeRequest({ facilityId, changeRequestNewFacilityId }) {
-      let navBarItem = this.userProfileList.find((item) => item.facilityId == facilityId);
+      const navBarItem = this.userProfileList.find((item) => item.facilityId === facilityId);
       if (navBarItem) {
         navBarItem.changeRequestNewFacilityId = changeRequestNewFacilityId;
         this.filterNavBar();
@@ -308,18 +313,18 @@ export const useNavBarStore = defineStore('navBar', {
       const applicationStore = useApplicationStore();
       const appStore = useAppStore();
 
-      let changeRequest = await reportChangesStore.getChangeRequest(changeRequestId);
+      const changeRequest = await reportChangesStore.getChangeRequest(changeRequestId);
 
       if (changeRequest?.programYearId) {
         applicationStore.setProgramYearId(changeRequest?.programYearId);
         applicationStore.setProgramYearLabel(
-          appStore.programYearList.list.find((el) => el.programYearId == changeRequest.programYearId).name,
+          appStore.programYearList.list.find((el) => el.programYearId === changeRequest.programYearId).name,
         );
         applicationStore.setApplicationId(
           applicationStore?.applicationMap?.get(changeRequest?.programYearId).applicationId,
         );
       }
-      let changeNotificationAction = changeRequest?.changeActions?.find(
+      const changeNotificationAction = changeRequest?.changeActions?.find(
         (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,
       );
       if (changeNotificationAction) {

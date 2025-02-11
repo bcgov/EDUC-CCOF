@@ -124,36 +124,32 @@
       />
     </v-container>
 
-    <v-dialog v-model="dialog" persistent max-width="525px">
-      <v-card>
-        <v-container class="pt-0">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="text-white"> Please confirm </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: left">
-              <p class="pt-4">
-                Are you sure you want to change your response? This will remove any documents uploaded to the Change
-                Notification Form section.
-              </p>
-              <p class="pt-4">Select "Continue" to confirm.</p>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <v-btn theme="dark" color="secondary" class="mr-10" @click="backSelected()"> Back </v-btn>
-              <v-btn theme="dark" color="primary" @click="confirmNoSelected()"> Continue </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <AppDialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+      title="Please Confirm"
+      :loading="false"
+      @close="dialog = false"
+    >
+      <template #content>
+        <p>
+          Are you sure you want to change your response? This will remove any documents uploaded to the Change
+          Notification Form section.
+        </p>
+        <p>Select "Continue" to confirm.</p>
+      </template>
+      <template #button>
+        <v-row>
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="false" @click="backSelected()"> Back </AppButton>
+          </v-col>
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="true" @click="confirmNoSelected()"> Continue </AppButton>
+          </v-col>
+        </v-row>
+      </template>
+    </AppDialog>
   </v-form>
 </template>
 
@@ -172,6 +168,7 @@ import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUplo
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 import DocumentService from '@/services/documentService';
 import rules from '@/utils/rules.js';
@@ -181,7 +178,7 @@ import { deepCloneObject } from '@/utils/common.js';
 import { PATHS, DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
-  components: { AppButton, NavButton, GroupChangeDialogueContent },
+  components: { AppButton, AppDialog, NavButton, GroupChangeDialogueContent },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     if (!this.isLocked) {

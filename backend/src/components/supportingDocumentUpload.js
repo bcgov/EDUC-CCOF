@@ -7,9 +7,10 @@ const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFi
 async function saveDocument(req, res) {
   try {
     let documents = req.body;
-    for (let document of documents) {
+    for (const document of documents) {
       let documentClone = document;
-      let changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId;
+      //ccfri-3755 saved document can now be for MTFI AFS - so it may not have a NewFacilityId
+      const changeRequestNewFacilityId = documentClone.changeRequestNewFacilityId ?? null;
       delete documentClone.changeRequestNewFacilityId;
       if (getFileExtension(documentClone.filename) === 'heic') {
         log.verbose(`saveDocument :: heic detected for file name ${documentClone.filename} starting conversion`);
