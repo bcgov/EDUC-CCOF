@@ -170,7 +170,7 @@ async function getFacilityChildCareTypesByCcfriId(ccfriId) {
       programYear: item['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
       programYearId: item._ccof_programyear_value,
       approvedFeeApr: item.ccof_apr,
-      approvedFetAug: item.ccof_aug,
+      approvedFeeAug: item.ccof_aug,
       approvedFeeDec: item.ccof_dec,
       approvedFeeFeb: item.ccof_feb,
       approvedFeeJan: item.ccof_jan,

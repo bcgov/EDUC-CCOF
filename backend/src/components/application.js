@@ -703,7 +703,7 @@ async function getApplicationSummary(req, res) {
 
     const facilityPromises = [];
     const limit = pLimit(6);
-    for (let facility of facilities) {
+    for (const facility of facilities) {
       facilityPromises.push(limit(async () => await populateSummaryDataForFacility(facility)));
     }
     const facilitiesWithSummaryData = await Promise.all(facilityPromises);

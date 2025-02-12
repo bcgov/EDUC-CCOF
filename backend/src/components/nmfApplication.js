@@ -21,14 +21,12 @@ function mapNMFApplicationObjectForBack(data) {
 }
 
 async function getNmfApplicationByCcfriId(ccfriId) {
-  let query = `ccof_rfi_pfi_nmfs?$filter=(_ccof_applicationccfri_value eq ${ccfriId})`;
+  const query = `ccof_rfi_pfi_nmfs?$filter=(_ccof_applicationccfri_value eq ${ccfriId})`;
   log.info('GET NMF query ' + query);
 
   const response = await getOperation(query);
-  console.log('response: ', minify(response.value));
-  console.log('response length: ', response.value.length);
   if (response.value.length === 1) {
-    let nmfApplication = mapNMFApplicationObjectForFront(response.value[0]);
+    const nmfApplication = mapNMFApplicationObjectForFront(response.value[0]);
     return nmfApplication;
   } else if (response.value.length === 0) {
     return {};
