@@ -101,7 +101,7 @@
 
               <div v-for="facility in facilities" :key="facility?.facilityId" class="special">
                 <v-skeleton-loader
-                  v-if="!isSummaryComplete"
+                  v-if="isSummaryLoading.length > 0"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
 
