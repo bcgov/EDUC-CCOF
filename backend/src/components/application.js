@@ -692,18 +692,12 @@ async function getApplicationSummary(req, res) {
       });
     }
 
-    let facilityFilters = null;
-    if (Array.isArray(req.query.facilityId)) {
-      facilityFilters = req.query.facilityId;
-    }
-    if (typeof req.query.facilityId === 'string') {
-      facilityFilters = [req.query.facilityId];
-    }
+    let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
 
     const facilities = Array
       .from(facilityMap.values())
       .filter((facility) => {
-        if (facilityFilters === null) return true;
+        if (facilityFilters === null || facilityFilters.length < 1) return true;
         return facilityFilters.includes(facility.facilityId);
       });
 
