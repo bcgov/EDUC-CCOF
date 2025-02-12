@@ -407,14 +407,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryForChangeNotiForm(payload) {
       const reportChangesStore = useReportChangesStore();
       try {
-        let summaryModel = this.summaryModel;
-        let changeNotiChangeAction = payload.changeActions?.find(
+        const changeNotiChangeAction = payload.changeActions?.find(
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,
         );
-        summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
+        this.summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
           changeNotiChangeAction?.changeActionId,
         );
-        this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
