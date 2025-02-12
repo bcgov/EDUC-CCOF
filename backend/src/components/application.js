@@ -615,7 +615,7 @@ async function populateSummaryDataForFacility(facility) {
   }
 
   // check for opt out - no need for more calls if opt-out
-  if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
+  if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus === 1) {
     const { ccfri } = facility;
     const facilityChildcareTypes = await getFacilityChildCareTypesByCcfriId(ccfri.ccfriId);
     facility.ccfri.childCareTypes = facilityChildcareTypes.childCareTypes;
