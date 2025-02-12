@@ -205,8 +205,19 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       try {
         this.setIsMainLoading(true);
 
-        // get application ID from the appMap so the page doesn't break when viewing historical CR records.
-        let applicationSummaryResponse = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`);
+        const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
+
+        let filterQuery = '';
+        if (filterNavBarIds.length) {
+          filterQuery = `?facilityId=${filterNavBarIds[0]}`;
+          for (let id of filterNavBarIds.slice(1)) {
+            filterQuery += `&facilityId=${id}`;
+          }
+        }
+
+        let applicationSummaryResponse = await ApiService.apiAxios.get(
+          `${ApiRoutes.APPLICATION_SUMMARY}/${appID}${filterQuery}`,
+        );
         const payload = applicationSummaryResponse.data;
 
         let summaryModel = {
@@ -215,11 +226,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           ecewe: undefined,
         };
 
-        const facilities = payload.facilities
-          .filter((fac) => {
-            return navBarStore.navBarList?.findIndex((item) => item.facilityId === fac.facilityId) > -1;
-          })
-          .map(mapFacility);
+        const facilities = payload.facilities.map(mapFacility);
 
         this.facilities = facilities;
 

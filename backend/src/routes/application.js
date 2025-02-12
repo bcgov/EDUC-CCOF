@@ -16,7 +16,7 @@ const {
   updateStatusForApplicationComponents,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
-const { param, validationResult } = require('express-validator');
+const { param, validationResult, query } = require('express-validator');
 
 router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
   return renewCCOFApplication(req, res);
@@ -153,7 +153,10 @@ router.get(
   '/summary/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [
+    param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(),
+    query('facilityId').isUUID()
+  ],
   (req, res) => {
     return getApplicationSummary(req, res);
   },

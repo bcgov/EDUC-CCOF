@@ -692,7 +692,21 @@ async function getApplicationSummary(req, res) {
       });
     }
 
-    const facilities = Array.from(facilityMap.values());
+    let facilityFilters = null;
+    if (Array.isArray(req.query.facilityId)) {
+      facilityFilters = req.query.facilityId;
+    }
+    if (typeof req.query.facilityId === 'string') {
+      facilityFilters = [req.query.facilityId];
+    }
+
+    const facilities = Array
+      .from(facilityMap.values())
+      .filter((facility) => {
+        if (facilityFilters === null) return true;
+        return facilityFilters.includes(facility.facilityId);
+      });
+
     const facilityPromises = [];
     const limit = pLimit(6);
     for (let facility of facilities) {
