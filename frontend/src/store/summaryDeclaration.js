@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia';
 import pLimit from 'p-limit';
+import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import { useAppStore } from '@/store/app.js';
@@ -94,7 +94,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     isValidForm: undefined,
     declarationModel: {},
     summaryModel: {},
-    isSummaryLoading: [],
+    isSummaryLoading: false,
     isMainLoading: true,
     isLoadingComplete: false,
   }),
@@ -257,9 +257,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
 
-        let isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
+        // isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
 
-        this.setIsSummaryLoading(isSummaryLoading);
+        this.setIsSummaryLoading(true);
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
@@ -401,8 +401,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
-        let isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
-        this.setIsSummaryLoading(isSummaryLoading);
+        //let isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
+        this.setIsSummaryLoading(true);
 
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
@@ -437,8 +437,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 mtfiFacility.rfiApp = (
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
-              isSummaryLoading.splice(index, 1, false);
-              this.setIsSummaryLoading(isSummaryLoading);
+              //isSummaryLoading.splice(index, 1, false);
+              this.setIsSummaryLoading(false);
               if (this.isMainLoading) this.setIsMainLoading(false);
             }
             this.setSummaryModel(summaryModel);

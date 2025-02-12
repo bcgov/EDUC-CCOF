@@ -95,13 +95,13 @@
 
                 <!-- MTFI Summary -->
                 <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                  <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                    <v-skeleton-loader
-                      v-if="isSummaryLoading[index]"
-                      :loading="isSummaryLoading[index]"
-                      type="paragraph, text@3, paragraph, text@3, paragraph"
-                    />
-                    <div v-else>
+                  <v-skeleton-loader
+                    v-if="isSummaryLoading"
+                    :loading="isSummaryLoading"
+                    type="paragraph, text@3, paragraph, text@3, paragraph"
+                  />
+                  <div v-else>
+                    <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
                       <v-expansion-panel variant="accordion" value="facility-name">
                         <v-row no-gutters class="d-flex pl-6 py-5">
                           <v-col class="col-6 col-lg-4">
@@ -126,18 +126,13 @@
                       </v-expansion-panel>
                       <v-expansion-panel variant="accordion" value="mtfi-summary">
                         <MTFISummary
-                          v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
                           :old-ccfri="facility?.oldCcfri"
                           :new-ccfri="facility?.newCcfri"
                           :facility-id="facility.facilityId"
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
-                      <v-expansion-panel
-                        v-if="facility?.hasRfi && !isSummaryLoading[index]"
-                        variant="accordion"
-                        value="rfi-summary"
-                      >
+                      <v-expansion-panel v-if="facility?.hasRfi" variant="accordion" value="rfi-summary">
                         <RFISummary
                           :rfi-app="facility?.rfiApp"
                           :ccfri-id="facility?.ccfriApplicationId"
