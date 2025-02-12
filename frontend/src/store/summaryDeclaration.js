@@ -14,7 +14,7 @@ function parseLicenseCategories(licenseCategories) {
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];
-  let categories = lookupCategories
+  const categories = lookupCategories
     .filter((item) => uniqueLicenseCategories.includes(item.ccof_license_categoryid))
     .map((a) => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -80,7 +80,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         : false;
     },
     areCheckBoxesComplete: (state, getters) => {
-      let isComplete =
+      const isComplete =
         state.summaryModel?.application?.isEceweComplete &&
         state.summaryModel?.application?.isLicenseUploadComplete &&
         getters.isCCFRIComplete;
@@ -162,7 +162,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             payload.externalStatus = 2;
           }
 
-          let response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
+          const response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
           this.declarationModel.externalStatus = 'SUBMITTED';
           this.setDeclarationModel(this.declarationModel);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
@@ -177,7 +177,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           return response;
         } else {
           //PCF application submit
-          let response = await ApiService.apiAxios.patch(
+          const response = await ApiService.apiAxios.patch(
             `${ApiRoutes.APPLICATION_DECLARATION_SUBMIT}/${applicationStore.applicationId}`,
             payload,
           );
@@ -209,7 +209,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         this.setIsSummaryLoading(['loadSummary is loading facilities all at once']);
 
-        let applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
+        const applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
           facilities: filterNavBarIds,
         });
 
