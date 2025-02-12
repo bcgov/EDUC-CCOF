@@ -215,6 +215,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           }
         }
 
+        this.setIsSummaryLoading(['loadSummary is loading facilities all at once']);
+
         let applicationSummaryResponse = await ApiService.apiAxios.get(
           `${ApiRoutes.APPLICATION_SUMMARY}/${appID}${filterQuery}`,
         );
@@ -233,9 +235,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
 
-        let isSummaryLoading = true;
-
-        this.setIsSummaryLoading(isSummaryLoading);
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
@@ -255,7 +254,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         }
 
         this.setSummaryModel(summaryModel);
-        this.setIsSummaryLoading(false);
+        this.setIsSummaryLoading([]);
 
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
