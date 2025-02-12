@@ -207,19 +207,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
 
-        let filterQuery = '';
-        if (filterNavBarIds.length) {
-          filterQuery = `?facilityId=${filterNavBarIds[0]}`;
-          for (let id of filterNavBarIds.slice(1)) {
-            filterQuery += `&facilityId=${id}`;
-          }
-        }
-
         this.setIsSummaryLoading(['loadSummary is loading facilities all at once']);
 
-        let applicationSummaryResponse = await ApiService.apiAxios.get(
-          `${ApiRoutes.APPLICATION_SUMMARY}/${appID}${filterQuery}`,
-        );
+        let applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
+          facilities: filterNavBarIds,
+        });
+
         const payload = applicationSummaryResponse.data;
 
         let summaryModel = {
