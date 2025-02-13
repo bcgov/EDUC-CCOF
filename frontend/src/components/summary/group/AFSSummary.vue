@@ -82,7 +82,6 @@ export default {
         formName: 'AFSSummary',
         formId: this.facilityId,
       },
-      isValidForm: true,
       processing: false,
       changeRequestDocs: [],
     };
@@ -104,7 +103,7 @@ export default {
           document.facilityId === this.facilityId,
       );
     },
-    setIsValidForm() {
+    isValidForm() {
       return (
         [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(this.afs?.afsStatus) ||
         (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(this.filteredUploadedDocuments))
@@ -117,14 +116,8 @@ export default {
       return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
     },
   },
+
   watch: {
-    isValidForm: {
-      handler() {
-        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
     approvableFeeSchedules: {
       handler() {
         this.reloadAfs();
@@ -140,7 +133,9 @@ export default {
       await this.getChangeDocs();
     }
 
-    //this.isValidForm = this.setIsValidForm;
+    //ccfri-4572-update validation for AFS Summary
+    //Because we have to check if there are required uploaded documents, we use our custom validation instead of relying on Vuetify's form validation.
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
