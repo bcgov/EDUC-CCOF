@@ -519,6 +519,7 @@ async function printPdf(req, numOfRetries = 0) {
 function getCurrentDateForPdfFileName() {
   const date = new Date();
   const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: "America/Vancouver",
     month: 'short',
   });
   const month = dateTimeFormatter.format(date).toUpperCase();
