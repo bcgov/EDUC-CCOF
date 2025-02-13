@@ -540,6 +540,7 @@ export default {
       handler: function (val) {
         if (val) {
           if (!this.isNewCcfriValid) this.isValidForm = false;
+          console.log(this.formObj);
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

@@ -82,6 +82,7 @@ export default {
         formName: 'AFSSummary',
         formId: this.facilityId,
       },
+      isValidForm: true,
       processing: false,
       changeRequestDocs: [],
     };
@@ -103,7 +104,7 @@ export default {
           document.facilityId === this.facilityId,
       );
     },
-    isValidForm() {
+    setIsValidForm() {
       return (
         [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(this.afs?.afsStatus) ||
         (this.afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(this.filteredUploadedDocuments))
@@ -117,10 +118,9 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val && !this.processing) {
-          this.$refs.afsSummaryForm?.validate();
+    isValidForm: {
+      handler() {
+        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -139,6 +139,8 @@ export default {
     if (this.isChangeRequest) {
       await this.getChangeDocs();
     }
+
+    //this.isValidForm = this.setIsValidForm;
   },
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
