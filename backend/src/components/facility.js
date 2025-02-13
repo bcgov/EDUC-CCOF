@@ -1,14 +1,5 @@
 'use strict';
-const {
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  minify,
-  getLabelFromValue,
-  deleteOperationWithObjectId,
-  getApplicationDocument,
-  getHttpHeader
-} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId, getApplicationDocument, getHttpHeader } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -81,9 +72,6 @@ function mapFacilityObjectForFront(data) {
     console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
   }
 
-  console.log('RECEIVED', data);
-  console.log('CONVERTED', obj);
-
   return obj;
 }
 
@@ -144,14 +132,14 @@ async function getLicenseCategories(req, res) {
 
 function getFeeFrequency(feeCode) {
   switch (feeCode) {
-  case 100000000:
-    return 'Monthly';
-  case 100000001:
-    return 'Weekly';
-  case 100000002:
-    return 'Daily';
-  default:
-    return '';
+    case 100000000:
+      return 'Monthly';
+    case 100000001:
+      return 'Weekly';
+    case 100000002:
+      return 'Daily';
+    default:
+      return '';
   }
 }
 
@@ -436,5 +424,5 @@ module.exports = {
   returnCCFRIClosureDates,
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
-  getFacilityByFacilityId
+  getFacilityByFacilityId,
 };
