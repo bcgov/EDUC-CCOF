@@ -743,21 +743,6 @@ export default {
     await this.save(false);
     next();
   },
-  computed: {
-    isFormComplete() {
-      return (
-        this.model.isCCOFComplete &&
-        this.hasLicenceCategory &&
-        (!this.model.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
-        (this.model.isExtendedHours === 0 ||
-          (this.hasLicenceCategoryWithExtendedChildCare &&
-            this.isUnder36ExtendedChildCareValid &&
-            this.is30MonthToSchoolAgeExtendedChildCareValid &&
-            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-            this.isMultiAgeExtendedChildCareValid))
-      );
-    },
-  },
   created() {
     this.ERROR_MESSAGES = ERROR_MESSAGES;
   },

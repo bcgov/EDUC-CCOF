@@ -100,6 +100,19 @@ export default {
     isMultiAgeExtendedChildCareValid() {
       return !this.model.hasMultiAgeExtendedCC || this.totalMaxSpacesMultiAgeExtendedChildCare > 0;
     },
+    isFormComplete() {
+      return (
+        this.model.isCCOFComplete &&
+        this.hasLicenceCategory &&
+        (!this.model.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
+        (this.model.isExtendedHours === 0 ||
+          (this.hasLicenceCategoryWithExtendedChildCare &&
+            this.isUnder36ExtendedChildCareValid &&
+            this.is30MonthToSchoolAgeExtendedChildCareValid &&
+            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
+            this.isMultiAgeExtendedChildCareValid))
+      );
+    },
   },
   data() {
     return {
@@ -128,6 +141,7 @@ export default {
     },
     async save(isSave) {
       this.processing = true;
+      this.model.isCCOFComplete = this.isFormComplete;
       this.setFundingModel({ ...this.model });
       this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
       this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
