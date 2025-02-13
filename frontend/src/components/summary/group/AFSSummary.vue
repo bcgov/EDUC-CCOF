@@ -116,15 +116,8 @@ export default {
       return pcfUrlGuid(PATHS.CCFRI_AFS, this.programYearId, this.ccfriId);
     },
   },
+
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val && !this.processing) {
-          this.$refs.afsSummaryForm?.validate();
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
     approvableFeeSchedules: {
       handler() {
         this.reloadAfs();
@@ -139,6 +132,10 @@ export default {
     if (this.isChangeRequest) {
       await this.getChangeDocs();
     }
+
+    //ccfri-4572-update validation for AFS Summary
+    //Because we have to check if there are required uploaded documents, we use our custom validation instead of relying on Vuetify's form validation.
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
