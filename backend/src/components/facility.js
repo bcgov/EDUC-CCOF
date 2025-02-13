@@ -134,7 +134,7 @@ async function getLicenseCategoriesByFacilityId(facilityId) {
 
 async function getLicenseCategories(req, res) {
   try {
-    const map = getLicenseCategoriesByFacilityId(req.params.facilityId);
+    const map = await getLicenseCategoriesByFacilityId(req.params.facilityId);
     return res.status(HttpStatus.OK).json(Array.from(map.values()));
   } catch (e) {
     log.error('failed with error', e);
