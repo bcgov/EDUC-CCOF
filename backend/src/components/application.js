@@ -32,9 +32,17 @@ const {
   CCFRIFacilityMappings,
   //ChangeRequestMappings
 } = require('../util/mapping/Mappings');
-const { getCCFRIClosureDates } = require('./facility');
+const {
+  getCCFRIClosureDates,
+  getLicenseCategoriesByFacilityId,
+  getFacilityChildCareTypesByCcfriId,
+  getFacilityByFacilityId
+} = require('./facility');
+const { getRfiApplicationByCcfriId } = require('./rfiApplication');
+const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
 const { getBrowserContext, closeBrowser } = require('../util/browser');
+const pLimit = require('p-limit');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -607,6 +615,45 @@ async function updateStatusForApplicationComponents(req, res) {
   }
 }
 
+async function populateSummaryDataForFacility(facility) {
+  try {
+    const childCareLicenses = await getLicenseCategoriesByFacilityId(facility.facilityId);
+    facility.childCareLicenses = Array.from(childCareLicenses.values());
+  } catch (e) {
+    log.warn('populateSummaryDataForFacility unable to find License Categories', e);
+  }
+
+  // check for opt out - no need for more calls if opt-out
+  if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus === 1) {
+    const { ccfri } = facility;
+    const facilityChildcareTypes = await getFacilityChildCareTypesByCcfriId(ccfri.ccfriId);
+    facility.ccfri.childCareTypes = facilityChildcareTypes.childCareTypes;
+    facility.ccfri.dates = facilityChildcareTypes.dates;
+
+    // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
+    // categories from the last year.
+    if (ccfri.previousCcfriId) {
+      const previousCcfriId = await getFacilityChildCareTypesByCcfriId(ccfri.previousCcfriId);
+      facility.ccfri.prevYearCcfriApp = previousCcfriId;
+    }
+
+    if (ccfri?.hasRfi || ccfri?.unlockRfi) {
+      const rfiApp = await getRfiApplicationByCcfriId(ccfri.ccfriId);
+      facility.rfiApp = rfiApp;
+    }
+
+    if (ccfri?.hasNmf || ccfri?.unlockNmf) {
+      const nmfApp = await getNmfApplicationByCcfriId(ccfri.ccfriId);
+      facility.nmfApp = nmfApp;
+    }
+  }
+
+  // jb changed below to work with renewel apps
+  facility.facilityInfo = await getFacilityByFacilityId(facility.facilityId);
+
+  return facility;
+}
+
 async function getApplicationSummary(req, res) {
   try {
     const operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
@@ -620,27 +667,27 @@ async function getApplicationSummary(req, res) {
     applicationSummary.ccofStatus = getLabelFromValue(applicationSummary.ccofStatus, CCOF_STATUS_CODES, 'NEW');
     applicationSummary.applicationStatus = getLabelFromValue(applicationSummary.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
 
-    //setup the Facility map
+    // setup the Facility map
     const facilityMap = new Map();
-    //map CCFRI
+    // map CCFRI
     results.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
       const mappedCCFRI = new MappableObjectForFront(ccfri, ApplicationSummaryCcfriMappings).data;
       getFacilityInMap(facilityMap, mappedCCFRI.facilityId).ccfri = mappedCCFRI;
     });
 
-    //map ECE-WE
+    // map ECE-WE
     results.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ecewe) => {
       const mappedEcewe = new MappableObjectForFront(ecewe, ECEWEFacilityMappings).data;
       getFacilityInMap(facilityMap, mappedEcewe.facilityId).ecewe = mappedEcewe;
     });
 
-    //map CCOF Base funding if it exists
+    // map CCOF Base funding if it exists
     results.ccof_application_basefunding_Application?.forEach((baseFunding) => {
       const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
       getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
     });
 
-    //add the change request ID to the facility so we can filter by it on the front end
+    // add the change request ID to the facility so we can filter by it on the front end
     const allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
     if (allChangeRequests.length > 0) {
       allChangeRequests.forEach((changeRequest) => {
@@ -654,9 +701,25 @@ async function getApplicationSummary(req, res) {
       });
     }
 
+    let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
+
+    const facilities = Array
+      .from(facilityMap.values())
+      .filter((facility) => {
+        if (facilityFilters === null || facilityFilters.length < 1) return true;
+        return facilityFilters.includes(facility.facilityId);
+      });
+
+    const facilityPromises = [];
+    const limit = pLimit(6);
+    for (const facility of facilities) {
+      facilityPromises.push(limit(async () => await populateSummaryDataForFacility(facility)));
+    }
+    const facilitiesWithSummaryData = await Promise.all(facilityPromises);
+
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: Array.from(facilityMap.values()),
+      facilities: facilitiesWithSummaryData
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);

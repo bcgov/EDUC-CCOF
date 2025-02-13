@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import pLimit from 'p-limit';
 
 import ApiService from '@/common/apiService.js';
 import { useAppStore } from '@/store/app.js';
@@ -15,7 +14,7 @@ function parseLicenseCategories(licenseCategories) {
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];
-  let categories = lookupCategories
+  const categories = lookupCategories
     .filter((item) => uniqueLicenseCategories.includes(item.ccof_license_categoryid))
     .map((a) => a.ccof_name);
   return categories ? categories.toString() : '';
@@ -32,59 +31,22 @@ function getProgramYear(selectedGuid, programYearList) {
 }
 
 /**
- * Contact the various endpoints to summarize all the details that a client needs to know about any given facility in
- * their summary declaration.
+ * Add a few missing datapoints to a facility
  *
- * @param {Object} facility - The facility to fill with details
+ * @param {Object} facility - The facility to add details to
  */
-async function mapFacility(facility) {
+function mapFacility(facility) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
-  let facilityLicenseResponse = undefined;
-  try {
-    facilityLicenseResponse = await ApiService.apiAxios.get(
-      `${ApiRoutes.FACILITY}/${facility.facilityId}/licenseCategories`,
-    );
-    facility.licenseCategories = parseLicenseCategories(facilityLicenseResponse.data);
-  } catch {
-    console.log('error, unable to get childcare category for provider: ', facility.facilityId);
-  }
+  facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
-    const ccfri = await ApiService.apiAxios.get(`${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.ccfriId}`);
-    facility.ccfri.childCareTypes = ccfri.data.childCareTypes;
-    facility.ccfri.dates = ccfri.data.dates;
-
-    // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
-    // categories from the last year.
-    if (facility.ccfri.previousCcfriId) {
-      const previousCcfriid = await ApiService.apiAxios.get(
-        `${ApiRoutes.CCFRIFACILITY}/${facility.ccfri.previousCcfriId}`,
-      );
-      facility.ccfri.prevYearCcfriApp = previousCcfriid.data;
-    }
-
-    if (facility.ccfri?.hasRfi || facility.ccfri?.unlockRfi) {
-      const rfiApp = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${facility.ccfri.ccfriId}/rfi`);
-      facility.rfiApp = rfiApp.data;
-    }
-
-    if (facility.ccfri?.hasNmf || facility.ccfri?.unlockNmf) {
-      const nmfApp = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_NMF}/${facility.ccfri.ccfriId}/nmf`);
-      facility.nmfApp = nmfApp.data;
-    }
-
-    facility.ccfri.childCareLicenses = facilityLicenseResponse; // jb - so I can build the CCFRI section
     const ccofProgramYearId = applicationStore.programYearId;
     const programYearList = appStore.programYearList.list;
     facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
     facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
   }
-
-  // jb changed below to work with renewel apps
-  const facilityInfo = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facility.facilityId}`);
-  facility.facilityInfo = facilityInfo.data;
 
   return facility;
 }
@@ -94,6 +56,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     isValidForm: undefined,
     declarationModel: {},
     summaryModel: {},
+    facilities: [],
     isSummaryLoading: [],
     isMainLoading: true,
     isLoadingComplete: false,
@@ -117,7 +80,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         : false;
     },
     areCheckBoxesComplete: (state, getters) => {
-      let isComplete =
+      const isComplete =
         state.summaryModel?.application?.isEceweComplete &&
         state.summaryModel?.application?.isLicenseUploadComplete &&
         getters.isCCFRIComplete;
@@ -199,7 +162,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             payload.externalStatus = 2;
           }
 
-          let response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
+          const response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
           this.declarationModel.externalStatus = 'SUBMITTED';
           this.setDeclarationModel(this.declarationModel);
           reportChangesStore.updateExternalStatusInChangeRequestStore({
@@ -214,7 +177,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           return response;
         } else {
           //PCF application submit
-          let response = await ApiService.apiAxios.patch(
+          const response = await ApiService.apiAxios.patch(
             `${ApiRoutes.APPLICATION_DECLARATION_SUBMIT}/${applicationStore.applicationId}`,
             payload,
           );
@@ -241,25 +204,30 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       }
       try {
         this.setIsMainLoading(true);
-        //get application ID from the appMap so the page doesn't break when viewing historical CR records.
-        let payload = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`)).data;
+
+        const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
+
+        this.setIsSummaryLoading(['loadSummary is loading facilities all at once']);
+
+        const applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
+          facilities: filterNavBarIds,
+        });
+
+        const payload = applicationSummaryResponse.data;
+
         let summaryModel = {
           organization: undefined,
           application: payload.application,
-          facilities: payload.facilities,
           ecewe: undefined,
         };
 
-        summaryModel.facilities = summaryModel.facilities?.filter((fac) => {
-          return navBarStore.navBarList?.findIndex((item) => item.facilityId === fac.facilityId) > -1;
-        });
+        const facilities = payload.facilities.map(mapFacility);
+
+        this.facilities = facilities;
 
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
 
-        let isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
-
-        this.setIsSummaryLoading(isSummaryLoading);
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
@@ -278,22 +246,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           this.setSummaryModel(summaryModel);
         }
 
-        try {
-          const mappedFacilities = [];
-          const limit = pLimit(3);
-
-          for (const facility of summaryModel.facilities) {
-            mappedFacilities.push(limit(() => mapFacility(facility)));
-          }
-
-          summaryModel.facilities = await Promise.all(mappedFacilities);
-        } catch (error) {
-          console.log(`Failed to load Summary - ${error}`);
-          throw error;
-        }
-
         this.setSummaryModel(summaryModel);
-        this.setIsSummaryLoading(false);
+        this.setIsSummaryLoading([]);
 
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
@@ -453,14 +407,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryForChangeNotiForm(payload) {
       const reportChangesStore = useReportChangesStore();
       try {
-        let summaryModel = this.summaryModel;
-        let changeNotiChangeAction = payload.changeActions?.find(
+        const changeNotiChangeAction = payload.changeActions?.find(
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,
         );
-        summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
+        this.summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
           changeNotiChangeAction?.changeActionId,
         );
-        this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
