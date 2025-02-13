@@ -61,24 +61,16 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-row v-if="isMainLoading">
+          <v-row v-if="isSummaryLoading">
             <v-col>
               <v-skeleton-loader
-                v-if="isMainLoading"
-                :loading="isMainLoading"
+                :loading="isSummaryLoading"
                 type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
               />
             </v-col>
           </v-row>
           <div v-else>
-            <v-expansion-panels
-              v-model="expand"
-              class="mt-6 rounded"
-              focusable
-              multiple
-              variant="accordion"
-              :loading="isMainLoading"
-            >
+            <v-expansion-panels v-model="expand" class="mt-6 rounded" focusable multiple variant="accordion">
               <v-row no-gutters class="d-flex flex-column mb-2">
                 <!-- Change Notification Form Summary -->
                 <v-expansion-panel
@@ -95,52 +87,59 @@
 
                 <!-- MTFI Summary -->
                 <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                  <v-skeleton-loader
-                    v-if="isSummaryLoading"
-                    :loading="isSummaryLoading"
-                    type="paragraph, text@3, paragraph, text@3, paragraph"
-                  />
-                  <div v-else>
-                    <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                      <v-expansion-panel variant="accordion" value="facility-name">
-                        <v-row no-gutters class="d-flex pl-6 py-5">
-                          <v-col class="col-6 col-lg-4">
-                            <p class="summary-label">Facility Name</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityName ? facility.facilityName : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Facility ID</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Licence Number</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
-                            </p>
-                          </v-col>
-                        </v-row>
-                      </v-expansion-panel>
-                      <v-expansion-panel variant="accordion" value="mtfi-summary">
-                        <MTFISummary
-                          :old-ccfri="facility?.oldCcfri"
-                          :new-ccfri="facility?.newCcfri"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                      <v-expansion-panel v-if="facility?.hasRfi" variant="accordion" value="rfi-summary">
-                        <RFISummary
-                          :rfi-app="facility?.rfiApp"
-                          :ccfri-id="facility?.ccfriApplicationId"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                    </div>
+                  <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                    <v-expansion-panel
+                      v-if="facility"
+                      :key="`${facility.facilityId}-facility-information`"
+                      value="facility-name"
+                      variant="accordion"
+                    >
+                      <v-row no-gutters class="d-flex pl-6 py-5">
+                        <v-col class="col-6 col-lg-4">
+                          <p class="summary-label">Facility Name</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityName ? facility.facilityName : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Facility ID</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Licence Number</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                          </p>
+                        </v-col>
+                      </v-row>
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-mtfi-summary`"
+                      :value="`${facility.facilityId}-mtfi-summary`"
+                      variant="accordion"
+                    >
+                      <MTFISummary
+                        :old-ccfri="facility?.oldCcfri"
+                        :new-ccfri="facility?.newCcfri"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      v-if="facility?.hasRfi"
+                      :key="`${facility.facilityId}-ccfri-summary`"
+                      :value="`${facility.facilityId}-ccfri-summary`"
+                      variant="accordion"
+                    >
+                      <RFISummary
+                        :rfi-app="facility?.rfiApp"
+                        :ccfri-id="facility?.ccfriApplicationId"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
                   </div>
                 </v-row>
               </v-row>
@@ -398,7 +397,6 @@ export default {
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
     ...mapState(useSummaryDeclarationStore, [
       'isSummaryLoading',
-      'isMainLoading',
       'isLoadingComplete',
       'summaryModel',
       'declarationModel',

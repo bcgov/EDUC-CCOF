@@ -95,7 +95,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     declarationModel: {},
     summaryModel: {},
     isSummaryLoading: false,
-    isMainLoading: true,
     isLoadingComplete: false,
   }),
   getters: {
@@ -134,9 +133,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     setIsSummaryLoading(value) {
       this.isSummaryLoading = value;
     },
-    setIsMainLoading(value) {
-      this.isMainLoading = value;
-    },
+
     isValidForm(value) {
       this.isValidForm = value;
     },
@@ -240,7 +237,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         appID = applicationStore.applicationId;
       }
       try {
-        this.setIsMainLoading(true);
+        this.setIsSummaryLoading(true);
         //get application ID from the appMap so the page doesn't break when viewing historical CR records.
         let payload = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`)).data;
         let summaryModel = {
@@ -255,11 +252,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         });
 
         this.setSummaryModel(summaryModel);
-        this.setIsMainLoading(false);
 
-        // isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
-
-        this.setIsSummaryLoading(true);
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
@@ -317,7 +310,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       try {
         this.setIsLoadingComplete(false);
-        if (!this.summaryModel) this.setIsMainLoading(true);
+        this.setIsSummaryLoading(true);
+
         const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
@@ -362,6 +356,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             }
           }),
         );
+        this.setIsSummaryLoading(false);
         this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
@@ -393,6 +388,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryForMtfi(payload) {
       const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
+      this.setIsSummaryLoading(true);
 
       try {
         let summaryModel = this.summaryModel;
@@ -402,10 +398,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
         //let isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
-        this.setIsSummaryLoading(true);
 
         await Promise.all(
-          summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
+          summaryModel.mtfiFacilities.map(async (mtfiFacility) => {
             let userProfileListFacility = navBarStore.userProfileList.find(
               (item) => item.facilityId === mtfiFacility.facilityId,
             );
@@ -437,13 +432,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 mtfiFacility.rfiApp = (
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
-              //isSummaryLoading.splice(index, 1, false);
-              this.setIsSummaryLoading(false);
-              if (this.isMainLoading) this.setIsMainLoading(false);
             }
             this.setSummaryModel(summaryModel);
           }),
         );
+
+        this.setIsSummaryLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request MTFI - ${error}`);
         throw error;
@@ -461,7 +455,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           changeNotiChangeAction?.changeActionId,
         );
         this.setSummaryModel(summaryModel);
-        this.setIsMainLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
         throw error;
