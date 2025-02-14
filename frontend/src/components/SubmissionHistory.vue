@@ -67,7 +67,6 @@ export default {
     return {
       isValidForm: false,
       processing: false,
-      loading: false,
       rules: [(v) => !!v || 'Required.'],
       headersGroup: [
         { title: 'Application/Change Request ID', value: 'appId', class: 'tableHeader' },
@@ -82,12 +81,8 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useDocumentStore, ['pdfs']),
-    isReadOnly() {
-      return false;
-    },
     allItems() {
-      let allItems = [];
-      allItems = this.pdfs?.map((submission, index) => {
+      return this.pdfs?.map((submission, index) => {
         return {
           index: index,
           annotationId: submission?.annotationId,
@@ -100,8 +95,6 @@ export default {
           fileSize: Math.round(submission?.fileSize / 100) / 10,
         };
       });
-      //}
-      return allItems;
     },
     headers() {
       return this.headersGroup;
