@@ -204,11 +204,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       }
       try {
         this.setIsMainLoading(true);
-<<<<<<< HEAD
-        //get application ID from the appMap so the page doesn't break when viewing historical CR records.
-        const payload = (await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`)).data;
-        const summaryModel = {
-=======
 
         const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
 
@@ -220,8 +215,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         const payload = applicationSummaryResponse.data;
 
-        let summaryModel = {
->>>>>>> e705c9b7d1674df67b11f478dfed63821437e9ae
+        const summaryModel = {
           organization: undefined,
           application: payload.application,
           ecewe: undefined,
@@ -234,12 +228,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setSummaryModel(summaryModel);
         this.setIsMainLoading(false);
 
-<<<<<<< HEAD
-        const isSummaryLoading = new Array(summaryModel.facilities.length).fill(true);
-
-        this.setIsSummaryLoading(isSummaryLoading);
-=======
->>>>>>> e705c9b7d1674df67b11f478dfed63821437e9ae
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
