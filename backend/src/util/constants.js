@@ -104,6 +104,7 @@ const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
   INACTIVE: 2,
   FUTURE: 3,
   HISTORICAL: 4,
+  'FAR FUTURE': 5,
 });
 
 const FACILITY_AGE_GROUP_CODES = Object.freeze({
