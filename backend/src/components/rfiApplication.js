@@ -98,29 +98,34 @@ async function deleteRfiApplication(req, res) {
   }
 }
 
+async function getRfiApplicationByCcfriId(ccfriId) {
+  const query = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi,ccof_rfipfi_ccof_rfipfi_IndegenousService`;
+  const response = await getOperation(query);
+
+  if (response.value.length > 0) {
+    let rfiApplication = new MappableObjectForFront(response.value[0], RFIApplicationMappings);
+    rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map((el) =>
+      formatDate(new MappableObjectForFront(el, ServiceExpansionDetailsMappings).data, 'date'),
+    );
+    rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map((el) => formatDate(new MappableObjectForFront(el, DCSWageIncreaseMappings).data, 'wageDate'));
+    rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map((el) =>
+      formatDate(new MappableObjectForFront(el, ExpenseInformationMappings).data, 'date'),
+    );
+    rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map((el) => formatDate(new MappableObjectForFront(el, OtherFundingProgramMappings).data, 'date'));
+    rfiApplication.data['indigenousExpenseList'] = response.value[0].ccof_rfipfi_ccof_rfipfi_IndegenousService?.map((el) =>
+      formatDate(new MappableObjectForFront(el, IndigenousExpenseMappings).data, 'date'),
+    );
+
+    return rfiApplication;
+  } else {
+    return {};
+  }
+}
+
 async function getRFIApplication(req, res) {
-  let query = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${req.params.ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi,ccof_rfipfi_ccof_rfipfi_IndegenousService`;
   try {
-    const response = await getOperation(query);
-
-    if (response.value.length > 0) {
-      let rfiApplication = new MappableObjectForFront(response.value[0], RFIApplicationMappings);
-      rfiApplication.data['expansionList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi?.map((el) =>
-        formatDate(new MappableObjectForFront(el, ServiceExpansionDetailsMappings).data, 'date'),
-      );
-      rfiApplication.data['wageList'] = response.value[0].ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail?.map((el) => formatDate(new MappableObjectForFront(el, DCSWageIncreaseMappings).data, 'wageDate'));
-      rfiApplication.data['expenseList'] = response.value[0].ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi?.map((el) =>
-        formatDate(new MappableObjectForFront(el, ExpenseInformationMappings).data, 'date'),
-      );
-      rfiApplication.data['fundingList'] = response.value[0].ccof_rfi_pfi_other_funding_RFI_PFI?.map((el) => formatDate(new MappableObjectForFront(el, OtherFundingProgramMappings).data, 'date'));
-      rfiApplication.data['indigenousExpenseList'] = response.value[0].ccof_rfipfi_ccof_rfipfi_IndegenousService?.map((el) =>
-        formatDate(new MappableObjectForFront(el, IndigenousExpenseMappings).data, 'date'),
-      );
-
-      return res.status(HttpStatus.OK).json(rfiApplication);
-    } else {
-      return res.status(HttpStatus.OK).json({});
-    }
+    const rfiApplication = await getRfiApplicationByCcfriId(req.params.ccfriId);
+    return res.status(HttpStatus.OK).json(rfiApplication);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -284,4 +289,5 @@ module.exports = {
   updateRFIApplication,
   getRFIMedian,
   deleteRfiApplication,
+  getRfiApplicationByCcfriId
 };

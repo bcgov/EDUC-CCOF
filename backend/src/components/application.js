@@ -31,9 +31,17 @@ const {
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
 } = require('../util/mapping/Mappings');
-const { getCCFRIClosureDates } = require('./facility');
+const {
+  getCCFRIClosureDates,
+  getLicenseCategoriesByFacilityId,
+  getFacilityChildCareTypesByCcfriId,
+  getFacilityByFacilityId
+} = require('./facility');
+const { getRfiApplicationByCcfriId } = require('./rfiApplication');
+const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
 const { getBrowserContext, closeBrowser } = require('../util/browser');
+const pLimit = require('p-limit');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -448,39 +456,59 @@ async function printPdf(req, numOfRetries = 0) {
     });
 
     log.info('printPdf :: starting page load');
+    const startTime = Date.now();
     await page.goto(url, { waitUntil: 'networkidle0' });
+    log.info(`printPdf :: Page loaded successfully in ${Date.now() - startTime}ms`);
+
+    log.info('printPdf :: Waiting for signature field to appear');
     await page.waitForSelector('#signatureTextField', { visible: true });
 
-    log.info('printPdf :: page loaded starting pdf creation');
+    const signatureContent = await page.$eval('#signatureTextField', (el) => el.value.trim());
+
+    if (!signatureContent) {
+      await sleep(2000);
+      throw new Error('printPdf :: ERROR: No signature found on Declaration.');
+    }
+
+    log.info(`printPdf :: signatureTextField content is: ${signatureContent}`);
+
+    log.info('printPdf :: Begin Generating PDF');
+    const pdfStartTime = Date.now();
     const pdfBuffer = await page.pdf({
       displayHeaderFooter: false,
       printBackground: true,
       timeout: 300000,
       width: 1280,
     });
+    log.info(`printPdf :: PDF generated in ${Date.now() - pdfStartTime}ms`);
 
-    log.info('printPdf :: pdf buffer created starting compression');
+    log.info('printPdf :: Compressing PDF');
     const compressedPdfBuffer = await compress(pdfBuffer, {
       gsModule: process.env.GHOSTSCRIPT_PATH, // this is set in dockerfile to fix ghostscript error on deploy
     });
-    log.info('printPdf :: compression completed for applicationId', req.params.applicationId);
+    log.info(`printPdf :: Compression completed for applicationId=${req.params.applicationId}`);
 
+    log.info('printPdf :: Sending PDF to storage');
     const payload = await postPdf(req, compressedPdfBuffer);
+
+    log.info(`printPdf :: PDF successfully stored for applicationId=${req.params.applicationId}`);
     await browserContext.close();
     closeBrowser();
 
     return payload;
   } catch (e) {
-    log.error(e);
+    const errorMessage = e instanceof Error ? e.stack || e.message : JSON.stringify(e);
+    log.error(`printPdf :: Error occurred for applicationId=${req.params.applicationId}, ${errorMessage}`);
+
     await browserContext?.close();
 
-    if (numOfRetries >= 3) {
-      log.info('printPdf :: maximum number of retries reached');
-      log.error(`printPdf :: unable to save pdf for application id ${req.params.applicationId}`);
+    if (numOfRetries >= 5) {
+      log.error(`printPdf :: Maximum retries reached for applicationId=${req.params.applicationId}. Aborting.`);
+      closeBrowser();
     } else {
-      let retryCount = numOfRetries + 1;
-      log.info('printPdf :: failed retrying');
-      log.info(`printPdf :: retry count ${retryCount}`);
+      const retryCount = numOfRetries + 1;
+      await sleep(5000);
+      log.info(`printPdf :: Retrying (${retryCount}/5) for applicationId=${req.params.applicationId}`);
       await printPdf(req, retryCount);
     }
   }
@@ -490,6 +518,7 @@ async function printPdf(req, numOfRetries = 0) {
 function getCurrentDateForPdfFileName() {
   const date = new Date();
   const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: "America/Vancouver",
     month: 'short',
   });
   const month = dateTimeFormatter.format(date).toUpperCase();
@@ -586,6 +615,45 @@ async function updateStatusForApplicationComponents(req, res) {
   }
 }
 
+async function populateSummaryDataForFacility(facility) {
+  try {
+    const childCareLicenses = await getLicenseCategoriesByFacilityId(facility.facilityId);
+    facility.childCareLicenses = Array.from(childCareLicenses.values());
+  } catch (e) {
+    log.warn('populateSummaryDataForFacility unable to find License Categories', e);
+  }
+
+  // check for opt out - no need for more calls if opt-out
+  if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus === 1) {
+    const { ccfri } = facility;
+    const facilityChildcareTypes = await getFacilityChildCareTypesByCcfriId(ccfri.ccfriId);
+    facility.ccfri.childCareTypes = facilityChildcareTypes.childCareTypes;
+    facility.ccfri.dates = facilityChildcareTypes.dates;
+
+    // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
+    // categories from the last year.
+    if (ccfri.previousCcfriId) {
+      const previousCcfriId = await getFacilityChildCareTypesByCcfriId(ccfri.previousCcfriId);
+      facility.ccfri.prevYearCcfriApp = previousCcfriId;
+    }
+
+    if (ccfri?.hasRfi || ccfri?.unlockRfi) {
+      const rfiApp = await getRfiApplicationByCcfriId(ccfri.ccfriId);
+      facility.rfiApp = rfiApp;
+    }
+
+    if (ccfri?.hasNmf || ccfri?.unlockNmf) {
+      const nmfApp = await getNmfApplicationByCcfriId(ccfri.ccfriId);
+      facility.nmfApp = nmfApp;
+    }
+  }
+
+  // jb changed below to work with renewel apps
+  facility.facilityInfo = await getFacilityByFacilityId(facility.facilityId);
+
+  return facility;
+}
+
 async function getApplicationSummary(req, res) {
   try {
     const operation = `ccof_applications(${req.params.applicationId})?$expand=ccof_applicationccfri_Application_ccof_ap($select=${getMappingString(
@@ -599,27 +667,27 @@ async function getApplicationSummary(req, res) {
     applicationSummary.ccofStatus = getLabelFromValue(applicationSummary.ccofStatus, CCOF_STATUS_CODES, 'NEW');
     applicationSummary.applicationStatus = getLabelFromValue(applicationSummary.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
 
-    //setup the Facility map
+    // setup the Facility map
     const facilityMap = new Map();
-    //map CCFRI
+    // map CCFRI
     results.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
       const mappedCCFRI = new MappableObjectForFront(ccfri, ApplicationSummaryCcfriMappings).data;
       getFacilityInMap(facilityMap, mappedCCFRI.facilityId).ccfri = mappedCCFRI;
     });
 
-    //map ECE-WE
+    // map ECE-WE
     results.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ecewe) => {
       const mappedEcewe = new MappableObjectForFront(ecewe, ECEWEFacilityMappings).data;
       getFacilityInMap(facilityMap, mappedEcewe.facilityId).ecewe = mappedEcewe;
     });
 
-    //map CCOF Base funding if it exists
+    // map CCOF Base funding if it exists
     results.ccof_application_basefunding_Application?.forEach((baseFunding) => {
       const mappedBaseFunding = mapFundingObjectForFront(baseFunding);
       getFacilityInMap(facilityMap, mappedBaseFunding.facilityId).funding = mappedBaseFunding;
     });
 
-    //add the change request ID to the facility so we can filter by it on the front end
+    // add the change request ID to the facility so we can filter by it on the front end
     const allChangeRequests = await getChangeRequestsFromApplicationId(req.params.applicationId);
     if (allChangeRequests.length > 0) {
       allChangeRequests.forEach((changeRequest) => {
@@ -633,9 +701,25 @@ async function getApplicationSummary(req, res) {
       });
     }
 
+    let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
+
+    const facilities = Array
+      .from(facilityMap.values())
+      .filter((facility) => {
+        if (facilityFilters === null || facilityFilters.length < 1) return true;
+        return facilityFilters.includes(facility.facilityId);
+      });
+
+    const facilityPromises = [];
+    const limit = pLimit(6);
+    for (const facility of facilities) {
+      facilityPromises.push(limit(async () => await populateSummaryDataForFacility(facility)));
+    }
+    const facilitiesWithSummaryData = await Promise.all(facilityPromises);
+
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: Array.from(facilityMap.values()),
+      facilities: facilitiesWithSummaryData
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);

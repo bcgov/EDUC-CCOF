@@ -250,9 +250,9 @@ async function createChangeRequestFacility(req, res) {
       facilityGuid +
       ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode),ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
     const payload = await getOperation(operation);
-    let changeRequestNewFacilityId = undefined;
-    let ccofBaseFundingId = undefined;
-    let ccofBaseFundingStatus = undefined;
+    let changeRequestNewFacilityId;
+    let ccofBaseFundingId;
+    let ccofBaseFundingStatus;
     if (payload?.ccof_application_basefunding_Facility?.length > 0) {
       ccofBaseFundingId = payload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
       ccofBaseFundingStatus = getLabelFromValue(payload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);

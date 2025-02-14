@@ -11,7 +11,6 @@ class MappableObject {
         this.data[item[to]] = input[item[from]];
       }
     }
-
   }
 
   toJSON() {
@@ -36,14 +35,16 @@ class MappableObjectForBack extends MappableObject {
  * Use this function to generate a list of fields based on mappings
  */
 function getMappingString(mappings) {
-  let retVal = mappings.map(item => {
-    return item.back;}).join(',');
-  console.log('mapping: ',retVal);
+  let retVal = mappings
+    .map((item) => {
+      return item.back;
+    })
+    .join(',');
   return retVal;
 }
 
 module.exports = {
   MappableObjectForFront,
   MappableObjectForBack,
-  getMappingString  
+  getMappingString,
 };

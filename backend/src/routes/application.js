@@ -16,7 +16,7 @@ const {
   updateStatusForApplicationComponents,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
-const { param, validationResult } = require('express-validator');
+const { param, validationResult, body } = require('express-validator');
 
 router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
   return renewCCOFApplication(req, res);
@@ -158,6 +158,22 @@ router.get(
     return getApplicationSummary(req, res);
   },
 );
+
+/* Get the full summary of the application, but filter with Ids in the POST body */
+router.post(
+  '/summary/:applicationId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [
+    param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(),
+    body('facilities').isArray(),
+    body('facilities.*').isUUID()
+  ],
+  (req, res) => {
+    return getApplicationSummary(req, res);
+  },
+);
+
 
 router.put(
   '/status/:applicationId',

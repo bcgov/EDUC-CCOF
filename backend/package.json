@@ -56,6 +56,7 @@
     "nats": "^1.4.12",
     "nconf": "^0.11.4",
     "nocache": "^2.1.0",
+    "p-limit": "^3.1.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-openidconnect-keycloak-idp": "^0.1.6",
