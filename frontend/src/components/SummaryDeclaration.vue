@@ -99,154 +99,12 @@
                 </v-expansion-panel>
               </div>
 
-              <div v-for="facility in facilities" :key="facility?.facilityId" class="special">
-                <v-expansion-panels v-model="expand[facility.facilityId]" multiple>
-                  <v-expansion-panel
-                    v-if="facility?.facilityInfo"
-                    :key="`${facility.facilityId}-facility-information`"
-                    :value="`${facility.facilityId}-facility-information`"
-                    variant="accordion"
-                  >
-                    <FacilityInformationSummary
-                      :facility-info="facility?.facilityInfo"
-                      :funding="facility?.funding"
-                      :facility-id="facility.facilityId"
-                      :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                      :ecewe-status="facility?.ecewe?.optInOrOut"
-                      :license-categories="facility?.licenseCategories"
-                      :provider-type="summaryModel?.application?.organizationProviderType"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ccof-summary`"
-                    :value="`${facility.facilityId}-ccof-summary`"
-                    variant="accordion"
-                  >
-                    <div v-if="!facility.funding || isRenewal" />
-                    <div v-else>
-                      <CCOFSummaryFamily
-                        v-if="
-                          summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
-                        "
-                        :funding="facility.funding"
-                        :facility-id="facility.facilityId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                      <CCOFSummary
-                        v-else
-                        :funding="facility.funding"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </div>
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ccfri-summary`"
-                    :value="`${facility.facilityId}-ccfri-summary`"
-                    variant="accordion"
-                  >
-                    <CCFRISummary
-                      :ccfri="facility?.ccfri"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      :is-processing="isProcessing"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.rfiApp"
-                    :key="`${facility.facilityId}-rfi-summary`"
-                    :value="`${facility.facilityId}-rfi-summary`"
-                    variant="accordion"
-                  >
-                    <RFISummary
-                      :rfi-app="facility?.rfiApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.nmfApp"
-                    :key="`${facility.facilityId}-nmf-summary`"
-                    :value="`${facility.facilityId}-nmf-summary`"
-                    variant="accordion"
-                  >
-                    <NMFSummary
-                      :nmf-app="facility?.nmfApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.ccfri?.enableAfs"
-                    :key="`${facility.facilityId}-afs-summary`"
-                    :value="`${facility.facilityId}-afs-summary`"
-                    variant="accordion"
-                  >
-                    <AFSSummary
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility?.facilityId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
+              <v-row class="pt-4">
+                <v-col v-for="facility in navBarList" :key="facility?.facilityId" cols="12" lg="6" class="my-1">
+                  <FacilityInformationSummaryCard :facility="facility" />
+                </v-col>
+              </v-row>
 
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ecewe-summary-org`"
-                    :value="`${facility.facilityId}-ecewe-summary-org`"
-                    variant="accordion"
-                  >
-                    <ECEWESummary
-                      :ecewe="summaryModel.ecewe"
-                      :ecewe-facility="null"
-                      :is-processing="isProcessing"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ecewe-summary-facility`"
-                    :value="`${facility.facilityId}-ecewe-summary-facility`"
-                    variant="accordion"
-                  >
-                    <ECEWESummary
-                      :ecewe="{}"
-                      :ecewe-facility="facility.ecewe"
-                      :funding-model="summaryModel?.ecewe?.fundingModel"
-                      :is-processing="isProcessing"
-                      :change-rec-guid="facility.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-uploaded-documents-summary`"
-                    :value="`${facility.facilityId}-uploaded-documents-summary`"
-                    variant="accordion"
-                  >
-                    <UploadedDocumentsSummary
-                      :documents="getDocumentsByFacility(facility)"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                </v-expansion-panels>
-              </div>
               <v-expansion-panel
                 v-if="hasChangeNotificationFormDocuments"
                 variant="accordion"
@@ -488,6 +346,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import DocumentService from '@/services/documentService';
+import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
 
 import {
   AFS_STATUSES,
@@ -514,6 +373,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 
 export default {
   components: {
+    FacilityInformationSummaryCard,
     OrganizationSummary,
     UploadedDocumentsSummary,
     NMFSummary,
