@@ -98,12 +98,49 @@
                   />
                 </v-expansion-panel>
               </div>
-
-              <v-row class="pt-4">
-                <v-col v-for="facility in navBarList" :key="facility?.facilityId" cols="12" lg="6" class="my-1">
-                  <FacilityInformationSummaryCard :facility="facility" />
-                </v-col>
-              </v-row>
+              <v-expansion-panel variant="accordion" value="facility-information-summary">
+                <v-expansion-panel-title>
+                  <h4 style="color: #003466">
+                    Facility Information
+                    <!-- <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon> -->
+                    <v-icon v-if="true" color="#ff5252" size="large" class="px-2"> mdi-alert-circle-outline </v-icon>
+                    <span v-if="true" style="color: #ff5252">
+                      At least one of your facilities is missing required information. Click here to view
+                    </span>
+                  </h4>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text eager>
+                  <v-text-field
+                    v-if="facilities?.length > 2"
+                    v-model="facilityFilter"
+                    clearable
+                    variant="outlined"
+                    label="Filter by Facility Name"
+                    max-width="500"
+                  />
+                  <v-row class="pt-0">
+                    <v-col
+                      v-for="facility in sortedFacilities"
+                      :key="facility?.facilityId"
+                      cols="12"
+                      lg="6"
+                      class="my-1"
+                    >
+                      <FacilityInformationSummaryCard
+                        :facility="facility"
+                        @click="handleFacilitySummaryClickEvent(facility?.facilityId)"
+                      />
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <FacilityInformationSummaryDialog
+                :show="showFacilityInformationSummaryDialog"
+                :facility="selectedFacility"
+                :program-year-id="summaryModel?.application?.programYearId"
+                max-width="85%"
+                @close="toggleFacilityInformationSummaryDialog"
+              />
 
               <v-expansion-panel
                 v-if="hasChangeNotificationFormDocuments"
@@ -347,6 +384,7 @@ import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import DocumentService from '@/services/documentService';
 import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
+import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
 
 import {
   AFS_STATUSES,
@@ -373,6 +411,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 
 export default {
   components: {
+    FacilityInformationSummaryDialog,
     FacilityInformationSummaryCard,
     OrganizationSummary,
     UploadedDocumentsSummary,
@@ -402,6 +441,9 @@ export default {
       payload: {},
       printableVersion: false,
       expand: [],
+      showFacilityInformationSummaryDialog: false,
+      selectedFacilityId: null,
+      facilityFilter: '',
     };
   },
   computed: {
@@ -530,6 +572,17 @@ export default {
         (!this.isRenewal && !this.organizationAccountNumber) || (this.isChangeRequest && !this.isDeclarationBDisplayed)
       );
     },
+    sortedFacilities() {
+      const sortedList = cloneDeep(this.navBarList);
+      return sortedList
+        .filter((facility) => facility.facilityName.includes(this.facilityFilter ?? ''))
+        .sort((a, b) =>
+          this.isFacilityComplete(a) === this.isFacilityComplete(b) ? 0 : this.isFacilityComplete(a) ? 1 : -1,
+        );
+    },
+    selectedFacility() {
+      return this.facilities?.find((facility) => facility.facilityId === this.selectedFacilityId);
+    },
   },
   watch: {
     isLoadingComplete: {
@@ -608,6 +661,22 @@ export default {
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh']),
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
+    isFacilityComplete(facility) {
+      return (
+        facility?.isFacilityComplete &&
+        facility?.isCCOFComplete &&
+        facility?.isCCFRIComplete &&
+        (!facility?.hasRfi || facility?.isRfiComplete) &&
+        (!facility?.hasNmf || facility?.isNmfComplete)
+      );
+    },
+    handleFacilitySummaryClickEvent(facilityId) {
+      this.selectedFacilityId = facilityId;
+      this.toggleFacilityInformationSummaryDialog();
+    },
+    toggleFacilityInformationSummaryDialog() {
+      this.showFacilityInformationSummaryDialog = !this.showFacilityInformationSummaryDialog;
+    },
     isPageComplete() {
       if (
         (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) ||

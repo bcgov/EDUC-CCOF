@@ -6,15 +6,15 @@
     hover
     @click="true"
   >
-    <div class="pa-4">
+    <div class="px-2 py-4">
       <v-row no-gutters>
-        <v-col cols="12" lg="6">
+        <v-col cols="6" class="px-2">
           <div class="summary-label">Facility Name</div>
           <div :class="facility.facilityName ? '' : 'text-error'" class="summary-value">
             {{ facility.facilityName ?? 'Required' }}
           </div>
         </v-col>
-        <v-col cols="12" lg="5">
+        <v-col cols="5" class="px-2">
           <div class="summary-label">Facility ID</div>
           <div class="summary-value">
             {{ facility.facilityAccountNumber ?? '--' }}
@@ -26,19 +26,19 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="pt-2">
-        <v-col cols="12" lg="4">
+        <v-col cols="6" md="4" class="px-2">
           <div class="summary-label">Licence Number</div>
           <div :class="facility.licenseNumber ? '' : 'text-error'" class="summary-value">
             {{ facility.licenseNumber ?? 'Required' }}
           </div>
         </v-col>
-        <v-col cols="12" lg="4">
+        <v-col cols="6" md="4" class="px-2">
           <div class="summary-label">CCFRI</div>
           <div :class="facility.ccfriOptInStatus != null ? '' : 'text-error'" class="summary-value">
             {{ getOptInOptOut(facility.ccfriOptInStatus) ?? 'Required' }}
           </div>
         </v-col>
-        <v-col cols="12" lg="4">
+        <v-col cols="6" md="4" class="px-2">
           <div class="summary-label">ECE-WE</div>
           <div :class="facility.eceweOptInStatus != null ? '' : 'text-error'" class="summary-value">
             {{ getOptInOptOut(facility.eceweOptInStatus) ?? 'Required' }}
@@ -61,7 +61,7 @@
         />
       </v-col> -->
       </v-row>
-      <v-row no-gutters class="pt-2">
+      <v-row no-gutters class="pa-2 pb-0">
         <template v-if="isFacilityComplete">
           <v-icon class="text-success" size="large"> mdi-check-circle-outline </v-icon>
           <span class="text-success pl-2">Click here to view.</span>
