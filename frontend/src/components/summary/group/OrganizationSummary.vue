@@ -45,9 +45,9 @@
           </v-col>
         </v-row>
         <v-row no-gutters>
-          <v-col cols="12">
+          <v-col cols="12" md="8" class="pr-2">
             <div class="summary-label">
-              Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)
+              Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
             </div>
             <v-text-field
               placeholder="Required"
@@ -61,8 +61,6 @@
               :rules="rules.required"
             />
           </v-col>
-        </v-row>
-        <v-row no-gutters>
           <v-col
             v-if="
               summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||

@@ -14,7 +14,7 @@
                       variant="outlined"
                       required
                       :rules="rules.required"
-                      label="Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)"
+                      label="Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)"
                     />
                   </v-col>
                 </v-row>
