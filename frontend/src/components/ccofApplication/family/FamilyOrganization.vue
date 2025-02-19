@@ -26,7 +26,7 @@
                       :disabled="isLocked"
                       variant="outlined"
                       :rules="validateIncorporationNumber(model.organizationType, model.incNumber)"
-                      label="Incorporation Number (as it appears in BC Corporate Registry)"
+                      label="Incorporation Number (as it appears in BC Registries and Online Services)"
                     />
                   </v-col>
                   <v-col>

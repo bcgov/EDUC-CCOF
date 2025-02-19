@@ -404,3 +404,9 @@ export const ORGANIZATION_TYPES = Object.freeze({
   FIRST_NATIONS_GOVERNMENT: 100000004,
   SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
 });
+
+export const TOOLTIP_TYPES = Object.freeze({
+  INFO: 'Information',
+  ERROR: 'Error',
+  WARNING: 'Warning',
+});

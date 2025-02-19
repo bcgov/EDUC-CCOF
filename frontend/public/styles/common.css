@@ -118,14 +118,14 @@ input[type="number"] {
 .error-message {
   color: #d8292f !important;
   font-size: 12px;
-  animation: 1s move-from-top linear;
+  animation: 0.5s move-from-top;
 }
 @keyframes move-from-top {
   0% {
     opacity: 0;
     transform: translateY(-100%);
   }
-  25% {
+  100% {
     opacity: 1;
     transform: translateY(0%);
   }
