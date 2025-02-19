@@ -57,6 +57,7 @@ import { useDocumentStore } from '@/store/document.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { PATHS, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
+import { mdyToIso } from '@/utils/formatTime';
 
 export default {
   components: { NavButton },
@@ -124,7 +125,11 @@ export default {
     getSubmissionDateString(date) {
       if (date) {
         // date display format: YYYY/MM/DD
-        return new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+        return new Date(mdyToIso(date)).toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
       }
       return '- - - -';
     },

@@ -1,3 +1,13 @@
+/**
+ * Formats the DD/MM/YY HH:mm format from dynamics into an ISO
+ * friendly string of YYYY-MM-DDTHH:mm:ss.sssZ
+ */
+export function mdyToIso(dateTimeString) {
+  const [date, time] = dateTimeString.split(' ');
+  const [month, day, year] = date.split('/');
+  return `${year}-${month}-${day}T${time}.000Z`;
+}
+
 export default function formatTime(v) {
   let hour = v.split(':')[0];
   hour = parseInt(hour);
