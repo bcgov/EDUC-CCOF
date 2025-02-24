@@ -627,6 +627,9 @@ export default {
     this.PATHS = PATHS;
     this.rules = rules;
   },
+  mounted() {
+    this.$refs.informationSummaryForm?.validate();
+  },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     isNullOrBlank,
@@ -692,5 +695,9 @@ export default {
 
 :deep(.v-field__input) {
   padding-left: 0px;
+}
+
+:deep(.v-input__details) {
+  padding-left: 0;
 }
 </style>
