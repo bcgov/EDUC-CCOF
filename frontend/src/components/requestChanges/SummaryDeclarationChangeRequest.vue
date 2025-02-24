@@ -545,8 +545,6 @@ export default {
               (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
             );
 
-            console.log(afs.afsStatus);
-            console.log(afs?.afsStatus === AFS_STATUSES.ACCEPT);
             const payload = {
               changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
               unlockAfs: false,

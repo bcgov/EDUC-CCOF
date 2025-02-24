@@ -436,15 +436,28 @@
               </v-card-subtitle>
               <v-row>
                 <v-col cols="12" sm="6" lg="3" class="py-0">
-                  <v-checkbox v-model="model.beforeSchool" :disabled="isLocked" label="Before School" color="primary" />
+                  <v-checkbox
+                    v-model="model.beforeSchool"
+                    :disabled="isLocked"
+                    :true-value="1"
+                    label="Before School"
+                    color="primary"
+                  />
                 </v-col>
                 <v-col cols="12" sm="6" lg="3" class="py-0">
-                  <v-checkbox v-model="model.afterSchool" :disabled="isLocked" label="After School" color="primary" />
+                  <v-checkbox
+                    v-model="model.afterSchool"
+                    :disabled="isLocked"
+                    :true-value="1"
+                    label="After School"
+                    color="primary"
+                  />
                 </v-col>
                 <v-col cols="12" sm="6" lg="3" class="py-0">
                   <v-checkbox
                     v-model="model.beforeKindergarten"
                     :disabled="isLocked"
+                    :true-value="1"
                     label="Before Kindergarten"
                     color="primary"
                   />
@@ -453,6 +466,7 @@
                   <v-checkbox
                     v-model="model.afterKindergarten"
                     :disabled="isLocked"
+                    :true-value="1"
                     label="After Kindergarten"
                     color="primary"
                   />

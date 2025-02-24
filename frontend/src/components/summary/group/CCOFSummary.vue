@@ -27,7 +27,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxDaysPerWeek) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.min(1), rules.max(7), rules.wholeNumber]"
                   />
@@ -47,7 +47,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxWeeksPerYear) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.min(1), rules.max(52), rules.wholeNumber]"
                   />
@@ -238,7 +238,7 @@
                     flat
                     variant="solo"
                     readonly
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.hoursTo) || isValidForm"
                     :rules="[...rules.required, rules.validHourTo(funding?.hoursFrom)]"
                   />
                 </v-col>
@@ -265,7 +265,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxGroupChildCareUnder36) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -281,7 +281,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxGroupChildCare36) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -299,7 +299,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxGroupChildCareSchool) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -315,7 +315,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxPreschool) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -331,7 +331,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxGroupChildCareMultiAge) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -347,7 +347,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :hide-details="isValidForm"
+                    :hide-details="isNullOrBlank(funding?.maxLicensesCapacity) || isValidForm"
                     readonly
                     :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
                   />
@@ -451,7 +451,7 @@
             <v-col cols="12" md="6">
               <v-text-field
                 placeholder="Required"
-                :model-value="funding?.isSchoolProperty ? 'YES' : 'NO'"
+                :model-value="getYesNoValue(funding?.isSchoolProperty)"
                 class="summary-value"
                 density="compact"
                 flat
@@ -490,7 +490,7 @@
             <v-col cols="12" md="6">
               <v-text-field
                 placeholder="Required"
-                :model-value="funding?.isExtendedHours ? 'YES' : 'NO'"
+                :model-value="getYesNoValue(funding?.isExtendedHours)"
                 class="summary-value"
                 density="compact"
                 flat
@@ -516,7 +516,7 @@
                   density="compact"
                   flat
                   variant="solo"
-                  :hide-details="isValidForm"
+                  :hide-details="isNullOrBlank(funding?.maxDaysPerWeekExtended) || isValidForm"
                   readonly
                 />
               </v-col>
@@ -532,7 +532,7 @@
                   density="compact"
                   flat
                   variant="solo"
-                  :hide-details="isValidForm"
+                  :hide-details="isNullOrBlank(funding?.maxWeeksPerYearExtended) || isValidForm"
                   readonly
                 />
               </v-col>
@@ -562,7 +562,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareUnder36)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -573,7 +574,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareUnder36)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -590,7 +592,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCare36)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -601,7 +604,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCare36)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -620,7 +624,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareSchool)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -631,7 +636,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareSchool)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -648,7 +654,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareMultiAge)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -659,7 +666,8 @@
                         density="compact"
                         flat
                         variant="solo"
-                        hide-details
+                        :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareMultiAge)]"
+                        :hide-details="isValidForm"
                         readonly
                       />
                     </v-col>
@@ -685,13 +693,16 @@ import { mapActions, mapState } from 'pinia';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 
-import { isChangeRequest } from '@/utils/common.js';
+import globalMixin from '@/mixins/globalMixin.js';
+import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
+
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
+  mixins: [globalMixin],
   props: {
     funding: {
       type: Object,
@@ -850,6 +861,7 @@ export default {
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
+    isNullOrBlank,
   },
 };
 </script>
