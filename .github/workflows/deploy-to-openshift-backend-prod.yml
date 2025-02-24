@@ -31,8 +31,8 @@ env:
 
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "7"
-  MIN_CPU: "50m"
-  MAX_CPU: "400m"
+  MIN_CPU: "200m"
+  MAX_CPU: "750m"
   MIN_MEM: "200Mi"
   MAX_MEM: "700Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
