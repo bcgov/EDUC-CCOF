@@ -4,7 +4,7 @@
     :items="matchedAddresses"
     item-title="Text"
     item-value="id"
-    return-object
+    clearable
     variant="outlined"
     prepend-inner-icon="mdi-magnify"
     @update:search="handleInput"
@@ -27,7 +27,7 @@ import CanadaPostService from '@/services/canadaPostService';
 export default {
   name: 'AppAddressLookup',
   mixins: [alertMixin],
-  emits: ['updateAddress'],
+  emits: ['updateAddress', 'update:modelValue'],
   data() {
     return {
       loading: false,
@@ -45,7 +45,7 @@ export default {
     // Delay triggering findMatchedAddresses() until after the user stops typing to reduce unnecessary API calls and improve performance.
     handleInput: debounce(async function (value) {
       await this.findMatchedAddresses(value);
-    }, 500), // Wait 500ms after the last keystroke
+    }, 800), // Wait 800ms after the last keystroke
 
     async findMatchedAddresses(value, bySearchTerm = true) {
       try {
@@ -71,6 +71,7 @@ export default {
       if (value?.Next === this.NEXT_ACTION.FIND) {
         await this.findMatchedAddresses(value?.Id, false);
       } else {
+        this.$emit('update:modelValue', value.Text);
         this.$emit('updateAddress', value);
       }
     },

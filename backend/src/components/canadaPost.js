@@ -20,7 +20,7 @@ async function findAddresses(req, res) {
     if (req?.query?.searchTerm) {
       const cachedSearchResult = addressSearchResultsCache.get(req?.query?.searchTerm);
       if (cachedSearchResult) {
-        log.info(`Canada Post findAddresses :: Cache hit for search term - ${req?.query?.searchTerm}`);
+        log.info(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
         return res.status(HttpStatus.OK).json(cachedSearchResult);
       }
       url += `&SearchTerm=${req.query.searchTerm}`;
@@ -38,7 +38,7 @@ async function findAddresses(req, res) {
     if (req?.query?.searchTerm) {
       addressSearchResultsCache.put(req?.query?.searchTerm, response.data, ONE_DAY_MS);
     }
-    log.info(`Canada Post findAddresses :: Cache miss and AddressComplete API is called for search term - ${req?.query?.searchTerm}`);
+    log.info(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
     log.error(e);
