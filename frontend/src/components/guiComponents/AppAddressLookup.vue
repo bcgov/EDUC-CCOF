@@ -4,10 +4,10 @@
     :items="matchedAddresses"
     item-title="Text"
     item-value="id"
-    return-object
+    clearable
     variant="outlined"
     prepend-inner-icon="mdi-magnify"
-    @update:search="findMatchedAddresses"
+    @update:search="handleInput"
     @update:model-value="selectAddress"
   >
     <template #item="{ props, item }">
@@ -20,14 +20,14 @@
 
 <script>
 import { uuid } from 'vue-uuid';
-import { isEmpty } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import alertMixin from '@/mixins/alertMixin.js';
 import CanadaPostService from '@/services/canadaPostService';
 
 export default {
   name: 'AppAddressLookup',
   mixins: [alertMixin],
-  emits: ['updateAddress'],
+  emits: ['updateAddress', 'update:modelValue'],
   data() {
     return {
       loading: false,
@@ -42,11 +42,16 @@ export default {
     };
   },
   methods: {
+    // Delay triggering findMatchedAddresses() until after the user stops typing to reduce unnecessary API calls and improve performance.
+    handleInput: debounce(async function (value) {
+      await this.findMatchedAddresses(value);
+    }, 800), // Wait 800ms after the last keystroke
+
     async findMatchedAddresses(value, bySearchTerm = true) {
       try {
+        if (isEmpty(value) || this.selectedAddress?.Text === value) return;
         this.loading = true;
         this.matchedAddresses = [];
-        if (isEmpty(value) || this.selectedAddress?.Text === value) return;
         const response = bySearchTerm
           ? await CanadaPostService.findAddressesBySearchTerm(value)
           : await CanadaPostService.findAddressesByLastId(value);
@@ -66,6 +71,7 @@ export default {
       if (value?.Next === this.NEXT_ACTION.FIND) {
         await this.findMatchedAddresses(value?.Id, false);
       } else {
+        this.$emit('update:modelValue', value.Text);
         this.$emit('updateAddress', value);
       }
     },

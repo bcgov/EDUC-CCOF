@@ -36,6 +36,7 @@ const changeRequestRouter = require('./routes/changeRequest');
 const pdfRouter = require('./routes/pdf');
 const canadaPostRouter = require('./routes/canadaPost');
 const connectRedis = require('connect-redis');
+const rateLimit = require('express-rate-limit');
 
 const promMid = require('express-prometheus-middleware');
 
@@ -188,6 +189,16 @@ utils.getOidcDiscovery().then((discovery) => {
 //functions for serializing/deserializing users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
+
+// Setup Rate limit for the number of frontend requests allowed per windowMs to avoid DDOS attack
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  store: dbSession,
+});
+app.use('/api/canadaPost', limiter);
 
 app.use(morgan(config.get('server:morganFormat'), { stream: logStream }));
 //set up routing to auth and main API
