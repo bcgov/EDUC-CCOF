@@ -105,9 +105,9 @@
           Facility Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
           <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error"
-            >Your form is missing required information. Click here to view.</span
-          >
+          <span v-if="!isValidForm" class="text-error">
+            Your form is missing required information. Click here to view.
+          </span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">
@@ -139,14 +139,14 @@
               density="compact"
               flat
               variant="solo"
-              hide-details
+              :hide-details="isNullOrBlank(facilityInfo?.yearBeganOperation) || isValidForm"
               readonly
-              :rules="rules.required"
+              :rules="[...rules.required, ...rules.YYYY]"
             />
           </v-col>
         </v-row>
         <v-row no-gutters>
-          <v-col cols="12" md="4">
+          <v-col cols="12">
             <div class="summary-label">Facility Street Address</div>
             <v-text-field
               placeholder="Required"
@@ -160,6 +160,52 @@
               :rules="rules.required"
             />
           </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="12" md="4">
+            <div class="summary-label">City/Town</div>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.city"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <div class="summary-label">Province</div>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.province"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              :rules="[...rules.required, rules.equalTo('BC', 'Facilities must be located within BC')]"
+              :hide-details="isNullOrBlank(facilityInfo?.province) || isValidForm"
+              readonly
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <div class="summary-label">Postal Code</div>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.postalCode"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(facilityInfo?.postalCode) || isValidForm"
+              readonly
+              :rules="[...rules.required, ...rules.postalCode]"
+            />
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
           <v-col cols="12" md="4">
             <div class="summary-label">Facility Contact Name</div>
             <v-text-field
@@ -193,53 +239,7 @@
           <v-col cols="12">
             <v-row no-gutters>
               <v-col cols="12" md="4">
-                <div class="summary-label">City/Town</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.city"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Province</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.province"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Postal Code</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.postalCode"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Business phone</div>
+                <div class="summary-label">Facility Phone Number</div>
                 <v-text-field
                   placeholder="Required"
                   :model-value="facilityInfo?.phone"
@@ -247,13 +247,13 @@
                   density="compact"
                   flat
                   variant="solo"
-                  hide-details
+                  :hide-details="isNullOrBlank(facilityInfo?.phone) || isValidForm"
                   readonly
-                  :rules="rules.required"
+                  :rules="[...rules.required, rules.phone]"
                 />
               </v-col>
               <v-col cols="12" md="4">
-                <div class="summary-label">Facility E-mail Address</div>
+                <div class="summary-label">Facility Email Address</div>
                 <v-text-field
                   placeholder="Required"
                   :model-value="facilityInfo?.email"
@@ -261,9 +261,9 @@
                   density="compact"
                   flat
                   variant="solo"
-                  hide-details
+                  :hide-details="isNullOrBlank(facilityInfo?.email) || isValidForm"
                   readonly
-                  :rules="rules.required"
+                  :rules="[...rules.required, ...rules.email]"
                 />
               </v-col>
             </v-row>
@@ -298,6 +298,20 @@
                   hide-details
                   readonly
                   :rules="rules.required"
+                />
+              </v-col>
+              <v-col cols="12" md="4">
+                <div class="summary-label">Health Authority</div>
+                <v-text-field
+                  :model-value="getHealthAuthorityNameById(facilityInfo?.healthAuthority)"
+                  placeholder="Required"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                  class="summary-value"
                 />
               </v-col>
             </v-row>
@@ -373,9 +387,9 @@
           <v-col cols="12">
             <v-row no-gutters>
               <v-col cols="12">
-                <span class="summary-label"
-                  >Facility Name (as it appears on the Community Care Assisted Living Act Licence)</span
-                >
+                <span class="summary-label">
+                  Facility Name (as it appears on the Community Care Assisted Living Act Licence)
+                </span>
               </v-col>
               <v-col cols="12">
                 <v-text-field
@@ -520,11 +534,12 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
+import { useAppStore } from '@/store/app.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { isChangeRequest } from '@/utils/common.js';
+import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
 import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -578,10 +593,7 @@ export default {
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
       isValidForm: true,
-      legal: null,
       formObj: {
         formName: 'FacilityInformationSummary',
         formId: this.facilityId,
@@ -589,6 +601,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAppStore, ['getHealthAuthorityNameById']),
     ...mapState(useApplicationStore, ['isRenewal']),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
@@ -611,9 +624,12 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.PATHS = PATHS;
+    this.rules = rules;
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
+    isNullOrBlank,
     getOptInOptOut(status) {
       if (status === 1) {
         return 'Opt-In';

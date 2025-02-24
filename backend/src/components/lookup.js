@@ -6,8 +6,10 @@ const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
 const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const log = require('./logger');
 
 const lookupCache = new cache.Cache();
+const ONE_HOUR_MS = 60 * 60 * 1000; // Cache timeout set for one hour
 
 const organizationType = [
   {
@@ -75,7 +77,7 @@ async function getLicenseCategory() {
       .sort((a, b) => {
         return a.ccof_categorynumber - b.ccof_categorynumber;
       });
-    lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
+    lookupCache.put('licenseCategory', resData, ONE_HOUR_MS);
   }
   return resData;
 }
@@ -137,7 +139,7 @@ async function getLookupInfo(req, res) {
         return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']);
       });
 
-    const licenseCategory = await getLicenseCategory();
+    const [licenseCategory, healthAuthorities] = await Promise.all([getLicenseCategory(), getGlobalOptionsData('ccof_healthauthority')]);
     resData = {
       programYear: programYears,
       childCareCategory: childCareCategory,
@@ -146,8 +148,9 @@ async function getLookupInfo(req, res) {
       groupLicenseCategory: licenseCategory.groupLicenseCategory,
       familyLicenseCategory: licenseCategory.familyLicenseCategory,
       'changeRequestTypes:': CHANGE_REQUEST_TYPES,
+      healthAuthorities: healthAuthorities,
     };
-    lookupCache.put('lookups', resData, 60 * 60 * 1000);
+    lookupCache.put('lookups', resData, ONE_HOUR_MS);
   }
   return res.status(HttpStatus.OK).json(resData);
 }
@@ -159,9 +162,23 @@ async function getSystemMessages(req, res) {
     systemMessages = [];
     const resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
     resData?.value.forEach((message) => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
-    lookupCache.put('systemMessages', systemMessages, 60 * 60 * 1000);
+    lookupCache.put('systemMessages', systemMessages, ONE_HOUR_MS);
   }
   return res.status(HttpStatus.OK).json(systemMessages);
+}
+
+async function getGlobalOptionsData(operationName) {
+  try {
+    const response = await getOperation(`GlobalOptionSetDefinitions(Name='${operationName}')`);
+    const data =
+      response?.Options?.map((item) => ({
+        id: Number(item.Value),
+        description: item.Label?.LocalizedLabels?.[0]?.Label ?? null,
+      })) || [];
+    return data;
+  } catch (error) {
+    log.error(`Error getting global options data for ${operationName}:`, error);
+  }
 }
 
 module.exports = {
