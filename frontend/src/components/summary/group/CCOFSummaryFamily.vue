@@ -66,7 +66,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hasClosedMonth ? 'YES' : 'NO'"
+                    :model-value="getYesNoValue(funding?.hasClosedMonth)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -322,7 +322,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isExtendedHours ? 'YES' : 'NO'"
+                    :model-value="getYesNoValue(funding?.isExtendedHours)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -549,12 +549,14 @@ import { mapState } from 'pinia';
 
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import globalMixin from '@/mixins/globalMixin.js';
 import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
+  mixins: [globalMixin],
   props: {
     funding: {
       type: Object,

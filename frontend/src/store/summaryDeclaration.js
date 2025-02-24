@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -11,6 +12,7 @@ import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
+  if (isEmpty(licenseCategories)) return '';
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];

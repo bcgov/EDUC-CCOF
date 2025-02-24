@@ -34,7 +34,6 @@
                 :disabled="isLocked"
                 :rules="rules.required"
                 color="primary"
-                @update:model-value="$refs.form?.validate"
               >
                 <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
               </v-radio-group>

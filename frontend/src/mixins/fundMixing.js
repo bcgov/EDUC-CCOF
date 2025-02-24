@@ -150,7 +150,6 @@ export default {
 
         if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
           let newFac = this.getChangeActionNewFacByFacilityId(this.fundingModel.facilityId);
-          console.log(newFac);
 
           newFac.baseFunding.isCCOFComplete = this.model.isCCOFComplete;
         }
