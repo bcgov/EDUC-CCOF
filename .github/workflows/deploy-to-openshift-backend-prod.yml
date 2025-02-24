@@ -29,6 +29,8 @@ env:
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
+  # NOTE: Some of these settings are temporary until puppeteer/chromium is decomissioned
+  # for printing. Original values for CPU were 50m min, 250m max. Max replicas were 5
   MIN_REPLICAS: "3"
   MAX_REPLICAS: "7"
   MIN_CPU: "200m"
