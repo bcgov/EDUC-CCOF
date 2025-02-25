@@ -15,7 +15,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000; // Cache timeout set for one day
 */
 async function findAddresses(req, res) {
   try {
-    let url = `${config.get('canadaPostApi:findApiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;
+    let url = `${config.get('canadaPostApi:apiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;
 
     if (req?.query?.searchTerm) {
       const cachedSearchResult = addressSearchResultsCache.get(req?.query?.searchTerm);

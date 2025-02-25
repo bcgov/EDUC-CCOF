@@ -36,6 +36,7 @@ const changeRequestRouter = require('./routes/changeRequest');
 const pdfRouter = require('./routes/pdf');
 const canadaPostRouter = require('./routes/canadaPost');
 const connectRedis = require('connect-redis');
+const { RedisStore } = require('rate-limit-redis');
 const rateLimit = require('express-rate-limit');
 
 const promMid = require('express-prometheus-middleware');
@@ -196,7 +197,7 @@ const limiter = rateLimit({
   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  store: dbSession,
+  store: dbSession ? new RedisStore({ sendCommand: (...args) => dbSession.client.call(...args) }) : undefined,
 });
 app.use('/api/canadaPost', limiter);
 
