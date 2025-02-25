@@ -80,7 +80,7 @@ function mapCCFRIObjectForFront(data) {
 }
 
 async function getFacilityByFacilityId(facilityId) {
-  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus`;
+  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually`;
   const facility = await getOperation(operation);
 
   if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
@@ -92,7 +92,7 @@ async function getFacilityByFacilityId(facilityId) {
 
 async function getFacility(req, res) {
   try {
-    let facility = await getFacilityByFacilityId(req.params.facilityId);
+    const facility = await getFacilityByFacilityId(req.params.facilityId);
 
     if (facility === null) {
       return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not facility.' });

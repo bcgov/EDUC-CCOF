@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
+import AppAddressForm from '@/components/guiComponents/AppAddressForm.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -10,19 +11,11 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { isChangeRequest } from '@/utils/common.js';
-import {
-  ORGANIZATION_PROVIDER_TYPES,
-  PATHS,
-  PROVINCES,
-  changeUrl,
-  changeUrlGuid,
-  pcfUrl,
-  pcfUrlGuid,
-} from '@/utils/constants.js';
+import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton },
+  components: { AppAddressForm, NavButton },
   mixins: [alertMixin],
   computed: {
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
@@ -79,7 +72,6 @@ export default {
     facilityModel: {
       handler() {
         this.model = { ...this.facilityModel };
-        this.model.province = this.model.province ?? PROVINCES.find((province) => province.value === 'BC')?.value;
         this.$refs.form?.resetValidation();
       },
       immediate: true,
@@ -105,12 +97,12 @@ export default {
     ]),
     ...mapActions(useOrganizationStore, ['loadOrganization']),
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
-    isSameAddressChecked() {
-      if (!this.model.isSameAsMailing) {
-        this.model.address2 = '';
-        this.model.city2 = '';
-        this.model.postalCode2 = '';
-      }
+    resetStreetAddress() {
+      if (this.loading) return;
+      this.model.address2 = null;
+      this.model.city2 = null;
+      this.model.province2 = null;
+      this.model.postalCode2 = null;
     },
     isGroup() {
       return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;

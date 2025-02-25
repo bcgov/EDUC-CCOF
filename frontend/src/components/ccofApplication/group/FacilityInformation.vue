@@ -30,43 +30,23 @@
                     label="Year Facility Began Operation (YYYY)"
                   />
                 </v-col>
-                <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="model.facilityAddress"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    required
-                    :rules="rules.required"
-                    label="Facility Street Address"
-                  />
-                </v-col>
               </v-row>
 
-              <v-row>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field
-                    v-model="model.city"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    required
-                    :rules="rules.required"
-                    label="City/Town"
-                  />
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field v-model="model.province" variant="outlined" :disabled="true" label="Province" />
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field
-                    v-model="model.postalCode"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    required
-                    :rules="[...rules.required, ...rules.postalCode]"
-                    label="Postal Code"
-                  />
-                </v-col>
-              </v-row>
+              <v-divider />
+
+              <AppAddressForm
+                :disabled="isLocked"
+                :manual-entry="model.isFacilityAddressEnteredManually"
+                :address="model.facilityAddress"
+                :city="model.city"
+                :province="model.province"
+                :postal-code="model.postalCode"
+                :has-bc-province-validation="true"
+                address-label="Facility Street Address"
+                @update="updateStreetAddress"
+              />
+
+              <v-divider class="mb-2" />
 
               <v-row>
                 <v-col cols="12" md="6">
@@ -184,8 +164,8 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
-
 import facilityMixin from '@/mixins/facilityMixin.js';
 
 export default {
@@ -196,6 +176,16 @@ export default {
       await this.save(false);
     }
     next();
+  },
+  methods: {
+    updateStreetAddress(updatedModel) {
+      if (isEmpty(updatedModel)) return;
+      this.model.isFacilityAddressEnteredManually = updatedModel.manualEntry;
+      this.model.facilityAddress = updatedModel.address;
+      this.model.city = updatedModel.city;
+      this.model.province = updatedModel.province;
+      this.model.postalCode = updatedModel.postalCode;
+    },
   },
 };
 </script>
