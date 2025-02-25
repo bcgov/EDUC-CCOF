@@ -179,7 +179,7 @@ jobs:
               ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
               ${{ secrets.SPLUNK_TOKEN }} \
               ${{ secrets.REDIS_PASSWORD }} \
-              ${{ secrets.D365_API_PREFIX }}
+              ${{ secrets.D365_API_PREFIX }} \
               ${{ secrets.CANADA_POST_API_ENDPOINT }} \
               ${{ secrets.CANADA_POST_API_KEY }} 
 
