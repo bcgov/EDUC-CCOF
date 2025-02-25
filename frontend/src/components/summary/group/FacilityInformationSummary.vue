@@ -101,14 +101,7 @@
       v-model="isValidForm"
     >
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Facility Information
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error"
-            >Your form is missing required information. Click here to view.</span
-          >
-        </h4>
+        <SummaryExpansionPanelTitle title="Facility Information" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">
         <v-row no-gutters>
@@ -520,6 +513,7 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -529,6 +523,7 @@ import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES }
 import rules from '@/utils/rules.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     facilityInfo: {
       type: Object,

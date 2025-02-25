@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="documentSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Uploaded Documents
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error"
-            >Your form is missing required information. Click here to view.</span
-          >
-        </h4>
+        <SummaryExpansionPanelTitle title="Uploaded Documents" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters>
@@ -49,6 +42,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { DOCUMENT_TYPES, PATHS, pcfUrl, changeUrl } from '@/utils/constants.js';
@@ -56,6 +50,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'UploadedDocumentsSummary',
+  components: { SummaryExpansionPanelTitle },
   props: {
     documents: {
       type: Array,

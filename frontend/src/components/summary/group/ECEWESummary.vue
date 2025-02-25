@@ -1,7 +1,7 @@
 <template>
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <h4 style="color: #003466">
+      <h4 style="color: #003366">
         Early Childhood Educator-Wage Enhancement (ECE-WE) -
         {{ facilityInformationExists ? 'Facility Information' : 'Organization Information' }}
 
@@ -9,7 +9,9 @@
           <v-icon class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
           <span class="text-error">Your form is missing required information. Click here to view.</span>
         </template>
-        <v-icon v-else-if="isValidForm && !isProcessing" color="green" size="large"> mdi-check-circle-outline </v-icon>
+        <v-icon v-else-if="isValidForm && !isProcessing" class="text-success" size="large">
+          mdi-check-circle-outline
+        </v-icon>
       </h4>
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
