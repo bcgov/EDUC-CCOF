@@ -2,18 +2,11 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="changeNotificationFormSummaryForm">
       <v-expansion-panel-title>
-        <h4 class="blueText">
-          Change Notification Form
-          <v-icon v-if="isLoadingComplete && isChangeNotificationFormComplete" color="green" size="large">
-            mdi-check-circle-outline
-          </v-icon>
-          <v-icon v-if="isLoadingComplete && !isChangeNotificationFormComplete" class="text-error" size="large">
-            mdi-alert-circle-outline
-          </v-icon>
-          <span v-if="isLoadingComplete && !isChangeNotificationFormComplete" class="text-error"
-            >Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle
+          title="Change Notification Form"
+          :loading="isLoadingComplete"
+          :is-complete="isChangeNotificationFormComplete"
+        />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <div class="my-4">
@@ -65,6 +58,7 @@
 
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -72,6 +66,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { PATHS, changeUrlGuid, CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     changeNotificationFormDocuments: {
       type: Array,
@@ -144,9 +139,5 @@ export default {
 .summary-value-missing {
   font-size: medium;
   color: #d8292f !important;
-}
-
-.blueText {
-  color: #003466 !important;
 }
 </style>

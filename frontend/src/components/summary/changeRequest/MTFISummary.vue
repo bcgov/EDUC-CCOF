@@ -2,16 +2,7 @@
   <v-row no-gutters class="d-flex flex-column ma-0 pa-0">
     <v-form ref="mtfiSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 class="blueText">
-          Parent fees
-          <v-icon v-if="isValidForm && isNewCcfriValid" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm || !isNewCcfriValid" class="text-error" size="large">
-            mdi-alert-circle-outline
-          </v-icon>
-          <span v-if="!isValidForm || !isNewCcfriValid" class="text-error"
-            >Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle title="Parent fees" :is-complete="isValidForm && isNewCcfriValid" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="rounded">
         <div v-if="isNewCcfriValid">
@@ -477,12 +468,14 @@
 
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import { deepCloneObject } from '@/utils/common.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     oldCcfri: {
       type: Object,
