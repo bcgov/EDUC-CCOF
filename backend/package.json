@@ -64,6 +64,7 @@
     "path": "0.12.7",
     "puppeteer": "^23.5.0",
     "querystring": "0.2.0",
+    "rate-limit-redis": "^4.2.0",
     "redlock": "^4.2.0",
     "strip-ansi": "^6.0.0",
     "uuid": "^8.3.2",
