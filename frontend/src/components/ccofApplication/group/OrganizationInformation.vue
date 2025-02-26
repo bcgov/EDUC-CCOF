@@ -1,8 +1,8 @@
 <template>
   <v-form ref="form" v-model="isValidForm">
-    <v-container>
-      <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
-        <v-card class="mx-lg-16 pa-2" width="100%">
+    <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
+      <v-container class="mx-lg-16">
+        <v-card class="cc-top-level-card pa-2">
           <v-card-title class="text-center pb-0">
             <h3>Organization Information</h3>
           </v-card-title>
@@ -27,17 +27,15 @@
               </v-card>
             </v-row>
 
-            <div>
-              <div class="ma-4 mb-2">Type of Organization</div>
-              <v-radio-group
-                v-model="model.organizationType"
-                :disabled="isLocked"
-                :rules="rules.required"
-                color="primary"
-              >
-                <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
-              </v-radio-group>
-            </div>
+            <div class="ma-4 mb-2">Type of Organization</div>
+            <v-radio-group
+              v-model="model.organizationType"
+              :disabled="isLocked"
+              :rules="rules.required"
+              color="primary"
+            >
+              <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
+            </v-radio-group>
 
             <template v-if="model.organizationType">
               <v-divider class="my-2 mb-8" />
@@ -186,19 +184,19 @@
             </template>
           </v-container>
         </v-card>
-      </v-skeleton-loader>
-      <NavButton
-        :is-next-displayed="true"
-        :is-save-displayed="true"
-        :is-save-disabled="isLocked"
-        :is-next-disabled="!isValidForm"
-        :is-processing="processing"
-        @previous="back"
-        @next="next"
-        @validate-form="validateForm()"
-        @save="save(true)"
-      />
-    </v-container>
+      </v-container>
+    </v-skeleton-loader>
+    <NavButton
+      :is-next-displayed="true"
+      :is-save-displayed="true"
+      :is-save-disabled="isLocked"
+      :is-next-disabled="!isValidForm"
+      :is-processing="processing"
+      @previous="back"
+      @next="next"
+      @validate-form="validateForm()"
+      @save="save(true)"
+    />
   </v-form>
 </template>
 

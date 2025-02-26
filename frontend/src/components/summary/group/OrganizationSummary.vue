@@ -2,16 +2,11 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="organizationSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Organization Information
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm && !isProcessing" class="text-error" size="large">
-            mdi-alert-circle-outline
-          </v-icon>
-          <span v-if="!isValidForm && !isProcessing" class="text-error">
-            Your form is missing required information. Click here to view
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle
+          title="Organization Information"
+          :loading="isProcessing"
+          :is-complete="isValidForm"
+        />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters>
@@ -283,6 +278,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
@@ -290,6 +286,7 @@ import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '
 
 export default {
   name: 'OrganizationSummary',
+  components: { SummaryExpansionPanelTitle },
   props: {
     programYear: {
       type: String,

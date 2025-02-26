@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccofSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Child Care Operating Funding (CCOF)
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error">
-            Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
@@ -546,7 +539,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -556,6 +549,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
+  components: { SummaryExpansionPanelTitle },
   mixins: [globalMixin],
   props: {
     funding: {

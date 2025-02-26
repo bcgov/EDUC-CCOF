@@ -2,14 +2,11 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="afsSummaryForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Approvable Fee Schedule
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error">
-            Your form is missing required information. Click here to view
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle
+          title="Approvable Fee Schedule"
+          :loading="isEmpty(afs) || processing"
+          :is-complete="isValidForm"
+        />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="ml-2">
         <ApprovableParentFeesCards :loading="isEmpty(afs)" :approvable-fee-schedules="afs?.approvableFeeSchedules" />
@@ -46,6 +43,7 @@ import { mapState, mapActions } from 'pinia';
 import AfsDecisionCard from '@/components/ccfriApplication/AFS/AfsDecisionCard.vue';
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
@@ -59,6 +57,7 @@ export default {
     AfsDecisionCard,
     ApprovableParentFeesCards,
     AppDocumentUpload,
+    SummaryExpansionPanelTitle,
   },
   props: {
     ccfriId: {
