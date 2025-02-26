@@ -39,34 +39,38 @@
 
             <template v-if="model.organizationType">
               <v-divider class="my-2 mb-8" />
-              <v-text-field
-                v-model="model.legalName"
-                :disabled="isLocked"
-                variant="outlined"
-                :rules="rules.required"
-                label="Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)"
-                class="my-4"
-              >
-                <template #prepend>
+              <v-row no-gutters>
+                <div class="pt-4">
                   <AppTooltip
                     tooltip-content="Legal Name as it appears as the licensee on your Community Care & Assisted Living Act Licence"
                   />
-                </template>
-              </v-text-field>
-              <v-text-field
-                v-if="hasIncorporationNumber"
-                v-model="model.incNumber"
-                :disabled="isLocked"
-                variant="outlined"
-                :rules="rules.required"
-                label="Incorporation Number (as it appears in BC Registries and Online Services)"
-              >
-                <template #prepend>
+                </div>
+                <v-text-field
+                  v-model="model.legalName"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  :rules="rules.required"
+                  label="Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)"
+                  class="ml-4"
+                />
+              </v-row>
+
+              <v-row no-gutters>
+                <div class="pt-4">
                   <AppTooltip
                     tooltip-content="If you're unsure of your Incorporation Number (IN), please search for it on the  <a href='https://www.bcregistry.gov.bc.ca/' target='_blank' rel='noopener noreferrer' style='color: white; text-decoration: underline;'>BC Registry</a>"
                   />
-                </template>
-              </v-text-field>
+                </div>
+                <v-text-field
+                  v-if="hasIncorporationNumber"
+                  v-model="model.incNumber"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  :rules="rules.required"
+                  label="Incorporation Number (as it appears in BC Registries and Online Services)"
+                  class="ml-4"
+                />
+              </v-row>
 
               <div class="pl-lg-11">
                 <v-divider class="my-4" />
@@ -120,18 +124,20 @@
 
               <v-row v-if="!isSoleProprietorshipPartnership">
                 <v-col cols="12" md="6">
-                  <v-text-field
-                    v-model="model.contactName"
-                    :disabled="isLocked"
-                    variant="outlined"
-                    required
-                    :rules="rules.required"
-                    label="Organization Contact Name"
-                  >
-                    <template #prepend>
+                  <v-row no-gutters>
+                    <div class="pt-4">
                       <AppTooltip tooltip-content="The full name of the signing authority" />
-                    </template>
-                  </v-text-field>
+                    </div>
+                    <v-text-field
+                      v-model="model.contactName"
+                      :disabled="isLocked"
+                      variant="outlined"
+                      required
+                      :rules="rules.required"
+                      label="Organization Contact Name"
+                      class="ml-4"
+                    />
+                  </v-row>
                 </v-col>
                 <v-col cols="12" md="6">
                   <v-text-field
