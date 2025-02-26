@@ -43,7 +43,7 @@
                 color="primary"
                 label="Is the Facility Street Address the same as the Organization Street Address?"
                 class="application-label mt-6"
-                @update:model-value="resetStreetAddress"
+                @update:model-value="resetFacilityAddress"
               >
                 <v-radio label="Yes" :value="true" />
                 <v-radio label="No" :value="false" />
@@ -75,7 +75,7 @@
                 color="primary"
                 label="Is the Facility Contact the same as the Organization's Authorized Signing Authority Information?"
                 class="application-label mt-6"
-                @update:model-value="resetSigningAuthorityInformation"
+                @update:model-value="resetFacilityContact"
               >
                 <v-radio label="Yes" :value="true" />
                 <v-radio label="No" :value="false" />

@@ -103,7 +103,7 @@ export default {
     ]),
     ...mapActions(useOrganizationStore, ['loadOrganization']),
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
-    resetStreetAddress() {
+    resetFacilityAddress() {
       if (this.loading) return;
       this.model.isFacilityAddressEnteredManually = null;
       this.model.facilityAddress = null;
@@ -111,7 +111,7 @@ export default {
       this.model.province = null;
       this.model.postalCode = null;
     },
-    resetSigningAuthorityInformation() {
+    resetFacilityContact() {
       if (this.loading) return;
       this.model.contactName = null;
       this.model.position = null;
