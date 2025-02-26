@@ -63,6 +63,7 @@
                   label="Are there months when ALL of the programs at this facility are closed for the entire month?"
                   color="primary"
                   class="application-label"
+                  @update:model-value="resetSelectedClosedMonths"
                 >
                   <v-radio label="Yes" :value="1" />
                   <v-radio label="No" :value="0" />
@@ -214,6 +215,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="model.maxGroupChildCareUnder36 = null"
             />
             <v-text-field
               v-if="model.hasUnder36Months"
@@ -234,6 +236,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="model.maxGroupChildCare36 = null"
             />
             <v-text-field
               v-if="model.has30MonthToSchoolAge"
@@ -254,6 +257,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="resetGroupChildCareSchoolAgeRelatedFields"
             />
             <v-text-field
               v-if="model.hasSchoolAgeCareOnSchoolGrounds"
@@ -274,6 +278,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="resetPreschoolRelatedFields"
             />
             <v-text-field
               v-if="model.hasPreschool"
@@ -294,6 +299,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="model.maxGroupChildCareMultiAge = null"
             />
             <v-text-field
               v-if="model.hasMultiAge"
@@ -489,6 +495,7 @@
               label="Do you regularly offer extended hours of child care (care before 6:00 am, after 7:00pm or overnight service regularly offered)?"
               color="primary"
               class="application-label"
+              @update:model-value="resetExtendedHoursFields"
             >
               <v-radio label="Yes" :value="1" />
               <v-radio label="No" :value="0" />
@@ -534,6 +541,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="resetUnder36MonthsExtendedCCRelatedFields"
             />
             <template v-if="model.hasUnder36MonthsExtendedCC">
               <v-row>
@@ -582,6 +590,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="reset30MonthsToSchoolAgeExtendedCCRelatedFields"
             />
             <template v-if="model.has30MonthToSchoolAgeExtendedCC">
               <v-row>
@@ -630,6 +639,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="resetSchoolAgeExtendedCCRelatedFields"
             />
             <template v-if="model.hasSchoolAgeCareOnSchoolGroundsExtendedCC">
               <v-row>
@@ -681,6 +691,7 @@
               color="primary"
               :disabled="isLocked"
               hide-details
+              @update:model-value="resetMultiAgeExtendedCCRelatedFields"
             />
             <template v-if="model.hasMultiAgeExtendedCC">
               <v-row>

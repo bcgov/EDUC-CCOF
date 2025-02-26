@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import NavButton from '@/components/util/NavButton.vue';
@@ -163,6 +164,62 @@ export default {
       this.processing = false;
     },
     formatTime,
+    resetSelectedClosedMonths() {
+      if (isEmpty(this.model)) return;
+      for (let i = 1; i <= 12; i++) {
+        this.model[`closedIn${i}`] = null;
+      }
+    },
+    resetGroupChildCareSchoolAgeRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.maxGroupChildCareSchool = null;
+      this.model.beforeSchool = null;
+      this.model.beforeKindergarten = null;
+      this.model.afterKindergarten = null;
+      this.model.afterSchool = null;
+    },
+    resetPreschoolRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.maxPreschool = null;
+      this.model.monday = null;
+      this.model.tusday = null;
+      this.model.wednesday = null;
+      this.model.thursday = null;
+      this.model.friday = null;
+    },
+    resetExtendedHoursFields() {
+      if (isEmpty(this.model)) return;
+      this.model.maxDaysPerWeekExtended = null;
+      this.model.maxWeeksPerYearExtended = null;
+      this.model.hasUnder36MonthsExtendedCC = null;
+      this.resetUnder36MonthsExtendedCCRelatedFields();
+      this.model.has30MonthToSchoolAgeExtendedCC = null;
+      this.reset30MonthsToSchoolAgeExtendedCCRelatedFields();
+      this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.resetSchoolAgeExtendedCCRelatedFields();
+      this.model.hasMultiAgeExtendedCC = null;
+      this.resetMultiAgeExtendedCCRelatedFields();
+    },
+    resetUnder36MonthsExtendedCCRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.extendedChildCareUnder36Months4OrLess = null;
+      this.model.extendedChildCareUnder36Months4OrMore = null;
+    },
+    reset30MonthsToSchoolAgeExtendedCCRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.extendedChildCare36MonthsToSchoolAge4OrLess = null;
+      this.model.extendedChildCare36MonthsToSchoolAge4OrMore = null;
+    },
+    resetSchoolAgeExtendedCCRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.extendedChildCareSchoolAge4OrLess = null;
+      this.model.extendedChildCareSchoolAge4OrMore = null;
+    },
+    resetMultiAgeExtendedCCRelatedFields() {
+      if (isEmpty(this.model)) return;
+      this.model.multiAgeCare4OrLess = null;
+      this.model.multiAgeCare4more = null;
+    },
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

@@ -8,26 +8,7 @@ const { getLicenseCategory } = require('./lookup');
 const log = require('./logger');
 
 function mapFundingObjectForBack(data) {
-  if (data.hasClosedMonth !== undefined) {
-    if (data.hasClosedMonth) {
-      for (let i = 1; i <= 12; i++) {
-        data[`closedIn${i}`] = data[`closedIn${i}`] ? 1 : 0;
-      }
-    } else {
-      for (let i = 1; i <= 12; i++) {
-        data[`closedIn${i}`] = null;
-      }
-    }
-  }
-
-  if (!data.isExtendedHours) {
-    data.maxDaysPerWeekExtended = null;
-    data.maxDaysPerYearExtended = null;
-  }
-
-  let fundingForBack = new MappableObjectForBack(data, CCOFApplicationFundingMapping).toJSON();
-
-  return fundingForBack;
+  return new MappableObjectForBack(data, CCOFApplicationFundingMapping).toJSON();
 }
 
 function mapFundingObjectForFront(data) {

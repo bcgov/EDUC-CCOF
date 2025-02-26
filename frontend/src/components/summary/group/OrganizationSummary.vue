@@ -4,8 +4,8 @@
       <v-expansion-panel-title>
         <SummaryExpansionPanelTitle
           title="Organization Information"
-          :is-complete="isValidForm"
           :loading="isProcessing"
+          :is-complete="isValidForm"
         />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
