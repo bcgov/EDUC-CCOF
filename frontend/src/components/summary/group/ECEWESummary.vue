@@ -1,18 +1,11 @@
 <template>
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <h4 style="color: #003366">
-        Early Childhood Educator-Wage Enhancement (ECE-WE) -
-        {{ facilityInformationExists ? 'Facility Information' : 'Organization Information' }}
-
-        <template v-if="(!isValidForm || showCSSEAWarning) && !isProcessing">
-          <v-icon class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span class="text-error">Your form is missing required information. Click here to view.</span>
-        </template>
-        <v-icon v-else-if="isValidForm && !isProcessing" class="text-success" size="large">
-          mdi-check-circle-outline
-        </v-icon>
-      </h4>
+      <SummaryExpansionPanelTitle
+        :title="expansionPanelTitle"
+        :loading="isProcessing"
+        :is-complete="isValidForm && !showCSSEAWarning"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
@@ -330,6 +323,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
@@ -352,6 +346,7 @@ import {
 import rules from '@/utils/rules.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     ecewe: {
       type: Object,
@@ -441,6 +436,10 @@ export default {
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
+    },
+    expansionPanelTitle() {
+      const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
+      return 'Early Childhood Educator-Wage Enhancement (ECE-WE) - ' + title;
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
