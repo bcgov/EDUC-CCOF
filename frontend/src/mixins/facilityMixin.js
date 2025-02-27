@@ -121,6 +121,7 @@ export default {
     populateFacilityAddress() {
       if (!this.isGroup) {
         // FAMILY application
+        // TODO (vietle-cgi) - confirm with the business when the Family application is updated.
         this.model.postalCode = this.organizationModel?.postalCode1;
         this.model.province = this.organizationModel?.province1;
       } else if (this.model.isFacilityAddressSameAsOrgStreetAddress) {
