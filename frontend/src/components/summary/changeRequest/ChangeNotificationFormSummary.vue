@@ -4,7 +4,7 @@
       <v-expansion-panel-title>
         <SummaryExpansionPanelTitle
           title="Change Notification Form"
-          :loading="isLoadingComplete"
+          :loading="!isLoadingComplete"
           :is-complete="isChangeNotificationFormComplete"
         />
       </v-expansion-panel-title>

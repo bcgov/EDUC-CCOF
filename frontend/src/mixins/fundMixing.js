@@ -142,7 +142,8 @@ export default {
     },
     async save(isSave) {
       this.processing = true;
-      this.model.isCCOFComplete = this.isFormComplete;
+      // TODO (vietle-cgi) - review this logic once the Family application is updated.
+      this.model.isCCOFComplete = this.isGroup() ? this.isFormComplete : this.model.isCCOFComplete;
       this.setFundingModel({ ...this.model });
       this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
       this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });

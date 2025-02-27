@@ -194,7 +194,13 @@
             />
           </v-col>
         </v-row>
-        <v-row v-if="!isSoleProprietorshipPartnership" no-gutters>
+        <v-row
+          v-if="
+            summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP &&
+            !isSoleProprietorshipPartnership
+          "
+          no-gutters
+        >
           <v-col cols="12" md="4">
             <div class="summary-label">Organization Contact Name</div>
             <v-text-field
