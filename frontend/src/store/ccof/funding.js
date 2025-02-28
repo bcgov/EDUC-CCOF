@@ -62,8 +62,7 @@ export const useFundingStore = defineStore('funding', {
       } else {
         checkSession();
         try {
-          const response = await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`);
-          model = response.data;
+          model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
           if (model.familyLicenseType) {
             model.familyLicenseType = '' + model.familyLicenseType;
           }

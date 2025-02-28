@@ -150,8 +150,8 @@ export default {
       try {
         await this.saveFunding();
 
-        if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
-          let newFac = this.getChangeActionNewFacByFacilityId(this.fundingModel.facilityId);
+        if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
+          const newFac = this.getChangeActionNewFacByFacilityId(this.fundingModel.facilityId);
 
           newFac.baseFunding.isCCOFComplete = this.model.isCCOFComplete;
         }
