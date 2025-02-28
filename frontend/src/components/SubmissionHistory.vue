@@ -19,9 +19,8 @@
           mobile-breakpoint="md"
           fixed-header
           class="elevation-4 my-4"
-          disable-pagination
-          hide-default-footer
-          :sort-by="['submissionDate']"
+          items-per-page="10"
+          :sort-by="[{ key: 'submissionDate', order: 'desc' }]"
         >
           <!-- FIXME: Trev: We're deconstructing the "item" into a blank template for who knows what reason
                <template #item.facilityNames="{ item }" /> -->
@@ -96,7 +95,7 @@ export default {
           appId: submission?.appId,
           type: submission?.type,
           fiscalYear: formatFiscalYearName(submission?.fiscalYear),
-          submissionDate: submission?.submissionDate,
+          submissionDate: submission?.submissionDate ? new Date(submission.submissionDate).getTime() : null,
           submissionDateString: this.getSubmissionDateString(submission?.submissionDate),
           fileName: submission?.fileName,
           fileSize: Math.round(submission?.fileSize / 100) / 10,
