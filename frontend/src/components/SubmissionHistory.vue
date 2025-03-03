@@ -20,6 +20,7 @@
       fixed-header
       class="elevation-4 my-4"
       :items-per-page="10"
+      must-sort
     >
       <template #item.PDF="{ item }">
         <router-link :to="getPDFPath(item.annotationId)" target="_blank">
