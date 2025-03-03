@@ -81,7 +81,6 @@ export const useNavBarStore = defineStore('navBar', {
     navBarList: [], // the filtered list  used by the navBar to generate the left panel
     userProfileList: [], // the full list of items loaded by user profile
     refreshNavBar: 1, //The navbar watches this value and refreshes itself when this changes.
-    canSubmit: true,
     changeRequestId: null,
     changeType: null,
     programYearId: null,
@@ -149,9 +148,7 @@ export const useNavBarStore = defineStore('navBar', {
     setNavBarItems(value) {
       this.navBarItems = value;
     },
-    setCanSubmit(value) {
-      this.canSubmit = value;
-    },
+
     setIsRenewal(value) {
       this.isRenewal = value;
     },
