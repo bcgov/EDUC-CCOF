@@ -216,7 +216,7 @@ async function getCCFRIClosureDates(ccfriId) {
       closureDateId: date.ccof_application_ccfri_closureid,
       startDate: date.ccof_startdate,
       endDate: date.ccof_enddate,
-      feesPaidWhileClosed: date.ccof_paidclosure,
+      feesPaidWhileClosed: date.ccof_paidclosure, // TODO (vietle-cgi) - remove this field.
       closureReason: date.ccof_comment,
       formattedStartDate: formattedStartDate,
       formattedEndDate: formattedEndDate,

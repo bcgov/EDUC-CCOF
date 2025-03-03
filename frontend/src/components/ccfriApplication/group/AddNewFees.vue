@@ -1,17 +1,10 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
     <v-container class="px-10">
-      <div class="text-center">
-        <div class="text-h5">
-          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-        </div>
-        <div class="text-h5 my-6">Child Care Fee Reduction Initiative (CCFRI)</div>
-      </div>
-      <FacilityHeader
-        :facility-account-number="currentFacility?.facilityAccountNumber"
-        :facility-name="currentFacility.facilityName"
-        :license-number="currentFacility?.licenseNumber"
-        class="mb-10"
+      <ApplicationPCFHeader
+        page-title="Child Care Fee Reduction Initiative (CCFRI)"
+        :program-year="formattedProgramYear"
+        :facility="currentFacility"
       />
       <p class="text-center">
         Enter the fees you would charge a new parent for full-time care at this facility for the months below.
@@ -272,163 +265,6 @@
           </v-card>
         </div>
       </div>
-      <br />
-      <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image">
-        <br /><br />
-      </v-skeleton-loader>
-      <v-card
-        v-else
-        elevation="6"
-        class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
-        min-height="230"
-        rounded
-        tiled
-        exact
-        tile
-        :ripple="false"
-      >
-        <v-card-text class="pa-0">
-          <div class="pa-2 pa-md-4 ma-0 backG">
-            <p class="text-h5 text--primary px-5 py-0 my-0">
-              Do you charge parent fees at this facility for any closures on business days?
-            </p>
-          </div>
-          <div class="px-md-12 px-7">
-            <br />
-            <div>
-              <p v-if="languageYearLabel == programYearTypes.HISTORICAL">
-                Do you charge parent fees at this facility for any closures on business days (other than designated
-                holidays)? Only indicate the date of closures where parent fees are charged.
-              </p>
-              <p v-else>
-                Do you charge parent fees at this facility for any closures on business days (other than provincial
-                statutory holidays)? Only indicate the date of closures where parent fees are charged.
-              </p>
-            </div>
-            <v-radio-group
-              v-model="CCFRIFacilityModel.hasClosureFees"
-              required
-              :disabled="isReadOnly"
-              :rules="rules.required"
-            >
-              <br />
-              <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(true)" />
-              <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
-            </v-radio-group>
-
-            <div v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
-              <v-row v-for="(obj, index) in CCFRIFacilityModel.dates" :key="obj.id" color="#003366">
-                <v-col color="#003366" cols="auto">
-                  <v-icon :disabled="isReadOnly" size="large" color="blue-darken-4" @click="removeIndex(index)">
-                    mdi-close
-                  </v-icon>
-                </v-col>
-
-                <v-col cols="12" md="3">
-                  <AppDateInput
-                    v-model="obj.formattedStartDate"
-                    :min="fiscalStartAndEndDates.startDate"
-                    :max="fiscalStartAndEndDates.endDate"
-                    :rules="[
-                      ...rules.required,
-                      rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                    ]"
-                    :disabled="isReadOnly"
-                    :hide-details="isReadOnly"
-                    label="Start Date"
-                    clearable
-                    @input="isDateLegal(obj)"
-                  />
-                </v-col>
-
-                <v-col cols="12" md="3">
-                  <AppDateInput
-                    v-model="obj.formattedEndDate"
-                    :min="obj.formattedStartDate"
-                    :max="fiscalStartAndEndDates.endDate"
-                    :rules="[
-                      ...rules.required,
-                      rules.min(obj.formattedStartDate, 'Must exceed start date'),
-                      rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                    ]"
-                    :disabled="isReadOnly"
-                    :hide-details="isReadOnly"
-                    clearable
-                    label="End Date"
-                    @input="isDateLegal(obj)"
-                  />
-                </v-col>
-
-                <v-col cols="12" md="3">
-                  <v-text-field
-                    v-model="obj.closureReason"
-                    :disabled="isReadOnly"
-                    label="Closure Reason"
-                    variant="outlined"
-                    clearable
-                    :rules="rules.required"
-                  />
-                </v-col>
-
-                <v-col cols="12" md="2" class="mt-n1">
-                  <span class="span-label font-small">Did parents pay for this closure?</span>
-                  <v-radio-group
-                    v-model="obj.feesPaidWhileClosed"
-                    :disabled="isReadOnly"
-                    inline
-                    :rules="rules.required"
-                  >
-                    <v-radio label="Yes" :value="1" />
-                    <v-radio label="No" :value="0" />
-                  </v-radio-group>
-                </v-col>
-
-                <span class="text-white"> . </span>
-                <v-row v-if="obj.datesOverlap || obj.datesInvalid">
-                  <v-card width="100%" class="mx-3 my-10">
-                    <AppAlertBanner type="error" class="mb-4 w-100">Invalid Dates</AppAlertBanner>
-
-                    <v-card-text v-if="obj.datesInvalid">
-                      Closure Start Date: {{ obj.formattedStartDate }}
-                      <br />
-                      Closure End Date: {{ obj.formattedEndDate }} <br /><br />
-
-                      Please review your facility closure dates.
-                      <br />
-                    </v-card-text>
-                    <v-card-text v-else-if="obj.datesOverlap">
-                      It appears that the closure start and end dates you've selected for this facility overlap with
-                      dates you've previously selected.
-                      <br /><br />
-                      Closure Start Date: {{ obj.formattedStartDate }}
-                      <br />
-                      Closure End Date: {{ obj.formattedEndDate }} <br /><br />
-
-                      Please review your existing facility closure dates to ensure consistency and avoid any potential
-                      overlap of Facility closure dates.
-                      <br />
-                    </v-card-text>
-                  </v-card>
-                </v-row>
-                <v-divider />
-              </v-row>
-              <!-- end v for-->
-              <br /><br />
-
-              <v-container>
-                <v-row>
-                  <v-btn class="my-5" dark color="#003366" :disabled="isReadOnly" @click="addRow(false)">
-                    ADD NEW CLOSURE
-                  </v-btn>
-                </v-row>
-              </v-container>
-              <br />
-            </div>
-          </div>
-        </v-card-text>
-      </v-card>
-      <br />
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image" />
       <v-card
         v-else
@@ -537,7 +373,7 @@ import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import NavButton from '@/components/util/NavButton.vue';
-import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import ApplicationPCFHeader from '@/components/guiComponents/ApplicationPCFHeader.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
@@ -580,8 +416,8 @@ function dateFunction(date1, date2) {
 
 export default {
   components: {
+    ApplicationPCFHeader,
     NavButton,
-    FacilityHeader,
     AppAlertBanner,
     AppDateInput,
     AppDialog,
@@ -600,7 +436,7 @@ export default {
       prevFeesCorrect: undefined,
       dateObj: {
         closureReason: '',
-        feesPaidWhileClosed: undefined,
+        feesPaidWhileClosed: undefined, // TODO (vietle-cgi) - remove this field.
       },
       showRfiDialog: false,
       rfi3percentCategories: [],

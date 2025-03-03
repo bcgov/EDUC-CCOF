@@ -612,6 +612,19 @@ export default {
                 navBarId: navBarId++,
               });
             }
+            items.push({
+              title: PAGE_TITLES.CCFRI_CLOSURES,
+              subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
+              id: item.facilityId,
+              link: { name: 'ccfri-closures-guid', params: { urlGuid: item.ccfriApplicationId } },
+              isAccessible: this.applicationStatus === 'SUBMITTED' || this.isCCFRIOptInComplete(),
+              icon: this.getCheckbox(item.isCCFRIClosuresComplete),
+              isActive:
+                'ccfri-closures-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
+              position: positionIndex++,
+              navBarId: navBarId++,
+            });
             if (item.enableAfs) {
               items.push({
                 title: 'Approvable Fee Schedule',

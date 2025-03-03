@@ -1,12 +1,8 @@
 <template>
-  <div class="text-center">
-    <div v-if="facilityAccountNumber" class="">
-      <p class="text-h5 blueText">Facility ID: {{ facilityAccountNumber }}</p>
-    </div>
-    <br />
-    <p class="text-h5 blueText">Facility Name: {{ facilityName }}</p>
-    <br />
-    <p v-if="licenseNumber" class="text-h5 blueText">Licence Number: {{ licenseNumber }}</p>
+  <div class="text-center mt-4 mb-8">
+    <p v-if="facilityAccountNumber" class="text-h5 my-4 blue-text">Facility ID: {{ facilityAccountNumber }}</p>
+    <p class="text-h5 my-4 blue-text">Facility Name: {{ facilityName }}</p>
+    <p v-if="licenseNumber" class="text-h5 my-4 blue-text">Licence Number: {{ licenseNumber }}</p>
   </div>
 </template>
 
@@ -20,13 +16,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.blueBorder {
-  border-top: 5px solid #003366 !important;
-}
-
-.blueText {
-  color: rgb(0, 52, 102);
-}
-</style>

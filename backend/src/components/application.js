@@ -31,12 +31,7 @@ const {
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
 } = require('../util/mapping/Mappings');
-const {
-  getCCFRIClosureDates,
-  getLicenseCategoriesByFacilityId,
-  getFacilityChildCareTypesByCcfriId,
-  getFacilityByFacilityId
-} = require('./facility');
+const { getCCFRIClosureDates, getLicenseCategoriesByFacilityId, getFacilityChildCareTypesByCcfriId, getFacilityByFacilityId } = require('./facility');
 const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
@@ -276,7 +271,7 @@ async function postClosureDates(dates, ccfriApplicationGuid, res) {
       dates.map(async (date) => {
         const payload = {
           ccof_startdate: formatTimeForBack(date.formattedStartDate),
-          ccof_paidclosure: date.feesPaidWhileClosed,
+          ccof_paidclosure: date.feesPaidWhileClosed, // TODO (vietle-cgi) - remove this field.
           ccof_enddate: date.formattedEndDate ? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
           ccof_comment: date.closureReason,
           'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${ccfriApplicationGuid})`,
@@ -518,7 +513,7 @@ async function printPdf(req, numOfRetries = 0) {
 function getCurrentDateForPdfFileName() {
   const date = new Date();
   const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: "America/Vancouver",
+    timeZone: 'America/Vancouver',
     month: 'short',
   });
   const month = dateTimeFormatter.format(date).toUpperCase();
@@ -703,12 +698,10 @@ async function getApplicationSummary(req, res) {
 
     let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
 
-    const facilities = Array
-      .from(facilityMap.values())
-      .filter((facility) => {
-        if (facilityFilters === null || facilityFilters.length < 1) return true;
-        return facilityFilters.includes(facility.facilityId);
-      });
+    const facilities = Array.from(facilityMap.values()).filter((facility) => {
+      if (facilityFilters === null || facilityFilters.length < 1) return true;
+      return facilityFilters.includes(facility.facilityId);
+    });
 
     const facilityPromises = [];
     const limit = pLimit(6);
@@ -719,7 +712,7 @@ async function getApplicationSummary(req, res) {
 
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: facilitiesWithSummaryData
+      facilities: facilitiesWithSummaryData,
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);

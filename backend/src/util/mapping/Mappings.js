@@ -163,7 +163,7 @@ const CCFRIClosureDateMappings = [
   { back: 'ccof_enddate', front: 'endDate' },
   { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
   { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
-  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' }, // TODO (vietle-cgi) - remove this field.
   { back: 'ccof_comment', front: 'closureReason' },
 ];
 

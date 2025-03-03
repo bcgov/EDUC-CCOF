@@ -348,6 +348,7 @@
                     />
                   </v-col>
 
+                  <!-- // TODO (vietle-cgi) - remove this field. -->
                   <v-col class="col-md-3 col-12">
                     <v-text-field
                       placeholder="Required"

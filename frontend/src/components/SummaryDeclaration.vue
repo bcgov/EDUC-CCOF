@@ -1,13 +1,8 @@
 <template>
   <v-container fluid>
     <v-form id="printable-form" ref="form" v-model="isValidForm">
-      <div class="text-center">
-        <div class="text-h4">
-          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-        </div>
-        <h2>Summary and Declaration</h2>
-        <div class="text-h5" style="color: #003466">{{ userInfo.organizationName }}</div>
-      </div>
+      <ApplicationPCFHeader page-title="Summary and Declaration" :program-year="formattedProgramYear" />
+      <div class="text-h5 text-center blue-text mb-4">{{ userInfo.organizationName }}</div>
       <v-row>
         <!-- Do not allow PCF to be submitted if CR is active-->
         <v-card v-if="isSomeChangeRequestActive() && !isChangeRequest" width="100%" class="mx-3 my-10">
@@ -54,7 +49,7 @@
         </v-card>
       </v-row>
 
-      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
+      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5 blue-text">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
       <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-8 mt-8">
@@ -497,11 +492,13 @@ import OrganizationSummary from '@/components/summary/group/OrganizationSummary.
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import ApplicationPCFHeader from '@/components/guiComponents/ApplicationPCFHeader.vue';
 import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
   components: {
     AppDialog,
+    ApplicationPCFHeader,
     OrganizationSummary,
     UploadedDocumentsSummary,
     NMFSummary,
