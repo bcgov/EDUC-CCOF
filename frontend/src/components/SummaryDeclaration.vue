@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-form id="printable-form" ref="form" v-model="isValidForm">
+    <v-form id="printable-form" ref="form">
       <div class="text-center">
         <div class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
@@ -431,7 +431,6 @@
           </v-row>
         </v-card>
       </v-row>
-
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"
@@ -519,7 +518,6 @@ export default {
   data() {
     return {
       model: {},
-      isValidForm: false,
       isLoading: false,
       isProcessing: false,
       dialog: false,
@@ -542,7 +540,7 @@ export default {
       'isChangeRequest',
     ]),
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['canSubmit', 'navBarList', 'changeRequestId']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState(useSummaryDeclarationStore, [
       'declarationModel',
@@ -613,9 +611,6 @@ export default {
       ) {
         //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
-      } else if (!this.canSubmit) {
-        //checkboxes
-        return true;
       } else if (
         this.isChangeRequest &&
         !(this.model.externalStatus == 'INCOMPLETE' || this.model.externalStatus == 'ACTION_REQUIRED')
@@ -737,15 +732,7 @@ export default {
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
     isPageComplete() {
-      if (
-        (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) ||
-        (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)
-      ) {
-        this.isValidForm = true;
-      } else {
-        this.isValidForm = false;
-      }
-      return this.isValidForm;
+      return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
     },
 
     isSomeChangeRequestActive() {
