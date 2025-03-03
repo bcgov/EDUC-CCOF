@@ -236,7 +236,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
-    ...mapState(useNavBarStore, [, 'navBarList', 'changeRequestId', 'nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'nextPath', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationDocumentsLoading',

@@ -120,7 +120,6 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
 let navBarId = 0;
