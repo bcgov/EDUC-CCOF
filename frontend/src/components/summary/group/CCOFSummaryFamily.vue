@@ -278,6 +278,7 @@
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-center">
                   <v-text-field
+                    placeholder="Required"
                     :model-value="funding?.maxSpaces"
                     class="summary-value"
                     density="compact"
@@ -285,10 +286,12 @@
                     variant="solo"
                     hide-details
                     readonly
+                    :rules="rules.required"
                   />
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center">
                   <v-text-field
+                    placeholder="Required"
                     :model-value="funding?.maxLicensesCapacity"
                     class="summary-value"
                     density="compact"
@@ -296,6 +299,7 @@
                     variant="solo"
                     hide-details
                     readonly
+                    :rules="rules.required"
                   />
                 </v-col>
               </v-row>
@@ -583,9 +587,11 @@ export default {
     ...mapState(useNavBarStore, ['navBarList']),
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        console.log('called');
+        this.$refs.ccofSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

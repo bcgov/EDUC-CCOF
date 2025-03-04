@@ -512,7 +512,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -575,7 +575,7 @@ export default {
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       legal: null,
       formObj: {
         formName: 'FacilityInformationSummary',
@@ -596,9 +596,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs?.informationSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -608,7 +609,6 @@ export default {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     getOptInOptOut(status) {
       if (status === 1) {
         return 'Opt-In';
