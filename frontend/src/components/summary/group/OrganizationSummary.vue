@@ -15,7 +15,7 @@
             <v-text-field
               placeholder="Required"
               class="summary-value"
-              :model-value="getOrgTypeString()"
+              :model-value="organizationType"
               density="compact"
               flat
               variant="solo"
@@ -194,13 +194,7 @@
             />
           </v-col>
         </v-row>
-        <v-row
-          v-if="
-            summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP &&
-            !isSoleProprietorshipPartnership
-          "
-          no-gutters
-        >
+        <v-row v-if="isGroup && !isSoleProprietorshipPartnership" no-gutters>
           <v-col cols="12" md="4">
             <div class="summary-label">Organization Contact Name</div>
             <v-text-field
@@ -274,7 +268,7 @@
           </v-col>
         </v-row>
         <div v-if="!isValidForm">
-          <router-link :to="getRoutingPath()">
+          <router-link :to="routingPath">
             <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
@@ -331,29 +325,10 @@ export default {
     isSoleProprietorshipPartnership() {
       return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
     },
-  },
-  watch: {
-    isValidForm: {
-      handler() {
-        if (!this.isProcessing && this.isLoadingComplete) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
+    isGroup() {
+      return this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-  },
-  created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-    this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
-  },
-  methods: {
-    getRoutingPath() {
-      if (this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else {
-        return pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId);
-      }
-    },
-    getOrgTypeString() {
+    organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {
         case ORGANIZATION_TYPES.NON_PROFIT_SOCIETY:
           return 'Non-Profit Society';
@@ -371,6 +346,24 @@ export default {
           return '';
       }
     },
+    routingPath() {
+      return this.isGroup
+        ? pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId)
+        : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
+    },
+  },
+  watch: {
+    isValidForm: {
+      handler() {
+        if (!this.isProcessing && this.isLoadingComplete) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
+      },
+    },
+  },
+  created() {
+    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
+    this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
   },
 };
 </script>

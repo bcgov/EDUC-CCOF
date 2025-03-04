@@ -1,11 +1,11 @@
 ---
-  apiVersion: template.openshift.io/v1
-  kind: Template
-  metadata:
-    name: "${REPO_NAME}-frontend-deployment"
-    labels:
-      template: "${REPO_NAME}-template"
-  objects:
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  name: "${REPO_NAME}-frontend-deployment"
+  labels:
+    template: "${REPO_NAME}-template"
+objects:
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -33,50 +33,50 @@
             app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
         spec:
           containers:
-          - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
-            imagePullPolicy: Always
-            volumeMounts:
-            - name: tls-certs
-              mountPath: "/etc/tls-certs"
-              readOnly: true
-            - name: config-env
-              mountPath: "/srv/js/config"
-            livenessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: "/"
-                port: 2015
-                scheme: HTTP
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
-            name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
-            ports:
-            - containerPort: 2015
-              protocol: TCP
-            readinessProbe:
-              failureThreshold: 3
-              httpGet:
-                path: "/"
-                port: 2015
-                scheme: HTTP
-              periodSeconds: 10
-              successThreshold: 1
-              timeoutSeconds: 1
-            resources:
-              requests:
-                cpu: "${MIN_CPU}"
-                memory: "${MIN_MEM}"
-              limits:
-                cpu: "${MAX_CPU}"
-                memory: "${MAX_MEM}"
+            - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: tls-certs
+                  mountPath: "/etc/tls-certs"
+                  readOnly: true
+                - name: config-env
+                  mountPath: "/srv/js/config"
+              livenessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
+              ports:
+                - containerPort: 2015
+                  protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  path: "/"
+                  port: 2015
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: "${MIN_CPU}"
+                  memory: "${MIN_MEM}"
+                limits:
+                  cpu: "${MAX_CPU}"
+                  memory: "${MAX_MEM}"
           volumes:
-          - name: tls-certs
-            secret:
-              secretName: ccof-frontend-cert
-          - name: config-env
-            configMap:
-              name: ccof-frontend-${APP_ENVIRONMENT}-config-map
+            - name: tls-certs
+              secret:
+                secretName: ccof-frontend-cert
+            - name: config-env
+              configMap:
+                name: ccof-frontend-${APP_ENVIRONMENT}-config-map
       test: false
   - apiVersion: v1
     kind: Service
@@ -89,17 +89,17 @@
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
       ports:
-      - name: 2015-tcp
-        port: 2015
-        protocol: TCP
-        targetPort: 2015
+        - name: 2015-tcp
+          port: 2015
+          protocol: TCP
+          targetPort: 2015
       selector:
         app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
   - apiVersion: v1
     kind: Route
     metadata:
       annotations:
-        openshift.io/host.generated: 'true'
+        openshift.io/host.generated: "true"
       labels:
         app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
@@ -130,17 +130,17 @@
       minReplicas: ${{MIN_REPLICAS}}
       maxReplicas: ${{MAX_REPLICAS}}
       metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            type: Utilization
-            averageUtilization: 90
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 90
   - apiVersion: v1
     kind: ConfigMap
     metadata:
       name: ccof-frontend-${APP_ENVIRONMENT}-config-map
-      namespace: '${NAMESPACE}'
+      namespace: "${NAMESPACE}"
     data:
       config.js: |
         const config = {
@@ -148,7 +148,6 @@
           BANNER_COLOR: '${BANNER_COLOR}',
           BANNER_ENVIRONMENT: '${BANNER_ENVIRONMENT}',
           VUE_APP_BCEID_REG_URL: '${VUE_APP_BCEID_REG_URL}',
-          DECB_VALIDATION_BYPASS: true,
         };
       snowplow.js: |-
         // <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->
@@ -172,7 +171,7 @@
         window.snowplow('enableLinkClickTracking');
         window.snowplow('trackPageView');
         // <!-- Snowplow stops plowing -->
-  parameters:
+parameters:
   - name: REPO_NAME
     description: Application repository name
     required: true

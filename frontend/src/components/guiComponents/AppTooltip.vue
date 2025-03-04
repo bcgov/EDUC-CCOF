@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-menu open-on-hover open-on-click :content-class="tooltipClass" max-width="500">
     <template #activator="{ props }">

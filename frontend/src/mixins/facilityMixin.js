@@ -129,7 +129,7 @@ export default {
         this.model.facilityAddress = this.organizationModel?.address2;
         this.model.city = this.organizationModel?.city2;
         this.model.province = this.organizationModel?.province2;
-        this.model.postalCode = this.organizationModel?.postalCode2;
+        this.model.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
       }
     },
     populateFacilityContact() {

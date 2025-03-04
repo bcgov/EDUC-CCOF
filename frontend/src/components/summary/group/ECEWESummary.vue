@@ -439,7 +439,7 @@ export default {
     },
     expansionPanelTitle() {
       const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
-      return 'Early Childhood Educator-Wage Enhancement (ECE-WE) - ' + title;
+      return `Early Childhood Educator-Wage Enhancement (ECE-WE) - ${title}`;
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
