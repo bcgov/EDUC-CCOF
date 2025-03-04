@@ -236,14 +236,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
-    ...mapState(useNavBarStore, [
-      'canSubmit',
-      'navBarList',
-      'changeRequestId',
-      'nextPath',
-      'previousPath',
-      'isChangeRequest',
-    ]),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'nextPath', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationDocumentsLoading',
@@ -281,8 +274,7 @@ export default {
       return this.isValidForm && (!isEmpty(newFilesAdded) || !isEmpty(this.uploadedSupportingDocuments?.deletedItems));
     },
     isNextEnabled() {
-      if (this.isChangeRequest) return this.isValidForm;
-      return this.isValidForm && this.canSubmit;
+      return this.isValidForm;
     },
   },
   watch: {

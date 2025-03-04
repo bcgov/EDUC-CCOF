@@ -55,14 +55,13 @@
                 />
               </v-row>
 
-              <v-row no-gutters>
+              <v-row v-if="hasIncorporationNumber" no-gutters>
                 <div class="pt-4">
                   <AppTooltip
                     tooltip-content="If you're unsure of your Incorporation Number (IN), please search for it on the  <a href='https://www.bcregistry.gov.bc.ca/' target='_blank' rel='noopener noreferrer' style='color: white; text-decoration: underline;'>BC Registry</a>"
                   />
                 </div>
                 <v-text-field
-                  v-if="hasIncorporationNumber"
                   v-model="model.incNumber"
                   :disabled="isLocked"
                   variant="outlined"

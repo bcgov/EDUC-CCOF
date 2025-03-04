@@ -228,7 +228,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.facilities = facilities;
 
         this.setSummaryModel(summaryModel);
-        this.setIsMainLoading(false);
 
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
@@ -248,6 +247,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           this.setSummaryModel(summaryModel);
         }
 
+        this.setIsMainLoading(false);
         this.setSummaryModel(summaryModel);
         this.setIsSummaryLoading([]);
 
