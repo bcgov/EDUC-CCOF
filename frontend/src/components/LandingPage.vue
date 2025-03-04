@@ -10,6 +10,30 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
+    <div v-if="ApplicationStatus === 'ACTION REQUIRED'" class="pb-12 text-h5 text-center" v-show="{}">
+      <AppAlertBanner  type="warning" class="ma-2 mb-4 w-100">
+        <!-- <div class="pm-table-container with-shadow-observer" data-layout="custom" style="width: 760px;"> -->
+          <!-- <div class="pm-table-wrapper"> -->
+            <!-- <div class="sentinel-left"></div> -->
+            <!-- <table data-testid="renderer-table" data-number-column="false" data-table-width="760" data-layout="default"> -->
+              <colgroup>
+                <col style="width: 758px;">
+              </colgroup>
+              <tbody>
+                <tr>
+                  <td rowspan="1" colspan="1" colorname="Yellow" data-cell-background="#fff0b3" style="background-color: rgb(245, 233, 137);">
+                    <p data-renderer-start-pos="3081">
+                      A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement to receive funding. Contact BC Registries immediately to resolve.
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            <!-- </table> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      </AppAlertBanner>
+    </div>
+
     <v-row>
       <v-col cols="12" :lg="isCCOFStatusNew ? 5 : 3">
         <SmallCard>
