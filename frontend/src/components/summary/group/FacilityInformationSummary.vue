@@ -575,7 +575,7 @@ export default {
       isChangeRequest: isChangeRequest(this),
       PATHS,
       rules,
-      isValidForm: false,
+      isValidForm: true,
       legal: null,
       formObj: {
         formName: 'FacilityInformationSummary',

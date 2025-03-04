@@ -589,7 +589,6 @@ export default {
   watch: {
     isValidForm: {
       handler() {
-        console.log('called');
         this.$refs.ccofSummaryForm.validate();
         if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
