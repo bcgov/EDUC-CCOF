@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -11,6 +12,7 @@ import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
+  if (isEmpty(licenseCategories)) return '';
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];
@@ -226,7 +228,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.facilities = facilities;
 
         this.setSummaryModel(summaryModel);
-        this.setIsMainLoading(false);
 
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
@@ -246,6 +247,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           this.setSummaryModel(summaryModel);
         }
 
+        this.setIsMainLoading(false);
         this.setSummaryModel(summaryModel);
         this.setIsSummaryLoading([]);
 

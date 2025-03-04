@@ -1027,7 +1027,7 @@ li {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

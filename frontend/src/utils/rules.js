@@ -1,4 +1,5 @@
-import { FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
+import { validateHourDifference } from '@/utils/common.js';
+import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
 import { getFileExtension, humanFileSize } from '@/utils/file';
 
 const rules = {
@@ -8,7 +9,7 @@ const rules = {
       if (v === 0 || v === false) {
         return true;
       } else if (!v) {
-        return 'This field is required';
+        return ERROR_MESSAGES.REQUIRED;
       }
 
       return true;
@@ -25,15 +26,19 @@ const rules = {
   ],
   MMDDYYYY: (v) => (!!v && !isNaN(new Date(v))) || 'Invalid date format',
   YYYY: [(v) => (v > 1900 && v < 2100) || 'A valid year is required'],
-  validHourTo(hourFrom) {
-    return (v) => !v || v > hourFrom || 'Hours To must be after Hours From';
+  validHourTo(
+    hourFrom,
+    difference = 1,
+    message = `Hours To must be at least ${difference} hour${difference > 1 ? 's' : ''} after Hours From`,
+  ) {
+    return (v) => !v || validateHourDifference(hourFrom, v, difference) || message;
   },
   notRequired: [() => true],
-  max(number, message = 'Max exceeded') {
+  max(number, message = number != null ? `Maximum entry: ${number}` : 'Max exceeded') {
     return (v) => !v || v <= number || message;
   },
-  min(number, message = 'Min exceeded') {
-    return (v) => !v || v >= number || message;
+  min(number, message = number != null ? `Minimum entry: ${number}` : 'Min exceeded') {
+    return (v) => v >= number || message;
   },
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';
