@@ -120,7 +120,6 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -231,7 +230,7 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
-    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems']),
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
 
     async loadData() {
@@ -295,16 +294,6 @@ export default {
       });
     },
     addSummaryAndDeclarationToNavBar() {
-      let declarationAccessible = this.areChildrenComplete(this.items);
-      if (
-        StaticConfig.DECB_VALIDATION_BYPASS &&
-        this.isDeclarationB() &&
-        this.unlockDeclaration &&
-        !this.isChangeRequest
-      ) {
-        declarationAccessible = true;
-      }
-      this.setCanSubmit(declarationAccessible);
       let checkbox; //true will show checkmark, false will not
       let linkName;
       if (this.isChangeRequest) {
@@ -322,7 +311,7 @@ export default {
       this.items.push({
         title: 'Declaration',
         link: { name: linkName },
-        isAccessible: declarationAccessible, //set this to true to unlock the declaration
+        isAccessible: this.areChildrenComplete(this.items), //set this to true to unlock the declaration
         icon: this.getCheckbox(checkbox),
         isActive: linkName === this.$route.name,
         expanded: false,
