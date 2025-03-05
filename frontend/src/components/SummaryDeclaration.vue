@@ -57,7 +57,7 @@
       <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-8 mt-8">
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-12 my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -75,11 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
-            <v-row v-if="isMainLoading">
+            <v-row v-if="isProcessing">
               <v-col>
                 <v-skeleton-loader
-                  v-if="isMainLoading"
-                  :loading="isMainLoading"
+                  :loading="isProcessing"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -542,14 +541,7 @@ export default {
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, [
-      'declarationModel',
-      'summaryModel',
-      'facilities',
-      'isSummaryLoading',
-      'isMainLoading',
-      'isLoadingComplete',
-    ]),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'formattedProgramYear',

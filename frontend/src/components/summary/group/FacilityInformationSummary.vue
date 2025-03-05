@@ -526,7 +526,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useAppStore } from '@/store/app.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
@@ -609,9 +609,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs?.informationSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -626,7 +627,6 @@ export default {
     this.$refs.informationSummaryForm?.validate();
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     isNullOrBlank,
     getOptInOptOut(status) {
       if (status === 1) {
