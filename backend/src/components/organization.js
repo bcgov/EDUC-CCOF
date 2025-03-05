@@ -103,8 +103,24 @@ async function updateOrganization(req, res) {
   }
 }
 
+async function getOrganizationInGoodStanding(req, res) {
+  try {
+    let organization = await getOperationWithObjectId('accounts', req.params.organizationId);
+    if (ACCOUNT_TYPE.ORGANIZATION != organization?.ccof_accounttype) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not organization.' });
+    }
+
+    organization = mapOrganizationObjectForFront(organization);
+
+    return res.status(HttpStatus.OK).json(organization);
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getOrganization,
   createOrganization,
-  updateOrganization
+  updateOrganization,
+  getOrganizationInGoodStanding,
 };

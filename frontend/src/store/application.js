@@ -1,12 +1,12 @@
-import { defineStore } from 'pinia';
+import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
 
+import { ApiRoutes } from '@/utils/constants.js';
 import ApiService from '@/common/apiService.js';
 import DocumentService from '@/services/documentService';
+import { defineStore } from 'pinia';
+import { formatFiscalYearName } from '@/utils/format';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { ApiRoutes } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
   state: () => ({
