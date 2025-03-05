@@ -163,6 +163,7 @@
                           :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
                           :facility-id="facility?.facilityId"
                           :program-year-id="summaryModel?.application?.programYearId"
+                          :is-processing="isProcessing"
                           @is-summary-valid="isFormComplete"
                         />
                       </v-expansion-panel>
