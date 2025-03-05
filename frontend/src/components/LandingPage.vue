@@ -10,28 +10,29 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
-    <div v-if="ApplicationStatus === 'ACTION REQUIRED'" class="pb-12 text-h5 text-center" v-show="{}">
-      <AppAlertBanner  type="warning" class="ma-2 mb-4 w-100">
+    <!-- todo: add logic to only show div below if the application standing has not good standing status -->
+    <div class="pb-12 text-h5 text-center" v-if="!isGoodStanding">
+      <!-- <AppAlertBanner  type="warning" class="ma-2 mb-4 w-100"> -->
         <!-- <div class="pm-table-container with-shadow-observer" data-layout="custom" style="width: 760px;"> -->
           <!-- <div class="pm-table-wrapper"> -->
             <!-- <div class="sentinel-left"></div> -->
             <!-- <table data-testid="renderer-table" data-number-column="false" data-table-width="760" data-layout="default"> -->
-              <colgroup>
+              <!-- <colgroup>
                 <col style="width: 758px;">
               </colgroup>
               <tbody>
                 <tr>
                   <td rowspan="1" colspan="1" colorname="Yellow" data-cell-background="#fff0b3" style="background-color: rgb(245, 233, 137);">
-                    <p data-renderer-start-pos="3081">
+                    <p data-renderer-start-pos="3081"> -->
                       A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement to receive funding. Contact BC Registries immediately to resolve.
-                    </p>
+                    <!-- </p>
                   </td>
                 </tr>
-              </tbody>
+              </tbody> -->
             <!-- </table> -->
           <!-- </div> -->
         <!-- </div> -->
-      </AppAlertBanner>
+      <!-- </AppAlertBanner> -->
     </div>
 
     <v-row>
@@ -348,6 +349,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
@@ -363,6 +365,7 @@ import {
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
+import OrganizationService from '@/services/organizationService';
 
 export default {
   name: 'LandingPage',
@@ -390,6 +393,7 @@ export default {
       ],
       CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
+      isGoodStanding: false,
       selectedProgramYear: undefined,
     };
   },
@@ -413,7 +417,7 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationMap',
-      'applicationId',
+      'applicationId'
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
@@ -626,6 +630,8 @@ export default {
 
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
+    this.isGoodStanding = await OrganizationService.getOrganizationGoodStanding(this.organizationId);
+    console.log(this.isGoodStanding);
     this.refreshNavBarList();
     await this.getChangeRequestList();
     this.isLoadingComplete = true;

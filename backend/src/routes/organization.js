@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken= auth.isValidBackendToken();
-const { getOrganization, createOrganization, updateOrganization } = require('../components/organization');
+const { getOrganization, createOrganization, updateOrganization, getOrganizationInGoodStanding } = require('../components/organization');
 const { param, validationResult, checkSchema} = require('express-validator');
 
 
@@ -95,5 +95,13 @@ router.post('/:organizationId/renew', passport.authenticate('jwt', {session: fal
   return createOrganization(req, res);
 });
 
+/**
+ * Get inGoodStanding for an organization.
+ */
+router.get('/:organizationId/inGoodStanding', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
+  param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()], (req, res) => {
+  validationResult(req).throw();
+  return getOrganizationInGoodStanding(req, res);
+});
 
 module.exports = router;
