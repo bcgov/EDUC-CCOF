@@ -841,11 +841,11 @@ export default {
     },
   },
   watch: {
-    isValidForm: {
+    isFormComplete: {
       handler() {
         this.$refs.ccofSummaryForm.validate();
-        if (this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        if (this.isLoadingComplete && this.isFormComplete !== null) {
+          this.$emit('isSummaryValid', this.formObj, this.isFormComplete);
         }
       },
     },
