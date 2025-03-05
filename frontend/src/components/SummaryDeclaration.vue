@@ -75,10 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
-            <v-row v-if="isSummaryLoading">
+            <v-row v-if="isProcessing">
               <v-col>
                 <v-skeleton-loader
-                  :loading="isSummaryLoading"
+                  :loading="isProcessing"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -541,13 +541,7 @@ export default {
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, [
-      'declarationModel',
-      'summaryModel',
-      'facilities',
-      'isSummaryLoading',
-      'isLoadingComplete',
-    ]),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'formattedProgramYear',

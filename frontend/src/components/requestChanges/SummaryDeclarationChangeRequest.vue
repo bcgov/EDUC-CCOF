@@ -11,26 +11,16 @@
         {{ userInfo.organizationName }}
       </v-row>
 
-      <v-row v-if="!isSummaryComplete && !isProcessing" class="justify-center">
-        <v-card width="80%" class="my-10 justify-center" elevation="4">
-          <v-row>
-            <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
-                <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                Incomplete Form
-              </v-card-title>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col class="py-6 px-10 justify-center">
-              <div>
-                <p>You will not be able to submit your application until it is complete.</p>
-                <p>Incomplete sections are marked with a red exclamation point.</p>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
+      <v-card v-if="!isSummaryComplete && !isProcessing" class="my-8 mx-12" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          Incomplete Form
+        </v-card-title>
+        <div class="pa-4">
+          <p>You will not be able to submit your application until it is complete.</p>
+          <p>Incomplete sections are marked with a red exclamation point.</p>
+        </div>
+      </v-card>
 
       <v-row class="d-flex justify-center">
         <v-card v-if="isSomeApplicationUnlocked" width="80%" class="mx-3 my-10 justify-center">
@@ -78,6 +68,7 @@
                   value="change-notification-form-summary"
                 >
                   <ChangeNotificationFormSummary
+                    :is-processing="isProcessing"
                     :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
                     @is-summary-valid="isFormComplete"
                   />

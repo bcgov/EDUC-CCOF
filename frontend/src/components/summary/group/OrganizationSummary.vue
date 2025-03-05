@@ -280,6 +280,7 @@
 import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useAuthStore } from '@/store/auth';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import rules from '@/utils/rules.js';
 import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
@@ -311,7 +312,7 @@ export default {
       PATHS,
       rules,
       legalName: null,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'OrganizationSummary',
         formId: this.summaryModel?.application?.organizationId,
@@ -320,11 +321,12 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     isSoleProprietorshipPartnership() {
       return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
     },
     isGroup() {
-      return this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {
@@ -351,11 +353,12 @@ export default {
     },
   },
   watch: {
-    isProcessing: {
+    isValidForm: {
       handler() {
-        if (this.isProcessing) return;
         this.$refs.organizationSummaryForm.validate();
-        this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        if (this.isLoadingComplete && this.isValidForm !== null) {
+          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
+        }
       },
     },
   },
