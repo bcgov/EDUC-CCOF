@@ -75,11 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
-            <v-row v-if="isMainLoading">
+            <v-row v-if="isSummaryLoading">
               <v-col>
                 <v-skeleton-loader
-                  v-if="isMainLoading"
-                  :loading="isMainLoading"
+                  :loading="isSummaryLoading"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -547,7 +546,6 @@ export default {
       'summaryModel',
       'facilities',
       'isSummaryLoading',
-      'isMainLoading',
       'isLoadingComplete',
     ]),
     ...mapState(useApplicationStore, [
