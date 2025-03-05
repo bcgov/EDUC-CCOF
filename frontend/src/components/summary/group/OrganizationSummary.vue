@@ -280,7 +280,6 @@
 import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useAuthStore } from '@/store/auth';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
 import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
@@ -321,7 +320,6 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     isSoleProprietorshipPartnership() {
       return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
     },
@@ -353,11 +351,11 @@ export default {
     },
   },
   watch: {
-    isValidForm: {
+    isProcessing: {
       handler() {
-        if (!this.isProcessing && this.isLoadingComplete) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
+        if (this.isProcessing) return;
+        this.$refs.organizationSummaryForm.validate();
+        this.$emit('isSummaryValid', this.formObj, this.isValidForm);
       },
     },
   },
