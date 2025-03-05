@@ -228,7 +228,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
+    ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments', 'setApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarAfsComplete', 'refreshNavBarList']),
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
@@ -334,8 +334,8 @@ export default {
 
       const exists = this.applicationUploadedDocuments?.some((item) => item.annotationId === annotationId);
       if (exists) {
-        this.applicationUploadedDocuments = this.applicationUploadedDocuments.filter(
-          (item) => item.annotationId !== annotationId,
+        this.setApplicationUploadedDocuments(
+          this.applicationUploadedDocuments.filter((item) => item.annotationId !== annotationId),
         );
       }
       this.uploadedDocumentsToDelete?.push(annotationId);
