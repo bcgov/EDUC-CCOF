@@ -31,7 +31,7 @@
               </div>
               <div class="px-md-12 px-7 py-4">
                 <div class="span-label font-regular">
-                  <p v-if="languageYearLabel == programYearTypes.HISTORICAL">
+                  <p v-if="languageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
                     Do you charge parent fees at this facility for any closures on business days (other than designated
                     holidays)? Only indicate the date of closures where parent fees are charged.
                   </p>
@@ -175,7 +175,7 @@
                     </v-row>
                   </v-card>
 
-                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow(false)">
+                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow">
                     Add New Closure
                   </AppButton>
                 </template>
@@ -218,7 +218,6 @@ import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 
-import { getBCSSALink } from '@/utils/common.js';
 import rules from '@/utils/rules.js';
 
 import {
@@ -316,12 +315,6 @@ export default {
     languageYearLabel() {
       return this.getLanguageYearLabel;
     },
-    BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
-    },
-    programYearTypes() {
-      return PROGRAM_YEAR_LANGUAGE_TYPES;
-    },
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
@@ -377,6 +370,7 @@ export default {
     this.rules = rules;
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
+    this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [
@@ -392,16 +386,13 @@ export default {
       'setLoadedModel',
     ]),
     ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
-    addRow(radioButtonClicked) {
+    addRow(radioButtonClicked = false) {
       //when opening table for the first time, add a row so it always populates with one.
       //check below so if user hits the radio button multiple times, it won't keep adding rows
       if (radioButtonClicked && this.CCFRIFacilityModel.dates.length > 0) return;
       this.updateChosenDates();
       const newObj = { ...this.dateObj, id: uuid.v1() };
       this.CCFRIFacilityModel.dates.push(newObj);
-    },
-    allowedDates(val) {
-      return !this.chosenDates.includes(val);
     },
     updateChosenDates() {
       this.chosenDates = [];
