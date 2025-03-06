@@ -109,8 +109,26 @@ input[type="number"] {
   font-size: 1rem;
 }
 
+.application-label .v-label {
+  margin-left: 0 !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+}
+
 .error-message {
-  color: #ff5252;
+  color: #d8292f !important;
+  font-size: 12px;
+  animation: 0.5s move-from-top;
+}
+@keyframes move-from-top {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
 }
 
 .font-large {

@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="rfiSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          RFI
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click here to view.</span
-          >
-        </h4>
+        <SummaryExpansionPanelTitle title="RFI" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="ml-2 mt-2">
         <span class="summary-label-bold">Exceptional Circumstances</span>
@@ -678,6 +671,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useAppStore } from '@/store/app.js';
@@ -687,6 +681,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'RFISummary',
+  components: { SummaryExpansionPanelTitle },
   props: {
     rfiApp: {
       type: Object,
@@ -712,7 +707,7 @@ export default {
     return {
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'RFISummary',
         formId: this.facilityId,
@@ -731,9 +726,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.rfiSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -772,7 +768,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

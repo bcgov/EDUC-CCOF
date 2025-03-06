@@ -542,9 +542,9 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
-import rules from '@/utils/rules.js';
 
 import { getBCSSALink } from '@/utils/common.js';
+import rules from '@/utils/rules.js';
 
 import {
   PATHS,
@@ -579,7 +579,14 @@ function dateFunction(date1, date2) {
 }
 
 export default {
-  components: { NavButton, FacilityHeader, AppDateInput, AppAlertBanner, AppDialog, AppButton },
+  components: {
+    NavButton,
+    FacilityHeader,
+    AppAlertBanner,
+    AppDateInput,
+    AppDialog,
+    AppButton,
+  },
   mixins: [alertMixin, globalMixin],
   beforeRouteLeave(_to, _from, next) {
     this.save(false);

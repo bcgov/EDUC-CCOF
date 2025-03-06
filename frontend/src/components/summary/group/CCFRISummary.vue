@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccfriSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Child Care Fee Reduction Initiative (CCFRI)
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle title="Child Care Fee Reduction Initiative (CCFRI)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row v-if="!ccfri || ccfri?.ccfriOptInStatus === 0">
@@ -410,25 +403,18 @@
           </v-row>
         </v-row>
 
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div v-if="!isValidForm">
+          <router-link :to="getRoutingPath()">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
 import _ from 'lodash';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { isChangeRequest } from '@/utils/common.js';
 import {
   PATHS,
@@ -446,6 +432,7 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   mixins: [globalMixin],
   props: {
     ccfri: {
@@ -661,8 +648,8 @@ export default {
   font-size: small;
   font-weight: bold;
 }
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: #d8292f !important;
+  opacity: 1 !important;
 }
 </style>

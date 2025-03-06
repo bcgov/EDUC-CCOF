@@ -101,14 +101,7 @@
       v-model="isValidForm"
     >
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Facility Information
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click here to view.</span
-          >
-        </h4>
+        <SummaryExpansionPanelTitle title="Facility Information" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">
         <v-row no-gutters>
@@ -347,9 +340,7 @@
         <v-row v-if="!isValidForm" no-gutters>
           <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
           <router-link :to="getRoutingPathGroup()">
-            <span style="color: #ff5252; text-underline: black">
-              <u>To add this information, click here. This will bring you to a different page.</u>
-            </span>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </v-row>
       </v-expansion-panel-text>
@@ -364,8 +355,8 @@
         <h4 style="color: #003466">
           Facility Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
+          <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" class="text-error"
             >Your form is missing required information. Click here to view.</span
           >
         </h4>
@@ -507,9 +498,9 @@
                 <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
 
                 <router-link :to="getRoutingPathFamily()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
+                  <u class="text-error">
+                    To add this information, click here. This will bring you to a different page.
+                  </u>
                 </router-link>
               </v-col>
             </v-row>
@@ -521,7 +512,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -531,6 +523,7 @@ import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES }
 import rules from '@/utils/rules.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     facilityInfo: {
       type: Object,
@@ -603,9 +596,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs?.informationSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -615,7 +609,6 @@ export default {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     getOptInOptOut(status) {
       if (status === 1) {
         return 'Opt-In';
@@ -663,7 +656,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

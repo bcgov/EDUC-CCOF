@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -11,6 +12,7 @@ import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
+  if (isEmpty(licenseCategories)) return '';
   const appStore = useAppStore();
   const uniqueLicenseCategories = [...new Set(licenseCategories.map((item) => item.licenseCategoryId))];
   const lookupCategories = [...appStore.lookupInfo.familyLicenseCategory, ...appStore.lookupInfo.groupLicenseCategory];
@@ -57,8 +59,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     declarationModel: {},
     summaryModel: {},
     facilities: [],
-    isSummaryLoading: [],
-    isMainLoading: true,
+    isSummaryLoading: true,
     isLoadingComplete: false,
   }),
   getters: {
@@ -96,9 +97,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
     setIsSummaryLoading(value) {
       this.isSummaryLoading = value;
-    },
-    setIsMainLoading(value) {
-      this.isMainLoading = value;
     },
     isValidForm(value) {
       this.isValidForm = value;
@@ -203,11 +201,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         appID = applicationStore.applicationId;
       }
       try {
-        this.setIsMainLoading(true);
+        this.setIsSummaryLoading(true);
 
         const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
-
-        this.setIsSummaryLoading(['loadSummary is loading facilities all at once']);
 
         const applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
           facilities: filterNavBarIds,
@@ -226,7 +222,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.facilities = facilities;
 
         this.setSummaryModel(summaryModel);
-        this.setIsMainLoading(false);
 
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
@@ -245,9 +240,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
           this.setSummaryModel(summaryModel);
         }
-
         this.setSummaryModel(summaryModel);
-        this.setIsSummaryLoading([]);
+        this.setIsSummaryLoading(false);
 
         if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
@@ -271,7 +265,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       try {
         this.setIsLoadingComplete(false);
-        if (!this.summaryModel) this.setIsMainLoading(true);
+        this.setIsSummaryLoading(true);
+
         const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
@@ -316,6 +311,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             }
           }),
         );
+        this.setIsSummaryLoading(false);
         this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
@@ -347,6 +343,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryForMtfi(payload) {
       const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
+      this.setIsSummaryLoading(true);
 
       try {
         const summaryModel = this.summaryModel;
@@ -355,11 +352,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
 
-        const isSummaryLoading = new Array(summaryModel.mtfiFacilities.length).fill(true);
-        this.setIsSummaryLoading(isSummaryLoading);
-
         await Promise.all(
-          summaryModel.mtfiFacilities.map(async (mtfiFacility, index) => {
+          summaryModel.mtfiFacilities.map(async (mtfiFacility) => {
             const userProfileListFacility = navBarStore.userProfileList.find(
               (item) => item.facilityId === mtfiFacility.facilityId,
             );
@@ -391,13 +385,11 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 mtfiFacility.rfiApp = (
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
-              isSummaryLoading.splice(index, 1, false);
-              this.setIsSummaryLoading(isSummaryLoading);
-              if (this.isMainLoading) this.setIsMainLoading(false);
             }
             this.setSummaryModel(summaryModel);
           }),
         );
+        this.setIsSummaryLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request MTFI - ${error}`);
         throw error;
@@ -413,7 +405,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.summaryModel.changeNotificationFormDocuments = await reportChangesStore.loadChangeRequestDocs(
           changeNotiChangeAction?.changeActionId,
         );
-        this.setIsMainLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request Change Notification Form - ${error}`);
         throw error;

@@ -4,7 +4,7 @@ import { isPlainObject, sortBy } from 'lodash';
 import useRfdc from 'rfdc';
 
 import { BCSSA_REGION_LINKS, PATHS, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
-import { getDateFormatter } from '@/utils/format.js';
+import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
@@ -34,6 +34,29 @@ export function deepCloneObject(objectToBeCloned) {
 
 export function isNullOrBlank(value) {
   return value === null || value === undefined || value === '';
+}
+
+/**
+ * Checks if the time difference between `from` and `to` is greater than or equal to the specified number of hours.
+ *
+ * @param {string} from - The starting time in "HH:mm" format (e.g., "09:40").
+ * @param {string} to - The ending time in "HH:mm" format (e.g., "21:30").
+ * @param {number} difference - The minimum number of hours that `to` should be after `from` (e.g., 1 for 1 hour).
+ *
+ * @returns {boolean} - Returns `true` if the time difference between `from` and `to` is greater than or equal to `difference` hours,
+ *                     otherwise returns `false`.
+ */
+export function validateHourDifference(from, to, difference) {
+  // Extract and convert the time to minutes from "HH:mm" format
+  const minutesFrom =
+    parseInt(formatTime12to24(from).split(':')[0], 10) * 60 + parseInt(formatTime12to24(from).split(':')[1], 10);
+  const minutesTo =
+    parseInt(formatTime12to24(to).split(':')[0], 10) * 60 + parseInt(formatTime12to24(to).split(':')[1], 10);
+  if (isNaN(minutesFrom) || isNaN(minutesTo)) {
+    console.error('Invalid time format');
+    return false;
+  }
+  return minutesTo >= minutesFrom + difference * 60;
 }
 
 export function isChangeRequest(vueForm) {

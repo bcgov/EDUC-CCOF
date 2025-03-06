@@ -10,7 +10,7 @@
                 <v-col xs="10" sm="10" md="10" lg="10" xl="10">
                   <v-card class="error-card" elevation="5">
                     <v-card-title class="gov-header">
-                      <h4 id="error_text" style="color: red">Unauthorized Access</h4>
+                      <h4 id="error_text" class="text-error">Unauthorized Access</h4>
                     </v-card-title>
                     <v-card-text id="error_message">
                       <span style="color: black; font-weight: bold"
