@@ -22,7 +22,6 @@
           <div class="summary-label">Facility ID</div>
           <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
           <v-text-field
-            placeholder="--"
             :model-value="facilityInfo?.facilityAccountNumber"
             class="summary-value"
             density="compact"
@@ -353,7 +352,7 @@
         </v-row>
         <v-row v-if="!isValidForm" no-gutters>
           <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-          <router-link :to="getRoutingPathGroup()">
+          <router-link :to="routingPathGroup">
             <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </v-row>
@@ -511,7 +510,7 @@
               <v-col cols="12">
                 <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
 
-                <router-link :to="getRoutingPathFamily()">
+                <router-link :to="routingPathFamily">
                   <u class="text-error">
                     To add this information, click here. This will bring you to a different page.
                   </u>
@@ -531,7 +530,6 @@ import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpans
 import { useAppStore } from '@/store/app.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
 import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
@@ -598,14 +596,22 @@ export default {
   computed: {
     ...mapState(useAppStore, ['getHealthAuthorityNameById']),
     ...mapState(useApplicationStore, ['isRenewal']),
-    ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     yesNoFacilityLabel() {
-      if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {
-        return 'YES AS FACILITY';
-      }
-      return this.facilityInfo?.hasReceivedFunding?.toUpperCase();
+      return this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY'
+        ? 'YES AS FACILITY'
+        : this.facilityInfo?.hasReceivedFunding?.toUpperCase();
+    },
+    routingPathGroup() {
+      return this.isChangeRequest
+        ? changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId)
+        : pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
+    },
+    routingPathFamily() {
+      return !this.funding.ccofBaseFundingId
+        ? pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId)
+        : pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
     },
   },
   watch: {
@@ -623,9 +629,6 @@ export default {
     this.PATHS = PATHS;
     this.rules = rules;
   },
-  mounted() {
-    this.$refs.informationSummaryForm?.validate();
-  },
   methods: {
     isNullOrBlank,
     getOptInOptOut(status) {
@@ -635,30 +638,6 @@ export default {
         return 'Opt-Out';
       } else {
         return '';
-      }
-    },
-    calculateTotal() {
-      let total = 0;
-      total =
-        this.funding.monday +
-        this.funding.tusday +
-        this.funding.wednesday +
-        this.funding.thursday +
-        this.funding.friday;
-      return total;
-    },
-    getRoutingPathGroup() {
-      if (isChangeRequest(this)) {
-        return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId);
-      } else {
-        return pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
-      }
-    },
-    getRoutingPathFamily() {
-      if (!this.funding.ccofBaseFundingId) {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else {
-        return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
       }
     },
   },
