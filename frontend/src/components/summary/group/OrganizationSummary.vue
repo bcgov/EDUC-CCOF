@@ -142,6 +142,7 @@
           <v-col cols="12">
             <div class="summary-label">Organization Street Address</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.address2"
               :rules="rules.required"
@@ -157,6 +158,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">City/Town</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.city2"
               :rules="rules.required"
@@ -170,6 +172,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">Province</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.province2"
               :rules="rules.required"
@@ -183,6 +186,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">Postal Code</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.postalCode2"
               :rules="rules.required"
@@ -280,7 +284,7 @@
 import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useAuthStore } from '@/store/auth';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import rules from '@/utils/rules.js';
 import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
@@ -312,7 +316,7 @@ export default {
       PATHS,
       rules,
       legalName: null,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'OrganizationSummary',
         formId: this.summaryModel?.application?.organizationId,
@@ -326,7 +330,7 @@ export default {
       return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
     },
     isGroup() {
-      return this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {
@@ -355,7 +359,8 @@ export default {
   watch: {
     isValidForm: {
       handler() {
-        if (!this.isProcessing && this.isLoadingComplete) {
+        this.$refs.organizationSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

@@ -66,7 +66,7 @@ export default {
   data() {
     return {
       rules,
-      isValidForm: true,
+      isValidForm: false,
       headers: [
         {
           title: 'Document',
@@ -100,9 +100,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.documentSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

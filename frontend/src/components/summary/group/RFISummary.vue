@@ -707,7 +707,7 @@ export default {
     return {
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'RFISummary',
         formId: this.facilityId,
@@ -726,9 +726,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.rfiSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },

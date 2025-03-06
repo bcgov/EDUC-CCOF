@@ -681,7 +681,7 @@
   </v-row>
 </template>
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 
@@ -841,9 +841,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isFormComplete: {
+      handler() {
+        this.$refs.ccofSummaryForm.validate();
+        if (this.isLoadingComplete && this.isFormComplete !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isFormComplete);
         }
       },
@@ -852,11 +853,7 @@ export default {
   created() {
     this.formatTime24to12 = formatTime24to12;
   },
-  mounted() {
-    this.$refs.ccofSummaryForm?.validate();
-  },
   methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
     isNullOrBlank,
   },
 };

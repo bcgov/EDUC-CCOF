@@ -15,7 +15,7 @@
           <template v-if="isEmpty(filteredUploadedDocuments)">
             <v-card elevation="2" class="pa-4">
               <h3>Uploaded Documents</h3>
-              <div class="error-message mt-4">Required</div>
+              <div class="text-error mt-4">Required</div>
             </v-card>
           </template>
           <AppDocumentUpload

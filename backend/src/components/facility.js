@@ -30,9 +30,7 @@ function buildNewFacilityPayload(req) {
 function mapFacilityObjectForBack(data) {
   const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
 
-  if (facilityForBack.ccof_facilitystartdate) {
-    facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
-  }
+  facilityForBack.ccof_facilitystartdate = facilityForBack.ccof_facilitystartdate ? `${facilityForBack.ccof_facilitystartdate}-01-01` : null;
   if (facilityForBack.ccof_licensestartdate) {
     facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
   }

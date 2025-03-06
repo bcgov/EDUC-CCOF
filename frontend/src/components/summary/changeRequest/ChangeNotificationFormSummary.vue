@@ -4,7 +4,7 @@
       <v-expansion-panel-title>
         <SummaryExpansionPanelTitle
           title="Change Notification Form"
-          :loading="!isLoadingComplete"
+          :loading="isProcessing"
           :is-complete="isChangeNotificationFormComplete"
         />
       </v-expansion-panel-title>
@@ -73,6 +73,10 @@ export default {
       required: false,
       default: () => [],
     },
+    isProcessing: {
+      type: Boolean,
+      default: true,
+    },
   },
   emits: ['isSummaryValid'],
   data() {
@@ -85,7 +89,7 @@ export default {
   },
   computed: {
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete', 'summaryModel']),
+    ...mapState(useSummaryDeclarationStore, ['summaryModel']),
     ...mapState(useNavBarStore, ['changeType']),
     getRoutingPath() {
       if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) {
@@ -114,11 +118,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormComplete);
-        }
+    isProcessing: {
+      handler() {
+        if (this.isProcessing) return;
+        this.$emit('isSummaryValid', this.formObj, this.isChangeNotificationFormComplete);
       },
     },
   },
