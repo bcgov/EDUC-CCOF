@@ -105,10 +105,7 @@ async function updateOrganization(req, res) {
 
 async function getOrganizationInGoodStanding(req, res) {
   try {
-    let organization = await getOperationWithObjectId('accounts', req.params.organizationId);
-    if (ACCOUNT_TYPE.ORGANIZATION != organization?.ccof_accounttype) {
-      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not organization.' });
-    }
+    let organization = await getOperation(`accounts(${req.params.organizationId})?$select=ccof_bypass_goodstanding_check,ccof_good_standing_status`);
 
     organization = mapOrganizationObjectForFront(organization);
 
