@@ -50,7 +50,7 @@
               </v-radio-group>
             </div>
             <AppAddressForm
-              v-if="model.isFacilityAddressSameAsOrgStreetAddress === false"
+              v-if="showFacilityAddressForm"
               :disabled="isLocked"
               :manual-entry="model.isFacilityAddressEnteredManually"
               :address="model.facilityAddress"
@@ -80,7 +80,7 @@
                 <v-radio label="Yes" :value="true" />
                 <v-radio label="No" :value="false" />
               </v-radio-group>
-              <template v-if="model.isFacilityContactSameAsOrgContact === false">
+              <template v-if="showFacilityContactForm">
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
@@ -239,6 +239,14 @@ export default {
       await this.save(false);
     }
     next();
+  },
+  computed: {
+    showFacilityAddressForm() {
+      return this.model.isFacilityAddressSameAsOrgStreetAddress === false;
+    },
+    showFacilityContactForm() {
+      return this.model.isFacilityContactSameAsOrgContact === false;
+    },
   },
   methods: {
     updateStreetAddress(updatedModel) {
