@@ -21,6 +21,7 @@ export const useAppStore = defineStore('app', {
     childCareCategoryList: [],
     organizationTypeList: [],
     fundingModelTypeList: [],
+    healthAuthorities: [],
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
@@ -65,6 +66,11 @@ export const useAppStore = defineStore('app', {
     setFundingModelTypeList(fundingModelTypeList) {
       this.fundingModelTypeList = fundingModelTypeList;
     },
+
+    setHealthAuthorities(healthAuthorities) {
+      this.healthAuthorities = healthAuthorities;
+    },
+
     //Nav bar stuff
     setShowNavBar(showNavBar) {
       this.showNavBar = showNavBar;
@@ -87,6 +93,7 @@ export const useAppStore = defineStore('app', {
         this.setChildCareCategoryList(lookupInfo.data?.childCareCategory);
         this.setOrganizationTypeList(lookupInfo.data?.organizationType);
         this.setFundingModelTypeList(lookupInfo.data?.fundingModelType);
+        this.setHealthAuthorities(lookupInfo.data?.healthAuthorities);
       }
     },
     async startCounter() {
@@ -166,6 +173,12 @@ export const useAppStore = defineStore('app', {
       return (id) => {
         const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);
         return childCareCategory?.ccof_childcarecategorynumber;
+      };
+    },
+    getHealthAuthorityNameById: (state) => {
+      return (id) => {
+        const healthAuthorityName = state.healthAuthorities?.find((item) => item.id === id);
+        return healthAuthorityName?.description;
       };
     },
   },

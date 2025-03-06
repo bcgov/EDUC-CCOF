@@ -142,6 +142,7 @@
           <v-col cols="12">
             <div class="summary-label">Organization Street Address</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.address2"
               :rules="rules.required"
@@ -157,6 +158,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">City/Town</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.city2"
               :rules="rules.required"
@@ -170,6 +172,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">Province</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.province2"
               :rules="rules.required"
@@ -183,6 +186,7 @@
           <v-col cols="12" md="4">
             <div class="summary-label">Postal Code</div>
             <v-text-field
+              placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.postalCode2"
               :rules="rules.required"

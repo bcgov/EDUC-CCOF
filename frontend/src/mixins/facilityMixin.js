@@ -2,8 +2,10 @@ import { isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import AppAddressForm from '@/components/guiComponents/AppAddressForm.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
@@ -15,9 +17,10 @@ import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, p
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppAddressForm, NavButton },
+  components: { AppAddressForm, AppTooltip, NavButton },
   mixins: [alertMixin],
   computed: {
+    ...mapState(useAppStore, ['healthAuthorities']),
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useAuthStore, ['userInfo']),
@@ -46,6 +49,9 @@ export default {
     },
     isModelEmpty() {
       return !Object.values(this.model)?.some((item) => item);
+    },
+    isGroup() {
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -97,15 +103,41 @@ export default {
     ]),
     ...mapActions(useOrganizationStore, ['loadOrganization']),
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
-    resetStreetAddress() {
+    resetFacilityAddress() {
       if (this.loading) return;
-      this.model.address2 = null;
-      this.model.city2 = null;
-      this.model.province2 = null;
-      this.model.postalCode2 = null;
+      this.model.isFacilityAddressEnteredManually = null;
+      this.model.facilityAddress = null;
+      this.model.city = null;
+      this.model.province = null;
+      this.model.postalCode = null;
     },
-    isGroup() {
-      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    resetFacilityContact() {
+      if (this.loading) return;
+      this.model.contactName = null;
+      this.model.position = null;
+      this.model.phone = null;
+      this.model.email = null;
+    },
+    populateFacilityAddress() {
+      if (!this.isGroup) {
+        // FAMILY application
+        // TODO (vietle-cgi) - confirm with the business when the Family application is updated.
+        this.model.postalCode = this.organizationModel?.postalCode1;
+        this.model.province = this.organizationModel?.province1;
+      } else if (this.model.isFacilityAddressSameAsOrgStreetAddress) {
+        // GROUP application
+        this.model.facilityAddress = this.organizationModel?.address2;
+        this.model.city = this.organizationModel?.city2;
+        this.model.province = this.organizationModel?.province2;
+        this.model.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
+      }
+    },
+    populateFacilityContact() {
+      if (!this.model.isFacilityContactSameAsOrgContact) return;
+      this.model.contactName = this.organizationModel?.contactName;
+      this.model.position = this.organizationModel?.position;
+      this.model.phone = this.organizationModel?.phone;
+      this.model.email = this.organizationModel?.email;
     },
     previous() {
       const defaultPath = isChangeRequest(this) ? PATHS.ROOT.CHANGE_LANDING : PATHS.ROOT.HOME;
@@ -148,7 +180,7 @@ export default {
         } else {
           this.$router.push(
             pcfUrlGuid(
-              this.isGroup() ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+              this.isGroup ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
               this.programYearId,
               baseFundingId,
             ),
@@ -165,26 +197,17 @@ export default {
       await this.save(true);
     },
     async save(isSave) {
-      if (this.isLocked) {
-        return;
-      }
-      if (this.model.isSameAsMailing) {
-        this.model.address2 = this.model.address1;
-        this.model.city2 = this.model.city1;
-        this.model.postalCode2 = this.model.postalCode1;
-        this.model.province2 = this.model.province1;
-      }
-      if (!this.isGroup()) {
-        // For Family, we will need to set the postal code from organization.
+      try {
+        if (this.isLocked) {
+          return;
+        }
+        this.processing = true;
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
         }
-        this.model.postalCode = this.organizationModel.postalCode1;
-        this.model.province = this.organizationModel.province1;
-      }
-      this.setFacilityModel({ ...this.model });
-      this.processing = true;
-      try {
+        this.populateFacilityAddress();
+        this.populateFacilityContact();
+        this.setFacilityModel({ ...this.model });
         await this.saveFacility({
           isChangeRequest: isChangeRequest(this),
           changeRequestId: this.$route.params.changeRecGuid,
@@ -193,23 +216,25 @@ export default {
         this.forceNavBarRefresh();
         if (isSave) {
           this.setSuccessAlert(
-            this.isGroup()
+            this.isGroup
               ? 'Success! Facility information has been saved.'
               : 'Success! Eligibility information has been saved.',
           );
         }
-      } catch {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
-      }
-      if (!this.$route.params.urlGuid && isSave) {
-        if (isChangeRequest(this)) {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
-        } else {
-          this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId));
+        if (!this.$route.params.urlGuid && isSave) {
+          if (isChangeRequest(this)) {
+            this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
+          } else {
+            this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId));
+          }
         }
+        this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.processing = false;
       }
-      this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
-      this.processing = false;
     },
   },
 };

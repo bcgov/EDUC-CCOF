@@ -42,6 +42,9 @@ const FacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
   { back: 'ccof_is_facility_address_entered_manually', front: 'isFacilityAddressEnteredManually' },
+  { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
+  { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
+  { back: 'ccof_healthauthority', front: 'healthAuthority' },
 ];
 
 const CCFRIFacilityMappings = [
