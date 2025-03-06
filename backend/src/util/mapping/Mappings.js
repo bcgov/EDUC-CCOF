@@ -23,7 +23,7 @@ const OrganizationMappings = [
   { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
   { back: 'ccof_bypass_goodstanding_check', front: 'bypassGoodstandingCheck'},
-  { bacl: 'ccof_good_standing_status', front: 'goodStandingStatus'},
+  { back: 'ccof_good_standing_status', front: 'goodStandingStatus'},
 ];
 
 const FacilityMappings = [
