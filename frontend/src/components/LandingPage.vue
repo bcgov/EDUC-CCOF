@@ -11,8 +11,8 @@
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
     <!-- todo: add logic to only show div below if the application standing has not good standing status -->
-    <div class="pb-12 text-h5 text-center" v-if="!this.isGoodStanding">
-      <AppAlertBanner  type="warning" class="mb-4 w-100">
+    <!-- <div class="pb-12 text-h5 text-center" v-if="!this.isGoodStanding"> -->
+      <AppAlertBanner  type="warning" class="mb-4 w-100" v-if="!this.isGoodStanding">
         <!-- <div class="pm-table-container with-shadow-observer" data-layout="custom" style="width: 760px;"> -->
           <!-- <div class="pm-table-wrapper"> -->
             <!-- <div class="sentinel-left"></div> -->
@@ -33,7 +33,7 @@
           <!-- </div> -->
         <!-- </div> -->
       </AppAlertBanner>
-    </div>
+    <!-- </div> -->
 
     <v-row>
       <v-col cols="12" :lg="isCCOFStatusNew ? 5 : 3">
@@ -369,7 +369,7 @@ import OrganizationService from '@/services/organizationService';
 
 export default {
   name: 'LandingPage',
-  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider, AppAlertBanner },
   mixins: [alertMixin],
   data() {
     return {
