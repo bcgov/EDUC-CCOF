@@ -11,8 +11,8 @@
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
     <!-- todo: add logic to only show div below if the application standing has not good standing status -->
-    <div class="pb-12 text-h5 text-center" v-if="!isGoodStanding">
-      <!-- <AppAlertBanner  type="warning" class="ma-2 mb-4 w-100"> -->
+    <div class="pb-12 text-h5 text-center" v-if="!this.isGoodStanding">
+      <AppAlertBanner  type="warning" class="mb-4 w-100">
         <!-- <div class="pm-table-container with-shadow-observer" data-layout="custom" style="width: 760px;"> -->
           <!-- <div class="pm-table-wrapper"> -->
             <!-- <div class="sentinel-left"></div> -->
@@ -32,7 +32,7 @@
             <!-- </table> -->
           <!-- </div> -->
         <!-- </div> -->
-      <!-- </AppAlertBanner> -->
+      </AppAlertBanner>
     </div>
 
     <v-row>
@@ -393,7 +393,7 @@ export default {
       ],
       CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
-      isGoodStanding: false,
+      isGoodStanding: true,
       selectedProgramYear: undefined,
     };
   },
@@ -631,7 +631,6 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.isGoodStanding = await OrganizationService.getOrganizationGoodStanding(this.organizationId);
-    console.log(this.isGoodStanding);
     this.refreshNavBarList();
     await this.getChangeRequestList();
     this.isLoadingComplete = true;
