@@ -38,6 +38,8 @@ const canadaPostRouter = require('./routes/canadaPost');
 const connectRedis = require('connect-redis');
 const { RedisStore } = require('rate-limit-redis');
 const rateLimit = require('express-rate-limit');
+const { getUserProfile } = require('./components/user');
+const { MappableObjectForBack } = require('./util/mapping/MappableObject');
 
 const promMid = require('express-prometheus-middleware');
 
@@ -125,17 +127,17 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
         scope: 'openid',
         kc_idp_hint: kc_idp_hint,
       },
-      (_issuer, profile, _context, _idToken, accessToken, refreshToken, done) => {
+      async (_issuer, profile, _context, idToken, accessToken, refreshToken, verified) => {
         if (typeof accessToken === 'undefined' || accessToken === null || typeof refreshToken === 'undefined' || refreshToken === null) {
-          return done('No access token', null);
+          return verified('No access token', null);
         }
-
         //set access and refresh tokens
         profile.jwtFrontend = auth.generateUiToken();
         profile.jwt = accessToken;
         profile._json = parseJwt(accessToken);
         profile.refreshToken = refreshToken;
-        return done(null, profile);
+        profile.idToken = idToken;
+        return verified(null, profile);
       },
     ),
   );
@@ -144,15 +146,15 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
 const parseJwt = (token) => {
   try {
     return JSON.parse(atob(token.split('.')[1]));
-  } catch (e) {
+  } catch {
     return null;
   }
 };
 //initialize our authentication strategy
 utils.getOidcDiscovery().then((discovery) => {
   //OIDC Strategy is used for authorization
-  addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', 'keycloak_bcdevexchange_idir', 'oidc:clientIdIDIR', 'oidc:clientSecretIDIR');
-  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', 'keycloak_bcdevexchange_bceid', 'oidc:clientId', 'oidc:clientSecret');
+  addLoginPassportUse(discovery, 'oidcBceid', config.get('server:frontend') + '/api/auth/callback', config.get('oidc:idpHintBceid'), 'oidc:clientId', 'oidc:clientSecret');
+  addLoginPassportUse(discovery, 'oidcIdir', config.get('server:frontend') + '/api/auth/callback_idir', config.get('oidc:idpHintIdir'), 'oidc:clientId', 'oidc:clientSecret');
 
   //JWT strategy is used for authorization  keycloak_bcdevexchange_idir
   passport.use(
@@ -187,6 +189,7 @@ utils.getOidcDiscovery().then((discovery) => {
     ),
   );
 });
+
 //functions for serializing/deserializing users
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));

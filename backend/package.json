@@ -11,8 +11,8 @@
     "setlocal": "set NODE_ENV='local'",
     "servecmd": "nodemon ./src/server.js",
     "start": "node --max-old-space-size=450 ./src/server.js",
-    "lint": "node_modules/.bin/eslint . --no-fix --ignore-pattern 'node_modules' --ext .js",
-    "lint:fix": "node_modules/.bin/eslint . --fix --ignore-pattern 'node_modules' --ext .js",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "test": "node_modules/.bin/jest --env node --passWithNoTests",
     "test-linux": "export NODE_ENV=test && node_modules/.bin/jest",
     "test:local": "npm run setlocal && npm run test",
@@ -88,50 +88,14 @@
     "babel-plugin-rewire": "^1.2.0",
     "babel-preset-airbnb": "^5.0.0",
     "core-js": "^3.12.1",
-    "eslint": "^7.26.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
     "jest": "^27.0.3",
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^3.1.7",
     "redis-mock": "^0.56.3",
     "supertest": "^4.0.2"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "commonjs": true,
-      "es6": true,
-      "jest": true,
-      "node": true
-    },
-    "extends": [
-      "eslint:recommended"
-    ],
-    "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly",
-      "_": false
-    },
-    "parserOptions": {
-      "ecmaVersion": 2020
-    },
-    "rules": {
-      "eol-last": [
-        "error",
-        "always"
-      ],
-      "indent": [
-        "error",
-        2
-      ],
-      "quotes": [
-        "error",
-        "single"
-      ],
-      "semi": [
-        "error",
-        "always"
-      ]
-    }
   },
   "browserslist": [
     "> 1%",

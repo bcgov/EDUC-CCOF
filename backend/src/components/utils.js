@@ -79,22 +79,25 @@ function getUserGuid(req) {
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
   }
-  let guid = req.session?.passport?.user?._json?.bceid_user_guid;
-  if (!guid) {
-    guid = req.session?.passport?.user?._json?.idir_user_guid;
-  }
-  return guid;
+
+  return splitUsername(userInfo._json.preferred_username).guid;
 }
+
+function splitUsername(username)  {
+  const [guid, idp] = username.split('@');
+  return { guid: guid.toUpperCase(), idp };
+}
+
 function isIdirUser(req) {
   const userInfo = req.session?.passport?.user;
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
   }
-  let isIdir = (req.session?.passport?.user?._json?.idir_user_guid) ? true : false;
+  const isIdir = req.session?.passport?.user?.__json?.idir_username;
 
-  //For local development only.
-  //generally set isIdirUser to false, so that developers can log in using their
-  //IDIRS as a normal, non-ministry user.
+  // For local development only.
+  // generally set isIdirUser to false, so that developers can log in using their
+  // IDIRS as a normal, non-ministry user.
   if ('local' === config.get('environment') && !config.get('server:useImpersonate')) {
     return false;
   }
@@ -441,7 +444,7 @@ const utils = {
   updateChangeRequestNewFacility,
   postChangeRequestSummaryDocument,
   getSubmissionPDFHistory,
-  getChangeActionDetails
+  getChangeActionDetails,
 };
 
 module.exports = utils;
