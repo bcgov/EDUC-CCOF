@@ -63,7 +63,6 @@ router.get('/login-idir', passport.authenticate('oidcIdir', {
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
-  const idirUser = isIdirUser(req);
   const idToken = req.session?.passport?.user?.idToken;
 
   req.logout(function(err) {
@@ -74,8 +73,6 @@ router.get('/logout', async (req, res, next) => {
     let endpoint = '';
     if (req.query?.sessionExpired) {
       endpoint = '/session-expired';
-    } else if (idirUser) {
-      endpoint = '/internal-logout'; // TODO: Make this a real thing
     } else {
       endpoint = '/logout';
     }
