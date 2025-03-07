@@ -151,16 +151,12 @@ jobs:
             ${{ secrets.CCOF_NAMESPACE_NO_ENV }} \
             ${{ secrets.COMMON_NAMESPACE_NO_ENV }} \
             ${{ secrets.SOAM_CLIENT_ID }} \
-            ${{ secrets.SOAM_CLIENT_ID_IDIR }} \
             ${{ secrets.SOAM_CLIENT_SECRET }} \
-            ${{ secrets.SOAM_CLIENT_SECRET_IDIR }} \
+            ${{ secrets.SOAM_IDP_HINT_BCEID }} \
+            ${{ secrets.SOAM_IDP_HINT_IDIR }} \
             ${{ secrets.SPLUNK_TOKEN }} \
             ${{ secrets.REDIS_PASSWORD }} \
             ${{ secrets.D365_API_PREFIX }}
-
-        # Start rollout (if necessary) and follow it
-        oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}} 2> /dev/null \
-            || true && echo "Rollout in progress"
 
         # Get status, returns 0 if rollout is successful
         oc rollout status deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}

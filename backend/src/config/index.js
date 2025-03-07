@@ -37,9 +37,9 @@ nconf.defaults({
     publicKey: process.env.SOAM_PUBLIC_KEY,
     clientId: process.env.SOAM_CLIENT_ID,
     clientSecret: process.env.SOAM_CLIENT_SECRET,
-    clientIdIDIR: process.env.SOAM_CLIENT_ID_IDIR,
-    clientSecretIDIR: process.env.SOAM_CLIENT_SECRET_IDIR,
-    discovery: process.env.SOAM_DISCOVERY
+    discovery: process.env.SOAM_DISCOVERY,
+    idpHintBceid: process.env.SOAM_IDP_HINT_BCEID,
+    idpHintIdir: process.env.SOAM_IDP_HINT_IDIR,
   },
   secureExchange: {
     apiEndpoint: process.env.CCOF_API_ENDPOINT,
