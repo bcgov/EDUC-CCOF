@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getOrganization, createOrganization, updateOrganization, getOrganizationInGoodStanding } = require('../components/organization');
+const { getOrganization, createOrganization, updateOrganization, getOrganizationInGoodStandingCheck } = require('../components/organization');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
@@ -110,7 +110,7 @@ router.get(
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
-    return getOrganizationInGoodStanding(req, res);
+    return getOrganizationInGoodStandingCheck(req, res);
   },
 );
 
