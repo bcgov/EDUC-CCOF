@@ -350,7 +350,7 @@ import OrganizationService from '@/services/organizationService';
 
 export default {
   name: 'LandingPage',
-  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider, AppAlertBanner },
+  components: { AppAlertBanner, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
