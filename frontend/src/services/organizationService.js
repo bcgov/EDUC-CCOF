@@ -1,5 +1,4 @@
-import { ApiRoutes, ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants';
-
+import { ApiRoutes } from '@/utils/constants';
 import ApiService from '@/common/apiService';
 
 export default {
@@ -7,10 +6,7 @@ export default {
     try {
       if (!organizationId) return false;
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}/goodStandingCheck`);
-      return (
-        response?.data.bypassGoodstandingCheck ||
-        response?.data.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.PASS
-      );
+      return response?.data;
     } catch (error) {
       console.log(`Failed to get application's documents - ${error}`);
       throw error;
