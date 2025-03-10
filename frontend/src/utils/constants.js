@@ -416,4 +416,3 @@ export const TOOLTIP_TYPES = Object.freeze({
   ERROR: 'Error',
   WARNING: 'Warning',
 });
-

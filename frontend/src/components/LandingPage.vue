@@ -342,7 +342,6 @@ import {
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
-  ORGANIZATION_GOOD_STANDING_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
