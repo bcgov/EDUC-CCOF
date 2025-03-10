@@ -104,9 +104,10 @@ async function updateOrganization(req, res) {
 
 async function getOrganizationGoodStandingCheck(req, res) {
   try {
-    let response = await getOperation(`accounts(${req.params.organizationId})?$select=ccof_bypass_goodstanding_check,ccof_good_standing_status`);
+    const response = await getOperation(`accounts(${req.params.organizationId})?$select=ccof_bypass_goodstanding_check,ccof_good_standing_status`);
     return res.status(HttpStatus.OK).json(mapOrganizationObjectForFront(response));
   } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
