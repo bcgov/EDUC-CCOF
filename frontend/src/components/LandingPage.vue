@@ -10,7 +10,7 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
-    <AppAlertBanner type="warning" class="mb-4 w-100" v-if="this.showNotGoodStandingWarning">
+    <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
       A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement
       to receive funding. Contact BC Registries immediately to resolve.
     </AppAlertBanner>
@@ -46,8 +46,11 @@
             </div>
             <p v-if="ccofStatus === CCOF_STATUS_NEW" class="pt-2">
               For more information, visit the government website:
-              <a class="text-decoration-underline"
-                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
+              <a
+                class="text-decoration-underline"
+                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
+                >gov.bc.ca/childcareoperatingfunding</a
+              >
             </p>
           </template>
           <template #button>
@@ -62,8 +65,11 @@
               <p class="text-h5 blueText">Status: Incomplete</p>
               <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <v-btn v-if="isLoadingComplete && isCancelPcfButtonEnabled" class="red-button"
-                @click="toggleCancelApplicationDialog">
+              <v-btn
+                v-if="isLoadingComplete && isCancelPcfButtonEnabled"
+                class="red-button"
+                @click="toggleCancelApplicationDialog"
+              >
                 Cancel Application
               </v-btn>
             </div>
@@ -71,8 +77,11 @@
             <div v-else>
               <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
                 <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
-                  <v-btn theme="dark" class="blueButton my-2"
-                    @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)">
+                  <v-btn
+                    theme="dark"
+                    class="blueButton my-2"
+                    @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
+                  >
                     Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
                   </v-btn>
                 </div>
@@ -82,21 +91,33 @@
                   Status of your funding agreement for the current fiscal year: Active
                 </p>
                 <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
-                <v-btn v-if="applicationType === 'NEW'" theme="dark" class="blueButton mt-4"
-                  @click="viewApplication('NEW')">
+                <v-btn
+                  v-if="applicationType === 'NEW'"
+                  theme="dark"
+                  class="blueButton mt-4"
+                  @click="viewApplication('NEW')"
+                >
                   View Recent Application
                 </v-btn>
-                <v-btn v-else-if="
-                  applicationType === 'RENEW' &&
-                  applicationStatus === 'SUBMITTED' &&
-                  ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
-                " theme="dark" class="blueButton" @click="viewApplication('RENEW')">
+                <v-btn
+                  v-else-if="
+                    applicationType === 'RENEW' &&
+                    applicationStatus === 'SUBMITTED' &&
+                    ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
+                  "
+                  theme="dark"
+                  class="blueButton"
+                  @click="viewApplication('RENEW')"
+                >
                   View Recent Application
                 </v-btn>
               </div>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <router-link v-if="isSubmissionHistoryDisplayed" class="text-decoration-underline"
-                :to="PATHS.ROOT.SUBMISSION_HISTORY">
+              <router-link
+                v-if="isSubmissionHistoryDisplayed"
+                class="text-decoration-underline"
+                :to="PATHS.ROOT.SUBMISSION_HISTORY"
+              >
                 View submission history
               </router-link>
             </div>
@@ -113,8 +134,12 @@
               government website:
             </p>
             <p>
-              <a class="text-decoration-underline" style="pointer-events: all"
-                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding">gov.bc.ca/childcareoperatingfunding</a>
+              <a
+                class="text-decoration-underline"
+                style="pointer-events: all"
+                href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
+                >gov.bc.ca/childcareoperatingfunding</a
+              >
             </p>
             <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
             <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
@@ -129,16 +154,28 @@
             </div>
             <div v-else>
               <!-- {{ isRenewEnabled }} -->
-              <v-btn v-if="ccofRenewStatus === RENEW_STATUS_NEW" :class="buttonColor(!isRenewEnabled)" theme="dark"
-                @click="renewApplication()">
+              <v-btn
+                v-if="ccofRenewStatus === RENEW_STATUS_NEW"
+                :class="buttonColor(!isRenewEnabled)"
+                theme="dark"
+                @click="renewApplication()"
+              >
                 Renew my Funding Agreement
               </v-btn>
-              <v-btn v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE" :class="buttonColor(!isRenewEnabled)"
-                theme="dark" @click="continueRenewal()">
+              <v-btn
+                v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE"
+                :class="buttonColor(!isRenewEnabled)"
+                theme="dark"
+                @click="continueRenewal()"
+              >
                 Continue Renewal
               </v-btn>
-              <v-btn v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED" :class="buttonColor(false)"
-                theme="dark" @click="actionRequiredOrganizationRoute()">
+              <v-btn
+                v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED"
+                :class="buttonColor(false)"
+                theme="dark"
+                @click="actionRequiredOrganizationRoute()"
+              >
                 Update your PCF
               </v-btn>
               <v-btn v-else :class="buttonColor(true)" :disabled="true"> Renew my Funding Agreement </v-btn>
@@ -160,8 +197,11 @@
                 </v-btn>
               </v-col>
               <v-col class="col-12">
-                <v-btn :class="buttonColor(!isReportChangeButtonEnabled)" theme="dark"
-                  @click="goToChangeRequestHistory()">
+                <v-btn
+                  :class="buttonColor(!isReportChangeButtonEnabled)"
+                  theme="dark"
+                  @click="goToChangeRequestHistory()"
+                >
                   Request a change
                 </v-btn>
               </v-col>
@@ -179,8 +219,11 @@
             </p>
           </template>
           <template #button>
-            <v-btn href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
-              :class="buttonColor(!isCCOFApproved)" theme="dark">
+            <v-btn
+              href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
+              :class="buttonColor(!isCCOFApproved)"
+              theme="dark"
+            >
               Submit a report
             </v-btn>
           </template>
@@ -188,8 +231,12 @@
       </v-col>
     </v-row>
 
-    <v-skeleton-loader v-if="!isLoadingComplete" class="mt-12" :loading="!isLoadingComplete"
-      type="paragraph, text@3, text@3, paragraph" />
+    <v-skeleton-loader
+      v-if="!isLoadingComplete"
+      class="mt-12"
+      :loading="!isLoadingComplete"
+      type="paragraph, text@3, text@3, paragraph"
+    />
     <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row no-gutters>
         <v-col class="col-12 col-md-6 ml-4 mb-4">
@@ -205,8 +252,14 @@
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
-          <v-text-field v-if="facilityListForFacilityCards?.length > 2" v-model="input" clearable variant="filled"
-            label="Filter by Facility Name " :bind="input" />
+          <v-text-field
+            v-if="facilityListForFacilityCards?.length > 2"
+            v-model="input"
+            clearable
+            variant="filled"
+            label="Filter by Facility Name "
+            :bind="input"
+          />
         </v-col>
         <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
           <v-row class="justify-right align-center mr-4">
@@ -216,8 +269,13 @@
         </v-col>
       </v-row>
       <v-row no-gutters class="justify-space-around">
-        <v-col v-for="facility in filteredFacilityListForFacilityCards" :key="facility.facilityId" class="pa-2"
-          cols="12" md="6">
+        <v-col
+          v-for="facility in filteredFacilityListForFacilityCards"
+          :key="facility.facilityId"
+          class="pa-2"
+          cols="12"
+          md="6"
+        >
           <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
             <v-card-text>
               <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
@@ -241,8 +299,13 @@
               </p>
             </v-card-text>
             <v-row v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
-              <v-btn class="blueButton" theme="dark" width="80%" align="center"
-                @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)">
+              <v-btn
+                class="blueButton"
+                theme="dark"
+                width="80%"
+                align="center"
+                @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
+              >
                 Update your PCF
               </v-btn>
             </v-row>
@@ -266,9 +329,9 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -277,6 +340,7 @@ import {
   pcfUrl,
   pcfUrlGuid,
   CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   ORGANIZATION_GOOD_STANDING_STATUSES,
 } from '@/utils/constants.js';
@@ -335,7 +399,7 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationMap',
-      'applicationId'
+      'applicationId',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
@@ -533,8 +597,11 @@ export default {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
     showNotGoodStandingWarning() {
-      return this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL && !this.isGoodStandingObject.bypassGoodstandingCheck;
-    }
+      return (
+        this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
+        !this.isGoodStandingObject.bypassGoodstandingCheck
+      );
+    },
   },
   async created() {
     this.CCOF_STATUS_NEW = 'NEW';
