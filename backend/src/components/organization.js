@@ -102,7 +102,7 @@ async function updateOrganization(req, res) {
   }
 }
 
-async function getOrganizationInGoodStandingCheck(req, res) {
+async function getOrganizationGoodStandingCheck(req, res) {
   try {
     let response = await getOperation(`accounts(${req.params.organizationId})?$select=ccof_bypass_goodstanding_check,ccof_good_standing_status`);
     return res.status(HttpStatus.OK).json(mapOrganizationObjectForFront(response));
@@ -115,5 +115,5 @@ module.exports = {
   getOrganization,
   createOrganization,
   updateOrganization,
-  getOrganizationInGoodStandingCheck,
+  getOrganizationGoodStandingCheck,
 };
