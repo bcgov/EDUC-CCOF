@@ -10,7 +10,7 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
-    <AppAlertBanner type="warning" class="mb-4 w-100" v-if="!this.isGoodStanding">
+    <AppAlertBanner type="warning" class="mb-4 w-100" v-if="this.showNotGoodStandingWarning">
       A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement
       to receive funding. Contact BC Registries immediately to resolve.
     </AppAlertBanner>
@@ -278,6 +278,7 @@ import {
   pcfUrlGuid,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_PROVIDER_TYPES,
+  ORGANIZATION_GOOD_STANDING_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
@@ -310,8 +311,8 @@ export default {
       ],
       CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
-      isGoodStanding: true,
       selectedProgramYear: undefined,
+      isGoodStandingObject: undefined,
     };
   },
   computed: {
@@ -531,6 +532,9 @@ export default {
     isCCOFStatusNew() {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
+    showNotGoodStandingWarning() {
+      return this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL && this.isGoodStandingObject.bypassGoodstandingCheck !== 'Yes';
+    }
   },
   async created() {
     this.CCOF_STATUS_NEW = 'NEW';
@@ -547,7 +551,7 @@ export default {
 
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
-    this.isGoodStanding = await OrganizationService.getOrganizationGoodStanding(this.organizationId);
+    this.isGoodStandingObject = await OrganizationService.getOrganizationGoodStanding(this.organizationId);
     this.refreshNavBarList();
     await this.getChangeRequestList();
     this.isLoadingComplete = true;
