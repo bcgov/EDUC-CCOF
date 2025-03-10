@@ -533,7 +533,7 @@ export default {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
     showNotGoodStandingWarning() {
-      return this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL && this.isGoodStandingObject.bypassGoodstandingCheck !== 'Yes';
+      return this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL && !this.isGoodStandingObject.bypassGoodstandingCheck;
     }
   },
   async created() {
