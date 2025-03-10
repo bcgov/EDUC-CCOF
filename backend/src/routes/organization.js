@@ -2,10 +2,9 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
-const isValidBackendToken= auth.isValidBackendToken();
+const isValidBackendToken = auth.isValidBackendToken();
 const { getOrganization, createOrganization, updateOrganization, getOrganizationInGoodStanding } = require('../components/organization');
-const { param, validationResult, checkSchema} = require('express-validator');
-
+const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
   // legalName: { in: ['body'],
@@ -52,17 +51,21 @@ module.exports = router;
 /**
  * Get Organization details
  */
-router.get('/:organizationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getOrganization(req, res);
-});
+router.get(
+  '/:organizationId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getOrganization(req, res);
+  },
+);
 
 /**
  * Create a new Organization
  */
-router.post('/', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => { 
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return createOrganization(req, res);
 });
@@ -70,18 +73,21 @@ router.post('/', passport.authenticate('jwt', {session: false}),isValidBackendTo
 /**
  * Update an existing Organization
  */
-router.put('/:organizationId', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(),
-  checkSchema(organizationSchema)], (req, res) => {
-  validationResult(req).throw();
-  return updateOrganization(req, res);
-});
+router.put(
+  '/:organizationId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(), checkSchema(organizationSchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateOrganization(req, res);
+  },
+);
 
 /**
  * Submit a complete application
  */
-router.post('/:organizationId/submit', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => { 
+router.post('/:organizationId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return createOrganization(req, res);
 });
@@ -89,8 +95,7 @@ router.post('/:organizationId/submit', passport.authenticate('jwt', {session: fa
 /**
  * Renew an application for an organization.
  */
-router.post('/:organizationId/renew', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  checkSchema(organizationSchema)], (req, res) => { 
+router.post('/:organizationId/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return createOrganization(req, res);
 });
@@ -98,10 +103,15 @@ router.post('/:organizationId/renew', passport.authenticate('jwt', {session: fal
 /**
  * Get inGoodStanding for an organization.
  */
-router.get('/:organizationId/goodStandingCheck', passport.authenticate('jwt', {session: false}),isValidBackendToken, [
-  param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getOrganizationInGoodStanding(req, res);
-});
+router.get(
+  '/:organizationId/goodStandingCheck',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getOrganizationInGoodStanding(req, res);
+  },
+);
 
 module.exports = router;
