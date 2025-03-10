@@ -115,5 +115,5 @@ module.exports = {
   getOrganization,
   createOrganization,
   updateOrganization,
-  getOrganizationInGoodStanding: getOrganizationInGoodStandingCheck,
+  getOrganizationInGoodStandingCheck,
 };
