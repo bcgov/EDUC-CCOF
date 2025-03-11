@@ -75,7 +75,11 @@ export const PAGE_TITLES = Object.freeze({
 export const ROUTE_NAMES = Object.freeze({
   GROUP_ORGANIZATION_INFORMATION: 'Group Organization Information',
   FAMILY_ORGANIZATION_INFORMATION: 'Family Organization Information',
+  GROUP_FACILITY_INFORMATION_GUID: 'Facility Information Guid',
+  GROUP_FUND_AMOUNT_GUID: 'Funding Amount Guid',
   GROUP_ORGANIZATION_INFORMATION_LEGACY_V1: 'Group Organization Information - Legacy V1',
+  GROUP_FACILITY_INFORMATION_GUID_LEGACY_V1: 'Facility Information Guid - Legacy V1',
+  GROUP_FUND_AMOUNT_GUID_LEGACY_V1: 'Funding Amount Guid - Legacy V1',
   FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1: 'Family Organization Information - Legacy V1',
 });
 

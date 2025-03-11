@@ -36,6 +36,8 @@ import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import FamilyOrganizationInformationLegacyV1 from '@/components/legacyApplication/v1/family/FamilyOrganization.vue';
+import GroupFacilityInformationLegacyV1 from '@/components/legacyApplication/v1/group/FacilityInformation.vue';
+import GroupFundAmountLegacyV1 from '@/components/legacyApplication/v1/group/FundAmount.vue';
 import GroupOrganizationInformationLegacyV1 from '@/components/legacyApplication/v1/group/OrganizationInformation.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
@@ -147,33 +149,9 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrl(PATHS.CCOF_GROUP_ORG_LEGACY_V1),
-      name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION_LEGACY_V1,
-      component: GroupOrganizationInformationLegacyV1,
-      meta: {
-        pageTitle: 'Organization Information',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
-      },
-    },
-    {
       path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
       name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION,
       component: FamilyOrganization,
-      meta: {
-        pageTitle: 'Organization Information',
-        requiresAuth: true,
-        showNavBar: true,
-        navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
-      },
-    },
-    {
-      path: pcfUrl(PATHS.CCOF_FAMILY_ORG_LEGACY_V1),
-      name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1,
-      component: FamilyOrganizationInformationLegacyV1,
       meta: {
         pageTitle: 'Organization Information',
         requiresAuth: true,
@@ -244,7 +222,7 @@ const router = createRouter({
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY),
-      name: 'Facility Information Guid',
+      name: ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID,
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
@@ -268,7 +246,7 @@ const router = createRouter({
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING),
-      name: 'Funding Amount Guid',
+      name: ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID,
       component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',
@@ -474,6 +452,54 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrl(PATHS.CCOF_GROUP_ORG_LEGACY_V1),
+      name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION_LEGACY_V1,
+      component: GroupOrganizationInformationLegacyV1,
+      meta: {
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY_LEGACY_V1),
+      name: ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID_LEGACY_V1,
+      component: GroupFacilityInformationLegacyV1,
+      meta: {
+        pageTitle: PAGE_TITLES.FACILITY_INFO,
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING_LEGACY_V1),
+      name: ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID_LEGACY_V1,
+      component: GroupFundAmountLegacyV1,
+      meta: {
+        pageTitle: 'Information to Determine Funding amounts',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrl(PATHS.CCOF_FAMILY_ORG_LEGACY_V1),
+      name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1,
+      component: FamilyOrganizationInformationLegacyV1,
+      meta: {
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: Subtitle_Banners.APPLICATION,
       },
     },

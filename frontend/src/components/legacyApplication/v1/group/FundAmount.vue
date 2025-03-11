@@ -642,12 +642,12 @@
 <script>
 import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 
-import fundMixing from '@/mixins/fundMixing.js';
+import fundMixin from '@/mixins/fundMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 
 export default {
   components: { AppTimeInput },
-  mixins: [fundMixing, globalMixin],
+  mixins: [fundMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
     next();

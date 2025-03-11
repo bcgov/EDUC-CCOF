@@ -9,6 +9,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isNullOrBlank } from '@/utils/common.js';
 import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import formatTime from '@/utils/formatTime.js';
 import rules from '@/utils/rules.js';
@@ -141,6 +142,7 @@ export default {
       this.$refs.form?.validate();
     },
     async save(isSave) {
+      if (this.isLocked) return;
       this.processing = true;
       // TODO (vietle-cgi) - review this logic once the Family application is updated.
       this.model.isCCOFComplete = this.isGroup() ? this.isFormComplete : this.model.isCCOFComplete;
@@ -221,6 +223,85 @@ export default {
       this.model.multiAgeCare4OrLess = null;
       this.model.multiAgeCare4more = null;
     },
+
+    /*
+      CCFRI-4682 - Legacy code to maintain compatibility with the old application layout.
+    */
+    groupValueRuleMaxGroupChildCareUnder36() {
+      return this.groupValueRule(
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxGroupChildCare36() {
+      return this.groupValueRule(
+        'maxGroupChildCare36',
+        'maxGroupChildCareUnder36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxPreschool() {
+      return this.groupValueRule(
+        'maxPreschool',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxGroupChildCareSchool() {
+      return this.groupValueRule(
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxGroupChildCareMultiAge() {
+      return this.groupValueRule(
+        'maxGroupChildCareMultiAge',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+      );
+    },
+    groupValueRule(forFieldName, otherFieldNAme1, otherFieldNAme2, otherFieldNAme3, otherFieldNAme4) {
+      if (!isNullOrBlank(this.model[`${forFieldName}`])) {
+        if (this.model[`${forFieldName}`] > 0) {
+          return true;
+        } else if (
+          !isNullOrBlank(this.model[`${otherFieldNAme1}`]) &&
+          !isNullOrBlank(this.model[`${otherFieldNAme2}`]) &&
+          !isNullOrBlank(this.model[`${otherFieldNAme3}`]) &&
+          !isNullOrBlank(this.model[`${otherFieldNAme4}`])
+        ) {
+          const sum =
+            (this.model[`${otherFieldNAme1}`] || 0) +
+            (this.model[`${otherFieldNAme2}`] || 0) +
+            (this.model[`${otherFieldNAme3}`] || 0) +
+            (this.model[`${otherFieldNAme4}`] || 0);
+          if (sum > 0) {
+            return true;
+          } else {
+            return 'At least one Licence Type should have a maximum capacity above zero.';
+          }
+        } else {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    },
+    /*
+      CCFRI-4682 - END OF LEGACY CODE
+    */
   },
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

@@ -31,7 +31,12 @@ export default {
       'isCCOFUnlocked',
       'changeRequestStatus',
     ]),
-    ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
+    ...mapState(useApplicationStore, [
+      'applicationStatus',
+      'unlockBaseFunding',
+      'programYearId',
+      'showLegacyApplicationV1',
+    ]),
     ...mapState(useOrganizationStore, ['organizationModel', 'organizationId', 'organizationProviderType']),
     isLocked() {
       if (isChangeRequest(this)) {
@@ -52,6 +57,14 @@ export default {
     },
     isGroup() {
       return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
+    baseFundingId() {
+      return this.isChangeRequest
+        ? this.changeRequestMap
+            ?.get(this.changeRequestId)
+            ?.changeActions?.find((ca) => ca.changeActionId === this.changeActionId)
+            ?.newFacilities.find((fac) => fac.facilityId === this.facilityId).baseFunding?.ccofBaseFundingId
+        : this.getNavByFacilityId(this.facilityId)?.ccofBaseFundingId;
     },
   },
   async beforeRouteLeave(_to, _from, next) {
@@ -102,7 +115,7 @@ export default {
       'addFacilityToStore',
     ]),
     ...mapActions(useOrganizationStore, ['loadOrganization']),
-    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
+    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh', 'getNavByFacilityId']),
     resetFacilityAddress() {
       if (this.loading) return;
       this.model.isFacilityAddressEnteredManually = null;
@@ -163,33 +176,32 @@ export default {
         await this.save(false);
       }
 
-      let baseFundingId;
-      if (this.isChangeRequest) {
-        baseFundingId = this.changeRequestMap
-          ?.get(this.changeRequestId)
-          ?.changeActions?.find((ca) => ca.changeActionId == this.changeActionId)
-          ?.newFacilities.find((fac) => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
-      } else {
-        const navBarStore = useNavBarStore();
-        baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
+      if (!this.baseFundingId) {
+        console.error('Unable to find baseFundingId');
+        return;
       }
 
-      if (baseFundingId) {
-        if (this.isChangeRequest) {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));
-        } else {
-          this.$router.push(
-            pcfUrlGuid(
-              this.isGroup ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
-              this.programYearId,
-              baseFundingId,
-            ),
-          );
-        }
+      if (this.isChangeRequest) {
+        this.$router.push(
+          changeUrlGuid(
+            this.showLegacyApplicationV1 ? PATHS.CCOF_GROUP_FUNDING_LEGACY_V1 : PATHS.CCOF_GROUP_FUNDING,
+            this.changeRequestId,
+            this.baseFundingId,
+          ),
+        );
+      } else if (this.isGroup) {
+        this.$router.push(
+          pcfUrlGuid(
+            this.showLegacyApplicationV1 ? PATHS.CCOF_GROUP_FUNDING_LEGACY_V1 : PATHS.CCOF_GROUP_FUNDING,
+            this.programYearId,
+            this.baseFundingId,
+          ),
+        );
       } else {
-        console.log('error, should never get here');
+        this.$router.push(pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.baseFundingId));
       }
     },
+
     validateForm() {
       this.$refs.form?.validate();
     },
