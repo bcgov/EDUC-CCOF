@@ -375,7 +375,7 @@ export default {
       CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
       selectedProgramYear: undefined,
-      isGoodStandingObject: undefined,
+      organizationGoodStandingCheckObject: undefined,
     };
   },
   computed: {
@@ -597,8 +597,8 @@ export default {
     },
     showNotGoodStandingWarning() {
       return (
-        this.isGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.isGoodStandingObject.bypassGoodstandingCheck
+        this.organizationGoodStandingObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
+        !this.organizationGoodStandingCheckObject.bypassGoodstandingCheck
       );
     },
   },
@@ -617,7 +617,9 @@ export default {
 
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
-    this.isGoodStandingObject = await OrganizationService.getOrganizationGoodStanding(this.organizationId);
+    this.organizationGoodStandingCheckObject = await OrganizationService.getOrganizationGoodStandingCheck(
+      this.organizationId,
+    );
     this.refreshNavBarList();
     await this.getChangeRequestList();
     this.isLoadingComplete = true;
