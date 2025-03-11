@@ -35,6 +35,8 @@ import GroupOrganizationInformation from '@/components/ccofApplication/group/Org
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import FamilyOrganizationInformationLegacyV1 from '@/components/legacyApplication/v1/family/FamilyOrganization.vue';
+import GroupOrganizationInformationLegacyV1 from '@/components/legacyApplication/v1/group/OrganizationInformation.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -46,19 +48,19 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { formatFiscalYearName } from '@/utils/format';
-
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
   PAGE_TITLES,
   PATHS,
+  ROUTE_NAMES,
   changeUrl,
   changeUrlGuid,
   pcfUrl,
   pcfUrlGuid,
-} from './utils/constants.js';
-import { Subtitle_Banners } from './utils/constants/SubTitleBanners.js';
+} from '@/utils/constants.js';
+import { Subtitle_Banners } from '@/utils/constants/SubTitleBanners.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -134,7 +136,7 @@ const router = createRouter({
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_ORG),
-      name: 'Group Organization Information',
+      name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION,
       component: GroupOrganizationInformation,
       meta: {
         pageTitle: 'Organization Information',
@@ -145,8 +147,20 @@ const router = createRouter({
       },
     },
     {
+      path: pcfUrl(PATHS.CCOF_GROUP_ORG_LEGACY_V1),
+      name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION_LEGACY_V1,
+      component: GroupOrganizationInformationLegacyV1,
+      meta: {
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
+    {
       path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
-      name: 'Family Organization Information',
+      name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION,
       component: FamilyOrganization,
       meta: {
         pageTitle: 'Organization Information',
@@ -156,7 +170,18 @@ const router = createRouter({
         subtitleBanner: Subtitle_Banners.APPLICATION,
       },
     },
-
+    {
+      path: pcfUrl(PATHS.CCOF_FAMILY_ORG_LEGACY_V1),
+      name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1,
+      component: FamilyOrganizationInformationLegacyV1,
+      meta: {
+        pageTitle: 'Organization Information',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: Subtitle_Banners.APPLICATION,
+      },
+    },
     {
       path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility',
@@ -300,17 +325,6 @@ const router = createRouter({
         subtitleBanner: Subtitle_Banners.APPLICATION,
       },
     },
-    // {
-    //   path: '/ccfri-application' + '/urlGuid',
-    //   name: 'ccfri-application',
-    //   component: currentFees,
-    //   meta: {
-    //     pageTitle: 'Current Fees',
-    //     requiresAuth: true,
-    //     showNavBar: true,
-    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
-    //   }
-    // },
     {
       path: pcfUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'ECEWE Eligibility',

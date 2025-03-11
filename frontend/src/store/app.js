@@ -163,6 +163,12 @@ export const useAppStore = defineStore('app', {
         return programYear?.order;
       };
     },
+    getProgramYearOrderByName: (state) => {
+      return (name) => {
+        const programYear = state.programYearList?.list?.find((item) => item.name === name);
+        return programYear?.order;
+      };
+    },
     getChildCareCategoryNameById: (state) => {
       return (id) => {
         const childCareCategory = state.childCareCategoryList?.find((item) => item.ccof_childcare_categoryid === id);

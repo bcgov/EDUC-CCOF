@@ -120,6 +120,7 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PAGE_TITLES,
   PATHS,
+  ROUTE_NAMES,
 } from '@/utils/constants.js';
 
 let positionIndex = 0;
@@ -153,6 +154,7 @@ export default {
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
+      'showLegacyApplicationV1',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -630,15 +632,29 @@ export default {
     },
     getCCOFFamilyNavigation() {
       let items = [];
-      items.push({
-        title: 'Family Provider',
-        link: { name: 'Family Organization Information' },
-        isAccessible: true,
-        icon: this.getCheckbox(this.isOrganizationComplete),
-        isActive: 'Family Organization Information' === this.$route.name,
-        position: positionIndex++,
-        navBarId: navBarId++,
-      });
+      console.log(this.showLegacyApplicationV1);
+      if (this.showLegacyApplicationV1) {
+        items.push({
+          title: 'Family Provider',
+          link: { name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1 },
+          isAccessible: true,
+          icon: this.getCheckbox(this.isOrganizationComplete),
+          isActive: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1 === this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++,
+        });
+      } else {
+        items.push({
+          title: 'Family Provider',
+          link: { name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION },
+          isAccessible: true,
+          icon: this.getCheckbox(this.isOrganizationComplete),
+          isActive: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION === this.$route.name,
+          position: positionIndex++,
+          navBarId: navBarId++,
+        });
+      }
+
       if (this.navBarList?.length > 0) {
         items.push(
           {
@@ -939,10 +955,10 @@ export default {
       let items = [];
       items.push({
         title: 'Organization',
-        link: { name: 'Group Organization Information' },
+        link: { name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),
-        isActive: 'Group Organization Information' === this.$route.name,
+        isActive: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++,
       });

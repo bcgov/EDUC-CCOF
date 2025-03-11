@@ -390,6 +390,7 @@ export default {
       'applicationStatus',
       'applicationMap',
       'applicationId',
+      'showLegacyApplicationV1',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
@@ -634,14 +635,21 @@ export default {
     },
     goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);
-      this.$router.push(
-        pcfUrl(
-          this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
-            ? PATHS.CCOF_GROUP_ORG
-            : PATHS.CCOF_FAMILY_ORG,
-          this.programYearId,
-        ),
-      );
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP) {
+        this.$router.push(
+          pcfUrl(
+            this.showLegacyApplicationV1 ? PATHS.CCOF_GROUP_ORG_LEGACY_V1 : PATHS.CCOF_GROUP_ORG,
+            this.programYearId,
+          ),
+        );
+      } else {
+        this.$router.push(
+          pcfUrl(
+            this.showLegacyApplicationV1 ? PATHS.CCOF_FAMILY_ORG_LEGACY_V1 : PATHS.CCOF_FAMILY_ORG,
+            this.programYearId,
+          ),
+        );
+      }
     },
     goToCCOFFunding(programYearId, facilityList) {
       if (facilityList?.length > 0) {
