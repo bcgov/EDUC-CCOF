@@ -242,6 +242,19 @@
         </v-col>
       </v-row>
       <v-row no-gutters justify="space-between">
+        <v-col class="col-12 col-md-6 ml-4 mb-4">
+          <v-row>
+            <h3 class="mr-4">Select fiscal year:</h3>
+            <FiscalYearSlider @select-program-year="selectProgramYear" />
+          </v-row>
+        </v-col>
+        <v-col class="col-12 col-md-6 ml-4 mb-4">
+          <v-row>
+            <v-btn theme="dark" class="blueButton mt-4"> Organization Closures </v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+      <v-row no-gutters justify="space-between">
         <v-col class="col-12 col-lg-7 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
@@ -256,12 +269,13 @@
             :bind="input"
           />
         </v-col>
-        <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
+        <!-- <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
           <v-row class="justify-right align-center mr-4">
             <h3 class="mr-4">Select fiscal year:</h3>
             <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
-        </v-col>
+        </v-col> -->
+        <v-col></v-col>
       </v-row>
       <v-row no-gutters class="justify-space-around">
         <v-col
