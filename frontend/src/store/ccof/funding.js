@@ -1,9 +1,9 @@
 import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
-import ApiService from '../../common/apiService.js';
-import { ApiRoutes } from '../../utils/constants.js';
-import { checkSession } from '../../utils/session.js';
+import ApiService from '@/common/apiService.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useFundingStore = defineStore('funding', {
   state: () => ({
@@ -43,33 +43,14 @@ export const useFundingStore = defineStore('funding', {
     },
     async saveFunding() {
       checkSession();
-
       if (isEqual(this.fundingModel, this.loadedModel)) {
         return;
       }
-
-      let payload = { ...this.fundingModel };
       this.setLoadedModel(this.fundingModel);
-
-      let deleteFields = [];
-      if (payload.hasClosedMonth !== 'yes') {
-        for (let i = 1; i <= 12; i++) {
-          deleteFields.push('closedIn' + i);
-        }
-      }
-
-      if (payload.isSchoolProperty !== 'yes') {
-        deleteFields.push('beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten');
-        payload.isSchoolProperty = 0;
-      } else {
-        payload.isSchoolProperty = 1;
-        ['beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten'].forEach((item) => {
-          payload[item] = payload[item] ? 1 : 0;
-        });
-      }
-
-      deleteFields.forEach((field) => delete payload[field]);
-      let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + this.ccofBaseFundingId, payload);
+      const response = await ApiService.apiAxios.put(
+        `${ApiRoutes.GROUP_FUND_AMOUNT}/${this.ccofBaseFundingId}`,
+        this.fundingModel,
+      );
       return response;
     },
     async loadFunding(fundingId) {
@@ -81,8 +62,7 @@ export const useFundingStore = defineStore('funding', {
       } else {
         checkSession();
         try {
-          let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
-          let model = response.data;
+          model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
           if (model.familyLicenseType) {
             model.familyLicenseType = '' + model.familyLicenseType;
           }

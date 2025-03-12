@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-form id="printable-form" ref="form" v-model="isValidForm">
+    <v-form id="printable-form" ref="form">
       <div class="text-center">
         <div class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
@@ -51,15 +51,13 @@
           <p>You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
           <br />
           <br />
-
-          <!-- <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
 
       <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-8 mt-8">
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-12 my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -77,11 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
-            <v-row v-if="isMainLoading">
+            <v-row v-if="isProcessing">
               <v-col>
                 <v-skeleton-loader
-                  v-if="isMainLoading"
-                  :loading="isMainLoading"
+                  :loading="isProcessing"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -202,8 +199,8 @@
                     Benefit;
                   </li>
                   <li>
-                    The organization must be in good standing with BC Corporate Registry (if a nonprofit society or a
-                    registered company); and
+                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
+                    a registered company); and
                   </li>
                   <li>
                     The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
@@ -213,10 +210,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
-                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
-                  all or part of any amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
+                  punishment imposed, the court may order you to pay to the government all or part of any amount you
+                  received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
               <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
@@ -236,9 +233,9 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px">
+                <ol class="declarationBList" type="a">
                   <li>
-                    I am the authorized representative and signing authority of the Provider as named in the CCOF
+                    I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);
                   </li>
                   <li>
@@ -262,19 +259,15 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="11">
-                    <span>i.</span>
-                    permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
-                    (ECEs); and
-                  </v-col>
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
+                    Educators (ECEs); and</v-col
+                  >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="11">
-                    <span>ii.</span>
-                    able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
                 <p style="padding-top: 10px">
@@ -332,7 +325,6 @@
           </v-row>
         </v-card>
       </v-row>
-
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"
@@ -342,32 +334,24 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog v-model="dialog" persistent max-width="525px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Submission Complete </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  Your submission has been received. Please refer to your dashboard for updates on the progress of your
-                  application. We will contact you if more information is required.
-                </p>
-                <p>
-                  <router-link :to="landingPage"> Return to your dashboard </router-link>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="dialog"
+        persistent
+        max-width="525px"
+        title="Submission Complete"
+        :loading="false"
+        @close="dialog = false"
+      >
+        <template #content>
+          <p>
+            Your submission has been received. Please refer to your dashboard for updates on the progress of your
+            application. We will contact you if more information is required.
+          </p>
+          <p>
+            <router-link :to="landingPage"> Return to your dashboard </router-link>
+          </p>
+        </template>
+      </AppDialog>
     </v-form>
   </v-container>
 </template>
@@ -383,8 +367,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import DocumentService from '@/services/documentService';
-import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
-import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 import {
   AFS_STATUSES,
@@ -411,8 +394,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 
 export default {
   components: {
-    FacilityInformationSummaryDialog,
-    FacilityInformationSummaryCard,
+    AppDialog,
     OrganizationSummary,
     UploadedDocumentsSummary,
     NMFSummary,
@@ -430,7 +412,6 @@ export default {
   data() {
     return {
       model: {},
-      isValidForm: false,
       isLoading: false,
       isProcessing: false,
       dialog: false,
@@ -456,16 +437,9 @@ export default {
       'isChangeRequest',
     ]),
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['canSubmit', 'navBarList', 'changeRequestId']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, [
-      'declarationModel',
-      'summaryModel',
-      'facilities',
-      'isSummaryLoading',
-      'isMainLoading',
-      'isLoadingComplete',
-    ]),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'formattedProgramYear',
@@ -527,9 +501,6 @@ export default {
       ) {
         //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
-      } else if (!this.canSubmit) {
-        //checkboxes
-        return true;
       } else if (
         this.isChangeRequest &&
         !(this.model.externalStatus == 'INCOMPLETE' || this.model.externalStatus == 'ACTION_REQUIRED')
@@ -678,15 +649,7 @@ export default {
       this.showFacilityInformationSummaryDialog = !this.showFacilityInformationSummaryDialog;
     },
     isPageComplete() {
-      if (
-        (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) ||
-        (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)
-      ) {
-        this.isValidForm = true;
-      } else {
-        this.isValidForm = false;
-      }
-      return this.isValidForm;
+      return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
     },
 
     isSomeChangeRequestActive() {
@@ -981,7 +944,7 @@ li {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

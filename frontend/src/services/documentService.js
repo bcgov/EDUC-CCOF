@@ -38,8 +38,6 @@ export default {
   async updateDocument(annotationId, payload) {
     try {
       if (isEmpty(annotationId) || isEmpty(payload)) return;
-      console.log('updateDocument');
-      console.log(annotationId);
       await ApiService.apiAxios.patch(`${ApiRoutes.DOCUMENT}/${annotationId}`, payload);
     } catch (error) {
       console.log(`Failed to update document - ${error}`);

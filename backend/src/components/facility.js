@@ -1,14 +1,5 @@
 'use strict';
-const {
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  minify,
-  getLabelFromValue,
-  deleteOperationWithObjectId,
-  getApplicationDocument,
-  getHttpHeader
-} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId, getApplicationDocument, getHttpHeader } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
@@ -39,9 +30,7 @@ function buildNewFacilityPayload(req) {
 function mapFacilityObjectForBack(data) {
   const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
 
-  if (facilityForBack.ccof_facilitystartdate) {
-    facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
-  }
+  facilityForBack.ccof_facilitystartdate = facilityForBack.ccof_facilitystartdate ? `${facilityForBack.ccof_facilitystartdate}-01-01` : null;
   if (facilityForBack.ccof_licensestartdate) {
     facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
   }
@@ -81,9 +70,6 @@ function mapFacilityObjectForFront(data) {
     console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
   }
 
-  console.log('RECEIVED', data);
-  console.log('CONVERTED', obj);
-
   return obj;
 }
 
@@ -92,7 +78,7 @@ function mapCCFRIObjectForFront(data) {
 }
 
 async function getFacilityByFacilityId(facilityId) {
-  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus`;
+  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority`;
   const facility = await getOperation(operation);
 
   if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
@@ -104,7 +90,7 @@ async function getFacilityByFacilityId(facilityId) {
 
 async function getFacility(req, res) {
   try {
-    let facility = await getFacilityByFacilityId(req.params.facilityId);
+    const facility = await getFacilityByFacilityId(req.params.facilityId);
 
     if (facility === null) {
       return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not facility.' });
@@ -144,14 +130,14 @@ async function getLicenseCategories(req, res) {
 
 function getFeeFrequency(feeCode) {
   switch (feeCode) {
-  case 100000000:
-    return 'Monthly';
-  case 100000001:
-    return 'Weekly';
-  case 100000002:
-    return 'Daily';
-  default:
-    return '';
+    case 100000000:
+      return 'Monthly';
+    case 100000001:
+      return 'Weekly';
+    case 100000002:
+      return 'Daily';
+    default:
+      return '';
   }
 }
 
@@ -436,5 +422,5 @@ module.exports = {
   returnCCFRIClosureDates,
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
-  getFacilityByFacilityId
+  getFacilityByFacilityId,
 };

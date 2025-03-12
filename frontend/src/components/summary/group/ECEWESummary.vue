@@ -1,16 +1,11 @@
 <template>
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <h4 style="color: #003466">
-        Early Childhood Educator-Wage Enhancement (ECE-WE) -
-        {{ facilityInformationExists ? 'Facility Information' : 'Organization Information' }}
-
-        <template v-if="(!isValidForm || showCSSEAWarning) && !isProcessing">
-          <v-icon color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span style="color: #ff5252">Your form is missing required information. Click here to view.</span>
-        </template>
-        <v-icon v-else-if="isValidForm && !isProcessing" color="green" size="large"> mdi-check-circle-outline </v-icon>
-      </h4>
+      <SummaryExpansionPanelTitle
+        :title="expansionPanelTitle"
+        :loading="isProcessing"
+        :is-complete="isValidForm && !showCSSEAWarning"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
@@ -34,9 +29,9 @@
                 />
               </v-col>
               <v-col
+                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
                 cols="12"
                 md="6"
-                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
               >
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field
@@ -83,7 +78,7 @@
                     <span class="summary-label pt-3">
                       Are you a public sector employer, as defined in the Public Sector Employers Act?
                     </span>
-                    <span v-if="showCSSEAWarning" style="color: red" class="ml-5">
+                    <span v-if="showCSSEAWarning" class="ml-5 text-error">
                       <u>Invalid Response</u>
                     </span>
                     <v-text-field
@@ -318,9 +313,7 @@
           </div>
           <div v-if="!isValidForm || showCSSEAWarning">
             <router-link :to="routingPath">
-              <span style="color: red">
-                <u>To add this information, click here. This will bring you to a different page.</u>
-              </span>
+              <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
             </router-link>
           </div>
         </v-container>
@@ -330,6 +323,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
@@ -352,6 +346,7 @@ import {
 import rules from '@/utils/rules.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     ecewe: {
       type: Object,
@@ -441,6 +436,10 @@ export default {
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
+    },
+    expansionPanelTitle() {
+      const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
+      return `Early Childhood Educator-Wage Enhancement (ECE-WE) - ${title}`;
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
@@ -574,7 +573,7 @@ export default {
   font-weight: bold;
 }
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 </style>

@@ -19,10 +19,9 @@ const OrganizationMappings = [
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
-  { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
+  { back: 'ccof_is_org_mailing_address_entered_manually', front: 'isOrgMailingAddressEnteredManually' },
+  { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
 const FacilityMappings = [
@@ -42,9 +41,10 @@ const FacilityMappings = [
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
-
-  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+  { back: 'ccof_is_facility_address_entered_manually', front: 'isFacilityAddressEnteredManually' },
+  { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
+  { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
+  { back: 'ccof_healthauthority', front: 'healthAuthority' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -60,6 +60,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
+  { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
 ];
 
 const RFIApplicationMappings = [
@@ -200,10 +201,16 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo' },
   { back: 'ccof_maximumnumberofchildcarespacesyouoffer', front: 'maxSpaces' },
+
+  { back: 'ccof_has_under36months', front: 'hasUnder36Months' },
+  { back: 'ccof_has_30monthtoschoolage', front: 'has30MonthToSchoolAge' },
+  { back: 'ccof_has_schoolagecareonschoolground', front: 'hasSchoolAgeCareOnSchoolGrounds' },
+  { back: 'ccof_has_preschool', front: 'hasPreschool' },
+  { back: 'ccof_has_multiagechildcare', front: 'hasMultiAge' },
+
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
-
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
@@ -221,6 +228,11 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maximumnumberofspacesyouofferextendedhours', front: 'maxCapacityExtended' },
   { back: 'ccof_maxnoofdaysperweekextendedhoursoffered', front: 'maxDaysPerWeekExtended' },
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
+
+  { back: 'ccof_has_under36months_extendedcc', front: 'hasUnder36MonthsExtendedCC' },
+  { back: 'ccof_has_30monthtoschoolage_extendedcc', front: 'has30MonthToSchoolAgeExtendedCC' },
+  { back: 'ccof_has_schoolagecareonschoolground_extendedc', front: 'hasSchoolAgeCareOnSchoolGroundsExtendedCC' },
+  { back: 'ccof_has_multiagechildcare_extendedcc', front: 'hasMultiAgeExtendedCC' },
 
   { back: 'ccof_under36months4hoursoflessextendedcc', front: 'extendedChildCareUnder36Months4OrLess' },
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
@@ -460,12 +472,6 @@ const CCFRIApprovableFeeSchedulesMappings = [
   { back: 'ccof_mar', front: 'approvedFeeMar' },
 ];
 
-//DONT USE THIS below for most change rec things- there is a seperate file for change request mappings
-const ChangeRequestMappings = [
-  { back: 'ccof_change_requestid', front: 'changeRequestId' }, // null,
-  //{ back: '', front: ''}, // null,
-];
-
 const PdfDocumentMappings = [
   { back: 'annotationid', front: 'annotationId' },
   { back: 'filename', front: 'fileName' },
@@ -529,7 +535,6 @@ module.exports = {
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,
-  ChangeRequestMappings,
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
   fundingAgreementMappings,

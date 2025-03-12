@@ -54,6 +54,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CANADA_POST: baseRoot + '/canadaPost',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -67,6 +68,8 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
   MTFI: 'Midterm Parent Fee Increase',
+  FACILITY_INFO: 'Facility Information',
+  LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -93,7 +96,6 @@ export const PATHS = {
     MESSAGES: '/messages',
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
-    CHANGE_INFO: '/change/information',
     SUBMISSION_HISTORY: '/submission-history',
   },
   PREFIX: {
@@ -139,6 +141,7 @@ export const PATHS = {
   MTFI_GROUP_SELECT_FACILITY: '/mtfi-select-facility',
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
+  MTFI_AFS: '/mtfi-afs',
 };
 
 //Some helper classes to build the URL consistently
@@ -381,3 +384,29 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xls',
   '.xlsx',
 ]);
+
+export const BCSSA_REGION_LINKS = Object.freeze({
+  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
+  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
+});
+
+export const ERROR_MESSAGES = Object.freeze({
+  REQUIRED: 'This field is required',
+  LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
+  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+});
+
+export const ORGANIZATION_TYPES = Object.freeze({
+  NON_PROFIT_SOCIETY: 100000000,
+  PUBLIC_INSTITUTION: 100000001,
+  REGISTERED_COMPANY: 100000002,
+  LOCAL_GOVERNMENT: 100000003,
+  FIRST_NATIONS_GOVERNMENT: 100000004,
+  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
+});
+
+export const TOOLTIP_TYPES = Object.freeze({
+  INFO: 'Information',
+  ERROR: 'Error',
+  WARNING: 'Warning',
+});

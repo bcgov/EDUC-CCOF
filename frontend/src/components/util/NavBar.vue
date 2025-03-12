@@ -110,6 +110,7 @@ import { useFundingStore } from '@/store/ccof/funding.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import {
   AFS_STATUSES,
@@ -117,9 +118,9 @@ import {
   NAV_BAR_GROUPS,
   CHANGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
+  PAGE_TITLES,
   PATHS,
 } from '@/utils/constants.js';
-import StaticConfig from '@/common/staticConfig.js';
 
 let positionIndex = 0;
 let navBarId = 0;
@@ -141,6 +142,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useAppStore, ['pageTitle', 'programYearList']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
@@ -150,6 +152,7 @@ export default {
       'programYearId',
       'isLicenseUploadComplete',
       'isRenewal',
+      'applicationId',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -228,7 +231,9 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['getApplicationUploadedDocuments']),
     ...mapActions(useCcfriAppStore, ['getApprovableFeeSchedulesForFacilities']),
-    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems', 'setCanSubmit']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarItems']),
+    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
+
     async loadData() {
       try {
         if (this.isApplication) {
@@ -237,6 +242,10 @@ export default {
             this.getApplicationUploadedDocuments(),
           ]);
           this.checkApprovableFeeSchedulesComplete();
+        } else if (this.changeType === 'mtfi') {
+          await this.getApprovableFeeSchedulesForFacilities(this.mtfiFacilities);
+          await this.getDocuments(this.applicationId);
+          this.checkMTFIApprovableFeeSchedulesComplete();
         }
       } catch (error) {
         console.log(error);
@@ -286,16 +295,6 @@ export default {
       });
     },
     addSummaryAndDeclarationToNavBar() {
-      let declarationAccessible = this.areChildrenComplete(this.items);
-      if (
-        StaticConfig.DECB_VALIDATION_BYPASS &&
-        this.isDeclarationB() &&
-        this.unlockDeclaration &&
-        !this.isChangeRequest
-      ) {
-        declarationAccessible = true;
-      }
-      this.setCanSubmit(declarationAccessible);
       let checkbox; //true will show checkmark, false will not
       let linkName;
       if (this.isChangeRequest) {
@@ -313,7 +312,7 @@ export default {
       this.items.push({
         title: 'Declaration',
         link: { name: linkName },
-        isAccessible: declarationAccessible, //set this to true to unlock the declaration
+        isAccessible: this.areChildrenComplete(this.items), //set this to true to unlock the declaration
         icon: this.getCheckbox(checkbox),
         isActive: linkName === this.$route.name,
         expanded: false,
@@ -656,7 +655,7 @@ export default {
             navBarId: navBarId++,
           },
           {
-            title: 'Funding',
+            title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
             subTitle: this.navBarList[0]?.facilityName,
             subTitle2: this.navBarList[0]?.facilityAccountNumber,
             link: { name: 'FamilyFunding GUID', params: { urlGuid: this.navBarList[0].ccofBaseFundingId } },
@@ -683,7 +682,7 @@ export default {
             navBarId: navBarId++,
           },
           {
-            title: 'Funding',
+            title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
             link: { name: 'FamilyFunding' },
             isAccessible: this.isNewFundingStarted,
             icon: this.getCheckbox(false),
@@ -715,21 +714,21 @@ export default {
     },
     addNewFacilityToCCOFNavbar() {
       return {
-        title: 'Facility',
+        title: PAGE_TITLES.FACILITY_INFO,
         id: null,
-        link: { name: this.isChangeRequest ? 'change-request-facility-information' : 'Facility Information' },
+        link: { name: this.isChangeRequest ? 'change-request-facility-information' : PAGE_TITLES.FACILITY_INFO },
         isAccessible: this.isNewFacilityStarted,
         icon: this.getCheckbox(false),
         isActive: this.isChangeRequest
           ? 'change-request-facility-information' === this.$route.name && this.$route.params.urlGuid == null
-          : 'Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
+          : PAGE_TITLES.FACILITY_INFO === this.$route.name && this.$route.params.urlGuid == null,
         position: positionIndex++,
         navBarId: navBarId++,
       };
     },
     addNewFundingToCCOFNavbar() {
       return {
-        title: 'Funding',
+        title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
         link: { name: this.isChangeRequest ? 'Change Request Funding' : 'Funding Amount' },
         isAccessible: this.isNewFundingStarted,
         icon: this.getCheckbox(false),
@@ -830,6 +829,7 @@ export default {
             position: positionIndex++,
             navBarId: navBarId++,
           });
+
           if (item.hasRfi || item.unlockRfi) {
             items.push({
               title: 'Parent Fee Increase – RFI',
@@ -845,6 +845,23 @@ export default {
               isActive:
                 'mtfi-change-request-ccfri-request-info' === this.$route.name &&
                 this.$route.params.urlGuid === item.ccfriApplicationId,
+              position: positionIndex++,
+              navBarId: navBarId++,
+            });
+          }
+          if (item.enableAfs) {
+            items.push({
+              title: 'Approvable Fee Schedule',
+              subTitle: item.facilityName,
+              subTitle2: item.facilityAccountNumber,
+              id: item.facilityId,
+              link: {
+                name: 'mtfi-afs',
+                params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
+              },
+              isAccessible: true,
+              icon: this.getCheckbox(item.isAFSComplete),
+              isActive: 'mtfi-afs' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
               position: positionIndex++,
               navBarId: navBarId++,
             });
@@ -867,7 +884,7 @@ export default {
         this.navBarList?.forEach((item) => {
           items.push(
             {
-              title: 'Facility',
+              title: PAGE_TITLES.FACILITY_INFO,
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
@@ -884,7 +901,7 @@ export default {
               navBarId: navBarId++,
             },
             {
-              title: 'Funding',
+              title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               link: {
@@ -933,7 +950,7 @@ export default {
         this.navBarList?.forEach((item) => {
           items.push(
             {
-              title: 'Facility',
+              title: PAGE_TITLES.FACILITY_INFO,
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
@@ -946,7 +963,7 @@ export default {
               navBarId: navBarId++,
             },
             {
-              title: 'Funding',
+              title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               link: { name: 'Funding Amount Guid', params: { urlGuid: item.ccofBaseFundingId } },
@@ -1065,6 +1082,7 @@ export default {
         const afs = this.approvableFeeSchedules?.find(
           (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
         );
+
         const uploadedSupportingDocuments = this.applicationUploadedDocuments?.filter(
           (document) =>
             [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
@@ -1075,6 +1093,24 @@ export default {
           [AFS_STATUSES.ACCEPT, AFS_STATUSES.DECLINE].includes(afs?.afsStatus) ||
           (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
       });
+      this.refreshNavBarList();
+    },
+    checkMTFIApprovableFeeSchedulesComplete() {
+      this.navBarList?.forEach((facility) => {
+        const afs = this.approvableFeeSchedules?.find(
+          (item) => item.ccfriApplicationId === facility?.ccfriApplicationId,
+        );
+        const uploadedSupportingDocuments = this.uploadedDocuments?.filter(
+          (document) =>
+            [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(
+              document.documentType,
+            ) && document.ccof_facility === facility.facilityId,
+        );
+        facility.isAFSComplete =
+          [AFS_STATUSES.ACCEPT].includes(afs?.afsStatus) ||
+          (afs?.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS && !isEmpty(uploadedSupportingDocuments));
+      });
+
       this.refreshNavBarList();
     },
   },

@@ -11,6 +11,8 @@ readonly SOAM_CLIENT_SECRET_IDIR=$8
 readonly SPLUNK_TOKEN=$9
 readonly REDIS_PASSWORD=${10}
 readonly D365_API_PREFIX=${11}
+readonly CANADA_POST_API_ENDPOINT=${12}
+readonly CANADA_POST_API_KEY=${13}
 readonly SOAM_KC_REALM_ID="standard"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"
@@ -111,6 +113,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="UI_PUBLIC_KEY=$UI_PUBLIC_KEY_VAL" \
   --from-literal="CLAMAV_PORT=3310" \
   --from-literal="ISSUER=EDUC_CCOF" \
+  --from-literal="CANADA_POST_API_ENDPOINT=$CANADA_POST_API_ENDPOINT" \
+  --from-literal="CANADA_POST_API_KEY=$CANADA_POST_API_KEY" \
   --dry-run=client -o yaml | oc apply -f -
 
 if [ "$ENV_VAL" != 'qa' ]; then

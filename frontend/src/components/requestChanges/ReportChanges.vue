@@ -1,29 +1,27 @@
 <template>
   <v-container>
     <div class="row pt-4 justify-center text-center">
-      <span class="text-h5">Child Care Operating Funding Program - {{ formattedProgramYear }}</span>
+      <span class="text-h5">Child Care Operating Funding Program</span>
     </div>
     <br />
-    <div class="row pt-4 justify-center">
-      <!-- <span class="text-h5">What would you like to change?</span> -->
-    </div>
+    <br />
 
     <v-form ref="isValidForm" v-model="isValidForm">
       <v-container>
-        <p class="text-h6 text-center">What changes do you want to make?</p>
+        <p class="text-h6 text-center">What changes do you want to request?</p>
         <v-row>
           <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="12" md="6" xl="4">
             <SmallCard>
               <template #content>
                 <div class="px-10">
-                  <p class="text-h6 text-center">Add a New facility to an existing organization</p>
+                  <p class="text-h6 text-center">Add a new facility to an existing organization</p>
                   <p class="px-2 text-center">
                     This will lead you through the CCOF application process. Please have your facility, CCFRI and ECE-WE
                     information ready.
                   </p>
+                  <br />
                   <p class="px-2 text-center">
-                    You need to attach an <strong>updated</strong
-                    ><i> Community Care And Assisted Living Act</i> licence.
+                    You will need to attach a Community Care and Assisted Living Act licence.
                   </p>
                 </div>
               </template>
@@ -60,10 +58,11 @@
             <SmallCard :disable="!isMtfiEnabled()">
               <template #content>
                 <div class="px-10">
-                  <p class="text-h6 text-center">Mid-Term Fee Increase</p>
+                  <p class="text-h6 text-center">Mid-Term Fee Increase (MTFI)</p>
                   <p class="px-2 text-center">
                     Request a parent fee increase for a facility after you have received approval for the CCFRI.
                   </p>
+                  <br />
                   <p class="px-2 text-center">You may need to provide details about your expenses.</p>
                 </div>
               </template>
@@ -77,7 +76,7 @@
                     :loading="processing"
                     @click="goToMTFI()"
                   >
-                    Update parent fees
+                    Request change to parent fees
                   </v-btn>
                 </v-row>
               </template>
@@ -178,38 +177,29 @@
           <p v-else class="ma-0 pa-0">View Current</p>
         </v-btn>
 
-        <v-dialog v-model="dialog" persistent max-width="525px">
-          <v-card>
-            <v-container class="pt-0">
-              <v-row>
-                <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                  <v-card-title class="text-white font-weight-bold"> Cancel a change request </v-card-title>
-                </v-col>
-                <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-              </v-row>
-              <v-row>
-                <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-              </v-row>
-              <v-row class="pa-6">
-                <p>Are you sure you want to cancel this change request?</p>
-                <p class="pt-2">
-                  [{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}] [{{
-                    cancelChangeRequestSubmissionDate
-                  }}]
-                </p>
-                <p class="pt-2">
-                  You will not be able to resume a cancelled request. They will be viewable in your change history.
-                </p>
-              </v-row>
-              <v-row class="d-flex justify-right">
-                <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false">
-                  Cancel
-                </v-btn>
-                <v-btn dark color="primary" :loading="processing" @click="cancel()"> Continue </v-btn>
-              </v-row>
-            </v-container>
-          </v-card>
-        </v-dialog>
+        <AppDialog
+          v-model="dialog"
+          persistent
+          max-width="525px"
+          :title="'Cancel a change request'"
+          @close="dialog = false"
+        >
+          <template #content>
+            <p style="margin-bottom: 16px">Are you sure you want to cancel this change request?</p>
+            <p style="margin-bottom: 16px">[{{ cancelChangeRequestType }}] [{{ cancelChangeRequestStatus }}]</p>
+            <p style="margin-bottom: 16px">
+              You will not be able to resume a cancelled request. They will be viewable in your change history.
+            </p>
+          </template>
+          <template #button>
+            <v-col cols="12" class="d-flex justify-center">
+              <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false">
+                Cancel
+              </AppButton>
+              <AppButton :primary="true" :loading="processing" @click="cancel()"> Continue </AppButton>
+            </v-col>
+          </template>
+        </AppDialog>
       </v-container>
     </v-form>
 
@@ -241,10 +231,12 @@ import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
   name: 'ReportChange',
-  components: { SmallCard, NavButton },
+  components: { SmallCard, AppButton, AppDialog, NavButton },
   mixins: [alertMixin],
   beforeRouteLeave(_to, _from, next) {
     next();

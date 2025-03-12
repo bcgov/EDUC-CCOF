@@ -13,8 +13,8 @@
                 </router-link>
                 <v-btn
                   v-if="!isLocked && navBarList.length > 1"
-                  variant="outlined"
-                  icon
+                  variant="text"
+                  :icon="'mdi-trash-can-outline'"
                   color="red"
                   @click="
                     confirmDeleteApplication(
@@ -27,7 +27,6 @@
                     )
                   "
                 >
-                  <v-icon>mdi-trash-can-outline</v-icon>
                 </v-btn>
               </li>
             </ul>
@@ -37,71 +36,71 @@
 
       <v-card class="cc-top-level-card" width="1200">
         <v-container>
-          <v-row justify="center"> Do you want to add another facility? </v-row>
+          <v-row justify="center" class="pb-4"> Do you want to add another facility? </v-row>
 
-          <v-row justify="center">
-            <v-btn
-              color="primary"
-              variant="outlined"
-              size="x-large"
-              style="margin: 2em"
-              :disabled="isLocked"
-              @click="addAnotherFacility()"
-            >
-              Yes
-            </v-btn>
-            <v-btn color="secondary" variant="outlined" size="x-large" style="margin: 2em" @click="next()"> No </v-btn>
+          <v-row justify="center" class="pb-4">
+            <v-col cols="auto" class="px-3">
+              <AppButton :primary="true" required size="large" :disabled="isLocked" @click="addAnotherFacility()">
+                Yes
+              </AppButton>
+            </v-col>
+            <v-col cols="auto" class="px-3">
+              <AppButton :primary="false" required size="large" @click="next()"> No </AppButton>
+            </v-col>
           </v-row>
         </v-container>
       </v-card>
     </v-row>
 
-    <v-row justify="space-around">
-      <v-btn color="info" variant="outlined" required size="x-large" @click="previous()"> Back </v-btn>
+    <v-row justify="space-around" class="pb-4">
+      <AppButton :primary="false" required size="x-large" @click="previous()"> Back </AppButton>
     </v-row>
 
-    <v-dialog v-model="dialog" persistent max-width="525px">
-      <v-card>
-        <v-container class="pt-0">
-          <v-row>
-            <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-              <v-card-title class="text-white"> Delete Application </v-card-title>
-            </v-col>
-            <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: left">
-              <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" style="text-align: center">
-              <v-btn dark color="secondary" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </v-btn>
-              <v-btn dark color="primary" :loading="processing" @click="deleteApplication()"> Continue </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-dialog>
+    <AppDialog
+      v-model="dialog"
+      persistent
+      max-width="525px"
+      title="Delete Application"
+      :loading="processing"
+      @close="dialog = false"
+    >
+      <template #content>
+        <v-row>
+          <v-col cols="12" style="text-align: left">
+            <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
+          </v-col>
+        </v-row>
+      </template>
+      <template #button>
+        <v-row justify="space-around">
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="false" :loading="processing" class="mr-10" @click="dialog = false"> Cancel </AppButton>
+          </v-col>
+          <v-col cols="12" md="6" class="d-flex justify-center">
+            <AppButton :primary="true" :loading="processing" @click="deleteApplication()"> Continue </AppButton>
+          </v-col>
+        </v-row>
+      </template>
+    </AppDialog>
   </v-container>
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useNavBarStore } from '../../../store/navBar.js';
-import { useApplicationStore } from '../../../store/application.js';
-import { useOrganizationStore } from '../../../store/ccof/organization.js';
-import { useFacilityStore } from '../../../store/ccof/facility.js';
-import { useReportChangesStore } from '../../../store/reportChanges.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useFacilityStore } from '@/store/ccof/facility.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '../../../utils/constants.js';
+import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
 
-import alertMixin from '../../../mixins/alertMixin.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
+  components: { AppButton, AppDialog },
   mixins: [alertMixin],
   data() {
     return {

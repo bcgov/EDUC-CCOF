@@ -97,6 +97,9 @@ export const useApplicationStore = defineStore('application', {
         app.isLicenseUploadComplete = value;
       }
     },
+    setApplicationUploadedDocuments(value) {
+      this.applicationUploadedDocuments = value;
+    },
     addApplicationsToMap(applicationList) {
       const map = new Map(this.applicationMap);
       applicationList?.forEach((el) => {

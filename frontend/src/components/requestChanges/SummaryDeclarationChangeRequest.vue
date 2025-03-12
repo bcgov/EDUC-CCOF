@@ -11,26 +11,16 @@
         {{ userInfo.organizationName }}
       </v-row>
 
-      <v-row v-if="!isSummaryComplete && !isProcessing" class="justify-center">
-        <v-card width="80%" class="my-10 justify-center" elevation="4">
-          <v-row>
-            <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
-                <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                Incomplete Form
-              </v-card-title>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col class="py-6 px-10 justify-center">
-              <div>
-                <p>You will not be able to submit your application until it is complete.</p>
-                <p>Incomplete sections are marked with a red exclamation point.</p>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
+      <v-card v-if="!isSummaryComplete && !isProcessing" class="my-8 mx-12" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          Incomplete Form
+        </v-card-title>
+        <div class="pa-4">
+          <p>You will not be able to submit your application until it is complete.</p>
+          <p>Incomplete sections are marked with a red exclamation point.</p>
+        </div>
+      </v-card>
 
       <v-row class="d-flex justify-center">
         <v-card v-if="isSomeApplicationUnlocked" width="80%" class="mx-3 my-10 justify-center">
@@ -50,8 +40,6 @@
           </p>
           <br />
           <br />
-
-          <!-- <v-btn dark class="blueButton mb-10" @click="goToChangeRequestHistory()" :loading="processing">View My Changes</v-btn> -->
         </v-card>
       </v-row>
       <div>
@@ -61,24 +49,16 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-row v-if="isMainLoading">
+          <v-row v-if="isSummaryLoading">
             <v-col>
               <v-skeleton-loader
-                v-if="isMainLoading"
-                :loading="isMainLoading"
+                :loading="isSummaryLoading"
                 type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
               />
             </v-col>
           </v-row>
           <div v-else>
-            <v-expansion-panels
-              v-model="expand"
-              class="mt-6 rounded"
-              focusable
-              multiple
-              variant="accordion"
-              :loading="isMainLoading"
-            >
+            <v-expansion-panels v-model="expand" class="mt-6 rounded" focusable multiple variant="accordion">
               <v-row no-gutters class="d-flex flex-column mb-2">
                 <!-- Change Notification Form Summary -->
                 <v-expansion-panel
@@ -88,6 +68,7 @@
                   value="change-notification-form-summary"
                 >
                   <ChangeNotificationFormSummary
+                    :is-processing="isProcessing"
                     :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
                     @is-summary-valid="isFormComplete"
                   />
@@ -95,57 +76,72 @@
 
                 <!-- MTFI Summary -->
                 <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                  <div v-for="(facility, index) in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                    <v-skeleton-loader
-                      v-if="isSummaryLoading[index]"
-                      :loading="isSummaryLoading[index]"
-                      type="paragraph, text@3, paragraph, text@3, paragraph"
-                    />
-                    <div v-else>
-                      <v-expansion-panel variant="accordion" value="facility-name">
-                        <v-row no-gutters class="d-flex pl-6 py-5">
-                          <v-col class="col-6 col-lg-4">
-                            <p class="summary-label">Facility Name</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityName ? facility.facilityName : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Facility ID</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
-                            </p>
-                          </v-col>
-                          <v-col class="col-6 col-lg-3">
-                            <p class="summary-label">Licence Number</p>
-                            <p label="--" class="summary-value">
-                              {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
-                            </p>
-                          </v-col>
-                        </v-row>
-                      </v-expansion-panel>
-                      <v-expansion-panel variant="accordion" value="mtfi-summary">
-                        <MTFISummary
-                          v-if="hasChangeRequestType('MTFI') && !isSummaryLoading[index]"
-                          :old-ccfri="facility?.oldCcfri"
-                          :new-ccfri="facility?.newCcfri"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                      <v-expansion-panel
-                        v-if="facility?.hasRfi && !isSummaryLoading[index]"
-                        variant="accordion"
-                        value="rfi-summary"
-                      >
-                        <RFISummary
-                          :rfi-app="facility?.rfiApp"
-                          :ccfri-id="facility?.ccfriApplicationId"
-                          :facility-id="facility.facilityId"
-                          @is-summary-valid="isFormComplete"
-                        />
-                      </v-expansion-panel>
-                    </div>
+                  <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                    <v-expansion-panel
+                      v-if="facility"
+                      :key="`${facility.facilityId}-facility-information`"
+                      value="facility-name"
+                      variant="accordion"
+                    >
+                      <v-row no-gutters class="d-flex pl-6 py-5">
+                        <v-col class="col-6 col-lg-4">
+                          <p class="summary-label">Facility Name</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityName ? facility.facilityName : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Facility ID</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                          </p>
+                        </v-col>
+                        <v-col class="col-6 col-lg-3">
+                          <p class="summary-label">Licence Number</p>
+                          <p label="--" class="summary-value">
+                            {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                          </p>
+                        </v-col>
+                      </v-row>
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      :key="`${facility.facilityId}-mtfi-summary`"
+                      :value="`${facility.facilityId}-mtfi-summary`"
+                      variant="accordion"
+                    >
+                      <MTFISummary
+                        :old-ccfri="facility?.oldCcfri"
+                        :new-ccfri="facility?.newCcfri"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      v-if="facility?.hasRfi"
+                      :key="`${facility.facilityId}-ccfri-summary`"
+                      :value="`${facility.facilityId}-ccfri-summary`"
+                      variant="accordion"
+                    >
+                      <RFISummary
+                        :rfi-app="facility?.rfiApp"
+                        :ccfri-id="facility?.ccfriApplicationId"
+                        :facility-id="facility.facilityId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
+                    <v-expansion-panel
+                      v-if="facility?.enableAfs"
+                      :key="`${facility.facilityId}-afs-summary`"
+                      :value="`${facility.facilityId}-afs-summary`"
+                      variant="accordion"
+                    >
+                      <AFSSummary
+                        :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
+                        :facility-id="facility?.facilityId"
+                        :program-year-id="summaryModel?.application?.programYearId"
+                        @is-summary-valid="isFormComplete"
+                      />
+                    </v-expansion-panel>
                   </div>
                 </v-row>
               </v-row>
@@ -191,8 +187,8 @@
                     Benefit;
                   </li>
                   <li>
-                    The organization must be in good standing with BC Corporate Registry (if a nonprofit society or a
-                    registered company); and
+                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
+                    a registered company); and
                   </li>
                   <li>
                     The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
@@ -202,10 +198,10 @@
                 </ul>
                 <p style="padding-top: 10px">
                   Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under Section 9 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 9, a court may order you
-                  imprisoned for up to six months, fine you not more than $2,000.00, or order you to pay the government
-                  all or part of any amount received under the child care grant.
+                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
+                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
+                  punishment imposed, the court may order you to pay to the government all or part of any amount you
+                  received under the Early Learning and Child Care Act as a result of committing the offence.
                 </p>
               </div>
 
@@ -226,9 +222,9 @@
                   and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
                 </p>
 
-                <ol type="a" style="padding-top: 10px">
+                <ol class="declarationBList" type="a">
                   <li>
-                    I am the authorized representative and signing authority of the Provider as named in the CCOF
+                    I am the authorized representative and signing authority of the Provider as named in the Funding
                     Agreement (the Provider);
                   </li>
                   <li>
@@ -252,19 +248,15 @@
                     ensure it is:
                   </li>
                 </ol>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> i. </v-col>
-                  <v-col cols="10">
-                    permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
-                    (ECEs); and
-                  </v-col>
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
+                    Educators (ECEs); and</v-col
+                  >
                 </v-row>
-                <v-row>
-                  <v-col cols="1" />
-                  <v-col cols="1"> ii. </v-col>
-                  <v-col cols="10">
-                    able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                <v-row style="padding-left: 90px">
+                  <v-col cols="12">
+                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
                   </v-col>
                 </v-row>
                 <p style="padding-top: 10px">
@@ -320,32 +312,24 @@
         @previous="previous"
         @submit="submit"
       />
-      <v-dialog v-model="dialog" persistent max-width="525px">
-        <v-card>
-          <v-container class="pt-0">
-            <v-row>
-              <v-col cols="7" class="py-0 pl-0" style="background-color: #234075">
-                <v-card-title class="text-white"> Submission Complete </v-card-title>
-              </v-col>
-              <v-col cols="5" class="d-flex justify-end" style="background-color: #234075" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="background-color: #ffc72c; padding: 2px" />
-            </v-row>
-            <v-row>
-              <v-col cols="12" style="text-align: center">
-                <p class="pt-4">
-                  Your submission has been received. Please refer to your dashboard for updates on the progress of your
-                  application. We will contact you if more information is required.
-                </p>
-                <p>
-                  <router-link :to="landingPage"> Return to your dashboard </router-link>
-                </p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card>
-      </v-dialog>
+      <AppDialog
+        v-model="dialog"
+        persistent
+        max-width="525px"
+        title="Submission Complete"
+        :loading="false"
+        @close="dialog = false"
+      >
+        <template #content>
+          <p class="pt-4">
+            Your submission has been received. Please refer to your dashboard for updates on the progress of your
+            application. We will contact you if more information is required.
+          </p>
+          <p>
+            <router-link :to="landingPage"> Return to your dashboard </router-link>
+          </p>
+        </template>
+      </AppDialog>
     </v-form>
   </v-container>
 </template>
@@ -358,27 +342,36 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import {
   PATHS,
   CHANGE_REQUEST_TYPES,
   CHANGE_TYPES,
   changeUrlGuid,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  DOCUMENT_TYPES,
+  AFS_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import MTFISummary from '@/components/summary/changeRequest/MTFISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
+import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
+import DocumentService from '@/services/documentService';
 
 export default {
   components: {
+    AppDialog,
     MTFISummary,
     ChangeNotificationFormSummary,
     RFISummary,
     NavButton,
+    AFSSummary,
   },
   mixins: [alertMixin],
   data() {
@@ -401,9 +394,10 @@ export default {
     ...mapState(useNavBarStore, ['changeType', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
+    ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
+    ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, [
       'isSummaryLoading',
-      'isMainLoading',
       'isLoadingComplete',
       'summaryModel',
       'declarationModel',
@@ -439,7 +433,7 @@ export default {
       return null;
     },
     relockPayload() {
-      let relockPayload = {
+      const relockPayload = {
         unlockDeclaration: this.model.unlockDeclaration,
       };
       return relockPayload;
@@ -488,6 +482,8 @@ export default {
       'loadChangeRequestSummaryDeclaration',
       'setDeclarationModel',
     ]),
+    ...mapActions(useReportChangesStore, ['updateChangeRequestMTFI']),
+    ...mapActions(useNavBarStore, ['setNavBarValue']),
     expandAllPanels() {
       this.expand = ['change-notification-form-summary', 'facility-name', 'mtfi-summary', 'rfi-summary'];
     },
@@ -504,12 +500,49 @@ export default {
       try {
         this.setDeclarationModel(this.model);
         await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
+
+        if (this.facilities?.some((fac) => fac.enableAfs)) {
+          await this.lockAFS();
+        }
         this.dialog = true;
       } catch (error) {
-        this.setFailureAlert('An error occurred while SUBMITTING change request. Please try again later.' + error);
+        this.setFailureAlert('An error occurred while submitting the change request. Please try again later.' + error);
       } finally {
         this.isProcessing = false;
       }
+    },
+    async lockAFS() {
+      await Promise.all(
+        this.facilities.map(async (mtfiFac) => {
+          if (mtfiFac.enableAfs) {
+            const afs = this.approvableFeeSchedules?.find(
+              (item) => item.ccfriApplicationId === mtfiFac.ccfriApplicationId,
+            );
+
+            const payload = {
+              changeRequestMtfiId: mtfiFac.changeRequestMtfiId,
+              unlockAfs: false,
+              enableAfs: afs?.afsStatus === AFS_STATUSES.ACCEPT,
+              afsStatus: afs?.afsStatus,
+            };
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'unlockAfs', value: payload.unlockAfs });
+            this.setNavBarValue({ facilityId: mtfiFac.facilityId, property: 'enableAfs', value: payload.enableAfs });
+            await this.updateChangeRequestMTFI(payload);
+          }
+        }),
+      );
+
+      const afsDocuments = this.uploadedDocuments?.filter(
+        (document) => document.documentType === DOCUMENT_TYPES.APPLICATION_AFS,
+      );
+      await Promise.all(
+        afsDocuments?.map(async (document) => {
+          const payload = {
+            documentType: DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED,
+          };
+          await DocumentService.updateDocument(document.annotationid, payload);
+        }),
+      );
     },
     previous() {
       this.isProcessing = true;

@@ -1,14 +1,26 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles'; // CSS Reset
+
 import { createVuetify } from 'vuetify';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
-import 'vuetify/styles'; // CSS Reset
+
+const ccofLightTheme = {
+  dark: false,
+  colors: {
+    primary: '#003366',
+    error: '#d8292f',
+    success: '#2e8540',
+  },
+};
 
 export default new createVuetify({
   theme: {
-    light: true,
-    dark: false,
+    defaultTheme: 'ccofLightTheme',
+    themes: {
+      ccofLightTheme,
+    },
   },
   components,
   directives,

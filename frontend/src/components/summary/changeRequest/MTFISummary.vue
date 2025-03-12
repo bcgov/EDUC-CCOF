@@ -2,16 +2,7 @@
   <v-row no-gutters class="d-flex flex-column ma-0 pa-0">
     <v-form ref="mtfiSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 class="blueText">
-          Parent fees
-          <v-icon v-if="isValidForm && isNewCcfriValid" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm || !isNewCcfriValid" color="#ff5252" size="large">
-            mdi-alert-circle-outline
-          </v-icon>
-          <span v-if="!isValidForm || !isNewCcfriValid" style="color: #ff5252"
-            >Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle title="Parent fees" :is-complete="isValidForm && isNewCcfriValid" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="rounded">
         <div v-if="isNewCcfriValid">
@@ -184,7 +175,7 @@
                   </div>
 
                   <div no-gutters class="feeTitle summary-label justify-start ma-0">
-                    July
+                    Jul
                     <v-text-field
                       v-model.number="newModel.childCareTypes[index].approvedFeeJul"
                       type="number"
@@ -445,20 +436,31 @@
               </div>
             </div>
           </div>
+          <v-row no-gutters class="d-flex justify-start">
+            <span class="summary-label"
+              >Is there any other information about this facility you would like us to know?</span
+            >
+          </v-row>
+          <v-row>
+            <v-textarea
+              class="col-10 summary-value"
+              :model-value="newCcfri.ccfriApplicationNotes"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              no-resize
+              readonly
+              rows="3"
+            />
+          </v-row>
         </div>
-        <v-row v-if="!isValidForm || !isNewCcfriValid" class="d-flex justify-start pt-4">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col class="d-flex justify-start">
-                <router-link :to="getRoutingPath">
-                  <span style="color: #ff5252; text-underline: black">
-                    <u>To add this information, click here. This will bring you to a different page.</u>
-                  </span>
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+
+        <div v-if="!isValidForm || !isNewCcfriValid">
+          <router-link :to="getRoutingPath">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
@@ -466,12 +468,14 @@
 
 <script>
 import { mapState } from 'pinia';
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import { deepCloneObject } from '@/utils/common.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 export default {
+  components: { SummaryExpansionPanelTitle },
   props: {
     oldCcfri: {
       type: Object,
@@ -579,8 +583,8 @@ export default {
   color: #003466 !important;
 }
 
->>> ::placeholder {
-  color: #ff5252 !important;
-  opacity: 1;
+:deep(::placeholder) {
+  color: #d8292f !important;
+  opacity: 1 !important;
 }
 </style>

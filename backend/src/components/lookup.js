@@ -6,8 +6,10 @@ const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
 const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const log = require('./logger');
 
 const lookupCache = new cache.Cache();
+const ONE_HOUR_MS = 60 * 60 * 1000; // Cache timeout set for one hour
 
 const organizationType = [
   {
@@ -55,43 +57,6 @@ const fundingModelType = [
   },
 ];
 
-function parseProgramYear(value) {
-  const programYears = {
-    current: undefined,
-    future: undefined,
-    previous: undefined,
-    renewal: undefined,
-    newApp: undefined,
-    list: [],
-  };
-  value.forEach((item) => {
-    const p = new MappableObjectForFront(item, ProgramYearMappings).data;
-    const currentStatus = p.status;
-    p.status = getLabelFromValue(p.status, PROGRAM_YEAR_STATUS_CODES);
-    if (currentStatus == PROGRAM_YEAR_STATUS_CODES.CURRENT) {
-      programYears.current = p;
-    } else if (currentStatus == PROGRAM_YEAR_STATUS_CODES.FUTURE) {
-      programYears.future = p;
-    }
-    programYears.list.push(p);
-  });
-  programYears.previous = programYears.list.find((p) => p.programYearId == programYears.current.previousYearId);
-  programYears.list.sort((a, b) => {
-    return b.order - a.order;
-  });
-  programYears.renewal = programYears.future ? programYears.future : programYears.list[0];
-
-  // Set the program year for a new application
-  if (programYears.current?.intakeEnd) {
-    const intakeDate = new Date(programYears.current?.intakeEnd);
-    programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.current;
-  } else {
-    programYears.newApp = programYears.current;
-  }
-
-  return programYears;
-}
-
 async function getLicenseCategory() {
   let resData = lookupCache.get('licenseCategory');
   if (!resData) {
@@ -112,9 +77,47 @@ async function getLicenseCategory() {
       .sort((a, b) => {
         return a.ccof_categorynumber - b.ccof_categorynumber;
       });
-    lookupCache.put('licenseCategory', resData, 60 * 60 * 1000);
+    lookupCache.put('licenseCategory', resData, ONE_HOUR_MS);
   }
   return resData;
+}
+
+async function getProgramYear() {
+  const programYearList = (await getOperation('ccof_program_years')).value;
+
+  const programYears = {
+    renewal: undefined,
+    newApp: undefined,
+    list: [],
+  };
+
+  //parse the list of program years from Dynamics. Renewal and NewApp will be used to create their respective applications
+  programYearList.forEach((item) => {
+    const year = new MappableObjectForFront(item, ProgramYearMappings).data;
+    const currentStatus = year.status;
+
+    year.status = getLabelFromValue(currentStatus, PROGRAM_YEAR_STATUS_CODES);
+    if (currentStatus === PROGRAM_YEAR_STATUS_CODES.CURRENT) {
+      programYears.newApp = year;
+    } else if (currentStatus === PROGRAM_YEAR_STATUS_CODES.FUTURE) {
+      programYears.renewal = year;
+    }
+    programYears.list.push(year);
+  });
+
+  programYears.list.sort((a, b) => {
+    return b.order - a.order;
+  });
+
+  //this shouldn't happen - but if year not found, default it to the first year?
+  if (!programYears.renewal) programYears.renewal = programYears.list[0];
+
+  // Set the program year for a new application
+  if (programYears.newApp?.intakeEnd) {
+    const intakeDate = new Date(programYears.newApp?.intakeEnd);
+    programYears.newApp = new Date() > intakeDate ? programYears.renewal : programYears.newApp;
+  }
+  return programYears;
 }
 
 async function getLookupInfo(req, res) {
@@ -128,29 +131,27 @@ async function getLookupInfo(req, res) {
    */
   let resData = lookupCache.get('lookups');
   if (!resData) {
-    let programYear = await getOperation('ccof_program_years');
-    programYear = parseProgramYear(programYear.value);
+    const programYears = await getProgramYear();
 
-    let childCareCategory = await getOperation('ccof_childcare_categories');
-    childCareCategory = childCareCategory.value
-      .filter((item) => item.statuscode == 1)
+    const childCareCategory = (await getOperation('ccof_childcare_categories')).value
+      .filter((item) => item.statuscode === 1)
       .map((item) => {
         return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']);
       });
 
-    const licenseCategory = await getLicenseCategory();
+    const [licenseCategory, healthAuthorities] = await Promise.all([getLicenseCategory(), getGlobalOptionsData('ccof_healthauthority')]);
     resData = {
-      programYear: programYear,
+      programYear: programYears,
       childCareCategory: childCareCategory,
       organizationType: organizationType,
       fundingModelType: fundingModelType,
       groupLicenseCategory: licenseCategory.groupLicenseCategory,
       familyLicenseCategory: licenseCategory.familyLicenseCategory,
       'changeRequestTypes:': CHANGE_REQUEST_TYPES,
+      healthAuthorities: healthAuthorities,
     };
-    lookupCache.put('lookups', resData, 60 * 60 * 1000);
+    lookupCache.put('lookups', resData, ONE_HOUR_MS);
   }
-  //log.info('lookupData is: ', minify(resData));
   return res.status(HttpStatus.OK).json(resData);
 }
 
@@ -161,9 +162,23 @@ async function getSystemMessages(req, res) {
     systemMessages = [];
     const resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
     resData?.value.forEach((message) => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
-    lookupCache.put('systemMessages', systemMessages, 60 * 60 * 1000);
+    lookupCache.put('systemMessages', systemMessages, ONE_HOUR_MS);
   }
   return res.status(HttpStatus.OK).json(systemMessages);
+}
+
+async function getGlobalOptionsData(operationName) {
+  try {
+    const response = await getOperation(`GlobalOptionSetDefinitions(Name='${operationName}')`);
+    const data =
+      response?.Options?.map((item) => ({
+        id: Number(item.Value),
+        description: item.Label?.LocalizedLabels?.[0]?.Label ?? null,
+      })) || [];
+    return data;
+  } catch (error) {
+    log.error(`Error getting global options data for ${operationName}:`, error);
+  }
 }
 
 module.exports = {

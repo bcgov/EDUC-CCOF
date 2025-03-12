@@ -12,20 +12,11 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 
 const HttpStatus = require('http-status-codes');
 
-const {
-  getLabelFromValue,
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  deleteOperationWithObjectId,
-  getChangeActionDocument,
-  postChangeActionDocument,
-  postChangeRequestSummaryDocument,
-} = require('./utils');
+const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 
 function mapChangeRequestForBack(data, changeType) {
-  let changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
+  const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
   changeRequestForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data.programYearId})`;
   delete changeRequestForBack._ccof_program_year_value;
 
@@ -45,20 +36,16 @@ function mapChangeRequestForBack(data, changeType) {
 async function getChangeActionNewFacilitityDetails(changeActionId) {
   if (changeActionId) {
     try {
-      let operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(
+      const operation = `ccof_change_request_new_facilities?$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=ccof_ccfri($select=${getMappingString(
         UserProfileBaseCCFRIMappings,
       )}),ccof_ecewe($select=${getMappingString(UserProfileECEWEMappings)}),ccof_CCOF($select=${getMappingString(UserProfileBaseFundingMappings)})`;
-      let changeActionDetails = await getOperation(operation);
-      let details = changeActionDetails?.value;
-
-      log.info('!!!!!!!!!!');
-      log.info(details);
-      let retVal = [];
+      const changeActionDetails = await getOperation(operation);
+      const details = changeActionDetails?.value;
+      const retVal = [];
       details?.forEach((el) => {
-        let data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();
+        const data = new MappableObjectForFront(el, NewFacilityMappings).toJSON();
         data.ccfri = new MappableObjectForFront(el.ccof_ccfri, UserProfileBaseCCFRIMappings).toJSON();
         data.ecewe = new MappableObjectForFront(el.ccof_ecewe, UserProfileECEWEMappings).toJSON();
-        log.info(data.ecewe);
         data.baseFunding = new MappableObjectForFront(el.ccof_CCOF, UserProfileBaseFundingMappings).toJSON();
         retVal.push(data);
       });
@@ -84,11 +71,11 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
         operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'`;
       }
 
-      let changeActionDetails = await getOperation(operation);
-      let details = changeActionDetails?.value;
-      let retVal = [];
+      const changeActionDetails = await getOperation(operation);
+      const details = changeActionDetails?.value;
+      const retVal = [];
       details?.forEach((el) => {
-        let data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
+        const data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
         let joinData = undefined;
         if (joiningTable) {
           joinData = new MappableObjectForFront(el[joiningTable], joiningTableMapping).toJSON();
@@ -105,14 +92,14 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 }
 
 async function mapChangeRequestObjectForFront(data) {
-  let retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
+  const retVal = new MappableObjectForFront(data, ChangeRequestMappings).toJSON();
 
-  let changeList = [];
+  const changeList = [];
   await Promise.all(
     retVal.changeActions?.map(async (el) => {
       let changeAction = new MappableObjectForFront(el, ChangeActionRequestMappings).toJSON();
       if (changeAction.changeType == CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE) {
-        let mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings);
+        const mtfi = await getChangeActionDetails(changeAction.changeActionId, 'ccof_change_request_mtfis', MtfiMappings, 'ccof_CCFRI', UserProfileBaseCCFRIMappings);
         mtfi?.forEach((item) => {
           item.ccfriStatus = getLabelFromValue(item.ccfriStatus, CCFRI_STATUS_CODES, 'NOT STARTED');
         });
@@ -121,21 +108,19 @@ async function mapChangeRequestObjectForFront(data) {
         const newFacilities = await getChangeActionNewFacilitityDetails(changeAction.changeActionId);
         changeAction.newFacilities = newFacilities;
       }
-      let unlockVals = new MappableObjectForFront(el, ChangeRequestUnlockMapping).toJSON();
+      const unlockVals = new MappableObjectForFront(el, ChangeRequestUnlockMapping).toJSON();
       changeAction = { ...changeAction, ...unlockVals };
       changeList.push(changeAction);
     }),
   );
   retVal.changeActions = changeList;
-  log.info('change actions: ', retVal);
-
   return retVal;
 }
 
 // get Change Request
 async function getChangeRequest(req, res) {
   try {
-    let operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon,ccof_unlock_ecewe,ccof_unlock_ccof,ccof_unlock_supporting_document,ccof_unlock_other_changes_document,ccof_unlock_change_request,ccof_unlock_licence_upload)`;
+    const operation = `ccof_change_requests(${req.params.changeRequestId})?$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode,ccof_changetype,createdon,ccof_unlock_ecewe,ccof_unlock_ccof,ccof_unlock_supporting_document,ccof_unlock_other_changes_document,ccof_unlock_change_request,ccof_unlock_licence_upload)`;
     let changeRequest = await getOperation(operation);
     changeRequest = await mapChangeRequestObjectForFront(changeRequest);
     changeRequest.providerType = getLabelFromValue(changeRequest.providerType, ORGANIZATION_PROVIDER_TYPES);
@@ -149,17 +134,14 @@ async function getChangeRequest(req, res) {
 
 async function updateChangeRequest(req, res) {
   let changeRequest = req.body;
-  //changeRequest.externalStatus = CHANGE_REQUEST_EXTERNAL_STATUS_CODES.externalStatus;
   changeRequest = new MappableObjectForBack(changeRequest, ChangeRequestMappings);
   changeRequest = changeRequest.toJSON();
 
   try {
     log.verbose('update change Request: payload', changeRequest);
-    let response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
+    const response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
 
-    //is change req complete ? (status 2 i think )
-
-    if (changeRequest.ccof_externalstatus == 2) {
+    if (changeRequest.ccof_externalstatus === CHANGE_REQUEST_EXTERNAL_STATUS_CODES.SUBMITTED) {
       printPdf(req).then();
     }
 
@@ -171,12 +153,9 @@ async function updateChangeRequest(req, res) {
 
 // create Change Request
 async function createChangeRequest(req, res) {
-  log.info('createChangeRequest called');
-
   try {
     let changeRequest = req.body;
     let changeType = changeRequest.changeType;
-    //log.info('change type', changeType);
     //this is kind of ugly, replace with a better mapping function
     if (changeType === 'PARENT_FEE_CHANGE') {
       changeType = CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE;
@@ -185,10 +164,9 @@ async function createChangeRequest(req, res) {
     } else if (changeType === 'PDF_CHANGE') {
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
     }
-    //log.info('change type', changeType);
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
-    let operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
+    const operation = `ccof_change_requests(${changeRequestId})?$select=ccof_change_requestid&$expand=ccof_change_action_change_request($select=ccof_change_actionid,statuscode)`;
     const payload = await getOperation(operation);
     let changeActionId = undefined;
     if (payload && payload.ccof_change_action_change_request?.length > 0) {
@@ -205,7 +183,6 @@ async function createChangeRequest(req, res) {
 }
 
 async function createChangeAction(req, res, changeType) {
-  log.info('createChangeAction called');
   try {
     const payload = {
       ccof_changetype: changeType,
@@ -224,7 +201,6 @@ async function createChangeAction(req, res, changeType) {
 }
 
 async function deleteChangeAction(req, res) {
-  log.info('deleteChangeAction called - changeActionId = ' + req.params.changeActionId);
   try {
     await deleteOperationWithObjectId('ccof_change_actions', req.params.changeActionId);
     return res.status(HttpStatus.OK).end();
@@ -256,7 +232,7 @@ function buildNewFacilityPayload(req) {
 
 async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload) {
   try {
-    let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
+    const response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
     return response;
   } catch (e) {
     log.error('error', e);
@@ -265,7 +241,7 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 }
 
 async function createChangeRequestFacility(req, res) {
-  let facility = buildNewFacilityPayload(req);
+  const facility = buildNewFacilityPayload(req);
   try {
     const facilityGuid = await postOperation('accounts', facility);
     //After the 'ChangeActionNewFacility' entity is created, grab the guid
@@ -273,11 +249,10 @@ async function createChangeRequestFacility(req, res) {
       'accounts(' +
       facilityGuid +
       ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode),ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
-    let payload = await getOperation(operation);
-    console.log(payload);
-    let changeRequestNewFacilityId = undefined;
-    let ccofBaseFundingId = undefined;
-    let ccofBaseFundingStatus = undefined;
+    const payload = await getOperation(operation);
+    let changeRequestNewFacilityId;
+    let ccofBaseFundingId;
+    let ccofBaseFundingStatus;
     if (payload?.ccof_application_basefunding_Facility?.length > 0) {
       ccofBaseFundingId = payload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
       ccofBaseFundingStatus = getLabelFromValue(payload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);
@@ -300,7 +275,7 @@ async function createChangeRequestFacility(req, res) {
 }
 
 async function deleteChangeRequest(req, res) {
-  let { changeRequestId } = req.params;
+  const { changeRequestId } = req.params;
   log.verbose(changeRequestId);
 
   try {
@@ -312,13 +287,12 @@ async function deleteChangeRequest(req, res) {
   }
 }
 
-//TODO: need some mapping here prob but lets figure out Sukanyas component first
 async function getChangeRequestDocs(req, res) {
-  let { changeRequestId } = req.params;
+  const { changeRequestId } = req.params;
   log.verbose(changeRequestId);
 
   try {
-    let response = await getChangeActionDocument(changeRequestId);
+    const response = await getChangeActionDocument(changeRequestId);
 
     log.verbose(response.value);
     return res.status(HttpStatus.OK).json(response.value);
@@ -330,8 +304,8 @@ async function getChangeRequestDocs(req, res) {
 
 async function saveChangeRequestDocs(req, res) {
   try {
-    let documents = req.body;
-    for (let document of documents) {
+    const documents = req.body;
+    for (const document of documents) {
       let documentClone = document;
       if (getFileExtension(documentClone.filename) === 'heic') {
         log.verbose(`saveChangeRequestDocs :: heic detected for file name ${documentClone.filename} starting conversion`);
@@ -348,11 +322,10 @@ async function saveChangeRequestDocs(req, res) {
 
 async function getChangeRequestMTFIByCcfriId(req, res) {
   try {
-    log.info('getChangeRequestMTFIByCcfriId - ccfriId = ', req.params.ccfriId);
-    let operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
-    let response = await getOperation(operation);
-    let mtfiDetails = [];
-    let rfiDetails = new MappableObjectForFront(response, UserProfileBaseCCFRIMappings).toJSON();
+    const operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
+    const response = await getOperation(operation);
+    const mtfiDetails = [];
+    const rfiDetails = new MappableObjectForFront(response, UserProfileBaseCCFRIMappings).toJSON();
     //Add in the rfi details mapping so on the front when we update hasRFI for the first time, we have the value needed to update it
     response?.ccof_change_request_mtfi_application_ccfri?.forEach((mtfiFacility) => {
       mtfiDetails.push({ ...new MappableObjectForFront(mtfiFacility, MtfiMappings).toJSON(), ...rfiDetails });
@@ -366,8 +339,7 @@ async function getChangeRequestMTFIByCcfriId(req, res) {
 
 async function deleteChangeRequestMTFI(req, res) {
   try {
-    log.info('deleteChangeRequestMTFI - mtfiId = ', req.params.mtfiId);
-    let response = await deleteOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId);
+    const response = await deleteOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     log.error(e);
@@ -377,7 +349,8 @@ async function deleteChangeRequestMTFI(req, res) {
 
 async function updateChangeRequestMTFI(req, res) {
   try {
-    let response = await patchOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId, req.body);
+    const payload = new MappableObjectForBack(req?.body, MtfiMappings);
+    await patchOperationWithObjectId('ccof_change_request_mtfis', req.params.mtfiId, payload);
     return res.status(HttpStatus.OK).json();
   } catch (e) {
     log.error('error', e);

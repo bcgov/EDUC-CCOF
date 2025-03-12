@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccofSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Child Care Operating Funding (CCOF)
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252">
-            Your form is missing required information. Click here to view.
-          </span>
-        </h4>
+        <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
@@ -66,7 +59,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.hasClosedMonth?.toUpperCase()"
+                    :model-value="getYesNoValue(funding?.hasClosedMonth)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -79,7 +72,7 @@
               </v-row>
             </v-col>
             <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row v-if="funding?.hasClosedMonth?.toUpperCase() == 'YES'" no-gutters class="d-flex justify-start">
+              <v-row v-if="funding?.hasClosedMonth" no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Months where ALL of the programs at this facility are closed for the entire month:
@@ -285,6 +278,7 @@
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-center">
                   <v-text-field
+                    placeholder="Required"
                     :model-value="funding?.maxSpaces"
                     class="summary-value"
                     density="compact"
@@ -292,10 +286,12 @@
                     variant="solo"
                     hide-details
                     readonly
+                    :rules="rules.required"
                   />
                 </v-col>
                 <v-col cols="12" class="d-flex justify-center">
                   <v-text-field
+                    placeholder="Required"
                     :model-value="funding?.maxLicensesCapacity"
                     class="summary-value"
                     density="compact"
@@ -303,6 +299,7 @@
                     variant="solo"
                     hide-details
                     readonly
+                    :rules="rules.required"
                   />
                 </v-col>
               </v-row>
@@ -322,7 +319,7 @@
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isExtendedHours?.toUpperCase()"
+                    :model-value="getYesNoValue(funding?.isExtendedHours)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -335,7 +332,7 @@
               </v-row>
             </v-col>
           </v-row>
-          <span v-if="funding?.isExtendedHours?.toUpperCase() === 'YES'">
+          <span v-if="funding?.isExtendedHours">
             <v-row class="d-flex justify-start">
               <v-col cols="6" lg="6" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
@@ -535,37 +532,29 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row v-if="!isValidForm" class="d-flex justify-start">
-          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
-            <v-row no-gutters class="d-flex justify-start">
-              <v-col cols="12" class="d-flex justify-start">
-                <router-link :to="getRoutingPath()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-                <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-                <!-- <router-link :to="this.PATHS.family.orgInfo" v-if=" !this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link>
-              <router-link :to="this.PATHS.family.fundAmount + '/' + this.funding.ccofBaseFundingId" v-else-if="this.funding.ccofBaseFundingId && this.summaryModel.application.organizationProviderType == 'FAMILY'"> <span style="color:#ff5252; text-underline: black"><u>To add this information, click here. This will bring you to a different page.</u></span></router-link> -->
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div v-if="!isValidForm">
+          <router-link :to="getRoutingPath()">
+            <u class="text-error"> To add this information, click here. This will bring you to a different page. </u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
 import { mapState } from 'pinia';
-
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import globalMixin from '@/mixins/globalMixin.js';
 import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
+  components: { SummaryExpansionPanelTitle },
+  mixins: [globalMixin],
   props: {
     funding: {
       type: Object,
@@ -598,9 +587,10 @@ export default {
     ...mapState(useNavBarStore, ['navBarList']),
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.ccofSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -642,11 +632,11 @@ export default {
   color: black;
 }
 :deep(.summary-value .v-label) {
-  color: red;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 .summary-label-smaller {
