@@ -234,23 +234,23 @@
     />
     <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row no-gutters>
-        <v-col class="col-12 col-md-6 ml-4 mb-4">
+        <v-col class="col-12 col-md-6 ml-4">
           <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
           <h2 v-if="getFundingAgreementNumberByYear">
             Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
           </h2>
         </v-col>
-      </v-row>
-      <v-row no-gutters justify="space-between">
-        <v-col class="col-12 col-md-6 ml-4 mb-4">
-          <v-row>
-            <h3 class="mr-4">Select fiscal year:</h3>
-            <FiscalYearSlider @select-program-year="selectProgramYear" />
+        <v-col class="col-12 col-lg-7 ml-7">
+          <v-row class="justify-right col-12 col-lg-7 ml-7">
+            <v-btn theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4"> Organization Closures </v-btn>
           </v-row>
         </v-col>
-        <v-col class="col-12 col-md-6 ml-4 mb-4">
-          <v-row>
-            <v-btn theme="dark" class="blueButton mt-4"> Organization Closures </v-btn>
+      </v-row>
+      <v-row no-gutters justify="space-between">
+        <v-col class="col-12 col-lg-7 ml-7">
+          <v-row class="justify-left align-center mr-4">
+            <h3 class="mr-4">Select fiscal year:</h3>
+            <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
