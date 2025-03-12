@@ -11,7 +11,7 @@
       </v-col>
     </v-row>
     <v-data-table
-      v-if="!loading"
+      v-else
       v-model:sort-by="sortBy"
       :headers="headers"
       :items="submissions"
