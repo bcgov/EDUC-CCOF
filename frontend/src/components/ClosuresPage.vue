@@ -2,10 +2,61 @@
 <template>
   <v-container fluid class="pa-12">
     <MessagesToolbar />
-    <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
-      <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
-      <p v-if="organizationName">Organization Name: {{ organizationName }}</p>
-    </div>
+    <v-row>
+      <v-col>
+        <h1>Organization Closures</h1>
+      </v-col>
+      <v-col> Fiscal Year: __Insert Year___ </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <p>{{ organizationName }}</p>
+        <p>Organization ID: {{ organizationId }}</p>
+      </v-col>
+      <v-col>
+        <v-btn
+          class="blueButton"
+          theme="dark"
+          width="30%"
+          align="left"
+          @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
+        >
+          Add New Closure
+        </v-btn>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container class="pa-12 border">
+    <v-row>
+      <v-col>Program and policy to provide text </v-col>
+      <v-col>
+        <v-row>
+          <h3>Filter by Facility</h3>
+          <h3>:]</h3>
+          <v-text-field
+            v-model="input"
+            clearable
+            variant="filled"
+            label="Filter by Facility Name and Facility ID "
+            :bind="input"
+          />
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-left">Facility ID</th>
+          <th class="text-left">Facility Name</th>
+          <th class="text-left">Start Date</th>
+          <th class="text-left">End Date</th>
+          <th class="text-left">Status</th>
+          <th class="text-left">Payment Eligibility</th>
+          <th class="text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </v-table>
   </v-container>
 </template>
 <script>

@@ -56,6 +56,7 @@ import {
   PATHS,
   changeUrl,
   changeUrlGuid,
+  closureUrl,
   pcfUrl,
   pcfUrlGuid,
 } from './utils/constants.js';
@@ -855,7 +856,7 @@ const router = createRouter({
       },
     },
     {
-      path: PATHS.ROOT.CLOSURES,
+      path: closureUrl(),
       name: 'closures-page',
       component: ClosuresPage,
       meta: {

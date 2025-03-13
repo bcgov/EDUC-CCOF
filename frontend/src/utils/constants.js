@@ -70,7 +70,7 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
-  CLOSURES_PAGE: 'Search Closures',
+  CLOSURES_PAGE: 'Organization Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -98,7 +98,6 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
-    CLOSURES: '/closures',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -132,6 +131,8 @@ export const PATHS = {
   SUPPORTING_DOCS: '/supporting-documents',
 
   SUMMARY_DECLARATION: '/summary-declaration',
+
+  CLOSURES: '/organization/closures',
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
@@ -168,8 +169,8 @@ export function changeUrlGuid(
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
-export function closureUrl(suffix, programYearGuid = ':programYearGuid') {
-  return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}`; // stub
+export function closureUrl(programYearGuid = ':programYearGuid') {
+  return `${PATHS.PREFIX.PCF}/${programYearGuid}${PATHS.CLOSURES}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
