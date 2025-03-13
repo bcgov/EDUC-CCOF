@@ -1,28 +1,21 @@
 <template>
-  <v-card
-    :class="isFacilityComplete ? 'success-card' : 'error-card'"
-    class="pa-0 mx-auto"
-    elevation="4"
-    hover
-    @click="true"
-  >
+  <v-card :class="facility.isComplete ? 'success-card' : 'error-card'" elevation="4">
     <div class="px-2 py-4">
       <v-row no-gutters>
-        <v-col cols="6" class="px-2">
+        <v-col cols="8" class="px-2">
           <div class="summary-label">Facility Name</div>
           <div :class="facility.facilityName ? '' : 'text-error'" class="summary-value">
             {{ facility.facilityName ?? 'Required' }}
           </div>
         </v-col>
-        <v-col cols="5" class="px-2">
+        <v-col cols="3" class="px-2">
           <div class="summary-label">Facility ID</div>
           <div class="summary-value">
             {{ facility.facilityAccountNumber ?? '--' }}
           </div>
-          <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
         </v-col>
         <v-col cols="1" class="d-flex justify-end">
-          <v-icon size="small">mdi-open-in-new </v-icon>
+          <v-icon size="small">mdi-open-in-new</v-icon>
         </v-col>
       </v-row>
       <v-row no-gutters class="pt-2">
@@ -45,24 +38,8 @@
           </div>
         </v-col>
       </v-row>
-      <v-row no-gutters>
-        <!-- <v-col cols="12" md="6">
-        <div class="summary-label">Licence Categories</div>
-        <v-textarea
-          :model-value="licenseCategories"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-          no-resize
-          rows="3"
-        />
-      </v-col> -->
-      </v-row>
       <v-row no-gutters class="pa-2 pb-0">
-        <template v-if="isFacilityComplete">
+        <template v-if="facility.isComplete">
           <v-icon class="text-success" size="large"> mdi-check-circle-outline </v-icon>
           <span class="text-success pl-2">Click here to view.</span>
         </template>
@@ -76,54 +53,19 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
+import { getOptInOptOut } from '@/utils/common.js';
 
 export default {
   props: {
     facility: {
       type: Object,
-      required: true,
+      default: () => {
+        return {};
+      },
     },
   },
-  data() {
-    return {
-      PATHS,
-      rules,
-    };
-  },
-  computed: {
-    ...mapState(useApplicationStore, ['isRenewal']),
-    ...mapState(useNavBarStore, ['navBarList']),
-    ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
-    isFacilityComplete() {
-      return (
-        this.facility?.isFacilityComplete &&
-        this.facility?.isCCOFComplete &&
-        this.facility?.isCCFRIComplete &&
-        (!this.facility?.hasRfi || this.facility?.isRfiComplete) &&
-        (!this.facility?.hasNmf || this.facility?.isNmfComplete)
-      );
-    },
-  },
-  created() {},
   methods: {
-    getOptInOptOut(status) {
-      if (status === 1) {
-        return 'Opt-In';
-      } else if (status === 0) {
-        return 'Opt-Out';
-      } else {
-        return '';
-      }
-    },
+    getOptInOptOut,
   },
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="eceweSummaryForm" v-model="isValidForm">
+  <v-form ref="eceweSummaryForm">
     <v-expansion-panel-title>
       <SummaryExpansionPanelTitle
         :title="expansionPanelTitle"
@@ -28,11 +28,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-              <v-col
-                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
-                cols="12"
-                md="6"
-              >
+              <v-col v-if="eceweFacility?.optInOrOut === OPT_STATUSES.OPT_IN && showUnionQuestion" cols="12" md="6">
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field
                   placeholder="Required"
@@ -69,9 +65,7 @@
             </v-row>
             <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
               <template
-                v-if="
-                  languageYearLabel === programYearTypes.FY2025_26 && ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
-                "
+                v-if="languageYearLabel === programYearTypes.FY2025_26 && ecewe?.optInECEWE === OPT_STATUSES.OPT_IN"
               >
                 <v-row v-if="!facilityInformationExists" no-gutters>
                   <v-col cols="12">
@@ -185,7 +179,7 @@
 
               <!-- previous year's ECE-WE question logic below -->
               <template v-else>
-                <v-row v-if="ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" no-gutters>
+                <v-row v-if="ecewe?.optInECEWE === OPT_STATUSES.OPT_IN" no-gutters>
                   <v-col cols="12">
                     <span class="summary-label pt-3">
                       Do any of the ECE employees at any facility in your organization belong to a union
@@ -206,8 +200,7 @@
                 <v-row v-if="!facilityInformationExists" no-gutters>
                   <v-col
                     v-if="
-                      languageYearLabel !== programYearTypes.HISTORICAL &&
-                      ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+                      languageYearLabel !== programYearTypes.HISTORICAL && ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
                     "
                     cols="12"
                   >
@@ -328,8 +321,8 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useAppStore } from '@/store/app.js';
-
-import { isChangeRequest } from '@/utils/common.js';
+import ApplicationService from '@/services/applicationService';
+import { getOptInOptOut, isChangeRequest } from '@/utils/common.js';
 import {
   PATHS,
   pcfUrl,
@@ -339,7 +332,7 @@ import {
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  ECEWE_OPT_IN_TYPES,
+  OPT_STATUSES,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_BELONGS_TO_UNION,
 } from '@/utils/constants.js';
@@ -384,12 +377,7 @@ export default {
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
       isValidForm: false,
-      formObj: {
-        formName: 'ECEWESummary',
-      },
     };
   },
   computed: {
@@ -409,17 +397,17 @@ export default {
     showApplicableSector() {
       return (
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+          this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
           this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
           this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+          this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
           this.languageYearLabel === this.programYearTypes.HISTORICAL)
       );
     },
     showFundingModel() {
       return (
-        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
       );
@@ -432,7 +420,7 @@ export default {
     },
     showWageConfirmation() {
       return (
-        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
@@ -472,14 +460,7 @@ export default {
       }
     },
     optInOptOut() {
-      switch (this.eceweFacility?.optInOrOut) {
-        case ECEWE_OPT_IN_TYPES.OPT_OUT:
-          return 'Opt-Out';
-        case ECEWE_OPT_IN_TYPES.OPT_IN:
-          return 'Opt-In';
-        default:
-          return '';
-      }
+      return getOptInOptOut(this.eceweFacility?.optInOrOut);
     },
     facilityUnionStatus() {
       switch (this.eceweFacility?.facilityUnionStatus) {
@@ -515,23 +496,16 @@ export default {
       );
     },
   },
-  watch: {
-    isValidForm: {
-      handler() {
-        this.$refs.eceweSummaryForm.validate();
-        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
-        //if form is invalid, it will be set to false and the emit will still fire.
-        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm && !this.showCSSEAWarning);
-        }
-      },
-    },
-  },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
+    this.OPT_STATUSES = OPT_STATUSES;
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES;
+    this.PATHS = PATHS;
+    this.rules = rules;
+  },
+  mounted() {
+    this.isValidForm = ApplicationService.isECEWEComplete(this.eceweFacility);
   },
   methods: {
     getYesNoValue(value) {

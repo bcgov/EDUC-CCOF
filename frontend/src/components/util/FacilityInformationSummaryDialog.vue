@@ -1,5 +1,11 @@
 <template>
-  <AppDialog v-model="isDisplayed" title="Facility Information Summary" :loading="isLoading" @close="closeDialog">
+  <AppDialog
+    v-model="isDisplayed"
+    title="Facility Information Summary"
+    :loading="isLoading"
+    text-alignment="left"
+    @close="closeDialog"
+  >
     <template #content>
       <v-expansion-panel
         v-if="facility?.facilityInfo"
@@ -17,32 +23,27 @@
           :provider-type="summaryModel?.application?.organizationProviderType"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
       <v-expansion-panel
+        v-if="!isRenewal && facility.funding"
         :key="`${facility.facilityId}-ccof-summary`"
         :value="`${facility.facilityId}-ccof-summary`"
         variant="accordion"
       >
-        <div v-if="!facility.funding || isRenewal" />
-        <div v-else>
-          <CCOFSummaryFamily
-            v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY"
-            :funding="facility.funding"
-            :facility-id="facility.facilityId"
-            :program-year-id="programYearId"
-            @is-summary-valid="isFormComplete"
-          />
-          <CCOFSummary
-            v-else
-            :funding="facility.funding"
-            :facility-id="facility.facilityId"
-            :change-rec-guid="facility.changeRequestId"
-            :program-year-id="programYearId"
-            @is-summary-valid="isFormComplete"
-          />
-        </div>
+        <CCOFSummaryFamily
+          v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY"
+          :funding="facility.funding"
+          :facility-id="facility.facilityId"
+          :program-year-id="programYearId"
+        />
+        <CCOFSummary
+          v-else
+          :funding="facility.funding"
+          :facility-id="facility.facilityId"
+          :change-rec-guid="facility.changeRequestId"
+          :program-year-id="programYearId"
+        />
       </v-expansion-panel>
       <v-expansion-panel
         :key="`${facility.facilityId}-ccfri-summary`"
@@ -54,7 +55,6 @@
           :facility-id="facility.facilityId"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
       <v-expansion-panel
@@ -69,7 +69,6 @@
           :facility-id="facility.facilityId"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
       <v-expansion-panel
@@ -84,7 +83,6 @@
           :facility-id="facility.facilityId"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
       <v-expansion-panel
@@ -97,7 +95,6 @@
           :ccfri-id="facility?.ccfri?.ccfriId"
           :facility-id="facility?.facilityId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
 
@@ -110,10 +107,8 @@
           :ecewe="{}"
           :ecewe-facility="facility.ecewe"
           :funding-model="summaryModel?.ecewe?.fundingModel"
-          :is-processing="isProcessing"
           :change-rec-guid="facility.changeRequestId"
           :program-year-id="programYearId"
-          @is-summary-valid="isFormComplete"
         />
       </v-expansion-panel>
     </template>
@@ -137,6 +132,8 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
+
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
@@ -148,6 +145,8 @@ import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 
+import { useApplicationStore } from '@/store/application.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import alertMixin from '@/mixins/alertMixin';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 
@@ -171,9 +170,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    facility: {
-      type: Object,
-      required: true,
+    facilityId: {
+      type: String,
+      default: '',
     },
     programYearId: {
       type: String,
@@ -186,6 +185,13 @@ export default {
       isDisplayed: false,
       isLoading: false,
     };
+  },
+  computed: {
+    ...mapState(useApplicationStore, ['isRenewal']),
+    ...mapState(useSummaryDeclarationStore, ['facilities', 'summaryModel']),
+    facility() {
+      return this.facilities?.find((facility) => facility.facilityId === this.facilityId);
+    },
   },
   watch: {
     show: {

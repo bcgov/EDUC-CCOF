@@ -1,8 +1,8 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-    <v-form ref="ccofSummaryForm" v-model="isValidForm">
+    <v-form ref="ccofSummaryForm">
       <v-expansion-panel-title>
-        <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isFormComplete" />
+        <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
@@ -671,7 +671,7 @@
             </div>
           </template>
         </v-row>
-        <div v-if="!isFormComplete">
+        <div v-if="!isValidForm">
           <router-link v-if="summaryModel?.application" :to="routingPath">
             <u class="text-error"> To add this information, click here. This will bring you to a different page. </u>
           </router-link>
@@ -687,7 +687,7 @@ import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpans
 
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-
+import ApplicationService from '@/services/applicationService';
 import globalMixin from '@/mixins/globalMixin.js';
 import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
@@ -723,13 +723,7 @@ export default {
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
-      isValidForm: true,
-      formObj: {
-        formName: 'CCOFSummary',
-        formId: this.funding?.ccofBaseFundingId,
-      },
+      isValidForm: false,
     };
   },
   computed: {
@@ -786,72 +780,31 @@ export default {
       return this.funding?.maxGroupChildCareSchool > 0;
     },
     hasLicenceCategory() {
-      return (
-        this.funding?.hasUnder36Months ||
-        this.funding?.has30MonthToSchoolAge ||
-        this.funding?.hasSchoolAgeCareOnSchoolGrounds ||
-        this.funding?.hasPreschool ||
-        this.funding?.hasMultiAge
-      );
+      return ApplicationService.hasLicenceCategory(this.funding);
     },
     hasLicenceCategoryWithExtendedChildCare() {
-      return (
-        this.funding?.hasUnder36MonthsExtendedCC ||
-        this.funding?.has30MonthToSchoolAgeExtendedCC ||
-        this.funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.funding?.hasMultiAgeExtendedCC
-      );
+      return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.funding);
     },
     isUnder36ExtendedChildCareValid() {
-      return (
-        !this.funding?.hasUnder36MonthsExtendedCC ||
-        this.funding?.extendedChildCareUnder36Months4OrLess + this.funding?.extendedChildCareUnder36Months4OrMore > 0
-      );
+      return ApplicationService.isUnder36ExtendedChildCareValid(this.funding);
     },
     is30MonthToSchoolAgeExtendedChildCareValid() {
-      return (
-        !this.funding?.has30MonthToSchoolAgeExtendedCC ||
-        this.funding?.extendedChildCare36MonthsToSchoolAge4OrLess +
-          this.funding?.extendedChildCare36MonthsToSchoolAge4OrMore >
-          0
-      );
+      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.funding);
     },
     isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return (
-        !this.funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.funding?.extendedChildCareSchoolAge4OrLess + this.funding?.extendedChildCareSchoolAge4OrMore > 0
-      );
+      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.funding);
     },
     isMultiAgeExtendedChildCareValid() {
-      return (
-        !this.funding?.hasMultiAgeExtendedCC || this.funding?.multiAgeCare4OrLess + this.funding?.multiAgeCare4more > 0
-      );
-    },
-    isFormComplete() {
-      return (
-        this.isValidForm &&
-        this.hasLicenceCategory &&
-        (this.funding?.isExtendedHours === 0 ||
-          (this.hasLicenceCategoryWithExtendedChildCare &&
-            this.isUnder36ExtendedChildCareValid &&
-            this.is30MonthToSchoolAgeExtendedChildCareValid &&
-            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-            this.isMultiAgeExtendedChildCareValid))
-      );
-    },
-  },
-  watch: {
-    isFormComplete: {
-      handler() {
-        this.$refs.ccofSummaryForm.validate();
-        if (this.isLoadingComplete && this.isFormComplete !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isFormComplete);
-        }
-      },
+      return ApplicationService.isMultiAgeExtendedChildCareValid(this.funding);
     },
   },
   created() {
+    this.PATHS = PATHS;
+    this.rules = rules;
     this.formatTime24to12 = formatTime24to12;
+  },
+  mounted() {
+    this.isValidForm = ApplicationService.isCCOFComplete(this.funding);
   },
   methods: {
     isNullOrBlank,

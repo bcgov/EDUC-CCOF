@@ -206,7 +206,7 @@ export const ECEWE_BELONGS_TO_UNION = {
   NO: 0,
 };
 
-export const ECEWE_OPT_IN_TYPES = {
+export const OPT_STATUSES = {
   OPT_IN: 1,
   OPT_OUT: 0,
 };
