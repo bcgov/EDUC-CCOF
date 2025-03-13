@@ -131,6 +131,8 @@ export const PATHS = {
 
   SUMMARY_DECLARATION: '/summary-declaration',
 
+  CLOSURES: '/closures',
+
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
   CHANGE_NOTIFICATION_DIALOGUE: '/notification-dialogue',
@@ -164,6 +166,10 @@ export function changeUrlGuid(
   changeType = CHANGE_TYPES.NEW_FACILITY,
 ) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
+}
+
+export function closureUrl(suffix, programYearGuid = ':programYearGuid') {
+  return `${PATHS.PREFIX.PCF}/${programYearGuid}${suffix}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
