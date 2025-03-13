@@ -48,6 +48,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { formatFiscalYearName } from '@/utils/format';
 
+import ClosuresPage from './components/ClosuresPage.vue';
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
@@ -850,6 +851,16 @@ const router = createRouter({
       name: 'notfound',
       redirect: '/',
       meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.CLOSURES,
+      name: 'closures-page',
+      component: ClosuresPage,
+      meta: {
+        pageTitle: PAGE_TITLES.CLOSURES_PAGE,
+        showNavBar: false,
         requiresAuth: true,
       },
     },

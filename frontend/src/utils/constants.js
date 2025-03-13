@@ -70,6 +70,7 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
+  CLOSURES_PAGE: 'Search Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -97,6 +98,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
+    CLOSURES: '/closures',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -130,8 +132,6 @@ export const PATHS = {
   SUPPORTING_DOCS: '/supporting-documents',
 
   SUMMARY_DECLARATION: '/summary-declaration',
-
-  CLOSURES: '/closures',
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
