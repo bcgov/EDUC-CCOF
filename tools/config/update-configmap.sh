@@ -5,9 +5,9 @@ readonly APP_NAME=$2
 readonly NAMESPACE_PREFIX=$3
 readonly COMMON_NAMESPACE=$4
 readonly SOAM_CLIENT_ID=$5
-readonly SOAM_CLIENT_ID_IDIR=$6
-readonly SOAM_CLIENT_SECRET=$7
-readonly SOAM_CLIENT_SECRET_IDIR=$8
+readonly SOAM_CLIENT_SECRET=$6
+readonly SOAM_IDP_HINT_BCEID=$7
+readonly SOAM_IDP_HINT_IDIR=$8
 readonly SPLUNK_TOKEN=$9
 readonly REDIS_PASSWORD=${10}
 readonly D365_API_PREFIX=${11}
@@ -103,8 +103,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="SOAM_DISCOVERY=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/.well-known/openid-configuration" \
   --from-literal="SOAM_CLIENT_ID=$SOAM_CLIENT_ID" \
   --from-literal="SOAM_CLIENT_SECRET=$SOAM_CLIENT_SECRET" \
-  --from-literal="SOAM_CLIENT_ID_IDIR=$SOAM_CLIENT_ID_IDIR" \
-  --from-literal="SOAM_CLIENT_SECRET_IDIR=$SOAM_CLIENT_SECRET_IDIR" \
+  --from-literal="SOAM_IDP_HINT_BCEID=$SOAM_IDP_HINT_BCEID" \
+  --from-literal="SOAM_IDP_HINT_IDIR=$SOAM_IDP_HINT_IDIR" \
   --from-literal="SOAM_PUBLIC_KEY=$FORMATTED_SOAM_PUBLIC_KEY" \
   --from-literal="SOAM_URL=https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID/protocol/openid-connect/logout" \
   --from-literal="UI_PRIVATE_KEY=$UI_PRIVATE_KEY_VAL" \
