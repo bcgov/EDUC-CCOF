@@ -2,7 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccfriSummaryForm">
       <v-expansion-panel-title>
-        <SummaryExpansionPanelTitle title="Child Care Fee Reduction Initiative (CCFRI)" :is-complete="isFormComplete" />
+        <SummaryExpansionPanelTitle title="Child Care Fee Reduction Initiative (CCFRI)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row v-if="!ccfri || ccfri?.ccfriOptInStatus === 0">
@@ -403,7 +403,7 @@
           </v-row>
         </v-row>
 
-        <div v-if="!isFormComplete">
+        <div v-if="!isValidForm">
           <router-link :to="getRoutingPath()">
             <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
@@ -464,7 +464,7 @@ export default {
   },
   data() {
     return {
-      isFormComplete: false,
+      isValidForm: false,
     };
   },
   computed: {
@@ -567,7 +567,7 @@ export default {
     this.rules = rules;
   },
   mounted() {
-    this.isFormComplete = ApplicationService.isCCFRIComplete(this.ccfri);
+    this.isValidForm = ApplicationService.isCCFRIComplete(this.ccfri);
   },
   methods: {
     getRoutingPath() {
