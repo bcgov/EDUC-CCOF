@@ -5,7 +5,7 @@ import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { ApiRoutes } from '@/utils/constants.js';
+import { APPLICATION_TEMPLATE_FISCAL_STARTS, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
@@ -228,7 +228,11 @@ export const useApplicationStore = defineStore('application', {
     showApplicationTemplateV1: (state) => {
       const appStore = useAppStore();
       // show the Application Template - V1 if the application program year is before the selected Program year.
-      return appStore.getProgramYearOrderById(state.programYearId) < appStore.getProgramYearOrderByName('2026-27 FY');
+      // TODO (vietle-cgi) - confirm with the business to make sure that fiscal year is the right approach
+      return (
+        appStore.getProgramYearOrderById(state.programYearId) <
+        appStore.getProgramYearOrderByName(APPLICATION_TEMPLATE_FISCAL_STARTS.V2)
+      );
     },
   },
 });

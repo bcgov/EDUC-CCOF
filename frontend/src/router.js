@@ -51,7 +51,6 @@ import {
   NAV_BAR_GROUPS,
   PAGE_TITLES,
   PATHS,
-  ROUTE_NAMES,
   changeUrl,
   changeUrlGuid,
   pcfUrl,
@@ -134,7 +133,7 @@ const router = createRouter({
     },
     {
       path: pcfUrl(PATHS.CCOF_GROUP_ORG),
-      name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION,
+      name: 'Group Organization Information',
       component: GroupOrganizationInformation,
       meta: {
         pageTitle: 'Organization Information',
@@ -146,7 +145,7 @@ const router = createRouter({
     },
     {
       path: pcfUrl(PATHS.CCOF_FAMILY_ORG),
-      name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION,
+      name: 'Family Organization Information',
       component: FamilyOrganization,
       meta: {
         pageTitle: 'Organization Information',
@@ -156,6 +155,7 @@ const router = createRouter({
         subtitleBanner: Subtitle_Banners.APPLICATION,
       },
     },
+
     {
       path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
       name: 'Eligibility',
@@ -218,7 +218,7 @@ const router = createRouter({
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY),
-      name: ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID,
+      name: 'Facility Information Guid',
       component: FacilityInformation,
       meta: {
         pageTitle: 'Facility Information',
@@ -242,7 +242,7 @@ const router = createRouter({
     },
     {
       path: pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING),
-      name: ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID,
+      name: 'Funding Amount Guid',
       component: GroupFundAmount,
       meta: {
         pageTitle: 'Information to Determine Funding amounts',

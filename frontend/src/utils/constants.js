@@ -72,13 +72,6 @@ export const PAGE_TITLES = Object.freeze({
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
 });
 
-export const ROUTE_NAMES = Object.freeze({
-  GROUP_ORGANIZATION_INFORMATION: 'Group Organization Information',
-  FAMILY_ORGANIZATION_INFORMATION: 'Family Organization Information',
-  GROUP_FACILITY_INFORMATION_GUID: 'Facility Information Guid',
-  GROUP_FUND_AMOUNT_GUID: 'Funding Amount Guid',
-});
-
 export const CHANGE_TYPES = Object.freeze({
   NEW_FACILITY: 'nf',
   CHANGE_NOTIFICATION: 'pdf',
@@ -416,4 +409,8 @@ export const TOOLTIP_TYPES = Object.freeze({
   INFO: 'Information',
   ERROR: 'Error',
   WARNING: 'Warning',
+});
+
+export const APPLICATION_TEMPLATE_FISCAL_STARTS = Object.freeze({
+  V2: '2026-27 FY',
 });
