@@ -410,3 +410,7 @@ export const TOOLTIP_TYPES = Object.freeze({
   ERROR: 'Error',
   WARNING: 'Warning',
 });
+
+export const APPLICATION_TEMPLATE_FISCAL_STARTS = Object.freeze({
+  V2: '2026-27 FY',
+});
