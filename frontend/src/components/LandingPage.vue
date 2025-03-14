@@ -242,7 +242,9 @@
         </v-col>
         <v-col class="col-12 col-md-6 ml-4">
           <v-row class="justify-right align-center col-12 col-lg-7 ml-4">
-            <v-btn theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4"> Organization Closures </v-btn>
+            <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4">
+              Organization Closures
+            </v-btn>
           </v-row>
         </v-col>
       </v-row>
@@ -348,6 +350,7 @@ import {
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
+import { closureUrl } from '../utils/constants';
 
 export default {
   name: 'LandingPage',
@@ -693,12 +696,8 @@ export default {
     goToSummaryDeclaration(programYearId = this.programYearId) {
       this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
     },
-    viewApplication(type) {
-      if (type === 'NEW') {
-        this.goToCCOFOrganizationInfo();
-      } else {
-        this.goToLicenseUpload();
-      }
+    goToOrganizationClosures() {
+      this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
     },
     async getAllMessagesVuex() {
       try {
