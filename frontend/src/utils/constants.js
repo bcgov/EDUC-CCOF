@@ -77,10 +77,6 @@ export const ROUTE_NAMES = Object.freeze({
   FAMILY_ORGANIZATION_INFORMATION: 'Family Organization Information',
   GROUP_FACILITY_INFORMATION_GUID: 'Facility Information Guid',
   GROUP_FUND_AMOUNT_GUID: 'Funding Amount Guid',
-  GROUP_ORGANIZATION_INFORMATION_LEGACY_V1: 'Group Organization Information - Legacy V1',
-  GROUP_FACILITY_INFORMATION_GUID_LEGACY_V1: 'Facility Information Guid - Legacy V1',
-  GROUP_FUND_AMOUNT_GUID_LEGACY_V1: 'Funding Amount Guid - Legacy V1',
-  FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1: 'Family Organization Information - Legacy V1',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -141,13 +137,6 @@ export const PATHS = {
   SUPPORTING_DOCS: '/supporting-documents',
 
   SUMMARY_DECLARATION: '/summary-declaration',
-
-  // Legacy Application - V1
-  CCOF_GROUP_ORG_LEGACY_V1: '/group/organization/v1',
-  CCOF_GROUP_FACILITY_LEGACY_V1: '/group/facility/v1',
-  CCOF_GROUP_FUNDING_LEGACY_V1: '/group/funding/v1',
-
-  CCOF_FAMILY_ORG_LEGACY_V1: '/family/organization/v1',
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',

@@ -227,7 +227,7 @@ export const useApplicationStore = defineStore('application', {
     },
     showApplicationTemplateV1: (state) => {
       const appStore = useAppStore();
-      // show the Legacy Application - V1 if the application program year is before the selected Program year.
+      // show the Application Template - V1 if the application program year is before the selected Program year.
       return appStore.getProgramYearOrderById(state.programYearId) < appStore.getProgramYearOrderByName('2026-27 FY');
     },
   },

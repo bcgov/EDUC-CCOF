@@ -225,7 +225,7 @@ export default {
     },
 
     /*
-      CCFRI-4682 - Legacy code to maintain compatibility with the old application layout.
+      CCFRI-4682 - Legacy code to maintain compatibility with the old application (V1) layout.
     */
     groupValueRuleMaxGroupChildCareUnder36() {
       return this.groupValueRule(
