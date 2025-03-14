@@ -1,6 +1,6 @@
 <template>
   <v-row no-gutters class="d-flex flex-column">
-    <v-form ref="ccfriSummaryForm" v-model="isValidForm">
+    <v-form ref="ccfriSummaryForm">
       <v-expansion-panel-title>
         <SummaryExpansionPanelTitle title="Child Care Fee Reduction Initiative (CCFRI)" :is-complete="isValidForm" />
       </v-expansion-panel-title>
@@ -430,6 +430,7 @@ import { mapState } from 'pinia';
 import globalMixin from '@/mixins/globalMixin.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
+import ApplicationService from '@/services/applicationService';
 
 export default {
   components: { SummaryExpansionPanelTitle },
@@ -461,16 +462,9 @@ export default {
       default: false,
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
-      PATHS,
-      rules,
       isValidForm: false,
-      formObj: {
-        formName: 'CCFRISummary',
-        formId: this.ccfri?.ccfriId,
-      },
     };
   },
   computed: {
@@ -567,20 +561,13 @@ export default {
       }
     },
   },
-  watch: {
-    isValidForm: {
-      handler() {
-        this.$refs.ccfriSummaryForm.validate();
-        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
-        //if form is invalid, it will be set to false and the emit will still fire.
-        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
-  },
   created() {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
+    this.PATHS = PATHS;
+    this.rules = rules;
+  },
+  mounted() {
+    this.isValidForm = ApplicationService.isCCFRIComplete(this.ccfri);
   },
   methods: {
     getRoutingPath() {

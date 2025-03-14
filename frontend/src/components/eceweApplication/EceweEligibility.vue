@@ -71,7 +71,7 @@ import {
   pcfUrl,
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
-  ECEWE_OPT_IN_TYPES,
+  OPT_STATUSES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
 } from '@/utils/constants.js';
@@ -193,12 +193,12 @@ export default {
     async next() {
       await this.saveECEWEApplication(false);
       if (this.isChangeRequest) {
-        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+        if (this.model.optInECEWE === OPT_STATUSES.OPT_OUT) {
           this.$router.push(changeUrl(PATHS.SUPPORTING_DOCS, this.$route.params.changeRecGuid));
         } else {
           this.$router.push(changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params.changeRecGuid));
         }
-      } else if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+      } else if (this.model.optInECEWE === OPT_STATUSES.OPT_OUT) {
         this.$router.push(pcfUrl(PATHS.SUPPORTING_DOCS, this.programYearId));
       } else {
         this.$router.push(pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId));
@@ -212,7 +212,7 @@ export default {
     /* Clear values for unanswered questions, in case user changes selection after save */
     updateQuestions() {
       if (this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
-        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+        if (this.model.optInECEWE === OPT_STATUSES.OPT_OUT) {
           this.resetModel([
             'fundingModel',
             'confirmation',
@@ -227,7 +227,7 @@ export default {
           this.resetModel(['applicableSector']);
         }
       } else {
-        if (this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT) {
+        if (this.model.optInECEWE === OPT_STATUSES.OPT_OUT) {
           this.resetModel(['belongsToUnion', 'fundingModel', 'confirmation', 'publicSector']);
         } else if (!this.model.belongsToUnion) {
           this.resetModel(['fundingModel', 'confirmation']);
@@ -287,10 +287,10 @@ export default {
       //this was modified by JB to try and fix bugs with the checkmarks.
       //instead of running map - I update the facility and nav bar with the opt out status.
       this.navBarList.forEach((facility) => {
-        facility.eceweOptInStatus = ECEWE_OPT_IN_TYPES.OPT_OUT;
+        facility.eceweOptInStatus = OPT_STATUSES.OPT_OUT;
       });
       this.facilities.forEach((facility) => {
-        facility.optInOrOut = ECEWE_OPT_IN_TYPES.OPT_OUT;
+        facility.optInOrOut = OPT_STATUSES.OPT_OUT;
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
@@ -330,7 +330,7 @@ export default {
         // If funding model is option 1, opt out all facilities and save. (2024 and previous ONLY) OR If opting out of ecewe,
         // ensure there are no previously saved opted in facilties, if there are, update to opt out and save.
         if (
-          this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_OUT ||
+          this.model.optInECEWE === OPT_STATUSES.OPT_OUT ||
           (this.model.fundingModel === this.fundingModelTypeList[0].id &&
             this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26)
         ) {

@@ -57,7 +57,7 @@
       <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-12 my-8">
+      <v-card v-if="!areAllFacilitiesComplete && !isProcessing" elevation="4" class="mx-12 my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -74,7 +74,7 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
+          <v-expansion-panels multiple variant="accordion">
             <v-row v-if="isProcessing">
               <v-col>
                 <v-skeleton-loader
@@ -91,159 +91,57 @@
                     :summary-model="summaryModel"
                     :is-processing="isProcessing"
                     :program-year-id="summaryModel?.application?.programYearId"
-                    @is-summary-valid="isFormComplete"
                   />
                 </v-expansion-panel>
               </div>
-
-              <div v-for="facility in facilities" :key="facility?.facilityId" class="special">
-                <v-expansion-panels v-model="expand[facility.facilityId]" multiple>
-                  <v-expansion-panel
-                    v-if="facility?.facilityInfo"
-                    :key="`${facility.facilityId}-facility-information`"
-                    :value="`${facility.facilityId}-facility-information`"
-                    variant="accordion"
-                  >
-                    <FacilityInformationSummary
-                      :facility-info="facility?.facilityInfo"
-                      :funding="facility?.funding"
-                      :facility-id="facility.facilityId"
-                      :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-                      :ecewe-status="facility?.ecewe?.optInOrOut"
-                      :license-categories="facility?.licenseCategories"
-                      :provider-type="summaryModel?.application?.organizationProviderType"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ccof-summary`"
-                    :value="`${facility.facilityId}-ccof-summary`"
-                    variant="accordion"
-                  >
-                    <div v-if="!facility.funding || isRenewal" />
-                    <div v-else>
-                      <CCOFSummaryFamily
-                        v-if="
-                          summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
-                        "
-                        :funding="facility.funding"
-                        :facility-id="facility.facilityId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
+              <v-expansion-panel variant="accordion" value="facility-information-summary">
+                <v-expansion-panel-title>
+                  <h4 style="color: #003466">
+                    Facility Information
+                    <v-icon v-if="areAllFacilitiesComplete" size="large" class="text-success">
+                      mdi-check-circle-outline
+                    </v-icon>
+                    <template v-else>
+                      <v-icon size="large" class="text-error px-2">mdi-alert-circle-outline</v-icon>
+                      <span class="text-error">
+                        At least one of your facilities is missing required information. Click here to view
+                      </span>
+                    </template>
+                  </h4>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text eager>
+                  <v-text-field
+                    v-if="facilities?.length > 2"
+                    v-model="facilityFilter"
+                    clearable
+                    variant="outlined"
+                    label="Filter by Facility Name"
+                    max-width="500"
+                  />
+                  <v-row class="pt-0">
+                    <v-col
+                      v-for="facility in sortedFacilities"
+                      :key="facility?.facilityId"
+                      cols="12"
+                      lg="6"
+                      class="my-1"
+                    >
+                      <FacilityInformationSummaryCard
+                        :facility="facility"
+                        @click="handleFacilitySummaryClickEvent(facility?.facilityId)"
                       />
-                      <CCOFSummary
-                        v-else
-                        :funding="facility.funding"
-                        :facility-id="facility.facilityId"
-                        :change-rec-guid="facility.changeRequestId"
-                        :program-year-id="summaryModel?.application?.programYearId"
-                        @is-summary-valid="isFormComplete"
-                      />
-                    </div>
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ccfri-summary`"
-                    :value="`${facility.facilityId}-ccfri-summary`"
-                    variant="accordion"
-                  >
-                    <CCFRISummary
-                      :ccfri="facility?.ccfri"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      :is-processing="isProcessing"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.rfiApp"
-                    :key="`${facility.facilityId}-rfi-summary`"
-                    :value="`${facility.facilityId}-rfi-summary`"
-                    variant="accordion"
-                  >
-                    <RFISummary
-                      :rfi-app="facility?.rfiApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.nmfApp"
-                    :key="`${facility.facilityId}-nmf-summary`"
-                    :value="`${facility.facilityId}-nmf-summary`"
-                    variant="accordion"
-                  >
-                    <NMFSummary
-                      :nmf-app="facility?.nmfApp"
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility.facilityId"
-                      :change-rec-guid="facility?.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.ccfri?.enableAfs"
-                    :key="`${facility.facilityId}-afs-summary`"
-                    :value="`${facility.facilityId}-afs-summary`"
-                    variant="accordion"
-                  >
-                    <AFSSummary
-                      :ccfri-id="facility?.ccfri?.ccfriId"
-                      :facility-id="facility?.facilityId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <FacilityInformationSummaryDialog
+                :show="showFacilityInformationSummaryDialog"
+                :facility-id="selectedFacilityId"
+                :program-year-id="summaryModel?.application?.programYearId"
+                max-width="85%"
+                @close="toggleFacilityInformationSummaryDialog"
+              />
 
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ecewe-summary-org`"
-                    :value="`${facility.facilityId}-ecewe-summary-org`"
-                    variant="accordion"
-                  >
-                    <ECEWESummary
-                      :ecewe="summaryModel.ecewe"
-                      :ecewe-facility="null"
-                      :is-processing="isProcessing"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-ecewe-summary-facility`"
-                    :value="`${facility.facilityId}-ecewe-summary-facility`"
-                    variant="accordion"
-                  >
-                    <ECEWESummary
-                      :ecewe="{}"
-                      :ecewe-facility="facility.ecewe"
-                      :funding-model="summaryModel?.ecewe?.fundingModel"
-                      :is-processing="isProcessing"
-                      :change-rec-guid="facility.changeRequestId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-uploaded-documents-summary`"
-                    :value="`${facility.facilityId}-uploaded-documents-summary`"
-                    variant="accordion"
-                  >
-                    <UploadedDocumentsSummary
-                      :documents="getDocumentsByFacility(facility)"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                </v-expansion-panels>
-              </div>
               <v-expansion-panel
                 v-if="hasChangeNotificationFormDocuments"
                 variant="accordion"
@@ -252,7 +150,6 @@
               >
                 <ChangeNotificationFormSummary
                   :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
-                  @is-summary-valid="isFormComplete"
                 />
               </v-expansion-panel>
             </v-row>
@@ -268,7 +165,7 @@
       >
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </v-row>
-      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-12'">
+      <v-row justify="center" class="pb-12 ma-12">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -431,10 +328,9 @@
         </v-card>
       </v-row>
       <NavButton
-        v-if="!printableVersion"
         :is-submit-displayed="true"
         class="mt-10"
-        :is-submit-disabled="!isPageComplete() || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
+        :is-submit-disabled="!isPageComplete || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
         :is-processing="isProcessing"
         @previous="previous"
         @submit="submit"
@@ -453,7 +349,7 @@
             application. We will contact you if more information is required.
           </p>
           <p>
-            <router-link :to="landingPage"> Return to your dashboard </router-link>
+            <router-link :to="PATHS.ROOT.HOME"> Return to your dashboard </router-link>
           </p>
         </template>
       </AppDialog>
@@ -471,6 +367,7 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
@@ -484,16 +381,9 @@ import {
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
-import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
-import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
-import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
-import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
-import RFISummary from '@/components/summary/group/RFISummary.vue';
-import NMFSummary from '@/components/summary/group/NMFSummary.vue';
-import AFSSummary from '@/components/summary/group/AFSSummary.vue';
+import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
+import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
-import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
-import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
@@ -501,15 +391,8 @@ export default {
   components: {
     AppDialog,
     OrganizationSummary,
-    UploadedDocumentsSummary,
-    NMFSummary,
-    RFISummary,
-    AFSSummary,
-    FacilityInformationSummary,
-    CCOFSummary,
-    CCFRISummary,
-    ECEWESummary,
-    CCOFSummaryFamily,
+    FacilityInformationSummaryCard,
+    FacilityInformationSummaryDialog,
     ChangeNotificationFormSummary,
     NavButton,
   },
@@ -520,25 +403,16 @@ export default {
       isLoading: false,
       isProcessing: false,
       dialog: false,
-      landingPage: PATHS.ROOT.HOME,
-      summaryKey: 1,
-      summaryModelFacilities: [],
-      invalidSummaryForms: [],
       payload: {},
-      printableVersion: false,
-      expand: [],
+      showFacilityInformationSummaryDialog: false,
+      selectedFacilityId: null,
+      facilityFilter: '',
     };
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
-    ...mapState(useNavBarStore, [
-      'getNavByFacilityId',
-      'getNavByFundingId',
-      'getNavByCCFRIId',
-      'previousPath',
-      'isChangeRequest',
-    ]),
-    ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
+    ...mapState(useNavBarStore, ['previousPath', 'isChangeRequest']),
+    ...mapState(useAppStore, ['programYearList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
     ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
@@ -622,9 +496,6 @@ export default {
     isFacilitiesAvailable() {
       return this.facilities?.length > 0;
     },
-    isSummaryComplete() {
-      return this.invalidSummaryForms.length < 1;
-    },
     allFacilitiesApproved() {
       return this.facilities?.every((facility) => {
         return facility.facilityInfo.facilityAccountNumber;
@@ -643,6 +514,26 @@ export default {
     isDeclarationADisplayed() {
       return (
         (!this.isRenewal && !this.organizationAccountNumber) || (this.isChangeRequest && !this.isDeclarationBDisplayed)
+      );
+    },
+    sortedFacilities() {
+      return this.facilities
+        .map((facility) => facility.facilitySummary)
+        .filter((facility) => facility.facilityName?.includes(this.facilityFilter ?? ''))
+        .sort((a, b) => (a.isComplete === b.isComplete ? 0 : a.isComplete ? 1 : -1));
+    },
+    isGroup() {
+      return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
+    areAllFacilitiesComplete() {
+      return this.sortedFacilities?.every((facility) => facility.isComplete);
+    },
+    isPageComplete() {
+      return (
+        this.model.agreeConsentCertify &&
+        this.model.orgContactName &&
+        this.areAllFacilitiesComplete &&
+        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup)
       );
     },
   },
@@ -664,9 +555,6 @@ export default {
   },
   async mounted() {
     this.isProcessing = true;
-    if (this.$route.path.endsWith('printable')) {
-      this.printableVersion = true;
-    }
     await Promise.all([
       this.getChangeRequestList(),
       this.loadSummary(this.$route.params?.changeRecGuid),
@@ -700,14 +588,7 @@ export default {
         this.model.declarationAStatus = undefined;
       }
     }
-    this.summaryKey = this.summaryKey + 1;
     this.isProcessing = false;
-    if (this.printableVersion) {
-      this.expandAllPanels();
-    }
-  },
-  created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [
@@ -723,10 +604,13 @@ export default {
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh']),
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
-    isPageComplete() {
-      return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
+    handleFacilitySummaryClickEvent(facilityId) {
+      this.selectedFacilityId = facilityId;
+      this.toggleFacilityInformationSummaryDialog();
     },
-
+    toggleFacilityInformationSummaryDialog() {
+      this.showFacilityInformationSummaryDialog = !this.showFacilityInformationSummaryDialog;
+    },
     isSomeChangeRequestActive() {
       //Status of : "Submitted" "Action Required";
       return isAnyChangeRequestActive(this.changeRequestStore);
@@ -852,142 +736,6 @@ export default {
     },
     previous() {
       this.$router.push(this.previousPath);
-    },
-    async isFormComplete(formObj, isComplete) {
-      if (!isComplete) {
-        this.invalidSummaryForms.push(formObj);
-      }
-      this.updateNavBarStatus(formObj, isComplete);
-    },
-    expandAllPanels() {
-      this.facilities.forEach((facility) => {
-        const facilityId = facility.facilityId;
-        this.expand[facilityId] = [
-          `${facilityId}-facility-information`,
-          `${facilityId}-ccof-summary`,
-          `${facilityId}-ccfri-summary`,
-          `${facilityId}-rfi-summary`,
-          `${facilityId}-nmf-summary`,
-          `${facilityId}-afs-summary`,
-          `${facilityId}-ecewe-summary-facility`,
-          `${facilityId}-ecewe-summary-org`,
-          `${facilityId}-uploaded-documents-summary`,
-        ];
-      });
-
-      this.expand['global'] = ['organization-summary', 'ecewe-summary-b', 'change-notification-form-summary'];
-    },
-    updateNavBarStatus(formObj, isComplete) {
-      if (formObj && !this.isReadOnly) {
-        if (this.isChangeRequest) {
-          this.payload['changeRequestId'] = this.changeRequestId;
-        }
-        console.info(`-- updating status for [${formObj?.formName}]' to be complete: [${isComplete}]`);
-        if (!this.payload.applicationId) {
-          this.payload['applicationId'] = this.summaryModel?.application?.applicationId;
-        }
-        switch (formObj.formName) {
-          case 'FacilityInformationSummary':
-            if (this.getNavByFacilityId(formObj.formId)?.isFacilityComplete != isComplete) {
-              this.setNavBarFacilityComplete({ facilityId: formObj.formId, complete: isComplete });
-              if (!this.payload.facilities) {
-                this.payload['facilities'] = [];
-              }
-              this.payload.facilities.push({ facilityId: formObj.formId, isFacilityComplete: isComplete });
-            }
-            break;
-          case 'CCOFSummary':
-            if (this.getNavByFundingId(formObj.formId)?.isCCOFComplete != isComplete) {
-              this.setNavBarFundingComplete({ fundingId: formObj.formId, complete: isComplete });
-              if (!this.payload.fundings) {
-                this.payload['fundings'] = [];
-              }
-              this.payload.fundings.push({ basefundingId: formObj.formId, isCCOFComplete: isComplete });
-            }
-            break;
-          case 'ECEWESummary':
-            if (this.isChangeRequest) {
-              if (this.isCREceweComplete != isComplete) {
-                this.setCRIsEceweComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
-                this.payload['isEceweComplete'] = isComplete;
-              }
-            } else {
-              if (this.isEceweComplete != isComplete) {
-                this.setIsEceweComplete(isComplete);
-                this.payload['isEceweComplete'] = isComplete;
-              }
-            }
-            break;
-          case 'CCFRISummary':
-            if (this.getNavByCCFRIId(formObj.formId)?.isCCFRIComplete != isComplete) {
-              this.getNavByCCFRIId(formObj.formId).isCCFRIComplete = isComplete;
-              if (!this.payload.ccfris) {
-                this.payload['ccfris'] = [];
-              }
-              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === formObj.formId);
-              if (findIndex > -1) {
-                const item = this.payload.ccfris[findIndex];
-                item['isCCFRIComplete'] = isComplete;
-              } else {
-                this.payload.ccfris.push({ ccfriId: formObj.formId, isCCFRIComplete: isComplete });
-              }
-            }
-            break;
-          case 'RFISummary':
-            if (this.getNavByFacilityId(formObj.formId)?.isRfiComplete != isComplete) {
-              this.getNavByFacilityId(formObj.formId).isRfiComplete = isComplete;
-              const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
-              if (!this.payload.ccfris) {
-                this.payload['ccfris'] = [];
-              }
-              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
-              if (findIndex > -1) {
-                const item = this.payload.ccfris[findIndex];
-                item['isRfiComplete'] = isComplete;
-              } else {
-                this.payload.ccfris.push({ ccfriId: ccfriId, isRfiComplete: isComplete });
-              }
-            }
-            break;
-          case 'NMFSummary':
-            if (this.getNavByFacilityId(formObj.formId)?.isNmfComplete != isComplete) {
-              this.getNavByFacilityId(formObj.formId).isNmfComplete = isComplete;
-              const ccfriId = this.getNavByFacilityId(formObj.formId).ccfriApplicationId;
-              if (!this.payload.ccfris) {
-                this.payload['ccfris'] = [];
-              }
-              const findIndex = this.payload.ccfris.findIndex((item) => item.ccfriId === ccfriId);
-              if (findIndex > -1) {
-                const item = this.payload.ccfris[findIndex];
-                item['isNmfComplete'] = isComplete;
-              } else {
-                this.payload.ccfris.push({ ccfriId: ccfriId, isNmfComplete: isComplete });
-              }
-            }
-            break;
-          case 'OrganizationSummary':
-            if (this.isOrganizationComplete != isComplete) {
-              this.setIsOrganizationComplete(isComplete);
-              this.payload['organizationId'] = formObj.formId;
-              this.payload['isOrganizationComplete'] = isComplete;
-            }
-            break;
-          case 'DocumentSummary':
-            if (this.isChangeRequest) {
-              if (this.isCRLicenseComplete != isComplete) {
-                this.setCRIsLicenseComplete({ changeRequestId: this.changeRequestId, isComplete: isComplete });
-                this.payload['isLicenseUploadComplete'] = isComplete;
-              }
-            } else {
-              if (this.isLicenseUploadComplete != isComplete) {
-                this.setIsLicenseUploadComplete(isComplete);
-                this.payload['isLicenseUploadComplete'] = isComplete;
-              }
-            }
-            break;
-        }
-      }
-      this.forceNavBarRefresh();
     },
 
     getDocumentsByFacility(facility) {
