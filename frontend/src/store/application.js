@@ -225,10 +225,10 @@ export const useApplicationStore = defineStore('application', {
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
       return facilityList;
     },
-    showLegacyApplicationV1: (state) => {
+    showApplicationTemplateV1: (state) => {
       const appStore = useAppStore();
       // show the Legacy Application - V1 if the application program year is before the selected Program year.
-      return appStore.getProgramYearOrderById(state.programYearId) < appStore.getProgramYearOrderByName('2025-26 FY');
+      return appStore.getProgramYearOrderById(state.programYearId) < appStore.getProgramYearOrderByName('2026-27 FY');
     },
   },
 });

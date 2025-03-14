@@ -31,12 +31,7 @@ export default {
       'isCCOFUnlocked',
       'changeRequestStatus',
     ]),
-    ...mapState(useApplicationStore, [
-      'applicationStatus',
-      'unlockBaseFunding',
-      'programYearId',
-      'showLegacyApplicationV1',
-    ]),
+    ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
     ...mapState(useOrganizationStore, ['organizationModel', 'organizationId', 'organizationProviderType']),
     isLocked() {
       if (isChangeRequest(this)) {
@@ -182,23 +177,15 @@ export default {
       }
 
       if (this.isChangeRequest) {
-        this.$router.push(
-          changeUrlGuid(
-            this.showLegacyApplicationV1 ? PATHS.CCOF_GROUP_FUNDING_LEGACY_V1 : PATHS.CCOF_GROUP_FUNDING,
-            this.changeRequestId,
-            this.baseFundingId,
-          ),
-        );
-      } else if (this.isGroup) {
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, this.baseFundingId));
+      } else {
         this.$router.push(
           pcfUrlGuid(
-            this.showLegacyApplicationV1 ? PATHS.CCOF_GROUP_FUNDING_LEGACY_V1 : PATHS.CCOF_GROUP_FUNDING,
+            this.isGroup ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
             this.programYearId,
             this.baseFundingId,
           ),
         );
-      } else {
-        this.$router.push(pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.baseFundingId));
       }
     },
 

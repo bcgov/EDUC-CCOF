@@ -120,7 +120,6 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PAGE_TITLES,
   PATHS,
-  ROUTE_NAMES,
 } from '@/utils/constants.js';
 
 let positionIndex = 0;
@@ -154,7 +153,6 @@ export default {
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
-      'showLegacyApplicationV1',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -632,28 +630,15 @@ export default {
     },
     getCCOFFamilyNavigation() {
       let items = [];
-      if (this.showLegacyApplicationV1) {
-        items.push({
-          title: 'Family Provider',
-          link: { name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1 },
-          isAccessible: true,
-          icon: this.getCheckbox(this.isOrganizationComplete),
-          isActive: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION_LEGACY_V1 === this.$route.name,
-          position: positionIndex++,
-          navBarId: navBarId++,
-        });
-      } else {
-        items.push({
-          title: 'Family Provider',
-          link: { name: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION },
-          isAccessible: true,
-          icon: this.getCheckbox(this.isOrganizationComplete),
-          isActive: ROUTE_NAMES.FAMILY_ORGANIZATION_INFORMATION === this.$route.name,
-          position: positionIndex++,
-          navBarId: navBarId++,
-        });
-      }
-
+      items.push({
+        title: 'Family Provider',
+        link: { name: 'Family Organization Information' },
+        isAccessible: true,
+        icon: this.getCheckbox(this.isOrganizationComplete),
+        isActive: 'Family Organization Information' === this.$route.name,
+        position: positionIndex++,
+        navBarId: navBarId++,
+      });
       if (this.navBarList?.length > 0) {
         items.push(
           {
@@ -951,14 +936,13 @@ export default {
       return retval;
     },
     getCCOFNavigation() {
-      if (this.showLegacyApplicationV1) return this.getCCOFNavigationLegacyApplicationV1();
       let items = [];
       items.push({
         title: 'Organization',
-        link: { name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION },
+        link: { name: 'Group Organization Information' },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),
-        isActive: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION === this.$route.name,
+        isActive: 'Group Organization Information' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++,
       });
@@ -970,12 +954,11 @@ export default {
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
               id: item.facilityId,
-              link: { name: ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID, params: { urlGuid: item.facilityId } },
+              link: { name: 'Facility Information Guid', params: { urlGuid: item.facilityId } },
               isAccessible: true,
               icon: this.getCheckbox(item.isFacilityComplete),
               isActive:
-                ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID === this.$route.name &&
-                this.$route.params.urlGuid === item.facilityId,
+                'Facility Information Guid' === this.$route.name && this.$route.params.urlGuid === item.facilityId,
               position: positionIndex++,
               navBarId: navBarId++,
             },
@@ -983,12 +966,11 @@ export default {
               title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
               subTitle: item.facilityName,
               subTitle2: item.facilityAccountNumber,
-              link: { name: ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID, params: { urlGuid: item.ccofBaseFundingId } },
+              link: { name: 'Funding Amount Guid', params: { urlGuid: item.ccofBaseFundingId } },
               isAccessible: true,
               icon: this.getCheckbox(item.isCCOFComplete),
               isActive:
-                ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID === this.$route.name &&
-                this.$route.params.urlGuid === item.ccofBaseFundingId,
+                'Funding Amount Guid' === this.$route.name && this.$route.params.urlGuid === item.ccofBaseFundingId,
               position: positionIndex++,
               navBarId: navBarId++,
             },
@@ -1011,69 +993,6 @@ export default {
       };
       return retval;
     },
-
-    getCCOFNavigationLegacyApplicationV1() {
-      let items = [];
-      items.push({
-        title: 'Organization',
-        link: { name: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION_LEGACY_V1 },
-        isAccessible: true,
-        icon: this.getCheckbox(this.isOrganizationComplete),
-        isActive: ROUTE_NAMES.GROUP_ORGANIZATION_INFORMATION_LEGACY_V1 === this.$route.name,
-        position: positionIndex++,
-        navBarId: navBarId++,
-      });
-      if (this.navBarList?.length > 0) {
-        this.navBarList?.forEach((item) => {
-          items.push(
-            {
-              title: PAGE_TITLES.FACILITY_INFO,
-              subTitle: item.facilityName,
-              subTitle2: item.facilityAccountNumber,
-              id: item.facilityId,
-              link: {
-                name: ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID_LEGACY_V1,
-                params: { urlGuid: item.facilityId },
-              },
-              isAccessible: true,
-              icon: this.getCheckbox(item.isFacilityComplete),
-              isActive:
-                ROUTE_NAMES.GROUP_FACILITY_INFORMATION_GUID_LEGACY_V1 === this.$route.name &&
-                this.$route.params.urlGuid === item.facilityId,
-              position: positionIndex++,
-              navBarId: navBarId++,
-            },
-            {
-              title: PAGE_TITLES.LICENCE_SERVICE_DETAILS,
-              subTitle: item.facilityName,
-              subTitle2: item.facilityAccountNumber,
-              link: { name: ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID_LEGACY_V1, params: { urlGuid: item.ccofBaseFundingId } },
-              isAccessible: true,
-              icon: this.getCheckbox(item.isCCOFComplete),
-              isActive:
-                ROUTE_NAMES.GROUP_FUND_AMOUNT_GUID_LEGACY_V1 && this.$route.params.urlGuid === item.ccofBaseFundingId,
-              position: positionIndex++,
-              navBarId: navBarId++,
-            },
-          );
-        });
-      } else {
-        //No new facilities, setup a blank template
-        items.push(this.addNewFacilityToCCOFNavbar(), this.addNewFundingToCCOFNavbar());
-      }
-      items.push(this.addNewFacilityConfirmationToCCOFNavbar());
-      items.push(this.addLicenceUploadToCCOFNavbar());
-      isCCOFGroupComplete = this.areChildrenComplete(items);
-      return {
-        title: NAV_BAR_GROUPS.CCOF,
-        isAccessible: true,
-        icon: this.getCheckbox(isCCOFGroupComplete),
-        expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
-        items: items,
-        navBarId: navBarId++,
-      };
-    },
-
     getECEWENavigation() {
       let items = [];
       items.push({
