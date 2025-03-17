@@ -346,7 +346,6 @@ import {
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
-import OrganizationService from '@/services/organizationService';
 
 export default {
   name: 'LandingPage',
@@ -375,7 +374,6 @@ export default {
       CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
       selectedProgramYear: undefined,
-      organizationGoodStandingCheckObject: undefined,
     };
   },
   computed: {
@@ -596,10 +594,10 @@ export default {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
     showNotGoodStandingWarning() {
-      return (
-        this.organizationGoodStandingCheckObject?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.organizationGoodStandingCheckObject.bypassGoodstandingCheck
-      );
+      if (this.isLoadingComplete) {
+        console.log(this.userInfo);
+      }
+      return true;
     },
   },
   async created() {
@@ -617,9 +615,6 @@ export default {
 
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
-    this.organizationGoodStandingCheckObject = await OrganizationService.getOrganizationGoodStandingCheck(
-      this.organizationId,
-    );
     this.refreshNavBarList();
     await this.getChangeRequestList();
     this.isLoadingComplete = true;
