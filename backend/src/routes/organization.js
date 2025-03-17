@@ -100,18 +100,4 @@ router.post('/:organizationId/renew', passport.authenticate('jwt', { session: fa
   return createOrganization(req, res);
 });
 
-/**
- * Get inGoodStanding for an organization.
- */
-router.get(
-  '/:organizationId/goodStandingCheck',
-  passport.authenticate('jwt', { session: false }),
-  isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
-  (req, res) => {
-    validationResult(req).throw();
-    return getOrganizationGoodStandingCheck(req, res);
-  },
-);
-
 module.exports = router;
