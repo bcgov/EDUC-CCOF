@@ -595,8 +595,8 @@ export default {
     },
     showNotGoodStandingWarning() {
       return (
-        this.userInfo?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.userInfo.bypassGoodstandingCheck
+        this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
+        !this.userInfo.organizaitonBypassGoodStandingCheck
       );
     },
   },
