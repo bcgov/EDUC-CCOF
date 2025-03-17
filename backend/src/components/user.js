@@ -1,24 +1,42 @@
 'use strict';
-const {getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation, isIdirUser, getOperation} = require('./utils');
+const { getSessionUser, getHttpHeader, minify, getUserGuid, getUserName, getLabelFromValue, postOperation, isIdirUser, getOperation } = require('./utils');
 const config = require('../config/index');
 const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
-const { APPLICATION_STATUS_CODES, CCFRI_STATUS_CODES, ECEWE_STATUS_CODES, CCOF_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES, PROGRAM_YEAR_STATUS_CODES, CHANGE_REQUEST_STATUS_CODES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES} = require('../util/constants');
-const { UserProfileFacilityMappings, UserProfileOrganizationMappings, UserProfileBaseFundingMappings, UserProfileApplicationMappings, UserProfileCCFRIMappings, UserProfileECEWEMappings, UserProfileChangeRequestNewFacilityMappings, fundingAgreementMappings} = require('../util/mapping/Mappings');
+const {
+  APPLICATION_STATUS_CODES,
+  CCFRI_STATUS_CODES,
+  ECEWE_STATUS_CODES,
+  CCOF_STATUS_CODES,
+  CCOF_APPLICATION_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  CHANGE_REQUEST_TYPES,
+  PROGRAM_YEAR_STATUS_CODES,
+  CHANGE_REQUEST_STATUS_CODES,
+  CHANGE_REQUEST_EXTERNAL_STATUS_CODES,
+} = require('../util/constants');
+const {
+  UserProfileFacilityMappings,
+  UserProfileOrganizationMappings,
+  UserProfileBaseFundingMappings,
+  UserProfileApplicationMappings,
+  UserProfileCCFRIMappings,
+  UserProfileECEWEMappings,
+  UserProfileChangeRequestNewFacilityMappings,
+  fundingAgreementMappings,
+} = require('../util/mapping/Mappings');
 const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const _ = require ('lodash');
-
+const _ = require('lodash');
 
 async function getUserInfo(req, res) {
-
   const userInfo = getSessionUser(req);
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
-      message: 'No session data'
+      message: 'No session data',
     });
   }
   const isIdir = isIdirUser(req);
@@ -33,12 +51,12 @@ async function getUserInfo(req, res) {
     } else {
       log.info(`Ministry user: [${req.session.passport.user._json.display_name}] attempted to log in but is not part of Dynamics.`);
       return res.status(HttpStatus.UNAUTHORIZED).json({
-        message: 'Not Authorized'
+        message: 'Not Authorized',
       });
     }
   }
   let resData = {
-    displayName: (queryUserName)? userName + '-' + queryUserName : userName,
+    displayName: queryUserName ? userName + '-' + queryUserName : userName,
     userName: userName,
     email: req.session.passport.user._json.email,
     isMinistryUser: isIdir,
@@ -55,11 +73,11 @@ async function getUserInfo(req, res) {
         // put a random userID so that we only search by queryname
         userResponse = await getUserProfile(null, queryUserName);
         if (userResponse === null) {
-          return res.status(HttpStatus.NOT_FOUND).json({message: 'No user found with that BCeID UserName'});
+          return res.status(HttpStatus.NOT_FOUND).json({ message: 'No user found with that BCeID UserName' });
         }
       } catch (e) {
         log.error('getUserProfile Error', e.response ? e.response.status : e.message);
-        throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+        throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
       }
     } else {
       //If not looking for a username, return from here since ministry staff should not have an account
@@ -69,18 +87,18 @@ async function getUserInfo(req, res) {
     //Not an idir user, so just get the guid from the header
     const userGuid = getUserGuid(req);
     log.verbose('User Guid is: ', userGuid);
-    userResponse = await getUserProfile(userGuid, userName );
+    userResponse = await getUserProfile(userGuid, userName);
   }
 
   if (log.isVerboseEnabled) {
-    log.verbose('getUserProfile response:',minify(userResponse));
+    log.verbose('getUserProfile response:', minify(userResponse));
   }
 
   if (userResponse === null) {
     creatUser(req);
     return res.status(HttpStatus.OK).json(resData);
   }
-  if (userResponse == {}){
+  if (userResponse == {}) {
     // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
@@ -88,13 +106,13 @@ async function getUserInfo(req, res) {
   let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
   let applicationList = [];
 
-  if (userResponse.application && userResponse.application.length > 0 ) {
+  if (userResponse.application && userResponse.application.length > 0) {
     //call the funding agreement table and load that to the application
     let operation = `ccof_funding_agreements?$filter=_ccof_organization_value eq '${organization.organizationId}'`;
     let fundingAgreementDetails = (await getOperation(operation)).value;
     //log.info(fundingAgreementDetails);
 
-    userResponse.application.forEach( ap => {
+    userResponse.application.forEach((ap) => {
       let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
       application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
       application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
@@ -107,16 +125,15 @@ async function getUserInfo(req, res) {
 
       //add in funding agreement details based on the fiscal year
       let fundingAgreementForFront = null;
-      for (const fundingAgreementObj of fundingAgreementDetails){
-        if (fundingAgreementObj._ccof_programyear_value != application.ccofProgramYearId){
+      for (const fundingAgreementObj of fundingAgreementDetails) {
+        if (fundingAgreementObj._ccof_programyear_value != application.ccofProgramYearId) {
           continue;
-        }
-        else if (!fundingAgreementForFront ||fundingAgreementObj.ccof_version > fundingAgreementForFront.ccof_version ){
+        } else if (!fundingAgreementForFront || fundingAgreementObj.ccof_version > fundingAgreementForFront.ccof_version) {
           fundingAgreementForFront = fundingAgreementObj;
         }
       }
       fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, fundingAgreementMappings).data;
-      application = {...application, ...fundingAgreementForFront};
+      application = { ...application, ...fundingAgreementForFront };
 
       applicationList.push(application);
     });
@@ -124,8 +141,9 @@ async function getUserInfo(req, res) {
   let results = {
     ...resData,
     ...organization,
-    applications: applicationList
+    applications: applicationList,
   };
+  console.log(res.status(HttpStatus.OK).json(results));
   return res.status(HttpStatus.OK).json(results);
 }
 
@@ -156,9 +174,9 @@ async function getUserProfile(userGuid, userName) {
 
 function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
   for (const changeRequest of changeRequestList) {
-    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter(item =>item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
+    let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter((item) => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
     for (const changeActionNewFacility of changeActionNewFacilityList) {
-      let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find(item => item['_ccof_facility_value'] === facilityId);
+      let result = changeActionNewFacility?.ccof_change_request_new_facility_change_act.find((item) => item['_ccof_facility_value'] === facilityId);
       //RLO - if facilityAccountNumber exists, then then don't update the facility statuses, since this is now part of the PCF
       if (result && !returnValue.facilityAccountNumber) {
         returnValue.changeRequestId = changeRequest?.ccof_change_requestid;
@@ -171,17 +189,16 @@ function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, 
 }
 
 function parseFacilityData(application, facilities) {
-
   //all the facilites
-  let facilityMap  = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
+  let facilityMap = new Map(facilities?.map((m) => [m['accountid'], new MappableObjectForFront(m, UserProfileFacilityMappings).data]));
 
   if (application) {
     facilityMap.forEach((value, key, map) => {
-      let ccfriInfo = application.ccof_applicationccfri_Application_ccof_ap?.find(item => item['_ccof_facility_value'] === key);
+      let ccfriInfo = application.ccof_applicationccfri_Application_ccof_ap?.find((item) => item['_ccof_facility_value'] === key);
       ccfriInfo = new MappableObjectForFront(ccfriInfo, UserProfileCCFRIMappings).data;
-      let eceweInfo = application.ccof_ccof_application_ccof_applicationecewe_application?.find(item => item['_ccof_facility_value'] === key);
+      let eceweInfo = application.ccof_ccof_application_ccof_applicationecewe_application?.find((item) => item['_ccof_facility_value'] === key);
       eceweInfo = new MappableObjectForFront(eceweInfo, UserProfileECEWEMappings).data;
-      let baseFunding = application.ccof_application_basefunding_Application?.find(item => item['_ccof_facility_value'] === key);
+      let baseFunding = application.ccof_application_basefunding_Application?.find((item) => item['_ccof_facility_value'] === key);
       baseFunding = new MappableObjectForFront(baseFunding, UserProfileBaseFundingMappings).data;
       // let changeRequestList = userResponse.application.ccof_ccof_change_request_Application_ccof_appl;
       let returnValue = {
@@ -216,13 +233,13 @@ async function getDynamicsUserByEmail(req) {
     email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
   // eslint-disable-next-line quotes,
-  email.includes("'") ? email = email.replace("'", "''") : email;
+  email.includes("'") ? (email = email.replace("'", "''")) : email;
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
   } catch (e) {
     log.error('getDynamicsUserByEmail Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -251,12 +268,12 @@ async function creatUser(req) {
       firstname: firstname,
       lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
-      ccof_username: getUserName(req)
+      ccof_username: getUserName(req),
     };
     postOperation('contacts', payload);
   } catch (e) {
     log.error('Error when creating user: ', e);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'Error while creating a new BCeID User'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'Error while creating a new BCeID User' }, e);
   }
 }
 
