@@ -102,7 +102,6 @@ async function getUserInfo(req, res) {
     // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
-  log.info(userResponse);
   let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
   let applicationList = [];
 
