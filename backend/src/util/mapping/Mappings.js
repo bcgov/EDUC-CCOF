@@ -279,6 +279,8 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'bypassGoodstandingCheck' },
+  { back: 'organization_ccof_good_standing_status', front: 'goodStandingStatus' },
 ];
 
 const UserProfileApplicationMappings = [
@@ -295,8 +297,6 @@ const UserProfileApplicationMappings = [
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
   { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
   { back: 'ccof_ccofstatus', front: 'ccofStatus' },
-  { back: 'ccof_bypass_goodstanding_check', front: 'bypassGoodstandingCheck' },
-  { back: 'ccof_good_standing_status', front: 'goodStandingStatus' },
 ];
 
 const UserProfileFacilityMappings = [
