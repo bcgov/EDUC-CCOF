@@ -594,10 +594,10 @@ export default {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
     },
     showNotGoodStandingWarning() {
-      if (this.isLoadingComplete) {
-        console.log(this.userInfo);
-      }
-      return true;
+      return (
+        this.userInfo?.goodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
+        !this.userInfo.bypassGoodstandingCheck
+      );
     },
   },
   async created() {
