@@ -7,7 +7,6 @@ const { OrganizationMappings } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
-
 async function getOrganization(req, res) {
   try {
     let organization = await getOperationWithObjectId('accounts', req.params.organizationId);
@@ -57,10 +56,10 @@ async function createOrganization(req, res) {
     // For new organizations, create a CCOF Application header
     organization.ccof_ccof_application_Organization_account = [
       {
-        'ccof_providertype': providerType, //10000000 GROUP, 100000001 - Family
-        'ccof_applicationtype': 100000000, // new
+        ccof_providertype: providerType, //10000000 GROUP, 100000001 - Family
+        ccof_applicationtype: 100000000, // new
         'ccof_ProgramYear@odata.bind': programYear,
-      }
+      },
     ];
 
     log.info('createOrganziation payload:', organization);
@@ -74,16 +73,16 @@ async function createOrganization(req, res) {
     if (applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
       applicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
       applicationStatus = getLabelFromValue(applicationPayload.ccof_ccof_application_Organization_account[0].statuscode, APPLICATION_STATUS_CODES);
-
     } else {
       log.error('Unable to find applicationId when creating organization: ', organizationGuid);
     }
-    return res.status(HttpStatus.CREATED).json({ 
+    return res.status(HttpStatus.CREATED).json({
       organizationId: organizationGuid,
       applicationId: applicationId,
       applicationStatus: applicationStatus,
       organizationProviderType: providerTypeLabel,
-      applicationType: 'NEW'});
+      applicationType: 'NEW',
+    });
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -106,5 +105,5 @@ async function updateOrganization(req, res) {
 module.exports = {
   getOrganization,
   createOrganization,
-  updateOrganization
+  updateOrganization,
 };
