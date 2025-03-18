@@ -11,6 +11,7 @@ const {
   deleteFacility,
   getLicenseCategories,
   getApprovedParentFees,
+  returnCCFRIClosuresForFiscalYear,
   returnCCFRIClosureDates,
 } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -76,7 +77,7 @@ router.get(
   [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty(), param('programYearGuid', 'URL param: [programYearGuid] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
-    return getCCFRIClosuresForFiscalYear(req, res);
+    return returnCCFRIClosuresForFiscalYear(req, res);
   },
 );
 
