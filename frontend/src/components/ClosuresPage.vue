@@ -6,7 +6,7 @@
       <v-col>
         <h1>Organization Closures</h1>
       </v-col>
-      <v-col> Fiscal Year: {{ programYearGuid }}</v-col>
+      <v-col> Fiscal Year: {{ route.params.programYearGuid }}</v-col>
     </v-row>
     <v-row>
       <v-col>
@@ -55,7 +55,17 @@
           <th class="text-left">Actions</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <tr v-for="(closure, index) in ccfriClosures.closures" :key="index">
+          <td>{{ closure.id }}</td>
+          <td>{{ closure.name }}</td>
+          <td>{{ closure.startDate }}</td>
+          <td>{{ closure.endDate }}</td>
+          <td>{{ closure.status }}</td>
+          <td>{{ closure.paymentEligibility }}</td>
+          <td></td>
+        </tr>
+      </tbody>
     </v-table>
   </v-container>
 </template>
@@ -68,6 +78,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
+import { useRoute } from 'vue-router';
 
 import facilityService from '@/services/facilityService.js';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
@@ -85,6 +96,7 @@ export default {
       results: {},
       isLoadingComplete: false,
       ccfriClosures: undefined,
+      route: useRoute(),
     };
   },
   computed: {
@@ -123,6 +135,7 @@ export default {
     this.getAllMessagesVuex();
     this.refreshNavBarList();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear('a', 'a');
+    console.log(this.ccfriClosures);
     // await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },

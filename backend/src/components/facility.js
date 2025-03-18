@@ -202,7 +202,7 @@ async function returnCCFRIClosureDates(req, res) {
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function returnCCFRIClosuresForFiscalYear(req, res) {
   try {
-    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.ccfriId) };
+    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.ccfriId, req.params.programYearId) };
     return res.status(HttpStatus.OK).json(closureData);
   } catch (e) {
     log.error('failed with error', e);
@@ -210,12 +210,24 @@ async function returnCCFRIClosuresForFiscalYear(req, res) {
   }
 }
 
-async function getCCFRIClosuresForFiscalYear(ccfriId) {
+async function getCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
   // const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
   // let data = await getOperation(url);
   // data = data.ccof_ccfri_closure_application_ccfri;
 
-  const closureDates = ['one date'];
+  const closures = [];
+
+  for (let i = 1; i <= 3; i++) {
+    closures.push({
+      closureDateId: i,
+      name: `Facility #${i}`,
+      startDate: `${i}/7/2024`,
+      endDate: `${i}/8/2024`,
+      status: i,
+      paymentEligibility: 1,
+      id: i + 100,
+    });
+  }
 
   // data.forEach((date) => {
   //   const formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
@@ -232,7 +244,7 @@ async function getCCFRIClosuresForFiscalYear(ccfriId) {
   //     id: date.ccof_application_ccfri_closureid,
   //   });
   // });
-  return closureDates;
+  return closures;
 }
 
 async function getCCFRIClosureDates(ccfriId) {
