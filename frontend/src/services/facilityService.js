@@ -2,10 +2,10 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
-  async returnCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
+  async getCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
     try {
       if (!ccfriId || !programYearId) return [];
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${ccfriId}/${programYearId}`);
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/closures/${ccfriId}/${programYearId}`);
       return response?.data;
     } catch (error) {
       console.log(`Failed to get ccfri closures - ${error}`);

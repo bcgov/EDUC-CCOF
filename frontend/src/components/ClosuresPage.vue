@@ -83,6 +83,7 @@ export default {
       PATHS: PATHS,
       results: {},
       isLoadingComplete: false,
+      ccfriClosures: undefined,
     };
   },
   computed: {
@@ -120,6 +121,7 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
+    this.ccfriClosures = this.getCCFRIClosuresForFiscalYear(,'2ad4c331-9434-ed11-9db1-002248d53d53');
     await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
