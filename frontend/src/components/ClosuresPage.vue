@@ -43,30 +43,50 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-left">Facility ID</th>
-          <th class="text-left">Facility Name</th>
-          <th class="text-left">Start Date</th>
-          <th class="text-left">End Date</th>
-          <th class="text-left">Status</th>
-          <th class="text-left">Payment Eligibility</th>
-          <th class="text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(closure, index) in ccfriClosures.closures" :key="index">
-          <td>{{ closure.id }}</td>
-          <td>{{ closure.name }}</td>
-          <td>{{ closure.startDate }}</td>
-          <td>{{ closure.endDate }}</td>
-          <td>{{ closure.status }}</td>
-          <td>{{ closure.paymentEligibility }}</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </v-table>
+    <v-container class="border">
+      <v-row>
+        <v-col>
+          <v-table v-if="isLoadingComplete">
+            <thead>
+              <tr>
+                <th class="text-left">Facility ID</th>
+                <th class="text-left">Facility Name</th>
+                <th class="text-left">Start Date</th>
+                <th class="text-left">End Date</th>
+                <th class="text-left">Status</th>
+                <th class="text-left">Payment Eligibility</th>
+                <th class="text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(closure, index) in ccfriClosures.closures" :key="index">
+                <td>{{ closure.id }}</td>
+                <td>{{ closure.name }}</td>
+                <td>{{ closure.startDate }}</td>
+                <td>{{ closure.endDate }}</td>
+                <td>{{ closure.status }}</td>
+                <td>{{ closure.paymentEligibility }}</td>
+                <td>Selectors</td>
+              </tr>
+              <tr></tr>
+            </tbody>
+          </v-table>
+          <v-row class="justify-end">
+            <v-col cols="auto">
+              <!-- Pagination Controls -->
+              <!-- Rows per page selector -->
+              <v-row v-if="isLoadingComplete" class="d-flex" style="gap: 16px">
+                <text>Items per page:</text>
+                <v-select v-model="itemsPerPage" :items="[5, 10, 15, 20]" density="compact" style="width: 150px" />
+                <text>{{ firstItem }}-{{ lastItem }} of {{ ccfriClosures.closures.length }}</text>
+                <v-btn><</v-btn>
+                <v-btn>></v-btn>
+              </v-row>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 <script>
@@ -97,6 +117,8 @@ export default {
       isLoadingComplete: false,
       ccfriClosures: undefined,
       route: useRoute(),
+      itemsPerPage: 10,
+      firstItem: 0,
     };
   },
   computed: {
@@ -129,14 +151,19 @@ export default {
       'organizationAccountNumber',
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
+    lastItem() {
+      if (this.ccfriClosures?.closures.length > 0) {
+        return Math.min(this.firstItem + this.itemsPerPage - 1, this.ccfriClosures.closures.length);
+      }
+      return 0;
+    },
   },
   async created() {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear('a', 'a');
-    console.log(this.ccfriClosures);
-    // await this.getChangeRequestList();
+    this.firstItem = this.ccfriClosures?.closures ? 1 : 0;
     this.isLoadingComplete = true;
   },
   methods: {
