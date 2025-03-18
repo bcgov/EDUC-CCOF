@@ -240,37 +240,33 @@
             Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
           </h2>
         </v-col>
-        <v-col class="col-12 col-md-6 ml-4">
-          <v-row class="justify-right align-center col-12 col-lg-7 ml-4">
-            <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4">
-              Organization Closures
-            </v-btn>
-          </v-row>
-        </v-col>
       </v-row>
-      <!--TODO: Fix formatting on smaller screens such that the components combine into a single column when width is small. "
-            .-->
-      <v-row no-gutters>
-        <v-col class="align-center col-12 ml-7">
-          <v-row class="justify-left align-center mr-4">
-            <h3 class="mr-4">Select fiscal year:</h3>
-            <FiscalYearSlider @select-program-year="selectProgramYear" />
-          </v-row>
-        </v-col>
+      <v-col class="col-12 col-md-6 ml-4">
+        <v-row class="justify-right align-center col-12 col-lg-7 ml-4">
+          <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4">
+            Organization Closures
+          </v-btn>
+        </v-row>
+      </v-col>
+      <v-row no-gutters justify="space-between">
         <v-col class="col-12 col-lg-7 ml-4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
-          <v-row>
-            <v-text-field
-              v-if="facilityListForFacilityCards?.length > 2"
-              v-model="input"
-              clearable
-              variant="filled"
-              label="Filter by Facility Name "
-              :bind="input"
-            />
+          <v-text-field
+            v-if="facilityListForFacilityCards?.length > 2"
+            v-model="input"
+            clearable
+            variant="filled"
+            label="Filter by Facility Name "
+            :bind="input"
+          />
+        </v-col>
+        <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
+          <v-row class="justify-right align-center mr-4">
+            <h3 class="mr-4">Select fiscal year:</h3>
+            <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
@@ -344,13 +340,13 @@ import {
   PATHS,
   pcfUrl,
   pcfUrlGuid,
+  closureUrl,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
-import { closureUrl } from '../utils/constants';
 
 export default {
   name: 'LandingPage',
@@ -696,6 +692,13 @@ export default {
     goToSummaryDeclaration(programYearId = this.programYearId) {
       this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
     },
+    viewApplication(type) {
+      if (type === 'NEW') {
+        this.goToCCOFOrganizationInfo();
+      } else {
+        this.goToLicenseUpload();
+      }
+    },
     goToOrganizationClosures() {
       this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
     },
@@ -848,13 +851,16 @@ export default {
 .blueBorder {
   border-top: 5px solid #003366 !important;
 }
+
 .blueButton {
   background-color: #003366 !important;
 }
+
 .red-button {
   background-color: #d8292f;
   color: white;
 }
+
 .blueText {
   color: rgb(0, 52, 102) !important;
 }
