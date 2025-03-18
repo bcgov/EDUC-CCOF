@@ -3,6 +3,7 @@ import { ApiRoutes } from '@/utils/constants';
 
 export default {
   async getCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
+    console.log('Running');
     try {
       if (!ccfriId || !programYearId) return [];
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/closures/${ccfriId}/${programYearId}`);

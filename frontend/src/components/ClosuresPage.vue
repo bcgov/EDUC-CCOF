@@ -69,6 +69,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
+import facilityService from '@/services/facilityService.js';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import { PATHS } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -121,8 +122,8 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    this.ccfriClosures = this.getCCFRIClosuresForFiscalYear(,'2ad4c331-9434-ed11-9db1-002248d53d53');
-    await this.getChangeRequestList();
+    this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear('a', 'a');
+    // await this.getChangeRequestList();
     this.isLoadingComplete = true;
   },
   methods: {
