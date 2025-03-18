@@ -202,7 +202,7 @@ async function returnCCFRIClosureDates(req, res) {
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function returnCCFRIClosuresForFiscalYear(req, res) {
   try {
-    const closureData = { closures: await getCCFRIClosureDates(req.params.ccfriId) };
+    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.ccfriId) };
     return res.status(HttpStatus.OK).json(closureData);
   } catch (e) {
     log.error('failed with error', e);
