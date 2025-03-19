@@ -3,90 +3,46 @@
   <v-container fluid class="pa-12">
     <MessagesToolbar />
     <v-row>
-      <v-col>
-        <h1>Organization Closures</h1>
+      <v-col class="col-m-12 col-lg-6">
+        <div class="pb-12 text-h4 font-weight-bold">Organization Closures</div>
       </v-col>
-      <v-col> Fiscal Year: {{ route.params.programYearGuid }}</v-col>
+      <v-col class="col-m-12 col-lg-6"> Fiscal Year: {{ route.params.programYearGuid }}</v-col>
     </v-row>
     <v-row>
       <v-col>
-        <p>{{ organizationName }}</p>
+        <h2>{{ organizationName }}</h2>
         <p>Organization ID: {{ organizationId }}</p>
       </v-col>
       <v-col>
-        <v-btn
-          class="blueButton"
-          theme="dark"
-          width="30%"
-          align="left"
-          @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
-        >
-          Add New Closure
-        </v-btn>
+        <v-btn class="blueButton" theme="dark" width="30%" align="left"> Add New Closure </v-btn>
       </v-col>
     </v-row>
   </v-container>
-  <v-container class="pa-12 border">
-    <v-row>
-      <v-col>Program and policy to provide text </v-col>
-      <v-col>
-        <v-row>
-          <h3>Filter by Facility</h3>
-          <h3>:]</h3>
-          <v-text-field
-            v-model="input"
-            clearable
-            variant="filled"
-            label="Filter by Facility Name and Facility ID "
-            :bind="input"
-          />
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-container class="border">
+  <v-row>
+    <v-col>Program and policy to provide text </v-col>
+    <v-col>
       <v-row>
-        <v-col>
-          <v-table v-if="isLoadingComplete">
-            <thead>
-              <tr>
-                <th class="text-left">Facility ID</th>
-                <th class="text-left">Facility Name</th>
-                <th class="text-left">Start Date</th>
-                <th class="text-left">End Date</th>
-                <th class="text-left">Status</th>
-                <th class="text-left">Payment Eligibility</th>
-                <th class="text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(closure, index) in ccfriClosures.closures" :key="index">
-                <td>{{ closure.id }}</td>
-                <td>{{ closure.name }}</td>
-                <td>{{ closure.startDate }}</td>
-                <td>{{ closure.endDate }}</td>
-                <td>{{ closure.status }}</td>
-                <td>{{ closure.paymentEligibility }}</td>
-                <td>Selectors</td>
-              </tr>
-              <tr></tr>
-            </tbody>
-          </v-table>
-          <v-row class="justify-end">
-            <v-col cols="auto">
-              <!-- Pagination Controls -->
-              <!-- Rows per page selector -->
-              <v-row v-if="isLoadingComplete" class="d-flex" style="gap: 16px">
-                <text>Items per page:</text>
-                <v-select v-model="itemsPerPage" :items="[5, 10, 15, 20]" density="compact" style="width: 150px" />
-                <text>{{ firstItem }}-{{ lastItem }} of {{ ccfriClosures.closures.length }}</text>
-                <v-btn><</v-btn>
-                <v-btn>></v-btn>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-col>
+        <p>Filter by Facility</p>
+        <v-icon>mdi-filter</v-icon>
+        <v-text-field
+          v-model="search"
+          label="Filter by Facility Name and Facility ID"
+          clearable
+          variant="outlined"
+          class="mb-4"
+        ></v-text-field>
       </v-row>
-    </v-container>
+    </v-col>
+  </v-row>
+  <v-container width="100%">
+    <v-data-table
+      :headers="closureTableHeaders"
+      :items="ccfriClosures?.closures"
+      :items-per-page="10"
+      :search="search"
+      class="elevation-1"
+    >
+    </v-data-table>
   </v-container>
 </template>
 <script>
@@ -117,8 +73,15 @@ export default {
       isLoadingComplete: false,
       ccfriClosures: undefined,
       route: useRoute(),
-      itemsPerPage: 10,
-      firstItem: 0,
+      search: '',
+      closureTableHeaders: [
+        { title: 'Facility ID', sortable: true, value: 'id' },
+        { title: 'Facility Name', sortable: true, value: 'name' },
+        { title: 'Start Date', sortable: true, value: 'startDate' },
+        { title: 'End Date', sortable: true, value: 'endDate' },
+        { title: 'Status', sortable: true, value: 'status' },
+        { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
+      ],
     };
   },
   computed: {
@@ -157,13 +120,15 @@ export default {
       }
       return 0;
     },
+    ccfriClosuresToShow() {
+      return this.ccfriClosures.closures.slice(this.firstItem - 1, this.lastItem);
+    },
   },
   async created() {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear('a', 'a');
-    this.firstItem = this.ccfriClosures?.closures ? 1 : 0;
     this.isLoadingComplete = true;
   },
   methods: {

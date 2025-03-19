@@ -217,13 +217,13 @@ async function getCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
 
   const closures = [];
 
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= 25; i++) {
     closures.push({
-      closureDateId: i,
+      closureDateId: 100 - i,
       name: `Facility #${i}`,
       startDate: `${i}/7/2024`,
       endDate: `${i}/8/2024`,
-      status: i,
+      status: (i % 3) + 1,
       paymentEligibility: 1,
       id: i + 100,
     });
