@@ -5,7 +5,7 @@ import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { APPLICATION_TEMPLATE_FISCAL_STARTS, ApiRoutes } from '@/utils/constants.js';
+import { ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
@@ -13,6 +13,7 @@ export const useApplicationStore = defineStore('application', {
     applicationId: null,
     applicationStatus: null,
     applicationType: null,
+    applicationTemplateVersion: null,
     ccofApplicationStatus: null,
     programYearId: null,
     programYearLabel: null,
@@ -42,6 +43,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setApplicationStatus(value) {
       this.applicationStatus = value;
+    },
+    setApplicationTemplateVersion(value) {
+      this.applicationTemplateVersion = value;
     },
     setCcofApplicationStatus(value) {
       this.ccofApplicationStatus = value;
@@ -124,6 +128,7 @@ export const useApplicationStore = defineStore('application', {
       if (application) {
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
+        this.setApplicationTemplateVersion(application.applicationTemplateVersion);
         this.setApplicationType(application.applicationType);
         this.setCcofApplicationStatus(application.ccofApplicationStatus);
         this.setProgramYearId(application.ccofProgramYearId);
@@ -226,13 +231,7 @@ export const useApplicationStore = defineStore('application', {
       return facilityList;
     },
     showApplicationTemplateV1: (state) => {
-      const appStore = useAppStore();
-      // show the Application Template - V1 if the application program year is before the selected Program year.
-      // TODO (vietle-cgi) - confirm with the business to make sure that fiscal year is the right approach
-      return (
-        appStore.getProgramYearOrderById(state.programYearId) <
-        appStore.getProgramYearOrderByName(APPLICATION_TEMPLATE_FISCAL_STARTS.V2)
-      );
+      return Number(state.applicationTemplateVersion) !== 1;
     },
   },
 });

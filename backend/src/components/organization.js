@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
+const { getActiveApplicationTemplate } = require('./application');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
@@ -57,7 +58,8 @@ async function createOrganization(req, res) {
     organization.ccof_ccof_application_Organization_account = [
       {
         ccof_providertype: providerType, //10000000 GROUP, 100000001 - Family
-        ccof_applicationtype: 100000000, // new
+        ccof_applicationtype: CCOF_APPLICATION_TYPES.NEW,
+        ccof_application_template_version: getActiveApplicationTemplate(),
         'ccof_ProgramYear@odata.bind': programYear,
       },
     ];

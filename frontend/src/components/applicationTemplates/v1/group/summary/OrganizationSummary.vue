@@ -304,10 +304,6 @@ export default {
       type: String,
       required: true,
     },
-    summaryModel: {
-      type: Object,
-      required: true,
-    },
     isProcessing: {
       type: Boolean,
       required: false,
@@ -333,7 +329,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete', 'summaryModel']),
   },
   watch: {
     isValidForm: {
