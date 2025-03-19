@@ -3,17 +3,21 @@
   <v-container fluid class="pa-12">
     <MessagesToolbar />
     <v-row>
-      <v-col class="col-m-12 col-lg-6">
-        <div class="pb-12 text-h4 font-weight-bold">Organization Closures</div>
+      <v-col class="col-m-12 col-lg-8">
+        <v-row>
+          <div class="pb-6 text-h4 font-weight-bold">Organization Closures</div>
+        </v-row>
+        <v-row>
+          <div class="text-h5 font-weight-bold blueText">{{ organizationName }}</div>
+        </v-row>
+        <v-row>
+          <div class="text-p blueText">Organization ID: {{ organizationId }}</div>
+        </v-row>
       </v-col>
-      <v-col class="col-m-12 col-lg-6"> Fiscal Year: {{ route.params.programYearGuid }}</v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h2>{{ organizationName }}</h2>
-        <p>Organization ID: {{ organizationId }}</p>
-      </v-col>
-      <v-col>
+      <v-col class="col-m-12 col-lg-4">
+        <v-row class="justify-end">
+          <div>Fiscal Year: {{ route.params.programYearGuid }}</div>
+        </v-row>
         <v-btn class="blueButton" theme="dark" width="30%" align="left"> Add New Closure </v-btn>
       </v-col>
     </v-row>
@@ -42,6 +46,11 @@
       :search="search"
       class="elevation-1"
     >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-btn size="small" color="white" @click="viewDetails(item)">View Details</v-btn>
+        <v-btn size="small" color="white" @click="updateItem(item)">Update</v-btn>
+        <v-btn size="small" color="white" @click="removeItem(item)">Remove</v-btn>
+      </template>
     </v-data-table>
   </v-container>
 </template>
@@ -81,6 +90,7 @@ export default {
         { title: 'End Date', sortable: true, value: 'endDate' },
         { title: 'Status', sortable: true, value: 'status' },
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
+        { title: 'Actions', sortable: false, value: 'actions' },
       ],
     };
   },
@@ -144,6 +154,16 @@ export default {
       } catch (error) {
         console.info(error);
       }
+    },
+    // todo: implement the following functions
+    viewDetails(item) {
+      // stub
+    },
+    updateItem(item) {
+      // stub
+    },
+    removeItem(item) {
+      // stub
     },
   },
 };
