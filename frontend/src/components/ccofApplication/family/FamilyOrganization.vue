@@ -61,7 +61,6 @@
                   :disabled="isLocked"
                   :rules="rules.required"
                   inline
-                  color="primary"
                   label="Organization Street Address same as Mailing Address"
                   class="mt-4"
                   @update:model-value="resetStreetAddress"

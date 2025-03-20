@@ -61,7 +61,6 @@
                   :disabled="isLocked"
                   inline
                   label="Are there months when ALL of the programs at this facility are closed for the entire month?"
-                  color="primary"
                   class="application-label"
                   @update:model-value="resetSelectedClosedMonths"
                 >
@@ -428,7 +427,6 @@
               :rules="rules.required"
               inline
               label="Is the facility located on school property?"
-              color="primary"
               class="application-label"
             >
               <v-radio label="Yes" :value="1" />
@@ -493,7 +491,6 @@
               :disabled="isLocked"
               inline
               label="Do you regularly offer extended hours of child care (care before 6:00 am, after 7:00pm or overnight service regularly offered)?"
-              color="primary"
               class="application-label"
               @update:model-value="resetExtendedHoursFields"
             >
