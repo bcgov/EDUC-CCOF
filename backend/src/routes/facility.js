@@ -71,10 +71,10 @@ router.get(
  *
  */
 router.get(
-  '/closures/:ccfriId/:programYearGuid',
+  '/closures/:organizationId/:programYearId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty(), param('programYearGuid', 'URL param: [programYearGuid] is required').not().isEmpty()],
+  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(), param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
     return returnCCFRIClosuresForFiscalYear(req, res);

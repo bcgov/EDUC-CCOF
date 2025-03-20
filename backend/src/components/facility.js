@@ -202,7 +202,7 @@ async function returnCCFRIClosureDates(req, res) {
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function returnCCFRIClosuresForFiscalYear(req, res) {
   try {
-    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.ccfriId, req.params.programYearId) };
+    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.organizationId, req.params.programYearId) };
     return res.status(HttpStatus.OK).json(closureData);
   } catch (e) {
     log.error('failed with error', e);
@@ -210,40 +210,38 @@ async function returnCCFRIClosuresForFiscalYear(req, res) {
   }
 }
 
-async function getCCFRIClosuresForFiscalYear(ccfriId, programYearId) {
-  // const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
-  // let data = await getOperation(url);
-  // data = data.ccof_ccfri_closure_application_ccfri;
-
+async function getCCFRIClosuresForFiscalYear(organizationId, programYearId) {
+  const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${organizationId} and  _ccof_program_year_value eq ${programYearId}`;
+  let data = await getOperation(url);
+  console.log(data);
   const closures = [];
 
-  for (let i = 1; i <= 25; i++) {
-    closures.push({
-      closureDateId: 100 - i,
-      name: `Facility #${i}`,
-      startDate: `${i}/7/2024`,
-      endDate: `${i}/8/2024`,
-      status: (i % 3) + 1,
-      paymentEligibility: 1,
-      id: i + 100,
-    });
-  }
-
-  // data.forEach((date) => {
-  //   const formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
-  //   const formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
-
-  //   closureDates.push({
-  //     closureDateId: date.ccof_application_ccfri_closureid,
-  //     startDate: date.ccof_startdate,
-  //     endDate: date.ccof_enddate,
-  //     feesPaidWhileClosed: date.ccof_paidclosure,
-  //     closureReason: date.ccof_comment,
-  //     formattedStartDate: formattedStartDate,
-  //     formattedEndDate: formattedEndDate,
-  //     id: date.ccof_application_ccfri_closureid,
+  // for (let i = 1; i <= 25; i++) {
+  //   closures.push({
+  //     closureDateId: 100 - i,
+  //     name: `Facility #${i}`,
+  //     startDate: `${i}/7/2024`,
+  //     endDate: `${i}/8/2024`,
+  //     status: (i % 3) + 1,
+  //     paymentEligibility: 1,
+  //     id: i + 100,
   //   });
-  // });
+  // }
+
+  console.log(data);
+  data.value.forEach((closure) => {
+    const formattedStartDate = closure.ccof_startdate ? new Date(closure.ccof_startdate).toISOString().slice(0, 10) : closure.ccof_startdate;
+    const formattedEndDate = closure.ccof_enddate ? new Date(closure.ccof_enddate).toISOString().slice(0, 10) : closure.ccof_enddate;
+
+    closures.push({
+      facilityId: closure._ccof_facility_value,
+      facilityName: closure['_ccof_facility_value@OData.Community.Display.V1.FormattedValue'],
+      startDate: formattedStartDate,
+      endDate: formattedEndDate,
+      ccofStatus: closure.ccof_closure_status,
+      ccofPaymentEligibility: closure.ccof_payment_eligibility,
+    });
+  });
   return closures;
 }
 

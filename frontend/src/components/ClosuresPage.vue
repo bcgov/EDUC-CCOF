@@ -47,9 +47,11 @@
       class="elevation-1"
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <v-btn size="small" color="white" @click="viewDetails(item)">View Details</v-btn>
-        <v-btn size="small" color="white" @click="updateItem(item)">Update</v-btn>
-        <v-btn size="small" color="white" @click="removeItem(item)">Remove</v-btn>
+        <v-row>
+          <v-btn size="small" color="white" @click="viewDetails(item)">View Details</v-btn>
+          <v-btn size="small" color="white" @click="updateItem(item)">Update</v-btn>
+          <v-btn size="small" color="white" @click="removeItem(item)">Remove</v-btn>
+        </v-row>
       </template>
     </v-data-table>
   </v-container>
@@ -84,12 +86,12 @@ export default {
       route: useRoute(),
       search: '',
       closureTableHeaders: [
-        { title: 'Facility ID', sortable: true, value: 'id' },
-        { title: 'Facility Name', sortable: true, value: 'name' },
+        { title: 'Facility ID', sortable: true, value: 'facilityId' },
+        { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Start Date', sortable: true, value: 'startDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Status', sortable: true, value: 'status' },
-        { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
+        { title: 'Status', sortable: true, value: 'ccofStatus' },
+        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
     };
@@ -138,7 +140,10 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
-    this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear('a', 'a');
+    this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear(
+      'c787c859-4df9-ef11-bae1-7ced8d05e0a9',
+      'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4',
+    );
     this.isLoadingComplete = true;
   },
   methods: {
