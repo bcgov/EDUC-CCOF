@@ -22,23 +22,24 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-row>
-    <v-col>Program and policy to provide text </v-col>
-    <v-col>
-      <v-row>
-        <p>Filter by Facility</p>
-        <v-icon>mdi-filter</v-icon>
-        <v-text-field
-          v-model="search"
-          label="Filter by Facility Name and Facility ID"
-          clearable
-          variant="outlined"
-          class="mb-4"
-        ></v-text-field>
-      </v-row>
-    </v-col>
-  </v-row>
   <v-container width="100%">
+    <v-row>
+      <v-col>Program and policy to provide text </v-col>
+      <v-col>
+        <v-row>
+          <p>Filter by Facility</p>
+          <v-icon>mdi-filter</v-icon>
+          <v-text-field
+            v-model="search"
+            label="Filter by Facility Name and Facility ID"
+            clearable
+            variant="outlined"
+            class="mb-4"
+          ></v-text-field>
+        </v-row>
+      </v-col>
+    </v-row>
+
     <v-data-table
       :headers="closureTableHeaders"
       :items="ccfriClosures?.closures"
@@ -46,6 +47,11 @@
       :search="search"
       class="elevation-1"
     >
+      <template v-slot:[`item.ccofStatus`]="{ item }">
+        <span :class="getCcofStatus(item.ccofStatus)">
+          {{ item.ccofStatusValue }}
+        </span>
+      </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-row>
           <v-btn size="small" color="white" @click="viewDetails(item)">View Details</v-btn>
@@ -90,7 +96,7 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Start Date', sortable: true, value: 'startDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Status', sortable: true, value: 'ccofStatusValue' },
+        { title: 'Status', sortable: true, value: 'ccofStatus' },
         { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityValue' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
@@ -184,8 +190,42 @@ export default {
         eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.INELIGIBLE}`, 'Ineligible');
         eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.PENDING}`, 'Pending');
         eligibility = eligibility.replaceAll(',', ', ');
-        console.log(eligibility);
+        switch (closure.ccofStatus) {
+          case FACILITY_CLOSURE_STATUS.DRAFT:
+            closure.ccofStatusValue = 'Draft';
+            break;
+          case FACILITY_CLOSURE_STATUS.SUBMITTED:
+            closure.ccofStatusValue = 'Submitted';
+            break;
+          case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
+            closure.ccofStatusValue = 'In progress';
+            break;
+          case FACILITY_CLOSURE_STATUS.APPROVED:
+            closure.ccofStatusValue = 'Approved';
+            break;
+          case FACILITY_CLOSURE_STATUS.DENIED:
+            closure.ccofStatusValue = 'Denied';
+            break;
+          default:
+            closure.ccofStatusValue = '';
+        }
         closure.ccofPaymentEligibilityValue = eligibility;
+      }
+    },
+    getCcofStatus(ccofStatusNumber) {
+      switch (ccofStatusNumber) {
+        case FACILITY_CLOSURE_STATUS.DRAFT:
+          return 'bg-blue';
+        case FACILITY_CLOSURE_STATUS.SUBMITTED:
+          return 'bg-yellow';
+        case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
+          return 'bg-orange';
+        case FACILITY_CLOSURE_STATUS.APPROVED:
+          return 'bg-green';
+        case FACILITY_CLOSURE_STATUS.DENIED:
+          return 'bg-red';
+        default:
+          return 'bg-white';
       }
     },
   },
