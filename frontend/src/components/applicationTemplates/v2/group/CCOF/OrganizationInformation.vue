@@ -28,12 +28,7 @@
             </v-row>
 
             <div class="ma-4 mb-2">Type of Organization</div>
-            <v-radio-group
-              v-model="model.organizationType"
-              :disabled="isLocked"
-              :rules="rules.required"
-              color="primary"
-            >
+            <v-radio-group v-model="model.organizationType" :disabled="isLocked" :rules="rules.required">
               <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
             </v-radio-group>
 
@@ -95,7 +90,6 @@
                   :disabled="isLocked"
                   :rules="rules.required"
                   inline
-                  color="primary"
                   label="Organization Street Address same as Mailing Address"
                   class="application-label mt-6"
                   @update:model-value="resetStreetAddress"

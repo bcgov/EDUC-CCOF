@@ -40,7 +40,6 @@
                 :disabled="isLocked"
                 :rules="rules.required"
                 inline
-                color="primary"
                 label="Is the Facility Street Address the same as the Organization Street Address?"
                 class="application-label mt-6"
                 @update:model-value="resetFacilityAddress"
@@ -72,7 +71,6 @@
                 :disabled="isLocked"
                 :rules="rules.required"
                 inline
-                color="primary"
                 label="Is the Facility Contact the same as the Organization's Authorized Signing Authority Information?"
                 class="application-label mt-6"
                 @update:model-value="resetFacilityContact"
@@ -185,7 +183,6 @@
                     :disabled="isLocked"
                     :rules="rules.required"
                     label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?"
-                    color="primary"
                     class="application-label"
                   >
                     <v-radio label="No" value="no" />
