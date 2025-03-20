@@ -613,7 +613,7 @@ export default {
     this.isLoadingComplete = true;
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsRenewal']),
+    ...mapActions(useApplicationStore, ['setIsRenewal', 'setProgramYearLabel']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
@@ -698,6 +698,7 @@ export default {
       }
     },
     goToOrganizationClosures() {
+      this.setProgramYearLabel(this.selectProgramYear?.name);
       this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
     },
     async getAllMessagesVuex() {

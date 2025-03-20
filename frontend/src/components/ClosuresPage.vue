@@ -16,7 +16,7 @@
       </v-col>
       <v-col class="col-m-12 col-lg-4">
         <v-row class="justify-end">
-          <div>Fiscal Year: {{ route.params.programYearGuid }}</div>
+          <div>Fiscal Year: {{ programYearLabel }}</div>
         </v-row>
         <v-btn class="blueButton" theme="dark" width="30%" align="left"> Add New Closure </v-btn>
       </v-col>
