@@ -69,7 +69,7 @@ import { useRoute } from 'vue-router';
 
 import facilityService from '@/services/facilityService.js';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
-import { PATHS } from '@/utils/constants.js';
+import { PATHS, FACILITY_CLOSURE_STATUS, FACILITY_CLOSURE_FUNDING_ELIGIBILITY } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
@@ -90,8 +90,8 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Start Date', sortable: true, value: 'startDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Status', sortable: true, value: 'ccofStatus' },
-        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibility' },
+        { title: 'Status', sortable: true, value: 'ccofStatusValue' },
+        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityValue' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
     };
@@ -145,7 +145,7 @@ export default {
       'c787c859-4df9-ef11-bae1-7ced8d05e0a9',
       'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4',
     );
-    this.addFacilitiyIds(this.ccfriClosures);
+    this.processClosures(this.ccfriClosures);
     this.isLoadingComplete = true;
   },
   methods: {
@@ -172,10 +172,20 @@ export default {
     removeItem(item) {
       // stub
     },
-    addFacilitiyIds(ccfriClosures) {
+    processClosures(ccfriClosures) {
       for (let closure of ccfriClosures.closures) {
         const facility = this.getNavByFacilityId(closure.facilityGuid);
         closure.facilityId = facility.facilityAccountNumber;
+
+        let eligibility = closure.ccofPaymentEligibility;
+        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI}`, 'CCFRI');
+        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI_AND_CCOF}`, 'CCFRI/CCOF');
+        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCOF}`, 'CCOF');
+        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.INELIGIBLE}`, 'Ineligible');
+        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.PENDING}`, 'Pending');
+        eligibility = eligibility.replaceAll(',', ', ');
+        console.log(eligibility);
+        closure.ccofPaymentEligibilityValue = eligibility;
       }
     },
   },
