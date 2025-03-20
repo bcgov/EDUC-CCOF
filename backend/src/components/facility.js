@@ -216,19 +216,6 @@ async function getCCFRIClosuresForFiscalYear(organizationId, programYearId) {
   console.log(data);
   const closures = [];
 
-  // for (let i = 1; i <= 25; i++) {
-  //   closures.push({
-  //     closureDateId: 100 - i,
-  //     name: `Facility #${i}`,
-  //     startDate: `${i}/7/2024`,
-  //     endDate: `${i}/8/2024`,
-  //     status: (i % 3) + 1,
-  //     paymentEligibility: 1,
-  //     id: i + 100,
-  //   });
-  // }
-
-  console.log(data);
   data.value.forEach((closure) => {
     const formattedStartDate = closure.ccof_startdate ? new Date(closure.ccof_startdate).toISOString().slice(0, 10) : closure.ccof_startdate;
     const formattedEndDate = closure.ccof_enddate ? new Date(closure.ccof_enddate).toISOString().slice(0, 10) : closure.ccof_enddate;
