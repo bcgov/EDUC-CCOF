@@ -117,7 +117,7 @@ export default {
       'applicationMap',
       'applicationId',
     ]),
-    ...mapState(useNavBarStore, ['navBarList']),
+    ...mapState(useNavBarStore, ['navBarList', 'getNavByFacilityId']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
       'organizationProviderType',
@@ -140,10 +140,12 @@ export default {
     this.isLoadingComplete = false;
     this.getAllMessagesVuex();
     this.refreshNavBarList();
+    this.useNavBarStore = useNavBarStore();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear(
       'c787c859-4df9-ef11-bae1-7ced8d05e0a9',
       'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4',
     );
+    this.addFacilitiyIds(this.ccfriClosures);
     this.isLoadingComplete = true;
   },
   methods: {
@@ -169,6 +171,12 @@ export default {
     },
     removeItem(item) {
       // stub
+    },
+    addFacilitiyIds(ccfriClosures) {
+      for (let closure of ccfriClosures.closures) {
+        const facility = this.getNavByFacilityId(closure.facilityGuid);
+        closure.facilityId = facility.facilityAccountNumber;
+      }
     },
   },
 };

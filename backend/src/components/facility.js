@@ -234,7 +234,7 @@ async function getCCFRIClosuresForFiscalYear(organizationId, programYearId) {
     const formattedEndDate = closure.ccof_enddate ? new Date(closure.ccof_enddate).toISOString().slice(0, 10) : closure.ccof_enddate;
 
     closures.push({
-      facilityId: closure._ccof_facility_value,
+      facilityGuid: closure._ccof_facility_value,
       facilityName: closure['_ccof_facility_value@OData.Community.Display.V1.FormattedValue'],
       startDate: formattedStartDate,
       endDate: formattedEndDate,
