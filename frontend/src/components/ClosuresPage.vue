@@ -61,6 +61,13 @@
       </template>
     </v-data-table>
   </v-container>
+  <NavButton
+    :is-next-displayed="false"
+    :is-save-displayed="false"
+    :is-next-disabled="true"
+    :is-processing="processing"
+    @previous="previous"
+  />
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
@@ -72,6 +79,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 import { useRoute } from 'vue-router';
+import NavButton from '@/components/util/NavButton.vue';
 
 import facilityService from '@/services/facilityService.js';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
@@ -80,7 +88,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
   name: 'ClosuresPage',
-  components: { MessagesToolbar },
+  components: { MessagesToolbar, NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -148,8 +156,8 @@ export default {
     this.refreshNavBarList();
     this.useNavBarStore = useNavBarStore();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear(
-      'c787c859-4df9-ef11-bae1-7ced8d05e0a9',
-      'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4',
+      this.organizationId,
+      useRoute().params.programYearGuid,
     );
     this.processClosures(this.ccfriClosures);
     this.isLoadingComplete = true;
@@ -227,6 +235,9 @@ export default {
         default:
           return 'bg-white';
       }
+    },
+    previous() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
   },
 };
