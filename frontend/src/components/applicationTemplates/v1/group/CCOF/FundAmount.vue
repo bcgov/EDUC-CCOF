@@ -3,7 +3,7 @@
 * This file contains **legacy code** from the previous application layout, which was deprecated and replaced as of March 2025.  
 * **DO NOT modify this file** to maintain compatibility with submitted PCF application/change request.
 *  
-* Source: Copied from commit 1146a77 on Dec 19, 2024 with some minor changes.
+* Source: Copied from commit 1146a77 on Dec 19, 2024 with some changes.
 -->
 <template>
   <v-form ref="form" v-model="model.isCCOFComplete">

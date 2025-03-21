@@ -51,6 +51,11 @@ const APPLICATION_STATUS_CODES = Object.freeze({
 const APPLICATION_TEMPLATE_VERSIONS = Object.freeze({
   V1: {
     id: 1,
+    isActive: false,
+    note: 'Original application template',
+  },
+  V2: {
+    id: 2,
     isActive: true,
     note: 'Mar 2025: CCFRI-4450, CCFRI-4568',
   },

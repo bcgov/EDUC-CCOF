@@ -33,6 +33,8 @@ export const useApplicationStore = defineStore('application', {
 
     applicationUploadedDocuments: [],
     isApplicationDocumentsLoading: false,
+
+    isApplicationProcessing: false,
   }),
   actions: {
     setApplicationId(value) {
@@ -45,7 +47,7 @@ export const useApplicationStore = defineStore('application', {
       this.applicationStatus = value;
     },
     setApplicationTemplateVersion(value) {
-      this.applicationTemplateVersion = value;
+      this.applicationTemplateVersion = Number(value);
     },
     setCcofApplicationStatus(value) {
       this.ccofApplicationStatus = value;
@@ -103,6 +105,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setApplicationUploadedDocuments(value) {
       this.applicationUploadedDocuments = value;
+    },
+    setIsApplicationProcessing(value) {
+      this.isApplicationProcessing = value;
     },
     addApplicationsToMap(applicationList) {
       const map = new Map(this.applicationMap);
@@ -231,7 +236,7 @@ export const useApplicationStore = defineStore('application', {
       return facilityList;
     },
     showApplicationTemplateV1: (state) => {
-      return Number(state.applicationTemplateVersion) !== 1;
+      return !state.applicationTemplateVersion || state.applicationTemplateVersion === 1;
     },
   },
 });
