@@ -18,7 +18,7 @@
         <v-row class="justify-end">
           <div>Fiscal Year: {{ programYearLabel }}</div>
         </v-row>
-        <v-btn class="blueButton" theme="dark" width="30%" align="left"> Add New Closure </v-btn>
+        <v-btn class="blueButton" theme="dark" width="30%"> Add New Closure </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -45,6 +45,8 @@
       :items="closuresToDisplay"
       :items-per-page="10"
       :search="search"
+      :mobile="null"
+      mobile-breakpoint="md"
       class="elevation-1"
     >
       <template v-slot:[`item.ccofStatus`]="{ item }">
@@ -54,9 +56,9 @@
       </template>
       <template v-slot:[`item.actions`]="{ item }">
         <v-row>
-          <v-btn size="small" color="white" @click="viewDetails(item)">View Details</v-btn>
-          <v-btn size="small" color="white" @click="updateItem(item)">Update</v-btn>
-          <v-btn size="small" color="white" @click="removeItem(item)">Remove</v-btn>
+          <v-btn size="small" color="white" @click="viewDetails(item)" class="blueBorder blueText">View Details</v-btn>
+          <v-btn size="small" color="white" @click="updateItem(item)" class="blueBorder blueText">Update</v-btn>
+          <v-btn size="small" color="white" @click="removeItem(item)" class="blueBorder blueText">Remove</v-btn>
         </v-row>
       </template>
     </v-data-table>
@@ -207,16 +209,62 @@ export default {
 
 <style scoped>
 .blueBorder {
-  border-top: 5px solid #003366 !important;
+  border: 2px solid #003366 !important;
 }
+
 .blueButton {
   background-color: #003366 !important;
 }
+
 .red-button {
   background-color: #d8292f;
   color: white;
 }
+
 .blueText {
-  color: rgb(0, 52, 102) !important;
+  color: rgb(0, 51, 102) !important;
+}
+
+.status-gray {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-green {
+  background-color: #c8e6c9;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-blue {
+  background-color: #bbdefb;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-purple {
+  background-color: #ba93d1;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-yellow {
+  background-color: #ffe082;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-red {
+  background-color: #d8292f;
+  color: white;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-pink {
+  background-color: #eeaaad;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
 }
 </style>
