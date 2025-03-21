@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-container>
+  <v-container fluid class="pa-12">
     <MessagesToolbar />
     <v-row>
       <v-col col="12" lg="6">
@@ -17,49 +17,51 @@
         </div>
       </v-col>
     </v-row>
-  </v-container>
-  <v-container width="100%">
-    <v-row>
-      <v-col col="12">Program and policy to provide text </v-col>
-      <v-col col="12">
-        <v-row>
-          <p>Filter by Facility</p>
-          <v-icon>mdi-filter</v-icon>
-          <v-text-field
-            v-model="search"
-            label="Filter by Facility Name and Facility ID"
-            clearable
-            variant="outlined"
-            class="mb-4"
-          ></v-text-field>
-        </v-row>
-      </v-col>
-    </v-row>
+    <v-container class="border pa-0" fluid>
+      <v-row>
+        <v-col col="12">Program and policy to provide text </v-col>
+        <v-col col="12">
+          <v-row>
+            <p>Filter by Facility</p>
+            <v-icon>mdi-filter</v-icon>
+            <v-text-field
+              v-model="search"
+              label="Filter by Facility Name and Facility ID"
+              clearable
+              variant="outlined"
+              class="mb-4"
+            ></v-text-field>
+          </v-row>
+        </v-col>
+      </v-row>
 
-    <v-data-table
-      :headers="closureTableHeaders"
-      :items="closuresToDisplay"
-      :items-per-page="10"
-      :search="search"
-      :mobile="null"
-      mobile-breakpoint="md"
-      class="elevation-1"
-    >
-      <template v-slot:[`item.ccofStatus`]="{ item }">
-        <span :class="getCcofStatus(item.ccofStatus)">
-          {{ item.ccofStatusValue }}
-        </span>
-      </template>
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-row>
-          <v-btn size="small" color="white" @click="viewDetails(item)" class="blueBorder blueText">View Details</v-btn>
-          <v-btn size="small" color="white" @click="updateItem(item)" class="blueBorder blueText">Update</v-btn>
-          <v-btn size="small" color="white" @click="removeItem(item)" class="blueBorder blueText">Remove</v-btn>
-        </v-row>
-      </template>
-    </v-data-table>
+      <v-data-table
+        :headers="closureTableHeaders"
+        :items="closuresToDisplay"
+        :items-per-page="10"
+        :search="search"
+        :mobile="null"
+        mobile-breakpoint="md"
+        class="elevation-1"
+      >
+        <template v-slot:[`item.ccofStatus`]="{ item }">
+          <span :class="getCcofStatus(item.ccofStatus)">
+            {{ item.ccofStatusValue }}
+          </span>
+        </template>
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-row>
+            <v-btn size="small" color="white" @click="viewDetails(item)" class="blueBorder blueText"
+              >View Details</v-btn
+            >
+            <v-btn size="small" color="white" @click="updateItem(item)" class="blueBorder blueText">Update</v-btn>
+            <v-btn size="small" color="white" @click="removeItem(item)" class="blueBorder blueText">Remove</v-btn>
+          </v-row>
+        </template>
+      </v-data-table>
+    </v-container>
+    <NavButton :is-next-displayed="false" :is-save-displayed="false" :is-next-disabled="true" @previous="previous" />
   </v-container>
-  <NavButton :is-next-displayed="false" :is-save-displayed="false" :is-next-disabled="true" @previous="previous" />
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
@@ -183,13 +185,13 @@ export default {
     getCcofStatus(ccofStatusNumber) {
       switch (ccofStatusNumber) {
         case FACILITY_CLOSURE_STATUS.DRAFT:
-          return 'bg-blue';
+          return 'status-yellow';
         case FACILITY_CLOSURE_STATUS.SUBMITTED:
-          return 'bg-yellow';
+          return 'status-yellow';
         case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
           return 'bg-orange';
         case FACILITY_CLOSURE_STATUS.APPROVED:
-          return 'bg-green';
+          return 'status-green';
         case FACILITY_CLOSURE_STATUS.DENIED:
           return 'bg-red';
         default:
@@ -205,20 +207,15 @@ export default {
 
 <style scoped>
 .blueBorder {
-  border: 2px solid #003366 !important;
+  border: 1px solid #193c6c !important;
 }
 
 .blueButton {
   background-color: #003366 !important;
 }
 
-.red-button {
-  background-color: #d8292f;
-  color: white;
-}
-
 .blueText {
-  color: rgb(0, 51, 102) !important;
+  color: #193c6c !important;
 }
 
 .status-gray {
@@ -228,38 +225,13 @@ export default {
 }
 
 .status-green {
-  background-color: #c8e6c9;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-blue {
-  background-color: #bbdefb;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-purple {
-  background-color: #ba93d1;
+  background-color: #c8e6cb;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
 
 .status-yellow {
-  background-color: #ffe082;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-red {
-  background-color: #d8292f;
-  color: white;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-pink {
-  background-color: #eeaaad;
+  background-color: #fdfac8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
