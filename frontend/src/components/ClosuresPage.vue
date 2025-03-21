@@ -11,7 +11,7 @@
           <div class="text-h5 font-weight-bold blueText">{{ organizationName }}</div>
         </v-row>
         <v-row>
-          <div class="text-p blueText">Organization ID: {{ organizationId }}</div>
+          <div class="text-p blueText">Organization ID: {{ organizationAccountNumber }}</div>
         </v-row>
       </v-col>
       <v-col class="col-m-12 col-lg-4">
