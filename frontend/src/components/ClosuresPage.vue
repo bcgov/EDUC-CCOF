@@ -42,7 +42,7 @@
 
     <v-data-table
       :headers="closureTableHeaders"
-      :items="ccfriClosures?.closures"
+      :items="closuresToDisplay"
       :items-per-page="10"
       :search="search"
       class="elevation-1"
@@ -61,13 +61,7 @@
       </template>
     </v-data-table>
   </v-container>
-  <NavButton
-    :is-next-displayed="false"
-    :is-save-displayed="false"
-    :is-next-disabled="true"
-    :is-processing="processing"
-    @previous="previous"
-  />
+  <NavButton :is-next-displayed="false" :is-save-displayed="false" :is-next-disabled="true" @previous="previous" />
 </template>
 <script>
 import { mapState, mapActions } from 'pinia';
@@ -84,17 +78,13 @@ import NavButton from '@/components/util/NavButton.vue';
 import facilityService from '@/services/facilityService.js';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import { PATHS, FACILITY_CLOSURE_STATUS, FACILITY_CLOSURE_FUNDING_ELIGIBILITY } from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
   name: 'ClosuresPage',
   components: { MessagesToolbar, NavButton },
-  mixins: [alertMixin],
   data() {
     return {
-      input: '',
       PATHS: PATHS,
-      results: {},
       isLoadingComplete: false,
       ccfriClosures: undefined,
       route: useRoute(),
@@ -140,14 +130,10 @@ export default {
       'organizationAccountNumber',
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-    lastItem() {
-      if (this.ccfriClosures?.closures.length > 0) {
-        return Math.min(this.firstItem + this.itemsPerPage - 1, this.ccfriClosures.closures.length);
-      }
-      return 0;
-    },
-    ccfriClosuresToShow() {
-      return this.ccfriClosures.closures.slice(this.firstItem - 1, this.lastItem);
+    closuresToDisplay() {
+      return this.ccfriClosures?.closures.filter(
+        (closure) => closure.facilityId.includes(this.search) || closure.facilityName.includes(this.search),
+      );
     },
   },
   async created() {
@@ -157,7 +143,7 @@ export default {
     this.useNavBarStore = useNavBarStore();
     this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear(
       this.organizationId,
-      useRoute().params.programYearGuid,
+      this.route.params.programYearGuid,
     );
     this.processClosures(this.ccfriClosures);
     this.isLoadingComplete = true;
