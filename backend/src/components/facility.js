@@ -213,7 +213,6 @@ async function returnCCFRIClosuresForFiscalYear(req, res) {
 async function getCCFRIClosuresForFiscalYear(organizationId, programYearId) {
   const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${organizationId} and  _ccof_program_year_value eq ${programYearId}`;
   let data = await getOperation(url);
-  console.log(data);
   const closures = [];
 
   data.value.forEach((closure) => {
