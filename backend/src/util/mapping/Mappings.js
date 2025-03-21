@@ -289,6 +289,7 @@ const UserProfileApplicationMappings = [
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
   { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },

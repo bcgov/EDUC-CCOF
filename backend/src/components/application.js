@@ -13,7 +13,15 @@ const {
   postChangeRequestSummaryDocument,
   getChangeActionDetails,
 } = require('./utils');
-const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
+const {
+  APPLICATION_TEMPLATE_VERSIONS,
+  CCOF_APPLICATION_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  APPLICATION_STATUS_CODES,
+  CCOF_STATUS_CODES,
+  CHANGE_REQUEST_TYPES,
+  CCFRI_STATUS_CODES,
+} = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
@@ -31,12 +39,7 @@ const {
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
 } = require('../util/mapping/Mappings');
-const {
-  getCCFRIClosureDates,
-  getLicenseCategoriesByFacilityId,
-  getFacilityChildCareTypesByCcfriId,
-  getFacilityByFacilityId
-} = require('./facility');
+const { getCCFRIClosureDates, getLicenseCategoriesByFacilityId, getFacilityChildCareTypesByCcfriId, getFacilityByFacilityId } = require('./facility');
 const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
@@ -518,7 +521,7 @@ async function printPdf(req, numOfRetries = 0) {
 function getCurrentDateForPdfFileName() {
   const date = new Date();
   const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: "America/Vancouver",
+    timeZone: 'America/Vancouver',
     month: 'short',
   });
   const month = dateTimeFormatter.format(date).toUpperCase();
@@ -703,12 +706,10 @@ async function getApplicationSummary(req, res) {
 
     let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
 
-    const facilities = Array
-      .from(facilityMap.values())
-      .filter((facility) => {
-        if (facilityFilters === null || facilityFilters.length < 1) return true;
-        return facilityFilters.includes(facility.facilityId);
-      });
+    const facilities = Array.from(facilityMap.values()).filter((facility) => {
+      if (facilityFilters === null || facilityFilters.length < 1) return true;
+      return facilityFilters.includes(facility.facilityId);
+    });
 
     const facilityPromises = [];
     const limit = pLimit(6);
@@ -719,7 +720,7 @@ async function getApplicationSummary(req, res) {
 
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: facilitiesWithSummaryData
+      facilities: facilitiesWithSummaryData,
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);
@@ -853,6 +854,11 @@ async function deletePcfApplication(req, res) {
   }
 }
 
+function getActiveApplicationTemplate() {
+  const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
+  return activeApplicationTemplate?.id;
+}
+
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -870,4 +876,5 @@ module.exports = {
   deleteCCFRIApplication,
   printPdf,
   deletePcfApplication,
+  getActiveApplicationTemplate,
 };

@@ -38,10 +38,10 @@ export const useOrganizationStore = defineStore('organization', {
       this.isStarted = isStarted;
     },
     setOrganizationModel(model) {
-      this.organizationModel = model;
+      this.organizationModel = { ...model };
     },
     setLoadedModel(model) {
-      this.loadedModel = model;
+      this.loadedModel = { ...model };
     },
     setIsOrganizationComplete(value) {
       this.isOrganizationComplete = value;
