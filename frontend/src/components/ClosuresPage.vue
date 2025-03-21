@@ -1,31 +1,27 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-container fluid class="pa-12">
+  <v-container>
     <MessagesToolbar />
     <v-row>
-      <v-col class="col-m-12 col-lg-8">
-        <v-row>
+      <v-col col="12" lg="6">
+        <div>
           <div class="pb-6 text-h4 font-weight-bold">Organization Closures</div>
-        </v-row>
-        <v-row>
           <div class="text-h5 font-weight-bold blueText">{{ organizationName }}</div>
-        </v-row>
-        <v-row>
           <div class="text-p blueText">Organization ID: {{ organizationAccountNumber }}</div>
-        </v-row>
+        </div>
       </v-col>
-      <v-col class="col-m-12 col-lg-4">
-        <v-row class="justify-end">
+      <v-col col="12" lg="6" class="d-flex justify-md-end">
+        <div>
           <div>Fiscal Year: {{ programYearLabel }}</div>
-        </v-row>
-        <v-btn class="blueButton" theme="dark" width="30%"> Add New Closure </v-btn>
+          <v-btn class="blueButton" theme="dark"> Add New Closure </v-btn>
+        </div>
       </v-col>
     </v-row>
   </v-container>
   <v-container width="100%">
     <v-row>
-      <v-col>Program and policy to provide text </v-col>
-      <v-col>
+      <v-col col="12">Program and policy to provide text </v-col>
+      <v-col col="12">
         <v-row>
           <p>Filter by Facility</p>
           <v-icon>mdi-filter</v-icon>

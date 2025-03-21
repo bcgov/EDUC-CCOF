@@ -263,12 +263,10 @@
           />
         </v-col>
         <v-col v-if="applicationIds?.length > 1" cols="12" md="8">
-          <!-- <div> -->
           <v-row class="d-flex justify-md-end">
             <h3 class="mr-4">Select fiscal year:</h3>
             <FiscalYearSlider @select-program-year="selectProgramYear" />
           </v-row>
-          <!-- </div> -->
         </v-col>
       </v-row>
       <v-row no-gutters class="justify-space-around">
