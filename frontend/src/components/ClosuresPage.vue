@@ -70,7 +70,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 import { useRoute } from 'vue-router';
 import NavButton from '@/components/util/NavButton.vue';
@@ -103,33 +102,14 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useAppStore, ['renewalYearLabel', 'programYearList']),
-    ...mapState(useApplicationStore, [
-      'applicationIds',
-      'getFacilityListForPCFByProgramYearId',
-      'formattedProgramYear',
-      'applicationType',
-      'programYearId',
-      'programYearLabel',
-      'ccofApplicationStatus',
-      'unlockBaseFunding',
-      'isRenewal',
-      'unlockDeclaration',
-      'unlockEcewe',
-      'unlockLicenseUpload',
-      'unlockSupportingDocuments',
-      'applicationStatus',
-      'applicationMap',
-      'applicationId',
-    ]),
+    ...mapState(useApplicationStore, ['programYearLabel', 'applicationStatus', 'applicationMap', 'applicationId']),
     ...mapState(useNavBarStore, ['navBarList', 'getNavByFacilityId']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
-      'organizationProviderType',
       'organizationId',
       'organizationName',
       'organizationAccountNumber',
     ]),
-    ...mapState(useReportChangesStore, ['changeRequestStore']),
     closuresToDisplay() {
       return this.ccfriClosures?.closures.filter(
         (closure) => closure.facilityId.includes(this.search) || closure.facilityName.includes(this.search),
@@ -151,10 +131,6 @@ export default {
   methods: {
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
-
-    buttonColor(isDisabled) {
-      return isDisabled ? 'disabledButton' : 'blueButton';
-    },
     async getAllMessagesVuex() {
       try {
         await this.getAllMessages(this.organizationId);
