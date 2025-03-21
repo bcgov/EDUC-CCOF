@@ -234,20 +234,20 @@
     />
     <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row no-gutters>
-        <v-col class="col-md-12 col-lg-8">
-          <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
-          <h2 v-if="getFundingAgreementNumberByYear">
-            Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
-          </h2>
+        <v-col cols="12" md="6">
+          <div>
+            <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
+            <h2 v-if="getFundingAgreementNumberByYear">
+              Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
+            </h2>
+          </div>
         </v-col>
-        <v-col class="col-md-12 col-lg-4 d-flex justify-lg-end">
-          <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton col-12 col-md-6 ml-4 mb-4">
-            Organization Closures
-          </v-btn>
+        <v-col cols="12" md="6" class="d-flex justify-md-end">
+          <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton"> Organization Closures </v-btn>
         </v-col>
       </v-row>
-      <v-row no-gutters>
-        <v-col class="col-m-12 col-lg-4">
+      <v-row>
+        <v-col cols="12" md="4">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -259,14 +259,16 @@
             variant="filled"
             label="Filter by Facility Name "
             :bind="input"
-            style="width: 400px; min-width: 5px"
+            class="w-100"
           />
         </v-col>
-        <v-col v-if="applicationIds?.length > 1" class="col-m-12 col-lg-8 d-flex justify-lg-end">
-          <!-- <v-row> -->
-          <h3 class="mr-4">Select fiscal year:</h3>
-          <FiscalYearSlider @select-program-year="selectProgramYear" />
-          <!-- </v-row> -->
+        <v-col v-if="applicationIds?.length > 1" cols="12" md="8">
+          <!-- <div> -->
+          <v-row class="d-flex justify-md-end">
+            <h3 class="mr-4">Select fiscal year:</h3>
+            <FiscalYearSlider @select-program-year="selectProgramYear" />
+          </v-row>
+          <!-- </div> -->
         </v-col>
       </v-row>
       <v-row no-gutters class="justify-space-around">
