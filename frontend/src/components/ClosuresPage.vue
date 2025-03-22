@@ -12,7 +12,7 @@
       </v-col>
       <v-col col="12" lg="6" class="d-flex justify-md-end">
         <div>
-          <div>Fiscal Year: {{ programYearLabel }}</div>
+          <div>Fiscal Year: {{ programYear }}</div>
           <v-btn class="blueButton" theme="dark"> Add New Closure </v-btn>
         </div>
       </v-col>
@@ -114,6 +114,9 @@ export default {
       return this.ccfriClosures?.closures.filter(
         (closure) => closure.facilityId.includes(this.search) || closure.facilityName.includes(this.search),
       );
+    },
+    programYear() {
+      return this.programYearLabel.slice(0, 7).replace('-', '/');
     },
   },
   async created() {
