@@ -36,6 +36,7 @@
       </v-row>
 
       <v-data-table
+        v-model:sort-by="sortBy"
         :headers="closureTableHeaders"
         :items="closuresToDisplay"
         :items-per-page="10"
@@ -44,12 +45,22 @@
         mobile-breakpoint="md"
         class="elevation-1"
       >
-        <template v-slot:[`item.ccofStatus`]="{ item }">
+        <template #[`item.startDate`]="{ item }">
+          <span>
+            {{ formattedDate(item.startDate) }}
+          </span>
+        </template>
+        <template #[`item.endDate`]="{ item }">
+          <span>
+            {{ formattedDate(item.endDate) }}
+          </span>
+        </template>
+        <template #[`item.ccofStatus`]="{ item }">
           <span :class="getCcofStatus(item.ccofStatus)">
             {{ item.ccofStatusValue }}
           </span>
         </template>
-        <template v-slot:[`item.actions`]="{ item }">
+        <template #[`item.actions`]="{ item }">
           <v-row>
             <AppButton :primary="false" @click="viewDetails(item)">View Details</AppButton>
             <AppButton :primary="false" @click="updateItem(item)">Update</AppButton>
@@ -86,17 +97,21 @@ export default {
       isLoadingComplete: false,
       ccfriClosures: undefined,
       route: useRoute(),
+      sortBy: [
+        { key: 'facilityName', order: 'asc' },
+        { key: 'startDate', order: 'asc' },
+      ],
       search: '',
       closureTableHeaders: [
         { title: 'Facility ID', sortable: true, value: 'facilityId' },
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
-        { title: 'Start Date', sortable: true, value: 'formattedStartDate' },
-        { title: 'End Date', sortable: true, value: 'formattedEndDate' },
+        { title: 'Start Date', sortable: true, value: 'startDate' },
+        { title: 'End Date', sortable: true, value: 'endDate' },
         { title: 'Status', sortable: true, value: 'ccofStatus' },
         { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityValue' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'may', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     };
   },
   computed: {
@@ -156,9 +171,6 @@ export default {
         const facility = this.getNavByFacilityId(closure.facilityGuid);
         closure.facilityId = facility.facilityAccountNumber;
 
-        closure.formattedStartDate = this.formattedDate(closure.startDate);
-        closure.formattedEndDate = this.formattedDate(closure.endDate);
-
         let eligibility = closure.ccofPaymentEligibility;
         eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI}`, 'CCFRI');
         eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI_AND_CCOF}`, 'CCFRI/CCOF');
@@ -206,7 +218,7 @@ export default {
     },
     formattedDate(date) {
       const newDate = new Date(date);
-      return `${this.months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getYear()}`;
+      return `${this.months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getFullYear()}`;
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
