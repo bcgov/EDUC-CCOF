@@ -10,14 +10,14 @@
           <div class="text-p blueText">Organization ID: {{ organizationAccountNumber }}</div>
         </div>
       </v-col>
-      <v-col col="12" lg="6" class="d-flex justify-md-end">
+      <v-col col="12" lg="6" class="d-flex justify-lg-end">
         <div>
           <div>Fiscal Year: {{ programYear }}</div>
-          <v-btn class="blueButton" theme="dark"> Add New Closure </v-btn>
+          <AppButton>Add New Closure</AppButton>
         </div>
       </v-col>
     </v-row>
-    <v-container class="border pa-0" fluid>
+    <v-container class="border pa-4" fluid>
       <v-row>
         <v-col col="12">Program and policy to provide text </v-col>
         <v-col col="12">
@@ -51,11 +51,9 @@
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-row>
-            <v-btn size="small" color="white" @click="viewDetails(item)" class="blueBorder blueText"
-              >View Details</v-btn
-            >
-            <v-btn size="small" color="white" @click="updateItem(item)" class="blueBorder blueText">Update</v-btn>
-            <v-btn size="small" color="white" @click="removeItem(item)" class="blueBorder blueText">Remove</v-btn>
+            <AppButton :primary="false" @click="viewDetails(item)">View Details</AppButton>
+            <AppButton :primary="false" @click="updateItem(item)">Update</AppButton>
+            <AppButton :primary="false" @click="removeItem(item)">Remove</AppButton>
           </v-row>
         </template>
       </v-data-table>
@@ -72,15 +70,16 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useMessageStore } from '@/store/message.js';
 import { useRoute } from 'vue-router';
-import NavButton from '@/components/util/NavButton.vue';
 
+import NavButton from '@/components/util/NavButton.vue';
 import facilityService from '@/services/facilityService.js';
+import AppButton from './guiComponents/AppButton.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import { PATHS, FACILITY_CLOSURE_STATUS, FACILITY_CLOSURE_FUNDING_ELIGIBILITY } from '@/utils/constants.js';
 
 export default {
   name: 'ClosuresPage',
-  components: { MessagesToolbar, NavButton },
+  components: { MessagesToolbar, NavButton, AppButton },
   data() {
     return {
       PATHS: PATHS,
@@ -207,7 +206,7 @@ export default {
     },
     formattedDate(date) {
       const newDate = new Date(date);
-      return `${this.months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getFullYear()}`;
+      return `${this.months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getYear()}`;
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
@@ -217,14 +216,6 @@ export default {
 </script>
 
 <style scoped>
-.blueBorder {
-  border: 1px solid #193c6c !important;
-}
-
-.blueButton {
-  background-color: #003366 !important;
-}
-
 .blueText {
   color: #193c6c !important;
 }
