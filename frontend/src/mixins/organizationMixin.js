@@ -22,7 +22,12 @@ export default {
     ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel', 'organizationProviderType']),
     ...mapState(useFacilityStore, ['facilityList']),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useApplicationStore, ['applicationStatus', 'isApplicationProcessing', 'unlockBaseFunding']),
+    ...mapState(useApplicationStore, [
+      'applicationStatus',
+      'isApplicationFormValidated',
+      'isApplicationProcessing',
+      'unlockBaseFunding',
+    ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     isLocked() {
       if (this.unlockBaseFunding) {
@@ -59,7 +64,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useOrganizationStore, [
       'saveOrganization',
       'loadOrganization',
@@ -100,9 +105,6 @@ export default {
       this.organizationModel.province2 = null;
       this.organizationModel.postalCode2 = null;
     },
-    validateForm() {
-      this.$refs.form?.validate();
-    },
     next() {
       this.$router.push(this.nextPath);
     },
@@ -110,7 +112,7 @@ export default {
       this.$router.push(this.previousPath);
     },
     async save(showNotification) {
-      if (this.isLocked) return;
+      if (this.isLocked || this.isApplicationProcessing) return;
       try {
         this.setIsApplicationProcessing(true);
         this.setIsStarted(true);

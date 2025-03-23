@@ -191,6 +191,13 @@ export default {
       return isAnyChangeRequestActive(this.changeRequestStore);
     },
   },
+  watch: {
+    isApplicationFormValidated: {
+      handler() {
+        this.$refs.form?.validate();
+      },
+    },
+  },
 };
 </script>
 <style scoped>

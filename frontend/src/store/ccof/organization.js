@@ -123,7 +123,7 @@ export const useOrganizationStore = defineStore('organization', {
       checkSession();
 
       try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}`);
         this.setOrganizationModel(response.data);
         this.setLoadedModel(response.data);
         this.setIsOrganizationComplete(response.data?.isOrganizationComplete);

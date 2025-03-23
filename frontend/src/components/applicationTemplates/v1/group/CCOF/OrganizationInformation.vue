@@ -254,6 +254,13 @@ export default {
       return isAnyChangeRequestActive(this.changeRequestStore);
     },
   },
+  watch: {
+    isApplicationFormValidated: {
+      handler() {
+        this.$refs.form?.validate();
+      },
+    },
+  },
   created() {
     this.PROVINCES = PROVINCES;
     this.organizationModel.province1 =

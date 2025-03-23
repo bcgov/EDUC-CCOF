@@ -85,7 +85,7 @@
         @previous="previous"
         @next="next"
         @validate-form="validateForm()"
-        @save="saveClicked()"
+        @save="save(true)"
       />
     </v-container>
   </v-form>
@@ -100,9 +100,7 @@ export default {
   components: { AppDateInput },
   mixins: [facilityMixin],
   async beforeRouteLeave(_to, _from, next) {
-    if (!this.isModelEmpty) {
-      await this.save(false);
-    }
+    await this.save(false);
     next();
   },
 };

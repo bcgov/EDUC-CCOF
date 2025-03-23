@@ -35,6 +35,7 @@ export const useApplicationStore = defineStore('application', {
     isApplicationDocumentsLoading: false,
 
     isApplicationProcessing: false,
+    isApplicationFormValidated: false,
   }),
   actions: {
     setApplicationId(value) {
@@ -170,6 +171,9 @@ export const useApplicationStore = defineStore('application', {
       } finally {
         this.isApplicationDocumentsLoading = false;
       }
+    },
+    validateApplicationForm() {
+      this.isApplicationFormValidated = !this.isApplicationFormValidated;
     },
   },
   getters: {

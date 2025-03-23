@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container class="mx-lg-16">
+    <v-container fluid class="mx-lg-16">
       <OrganizationInformationV1 v-if="showApplicationTemplateV1" />
       <OrganizationInformationV2 v-else />
     </v-container>
@@ -13,7 +13,7 @@
     :is-processing="isApplicationProcessing"
     @previous="back"
     @next="next"
-    @validate-form="validateForm()"
+    @validate-form="validateApplicationForm"
     @save="save(true)"
   />
 </template>

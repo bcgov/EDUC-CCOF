@@ -14,33 +14,23 @@ import { checkSession } from '@/utils/session.js';
 // FIXME: getModel getter was removed and will break all over. All it did was return state.model
 export const useFacilityStore = defineStore('facility', {
   state: () => ({
-    model: [],
-    foo: 'bar',
     facilityStore: {},
-    facilityModel: {},
     facilityId: null,
-    isValidForm: false,
+    facilityModel: {},
     loadedModel: {},
   }),
   getters: {
-    isCurrentFacilityComplete: (state) => state.isValidForm,
     getFacilityById: (state) => (facilityId) => {
       return state.facilityStore[facilityId];
     },
     isNewFacilityStarted: (state) => !isEmpty(state.facilityModel),
   },
   actions: {
-    model(value) {
-      this.model = value;
-    },
-    isValidForm(value) {
-      this.isValidForm = value;
-    },
-    setFacilityModel(facilityModel) {
-      this.facilityModel = facilityModel;
+    setFacilityModel(model) {
+      this.facilityModel = { ...model };
     },
     setLoadedModel(model) {
-      this.loadedModel = model;
+      this.loadedModel = { ...model };
     },
     setFacilityId(facilityId) {
       this.facilityId = facilityId;
@@ -55,21 +45,19 @@ export const useFacilityStore = defineStore('facility', {
     },
     async saveFacility({ isChangeRequest, changeRequestId }) {
       checkSession();
+      if (isEqual(this.facilityModel, this.loadedModel)) return;
+
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
       const reportChangesStore = useReportChangesStore();
       const organizationStore = useOrganizationStore();
 
-      if (isEqual(this.facilityModel, this.loadedModel)) {
-        return;
-      }
-
-      let organizationId = organizationStore.organizationId;
+      const organizationId = organizationStore.organizationId;
       if (!organizationId) {
         throw 'unable to save facility because you are not associated to an organization';
       }
 
-      let payload = { ...this.facilityModel, organizationId, applicationId: applicationStore.applicationId };
+      const payload = { ...this.facilityModel, organizationId, applicationId: applicationStore.applicationId };
 
       //CMS was having a workflow issue related to saving the same post code repeatadly. Don't save postcode unless it has changed
       try {
@@ -90,7 +78,7 @@ export const useFacilityStore = defineStore('facility', {
       if (this.facilityId) {
         // has an orgaization ID, so update the data
         try {
-          let response = await ApiService.apiAxios.put(ApiRoutes.FACILITY + '/' + this.facilityId, payload);
+          const response = await ApiService.apiAxios.put(`${ApiRoutes.FACILITY}/${this.facilityId}`, payload);
           this.addFacilityToStore({ facilityId: this.facilityId, facilityModel: this.facilityModel });
           // TODO: also find the existing value in the nav bar and update the facility Name and license number
           navBarStore.updateNavBar({
@@ -168,7 +156,7 @@ export const useFacilityStore = defineStore('facility', {
             reportChangesStore.addNewChangeRequestToMap(changeRequestNewFacilityModel);
             changeActionId = changeRequestResponse.data?.changeActionId;
           }
-          let response = await ApiService.apiAxios.post(
+          const response = await ApiService.apiAxios.post(
             `${ApiRoutes.CHANGE_REQUEST_NEW_FAC}/${changeActionId}`,
             payload,
           );
@@ -219,14 +207,15 @@ export const useFacilityStore = defineStore('facility', {
     },
     async loadFacility(facilityId) {
       this.setFacilityId(facilityId);
-      let facilityModel = this.getFacilityById(facilityId);
+      const facilityModel = this.getFacilityById(facilityId);
+
       if (facilityModel) {
         this.setFacilityModel(facilityModel);
         this.setLoadedModel(facilityModel);
       } else {
         checkSession();
         try {
-          let response = await ApiService.apiAxios.get(ApiRoutes.FACILITY + '/' + facilityId);
+          const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}`);
           this.addFacilityToStore({ facilityId: facilityId, facilityModel: response.data });
           this.setFacilityModel(response.data);
           this.setLoadedModel(response.data);
@@ -243,7 +232,7 @@ export const useFacilityStore = defineStore('facility', {
       const fundingStore = useFundingStore();
       const navBarStore = useNavBarStore();
 
-      await ApiService.apiAxios.delete(ApiRoutes.FACILITY + '/' + facilityObj.facilityId, { data: facilityObj });
+      await ApiService.apiAxios.delete(`${ApiRoutes.FACILITY}/${facilityObj.facilityId}`, { data: facilityObj });
 
       this.deleteFromStore(facilityObj.facilityId);
       applicationStore.removeFacilityFromMap(facilityObj.facilityId);
