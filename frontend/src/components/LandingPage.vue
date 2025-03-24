@@ -243,7 +243,7 @@
           </div>
         </v-col>
         <v-col cols="12" md="6" class="d-flex justify-md-end">
-          <v-btn @click="goToOrganizationClosures()" theme="dark" class="blueButton"> Organization Closures </v-btn>
+          <v-btn theme="dark" class="blueButton" @click="goToOrganizationClosures()"> Organization Closures </v-btn>
         </v-col>
       </v-row>
       <v-row>
