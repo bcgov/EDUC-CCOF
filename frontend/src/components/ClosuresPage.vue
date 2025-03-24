@@ -17,22 +17,22 @@
         </div>
       </v-col>
     </v-row>
-    <v-container class="blackBorder pa-8" fluid>
+    <v-container class="blackBorder pa-8 pt-2" fluid>
       <v-row align="start">
         <v-col cols="12" lg="4" class="mt-4 grayText">Program and policy to provide text </v-col>
-        <v-col cols="12" lg="4" class="mt-4">
+        <v-col cols="12" lg="5" class="mt-4">
           <v-row justify="end" class="blueText">
             <p class="mr-2">Filter by Facility</p>
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="3" justify="end">
           <v-text-field
             v-model="search"
             label="Filter by Facility Name and Facility ID"
             clearable
             variant="outlined"
-            class="mr-3 grayText"
+            class="grayText"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -47,7 +47,7 @@
         :search="search"
         :mobile="null"
         mobile-breakpoint="md"
-        class="elevation-1"
+        class="elevation-2"
       >
         <template #[`item.startDate`]="{ item }">
           <span>
