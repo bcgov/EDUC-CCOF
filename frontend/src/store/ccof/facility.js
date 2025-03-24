@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
@@ -11,7 +10,6 @@ import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 import { ApiRoutes, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
-// FIXME: getModel getter was removed and will break all over. All it did was return state.model
 export const useFacilityStore = defineStore('facility', {
   state: () => ({
     facilityStore: {},
@@ -229,14 +227,12 @@ export const useFacilityStore = defineStore('facility', {
     async deleteFacility(facilityObj) {
       checkSession();
       const applicationStore = useApplicationStore();
-      const fundingStore = useFundingStore();
       const navBarStore = useNavBarStore();
 
       await ApiService.apiAxios.delete(`${ApiRoutes.FACILITY}/${facilityObj.facilityId}`, { data: facilityObj });
 
       this.deleteFromStore(facilityObj.facilityId);
       applicationStore.removeFacilityFromMap(facilityObj.facilityId);
-      fundingStore.deleteFromStore(facilityObj.facilityId);
       navBarStore.deleteFromNavBar(facilityObj.facilityId);
     },
     newFacility() {
