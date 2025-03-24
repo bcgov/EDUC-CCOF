@@ -179,20 +179,17 @@ export default {
         eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.PENDING}`, 'Pending');
         eligibility = eligibility.replaceAll(',', ', ');
         switch (closure.ccofStatus) {
-          case FACILITY_CLOSURE_STATUS.DRAFT:
-            closure.ccofStatusValue = 'Draft';
-            break;
           case FACILITY_CLOSURE_STATUS.SUBMITTED:
-            closure.ccofStatusValue = 'Submitted';
+            closure.ccofStatusValue = 'Pending';
             break;
           case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
-            closure.ccofStatusValue = 'In progress';
+            closure.ccofStatusValue = 'Pending';
             break;
           case FACILITY_CLOSURE_STATUS.APPROVED:
             closure.ccofStatusValue = 'Approved';
             break;
           case FACILITY_CLOSURE_STATUS.DENIED:
-            closure.ccofStatusValue = 'Denied';
+            closure.ccofStatusValue = 'Ineligible';
             break;
           default:
             closure.ccofStatusValue = '';
@@ -202,16 +199,14 @@ export default {
     },
     getCcofStatus(ccofStatusNumber) {
       switch (ccofStatusNumber) {
-        case FACILITY_CLOSURE_STATUS.DRAFT:
-          return 'status-yellow';
         case FACILITY_CLOSURE_STATUS.SUBMITTED:
-          return 'status-yellow';
+          return 'status-gray';
         case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
-          return 'bg-orange';
+          return 'status-gray';
         case FACILITY_CLOSURE_STATUS.APPROVED:
           return 'status-green';
         case FACILITY_CLOSURE_STATUS.DENIED:
-          return 'bg-red';
+          return 'status-yellow';
         default:
           return 'bg-white';
       }
