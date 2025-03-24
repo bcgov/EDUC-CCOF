@@ -10,6 +10,11 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
+    <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
+      A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement
+      to receive funding. Contact BC Registries immediately to resolve.
+    </AppAlertBanner>
+
     <v-row>
       <v-col cols="12" :lg="isCCOFStatusNew ? 5 : 3">
         <SmallCard>
@@ -334,6 +339,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -343,6 +349,7 @@ import {
   pcfUrlGuid,
   closureUrl,
   CHANGE_REQUEST_EXTERNAL_STATUS,
+  ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -351,7 +358,7 @@ import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { AppAlertBanner, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
@@ -594,6 +601,12 @@ export default {
     },
     isCCOFStatusNew() {
       return this.ccofStatus === this.CCOF_STATUS_NEW;
+    },
+    showNotGoodStandingWarning() {
+      return (
+        this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
+        !this.userInfo.organizaitonBypassGoodStandingCheck
+      );
     },
   },
   async created() {

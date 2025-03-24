@@ -428,6 +428,12 @@ export const FACILITY_CLOSURE_FUNDING_ELIGIBILITY = Object.freeze({
   PENDING: 100000004,
 });
 
+export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
+  PASS: 1,
+  FAIL: 2,
+  INTEGRATION_ERROR: 3,
+});
+
 export const TOOLTIP_TYPES = Object.freeze({
   INFO: 'Information',
   ERROR: 'Error',
