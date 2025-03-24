@@ -66,26 +66,36 @@
         </template>
         <template #[`item.actions`]="{ item }">
           <v-row class="action-buttons">
-            <AppButton :primary="false" @click="viewDetails(item)" size="small">View Details</AppButton>
+            <AppButton :primary="false" size="large" class="text-body-2" @click="viewDetails(item)"
+              >View Details</AppButton
+            >
             <AppButton
               :primary="false"
-              @click="updateItem(item)"
               :disabled="item.ccofStatusValue === 'Pending'"
-              size="small"
+              size="large"
+              class="text-body-2"
+              @click="updateItem(item)"
               >Update</AppButton
             >
             <AppButton
               :primary="false"
-              @click="removeItem(item)"
               :disabled="item.ccofStatusValue === 'Pending'"
-              size="small"
+              size="large"
+              class="text-body-2"
+              @click="removeItem(item)"
               >Remove</AppButton
             >
           </v-row>
         </template>
       </v-data-table>
     </v-container>
-    <NavButton :is-next-displayed="false" :is-save-displayed="false" :is-next-disabled="true" @previous="previous" />
+    <NavButton
+      :is-next-displayed="false"
+      :is-save-displayed="false"
+      :is-next-disabled="true"
+      class="ml-0 mr-0"
+      @previous="previous"
+    />
   </v-container>
 </template>
 <script>
@@ -255,6 +265,7 @@ export default {
 
 .action-buttons {
   gap: 8px;
+  padding: 0px 0px 0px 10px;
 }
 
 .status-gray {
