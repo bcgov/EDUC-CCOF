@@ -233,7 +233,7 @@
       type="paragraph, text@3, text@3, paragraph"
     />
     <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
-      <v-row no-gutters>
+      <v-row class="ml-2" no-gutters>
         <v-col cols="12" md="6">
           <div>
             <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
@@ -243,7 +243,9 @@
           </div>
         </v-col>
         <v-col cols="12" md="6" class="d-flex justify-md-end">
-          <v-btn theme="dark" class="blueButton" @click="goToOrganizationClosures()"> Organization Closures </v-btn>
+          <v-btn theme="dark" class="blueButton mr-2" @click="goToOrganizationClosures()">
+            Organization Closures
+          </v-btn>
         </v-col>
       </v-row>
       <v-row>
@@ -259,13 +261,13 @@
             variant="filled"
             label="Filter by Facility Name "
             :bind="input"
-            class="w-100"
+            class="w-100 ml-2"
           />
         </v-col>
         <v-col v-if="applicationIds?.length > 1" cols="12" md="8">
           <v-row class="d-flex justify-md-end">
-            <h3 class="mr-4">Select fiscal year:</h3>
-            <FiscalYearSlider @select-program-year="selectProgramYear" />
+            <h3 class="mr-4 ml-5">Select fiscal year:</h3>
+            <FiscalYearSlider class="mr-5" @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
