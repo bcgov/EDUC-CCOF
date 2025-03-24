@@ -63,8 +63,12 @@
         <template #[`item.actions`]="{ item }">
           <v-row>
             <AppButton :primary="false" @click="viewDetails(item)">View Details</AppButton>
-            <AppButton :primary="false" @click="updateItem(item)">Update</AppButton>
-            <AppButton :primary="false" @click="removeItem(item)">Remove</AppButton>
+            <AppButton :primary="false" @click="updateItem(item)" :disabled="item.ccofStatusValue === 'Pending'"
+              >Update</AppButton
+            >
+            <AppButton :primary="false" @click="removeItem(item)" :disabled="item.ccofStatusValue === 'Pending'"
+              >Remove</AppButton
+            >
           </v-row>
         </template>
       </v-data-table>
