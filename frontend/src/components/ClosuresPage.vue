@@ -12,28 +12,32 @@
       </v-col>
       <v-col col="12" lg="6" class="d-flex justify-lg-end">
         <div>
-          <div>Fiscal Year: {{ programYear }}</div>
-          <AppButton>Add New Closure</AppButton>
+          <div class="text-h7 pb-8 d-flex justify-lg-end">Fiscal Year: {{ programYear }}</div>
+          <AppButton size="large">Add New Closure</AppButton>
         </div>
       </v-col>
     </v-row>
-    <v-container class="border pa-4" fluid>
-      <v-row>
-        <v-col col="12">Program and policy to provide text </v-col>
-        <v-col col="12">
-          <v-row>
-            <p>Filter by Facility</p>
-            <v-icon>mdi-filter</v-icon>
-            <v-text-field
-              v-model="search"
-              label="Filter by Facility Name and Facility ID"
-              clearable
-              variant="outlined"
-              class="mb-4"
-            ></v-text-field>
+    <v-container class="blackBorder pa-8" fluid>
+      <v-row align="start">
+        <v-col cols="12" lg="4" class="mt-4 grayText">Program and policy to provide text </v-col>
+        <v-col cols="12" lg="4" class="mt-4">
+          <v-row justify="end" class="blueText">
+            <p class="mr-2">Filter by Facility</p>
+            <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
+        <v-col cols="4">
+          <v-text-field
+            v-model="search"
+            label="Filter by Facility Name and Facility ID"
+            clearable
+            variant="outlined"
+            class="mr-3 grayText"
+          ></v-text-field>
+        </v-col>
       </v-row>
+
+      <!-- </v-row> -->
 
       <v-data-table
         v-model:sort-by="sortBy"
@@ -61,12 +65,20 @@
           </span>
         </template>
         <template #[`item.actions`]="{ item }">
-          <v-row>
-            <AppButton :primary="false" @click="viewDetails(item)">View Details</AppButton>
-            <AppButton :primary="false" @click="updateItem(item)" :disabled="item.ccofStatusValue === 'Pending'"
+          <v-row class="action-buttons">
+            <AppButton :primary="false" @click="viewDetails(item)" size="small">View Details</AppButton>
+            <AppButton
+              :primary="false"
+              @click="updateItem(item)"
+              :disabled="item.ccofStatusValue === 'Pending'"
+              size="small"
               >Update</AppButton
             >
-            <AppButton :primary="false" @click="removeItem(item)" :disabled="item.ccofStatusValue === 'Pending'"
+            <AppButton
+              :primary="false"
+              @click="removeItem(item)"
+              :disabled="item.ccofStatusValue === 'Pending'"
+              size="small"
               >Remove</AppButton
             >
           </v-row>
@@ -229,6 +241,18 @@ export default {
 <style scoped>
 .blueText {
   color: #193c6c !important;
+}
+
+.grayText {
+  color: #b1b1b1 !important;
+}
+
+.blackBorder {
+  border: 2px solid black;
+}
+
+.action-buttons {
+  gap: 8px;
 }
 
 .status-gray {
