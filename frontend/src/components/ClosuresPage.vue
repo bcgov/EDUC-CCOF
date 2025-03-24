@@ -37,8 +37,6 @@
         </v-col>
       </v-row>
 
-      <!-- </v-row> -->
-
       <v-data-table
         v-model:sort-by="sortBy"
         :headers="closureTableHeaders"
