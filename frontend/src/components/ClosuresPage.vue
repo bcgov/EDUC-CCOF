@@ -228,8 +228,10 @@ export default {
       }
     },
     formattedDate(date) {
+      console.log(date);
       const newDate = new Date(date);
-      return `${this.months[newDate.getMonth()]} ${newDate.getDate()}, ${newDate.getFullYear()}`;
+      console.log(newDate);
+      return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
