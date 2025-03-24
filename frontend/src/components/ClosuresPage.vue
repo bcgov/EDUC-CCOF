@@ -21,12 +21,12 @@
       <v-row align="start">
         <v-col cols="12" lg="4" class="mt-4 grayText">Program and policy to provide text </v-col>
         <v-col cols="12" lg="5" class="mt-4">
-          <v-row justify="end" class="blueText">
+          <v-row class="blueText d-flex justify-lg-end ml-1">
             <p class="mr-2">Filter by Facility</p>
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
-        <v-col cols="3" justify="end">
+        <v-col cols="12" lg="3" class="d-flex justify-lg-end">
           <v-text-field
             v-model="search"
             label="Filter by Facility Name and Facility ID"
