@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { returnCCFRIClosuresForFiscalYear } = require('../components/facility');
+const { getOrganizationClosuresForFiscalYear } = require('../components/closure');
 const { query, validationResult } = require('express-validator');
 
 const facilitySchema = {
@@ -24,7 +24,7 @@ router.get(
   [query('organizationId').notEmpty().isUUID(), query('programYearId').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
-    return returnCCFRIClosuresForFiscalYear(req, res);
+    return getOrganizationClosuresForFiscalYear(req, res);
   },
 );
 
