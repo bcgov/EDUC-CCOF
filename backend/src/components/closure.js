@@ -12,7 +12,7 @@ function mapClosureObjectForFront(backendClosureObject) {
 }
 
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
-async function getOrganizationClosuresForFiscalYear(req, res) {
+async function getClosures(req, res) {
   try {
     const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId} and ccof_closure_status ge 100000001`;
     let data = await getOperation(url);
@@ -31,5 +31,5 @@ async function getOrganizationClosuresForFiscalYear(req, res) {
 }
 
 module.exports = {
-  getOrganizationClosuresForFiscalYear,
+  getClosures,
 };
