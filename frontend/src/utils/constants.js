@@ -412,7 +412,7 @@ export const ORGANIZATION_TYPES = Object.freeze({
   SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
 });
 
-export const FACILITY_CLOSURE_STATUS = Object.freeze({
+export const CLOSURE_STATUSES = Object.freeze({
   DRAFT: 100000000,
   SUBMITTED: 100000001,
   IN_PROGRESS: 100000002,
@@ -420,12 +420,20 @@ export const FACILITY_CLOSURE_STATUS = Object.freeze({
   DENIED: 100000004,
 });
 
-export const FACILITY_CLOSURE_FUNDING_ELIGIBILITY = Object.freeze({
+export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCFRI: 100000000,
   CCFRI_AND_CCOF: 100000001,
   CCOF: 100000002,
   INELIGIBLE: 100000003,
   PENDING: 100000004,
+});
+
+export const PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
+  CCFRI: 'CCFRI',
+  CCFRI_AND_CCOF: 'CCFRI & CCOF',
+  CCOF: 'CCOF',
+  INELIGIBLE: 'Ineligible',
+  PENDING: 'Pending',
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({

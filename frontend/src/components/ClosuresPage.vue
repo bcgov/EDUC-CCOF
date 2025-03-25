@@ -106,7 +106,12 @@ import { useRoute } from 'vue-router';
 import NavButton from '@/components/util/NavButton.vue';
 import ClosureService from '@/services/closureService.js';
 import AppButton from './guiComponents/AppButton.vue';
-import { PATHS, FACILITY_CLOSURE_STATUS, FACILITY_CLOSURE_FUNDING_ELIGIBILITY } from '@/utils/constants.js';
+import {
+  PATHS,
+  CLOSURE_STATUSES,
+  CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  PAYMENT_ELIGIBILITY_TEXTS,
+} from '@/utils/constants.js';
 
 export default {
   name: 'ClosuresPage',
@@ -115,7 +120,7 @@ export default {
     return {
       PATHS: PATHS,
       isLoadingComplete: false,
-      ccfriClosures: undefined,
+      closures: undefined,
       route: useRoute(),
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -146,8 +151,8 @@ export default {
       'organizationAccountNumber',
     ]),
     closuresToDisplay() {
-      return this.ccfriClosures?.closures.filter(
-        (closure) => closure.facilityId.includes(this.search) || closure.facilityName.includes(this.search),
+      return this.closures?.filter(
+        (closure) => closure?.facilityId?.includes(this.search) || closure?.facilityName?.includes(this.search),
       );
     },
     programYear() {
@@ -156,14 +161,13 @@ export default {
   },
   async created() {
     this.isLoadingComplete = false;
-    this.getAllMessagesVuex();
     this.refreshNavBarList();
     this.useNavBarStore = useNavBarStore();
-    this.ccfriClosures = await ClosureService.getOrganizationClosuresForFiscalYear(
+    this.closures = await ClosureService.getOrganizationClosuresForFiscalYear(
       this.organizationId,
       this.route.params.programYearGuid,
     );
-    this.processClosures(this.ccfriClosures);
+    this.processClosures(this.closures);
     this.isLoadingComplete = true;
   },
   methods: {
@@ -179,55 +183,70 @@ export default {
     removeItem(item) {
       // stub
     },
-    processClosures(ccfriClosures) {
-      for (let closure of ccfriClosures.closures) {
+    processClosures(closures) {
+      for (let closure of closures) {
         const facility = this.getNavByFacilityId(closure.facilityGuid);
         closure.facilityId = facility.facilityAccountNumber;
+        closure.ccofStatusText = this.getClosureStatusText(closure.ccofStatus);
 
-        let eligibility = closure.ccofPaymentEligibility;
-        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI}`, 'CCFRI');
-        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCFRI_AND_CCOF}`, 'CCFRI/CCOF');
-        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.CCOF}`, 'CCOF');
-        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.INELIGIBLE}`, 'Ineligible');
-        eligibility = eligibility.replace(`${FACILITY_CLOSURE_FUNDING_ELIGIBILITY.PENDING}`, 'Pending');
-        eligibility = eligibility.replaceAll(',', ', ');
-        switch (closure.ccofStatus) {
-          case FACILITY_CLOSURE_STATUS.SUBMITTED:
-            closure.ccofStatusValue = 'Pending';
-            break;
-          case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
-            closure.ccofStatusValue = 'Pending';
-            break;
-          case FACILITY_CLOSURE_STATUS.APPROVED:
-            closure.ccofStatusValue = 'Approved';
-            break;
-          case FACILITY_CLOSURE_STATUS.DENIED:
-            closure.ccofStatusValue = 'Ineligible';
-            break;
-          default:
-            closure.ccofStatusValue = '';
-        }
-        closure.ccofPaymentEligibilityValue = eligibility;
+        closure.ccofPaymentEligibilityText = this.getPaymentEligibilityText(closure.ccofPaymentEligibility);
       }
+    },
+    getClosureStatusText(closureValues) {
+      switch (closureValues) {
+        case CLOSURE_STATUSES.SUBMITTED:
+          return 'Pending';
+        case CLOSURE_STATUSES.IN_PROGRESS:
+          return 'Pending';
+        case CLOSURE_STATUSES.APPROVED:
+          return 'Approved';
+        case CLOSURE_STATUSES.DENIED:
+          return 'Ineligible';
+        default:
+          return '';
+      }
+    },
+    getPaymentEligibilityText(paymentEligibility) {
+      paymentEligibility = paymentEligibility.replace(
+        `${CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI}`,
+        PAYMENT_ELIGIBILITY_TEXTS.CCFRI,
+      );
+      paymentEligibility = paymentEligibility.replace(
+        `${CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI_AND_CCOF}`,
+        PAYMENT_ELIGIBILITY_TEXTS.CCFRI_AND_CCOF,
+      );
+      paymentEligibility = paymentEligibility.replace(
+        `${CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCOF}`,
+        PAYMENT_ELIGIBILITY_TEXTS.CCOF,
+      );
+      paymentEligibility = paymentEligibility.replace(
+        `${CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.INELIGIBLE}`,
+        PAYMENT_ELIGIBILITY_TEXTS.INELIGIBLE,
+      );
+      paymentEligibility = paymentEligibility.replace(
+        `${CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.PENDING}`,
+        PAYMENT_ELIGIBILITY_TEXTS.PENDING,
+      );
+      paymentEligibility = paymentEligibility.replaceAll(',', ', ');
+
+      return paymentEligibility;
     },
     getCcofStatus(ccofStatusNumber) {
       switch (ccofStatusNumber) {
-        case FACILITY_CLOSURE_STATUS.SUBMITTED:
+        case CLOSURE_STATUSES.SUBMITTED:
           return 'status-gray';
-        case FACILITY_CLOSURE_STATUS.IN_PROGRESS:
+        case CLOSURE_STATUSES.IN_PROGRESS:
           return 'status-gray';
-        case FACILITY_CLOSURE_STATUS.APPROVED:
+        case CLOSURE_STATUSES.APPROVED:
           return 'status-green';
-        case FACILITY_CLOSURE_STATUS.DENIED:
+        case CLOSURE_STATUSES.DENIED:
           return 'status-yellow';
         default:
           return 'bg-white';
       }
     },
     formattedDate(date) {
-      console.log(date);
       const newDate = new Date(date);
-      console.log(newDate);
       return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
     },
     previous() {
@@ -238,6 +257,8 @@ export default {
 </script>
 
 <style scoped>
+@import './../../public/styles/common.css';
+
 .blueText {
   color: #193c6c !important;
 }
@@ -255,7 +276,7 @@ export default {
   padding: 0px 0px 0px 10px;
 }
 
-.status-gray {
+/* .status-gray {
   background-color: #e0e0e0;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
@@ -271,5 +292,5 @@ export default {
   background-color: #fdfac8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
-}
+} */
 </style>
