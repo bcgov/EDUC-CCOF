@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
-const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { OrganizationClosureMappings } = require('../util/mapping/Mappings');
 
 function mapClosureObjectForFront(backendClosureObject) {
@@ -14,7 +14,7 @@ function mapClosureObjectForFront(backendClosureObject) {
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function getClosures(req, res) {
   try {
-    const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId} and ccof_closure_status ge 100000001`;
+    const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId}`;
     let data = await getOperation(url);
     const frontendClosures = [];
 
