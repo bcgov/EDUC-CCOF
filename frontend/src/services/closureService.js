@@ -6,7 +6,7 @@ export default {
     try {
       if (!organizationId || !programYearId) return [];
       const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.FACILITY}/closures?organizationId=${organizationId}&programYearId=${programYearId}`,
+        `${ApiRoutes.ORGANIZATION_CLOSURES}/find?organizationId=${organizationId}&programYearId=${programYearId}`,
       );
       return response?.data;
     } catch (error) {
