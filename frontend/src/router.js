@@ -856,8 +856,7 @@ const router = createRouter({
       },
     },
     {
-      // route: '/pcf/:programYearGuid/organization/closures'
-      // Feel free to suggest something better in the code review :)
+      // route: '/closures/:programYearGuid'
       path: closureUrl(),
       name: 'closures-page',
       component: ClosuresPage,
