@@ -31,13 +31,13 @@ export const useFundingStore = defineStore('funding', {
       try {
         checkSession();
         const model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
-        // if (model.familyLicenseType) { ?????
-        //   model.familyLicenseType = '' + model.familyLicenseType;
-        // }
+        if (model.familyLicenseType) {
+          model.familyLicenseType = '' + model.familyLicenseType;
+        }
         this.setFundingModel(model);
         this.setLoadedModel(model);
       } catch (error) {
-        console.log(`Failed to get Funding - ${error}`);
+        console.log(`Failed to get Licence and Service details - ${error}`);
         throw error;
       }
     },

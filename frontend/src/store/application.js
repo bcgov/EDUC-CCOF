@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -151,6 +152,9 @@ export const useApplicationStore = defineStore('application', {
 
         navBarStore.setIsRenewal(application.applicationType === 'RENEW');
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);
+      } else {
+        const activeApplicationTemplate = ApplicationService.getActiveApplicationTemplate();
+        this.setApplicationTemplateVersion(activeApplicationTemplate);
       }
     },
     async deletePcfApplication() {

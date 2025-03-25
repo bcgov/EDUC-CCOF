@@ -1,7 +1,7 @@
 <template>
-  <v-form ref="form" v-model="model.isFacilityComplete">
+  <v-form ref="form" v-model="facilityModel.isFacilityComplete">
     <v-container>
-      <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
+      <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
         <v-container fluid class="pa-0">
           <v-row justify="center" class="pt-4, pb-4">
             <span class="text-h5">Information to Determine Eligibility</span>
@@ -12,7 +12,7 @@
                 <v-row>
                   <v-col cols="12" md="12">
                     <v-text-field
-                      v-model="model.facilityName"
+                      v-model="facilityModel.facilityName"
                       :disabled="isLocked"
                       variant="outlined"
                       required
@@ -24,7 +24,7 @@
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
-                      v-model="model.licenseNumber"
+                      v-model="facilityModel.licenseNumber"
                       :disabled="isLocked"
                       variant="outlined"
                       required
@@ -35,7 +35,7 @@
                   <v-col cols="12" md="6">
                     <AppDateInput
                       id="licence-effective-date"
-                      v-model="model.licenseEffectiveDate"
+                      v-model="facilityModel.licenseEffectiveDate"
                       :rules="[...rules.required, rules.MMDDYYYY]"
                       :disabled="isLocked"
                       :hide-details="isLocked"
@@ -46,7 +46,7 @@
                 <v-row>
                   <v-col>
                     <v-radio-group
-                      v-model="model.hasReceivedFunding"
+                      v-model="facilityModel.hasReceivedFunding"
                       :disabled="isLocked"
                       inline
                       :rules="rules.required"
@@ -58,14 +58,14 @@
                   </v-col>
                 </v-row>
 
-                <v-row v-show="model.hasReceivedFunding === 'yes'">
+                <v-row v-show="facilityModel.hasReceivedFunding === 'yes'">
                   <v-col>
                     <v-text-field
-                      v-model="model.fundingFacility"
+                      v-model="facilityModel.fundingFacility"
                       :disabled="isLocked"
                       variant="outlined"
                       required
-                      :rules="model.hasReceivedFunding === 'yes' ? rules.required : []"
+                      :rules="facilityModel.hasReceivedFunding === 'yes' ? rules.required : []"
                       label="Facility Name"
                     />
                   </v-col>
@@ -80,11 +80,11 @@
         :is-next-displayed="true"
         :is-save-displayed="true"
         :is-save-disabled="isLocked"
-        :is-next-disabled="!model.isFacilityComplete"
-        :is-processing="processing"
+        :is-next-disabled="!facilityModel.isFacilityComplete"
+        :is-processing="isApplicationProcessing"
         @previous="previous"
         @next="next"
-        @validate-form="validateForm()"
+        @validate-form="validateApplicationForm"
         @save="save(true)"
       />
     </v-container>
@@ -102,6 +102,24 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
     next();
+  },
+  watch: {
+    isApplicationFormValidated: {
+      handler() {
+        this.$refs.form?.validate();
+      },
+    },
+  },
+  async created() {
+    try {
+      if (!this.$route.params.urlGuid) return;
+      this.setIsApplicationProcessing(true);
+      await this.loadFacility(this.$route.params.urlGuid);
+      this.setIsApplicationProcessing(false);
+    } catch (error) {
+      console.error(`Failed to get Facility data with error - ${error}`);
+      this.setFailureAlert('An error occurred while loading facility. Please try again later.');
+    }
   },
 };
 </script>

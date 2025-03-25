@@ -227,14 +227,16 @@ import { PROVINCES } from '@/utils/constants.js';
 
 export default {
   mixins: [organizationMixin, globalMixin],
-  async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
-    next();
-  },
-
   computed: {
     filteredOrganizationList() {
       return this.organizationTypeList.filter((fac) => fac.id == 100000002 || fac.id == 100000005);
+    },
+  },
+  watch: {
+    isApplicationFormValidated: {
+      handler() {
+        this.$refs.form?.validate();
+      },
     },
   },
   created() {

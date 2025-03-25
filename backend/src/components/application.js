@@ -13,15 +13,7 @@ const {
   postChangeRequestSummaryDocument,
   getChangeActionDetails,
 } = require('./utils');
-const {
-  APPLICATION_TEMPLATE_VERSIONS,
-  CCOF_APPLICATION_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-  APPLICATION_STATUS_CODES,
-  CCOF_STATUS_CODES,
-  CHANGE_REQUEST_TYPES,
-  CCFRI_STATUS_CODES,
-} = require('../util/constants');
+const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
@@ -54,11 +46,10 @@ async function renewCCOFApplication(req, res) {
     const payload = {
       ccof_providertype: application.providerType === 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
       ccof_applicationtype: CCOF_APPLICATION_TYPES.RENEW,
-      ccof_application_template_version: getActiveApplicationTemplate(),
+      ccof_application_template_version: application.applicationTemplateVersion,
       'ccof_ProgramYear@odata.bind': `/ccof_program_years(${application.programYearId})`,
       'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`,
     };
-    console.log(payload);
     const applicationGuid = await postOperation('ccof_applications', payload);
 
     //After the application is created, get the application guid
@@ -857,12 +848,6 @@ async function deletePcfApplication(req, res) {
   }
 }
 
-function getActiveApplicationTemplate() {
-  console.log(APPLICATION_TEMPLATE_VERSIONS);
-  const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
-  return activeApplicationTemplate?.id;
-}
-
 module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
@@ -880,5 +865,4 @@ module.exports = {
   deleteCCFRIApplication,
   printPdf,
   deletePcfApplication,
-  getActiveApplicationTemplate,
 };

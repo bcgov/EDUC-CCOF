@@ -1,6 +1,21 @@
 <template>
-  <FamilyOrganizationV1 v-if="showApplicationTemplateV1" />
-  <FamilyOrganizationV2 v-else />
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
+    <v-container fluid class="mx-lg-16">
+      <FamilyOrganizationV1 v-if="showApplicationTemplateV1" />
+      <FamilyOrganizationV2 v-else />
+    </v-container>
+  </v-skeleton-loader>
+  <NavButton
+    :is-next-displayed="true"
+    :is-save-displayed="true"
+    :is-save-disabled="isLocked"
+    :is-next-disabled="!organizationModel.isOrganizationComplete"
+    :is-processing="isApplicationProcessing"
+    @previous="back"
+    @next="next"
+    @validate-form="validateApplicationForm"
+    @save="save(true)"
+  />
 </template>
 
 <script>
@@ -8,9 +23,15 @@ import { mapState } from 'pinia';
 import FamilyOrganizationV1 from '@/components/applicationTemplates/v1/family/FamilyOrganization.vue';
 import FamilyOrganizationV2 from '@/components/applicationTemplates/v2/family/FamilyOrganization.vue';
 import { useApplicationStore } from '@/store/application.js';
+import organizationMixin from '@/mixins/organizationMixin.js';
 
 export default {
   components: { FamilyOrganizationV1, FamilyOrganizationV2 },
+  mixins: [organizationMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
+    next();
+  },
   computed: {
     ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
   },

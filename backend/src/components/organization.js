@@ -1,10 +1,9 @@
 'use strict';
 const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, getUserGuid, getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
+const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { OrganizationMappings } = require('../util/mapping/Mappings');
-const { getActiveApplicationTemplate } = require('./application');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
@@ -43,35 +42,28 @@ function mapOrganizationObjectForFront(data) {
 }
 
 async function createOrganization(req, res) {
-  log.info('create org called');
   try {
     const userGuid = getUserGuid(req);
-    let organization = req.body;
-    let programYear = '/ccof_program_years(' + organization.programYearId + ')';
-    let { providerType } = organization;
-    organization = mapOrganizationForBack(organization);
-
+    const organization = mapOrganizationForBack(req.body);
     organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
     organization['primarycontactid@odata.bind'] = `/contacts(ccof_userid='${userGuid}')`;
 
     // For new organizations, create a CCOF Application header
     organization.ccof_ccof_application_Organization_account = [
       {
-        ccof_providertype: providerType, //10000000 GROUP, 100000001 - Family
+        ccof_providertype: req.body?.providerType, //10000000 GROUP, 100000001 - Family
         ccof_applicationtype: CCOF_APPLICATION_TYPES.NEW,
-        ccof_application_template_version: getActiveApplicationTemplate(),
-        'ccof_ProgramYear@odata.bind': programYear,
+        ccof_application_template_version: req.body?.applicationTemplateVersion,
+        'ccof_ProgramYear@odata.bind': '/ccof_program_years(' + req.body?.programYearId + ')',
       },
     ];
-
-    log.info('createOrganziation payload:', organization);
-    let organizationGuid = await postOperation('accounts', organization);
+    const organizationGuid = await postOperation('accounts', organization);
     //After the application is created, get the application guid
-    let operation = 'accounts(' + organizationGuid + ')?$select=accountid&$expand=ccof_ccof_application_Organization_account($select=ccof_applicationid,statuscode)';
-    let applicationPayload = await getOperation(operation);
-    let applicationId = undefined;
-    let applicationStatus = undefined;
-    let providerTypeLabel = getLabelFromValue(providerType, ORGANIZATION_PROVIDER_TYPES);
+    const operation = `accounts(${organizationGuid})?$select=accountid&$expand=ccof_ccof_application_Organization_account($select=ccof_applicationid,statuscode)`;
+    const applicationPayload = await getOperation(operation);
+    let applicationId;
+    let applicationStatus;
+    const providerTypeLabel = getLabelFromValue(providerType, ORGANIZATION_PROVIDER_TYPES);
     if (applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
       applicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
       applicationStatus = getLabelFromValue(applicationPayload.ccof_ccof_application_Organization_account[0].statuscode, APPLICATION_STATUS_CODES);
@@ -86,20 +78,19 @@ async function createOrganization(req, res) {
       applicationType: 'NEW',
     });
   } catch (e) {
-    log.error('error', e);
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function updateOrganization(req, res) {
-  let organization = mapOrganizationForBack(req.body);
-  organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
-
   try {
-    let orgResponse = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
-    orgResponse = new MappableObjectForFront(orgResponse, OrganizationMappings);
-    return res.status(HttpStatus.OK).json(orgResponse);
+    const organization = mapOrganizationForBack(req.body);
+    organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
+    const response = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, OrganizationMappings));
   } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }

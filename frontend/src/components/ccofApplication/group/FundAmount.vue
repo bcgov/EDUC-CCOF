@@ -52,13 +52,13 @@ export default {
   methods: {
     async loadData() {
       try {
-        this.setIsApplicationProcessing(true);
         if (!this.$route.params.urlGuid) return;
+        this.setIsApplicationProcessing(true);
         await this.loadFunding(this.$route.params.urlGuid);
         this.setIsApplicationProcessing(false);
       } catch (error) {
-        console.error(`Failed to get Facility data with error - ${error}`);
-        this.setFailureAlert('An error occurred while loading facility. Please try again later.');
+        console.error(`Failed to get Licence and Service details with error - ${error}`);
+        this.setFailureAlert('An error occurred while loading Licence and Service details. Please try again later.');
       }
     },
   },

@@ -48,11 +48,6 @@ const APPLICATION_STATUS_CODES = Object.freeze({
   'ACTION REQUIRED': 11,
 });
 
-const APPLICATION_TEMPLATE_VERSIONS = [
-  { id: 1, isActive: false, note: 'Original application template' },
-  { id: 2, isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
-];
-
 const CHANGE_REQUEST_EXTERNAL_STATUS_CODES = Object.freeze({
   INCOMPLETE: 1,
   SUBMITTED: 2,
@@ -143,7 +138,6 @@ module.exports = {
   CHILD_AGE_CATEGORY_TYPES,
   ACCOUNT_TYPE,
   APPLICATION_STATUS_CODES,
-  APPLICATION_TEMPLATE_VERSIONS,
   CCOF_STATUS_CODES,
   CCFRI_STATUS_CODES,
   ECEWE_STATUS_CODES,
