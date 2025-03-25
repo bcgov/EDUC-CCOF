@@ -11,7 +11,6 @@ const {
   deleteFacility,
   getLicenseCategories,
   getApprovedParentFees,
-  returnCCFRIClosuresForFiscalYear,
   returnCCFRIClosureDates,
 } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -63,21 +62,6 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getApprovedParentFees(req, res);
-  },
-);
-
-/**
- * Get closures for a facility and fiscal year
- *
- */
-router.get(
-  '/closures/:organizationId/:programYearId',
-  passport.authenticate('jwt', { session: false }),
-  isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(), param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()],
-  (req, res) => {
-    validationResult(req).throw();
-    return returnCCFRIClosuresForFiscalYear(req, res);
   },
 );
 
