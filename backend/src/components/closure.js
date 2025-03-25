@@ -4,7 +4,6 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ClosureMappings } = require('../util/mapping/Mappings');
-const { filter } = require('lodash');
 
 function mapClosureObjectForFront(backendClosureObject) {
   return new MappableObjectForFront(backendClosureObject, ClosureMappings).toJSON();
@@ -23,7 +22,6 @@ function buildFilterQueryForGetClosures(filterQuery) {
   }
 }
 
-//a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function getClosures(req, res) {
   try {
     let url = `ccof_application_ccfri_closures` + buildFilterQueryForGetClosures(req?.query);
