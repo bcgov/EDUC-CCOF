@@ -1,13 +1,11 @@
-<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-container fluid class="pa-12">
-    <MessagesToolbar />
     <v-row>
       <v-col col="12" lg="6">
         <div>
           <div class="pb-6 text-h4 font-weight-bold">Organization Closures</div>
-          <div class="text-h5 font-weight-bold blueText">{{ organizationName }}</div>
-          <div class="text-p blueText">Organization ID: {{ organizationAccountNumber }}</div>
+          <div class="text-h5 font-weight-bold text-primary">{{ organizationName }}</div>
+          <div class="text-p text-primary">Organization ID: {{ organizationAccountNumber }}</div>
         </div>
       </v-col>
       <v-col col="12" lg="6" class="d-flex justify-lg-end">
@@ -17,7 +15,7 @@
         </div>
       </v-col>
     </v-row>
-    <v-container class="blackBorder pa-8 pt-2" fluid>
+    <v-card variant="outlined" class="pa-8 pt-2" fluid>
       <v-row align="start">
         <v-col cols="12" lg="4" class="mt-4 grayText">Program and policy to provide text </v-col>
         <v-col cols="12" lg="5" class="mt-4">
@@ -32,7 +30,6 @@
             label="Filter by Facility Name and Facility ID"
             clearable
             variant="outlined"
-            class="grayText"
           ></v-text-field>
         </v-col>
       </v-row>
@@ -86,7 +83,7 @@
           </v-row>
         </template>
       </v-data-table>
-    </v-container>
+    </v-card>
     <NavButton
       :is-next-displayed="false"
       :is-save-displayed="false"
@@ -107,14 +104,13 @@ import { useMessageStore } from '@/store/message.js';
 import { useRoute } from 'vue-router';
 
 import NavButton from '@/components/util/NavButton.vue';
-import facilityService from '@/services/facilityService.js';
+import ClosureService from '@/services/closureService.js';
 import AppButton from './guiComponents/AppButton.vue';
-import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import { PATHS, FACILITY_CLOSURE_STATUS, FACILITY_CLOSURE_FUNDING_ELIGIBILITY } from '@/utils/constants.js';
 
 export default {
   name: 'ClosuresPage',
-  components: { MessagesToolbar, NavButton, AppButton },
+  components: { NavButton, AppButton },
   data() {
     return {
       PATHS: PATHS,
@@ -163,7 +159,7 @@ export default {
     this.getAllMessagesVuex();
     this.refreshNavBarList();
     this.useNavBarStore = useNavBarStore();
-    this.ccfriClosures = await facilityService.getCCFRIClosuresForFiscalYear(
+    this.ccfriClosures = await ClosureService.getOrganizationClosuresForFiscalYear(
       this.organizationId,
       this.route.params.programYearGuid,
     );
@@ -173,14 +169,7 @@ export default {
   methods: {
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
-    async getAllMessagesVuex() {
-      try {
-        await this.getAllMessages(this.organizationId);
-      } catch (error) {
-        console.info(error);
-      }
-    },
-    // todo: implement the following functions
+    // JonahCurlCGI - todo: implement the following functions
     viewDetails(item) {
       // stub
     },
