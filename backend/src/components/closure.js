@@ -5,16 +5,19 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { OrganizationClosureMappings } = require('../util/mapping/Mappings');
+const { ClosureMappings } = require('../util/mapping/Mappings');
 
 function mapClosureObjectForFront(backendClosureObject) {
-  return new MappableObjectForFront(data, OrganizationClosureMappings).toJSON();
+  console.log(backendClosureObject);
+  return new MappableObjectForFront(backendClosureObject, ClosureMappings).toJSON();
 }
+
+function buildFilterQueryForGetClosures() {}
 
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function getClosures(req, res) {
   try {
-    const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId}`;
+    const url = `ccof_application_ccfri_closures?$filter= _ccof_organizationfacility_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId}`;
     let data = await getOperation(url);
     const frontendClosures = [];
 
@@ -22,8 +25,8 @@ async function getClosures(req, res) {
       frontendClosures.push(mapClosureObjectForFront(closureObject));
     }
 
-    const closuresData = { closures: frontendClosures };
-    return res.status(HttpStatus.OK).json(closuresData);
+    // const closuresData = { closures: frontendClosures };
+    return res.status(HttpStatus.OK).json(frontendClosures);
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

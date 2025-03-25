@@ -324,13 +324,13 @@ const OrganizationFacilityMappings = [
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
 ];
 
-const OrganizationClosureMappings = [
-  { front: 'facilityGuid', back: '_ccof_facility_value' },
-  { front: 'facilityName', back: '_ccof_facility_value@OData.Community.Display.V1.FormattedValue' },
-  { front: 'startDate', back: 'formattedStartDate' },
-  { front: 'endDate', back: 'formattedEndDate' },
-  { front: 'ccofStatus', back: 'ccof_closure_status' },
-  { front: 'ccofPaymentEligibility', back: 'ccof_payment_eligibility' },
+const ClosureMappings = [
+  { back: '_ccof_facilityinfo_value', front: 'facilityGuid' },
+  { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_closure_status', front: 'ccofStatus' },
+  { back: 'ccof_payment_eligibility', front: 'ccofPaymentEligibility' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
@@ -536,7 +536,7 @@ module.exports = {
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
-  OrganizationClosureMappings,
+  ClosureMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,
