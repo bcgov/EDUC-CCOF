@@ -54,9 +54,9 @@
             {{ formattedDate(item.endDate) }}
           </span>
         </template>
-        <template #[`item.ccofStatus`]="{ item }">
+        <template #[`item.ccofStatusText`]="{ item }">
           <span :class="getCcofStatus(item.ccofStatus)">
-            {{ item.ccofStatusValue }}
+            {{ item.ccofStatusText }}
           </span>
         </template>
         <template #[`item.actions`]="{ item }">
@@ -132,8 +132,8 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Start Date', sortable: true, value: 'startDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Status', sortable: true, value: 'ccofStatus' },
-        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityValue' },
+        { title: 'Status', sortable: true, value: 'ccofStatusText' },
+        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityText' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'may', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -185,10 +185,10 @@ export default {
     },
     processClosures(closures) {
       for (let closure of closures) {
+        console.log(closure);
         const facility = this.getNavByFacilityId(closure.facilityGuid);
         closure.facilityId = facility.facilityAccountNumber;
         closure.ccofStatusText = this.getClosureStatusText(closure.ccofStatus);
-
         closure.ccofPaymentEligibilityText = this.getPaymentEligibilityText(closure.ccofPaymentEligibility);
       }
     },
