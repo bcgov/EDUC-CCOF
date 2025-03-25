@@ -704,10 +704,6 @@ export default {
       type: Object,
       required: true,
     },
-    facilityId: {
-      type: String,
-      required: true,
-    },
     changeRecGuid: {
       type: String,
       required: false,

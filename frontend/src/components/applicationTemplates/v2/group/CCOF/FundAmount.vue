@@ -747,9 +747,20 @@ import { ERROR_MESSAGES } from '@/utils/constants.js';
 export default {
   components: { AppTimeInput },
   mixins: [fundMixin, globalMixin],
+  data() {
+    return {
+      isFormValidated: false,
+    };
+  },
+  computed: {
+    showErrorMessage() {
+      return this.isFormValidated && !this.isLocked;
+    },
+  },
   watch: {
     isApplicationFormValidated: {
       handler() {
+        this.isFormValidated = true;
         this.$refs.form?.validate();
       },
     },

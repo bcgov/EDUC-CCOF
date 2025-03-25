@@ -53,7 +53,7 @@
                 :rules="rules.required"
               />
             </v-col>
-            <template v-if="summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+            <template v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
               <v-col cols="12" md="6">
                 <div class="summary-label">Organization Contact Name</div>
                 <v-text-field
@@ -177,7 +177,7 @@
               <v-text-field
                 placeholder="Required"
                 class="summary-value"
-                :model-value="getOrgTypeString()"
+                :model-value="organizationType"
                 density="compact"
                 flat
                 variant="solo"
@@ -280,7 +280,7 @@
           </v-row>
         </div>
         <div v-if="!isValidForm">
-          <router-link :to="getRoutingPath()">
+          <router-link :to="routingPath">
             <span style="color: #ff5252; text-underline: black">
               <u>To add this information, click here. This will bring you to a different page.</u>
             </span>
@@ -295,7 +295,7 @@ import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import rules from '@/utils/rules.js';
-import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationSummary',
@@ -330,11 +330,35 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useSummaryDeclarationStore, ['isLoadingComplete', 'summaryModel']),
+    organizationType() {
+      switch (this.summaryModel?.organization?.organizationType) {
+        case ORGANIZATION_TYPES.NON_PROFIT_SOCIETY:
+          return 'Non-Profit Society';
+        case ORGANIZATION_TYPES.PUBLIC_INSTITUTION:
+          return 'Public Institution(college/university)';
+        case ORGANIZATION_TYPES.REGISTERED_COMPANY:
+          return 'Registered Company';
+        case ORGANIZATION_TYPES.LOCAL_GOVERNMENT:
+          return 'Local Government';
+        case ORGANIZATION_TYPES.FIRST_NATIONS_GOVERNMENT:
+          return 'First Nations Government';
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP:
+          return 'Sole Proprietorship or Partnership';
+        default:
+          return '';
+      }
+    },
+    routingPath() {
+      return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+        ? pcfUrl(PATHS.CCOF_GROUP_ORG, this.programYearId)
+        : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
+    },
   },
   watch: {
     isValidForm: {
       handler() {
-        if (!this.isProcessing && this.isLoadingComplete) {
+        this.$refs.organizationSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -342,35 +366,6 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-  },
-  methods: {
-    getRoutingPath() {
-      if (this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else {
-        return pcfUrl(PATHS.CCOF_GROUP_ORG_LEGACY_V1, this.programYearId);
-      }
-    },
-    getOrgTypeString() {
-      switch (this.summaryModel?.organization?.organizationType) {
-        case !this.summaryModel?.organization?.organizationType:
-          return '';
-        case 100000000:
-          return 'Non-Profit Society';
-        case 100000001:
-          return 'Public Institution(college/university)';
-        case 100000002:
-          return 'Registered Company';
-        case 100000003:
-          return 'Local Government';
-        case 100000004:
-          return 'First Nations Government';
-        case 100000005:
-          return 'Sole Proprietorship or Partnership';
-        default:
-          return '';
-      }
-    },
   },
 };
 </script>

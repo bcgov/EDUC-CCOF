@@ -49,9 +49,6 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
-    showErrorMessage() {
-      return !this.isLocked && this.isValidated;
-    },
     hasLicenceCategory() {
       return (
         this.fundingModel.hasUnder36Months ||

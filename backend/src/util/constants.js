@@ -48,18 +48,10 @@ const APPLICATION_STATUS_CODES = Object.freeze({
   'ACTION REQUIRED': 11,
 });
 
-const APPLICATION_TEMPLATE_VERSIONS = Object.freeze({
-  V1: {
-    id: 1,
-    isActive: false,
-    note: 'Original application template',
-  },
-  V2: {
-    id: 2,
-    isActive: true,
-    note: 'Mar 2025: CCFRI-4450, CCFRI-4568',
-  },
-});
+const APPLICATION_TEMPLATE_VERSIONS = [
+  { id: 1, isActive: false, note: 'Original application template' },
+  { id: 2, isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
+];
 
 const CHANGE_REQUEST_EXTERNAL_STATUS_CODES = Object.freeze({
   INCOMPLETE: 1,

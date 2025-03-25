@@ -499,7 +499,7 @@
                 <v-col cols="12" sm="6" lg="8" xl="9" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isSchoolProperty?.toUpperCase()"
+                    :model-value="getYesNoValue(funding?.isSchoolProperty)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -546,7 +546,7 @@
                 <v-col cols="12" sm="6" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
-                    :model-value="funding?.isExtendedHours?.toUpperCase()"
+                    :model-value="getYesNoValue(funding?.isExtendedHours)"
                     class="summary-value"
                     density="compact"
                     flat
@@ -765,7 +765,7 @@ import { mapActions, mapState } from 'pinia';
 
 import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-
+import globalMixin from '@/mixins/globalMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
@@ -773,23 +773,18 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
+  mixins: [globalMixin],
   props: {
     funding: {
       type: Object,
       required: true,
     },
-    facilityId: {
-      type: String,
-      required: true,
-    },
     changeRecGuid: {
       type: String,
-      required: false,
       default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },

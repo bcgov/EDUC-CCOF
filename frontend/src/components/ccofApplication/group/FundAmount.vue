@@ -9,7 +9,7 @@
     :is-next-displayed="true"
     :is-save-displayed="true"
     :is-save-disabled="isLocked"
-    :is-next-disabled="!fundingModel.isCCOFComplete"
+    :is-next-disabled="!isFormComplete"
     :is-processing="isApplicationProcessing"
     @previous="previous"
     @next="next"

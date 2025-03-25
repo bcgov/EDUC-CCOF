@@ -52,12 +52,15 @@ async function renewCCOFApplication(req, res) {
   try {
     const application = req.body;
     const payload = {
-      ccof_providertype: application.providerType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
+      ccof_providertype: application.providerType === 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
       ccof_applicationtype: CCOF_APPLICATION_TYPES.RENEW,
+      ccof_application_template_version: getActiveApplicationTemplate(),
       'ccof_ProgramYear@odata.bind': `/ccof_program_years(${application.programYearId})`,
       'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`,
     };
+    console.log(payload);
     const applicationGuid = await postOperation('ccof_applications', payload);
+
     //After the application is created, get the application guid
     return res.status(HttpStatus.CREATED).json({ applicationId: applicationGuid });
   } catch (e) {
@@ -855,6 +858,7 @@ async function deletePcfApplication(req, res) {
 }
 
 function getActiveApplicationTemplate() {
+  console.log(APPLICATION_TEMPLATE_VERSIONS);
   const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
   return activeApplicationTemplate?.id;
 }

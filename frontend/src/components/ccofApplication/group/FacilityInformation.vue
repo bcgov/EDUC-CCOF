@@ -27,11 +27,15 @@ export default {
   components: { FacilityInformationV1, FacilityInformationV2 },
   mixins: [facilityMixin],
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (this.$route.params.urlGuid) {
+      await this.save(false);
+    }
     next();
   },
   async beforeRouteUpdate(_to, _from, next) {
-    await this.save(false);
+    if (this.$route.params.urlGuid) {
+      await this.save(false);
+    }
     next();
   },
   watch: {
