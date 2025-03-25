@@ -1,23 +1,32 @@
 'use strict';
-const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId, getApplicationDocument, getHttpHeader } = require('./utils');
+const { getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
-const axios = require('axios');
-const config = require('../config/index');
 const log = require('./logger');
-const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ClosureMappings } = require('../util/mapping/Mappings');
+const { filter } = require('lodash');
 
 function mapClosureObjectForFront(backendClosureObject) {
-  console.log(backendClosureObject);
   return new MappableObjectForFront(backendClosureObject, ClosureMappings).toJSON();
 }
 
-function buildFilterQueryForGetClosures() {}
+function buildFilterQueryForGetClosures(filterQuery) {
+  if (filterQuery) {
+    const queryObject = new MappableObjectForBack(filterQuery, ClosureMappings).toJSON();
+    let query = `?$filter=`;
+    for (const key in queryObject) {
+      query += `${key} eq ${queryObject[key]} and `;
+    }
+    return query.slice(0, -4);
+  } else {
+    return ``;
+  }
+}
 
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res
 async function getClosures(req, res) {
   try {
-    const url = `ccof_application_ccfri_closures?$filter= _ccof_organizationfacility_value eq ${req.query.organizationId} and  _ccof_program_year_value eq ${req.query.programYearId}`;
+    let url = `ccof_application_ccfri_closures` + buildFilterQueryForGetClosures(req?.query);
     let data = await getOperation(url);
     const frontendClosures = [];
 
