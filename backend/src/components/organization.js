@@ -63,7 +63,7 @@ async function createOrganization(req, res) {
     const applicationPayload = await getOperation(operation);
     let applicationId;
     let applicationStatus;
-    const providerTypeLabel = getLabelFromValue(providerType, ORGANIZATION_PROVIDER_TYPES);
+    const providerTypeLabel = getLabelFromValue(req.body?.providerType, ORGANIZATION_PROVIDER_TYPES);
     if (applicationPayload?.ccof_ccof_application_Organization_account?.length > 0) {
       applicationId = applicationPayload.ccof_ccof_application_Organization_account[0].ccof_applicationid;
       applicationStatus = getLabelFromValue(applicationPayload.ccof_ccof_application_Organization_account[0].statuscode, APPLICATION_STATUS_CODES);

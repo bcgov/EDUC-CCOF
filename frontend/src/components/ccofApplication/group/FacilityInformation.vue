@@ -22,6 +22,7 @@
 import FacilityInformationV1 from '@/components/applicationTemplates/v1/group/CCOF/FacilityInformation.vue';
 import FacilityInformationV2 from '@/components/applicationTemplates/v2/group/CCOF/FacilityInformation.vue';
 import facilityMixin from '@/mixins/facilityMixin.js';
+import { PROVINCES } from '@/utils/constants.js';
 
 export default {
   components: { FacilityInformationV1, FacilityInformationV2 },
@@ -57,6 +58,10 @@ export default {
           await this.loadFacility(facilityId);
         } else {
           await this.newFacility();
+        }
+        if (this.showApplicationTemplateV1) {
+          this.facilityModel.province =
+            this.facilityModel.province ?? PROVINCES.find((province) => province.value === 'BC')?.value;
         }
         this.setIsApplicationProcessing(false);
       } catch (error) {

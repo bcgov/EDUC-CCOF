@@ -227,7 +227,7 @@ export default {
     },
 
     /*
-      CCFRI-4682 - Legacy code to maintain compatibility with the old application (V1) layout.
+      CCFRI-4682 - Legacy code to support application template (V1).
     */
     groupValueRuleMaxGroupChildCareUnder36() {
       return this.groupValueRule(
@@ -275,34 +275,23 @@ export default {
       );
     },
     groupValueRule(forFieldName, otherFieldNAme1, otherFieldNAme2, otherFieldNAme3, otherFieldNAme4) {
-      if (!isNullOrBlank(this.fundingModel[`${forFieldName}`])) {
-        if (this.fundingModel[`${forFieldName}`] > 0) {
-          return true;
-        } else if (
-          !isNullOrBlank(this.fundingModel[`${otherFieldNAme1}`]) &&
-          !isNullOrBlank(this.fundingModel[`${otherFieldNAme2}`]) &&
-          !isNullOrBlank(this.fundingModel[`${otherFieldNAme3}`]) &&
-          !isNullOrBlank(this.fundingModel[`${otherFieldNAme4}`])
-        ) {
-          const sum =
-            (this.fundingModel[`${otherFieldNAme1}`] || 0) +
-            (this.fundingModel[`${otherFieldNAme2}`] || 0) +
-            (this.fundingModel[`${otherFieldNAme3}`] || 0) +
-            (this.fundingModel[`${otherFieldNAme4}`] || 0);
-          if (sum > 0) {
-            return true;
-          } else {
-            return 'At least one Licence Type should have a maximum capacity above zero.';
-          }
-        } else {
-          return true;
-        }
-      } else {
+      if (isNullOrBlank(this.fundingModel[`${forFieldName}`]) || this.fundingModel[`${forFieldName}`] > 0) return true;
+      if (
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme1}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme2}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme3}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme4}`])
+      )
         return true;
-      }
+      const sum =
+        (this.fundingModel[`${otherFieldNAme1}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme2}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme3}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme4}`] || 0);
+      return sum > 0 ? true : 'At least one Licence Type should have a maximum capacity above zero.';
     },
     /*
-      CCFRI-4682 - END OF LEGACY CODE
+      CCFRI-4682 - END OF Legacy code to support application template (V1).
     */
   },
 };

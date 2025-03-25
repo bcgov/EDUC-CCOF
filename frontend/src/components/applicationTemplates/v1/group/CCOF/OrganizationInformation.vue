@@ -106,13 +106,13 @@
 
             <v-divider />
 
-            <v-card-subtitle
-              ><v-checkbox
+            <v-card-subtitle>
+              <v-checkbox
                 v-model="organizationModel.isSameAsMailing"
                 :disabled="isLocked"
                 label="Organization Street Address same as Mailing Address"
-                @click="isSameAddressChecked()"
-            /></v-card-subtitle>
+              />
+            </v-card-subtitle>
             <div v-if="!organizationModel.isSameAsMailing">
               <v-row>
                 <v-col>
