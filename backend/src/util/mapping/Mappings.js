@@ -279,7 +279,7 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
-  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizaitonBypassGoodStandingCheck' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
   { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
 ];
 

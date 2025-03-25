@@ -605,7 +605,7 @@ export default {
     showNotGoodStandingWarning() {
       return (
         this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.userInfo.organizaitonBypassGoodStandingCheck
+        !this.userInfo.organizationBypassGoodStandingCheck
       );
     },
   },
