@@ -5,10 +5,10 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ClosureMappings } = require('../util/mapping/Mappings');
+const { OrganizationClosureMappings } = require('../util/mapping/Mappings');
 
 function mapClosureObjectForFront(backendClosureObject) {
-  return {};
+  return new MappableObjectForFront(data, OrganizationClosureMappings).toJSON();
 }
 
 //a wrapper fn as getCCFRIClosureDates does not take in a req/res

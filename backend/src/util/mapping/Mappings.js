@@ -536,6 +536,7 @@ module.exports = {
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  OrganizationClosureMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,
