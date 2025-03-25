@@ -199,38 +199,6 @@ async function returnCCFRIClosureDates(req, res) {
   }
 }
 
-//a wrapper fn as getCCFRIClosureDates does not take in a req/res
-async function returnCCFRIClosuresForFiscalYear(req, res) {
-  try {
-    const closureData = { closures: await getCCFRIClosuresForFiscalYear(req.params.organizationId, req.params.programYearId) };
-    return res.status(HttpStatus.OK).json(closureData);
-  } catch (e) {
-    log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function getCCFRIClosuresForFiscalYear(organizationId, programYearId) {
-  const url = `ccof_application_ccfri_closures?$filter= _ccof_organization_value eq ${organizationId} and  _ccof_program_year_value eq ${programYearId} and ccof_closure_status ge 100000001`;
-  let data = await getOperation(url);
-  const closures = [];
-
-  data.value.forEach((closure) => {
-    const formattedStartDate = closure.ccof_startdate ? new Date(closure.ccof_startdate).toISOString().slice(0, 10) : closure.ccof_startdate;
-    const formattedEndDate = closure.ccof_enddate ? new Date(closure.ccof_enddate).toISOString().slice(0, 10) : closure.ccof_enddate;
-
-    closures.push({
-      facilityGuid: closure._ccof_facility_value,
-      facilityName: closure['_ccof_facility_value@OData.Community.Display.V1.FormattedValue'],
-      startDate: formattedStartDate,
-      endDate: formattedEndDate,
-      ccofStatus: closure.ccof_closure_status,
-      ccofPaymentEligibility: closure.ccof_payment_eligibility,
-    });
-  });
-  return closures;
-}
-
 async function getCCFRIClosureDates(ccfriId) {
   const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
   let data = await getOperation(url);
@@ -448,11 +416,9 @@ module.exports = {
   deleteFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
-  getCCFRIClosuresForFiscalYear,
   getCCFRIClosureDates,
   mapFacilityObjectForBack,
   getApprovedParentFees,
-  returnCCFRIClosuresForFiscalYear,
   returnCCFRIClosureDates,
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
