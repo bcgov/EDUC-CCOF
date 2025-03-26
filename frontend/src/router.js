@@ -12,6 +12,7 @@ import Logout from '@/components/Logout.vue';
 import MessagesPage from '@/components/MessagesPage.vue';
 import MinistryLogin from '@/components/MinistryLogin.vue';
 import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage.vue';
+import OrganizationClosures from '@/components/OrganizationClosures.vue';
 import NMF from '@/components/RFI/NMF.vue';
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
 import SessionExpired from '@/components/SessionExpired.vue';
@@ -48,7 +49,6 @@ import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { formatFiscalYearName } from '@/utils/format';
 
-import OrganizationClosures from './components/OrganizationClosures.vue';
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
