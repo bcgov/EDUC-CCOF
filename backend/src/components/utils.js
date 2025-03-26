@@ -17,11 +17,11 @@ function sleep(ms) {
 }
 
 function buildFilterQuery(query, mapping) {
-  if (isEmpty(query)) return;
+  if (lodash.isEmpty(query)) return;
   let filterQuery = '';
   const mappedQuery = new MappableObjectForBack(query, mapping).toJSON();
   Object.entries(mappedQuery)?.forEach(([key, value]) => {
-    filterQuery = isEmpty(filterQuery) ? filterQuery.concat(`${key} eq ${value}`) : filterQuery.concat(` and ${key} eq ${value}`);
+    filterQuery = lodash.isEmpty(filterQuery) ? filterQuery.concat(`${key} eq ${value}`) : filterQuery.concat(` and ${key} eq ${value}`);
   });
   return filterQuery;
 }
