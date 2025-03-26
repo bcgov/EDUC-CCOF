@@ -68,7 +68,7 @@
             >
             <AppButton
               :primary="false"
-              :disabled="item.ccofStatusValue === 'Pending'"
+              :disabled="item.ccofStatusText === 'Pending'"
               size="large"
               class="text-body-2"
               @click="updateItem(item)"
@@ -76,7 +76,7 @@
             >
             <AppButton
               :primary="false"
-              :disabled="item.ccofStatusValue === 'Pending'"
+              :disabled="item.ccofStatusText === 'Pending'"
               size="large"
               class="text-body-2"
               @click="removeItem(item)"
