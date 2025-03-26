@@ -154,7 +154,9 @@ export default {
     ]),
     closuresToDisplay() {
       return this.closures?.filter(
-        (closure) => closure?.facilityId?.includes(this.search) || closure?.facilityName?.includes(this.search),
+        (closure) =>
+          closure?.facilityId?.toLowerCase().includes(this.search.toLowerCase()) ||
+          closure?.facilityName?.toLowerCase().includes(this.search.toLowerCase()),
       );
     },
     programYear() {
@@ -187,15 +189,15 @@ export default {
     },
     processClosures(closures) {
       for (let closure of closures) {
-        console.log(closure);
         const facility = this.getNavByFacilityId(closure.facilityGuid);
-        closure.facilityId = facility.facilityAccountNumber;
+        console.log(facility);
+        closure.facilityId = facility?.facilityAccountNumber;
         closure.ccofStatusText = this.getClosureStatusText(closure.ccofStatus);
         closure.ccofPaymentEligibilityText = this.getPaymentEligibilityText(closure.ccofPaymentEligibility);
       }
     },
-    getClosureStatusText(closureValues) {
-      switch (closureValues) {
+    getClosureStatusText(closureValue) {
+      switch (closureValue) {
         case CLOSURE_STATUSES.SUBMITTED:
           return 'Pending';
         case CLOSURE_STATUSES.IN_PROGRESS:
