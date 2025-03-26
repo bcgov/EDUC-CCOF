@@ -17,10 +17,10 @@
     </v-row>
     <v-card variant="outlined" class="pa-8 pt-2" fluid>
       <v-row align="start">
-        <v-col cols="12" lg="4" class="mt-4 grayText">
+        <v-col cols="12" lg="7" class="mt-4 grayText">
           View the status of your closure requests, submit a new closure request or make a change.
         </v-col>
-        <v-col cols="12" lg="5" class="mt-4">
+        <v-col cols="12" lg="2" class="mt-4">
           <v-row class="blueText d-flex justify-lg-end ml-1">
             <p class="mr-2">Filter by Facility</p>
             <v-icon class="mr-1">mdi-filter</v-icon>
