@@ -2,37 +2,18 @@
 const { getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ClosureMappings } = require('../util/mapping/Mappings');
-
-function mapClosureObjectForFront(backendClosureObject) {
-  return new MappableObjectForFront(backendClosureObject, ClosureMappings).toJSON();
-}
-
-function buildFilterQueryForGetClosures(filterQuery) {
-  if (filterQuery) {
-    const queryObject = new MappableObjectForBack(filterQuery, ClosureMappings).toJSON();
-    let query = `?$filter=`;
-    for (const key in queryObject) {
-      query += `${key} eq ${queryObject[key]} and `;
-    }
-    return query.slice(0, -4);
-  } else {
-    return ``;
-  }
-}
+const { buildFilterQuery } = require('./../components/utils');
 
 async function getClosures(req, res) {
   try {
-    let url = `ccof_application_ccfri_closures` + buildFilterQueryForGetClosures(req?.query);
-    let data = await getOperation(url);
+    const url = `ccof_application_ccfri_closures` + buildFilterQuery(req.query, ClosureMappings);
+    const response = await getOperation(url);
     const frontendClosures = [];
 
-    for (const closureObject of data.value) {
+    for (const closureObject of response.value) {
       frontendClosures.push(mapClosureObjectForFront(closureObject));
     }
-
-    // const closuresData = { closures: frontendClosures };
     return res.status(HttpStatus.OK).json(frontendClosures);
   } catch (e) {
     log.error('failed with error', e);
