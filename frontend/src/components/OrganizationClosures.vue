@@ -103,7 +103,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useMessageStore } from '@/store/message.js';
 import { useRoute } from 'vue-router';
 
 import NavButton from '@/components/util/NavButton.vue';
@@ -112,12 +111,13 @@ import AppButton from './guiComponents/AppButton.vue';
 import {
   PATHS,
   CLOSURE_STATUSES,
+  CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   PAYMENT_ELIGIBILITY_TEXTS,
 } from '@/utils/constants.js';
 
 export default {
-  name: 'ClosuresPage',
+  name: 'OrganizationClosures',
   components: { NavButton, AppButton },
   data() {
     return {
@@ -160,7 +160,11 @@ export default {
     },
   },
   async created() {
-    this.loadData();
+    try {
+      await this.loadData();
+    } catch {
+      console.log('error');
+    }
   },
   methods: {
     async loadData() {
@@ -193,13 +197,12 @@ export default {
     getClosureStatusText(closureValue) {
       switch (closureValue) {
         case CLOSURE_STATUSES.SUBMITTED:
-        // return 'Pending';
         case CLOSURE_STATUSES.IN_PROGRESS:
-          return 'Pending';
+          return CLOSURE_STATUS_TEXTS.PENDING;
         case CLOSURE_STATUSES.APPROVED:
-          return 'Approved';
+          return CLOSURE_STATUS_TEXTS.APPROVED;
         case CLOSURE_STATUSES.DENIED:
-          return 'Ineligible';
+          return CLOSURE_STATUS_TEXTS.INELIGIBLE;
         default:
           return '';
       }
