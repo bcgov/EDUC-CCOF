@@ -138,7 +138,7 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityText' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'may', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     };
   },
   computed: {
