@@ -71,7 +71,7 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
-  CLOSURES_PAGE: 'Organization Closures',
+  CLOSURES: 'Organization Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -99,7 +99,6 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
-    CLOSURES: '/closures',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -145,6 +144,8 @@ export const PATHS = {
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
+
+  ORGANIZATION_CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
@@ -170,7 +171,7 @@ export function changeUrlGuid(
 }
 
 export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.ROOT.CLOSURES}/${programYearGuid}`; // stub
+  return `${PATHS.ORGANIZATION_CLOSURES}/${programYearGuid}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
@@ -418,6 +419,12 @@ export const CLOSURE_STATUSES = Object.freeze({
   IN_PROGRESS: 100000002,
   APPROVED: 100000003,
   DENIED: 100000004,
+});
+
+export const CLOSURE_STATUS_TEXTS = Object.freeze({
+  PENDING: 'Pending',
+  APPROVED: 'Approved',
+  INELIGIBLE: 'Ineligible',
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({

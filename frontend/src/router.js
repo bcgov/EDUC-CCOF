@@ -48,7 +48,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { formatFiscalYearName } from '@/utils/format';
 
-import ClosuresPage from './components/ClosuresPage.vue';
+import OrganizationClosures from './components/OrganizationClosures.vue';
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
@@ -856,12 +856,11 @@ const router = createRouter({
       },
     },
     {
-      // route: '/closures/:programYearGuid'
       path: closureUrl(),
       name: 'closures-page',
-      component: ClosuresPage,
+      component: OrganizationClosures,
       meta: {
-        pageTitle: PAGE_TITLES.CLOSURES_PAGE,
+        pageTitle: PAGE_TITLES.CLOSURES,
         showNavBar: false,
         requiresAuth: true,
       },
