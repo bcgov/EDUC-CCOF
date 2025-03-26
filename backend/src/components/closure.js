@@ -4,15 +4,15 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { ClosureMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery } = require('./../components/utils');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getClosures(req, res) {
   try {
     const url = `ccof_application_ccfri_closures` + buildFilterQuery(req.query, ClosureMappings);
     const response = await getOperation(url);
     const frontendClosures = [];
-
-    for (const closureObject of response.value) {
-      frontendClosures.push(mapClosureObjectForFront(closureObject));
+    for (const closure of response?.value) {
+      frontendClosures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON());
     }
     return res.status(HttpStatus.OK).json(frontendClosures);
   } catch (e) {
