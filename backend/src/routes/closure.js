@@ -12,7 +12,7 @@ module.exports = router;
  * Get closures for an organization and fiscal year
  *
  */
-router.get('/find', passport.authenticate('jwt', { session: false }), isValidBackendToken, [query('organizationId').notEmpty(), query('programYearId').notEmpty()], (req, res) => {
+router.get('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [query('organizationId').notEmpty(), query('programYearId').notEmpty()], (req, res) => {
   validationResult(req).throw();
   return getClosures(req, res);
 });
