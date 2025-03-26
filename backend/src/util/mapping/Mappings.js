@@ -327,12 +327,12 @@ const OrganizationFacilityMappings = [
 const ClosureMappings = [
   { back: '_ccof_organizationfacility_value', front: 'organizationId' },
   { back: '_ccof_program_year_value', front: 'programYearId' },
-  { back: '_ccof_facilityinfo_value', front: 'facilityGuid' },
+  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
   { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
   { back: 'ccof_startdate', front: 'startDate' },
   { back: 'ccof_enddate', front: 'endDate' },
-  { back: 'ccof_closure_status', front: 'ccofStatus' },
-  { back: 'ccof_payment_eligibility', front: 'ccofPaymentEligibility' },
+  { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
