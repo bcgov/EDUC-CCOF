@@ -19,10 +19,8 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
 import FundAmountV1 from '@/components/applicationTemplates/v1/group/CCOF/FundAmount.vue';
 import FundAmountV2 from '@/components/applicationTemplates/v2/group/CCOF/FundAmount.vue';
-import { useApplicationStore } from '@/store/application.js';
 import fundMixin from '@/mixins/fundMixin.js';
 
 export default {
@@ -35,9 +33,6 @@ export default {
   async beforeRouteUpdate(_to, _from, next) {
     await this.save(false);
     next();
-  },
-  computed: {
-    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
   },
   watch: {
     '$route.params.urlGuid': {

@@ -632,16 +632,6 @@ export default {
         return '';
       }
     },
-    calculateTotal() {
-      let total = 0;
-      total =
-        this.funding.monday +
-        this.funding.tusday +
-        this.funding.wednesday +
-        this.funding.thursday +
-        this.funding.friday;
-      return total;
-    },
     getRoutingPathGroup() {
       if (isChangeRequest(this)) {
         return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId);

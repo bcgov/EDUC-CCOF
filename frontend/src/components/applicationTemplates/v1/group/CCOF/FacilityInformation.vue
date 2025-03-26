@@ -178,6 +178,7 @@
 <script>
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import facilityMixin from '@/mixins/facilityMixin.js';
+import { PROVINCES } from '@/utils/constants.js';
 
 export default {
   components: { AppDateInput },
@@ -188,6 +189,10 @@ export default {
         this.$refs.form?.validate();
       },
     },
+  },
+  created() {
+    this.facilityModel.province =
+      this.facilityModel.province ?? PROVINCES.find((province) => province.value === 'BC')?.value;
   },
 };
 </script>

@@ -426,7 +426,7 @@
                 <v-row no-gutters class="summary-label">Total</v-row>
                 <v-text-field
                   placeholder="Required"
-                  :model-value="calculateTotal"
+                  :model-value="totalPreschoolSessions"
                   density="compact"
                   flat
                   variant="solo"
@@ -682,12 +682,8 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
-
-import { useNavBarStore } from '@/store/navBar.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-
 import globalMixin from '@/mixins/globalMixin.js';
 import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
@@ -719,8 +715,6 @@ export default {
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
       isValidForm: true,
       formObj: {
         formName: 'CCOFSummary',
@@ -729,7 +723,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     schoolPropertyLabel() {
       const arr = [];
@@ -747,15 +740,10 @@ export default {
       }
       return String(arr);
     },
-    calculateTotal() {
-      let total = 0;
-      total =
-        this.funding.monday +
-        this.funding.tusday +
-        this.funding.wednesday +
-        this.funding.thursday +
-        this.funding.friday;
-      return total;
+    totalPreschoolSessions() {
+      return (
+        this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday
+      );
     },
     routingPath() {
       if (
@@ -848,6 +836,7 @@ export default {
   },
   created() {
     this.formatTime24to12 = formatTime24to12;
+    this.rules = rules;
   },
   methods: {
     isNullOrBlank,

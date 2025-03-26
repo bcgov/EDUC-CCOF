@@ -19,10 +19,8 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
 import FamilyOrganizationV1 from '@/components/applicationTemplates/v1/family/FamilyOrganization.vue';
 import FamilyOrganizationV2 from '@/components/applicationTemplates/v2/family/FamilyOrganization.vue';
-import { useApplicationStore } from '@/store/application.js';
 import organizationMixin from '@/mixins/organizationMixin.js';
 
 export default {
@@ -31,9 +29,6 @@ export default {
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
     next();
-  },
-  computed: {
-    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
   },
 };
 </script>

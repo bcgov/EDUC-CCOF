@@ -27,6 +27,7 @@ export default {
       'isApplicationFormValidated',
       'isApplicationProcessing',
       'unlockBaseFunding',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     isLocked() {
