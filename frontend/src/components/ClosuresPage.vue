@@ -17,11 +17,11 @@
     </v-row>
     <v-card variant="outlined" class="pa-8 pt-2" fluid>
       <v-row align="start">
-        <v-col cols="12" lg="7" class="mt-4 grayText">
+        <v-col cols="12" lg="7" class="mt-4 text-gray">
           View the status of your closure requests, submit a new closure request or make a change.
         </v-col>
         <v-col cols="12" lg="2" class="mt-4">
-          <v-row class="blueText d-flex justify-lg-end ml-1">
+          <v-row class="text-primary d-flex justify-lg-end ml-1">
             <p class="mr-2">Filter by Facility</p>
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
@@ -38,6 +38,7 @@
 
       <v-data-table
         v-model:sort-by="sortBy"
+        must-sort
         :headers="closureTableHeaders"
         :items="closuresToDisplay"
         :items-per-page="10"
@@ -56,9 +57,9 @@
             {{ formattedDate(item.endDate) }}
           </span>
         </template>
-        <template #[`item.ccofStatusText`]="{ item }">
-          <span :class="getCcofStatus(item.ccofStatus)">
-            {{ item.ccofStatusText }}
+        <template #[`item.closureStatusText`]="{ item }">
+          <span :class="getclosureStatus(item.closureStatus)">
+            {{ item.closureStatusText }}
           </span>
         </template>
         <template #[`item.actions`]="{ item }">
@@ -68,7 +69,7 @@
             >
             <AppButton
               :primary="false"
-              :disabled="item.ccofStatusText === 'Pending'"
+              :disabled="item.closureStatusText === 'Pending'"
               size="large"
               class="text-body-2"
               @click="updateItem(item)"
@@ -76,7 +77,7 @@
             >
             <AppButton
               :primary="false"
-              :disabled="item.ccofStatusText === 'Pending'"
+              :disabled="item.closureStatusText === 'Pending'"
               size="large"
               class="text-body-2"
               @click="removeItem(item)"
@@ -134,8 +135,8 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Start Date', sortable: true, value: 'startDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Status', sortable: true, value: 'ccofStatusText' },
-        { title: 'Payment Eligibility', sortable: true, value: 'ccofPaymentEligibilityText' },
+        { title: 'Status', sortable: true, value: 'closureStatusText' },
+        { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibilityText' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -145,13 +146,8 @@ export default {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useAppStore, ['renewalYearLabel', 'programYearList']),
     ...mapState(useApplicationStore, ['programYearLabel', 'applicationStatus', 'applicationMap', 'applicationId']),
-    ...mapState(useNavBarStore, ['navBarList', 'getNavByFacilityId']),
-    ...mapState(useOrganizationStore, [
-      'organizationAccountNumber',
-      'organizationId',
-      'organizationName',
-      'organizationAccountNumber',
-    ]),
+    ...mapState(useNavBarStore, ['getNavByFacilityId']),
+    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     closuresToDisplay() {
       return this.closures?.filter(
         (closure) =>
@@ -164,19 +160,18 @@ export default {
     },
   },
   async created() {
-    this.isLoadingComplete = false;
-    this.refreshNavBarList();
-    this.useNavBarStore = useNavBarStore();
-    this.closures = await ClosureService.getOrganizationClosuresForFiscalYear(
-      this.organizationId,
-      this.route.params.programYearGuid,
-    );
-    this.processClosures(this.closures);
-    this.isLoadingComplete = true;
+    this.loadData();
   },
   methods: {
-    ...mapActions(useMessageStore, ['getAllMessages']),
-    ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    async loadData() {
+      this.isLoadingComplete = false;
+      this.closures = await ClosureService.getOrganizationClosuresForFiscalYear(
+        this.organizationId,
+        this.route.params.programYearGuid,
+      );
+      this.processClosures(this.closures);
+      this.isLoadingComplete = true;
+    },
     // JonahCurlCGI - todo: implement the following functions
     viewDetails(item) {
       // stub
@@ -189,17 +184,16 @@ export default {
     },
     processClosures(closures) {
       for (let closure of closures) {
-        const facility = this.getNavByFacilityId(closure.facilityGuid);
-        console.log(facility);
+        const facility = this.getNavByFacilityId(closure.facilityId);
         closure.facilityId = facility?.facilityAccountNumber;
-        closure.ccofStatusText = this.getClosureStatusText(closure.ccofStatus);
-        closure.ccofPaymentEligibilityText = this.getPaymentEligibilityText(closure.ccofPaymentEligibility);
+        closure.closureStatusText = this.getClosureStatusText(closure.closureStatus);
+        closure.paymentEligibilityText = this.getPaymentEligibilityText(closure.paymentEligibility);
       }
     },
     getClosureStatusText(closureValue) {
       switch (closureValue) {
         case CLOSURE_STATUSES.SUBMITTED:
-          return 'Pending';
+        // return 'Pending';
         case CLOSURE_STATUSES.IN_PROGRESS:
           return 'Pending';
         case CLOSURE_STATUSES.APPROVED:
@@ -235,8 +229,8 @@ export default {
 
       return paymentEligibility;
     },
-    getCcofStatus(ccofStatusNumber) {
-      switch (ccofStatusNumber) {
+    getclosureStatus(closureStatusNumber) {
+      switch (closureStatusNumber) {
         case CLOSURE_STATUSES.SUBMITTED:
           return 'status-gray';
         case CLOSURE_STATUSES.IN_PROGRESS:
@@ -261,13 +255,7 @@ export default {
 </script>
 
 <style scoped>
-@import './../../public/styles/common.css';
-
-.blueText {
-  color: #193c6c !important;
-}
-
-.grayText {
+.text-gray {
   color: #b1b1b1 !important;
 }
 
@@ -279,22 +267,4 @@ export default {
   gap: 8px;
   padding: 0px 0px 0px 10px;
 }
-
-/* .status-gray {
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-green {
-  background-color: #c8e6cb;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-}
-
-.status-yellow {
-  background-color: #fdfac8;
-  border-radius: 5px;
-  padding: 2px 6px 2px 6px;
-} */
 </style>
