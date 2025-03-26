@@ -10,8 +10,8 @@
       </v-col>
       <v-col col="12" lg="6" class="d-flex justify-lg-end">
         <div>
-          <div class="text-h7 pb-8 d-flex justify-lg-end">Fiscal Year: {{ programYear }}</div>
           <AppButton size="large">Add New Closure</AppButton>
+          <div class="text-h6 font-weight-bold pb-8 d-flex justify-lg-end">Fiscal Year: {{ programYear }}</div>
         </div>
       </v-col>
     </v-row>
@@ -158,7 +158,7 @@ export default {
       );
     },
     programYear() {
-      return this.programYearLabel.slice(0, 7).replace('-', '/');
+      return this.programYearLabel.slice(0, 7);
     },
   },
   async created() {
