@@ -2,7 +2,7 @@ import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
-  async getOrganizationClosuresForFiscalYear(organizationId, programYearId) {
+  async getOrganizationClosures(organizationId, programYearId) {
     try {
       if (!organizationId || !programYearId) return [];
       const response = await ApiService.apiAxios.get(
@@ -10,7 +10,7 @@ export default {
       );
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get ccfri closures - ${error}`);
+      console.log(`Failed to get organization closures - ${error}`);
       throw error;
     }
   },

@@ -97,7 +97,8 @@
   </v-container>
 </template>
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
+import alertMixin from '@/mixins/alertMixin.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -107,7 +108,7 @@ import { useRoute } from 'vue-router';
 
 import NavButton from '@/components/util/NavButton.vue';
 import ClosureService from '@/services/closureService.js';
-import AppButton from './guiComponents/AppButton.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import {
   PATHS,
   CLOSURE_STATUSES,
@@ -119,6 +120,7 @@ import {
 export default {
   name: 'OrganizationClosures',
   components: { NavButton, AppButton },
+  mixins: [alertMixin],
   data() {
     return {
       PATHS: PATHS,
@@ -160,21 +162,22 @@ export default {
     },
   },
   async created() {
-    try {
-      await this.loadData();
-    } catch {
-      console.log('error');
-    }
+    await this.loadData();
   },
   methods: {
     async loadData() {
-      this.isLoadingComplete = false;
-      this.closures = await ClosureService.getOrganizationClosuresForFiscalYear(
-        this.organizationId,
-        this.route.params.programYearGuid,
-      );
-      this.processClosures(this.closures);
-      this.isLoadingComplete = true;
+      try {
+        this.isLoadingComplete = false;
+        this.closures = await ClosureService.getOrganizationClosures(
+          this.organizationId,
+          this.route.params.programYearGuid,
+        );
+        this.processClosures(this.closures);
+        this.isLoadingComplete = true;
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Failed to load closures');
+      }
     },
     // JonahCurlCGI - todo: implement the following functions
     viewDetails(item) {

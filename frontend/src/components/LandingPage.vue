@@ -248,9 +248,7 @@
           </div>
         </v-col>
         <v-col cols="12" md="6" class="d-flex justify-md-end">
-          <v-btn theme="dark" class="blueButton mr-2" @click="goToOrganizationClosures()">
-            Organization Closures
-          </v-btn>
+          <AppButton size="small" @click="goToOrganizationClosures()">Organization Closures</AppButton>
         </v-col>
       </v-row>
       <v-row>
@@ -340,6 +338,7 @@ import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -358,7 +357,7 @@ import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { AppAlertBanner, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
