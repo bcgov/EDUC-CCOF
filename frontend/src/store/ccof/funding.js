@@ -31,6 +31,7 @@ export const useFundingStore = defineStore('funding', {
       try {
         checkSession();
         const model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
+        // TODO (vietle-cgi) - review this function when working on Family Application changes
         if (model.familyLicenseType) {
           model.familyLicenseType = '' + model.familyLicenseType;
         }

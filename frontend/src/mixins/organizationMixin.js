@@ -73,6 +73,7 @@ export default {
       'setIsOrganizationComplete',
       'setOrganizationModel',
     ]),
+    // TODO (vietle-cgi) - review this function when working on Family Application changes
     validateIncorporationNumber(organizationTypeId, incorporationNumber) {
       const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
       if (!incorporationNumber) {

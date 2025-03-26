@@ -62,7 +62,7 @@ export default {
         ? this.changeRequestMap
             ?.get(this.changeRequestId)
             ?.changeActions?.find((ca) => ca.changeActionId === this.changeActionId)
-            ?.newFacilities.find((fac) => fac.facilityId === this.facilityId).baseFunding?.ccofBaseFundingId
+            ?.newFacilities?.find((fac) => fac.facilityId === this.facilityId).baseFunding?.ccofBaseFundingId
         : this.getNavByFacilityId(this.facilityId)?.ccofBaseFundingId;
     },
   },

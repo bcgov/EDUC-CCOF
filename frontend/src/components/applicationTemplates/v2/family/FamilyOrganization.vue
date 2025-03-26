@@ -157,6 +157,7 @@ import globalMixin from '@/mixins/globalMixin.js';
 export default {
   mixins: [organizationMixin, globalMixin],
   computed: {
+    // TODO (vietle-cgi) - review this function when working on Family Application changes
     filteredOrganizationList() {
       return this.organizationTypeList.filter((fac) => fac.id == 100000002 || fac.id == 100000005);
     },
