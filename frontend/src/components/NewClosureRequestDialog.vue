@@ -2,7 +2,9 @@
   <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
     <template #content>
       <v-container class="pa-8">
-        <v-row></v-row>
+        <v-row class="text-primary">
+          <h1>Fiscal Year: {{ organizationClosuresData.programYear }}</h1>
+        </v-row>
         <v-row>
           <p class="left-align">
             Closures may impact your CCFRI payments. See the
@@ -34,6 +36,9 @@ export default {
     show: {
       type: Boolean,
       default: false,
+    },
+    organizationClosuresData: {
+      programYear: String,
     },
   },
   emits: ['close'],
