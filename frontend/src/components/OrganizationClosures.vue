@@ -8,7 +8,9 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large">Add New Closure</AppButton>
+          <AppButton :loading="isLoading" size="large" @click="toggleNewClosureRequestDialog"
+            >Add New Closure</AppButton
+          >
           <div class="text-h6 font-weight-bold my-4">
             Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
           </div>
@@ -124,14 +126,16 @@ import {
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   PATHS,
 } from '@/utils/constants.js';
+import NewClosureRequestDialog from './NewClosureRequestDialog.vue';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton },
+  components: { NavButton, AppButton, NewClosureRequestDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      showNewClosureRequestDialog: false,
       closures: undefined,
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -180,6 +184,9 @@ export default {
         console.log(error);
         this.setFailureAlert('Failed to load closures');
       }
+    },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
     },
     // JonahCurlCGI - todo: implement the following functions
     viewDetails(closure) {

@@ -23,11 +23,7 @@
             Back
           </AppButton>
         </v-col>
-        <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton id="cancel-application-button" :loading="isLoading" size="large" width="200px" @click="deletePcf">
-            Continue
-          </AppButton>
-        </v-col>
+        <v-col cols="12" md="6" class="d-flex justify-center"> </v-col>
       </v-row>
     </template>
   </AppDialog>
