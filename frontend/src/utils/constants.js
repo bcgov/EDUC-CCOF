@@ -419,12 +419,15 @@ export const CLOSURE_STATUSES = Object.freeze({
   IN_PROGRESS: 100000002,
   APPROVED: 100000003,
   DENIED: 100000004,
+  CANCELLED: 100000005,
 });
 
 export const CLOSURE_STATUS_TEXTS = Object.freeze({
   PENDING: 'Pending',
   APPROVED: 'Approved',
   INELIGIBLE: 'Ineligible',
+  DENIED: 'Declined',
+  CANCELLED: 'Removed by Provider',
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
