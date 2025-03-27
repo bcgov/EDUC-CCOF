@@ -31,8 +31,8 @@
             v-model="filter"
             label="Filter by Facility Name and Facility ID"
             clearable
-            @click:clear="filter = ''"
             variant="outlined"
+            @click:clear="filter = ''"
           />
         </v-col>
       </v-row>
@@ -147,7 +147,6 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
-      months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     };
   },
   computed: {
