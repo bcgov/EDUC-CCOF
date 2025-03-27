@@ -12,7 +12,7 @@ on:
       - 'Feature/**'
       - 'fix/*'
       - 'Fix/*'
-      - 'ofmcc-*'
+      - 'ccfri-*'
     paths:
       - 'frontend/src/**'
   pull_request:
