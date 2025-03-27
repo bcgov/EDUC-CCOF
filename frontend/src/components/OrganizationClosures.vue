@@ -27,7 +27,13 @@
           </v-row>
         </v-col>
         <v-col cols="12" lg="3" class="d-flex justify-lg-end">
-          <v-text-field v-model="filter" label="Filter by Facility Name and Facility ID" clearable variant="outlined" />
+          <v-text-field
+            v-model="filter"
+            label="Filter by Facility Name and Facility ID"
+            clearable
+            @click:clear="filter = ''"
+            variant="outlined"
+          />
         </v-col>
       </v-row>
 
