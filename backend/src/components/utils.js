@@ -5,17 +5,26 @@ const config = require('../config/index');
 const log = require('./logger');
 const HttpStatus = require('http-status-codes');
 const lodash = require('lodash');
-const {ApiError} = require('./error');
+const { ApiError } = require('./error');
 const jsonwebtoken = require('jsonwebtoken');
-const {LocalDateTime, DateTimeFormatter} = require('@js-joda/core');
-const {Locale} = require('@js-joda/locale_en');
-const { MappableObjectForFront, getMappingString } = require('../util/mapping/MappableObject');
+const { LocalDateTime, DateTimeFormatter } = require('@js-joda/core');
+const { Locale } = require('@js-joda/locale_en');
+const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 let discovery = null;
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function buildFilterQuery(query, mapping) {
+  if (lodash.isEmpty(query)) return;
+  let filterQuery = '';
+  const mappedQuery = new MappableObjectForBack(query, mapping).toJSON();
+  Object.entries(mappedQuery)?.forEach(([key, value]) => {
+    filterQuery = lodash.isEmpty(filterQuery) ? filterQuery.concat(`?$filter=${key} eq ${value}`) : filterQuery.concat(` and ${key} eq ${value}`);
+  });
+  return filterQuery;
+}
 
 function getConstKey(constants, value) {
   if (value) {
@@ -27,7 +36,6 @@ function getConstKey(constants, value) {
     log.error(`getConstKey: Unable to find key for value: [${value}] for const: [${constants?.constructor?.name}]`);
   }
   return undefined;
-
 }
 
 function getLabelFromValue(value, constants, defaultValue) {
@@ -35,7 +43,7 @@ function getLabelFromValue(value, constants, defaultValue) {
     return defaultValue;
   }
   if (value) {
-    let retVal = getConstKey(constants,value);
+    let retVal = getConstKey(constants, value);
     if (retVal) {
       return retVal;
     } else {
@@ -44,7 +52,6 @@ function getLabelFromValue(value, constants, defaultValue) {
   }
   return value;
 }
-
 
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'EDUC-CCOF';
@@ -64,8 +71,7 @@ async function getOidcDiscovery() {
 }
 
 function minify(obj, keys = ['documentData']) {
-  return lodash.transform(obj, (result, value, key) =>
-    result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0, 1) + ' ...' : value);
+  return lodash.transform(obj, (result, value, key) => (result[key] = keys.includes(key) && lodash.isString(value) ? value.substring(0, 1) + ' ...' : value));
 }
 
 function getSessionUser(req) {
@@ -77,13 +83,13 @@ function getSessionUser(req) {
 function getUserGuid(req) {
   const userInfo = req.session?.passport?.user;
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
-    throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
+    throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
 
   return splitUsername(userInfo._json.preferred_username).guid;
 }
 
-function splitUsername(username)  {
+function splitUsername(username) {
   const [guid, idp] = username.split('@');
   return { guid: guid.toUpperCase(), idp };
 }
@@ -91,7 +97,7 @@ function splitUsername(username)  {
 function isIdirUser(req) {
   const userInfo = req.session?.passport?.user;
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
-    throw new ApiError(HttpStatus.UNAUTHORIZED, {message: 'API Get error'});
+    throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
   const isIdir = req.session?.passport?.user?._json?.idir_username;
 
@@ -138,7 +144,7 @@ async function deleteOperation(operation) {
   } catch (e) {
     log.error('deleteOperation Error', e.response ? e.response.status : e.message);
     log.info(e);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -152,7 +158,7 @@ async function getOperation(operation) {
   } catch (e) {
     log.info(e);
     log.error('getOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -178,7 +184,7 @@ async function postOperation(operation, payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
   }
 }
 
@@ -186,7 +192,7 @@ async function postApplicationDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationDocument';
   log.info('postApplicationDocument Url', url);
   if (log.isDebugEnabled()) {
-    log.debug(`postApplicationDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+    log.debug(`postApplicationDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
@@ -194,10 +200,10 @@ async function postApplicationDocument(payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
   }
 }
-async function getApplicationDocument(applicationID){
+async function getApplicationDocument(applicationID) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationDocument?applicationId=' + applicationID;
     log.info('get Data Url', url);
@@ -205,7 +211,7 @@ async function getApplicationDocument(applicationID){
     return response.data;
   } catch (e) {
     log.error(' getApplicationDocument Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -213,7 +219,7 @@ async function postApplicationSummaryDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationSummaryDocument';
   log.info('postApplicationSummaryDocument Url', url);
   if (log.isDebugEnabled()) {
-    log.debug(`postApplicationSummaryDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+    log.debug(`postApplicationSummaryDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
@@ -221,7 +227,7 @@ async function postApplicationSummaryDocument(payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
   }
 }
 
@@ -229,7 +235,7 @@ async function postChangeRequestSummaryDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeRequestSummaryDocument';
   log.info('postChangeRequestSummaryDocument Url', url);
   if (log.isDebugEnabled()) {
-    log.debug(`postChangeRequestSummaryDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+    log.debug(`postChangeRequestSummaryDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
@@ -237,11 +243,11 @@ async function postChangeRequestSummaryDocument(payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
   }
 }
 
-async function getSubmissionPDFHistory(organizationId){
+async function getSubmissionPDFHistory(organizationId) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/SubmissionPDFHistory?OrgId=' + organizationId;
     log.info('get Data Url', url);
@@ -249,11 +255,11 @@ async function getSubmissionPDFHistory(organizationId){
     return response.data;
   } catch (e) {
     log.error(' getSubmissionPDFHistory Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
-async function getDocument(annotationId){
+async function getDocument(annotationId) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationId=' + annotationId;
     log.info('get Data Url', url);
@@ -261,10 +267,10 @@ async function getDocument(annotationId){
     return response.data;
   } catch (e) {
     log.error(' getApplicationDocument Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
-async function deleteDocument(annotationid){
+async function deleteDocument(annotationid) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Document?annotationid=' + annotationid;
     log.info('delete Data Url', url);
@@ -272,7 +278,7 @@ async function deleteDocument(annotationid){
     return response.data;
   } catch (e) {
     log.error(' deleteDocument Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -291,11 +297,11 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
   } catch (e) {
     log.error(e);
     log.error('patchOperationWithObjectId Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Patch error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Patch error' }, e);
   }
 }
 
-async function getChangeActionDocument(changeActionId){
+async function getChangeActionDocument(changeActionId) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeActionDocument?changeactionId=' + changeActionId;
     log.info('get Data Url', url);
@@ -303,7 +309,7 @@ async function getChangeActionDocument(changeActionId){
     return response.data;
   } catch (e) {
     log.error(' get Change Action Document Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Get error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
   }
 }
 
@@ -311,7 +317,7 @@ async function postChangeActionDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeActionDocument';
   log.info('postChangeActionDocument Url', url);
   if (log.isVerboseEnabled()) {
-    log.verbose(`postChangeActionDocument post data for ${url}  :: is :: `, minify(payload,['documentbody']));
+    log.verbose(`postChangeActionDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
@@ -319,16 +325,15 @@ async function postChangeActionDocument(payload) {
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, {message: 'API Post error'}, e);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
   }
 }
 
-async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload){
-  try{
+async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payload) {
+  try {
     let response = await patchOperationWithObjectId('ccof_change_request_new_facilities', changeRequestNewFacilityId, payload);
     return response;
-  }
-  catch(e){
+  } catch (e) {
     log.error('error', e);
     return e.data ? e.data : e?.status;
   }
@@ -340,7 +345,9 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
     try {
       let operation;
       if (joiningTable) {
-        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=${joiningTable}($select=${getMappingString(joiningTableMapping)})`;
+        operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'&$expand=${joiningTable}($select=${getMappingString(
+          joiningTableMapping,
+        )})`;
       } else {
         operation = `${changeDetailEntity}?$select=${getMappingString(changeDetailMapper)}&$filter=_ccof_change_action_value eq '${changeActionId}'`;
       }
@@ -348,17 +355,17 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
       let changeActionDetails = await getOperation(operation);
       let details = changeActionDetails?.value;
       let retVal = [];
-      details?.forEach(el => {
+      details?.forEach((el) => {
         let data = new MappableObjectForFront(el, changeDetailMapper).toJSON();
         let joinData;
         if (joiningTable) {
           joinData = new MappableObjectForFront(el[joiningTable], joiningTableMapping).toJSON();
         }
-        retVal.push({...data, ...joinData});
+        retVal.push({ ...data, ...joinData });
       });
       return retVal;
     } catch (e) {
-      log.error('Unable to get change action details',e);
+      log.error('Unable to get change action details', e);
     }
   } else {
     return undefined;
@@ -369,16 +376,16 @@ function getHttpHeader() {
   let headers = null;
   if ('local' === config.get('environment')) {
     headers = {
-      'Accept': 'text/plain',
+      Accept: 'text/plain',
       'Content-Type': 'application/json',
-      'auth': {
-        'username': config.get('dynamicsApi:devBasicAuthUser'),
-        'password': config.get('dynamicsApi:devBasicAuthPass')
-      }
+      auth: {
+        username: config.get('dynamicsApi:devBasicAuthUser'),
+        password: config.get('dynamicsApi:devBasicAuthPass'),
+      },
     };
   } else {
     headers = {
-      'Accept': 'text/plain',
+      Accept: 'text/plain',
       'Content-Type': 'application/json',
     };
   }
@@ -386,7 +393,6 @@ function getHttpHeader() {
 }
 
 function generateJWTToken(jwtid, subject, issuer, algorithm, payload) {
-
   const tokenTTL = config.get('email:tokenTTL'); // this should be in minutes
   const jwtSecretKey = config.get('email:secretKey');
   let sign_options_schema = {
@@ -394,7 +400,7 @@ function generateJWTToken(jwtid, subject, issuer, algorithm, payload) {
     algorithm: algorithm,
     issuer: issuer,
     jwtid: jwtid,
-    subject: subject
+    subject: subject,
   };
 
   return jsonwebtoken.sign(payload, jwtSecretKey, sign_options_schema);
@@ -408,13 +414,14 @@ function formatCommentTimestamp(time) {
 function errorResponse(res, msg, code) {
   return res.status(code || HttpStatus.INTERNAL_SERVER_ERROR).json({
     message: msg || 'INTERNAL SERVER ERROR',
-    code: code || HttpStatus.INTERNAL_SERVER_ERROR
+    code: code || HttpStatus.INTERNAL_SERVER_ERROR,
   });
 }
 
 const utils = {
   getOidcDiscovery,
   prettyStringify: (obj, indent = 2) => JSON.stringify(obj, null, indent),
+  buildFilterQuery,
   getSessionUser,
   getAccessToken,
   getUserGuid,
