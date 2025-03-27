@@ -279,7 +279,7 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
-  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizaitonBypassGoodStandingCheck' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
   { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
 ];
 
@@ -322,6 +322,17 @@ const OrganizationFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+];
+
+const ClosureMappings = [
+  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
+  { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
@@ -527,6 +538,7 @@ module.exports = {
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  ClosureMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,
