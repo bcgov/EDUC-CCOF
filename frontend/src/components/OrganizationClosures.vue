@@ -103,23 +103,13 @@
         </v-data-table>
       </v-skeleton-loader>
     </v-card>
-<<<<<<< HEAD
     <NavButton @previous="previous" />
-=======
-    <NavButton
-      :is-next-displayed="false"
-      :is-save-displayed="false"
-      :is-next-disabled="true"
-      class="ml-0 mr-0"
-      @previous="previous"
-    />
     <NewClosureRequestDialog
       :show="showNewClosureRequestDialog"
       :organizationClosuresData="getNewClosureRequestDialogData()"
       max-width="60%"
       @close="toggleNewClosureRequestDialog"
     />
->>>>>>> 6e754817 (ccfri-4640 - Added props to pass data to dialog from closures)
   </v-container>
 </template>
 <script>
@@ -274,8 +264,6 @@ export default {
           return '';
       }
     },
-<<<<<<< HEAD
-=======
     formattedDate(date) {
       const newDate = new Date(date);
       return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
@@ -285,7 +273,6 @@ export default {
         programYear: this.programYear,
       };
     },
->>>>>>> 6e754817 (ccfri-4640 - Added props to pass data to dialog from closures)
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
