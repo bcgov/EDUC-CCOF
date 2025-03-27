@@ -271,6 +271,6 @@ export default {
 
 .action-buttons {
   gap: 8px;
-  padding: 0px 0px 0px 10px;
+  padding: 10px 0px 10px 10px;
 }
 </style>
