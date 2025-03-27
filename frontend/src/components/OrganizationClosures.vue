@@ -206,6 +206,8 @@ export default {
           return CLOSURE_STATUS_TEXTS.APPROVED;
         case CLOSURE_STATUSES.DENIED:
           return CLOSURE_STATUS_TEXTS.INELIGIBLE;
+        case CLOSURE_STATUSES.CANCELLED:
+          return CLOSURE_STATUS_TEXTS.REMOVED_BY_PROVIDER;
         default:
           return '';
       }
@@ -245,6 +247,7 @@ export default {
           return 'status-green';
         case CLOSURE_STATUSES.DENIED:
           return 'status-yellow';
+        case CLOSURE_STATUSES.CANCELLED:
         default:
           return 'bg-white';
       }
