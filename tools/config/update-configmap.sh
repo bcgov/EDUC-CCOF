@@ -113,6 +113,12 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="ISSUER=EDUC_CCOF" \
   --dry-run=client -o yaml | oc apply -f -
 
+echo
+echo Setting environment variables for "$APP_NAME-backend-$ENV_VAL" application
+oc -n "$OPENSHIFT_NAMESPACE" set env \
+  --from="configmap/$APP_NAME-backend-$ENV_VAL-config-map" \
+  "deployment/$APP_NAME-backend-$ENV_VAL"
+
 if [ "$ENV_VAL" != 'qa' ]; then
     SPLUNK_URL="gww.splunk.educ.gov.bc.ca"
     FLB_CONFIG="[SERVICE]
