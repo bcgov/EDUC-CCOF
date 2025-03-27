@@ -47,8 +47,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { formatFiscalYearName } from '@/utils/format';
-
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
@@ -59,8 +57,9 @@ import {
   closureUrl,
   pcfUrl,
   pcfUrlGuid,
-} from './utils/constants.js';
-import { Subtitle_Banners } from './utils/constants/SubTitleBanners.js';
+} from '@/utils/constants.js';
+import { Subtitle_Banners } from '@/utils/constants/SubTitleBanners.js';
+import { formatFiscalYearName } from '@/utils/format';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -302,17 +301,6 @@ const router = createRouter({
         subtitleBanner: Subtitle_Banners.APPLICATION,
       },
     },
-    // {
-    //   path: '/ccfri-application' + '/urlGuid',
-    //   name: 'ccfri-application',
-    //   component: currentFees,
-    //   meta: {
-    //     pageTitle: 'Current Fees',
-    //     requiresAuth: true,
-    //     showNavBar: true,
-    //     navBarGroup: NAV_BAR_GROUPS.CCFRI
-    //   }
-    // },
     {
       path: pcfUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'ECEWE Eligibility',

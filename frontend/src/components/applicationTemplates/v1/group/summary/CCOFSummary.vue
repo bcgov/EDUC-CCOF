@@ -1,13 +1,27 @@
+<!--
+* NOTE (vietle-cgi):  
+* This file contains **legacy code** from the previous application layout, which was deprecated and replaced as of March 2025.  
+* **DO NOT modify this file** to maintain compatibility with submitted PCF application/change request.
+*  
+* Source: Copied from commit 4adb36 on Dec 13, 2024 with some minor changes.
+-->
 <template>
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="ccofSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isValidForm" />
+        <h4 style="color: #003466">
+          Child Care Operating Funding (CCOF)
+          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
+          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
+          <span v-if="!isValidForm" style="color: #ff5252"
+            >Your form is missing required information. Click here to view.</span
+          >
+        </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager>
         <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" md="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
@@ -27,7 +41,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-col cols="12" md="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
@@ -49,36 +63,14 @@
             </v-col>
           </v-row>
           <v-row class="d-flex justify-start">
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
+            <v-col v-if="funding?.hasClosedMonth" cols="12" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3"
-                    >Are there months when ALL of the programs at this facility are closed for the entire month?
-                  </span>
-                </v-col>
-                <v-col cols="12" class="d-flex justify-start">
-                  <v-text-field
-                    placeholder="Required"
-                    :model-value="getYesNoValue(funding?.hasClosedMonth)"
-                    class="summary-value"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="8" lg="6" class="pb-0 pt-0">
-              <v-row v-if="funding?.hasClosedMonth" no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
                   <span class="summary-label pt-3"
                     >Months where ALL of the programs at this facility are closed for the entire month:
                   </span>
                 </v-col>
-                <v-col v-if="funding?.closedIn1" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn1" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="January"
                     class="summary-value"
@@ -90,7 +82,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn2" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn2" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="February"
                     class="summary-value"
@@ -102,7 +94,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn3" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn3" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="March"
                     class="summary-value"
@@ -114,7 +106,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn4" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn4" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="April"
                     class="summary-value"
@@ -126,7 +118,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn5" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn5" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="May"
                     class="summary-value"
@@ -138,7 +130,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn6" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn6" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="June"
                     class="summary-value"
@@ -150,7 +142,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn7" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn7" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="July"
                     class="summary-value"
@@ -162,7 +154,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn8" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn8" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="August"
                     class="summary-value"
@@ -174,7 +166,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn9" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn9" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="September"
                     class="summary-value"
@@ -186,7 +178,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn10" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn10" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="October"
                     class="summary-value"
@@ -198,7 +190,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn11" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn11" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="November"
                     class="summary-value"
@@ -210,7 +202,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col v-if="funding?.closedIn12" cols="4" class="d-flex justify-start">
+                <v-col v-if="funding?.closedIn12" cols="6" sm="4" class="d-flex justify-start">
                   <v-text-field
                     model-value="December"
                     class="summary-value"
@@ -224,14 +216,12 @@
                 </v-col>
               </v-row>
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4" lg="6" class="pb-0 pt-0">
+            <v-col cols="12" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="4" class="d-flex justify-start flex-nowrap">
+                <v-col cols="12" md="4" class="d-flex justify-start flex-nowrap">
                   <span class="summary-label pt-3">Facility hours of operation:</span>
                 </v-col>
-                <v-col class="d-flex justify-start">
+                <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
                   <span class="summary-label pt-3">From:</span>
                   <v-text-field
                     placeholder="Required"
@@ -245,7 +235,7 @@
                     :rules="rules.required"
                   />
                 </v-col>
-                <v-col class="d-flex justify-start">
+                <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
                   <span class="summary-label pt-3">To:</span>
                   <v-text-field
                     placeholder="Required"
@@ -262,34 +252,38 @@
               </v-row>
             </v-col>
           </v-row>
-
           <v-row class="d-flex justify-start">
-            <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-col cols="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                  <span class="summary-label">Maximum number of child care spaces you offer</span>
+                <v-col cols="10" class="d-flex justify-start">
+                  <span class="summary-value">Type of Service</span>
                 </v-col>
-                <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                  <span class="summary-label">Maximum licensed capacity </span>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-2">
+                  <span class="summary-label">Maximum Licensed Capacity</span>
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-2">
+                  <span class="summary-label">Group Child Care (Under 36 months)</span>
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-3">
+                  <span class="summary-label">Group Child Care (30 Months to School Age)</span>
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-3">
+                  <span class="summary-label">Preschool</span>
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-3">
+                  <span class="summary-label">Group Child Care (School Age/ School Age Care on School Grounds)</span>
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start pb-2 pt-3">
+                  <span class="summary-label">Multi-Age Child Care</span>
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="4" lg="4" class="pb-0 pt-3">
+            <v-col cols="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
-                <v-col cols="12" class="d-flex justify-center">
-                  <v-text-field
-                    placeholder="Required"
-                    :model-value="funding?.maxSpaces"
-                    class="summary-value"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
+                <v-col cols="10" class="d-flex justify-start">
+                  <span class="summary-value">Maximum Number</span>
                 </v-col>
-                <v-col cols="12" class="d-flex justify-center">
+                <v-col cols="10" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     :model-value="funding?.maxLicensesCapacity"
@@ -302,21 +296,254 @@
                     :rules="rules.required"
                   />
                 </v-col>
+                <v-col cols="10" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.maxGroupChildCareUnder36"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.maxGroupChildCare36"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.maxPreschool"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.maxGroupChildCareSchool"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="10" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.maxGroupChildCareMultiAge"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
               </v-row>
             </v-col>
           </v-row>
-          <br />
+          <span v-if="funding?.maxPreschool > 0">
+            <v-row class="d-flex justify-start">
+              <v-col cols="12" lg="12" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start pt-2">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Preschool sessions your facility offers per day:</span>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-row class="d-flex justify-start pt-2">
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Monday</span>
+                  </v-col>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.monday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Tuesday</span>
+                  </v-col>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.tusday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Wednesday</span>
+                  </v-col>
 
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.wednesday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    required
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Thursday</span>
+                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.thursday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Friday</span>
+                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="funding?.friday"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pb-0 pt-0">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label">Total</span>
+                  </v-col>
+
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="totalPreschoolSessions"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-row>
+              </v-col>
+            </v-row>
+          </span>
+          <v-row v-if="funding?.maxGroupChildCareSchool > 0" class="pb-0 pt-0">
+            <v-col cols="12" class="pb-0 pt-0">
+              <v-row no-gutters class="d-flex justify-start">
+                <v-col cols="12" sm="6" lg="4" xl="3" class="d-flex justify-start">
+                  <span class="summary-label pt-1">Is the facility located on school property?</span>
+                </v-col>
+                <v-col cols="12" sm="6" lg="8" xl="9" class="d-flex justify-start">
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="getYesNoValue(funding?.isSchoolProperty)"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+              </v-row>
+              <span v-if="showSchoolPropertyQuestion">
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <span class="summary-label pt-1">Please indicate each service that your facility offers:</span>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters class="d-flex justify-start">
+                  <v-col cols="12" class="d-flex justify-start">
+                    <v-text-field
+                      placeholder="Required"
+                      :model-value="schoolPropertyLabel"
+                      class="summary-value ml-n5 pl-2"
+                      density="compact"
+                      flat
+                      variant="solo"
+                      hide-details
+                      readonly
+                      :rules="rules.required"
+                    />
+                  </v-col>
+                </v-row>
+              </span>
+            </v-col>
+          </v-row>
           <v-row class="d-flex justify-start">
             <v-col cols="12" lg="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start pt-2">
-                <v-col cols="12" class="d-flex justify-start">
+                <v-col cols="12" sm="6" class="d-flex justify-start">
                   <span class="summary-label pt-2"
                     >Do you <b>regularly offer</b> extended daily hours of child care
                     <b>(before 6am, after 7pm or overnight)</b>?</span
                   >
                 </v-col>
-                <v-col cols="12" class="d-flex justify-start">
+                <v-col cols="12" sm="6" class="d-flex justify-start">
                   <v-text-field
                     placeholder="Required"
                     :model-value="getYesNoValue(funding?.isExtendedHours)"
@@ -337,35 +564,19 @@
               <v-col cols="6" lg="6" class="pb-0 pt-0">
                 <v-row no-gutters class="d-flex justify-start">
                   <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                    <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
-                  </v-col>
-                  <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
                     <span class="summary-label"
-                      >Maximum number of days per week you offer extended hours of child care</span
+                      >Maximum number of days per week you offer extended hours of child care?</span
                     >
                   </v-col>
                   <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
                     <span class="summary-label"
-                      >Maximum number of weeks per year you offer extended hours of child care</span
+                      >Maximum number of weeks per year you offer extended hours of child care?</span
                     >
                   </v-col>
                 </v-row>
               </v-col>
               <v-col cols="4" lg="4" class="pb-0 pt-3">
                 <v-row no-gutters class="d-flex justify-start">
-                  <v-col cols="12" class="d-flex justify-center">
-                    <v-text-field
-                      placeholder="Required"
-                      :rules="rules.required"
-                      :model-value="funding?.maxCapacityExtended"
-                      class="summary-value"
-                      density="compact"
-                      flat
-                      variant="solo"
-                      hide-details
-                      readonly
-                    />
-                  </v-col>
                   <v-col cols="12" class="d-flex justify-center">
                     <v-text-field
                       placeholder="Required"
@@ -396,7 +607,7 @@
               </v-col>
             </v-row>
           </span>
-          <v-row class="d-flex justify-start mt-2">
+          <v-row class="d-flex justify-start">
             <v-col cols="12" lg="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
@@ -415,13 +626,13 @@
                   <span class="summary-value pt-1">Type of Service</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
-                  <span class="summary-label">Family Child Care (Under 36 months)</span>
+                  <span class="summary-label">Group Child Care (Under 36 months)</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                  <span class="summary-label">Family Child Care (30 Months to School Age)</span>
+                  <span class="summary-label">Group Child Care (30 Months to School Age)</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                  <span class="summary-label">Family Child Care (School Age/ School Age Care on School Grounds)</span>
+                  <span class="summary-label">Group Child Care (School Age/ School Age Care on School Grounds)</span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-3">
                   <span class="summary-label">Multi-Age Child Care</span>
@@ -532,49 +743,53 @@
             </v-col>
           </v-row>
         </v-row>
-        <div v-if="!isValidForm">
-          <router-link :to="getRoutingPath()">
-            <u class="text-error"> To add this information, click here. This will bring you to a different page. </u>
-          </router-link>
-        </div>
+        <v-row v-if="!isValidForm" class="d-flex justify-start">
+          <v-col cols="6" lg="4" class="pb-0 pt-0 ml-2">
+            <v-row no-gutters class="d-flex justify-start">
+              <v-col cols="12" class="d-flex justify-start">
+                <router-link v-if="summaryModel?.application" :to="routingPath">
+                  <span style="color: #ff5252; text-underline: black"
+                    ><u>To add this information, click here. This will bring you to a different page.</u></span
+                  >
+                </router-link>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
 </template>
 <script>
-import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { mapActions, mapState } from 'pinia';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import globalMixin from '@/mixins/globalMixin.js';
-import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
+import { isChangeRequest } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
-  components: { SummaryExpansionPanelTitle },
   mixins: [globalMixin],
   props: {
     funding: {
       type: Object,
       required: true,
     },
-    facilityId: {
+    changeRecGuid: {
       type: String,
-      required: true,
+      default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },
   emits: ['isSummaryValid'],
   data() {
     return {
-      PATHS,
-      rules,
+      isChangeRequest: isChangeRequest(this),
       isValidForm: true,
       formObj: {
         formName: 'CCOFSummary',
@@ -584,13 +799,56 @@ export default {
   },
   computed: {
     ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
-    ...mapState(useNavBarStore, ['navBarList']),
+    schoolPropertyLabel() {
+      const arr = [];
+      if (this.funding?.beforeSchool) {
+        arr.push('BEFORE SCHOOL');
+      }
+      if (this.funding?.afterSchool) {
+        arr.push('AFTER SCHOOL');
+      }
+      if (this.funding?.beforeKindergarten) {
+        arr.push('BEFORE KINDERGARTEN');
+      }
+      if (this.funding?.afterKindergarten) {
+        arr.push('AFTER KINDERGARTEN');
+      }
+      return String(arr);
+    },
+    totalPreschoolSessions() {
+      return (
+        this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday
+      );
+    },
+    routingPath() {
+      if (
+        !this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
+        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+      ) {
+        pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
+      } else if (this.isChangeRequest) {
+        return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
+      } else if (
+        this.funding.ccofBaseFundingId &&
+        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+      ) {
+        return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
+      }
+      return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
+    },
+    showSchoolPropertyQuestion() {
+      return this.funding?.maxGroupChildCareSchool > 0 && this.funding?.isSchoolProperty;
+    },
   },
   watch: {
-    isValidForm: {
-      handler() {
-        this.$refs.ccofSummaryForm.validate();
-        if (this.isLoadingComplete && this.isValidForm !== null) {
+    isLoadingComplete: {
+      handler: function (val) {
+        if (val) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -598,19 +856,13 @@ export default {
   },
   created() {
     this.formatTime24to12 = formatTime24to12;
+    this.rules = rules;
   },
   methods: {
-    getRoutingPath() {
-      if (!this.funding.ccofBaseFundingId) {
-        return pcfUrl(this.PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else if (this.funding.ccofBaseFundingId) {
-        return pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
-      }
-    },
+    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
   },
 };
 </script>
-
 <style scoped>
 .summary-label {
   color: grey;
@@ -622,11 +874,11 @@ export default {
   color: black;
 }
 :deep(.summary-value .v-label) {
-  color: #d8292f !important;
+  color: red !important;
   opacity: 1 !important;
 }
 :deep(::placeholder) {
-  color: #d8292f !important;
+  color: red !important;
   opacity: 1 !important;
 }
 .summary-label-smaller {

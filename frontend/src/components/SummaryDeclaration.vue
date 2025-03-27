@@ -136,7 +136,6 @@
                       <CCOFSummary
                         v-else
                         :funding="facility.funding"
-                        :facility-id="facility.facilityId"
                         :change-rec-guid="facility.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
