@@ -279,6 +279,8 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizaitonBypassGoodStandingCheck' },
+  { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
 ];
 
 const UserProfileApplicationMappings = [
@@ -287,6 +289,7 @@ const UserProfileApplicationMappings = [
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
   { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
@@ -305,6 +308,7 @@ const UserProfileFacilityMappings = [
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   { back: 'ccof_facilitystatus_formatted', front: 'facilityStatus' },
 ];
+
 const UserProfileBaseFundingMappings = [
   //base funding
   { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },

@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import { hasEmptyFields } from '@/utils/common.js';
-import { OPT_STATUSES, ORGANIZATION_TYPES } from '@/utils/constants.js';
+import { APPLICATION_TEMPLATE_VERSIONS, OPT_STATUSES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
 export default {
   isOrganizationComplete(organization, isGroup) {
@@ -160,5 +160,10 @@ export default {
     if (ecewe?.optInOrOut === OPT_STATUSES.OPT_OUT) return true;
     const requiredFields = [];
     return !hasEmptyFields(ecewe, requiredFields);
+  },
+
+  getActiveApplicationTemplate() {
+    const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
+    return activeApplicationTemplate?.id;
   },
 };

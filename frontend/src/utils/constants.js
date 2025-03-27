@@ -405,8 +405,19 @@ export const ORGANIZATION_TYPES = Object.freeze({
   SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
 });
 
+export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
+  PASS: 1,
+  FAIL: 2,
+  INTEGRATION_ERROR: 3,
+});
+
 export const TOOLTIP_TYPES = Object.freeze({
   INFO: 'Information',
   ERROR: 'Error',
   WARNING: 'Warning',
 });
+
+export const APPLICATION_TEMPLATE_VERSIONS = [
+  { id: '1', isActive: false, note: 'Original application template' },
+  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
+];

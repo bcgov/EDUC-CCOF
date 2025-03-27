@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -13,6 +14,7 @@ export const useApplicationStore = defineStore('application', {
     applicationId: null,
     applicationStatus: null,
     applicationType: null,
+    applicationTemplateVersion: null,
     ccofApplicationStatus: null,
     programYearId: null,
     programYearLabel: null,
@@ -32,6 +34,9 @@ export const useApplicationStore = defineStore('application', {
 
     applicationUploadedDocuments: [],
     isApplicationDocumentsLoading: false,
+
+    isApplicationProcessing: false,
+    isApplicationFormValidated: false,
   }),
   actions: {
     setApplicationId(value) {
@@ -42,6 +47,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setApplicationStatus(value) {
       this.applicationStatus = value;
+    },
+    setApplicationTemplateVersion(value) {
+      this.applicationTemplateVersion = Number(value);
     },
     setCcofApplicationStatus(value) {
       this.ccofApplicationStatus = value;
@@ -100,6 +108,9 @@ export const useApplicationStore = defineStore('application', {
     setApplicationUploadedDocuments(value) {
       this.applicationUploadedDocuments = value;
     },
+    setIsApplicationProcessing(value) {
+      this.isApplicationProcessing = value;
+    },
     addApplicationsToMap(applicationList) {
       const map = new Map(this.applicationMap);
       applicationList?.forEach((el) => {
@@ -124,6 +135,7 @@ export const useApplicationStore = defineStore('application', {
       if (application) {
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
+        this.setApplicationTemplateVersion(application.applicationTemplateVersion);
         this.setApplicationType(application.applicationType);
         this.setCcofApplicationStatus(application.ccofApplicationStatus);
         this.setProgramYearId(application.ccofProgramYearId);
@@ -140,6 +152,9 @@ export const useApplicationStore = defineStore('application', {
 
         navBarStore.setIsRenewal(application.applicationType === 'RENEW');
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);
+      } else {
+        const activeApplicationTemplate = ApplicationService.getActiveApplicationTemplate();
+        this.setApplicationTemplateVersion(activeApplicationTemplate);
       }
     },
     async deletePcfApplication() {
@@ -160,6 +175,9 @@ export const useApplicationStore = defineStore('application', {
       } finally {
         this.isApplicationDocumentsLoading = false;
       }
+    },
+    validateApplicationForm() {
+      this.isApplicationFormValidated = !this.isApplicationFormValidated;
     },
   },
   getters: {
@@ -224,6 +242,9 @@ export const useApplicationStore = defineStore('application', {
 
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
       return facilityList;
+    },
+    showApplicationTemplateV1: (state) => {
+      return !state.applicationTemplateVersion || state.applicationTemplateVersion === 1;
     },
   },
 });

@@ -600,16 +600,6 @@ export default {
     this.formatTime24to12 = formatTime24to12;
   },
   methods: {
-    calculateTotal() {
-      let total = 0;
-      total =
-        this.funding.monday +
-        this.funding.tusday +
-        this.funding.wednesday +
-        this.funding.thursday +
-        this.funding.friday;
-      return total;
-    },
     getRoutingPath() {
       if (!this.funding.ccofBaseFundingId) {
         return pcfUrl(this.PATHS.CCOF_FAMILY_ORG, this.programYearId);
