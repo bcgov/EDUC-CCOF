@@ -247,12 +247,12 @@
             </h2>
           </div>
         </v-col>
-        <v-col cols="12" md="6" class="d-flex justify-md-end">
-          <AppButton size="small" @click="goToOrganizationClosures()">Organization Closures</AppButton>
+        <v-col cols="12" md="6" class="my-2 my-md-0 d-flex justify-md-end">
+          <AppButton size="large" height="50" @click="goToOrganizationClosures">Organization Closures</AppButton>
         </v-col>
       </v-row>
       <v-row>
-        <v-col cols="12" md="4">
+        <v-col cols="12" md="4" order="2" order-md="1">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -264,13 +264,13 @@
             variant="filled"
             label="Filter by Facility Name "
             :bind="input"
-            class="w-100 ml-2"
+            class="mx-2"
           />
         </v-col>
-        <v-col v-if="applicationIds?.length > 1" cols="12" md="8">
-          <v-row class="d-flex justify-md-end">
-            <h3 class="mr-4 ml-5">Select fiscal year:</h3>
-            <FiscalYearSlider class="mr-5" @select-program-year="selectProgramYear" />
+        <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
+          <v-row class="justify-md-end">
+            <h3 class="ml-5">Select fiscal year:</h3>
+            <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
@@ -628,7 +628,7 @@ export default {
     this.isLoadingComplete = true;
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsRenewal', 'setProgramYearLabel']),
+    ...mapActions(useApplicationStore, ['setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
@@ -713,7 +713,6 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.setProgramYearLabel(this.selectProgramYear?.name);
       this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
     },
     async getAllMessagesVuex() {

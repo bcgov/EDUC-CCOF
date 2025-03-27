@@ -8,15 +8,12 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getClosures(req, res) {
   try {
-    const url = `ccof_application_ccfri_closures` + buildFilterQuery(req.query, ClosureMappings);
-    const response = await getOperation(url);
-    const frontendClosures = [];
-    for (const closure of response?.value) {
-      frontendClosures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON());
-    }
-    return res.status(HttpStatus.OK).json(frontendClosures);
+    const response = await getOperation(`ccof_application_ccfri_closures${buildFilterQuery(req.query, ClosureMappings)}`);
+    const closures = [];
+    response?.value?.forEach((closure) => closures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON()));
+    return res.status(HttpStatus.OK).json(closures);
   } catch (e) {
-    log.error('failed with error', e);
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }

@@ -857,10 +857,10 @@ const router = createRouter({
     },
     {
       path: closureUrl(),
-      name: 'closures-page',
+      name: 'organization-closures',
       component: OrganizationClosures,
       meta: {
-        pageTitle: PAGE_TITLES.CLOSURES,
+        pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
         showNavBar: false,
         requiresAuth: true,
       },

@@ -26,7 +26,7 @@ export const ApiRoutes = Object.freeze({
   CCFRIFACILITY: baseRoot + '/facility/ccfri',
   CCFRI_FEES: baseRoot + '/facility/fees',
   CCFRI_DATES: baseRoot + '/facility/dates',
-  ORGANIZATION_CLOSURES: baseRoot + '/closures',
+  CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
@@ -71,7 +71,7 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
-  CLOSURES: 'Organization Closures',
+  ORGANIZATION_CLOSURES: 'Organization Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -145,7 +145,7 @@ export const PATHS = {
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
 
-  ORGANIZATION_CLOSURES: '/closures',
+  CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
@@ -171,7 +171,7 @@ export function changeUrlGuid(
 }
 
 export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.ORGANIZATION_CLOSURES}/${programYearGuid}`; // stub
+  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
@@ -429,7 +429,7 @@ export const CLOSURE_STATUS_TEXTS = Object.freeze({
   REMOVED_BY_PROVIDER: 'Removed by Provider',
 });
 
-export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
+export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
   CCFRI: 100000000,
   CCFRI_AND_CCOF: 100000001,
   CCOF: 100000002,
@@ -437,7 +437,7 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   PENDING: 100000004,
 });
 
-export const PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
+export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCFRI: 'CCFRI',
   CCFRI_AND_CCOF: 'CCFRI & CCOF',
   CCOF: 'CCOF',
