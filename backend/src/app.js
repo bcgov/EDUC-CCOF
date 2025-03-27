@@ -35,6 +35,7 @@ const supportingDocumentUploadRouter = require('./routes/supportingDocuments');
 const changeRequestRouter = require('./routes/changeRequest');
 const pdfRouter = require('./routes/pdf');
 const canadaPostRouter = require('./routes/canadaPost');
+const closureRouter = require('./routes/closure');
 const connectRedis = require('connect-redis');
 const { RedisStore } = require('rate-limit-redis');
 const rateLimit = require('express-rate-limit');
@@ -223,6 +224,7 @@ apiRouter.use('/supportingDocument', supportingDocumentUploadRouter);
 apiRouter.use('/changeRequest', changeRequestRouter);
 apiRouter.use('/pdf', pdfRouter);
 apiRouter.use('/canadaPost', canadaPostRouter);
+apiRouter.use('/closures', closureRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
