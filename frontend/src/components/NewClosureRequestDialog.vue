@@ -1,31 +1,23 @@
 <template>
   <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
     <template #content>
-      <div class="text-center pa-4">
-        <p class="mb-4">
-          If you cancel your application, any information you entered will be deleted. If you create a new application,
-          you will need to re-enter this information.
-        </p>
-        <p>Are you sure you want to cancel your application and delete your information?</p>
-      </div>
+      <v-container class="pa-8">
+        <v-row></v-row>
+        <v-row>
+          <p class="left-align">
+            Closures may impact your CCFRI payments. See the
+            <a
+              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
+              target="_blank"
+              >CCFRI Funding Guidelines</a
+            >
+            for information on the maximum closure period. Information about eligibility for CCOF Base Funding during
+            Emergency closures is available on the CCOF website.
+          </p>
+        </v-row>
+      </v-container>
     </template>
-    <template #button>
-      <v-row justify="space-around">
-        <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton
-            id="back-button"
-            :loading="isLoading"
-            :primary="false"
-            size="large"
-            width="200px"
-            @click="closeDialog"
-          >
-            Back
-          </AppButton>
-        </v-col>
-        <v-col cols="12" md="6" class="d-flex justify-center"> </v-col>
-      </v-row>
-    </template>
+    <template #button> </template>
   </AppDialog>
 </template>
 
@@ -65,3 +57,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.left-align {
+  text-align: left;
+}
+</style>
