@@ -49,10 +49,10 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
             </v-col>
           </v-row>
-          <v-row v-if="isSummaryLoading">
+          <v-row v-if="isLoadingComplete">
             <v-col>
               <v-skeleton-loader
-                :loading="isSummaryLoading"
+                :loading="!isLoadingComplete"
                 type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
               />
             </v-col>
@@ -396,12 +396,7 @@ export default {
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
-    ...mapState(useSummaryDeclarationStore, [
-      'isSummaryLoading',
-      'isLoadingComplete',
-      'summaryModel',
-      'declarationModel',
-    ]),
+    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete', 'summaryModel', 'declarationModel']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
     },
