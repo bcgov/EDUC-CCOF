@@ -3,7 +3,7 @@
     <template #content>
       <v-container class="pa-8">
         <v-row class="text-primary">
-          <h1>Fiscal Year: {{ organizationClosuresData.programYear }}</h1>
+          <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
         </v-row>
         <v-row>
           <p class="left-align">
@@ -24,9 +24,13 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
+
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+
 import alertMixin from '@/mixins/alertMixin';
+import { useAppStore } from '@/store/app.js';
 
 export default {
   name: 'NewClosureRequestDialog',
@@ -37,8 +41,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    organizationClosuresData: {
-      programYear: String,
+    programYearId: {
+      type: String,
+      default: '',
     },
   },
   emits: ['close'],
@@ -47,6 +52,9 @@ export default {
       isDisplayed: false,
       isLoading: false,
     };
+  },
+  computed: {
+    ...mapState(useAppStore, ['getProgramYearNameById']),
   },
   watch: {
     show: {

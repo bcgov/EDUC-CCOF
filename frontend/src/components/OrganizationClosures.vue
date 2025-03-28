@@ -106,7 +106,7 @@
     <NavButton @previous="previous" />
     <NewClosureRequestDialog
       :show="showNewClosureRequestDialog"
-      :organizationClosuresData="getNewClosureRequestDialogData()"
+      :programYearId="$route.params.programYearGuid"
       max-width="60%"
       @close="toggleNewClosureRequestDialog"
     />
@@ -267,11 +267,6 @@ export default {
     formattedDate(date) {
       const newDate = new Date(date);
       return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
-    },
-    getNewClosureRequestDialogData() {
-      return {
-        programYear: this.programYear,
-      };
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
