@@ -54,7 +54,7 @@ async function createOrganization(req, res) {
         ccof_providertype: req.body?.providerType, //10000000 GROUP, 100000001 - Family
         ccof_applicationtype: CCOF_APPLICATION_TYPES.NEW,
         ccof_application_template_version: req.body?.applicationTemplateVersion,
-        'ccof_ProgramYear@odata.bind': '/ccof_program_years(' + req.body?.programYearId + ')',
+        'ccof_ProgramYear@odata.bind': `/ccof_program_years(${req.body?.programYearId})`,
       },
     ];
     const organizationGuid = await postOperation('accounts', organization);
