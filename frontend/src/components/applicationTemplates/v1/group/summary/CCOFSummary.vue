@@ -14,7 +14,7 @@
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
           <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
           <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click here to view.</span
+            >Your form is missing required information. Click to view.</span
           >
         </h4>
       </v-expansion-panel-title>

@@ -57,7 +57,7 @@
       <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!areAllFacilitiesComplete && !isProcessing" elevation="4" class="mx-12 my-8">
+      <v-card v-if="!areAllFacilitiesComplete && !isApplicationProcessing" elevation="4" class="mx-12 my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -75,10 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels multiple variant="accordion">
-            <v-row v-if="isProcessing">
+            <v-row v-if="isApplicationProcessing">
               <v-col>
                 <v-skeleton-loader
-                  :loading="isProcessing"
+                  :loading="isApplicationProcessing"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -86,12 +86,7 @@
             <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
               <div v-if="!isRenewal">
                 <v-expansion-panel variant="accordion" value="organization-summary">
-                  <OrganizationSummary
-                    :program-year="formattedProgramYear"
-                    :summary-model="summaryModel"
-                    :is-processing="isProcessing"
-                    :program-year-id="summaryModel?.application?.programYearId"
-                  />
+                  <OrganizationSummary />
                 </v-expansion-panel>
               </div>
               <v-expansion-panel variant="accordion" value="facility-information-summary">
@@ -104,7 +99,7 @@
                     <template v-else>
                       <v-icon size="large" class="text-error px-2">mdi-alert-circle-outline</v-icon>
                       <span class="text-error">
-                        At least one of your facilities is missing required information. Click here to view
+                        At least one of your facilities is missing required information. Click to view
                       </span>
                     </template>
                   </h4>
@@ -128,7 +123,7 @@
                     >
                       <FacilityInformationSummaryCard
                         :facility="facility"
-                        @click="handleFacilitySummaryClickEvent(facility?.facilityId)"
+                        @click="openFacilitySummary(facility?.facilityId)"
                       />
                     </v-col>
                   </v-row>
@@ -172,16 +167,16 @@
               <v-card-title class="rounded-t-lg pt-3 pb-3 card-title"> Declaration </v-card-title>
             </v-col>
           </v-row>
-          <v-row v-if="isProcessing">
+          <v-row v-if="isApplicationProcessing">
             <v-col>
               <v-skeleton-loader
-                v-if="isProcessing"
-                :loading="isProcessing"
+                v-if="isApplicationProcessing"
+                :loading="isApplicationProcessing"
                 type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
               />
             </v-col>
           </v-row>
-          <v-row v-if="!isProcessing" class="px-8">
+          <v-row v-if="!isApplicationProcessing" class="px-8">
             <v-col class="pb-0">
               <div v-if="isDeclarationADisplayed">
                 <!-- Ministry Requirements for Change Request Add New Facility is always show Dec A first -->
@@ -293,7 +288,7 @@
               </div>
             </v-col>
           </v-row>
-          <v-row v-if="!isProcessing">
+          <v-row v-if="!isApplicationProcessing">
             <v-col cols="12" class="pl-6 pt-0 pb-0">
               <v-checkbox
                 v-if="!isRenewal"
@@ -313,10 +308,10 @@
               />
             </v-col>
           </v-row>
-          <v-row v-if="!isProcessing">
+          <v-row v-if="!isApplicationProcessing">
             <v-col class="pt-0">
               <v-text-field
-                v-if="!isProcessing"
+                v-if="!isApplicationProcessing"
                 id="signatureTextField"
                 v-model="model.orgContactName"
                 variant="outlined"
@@ -331,17 +326,17 @@
         :is-submit-displayed="true"
         class="mt-10"
         :is-submit-disabled="!isPageComplete || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
-        :is-processing="isProcessing"
+        :is-processing="isApplicationProcessing"
         @previous="previous"
         @submit="submit"
       />
       <AppDialog
-        v-model="dialog"
+        v-model="showSubmissionConfirmationDialog"
         persistent
         max-width="525px"
         title="Submission Complete"
         :loading="false"
-        @close="dialog = false"
+        @close="showSubmissionConfirmationDialog = false"
       >
         <template #content>
           <p>
@@ -400,11 +395,9 @@ export default {
   data() {
     return {
       model: {},
-      isLoading: false,
-      isProcessing: false,
-      dialog: false,
-      payload: {},
+      // payload: {},
       showFacilityInformationSummaryDialog: false,
+      showSubmissionConfirmationDialog: false,
       selectedFacilityId: null,
       facilityFilter: '',
     };
@@ -430,6 +423,7 @@ export default {
       'applicationStatus',
       'isEceweComplete',
       'applicationMap',
+      'isApplicationProcessing',
     ]),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isCREceweComplete', 'isCRLicenseComplete']),
@@ -463,10 +457,11 @@ export default {
       return currProgramYear.name;
     },
     isReadOnly() {
-      if (this.isMinistryUser) {
+      if (this.isMinistryUser || this.applicationStatus === 'SUBMITTED') {
         return true;
-      } else if (
-        (this.model.externalStatus == 'INCOMPLETE' || this.model.externalStatus == 'ACTION_REQUIRED') &&
+      }
+      if (
+        (this.model.externalStatus === 'INCOMPLETE' || this.model.externalStatus === 'ACTION_REQUIRED') &&
         !this.allFacilitiesApproved
       ) {
         //allow users to submit their Dec A Change Request form without having to manually unlock
@@ -481,9 +476,6 @@ export default {
         this.isChangeRequest &&
         !(this.model.externalStatus == 'INCOMPLETE' || this.model.externalStatus == 'ACTION_REQUIRED')
       ) {
-        //ensure summary dec is locked for completed CR when viewing a historical record.
-        return true;
-      } else if (this.applicationStatus == 'SUBMITTED') {
         //ensure summary dec is locked for completed CR when viewing a historical record.
         return true;
       }
@@ -537,58 +529,24 @@ export default {
       );
     },
   },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          setTimeout(() => {
-            const keys = Object.keys(this.payload);
-            //If this is a change request, we'll have 2 items in the payload.
-            if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
-              this.updateApplicationStatus(this.payload);
-              this.forceNavBarRefresh();
-            }
-          }, 1000);
-        }
-      },
-    },
-  },
-  async mounted() {
-    this.isProcessing = true;
-    await Promise.all([
-      this.getChangeRequestList(),
-      this.loadSummary(this.$route.params?.changeRecGuid),
-      this.loadData(),
-    ]);
-
-    if (!isEmpty(this.declarationModel)) {
-      this.model = cloneDeep(this.declarationModel);
-    }
-
-    if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
-      // Establish the server time
-      const serverTime = new Date(this.userInfo.serverTime);
-
-      // Determine declaration b start date
-      let declarationBStart = null;
-      this.programYearList.list.find((item) => {
-        if (item.programYearId == this.programYearId) {
-          declarationBStart = new Date(item.declarationbStart);
-        }
-      });
-      // Determine:
-      //   - which user declaration text version (status a or b) will display
-      //   - which declaration status (a or b) will be saved on submit.
-      // saved as part of submission.
-      if (serverTime < declarationBStart) {
-        this.model.declarationAStatus = 1;
-        this.model.declarationBStatus = undefined;
-      } else {
-        this.model.declarationBStatus = 1;
-        this.model.declarationAStatus = undefined;
-      }
-    }
-    this.isProcessing = false;
+  // watch: {
+  //   isLoadingComplete: {
+  //     handler: function (val) {
+  //       if (val) {
+  //         setTimeout(() => {
+  //           const keys = Object.keys(this.payload);
+  //           //If this is a change request, we'll have 2 items in the payload.
+  //           if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
+  //             this.updateApplicationStatus(this.payload);
+  //             this.forceNavBarRefresh();
+  //           }
+  //         }, 1000);
+  //       }
+  //     },
+  //   },
+  // },
+  async created() {
+    await this.loadData();
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [
@@ -600,11 +558,11 @@ export default {
       'updateApplicationStatus',
       'updateDeclaration',
     ]),
-    ...mapActions(useApplicationStore, ['setIsEceweComplete', 'setIsLicenseUploadComplete']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
     ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh']),
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
-    handleFacilitySummaryClickEvent(facilityId) {
+    openFacilitySummary(facilityId) {
       this.selectedFacilityId = facilityId;
       this.toggleFacilityInformationSummaryDialog();
     },
@@ -619,25 +577,55 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     async loadData() {
-      this.isLoading = true;
       try {
-        //always load the change request store so we can prevent PCF submission if active change request
+        this.setIsApplicationProcessing(true);
+        const declarationPromise = this.isChangeRequest
+          ? this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid)
+          : this.loadDeclaration();
+        await Promise.all([
+          this.getChangeRequestList(),
+          this.loadSummary(this.$route.params?.changeRecGuid),
+          declarationPromise,
+        ]);
 
-        if (this.isChangeRequest) {
-          await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
-        } else {
-          await this.loadDeclaration();
+        // TODO (vietle-cgi) - review these codes to see where to put them....
+        if (!isEmpty(this.declarationModel)) {
+          this.model = cloneDeep(this.declarationModel);
+        }
+        if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
+          // Establish the server time
+          const serverTime = new Date(this.userInfo.serverTime);
+
+          // Determine declaration b start date
+          let declarationBStart = null;
+          this.programYearList.list.find((item) => {
+            if (item.programYearId == this.programYearId) {
+              declarationBStart = new Date(item.declarationbStart);
+            }
+          });
+          // Determine:
+          //   - which user declaration text version (status a or b) will display
+          //   - which declaration status (a or b) will be saved on submit.
+          // saved as part of submission.
+          if (serverTime < declarationBStart) {
+            this.model.declarationAStatus = 1;
+            this.model.declarationBStatus = undefined;
+          } else {
+            this.model.declarationBStatus = 1;
+            this.model.declarationAStatus = undefined;
+          }
         }
       } catch (error) {
-        console.log('Error loading application Declaration.', error);
-        this.setFailureAlert('Error loading application Declaration.');
+        console.log('Error loading application Summary Declaration.', error);
+        this.setFailureAlert('Error loading application Summary Declaration.');
       } finally {
-        this.isLoading = false;
+        this.setIsApplicationProcessing(false);
       }
     },
     async submit() {
-      this.isProcessing = true;
+      this.isApplicationProcessing = true;
       try {
+        this.setIsApplicationProcessing(true);
         this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
@@ -646,11 +634,12 @@ export default {
           await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
-        this.dialog = true;
+        this.showSubmissionConfirmationDialog = true;
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
       } finally {
-        this.isProcessing = false;
+        this.isApplicationProcessing = false;
+        this.setIsApplicationProcessing(false);
       }
     },
     createRelockPayload() {

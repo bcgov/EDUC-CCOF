@@ -41,11 +41,13 @@
       <v-row no-gutters class="pa-2 pb-0">
         <template v-if="facility.isComplete">
           <v-icon class="text-success" size="large"> mdi-check-circle-outline </v-icon>
-          <span class="text-success pl-2">Click here to view.</span>
+          <span class="text-success pl-2">Click to view.</span>
         </template>
         <template v-else>
           <v-icon class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span class="text-error pl-2"> Your form is missing required information. Click here to view. </span>
+          <span class="text-error pl-2">
+            Your form is missing required information. Click to view and complete form.
+          </span>
         </template>
       </v-row>
     </div>

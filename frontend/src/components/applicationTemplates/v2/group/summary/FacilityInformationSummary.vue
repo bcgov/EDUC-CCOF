@@ -369,9 +369,7 @@
           Facility Information
           <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
           <v-icon v-if="!isValidForm" class="text-error" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" class="text-error"
-            >Your form is missing required information. Click here to view.</span
-          >
+          <span v-if="!isValidForm" class="text-error">Your form is missing required information. Click to view.</span>
         </h4>
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="exp-style">

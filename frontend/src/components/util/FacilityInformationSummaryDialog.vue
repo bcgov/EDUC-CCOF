@@ -1,7 +1,7 @@
 <template>
   <AppDialog
     v-model="isDisplayed"
-    title="Facility Information Summary"
+    title="Facility Information"
     :loading="isLoading"
     text-alignment="left"
     @close="closeDialog"

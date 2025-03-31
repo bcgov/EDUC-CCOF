@@ -36,12 +36,14 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
+    console.log('this.isCCOFComplete = ' + this.isCCOFComplete(facility.funding));
+    console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
+    console.log('this.isECEWEComplete = ' + this.isECEWEComplete(facility.ecewe));
     return (
       // this.isFacilityInformationComplete(facility.facilityInfo) &&
-      this.isCCOFComplete(facility.funding) &&
+      // this.isCCOFComplete(facility.funding) &&
       // this.isLicenceUploadComplete(facility) &&
-      this.isCCFRIComplete(facility.ccfri) &&
-      this.isECEWEComplete(facility.ecewe)
+      this.isCCFRIComplete(facility.ccfri) && this.isECEWEComplete(facility.ecewe)
       //   (!this.facility?.hasRfi || this.facility?.isRFIComplete) &&
       //   (!this.facility?.hasNmf || this.facility?.isNMFComplete)
       //   (this.isAFSComplete)
@@ -94,6 +96,11 @@ export default {
           this.isMultiAgeExtendedChildCareValid(funding)))
     );
   },
+
+  /*
+   **** Licence and Service Details Validations
+   */
+  // Application Template version 2
   hasLicenceCategory(funding) {
     return (
       funding?.hasUnder36Months ||
@@ -142,6 +149,9 @@ export default {
   isMultiAgeExtendedChildCareValid(funding) {
     return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
   },
+  /*
+   **** END OF Licence and Service Details Validations
+   */
 
   isLicenceUploadComplete(licence) {
     return true;
