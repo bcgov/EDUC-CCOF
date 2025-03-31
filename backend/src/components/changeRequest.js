@@ -163,6 +163,12 @@ async function createChangeRequest(req, res) {
       changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
     } else if (changeType === 'PDF_CHANGE') {
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+    } else if (changeType === 'NEW_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+    } else if (changeType === 'EDIT_EXISTING_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+    } else if (changeType === 'REMOVE_A_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     }
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
@@ -238,6 +244,46 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
     log.error('error', e);
     return e.data ? e.data : e?.status;
   }
+}
+
+async function createNewClosureChangeRequest(req, res) {
+  // const facility = buildNewFacilityPayload(req);
+  try {
+    const createChangeRequestReponse = await createChangeRequest(req, res);
+    console.log(createChangeRequestReponse);
+    return createChangeRequestReponse;
+  } catch (e) {
+    //
+  }
+  //   const facilityGuid = await postOperation('accounts', facility);
+  //   //After the 'ChangeActionNewFacility' entity is created, grab the guid
+  //   let operation =
+  //     'accounts(' +
+  //     facilityGuid +
+  //     ')?$select=accountid&$expand=ccof_ccof_change_request_new_facility_facility($select=ccof_change_request_new_facilityid,statuscode),ccof_application_basefunding_Facility($select=ccof_application_basefundingid,statuscode)';
+  //   const payload = await getOperation(operation);
+  //   let changeRequestNewFacilityId;
+  //   let ccofBaseFundingId;
+  //   let ccofBaseFundingStatus;
+  //   if (payload?.ccof_application_basefunding_Facility?.length > 0) {
+  //     ccofBaseFundingId = payload.ccof_application_basefunding_Facility[0].ccof_application_basefundingid;
+  //     ccofBaseFundingStatus = getLabelFromValue(payload.ccof_application_basefunding_Facility[0].statuscode, CCOF_STATUS_CODES);
+  //   }
+  //   if (payload?.ccof_ccof_change_request_new_facility_facility?.length > 0) {
+  //     changeRequestNewFacilityId = payload.ccof_ccof_change_request_new_facility_facility[0].ccof_change_request_new_facilityid;
+  //   }
+  //   if (ccofBaseFundingId && changeRequestNewFacilityId) {
+  //     await updateChangeRequestNewFacility(changeRequestNewFacilityId, {
+  //       'ccof_CCOF@odata.bind': `/ccof_application_basefundings(${ccofBaseFundingId})`,
+  //     });
+  //   }
+  //   return res
+  //     .status(HttpStatus.CREATED)
+  //     .json({ facilityId: facilityGuid, changeRequestNewFacilityId: changeRequestNewFacilityId, ccofBaseFundingId: ccofBaseFundingId, ccofBaseFundingStatus: ccofBaseFundingStatus });
+  // } catch (e) {
+  //   console.log(e);
+  //   return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  // }
 }
 
 async function createChangeRequestFacility(req, res) {
@@ -362,6 +408,7 @@ module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
+  createNewClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
