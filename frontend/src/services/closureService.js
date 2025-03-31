@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
@@ -14,4 +16,27 @@ export default {
       throw error;
     }
   },
+
+  async createNewClosureChangeRequest(payload) {
+    payload.applicationId = 'c887c859-4df9-ef11-bae1-7ced8d05e0a9';
+    payload.programYearId = 'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4';
+    payload.changeType = 'NEW_CLOSURE';
+    try {
+      // if (isEmpty(payload)) return;
+      await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_CLOSURE, payload);
+    } catch (error) {
+      console.log(`Failed to create organization closure request - ${error}`);
+      throw error;
+    }
+  },
 };
+
+// const changeRequestPayload = {
+//   applicationId: applicationStore.applicationId,
+//   programYearId: applicationStore.programYearId,
+//   changeType: 'NEW_FACILITY',
+// };
+// const changeRequestResponse = await ApiService.apiAxios.post(
+//   ApiRoutes.CHANGE_REQUEST_NEW_FAC,
+//   changeRequestPayload,
+// );

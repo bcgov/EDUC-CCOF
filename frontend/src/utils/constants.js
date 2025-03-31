@@ -48,6 +48,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
+  CHANGE_REQUEST_NEW_CLOSURE: baseRoot + '/changeRequest/newClosure',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
