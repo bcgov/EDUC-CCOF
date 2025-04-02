@@ -3,7 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, ClosureMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -247,10 +247,10 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 }
 
 async function createNewClosureChangeRequest(req, res) {
-  // const facility = buildNewFacilityPayload(req);
+  const closure = new MappableObjectForBack(req.body, ClosureMappings);
   try {
     const createChangeRequestReponse = await createChangeRequest(req, res);
-    console.log(createChangeRequestReponse);
+
     return createChangeRequestReponse;
   } catch (e) {
     //

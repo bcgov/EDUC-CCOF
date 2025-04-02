@@ -446,6 +446,15 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   PENDING: 'Pending',
 });
 
+export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
+  AGE_0_18: 100000000,
+  AGE_18_36: 100000001,
+  AGE_3Y_K: 100000002,
+  OOSC_K: 100000003,
+  OOSC_G: 100000004,
+  PRE: 100000005,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
