@@ -42,6 +42,9 @@ function mapFacility(facility) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
   facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
+  facility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
+    (document) => document.facilityId === facility.facilityId,
+  );
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {

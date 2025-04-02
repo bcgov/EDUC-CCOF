@@ -1,12 +1,12 @@
 <template>
   <v-container fluid>
-    <v-form id="printable-form" ref="form">
+    <div class="mx-4 mx-lg-12">
       <div class="text-center">
         <div class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
         </div>
         <h2>Summary and Declaration</h2>
-        <div class="text-h5" style="color: #003466">{{ userInfo.organizationName }}</div>
+        <div class="text-h5 text-primary">{{ userInfo.organizationName }}</div>
       </div>
       <v-row>
         <!-- Do not allow PCF to be submitted if CR is active-->
@@ -54,10 +54,10 @@
         </v-card>
       </v-row>
 
-      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
+      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5 text-primary">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!areAllFacilitiesComplete && !isApplicationProcessing" elevation="4" class="mx-12 my-8">
+      <v-card v-if="!areAllFacilitiesComplete && !isApplicationProcessing" elevation="4" class="my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -67,288 +67,242 @@
           <p>Incomplete sections are marked with a red exclamation point.</p>
         </div>
       </v-card>
-      <div>
-        <v-card class="py-0 px-3 mx-12 mt-4 rounded-lg" elevation="4">
-          <v-row class="d-flex justify-start">
-            <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title" style="color: #003466"> Summary </v-card-title>
-            </v-col>
-          </v-row>
-          <v-expansion-panels multiple variant="accordion">
-            <v-row v-if="isApplicationProcessing">
-              <v-col>
-                <v-skeleton-loader
-                  :loading="isApplicationProcessing"
-                  type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-else no-gutters class="d-flex flex-column pb-2 pt-2">
-              <div v-if="!isRenewal">
-                <v-expansion-panel variant="accordion" value="organization-summary">
-                  <OrganizationSummary />
-                </v-expansion-panel>
-              </div>
-              <v-expansion-panel variant="accordion" value="facility-information-summary">
-                <v-expansion-panel-title>
-                  <h4 style="color: #003466">
-                    Facility Information
-                    <v-icon v-if="areAllFacilitiesComplete" size="large" class="text-success">
-                      mdi-check-circle-outline
-                    </v-icon>
-                    <template v-else>
-                      <v-icon size="large" class="text-error px-2">mdi-alert-circle-outline</v-icon>
-                      <span class="text-error">
-                        At least one of your facilities is missing required information. Click to view
-                      </span>
-                    </template>
-                  </h4>
-                </v-expansion-panel-title>
-                <v-expansion-panel-text eager>
-                  <v-text-field
-                    v-if="facilities?.length > 2"
-                    v-model="facilityFilter"
-                    clearable
-                    variant="outlined"
-                    label="Filter by Facility Name"
-                    max-width="500"
-                  />
-                  <v-row class="pt-0">
-                    <v-col
-                      v-for="facility in sortedFacilities"
-                      :key="facility?.facilityId"
-                      cols="12"
-                      lg="6"
-                      class="my-1"
-                    >
-                      <FacilityInformationSummaryCard
-                        :facility="facility"
-                        @click="openFacilitySummary(facility?.facilityId)"
-                      />
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-              <FacilityInformationSummaryDialog
-                :show="showFacilityInformationSummaryDialog"
-                :facility-id="selectedFacilityId"
-                :program-year-id="summaryModel?.application?.programYearId"
-                max-width="85%"
-                @close="toggleFacilityInformationSummaryDialog"
-              />
+      <v-card class="mt-8 rounded-lg" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 card-title font-weight-bold">Summary</v-card-title>
 
-              <v-expansion-panel
-                v-if="hasChangeNotificationFormDocuments"
-                variant="accordion"
-                value="change-notification-form-summary"
-                class="mt-10"
-              >
-                <ChangeNotificationFormSummary
-                  :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
-                />
-              </v-expansion-panel>
-            </v-row>
-          </v-expansion-panels>
-        </v-card>
-      </div>
-      <!---Declaration Start--->
-      <v-row
-        v-if="getFundingAgreementNumber && !isChangeRequest"
-        justify="center"
-        class="pt-4 text-h5"
-        style="color: #003466"
-      >
-        Funding Agreement Number: {{ getFundingAgreementNumber }}
-      </v-row>
-      <v-row justify="center" class="pb-12 ma-12">
-        <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-          <v-row>
-            <v-col class="pa-0">
-              <v-card-title class="rounded-t-lg pt-3 pb-3 card-title"> Declaration </v-card-title>
-            </v-col>
-          </v-row>
-          <v-row v-if="isApplicationProcessing">
-            <v-col>
-              <v-skeleton-loader
-                v-if="isApplicationProcessing"
-                :loading="isApplicationProcessing"
-                type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-              />
-            </v-col>
-          </v-row>
-          <v-row v-if="!isApplicationProcessing" class="px-8">
-            <v-col class="pb-0">
-              <div v-if="isDeclarationADisplayed">
-                <!-- Ministry Requirements for Change Request Add New Facility is always show Dec A first -->
-                <!-- always show Dec A first for any new orgs completing PCF for the first time-->
-                <p>
-                  I hereby confirm that the information I have provided in this application is complete and accurate. I
-                  certify that I have read and understand the following requirements:
-                </p>
-                <ul class="ml-5 pt-5">
-                  <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
-                  <li>
-                    Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care
-                    Licensing Regulation;
-                  </li>
-                  <li>
-                    Each facility must be willing to provide services to families who receive the Affordable Child Care
-                    Benefit;
-                  </li>
-                  <li>
-                    The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or
-                    a registered company); and
-                  </li>
-                  <li>
-                    The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
-                    Applicant must either have no outstanding balances owing to the Ministry OR the Applicant must have
-                    established payment plans for outstanding balances and these must be in good standing).
-                  </li>
-                </ul>
-                <p style="padding-top: 10px">
-                  Intentionally supplying information that is false or misleading with respect to a material fact in
-                  order to obtain a child care grant may lead to action being taken under section 16 of the Early
-                  Learning and Child Care Act. If you are convicted of an offence under section 16, in addition to any
-                  punishment imposed, the court may order you to pay to the government all or part of any amount you
-                  received under the Early Learning and Child Care Act as a result of committing the offence.
-                </p>
-              </div>
-              <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
-              <div v-else-if="isDeclarationBDisplayed">
-                <p>
-                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
-                  information provided is true and complete to the best of my knowledge and belief.
-                </p>
-                <p>
-                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
-                  to validate the accuracy of any information that I have provided.
-                </p>
-                <p>
-                  By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby
-                  confirm that I have carefully read this Form and the corresponding terms and conditions of the Child
-                  Care Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms
-                  and conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
-                </p>
-
-                <ol class="declarationBList" type="a">
-                  <li>
-                    I am the authorized representative and signing authority of the Provider as named in the Funding
-                    Agreement (the Provider);
-                  </li>
-                  <li>
-                    I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do
-                    hereby bind the Provider to the terms and conditions of the Funding Agreement if the Province
-                    accepts this Form and enrolls the Provider in any or all of the Child Care Operating Funding
-                    Program, the CCFRI, or the ECE Wage Enhancement;
-                  </li>
-                  <li>
-                    All information provided in the Form or otherwise in support of the Provider to receive funding
-                    under the Funding Agreement is true and complete to the best of my knowledge and belief. I
-                    understand and acknowledge that providing false or misleading information either on the Form or
-                    otherwise to the Province to obtain any funding under the Funding Agreement or otherwise failing to
-                    comply with the Funding Agreement could result in certain penalties or repayment obligations, or
-                    both, under any or all of the Early Learning and Child Care Act, any successor legislation, or the
-                    Funding Agreement;
-                  </li>
-                  <li>
-                    If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the
-                    Provider has taken all actions required under any collective agreement to which it is a party to
-                    ensure it is:
-                  </li>
-                </ol>
-                <v-row style="padding-left: 90px">
-                  <v-col cols="12">
-                    i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood
-                    Educators (ECEs); and</v-col
-                  >
-                </v-row>
-                <v-row style="padding-left: 90px">
-                  <v-col cols="12">
-                    ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
-                  </v-col>
-                </v-row>
-                <p style="padding-top: 10px">
-                  I understand and acknowledge that until such time as the Province confirms approval or temporary
-                  approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
-                  formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
-                  Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments
-                  made are at the Provider's own risk.
-                </p>
-              </div>
-              <div v-else>
-                <!-- show for early renewals who do not have a FA yet -->
-                <p>
-                  I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
-                  information provided is true and complete to the best of my knowledge and belief.
-                </p>
-                <p>
-                  I consent to the Ministry contacting other branches within the Ministry and other Province ministries
-                  to validate the accuracy of any information that I have provided.
-                </p>
-              </div>
-            </v-col>
-          </v-row>
-          <v-row v-if="!isApplicationProcessing">
-            <v-col cols="12" class="pl-6 pt-0 pb-0">
-              <v-checkbox
-                v-if="!isRenewal"
-                v-model="model.agreeConsentCertify"
-                class="pt-0"
-                :disabled="isReadOnly"
-                :value="1"
-                label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
-              />
-              <v-checkbox
-                v-else-if="isRenewal"
-                v-model="model.agreeConsentCertify"
-                class="pt-0"
-                :disabled="isReadOnly"
-                :value="1"
-                label="I agree, consent, and certify"
-              />
-            </v-col>
-          </v-row>
-          <v-row v-if="!isApplicationProcessing">
-            <v-col class="pt-0">
+        <v-skeleton-loader
+          v-if="isApplicationProcessing"
+          :loading="isApplicationProcessing"
+          type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+        />
+        <v-expansion-panels v-else multiple variant="accordion">
+          <v-expansion-panel v-if="!isRenewal" variant="accordion" value="organization-summary">
+            <OrganizationSummary />
+          </v-expansion-panel>
+          <v-expansion-panel variant="accordion" value="facility-information-summary">
+            <v-expansion-panel-title>
+              <h4 style="color: #003466">
+                Facility Information
+                <v-icon v-if="areAllFacilitiesComplete" size="large" class="text-success">
+                  mdi-check-circle-outline
+                </v-icon>
+                <template v-else>
+                  <v-icon size="large" class="text-error px-2">mdi-alert-circle-outline</v-icon>
+                  <span class="text-error">
+                    At least one of your facilities is missing required information. Click to view
+                  </span>
+                </template>
+              </h4>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text eager>
               <v-text-field
-                v-if="!isApplicationProcessing"
-                id="signatureTextField"
-                v-model="model.orgContactName"
+                v-if="facilities?.length > 2"
+                v-model="facilityFilter"
+                clearable
                 variant="outlined"
-                :disabled="isReadOnly"
-                label="Your Organization's Authorized Signing Authority"
+                label="Filter by Facility Name"
+                max-width="500"
               />
-            </v-col>
-          </v-row>
-        </v-card>
-      </v-row>
-      <NavButton
-        :is-submit-displayed="true"
-        class="mt-10"
-        :is-submit-disabled="!isPageComplete || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
-        :is-processing="isApplicationProcessing"
-        @previous="previous"
-        @submit="submit"
-      />
-      <AppDialog
-        v-model="showSubmissionConfirmationDialog"
-        persistent
-        max-width="525px"
-        title="Submission Complete"
-        :loading="false"
-        @close="showSubmissionConfirmationDialog = false"
-      >
-        <template #content>
-          <p>
-            Your submission has been received. Please refer to your dashboard for updates on the progress of your
-            application. We will contact you if more information is required.
-          </p>
-          <p>
-            <router-link :to="PATHS.ROOT.HOME"> Return to your dashboard </router-link>
-          </p>
-        </template>
-      </AppDialog>
-    </v-form>
+              <v-row class="pt-0">
+                <v-col v-for="facility in sortedFacilities" :key="facility?.facilityId" cols="12" lg="6" class="my-1">
+                  <FacilityInformationSummaryCard
+                    :facility="facility"
+                    @click="openFacilitySummary(facility?.facilityId)"
+                  />
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+          <FacilityInformationSummaryDialog
+            :show="showFacilityInformationSummaryDialog"
+            :facility-id="selectedFacilityId"
+            :program-year-id="summaryModel?.application?.programYearId"
+            max-width="85%"
+            @close="toggleFacilityInformationSummaryDialog"
+          />
+          <v-expansion-panel
+            v-if="hasChangeNotificationFormDocuments"
+            variant="accordion"
+            value="change-notification-form-summary"
+            class="mt-10"
+          >
+            <ChangeNotificationFormSummary
+              :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+            />
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-card>
+
+      <!---Declaration Start--->
+      <div v-if="getFundingAgreementNumber && !isChangeRequest" class="my-8 text-h5 text-center text-primary">
+        Funding Agreement Number: {{ getFundingAgreementNumber }}
+      </div>
+      <v-card class="my-8 rounded-lg" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 card-title font-weight-bold">Declaration</v-card-title>
+        <v-skeleton-loader
+          :loading="isApplicationProcessing"
+          type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+        >
+          <v-container fluid class="px-6">
+            <template v-if="isDeclarationADisplayed">
+              <!-- Ministry Requirements for Change Request Add New Facility is always show Dec A first -->
+              <!-- always show Dec A first for any new orgs completing PCF for the first time-->
+              <p>
+                I hereby confirm that the information I have provided in this application is complete and accurate. I
+                certify that I have read and understand the following requirements:
+              </p>
+              <ul class="ml-5 pt-5">
+                <li>Each facility must be licensed under the Community Care and Assisted Living Act;</li>
+                <li>
+                  Each facility must be in compliance with the Community Care and Assisted Living Act and Child Care
+                  Licensing Regulation;
+                </li>
+                <li>
+                  Each facility must be willing to provide services to families who receive the Affordable Child Care
+                  Benefit;
+                </li>
+                <li>
+                  The organization must be in good standing with BC Registrar of Companies (if a nonprofit society or a
+                  registered company); and
+                </li>
+                <li>
+                  The applicant must be in good standing with the Ministry of Education and Child Care (that is, the
+                  Applicant must either have no outstanding balances owing to the Ministry OR the Applicant must have
+                  established payment plans for outstanding balances and these must be in good standing).
+                </li>
+              </ul>
+              <p style="padding-top: 10px">
+                Intentionally supplying information that is false or misleading with respect to a material fact in order
+                to obtain a child care grant may lead to action being taken under section 16 of the Early Learning and
+                Child Care Act. If you are convicted of an offence under section 16, in addition to any punishment
+                imposed, the court may order you to pay to the government all or part of any amount you received under
+                the Early Learning and Child Care Act as a result of committing the offence.
+              </p>
+            </template>
+            <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
+            <template v-else-if="isDeclarationBDisplayed">
+              <p>
+                I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                information provided is true and complete to the best of my knowledge and belief.
+              </p>
+              <p>
+                I consent to the Ministry contacting other branches within the Ministry and other Province ministries to
+                validate the accuracy of any information that I have provided.
+              </p>
+              <p>
+                By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm
+                that I have carefully read this Form and the corresponding terms and conditions of the Child Care
+                Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and
+                conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
+              </p>
+
+              <ol class="declarationBList" type="a">
+                <li>
+                  I am the authorized representative and signing authority of the Provider as named in the Funding
+                  Agreement (the Provider);
+                </li>
+                <li>
+                  I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do
+                  hereby bind the Provider to the terms and conditions of the Funding Agreement if the Province accepts
+                  this Form and enrolls the Provider in any or all of the Child Care Operating Funding Program, the
+                  CCFRI, or the ECE Wage Enhancement;
+                </li>
+                <li>
+                  All information provided in the Form or otherwise in support of the Provider to receive funding under
+                  the Funding Agreement is true and complete to the best of my knowledge and belief. I understand and
+                  acknowledge that providing false or misleading information either on the Form or otherwise to the
+                  Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the
+                  Funding Agreement could result in certain penalties or repayment obligations, or both, under any or
+                  all of the Early Learning and Child Care Act, any successor legislation, or the Funding Agreement;
+                </li>
+                <li>
+                  If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the
+                  Provider has taken all actions required under any collective agreement to which it is a party to
+                  ensure it is:
+                </li>
+              </ol>
+              <v-row style="padding-left: 90px">
+                <v-col cols="12">
+                  i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
+                  (ECEs); and</v-col
+                >
+              </v-row>
+              <v-row style="padding-left: 90px">
+                <v-col cols="12">
+                  ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                </v-col>
+              </v-row>
+              <p style="padding-top: 10px">
+                I understand and acknowledge that until such time as the Province confirms approval or temporary
+                approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
+                formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
+                Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments made
+                are at the Provider's own risk.
+              </p>
+            </template>
+            <template v-else>
+              <!-- show for early renewals who do not have a FA yet -->
+              <p>
+                I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                information provided is true and complete to the best of my knowledge and belief.
+              </p>
+              <p>
+                I consent to the Ministry contacting other branches within the Ministry and other Province ministries to
+                validate the accuracy of any information that I have provided.
+              </p>
+            </template>
+          </v-container>
+          <div class="px-6">
+            <v-checkbox
+              v-if="!isRenewal"
+              v-model="model.agreeConsentCertify"
+              :disabled="isReadOnly"
+              :value="1"
+              label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
+            />
+            <v-checkbox
+              v-else-if="isRenewal"
+              v-model="model.agreeConsentCertify"
+              :disabled="isReadOnly"
+              :value="1"
+              label="I agree, consent, and certify"
+            />
+            <v-text-field
+              id="signatureTextField"
+              v-model="model.orgContactName"
+              variant="outlined"
+              :disabled="isReadOnly"
+              label="Your Organization's Authorized Signing Authority"
+            />
+          </div>
+        </v-skeleton-loader>
+      </v-card>
+    </div>
+    <NavButton
+      :is-submit-displayed="true"
+      :is-submit-disabled="!isPageComplete || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
+      :is-processing="isApplicationProcessing"
+      class="mt-10"
+      @previous="previous"
+      @submit="submit"
+    />
+    <AppDialog
+      v-model="showSubmissionConfirmationDialog"
+      persistent
+      max-width="525px"
+      title="Submission Complete"
+      @close="showSubmissionConfirmationDialog = false"
+    >
+      <template #content>
+        <p>
+          Your submission has been received. Please refer to your dashboard for updates on the progress of your
+          application. We will contact you if more information is required.
+        </p>
+        <p>
+          <router-link :to="PATHS.ROOT.HOME"> Return to your dashboard </router-link>
+        </p>
+      </template>
+    </AppDialog>
   </v-container>
 </template>
 <script>
@@ -727,10 +681,6 @@ export default {
       this.$router.push(this.previousPath);
     },
 
-    getDocumentsByFacility(facility) {
-      return this.applicationUploadedDocuments?.filter((document) => facility?.facilityId === document.facilityId);
-    },
-
     // CCFRI-3808 - This function ensures that submitted AFS documents from previous submissions cannot be deleted from the Portal when the Ministry Adjudicators re-enable/re-unlock the AFS section.
     // i.e.: Documents with documentType = APPLICATION_AFS_SUBMITTED are not deletable.
     async updateAfsSupportingDocuments() {
@@ -750,7 +700,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 li {
   padding-bottom: 12px;
 }
@@ -758,33 +708,5 @@ li {
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
-}
-
-* .card-title {
-  color: #003466;
-  font-size: 20px;
-  font-weight: bold;
-  background-color: #e5e4e4;
-}
-
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
-.special {
-  margin-top: 5vh !important;
-}
-
-@media print {
-  #printable-form .v-card {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
 }
 </style>

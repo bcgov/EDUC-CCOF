@@ -276,11 +276,9 @@
             </v-col>
           </v-row>
         </div>
-        <template v-if="!isValidForm">
-          <router-link :to="routingPath">
-            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-          </router-link>
-        </template>
+        <router-link v-if="!isValidForm" :to="routingPath">
+          <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+        </router-link>
       </v-expansion-panel-text>
     </v-form>
   </v-row>

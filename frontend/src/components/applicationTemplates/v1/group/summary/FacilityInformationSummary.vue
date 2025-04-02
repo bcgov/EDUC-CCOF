@@ -6,118 +6,12 @@
 * Source: Copied from commit 97b8210 on Dec 31, 2024.
 -->
 <template>
-  <v-row no-gutters class="d-flex flex-column">
-    <v-card class="facility-info pa-4 pb-2">
-      <v-row no-gutters>
-        <v-col cols="12">
-          <div class="summary-label">Facility Name</div>
-          <v-textarea
-            placeholder="Required"
-            :model-value="facilityInfo.facilityName"
-            class="summary-value"
-            auto-grow
-            rows="2"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-        <v-col cols="12" md="3">
-          <div class="summary-label">Facility ID</div>
-          <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
-          <v-text-field
-            placeholder="--"
-            :model-value="facilityInfo?.facilityAccountNumber"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-          />
-        </v-col>
-        <v-col cols="12" md="3">
-          <div class="summary-label">Licence Number</div>
-          <v-text-field
-            placeholder="Required"
-            :model-value="facilityInfo?.licenseNumber"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col cols="12" md="6">
-          <div class="summary-label">Licence Categories</div>
-          <!-- change below value to :value -->
-          <v-textarea
-            :model-value="licenseCategories"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            no-resize
-            rows="3"
-          />
-        </v-col>
-        <v-col cols="12" md="3">
-          <div class="summary-label">CCFRI</div>
-          <v-text-field
-            placeholder="Required"
-            :model-value="getOptInOptOut(ccfriStatus)"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-        <v-col cols="12" md="3">
-          <div class="summary-label">ECE-WE</div>
-          <v-text-field
-            placeholder="Required"
-            :model-value="getOptInOptOut(eceweStatus)"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-      </v-row>
-    </v-card>
-
-    <!-- JB here to make this work with renewels-->
-    <v-form
-      v-if="(!isRenewal && organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP) || isChangeRequest"
-      ref="informationSummaryForm"
-      v-model="isValidForm"
-    >
-      <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Facility Information
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click to view.</span
-          >
-        </h4>
-      </v-expansion-panel-title>
-      <v-expansion-panel-text eager class="exp-style">
+  <v-form ref="facilitySummaryForm" v-model="isValidForm">
+    <v-expansion-panel-title>
+      <SummaryExpansionPanelTitle title="Facility Information" :is-complete="isValidForm" />
+    </v-expansion-panel-title>
+    <v-expansion-panel-text eager>
+      <template v-if="(!isRenewal && isGroup) || isChangeRequest">
         <v-row no-gutters>
           <v-col cols="12" md="8" class="pr-2">
             <div class="summary-label">
@@ -351,33 +245,10 @@
             </v-col>
           </v-row>
         </v-row>
-        <v-row v-if="!isValidForm" no-gutters>
-          <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-          <router-link :to="getRoutingPathGroup()">
-            <span style="color: #ff5252; text-underline: black">
-              <u>To add this information, click here. This will bring you to a different page.</u>
-            </span>
-          </router-link>
-        </v-row>
-      </v-expansion-panel-text>
-    </v-form>
+      </template>
 
-    <v-form
-      v-else-if="!isRenewal && providerType === ORGANIZATION_PROVIDER_TYPES.FAMILY"
-      ref="informationSummaryForm"
-      v-model="isValidForm"
-    >
-      <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          Facility Information
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click to view.</span
-          >
-        </h4>
-      </v-expansion-panel-title>
-      <v-expansion-panel-text eager class="exp-style">
+      <!-- FAMILY APPLICATION -->
+      <template v-else-if="!isRenewal && !isGroup">
         <v-row no-gutters>
           <v-col cols="12">
             <v-row no-gutters>
@@ -507,37 +378,21 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-row v-if="!isValidForm" no-gutters>
-          <v-col cols="6" lg="4">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
-
-                <router-link :to="getRoutingPathFamily()">
-                  <span style="color: #ff5252; text-underline: black"
-                    ><u>To add this information, click here. This will bring you to a different page.</u></span
-                  >
-                </router-link>
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-expansion-panel-text>
-    </v-form>
-  </v-row>
+      </template>
+      <router-link v-if="!isValidForm" :to="isGroup ? routingPathGroup : routingPathFamily">
+        <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+      </router-link>
+    </v-expansion-panel-text>
+  </v-form>
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
+import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 
 export default {
+  mixins: [summaryMixin],
   props: {
     facilityInfo: {
       type: Object,
@@ -547,133 +402,59 @@ export default {
       type: String,
       required: true,
     },
-    ccfriStatus: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    eceweStatus: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    licenseCategories: {
-      type: String,
-      required: false,
-      default: '',
-    },
     funding: {
       type: Object,
-      required: false,
       default: () => ({}),
-    },
-    providerType: {
-      type: String,
-      required: false,
-      default: '',
     },
     changeRecGuid: {
       type: String,
-      required: false,
       default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
       isValidForm: true,
-      legal: null,
-      formObj: {
-        formName: 'FacilityInformationSummary',
-        formId: this.facilityId,
-      },
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['isRenewal']),
-    ...mapState(useNavBarStore, ['navBarList']),
-    ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     yesNoFacilityLabel() {
       if (this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY') {
         return 'YES AS FACILITY';
       }
       return this.facilityInfo?.hasReceivedFunding?.toUpperCase();
     },
-  },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
+    routingPathGroup() {
+      return this.isChangeRequest
+        ? changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId)
+        : pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
+    },
+    routingPathFamily() {
+      return !this.funding.ccofBaseFundingId
+        ? pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId)
+        : pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
     },
   },
-  created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-  },
-  methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
-    getOptInOptOut(status) {
-      if (status === 1) {
-        return 'Opt-In';
-      } else if (status === 0) {
-        return 'Opt-Out';
-      } else {
-        return '';
-      }
-    },
-    getRoutingPathGroup() {
-      if (isChangeRequest(this)) {
-        return changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId);
-      } else {
-        return pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId);
-      }
-    },
-    getRoutingPathFamily() {
-      if (!this.funding.ccofBaseFundingId) {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else {
-        return pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
-      }
-    },
+  mounted() {
+    this.$refs.facilitySummaryForm.validate();
   },
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.facility-info {
-  border-top: 5px solid grey !important;
 }
 
 :deep(.v-field__input) {
   padding-left: 0px;
+}
+
+:deep(.v-input__details) {
+  padding-left: 0;
 }
 </style>

@@ -271,11 +271,9 @@
             />
           </v-col>
         </v-row>
-        <template v-if="!isValidForm">
-          <router-link :to="routingPath">
-            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-          </router-link>
-        </template>
+        <router-link v-if="!isValidForm" :to="routingPath">
+          <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+        </router-link>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
@@ -305,42 +303,9 @@ export default {
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black !important;
-}
-
-*:disabled {
-  background-color: dimgrey !important;
-  color: #d8292f !important;
-  opacity: 1 !important;
-}
-
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
 }
 
 :deep(.v-field__input) {

@@ -2,11 +2,17 @@
   <AppDialog
     v-model="isDisplayed"
     title="Facility Information"
-    :loading="isLoading"
+    :loading="isApplicationProcessing"
     text-alignment="left"
     @close="closeDialog"
   >
     <template #content>
+      <FacilityInformationSummaryDialogHeader
+        :facility-info="facility?.facilityInfo"
+        :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
+        :ecewe-status="facility?.ecewe?.optInOrOut"
+        :license-categories="facility?.licenseCategories"
+      />
       <v-expansion-panel
         v-if="facility?.facilityInfo"
         :key="`${facility.facilityId}-facility-information`"
@@ -20,7 +26,6 @@
           :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
           :ecewe-status="facility?.ecewe?.optInOrOut"
           :license-categories="facility?.licenseCategories"
-          :provider-type="summaryModel?.application?.organizationProviderType"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
         />
@@ -32,7 +37,7 @@
         variant="accordion"
       >
         <CCOFSummaryFamily
-          v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY"
+          v-if="!isGroup"
           :funding="facility.funding"
           :facility-id="facility.facilityId"
           :program-year-id="programYearId"
@@ -111,13 +116,23 @@
           :program-year-id="programYearId"
         />
       </v-expansion-panel>
+      <v-expansion-panel
+        :key="`${facility.facilityId}-uploaded-documents-summary`"
+        :value="`${facility.facilityId}-uploaded-documents-summary`"
+        variant="accordion"
+      >
+        <UploadedDocumentsSummary
+          :facility-id="facility?.facilityId"
+          :program-year-id="summaryModel?.application?.programYearId"
+        />
+      </v-expansion-panel>
     </template>
     <template #button>
       <v-row justify="space-around">
         <v-col cols="12" class="d-flex justify-center">
           <AppButton
             id="back-button"
-            :loading="isLoading"
+            :loading="isApplicationProcessing"
             :primary="false"
             size="large"
             width="400px"
@@ -143,28 +158,31 @@ import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
+import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
+import FacilityInformationSummaryDialogHeader from '@/components/util/FacilityInformationSummaryDialogHeader.vue';
 
-import { useApplicationStore } from '@/store/application.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import alertMixin from '@/mixins/alertMixin';
-import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 
 export default {
-  name: 'CancelApplicationDialog',
+  name: 'FacilityInformationSummaryDialog',
   components: {
     AppButton,
     AppDialog,
+    AFSSummary,
+    CCFRISummary,
+    CCOFSummary,
+    CCOFSummaryFamily,
+    ECEWESummary,
+    FacilityInformationSummary,
+    FacilityInformationSummaryDialogHeader,
     NMFSummary,
     RFISummary,
-    AFSSummary,
-    FacilityInformationSummary,
-    CCOFSummary,
-    CCFRISummary,
-    ECEWESummary,
-    CCOFSummaryFamily,
+    UploadedDocumentsSummary,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, summaryMixin],
   props: {
     show: {
       type: Boolean,
@@ -183,12 +201,10 @@ export default {
   data() {
     return {
       isDisplayed: false,
-      isLoading: false,
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['isRenewal']),
-    ...mapState(useSummaryDeclarationStore, ['facilities', 'summaryModel']),
+    ...mapState(useSummaryDeclarationStore, ['facilities']),
     facility() {
       return this.facilities?.find((facility) => facility.facilityId === this.facilityId);
     },
@@ -199,9 +215,6 @@ export default {
         this.isDisplayed = value;
       },
     },
-  },
-  created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
   },
   methods: {
     closeDialog() {

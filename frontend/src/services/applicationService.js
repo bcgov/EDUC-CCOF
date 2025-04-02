@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import { hasEmptyFields } from '@/utils/common.js';
-import { APPLICATION_TEMPLATE_VERSIONS, OPT_STATUSES, ORGANIZATION_TYPES } from '@/utils/constants.js';
+import { APPLICATION_TEMPLATE_VERSIONS, DOCUMENT_TYPES, OPT_STATUSES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
 export default {
   isOrganizationComplete(organization, isGroup) {
@@ -36,14 +36,16 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
-    console.log('this.isCCOFComplete = ' + this.isCCOFComplete(facility.funding));
+    console.log(facility);
+    console.log('this.isCCOFComplete = ' + this.isCCOFCompleteGroupV2(facility.funding));
     console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
     console.log('this.isECEWEComplete = ' + this.isECEWEComplete(facility.ecewe));
     return (
-      // this.isFacilityInformationComplete(facility.facilityInfo) &&
-      // this.isCCOFComplete(facility.funding) &&
-      // this.isLicenceUploadComplete(facility) &&
-      this.isCCFRIComplete(facility.ccfri) && this.isECEWEComplete(facility.ecewe)
+      this.isFacilityInformationComplete(facility.facilityInfo) &&
+      this.isCCOFCompleteGroupV2(facility.funding) &&
+      this.isLicenceUploadComplete(facility.uploadedDocuments) &&
+      this.isCCFRIComplete(facility.ccfri) &&
+      this.isECEWEComplete(facility.ecewe)
       //   (!this.facility?.hasRfi || this.facility?.isRFIComplete) &&
       //   (!this.facility?.hasNmf || this.facility?.isNMFComplete)
       //   (this.isAFSComplete)
@@ -66,7 +68,7 @@ export default {
       'licenseNumber',
       'licenseEffectiveDate',
       'hasReceivedFunding',
-      // 'healthAuthority',
+      'healthAuthority',
     ];
     if (facilityInfo.hasReceivedFunding) {
       requiredFields.push['fundingFacility'];
@@ -74,7 +76,13 @@ export default {
     return !hasEmptyFields(facilityInfo, requiredFields);
   },
 
-  isCCOFComplete(funding) {
+  /*
+   **** Licence and Service Details Validations
+   */
+  // Application Template version 2
+
+  // Group Provider - Application Template Version 2
+  isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
       'maxDaysPerWeek',
@@ -83,11 +91,11 @@ export default {
       'hoursTo',
       'isSchoolProperty',
       'isExtendedHours',
-      'healthAuthority',
     ];
     return (
       !hasEmptyFields(funding, requiredFields) &&
       this.hasValidLicenceCategory(funding) &&
+      (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
       (funding?.isExtendedHours === 0 ||
         (this.hasLicenceCategoryWithExtendedChildCare(funding) &&
           this.isUnder36ExtendedChildCareValid(funding) &&
@@ -97,10 +105,6 @@ export default {
     );
   },
 
-  /*
-   **** Licence and Service Details Validations
-   */
-  // Application Template version 2
   hasLicenceCategory(funding) {
     return (
       funding?.hasUnder36Months ||
@@ -120,6 +124,9 @@ export default {
         (funding?.hasMultiAge && funding?.maxGroupChildCareMultiAge > 0))
     );
   },
+  hasSchoolAgeCareServices(funding) {
+    return funding?.beforeSchool || funding?.afterSchool || funding?.beforeKindergarten || funding?.afterKindergarten;
+  },
   hasLicenceCategoryWithExtendedChildCare(funding) {
     return (
       funding?.hasUnder36MonthsExtendedCC ||
@@ -131,7 +138,7 @@ export default {
   isUnder36ExtendedChildCareValid(funding) {
     return (
       !funding?.hasUnder36MonthsExtendedCC ||
-      funding?.extendedChildCareUnder36Months4OrLess + this.funding?.extendedChildCareUnder36Months4OrMore > 0
+      funding?.extendedChildCareUnder36Months4OrLess + funding?.extendedChildCareUnder36Months4OrMore > 0
     );
   },
   is30MonthToSchoolAgeExtendedChildCareValid(funding) {
@@ -153,8 +160,11 @@ export default {
    **** END OF Licence and Service Details Validations
    */
 
-  isLicenceUploadComplete(licence) {
-    return true;
+  isLicenceUploadComplete(uploadedDocuments) {
+    const uploadedLicenceDocuments = uploadedDocuments?.filter(
+      (doc) => doc.documentType === DOCUMENT_TYPES.APPLICATION_LICENCE,
+    );
+    return uploadedLicenceDocuments?.length > 0;
   },
 
   isCCFRIComplete(ccfri) {

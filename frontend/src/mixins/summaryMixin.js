@@ -6,6 +6,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import { getOptInOptOut, isNullOrBlank } from '@/utils/common.js';
 import { ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES, PATHS } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -13,7 +14,12 @@ export default {
   components: { NavButton, SummaryExpansionPanelTitle },
   mixins: [alertMixin],
   computed: {
-    ...mapState(useApplicationStore, ['isApplicationProcessing', 'showApplicationTemplateV1']),
+    ...mapState(useApplicationStore, [
+      'applicationUploadedDocuments',
+      'isApplicationProcessing',
+      'isRenewal',
+      'showApplicationTemplateV1',
+    ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel']),
     isSoleProprietorshipPartnership() {
@@ -47,5 +53,8 @@ export default {
     this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
     this.PATHS = PATHS;
   },
-  methods: {},
+  methods: {
+    getOptInOptOut,
+    isNullOrBlank,
+  },
 };
