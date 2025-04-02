@@ -227,6 +227,9 @@ export default {
       }
     },
     getPaymentEligibilityText(paymentEligibility) {
+      if (!paymentEligibility) {
+        return '';
+      }
       paymentEligibility = paymentEligibility.replace(
         `${CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI}`,
         CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI,

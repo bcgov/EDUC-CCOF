@@ -20,6 +20,15 @@ export default {
   async createNewClosureChangeRequest(payload) {
     payload.applicationId = 'c887c859-4df9-ef11-bae1-7ced8d05e0a9';
     payload.programYearId = 'fdc2fce3-d1a2-ef11-8a6a-000d3af474a4';
+    payload.facilityId = '';
+    payload.startDate = '';
+    payload.endDate = '';
+    payload.paidClosure = true;
+    payload.fullClosure = false;
+    payload.ageGroups = [];
+    payload.closureReason = '';
+    payload.description = '';
+    payload.documents = [];
     payload.changeType = 'NEW_CLOSURE';
     try {
       // if (isEmpty(payload)) return;
