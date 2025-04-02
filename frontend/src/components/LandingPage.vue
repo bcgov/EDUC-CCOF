@@ -390,6 +390,7 @@ export default {
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',
+      'applicationMap',
       'getFacilityListForPCFByProgramYearId',
       'formattedProgramYear',
       'applicationType',
@@ -713,7 +714,15 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
+      if (this.selectedProgramYear) {
+        // if this is defined then slider should be showing, otherwise we only have one application
+        this.$router.push(closureUrl(this.selectedProgramYear.programYearId));
+      }
+      const programYears = [];
+      this.applicationMap.forEach((item) => {
+        programYears.push(item.ccofProgramYearId);
+      });
+      this.$router.push(closureUrl(programYears[0]));
     },
     async getAllMessagesVuex() {
       try {
