@@ -817,7 +817,7 @@ export default {
     },
     async next() {
       //do not call RFI fee caluclation on NEW PCF or CR NEW FAC
-      if (this.isRenewal && !this.isChangeRequest) {
+      if (this.isRenewal && !this.isChangeRequest && !this.isReadOnly) {
         console.log('calculating RFI');
         this.rfi3percentCategories = await this.getCcfriOver3percent();
         if (this.rfi3percentCategories.length > 0) {
@@ -829,13 +829,16 @@ export default {
           }
         } else {
           //no need for RFI.
+          //ccfri 4791 only delete the RFI if application has not been submitted yet
+          //todoJB- this page needs a bigger refactor. I don't think the portal should be setting the unlockRFI flag.
           if (this.currentFacility.hasRfi) {
             this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false });
             // Use nextTick to ensure the DOM is updated before continuing
-            await this.$nextTick();
-            console.log('deleting RFI');
-            await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
-            await this.$nextTick();
+            if (!this.currentFacility?.unlockRfi) {
+              await this.$nextTick();
+              await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
+              await this.$nextTick();
+            }
           }
           this.$router.push(this.nextPath);
         }
