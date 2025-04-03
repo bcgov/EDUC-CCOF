@@ -427,14 +427,14 @@ import {
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import { mapState } from 'pinia';
-import globalMixin from '@/mixins/globalMixin.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useApplicationStore } from '@/store/application.js';
 import ApplicationService from '@/services/applicationService';
 
 export default {
   components: { SummaryExpansionPanelTitle },
-  mixins: [globalMixin],
+  mixins: [summaryMixin],
   props: {
     ccfri: {
       type: Object,

@@ -1,14 +1,14 @@
 <template>
-  <v-form ref="eceweSummaryForm">
+  <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
       <SummaryExpansionPanelTitle
         :title="expansionPanelTitle"
-        :loading="isProcessing"
+        :loading="isApplicationProcessing"
         :is-complete="isValidForm && !showCSSEAWarning"
       />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
-      <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
+      <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody">
         <v-container fluid class="pa-0">
           <div>
             <!-- This is facility level information. Because this component is rendered twice but with two models, this is slightly different.
@@ -304,11 +304,9 @@
               </template>
             </div>
           </div>
-          <div v-if="!isValidForm || showCSSEAWarning">
-            <router-link :to="routingPath">
-              <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-            </router-link>
-          </div>
+          <router-link v-if="!isValidForm || showCSSEAWarning" :to="routingPath">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
         </v-container>
       </v-skeleton-loader>
     </v-expansion-panel-text>
@@ -316,19 +314,16 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useAppStore } from '@/store/app.js';
-import ApplicationService from '@/services/applicationService';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { getOptInOptOut, isChangeRequest } from '@/utils/common.js';
 import {
   PATHS,
   pcfUrl,
   changeUrl,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
@@ -336,44 +331,32 @@ import {
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_BELONGS_TO_UNION,
 } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
 
 export default {
-  components: { SummaryExpansionPanelTitle },
+  mixins: [summaryMixin],
   props: {
     ecewe: {
       type: Object,
-      required: false,
       default: () => ({}),
     },
     eceweFacility: {
       type: Object,
-      required: false,
       default: () => ({}),
-    },
-    isProcessing: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     changeRecGuid: {
       type: String,
-      required: false,
       default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
     //we need this prop so at the facility level we have the required data from org level to show unionized question
     fundingModel: {
       type: Number,
-      required: false,
       default: null,
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
@@ -382,7 +365,6 @@ export default {
   },
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
     languageYearLabel() {
@@ -428,6 +410,7 @@ export default {
     expansionPanelTitle() {
       const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
       return `Early Childhood Educator-Wage Enhancement (ECE-WE) - ${title}`;
+      // return 'Early Childhood Educator-Wage Enhancement (ECE-WE)';
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
@@ -497,26 +480,12 @@ export default {
     },
   },
   created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.OPT_STATUSES = OPT_STATUSES;
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES;
-    this.PATHS = PATHS;
-    this.rules = rules;
   },
   mounted() {
-    this.isValidForm = ApplicationService.isECEWEComplete(this.eceweFacility);
-  },
-  methods: {
-    getYesNoValue(value) {
-      if (value === 1 || value === 100000000) {
-        return 'Yes';
-      } else if (value === 0) {
-        return 'No';
-      } else {
-        return null;
-      }
-    },
+    this.$refs.eceweSummaryForm.validate();
   },
 };
 </script>

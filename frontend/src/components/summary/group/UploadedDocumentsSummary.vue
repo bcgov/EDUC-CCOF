@@ -1,7 +1,11 @@
 <template>
   <v-form ref="documentSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <SummaryExpansionPanelTitle title="Uploaded Documents" :is-complete="isValidForm" />
+      <SummaryExpansionPanelTitle
+        title="Uploaded Documents"
+        :loading="isApplicationProcessing"
+        :is-complete="isValidForm"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <v-row no-gutters>

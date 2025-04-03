@@ -6,8 +6,9 @@ import alertMixin from '@/mixins/alertMixin.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-import { getOptInOptOut, isNullOrBlank } from '@/utils/common.js';
+import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import { ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES, PATHS } from '@/utils/constants.js';
+import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -49,12 +50,14 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.formatTime24to12 = formatTime24to12;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
     this.PATHS = PATHS;
   },
   methods: {
     getOptInOptOut,
+    getYesNoValue,
     isNullOrBlank,
   },
 };

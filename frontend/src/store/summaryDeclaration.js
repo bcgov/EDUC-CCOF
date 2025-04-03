@@ -224,13 +224,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           ecewe: undefined,
         };
 
-        const facilities = payload.facilities.map(mapFacility);
-        this.facilities = facilities;
-
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
         ]);
+
+        this.facilities = payload.facilities.map(mapFacility);
 
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {

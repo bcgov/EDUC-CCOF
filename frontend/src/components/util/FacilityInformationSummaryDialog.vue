@@ -104,6 +104,18 @@
       </v-expansion-panel>
 
       <v-expansion-panel
+        :key="`${facility.facilityId}-ecewe-summary-org`"
+        :value="`${facility.facilityId}-ecewe-summary-org`"
+        variant="accordion"
+      >
+        <ECEWESummary
+          :ecewe="summaryModel.ecewe"
+          :ecewe-facility="null"
+          :program-year-id="summaryModel?.application?.programYearId"
+        />
+      </v-expansion-panel>
+
+      <v-expansion-panel
         :key="`${facility.facilityId}-ecewe-summary-a`"
         :value="`${facility.facilityId}-ecewe-summary-a`"
         variant="accordion"
@@ -116,6 +128,7 @@
           :program-year-id="programYearId"
         />
       </v-expansion-panel>
+
       <v-expansion-panel
         :key="`${facility.facilityId}-uploaded-documents-summary`"
         :value="`${facility.facilityId}-uploaded-documents-summary`"
@@ -128,19 +141,16 @@
       </v-expansion-panel>
     </template>
     <template #button>
-      <v-row justify="space-around">
-        <v-col cols="12" class="d-flex justify-center">
-          <AppButton
-            id="back-button"
-            :loading="isApplicationProcessing"
-            :primary="false"
-            size="large"
-            width="400px"
-            @click="closeDialog"
-          >
-            Back to Summary
-          </AppButton>
-        </v-col>
+      <v-row class="justify-center">
+        <AppButton
+          id="back-button"
+          :loading="isApplicationProcessing"
+          :primary="false"
+          size="large"
+          @click="closeDialog"
+        >
+          Back to Summary
+        </AppButton>
       </v-row>
     </template>
   </AppDialog>

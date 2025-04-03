@@ -120,6 +120,13 @@
             max-width="85%"
             @close="toggleFacilityInformationSummaryDialog"
           />
+          <v-expansion-panel value="ecewe-summary-org" variant="accordion">
+            <ECEWESummary
+              :ecewe="summaryModel.ecewe"
+              :ecewe-facility="null"
+              :program-year-id="summaryModel?.application?.programYearId"
+            />
+          </v-expansion-panel>
           <v-expansion-panel
             v-if="hasChangeNotificationFormDocuments"
             variant="accordion"
@@ -332,6 +339,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import NavButton from '@/components/util/NavButton.vue';
 import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
 import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
+import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
@@ -339,6 +347,7 @@ import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/comm
 export default {
   components: {
     AppDialog,
+    ECEWESummary,
     OrganizationSummary,
     FacilityInformationSummaryCard,
     FacilityInformationSummaryDialog,

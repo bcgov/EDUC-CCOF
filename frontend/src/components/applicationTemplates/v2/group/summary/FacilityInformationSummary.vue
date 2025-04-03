@@ -1,7 +1,11 @@
 <template>
   <v-form ref="facilitySummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <SummaryExpansionPanelTitle title="Facility Information" :is-complete="isValidForm" />
+      <SummaryExpansionPanelTitle
+        title="Facility Information"
+        :loading="isApplicationProcessing"
+        :is-complete="isValidForm"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <!-- GROUP APPLICATION or ADD NEW FACILITY CHANGE REQUEST -->

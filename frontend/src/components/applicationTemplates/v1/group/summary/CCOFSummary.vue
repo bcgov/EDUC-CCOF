@@ -761,17 +761,13 @@
   </v-row>
 </template>
 <script>
-import { mapActions, mapState } from 'pinia';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
-import globalMixin from '@/mixins/globalMixin.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import { formatTime24to12 } from '@/utils/format';
-import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
-  mixins: [globalMixin],
+  mixins: [summaryMixin],
   props: {
     funding: {
       type: Object,
@@ -786,19 +782,13 @@ export default {
       default: '',
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      isValidForm: true,
-      formObj: {
-        formName: 'CCOFSummary',
-        formId: this.funding?.ccofBaseFundingId,
-      },
+      isValidForm: false,
     };
   },
   computed: {
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     schoolPropertyLabel() {
       const arr = [];
       if (this.funding?.beforeSchool) {
@@ -845,56 +835,16 @@ export default {
       return this.funding?.maxGroupChildCareSchool > 0 && this.funding?.isSchoolProperty;
     },
   },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
-  },
-  created() {
-    this.formatTime24to12 = formatTime24to12;
-    this.rules = rules;
-  },
-  methods: {
-    ...mapActions(useSummaryDeclarationStore, ['setIsLoadingComplete']),
-  },
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
 :deep(.summary-value .v-label) {
   color: red !important;
   opacity: 1 !important;
 }
+
 :deep(::placeholder) {
   color: red !important;
   opacity: 1 !important;
-}
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
 }
 </style>

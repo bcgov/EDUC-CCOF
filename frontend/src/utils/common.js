@@ -157,11 +157,24 @@ export function hasEmptyFields(obj, requiredFields) {
 }
 
 export function getOptInOptOut(status) {
-  if (status === OPT_STATUSES.OPT_IN) {
-    return 'Opt-In';
-  } else if (status === OPT_STATUSES.OPT_OUT) {
-    return 'Opt-Out';
-  } else {
-    return null;
+  switch (status) {
+    case OPT_STATUSES.OPT_IN:
+      return 'Opt-In';
+    case OPT_STATUSES.OPT_OUT:
+      return 'Opt-Out';
+    default:
+      return null;
+  }
+}
+
+export function getYesNoValue(value) {
+  switch (value) {
+    case 0:
+      return 'No';
+    case 1:
+    case 100000000:
+      return 'Yes';
+    default:
+      return null;
   }
 }

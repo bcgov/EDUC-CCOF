@@ -1,7 +1,11 @@
 <template>
   <v-form ref="ccofSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <SummaryExpansionPanelTitle title="Child Care Operating Funding (CCOF)" :is-complete="isFormComplete" />
+      <SummaryExpansionPanelTitle
+        title="Child Care Operating Funding (CCOF)"
+        :loading="isApplicationProcessing"
+        :is-complete="isFormComplete"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <v-row no-gutters class="d-flex flex-column pb-1 pt-1 ml-2">
@@ -673,21 +677,14 @@
   </v-form>
 </template>
 <script>
-import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import ApplicationService from '@/services/applicationService';
-import globalMixin from '@/mixins/globalMixin.js';
-import { isChangeRequest, isNullOrBlank } from '@/utils/common.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
+import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import { formatTime24to12 } from '@/utils/format';
-
-import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
-  components: { SummaryExpansionPanelTitle },
-  mixins: [globalMixin],
+  mixins: [summaryMixin],
   props: {
     funding: {
       type: Object,
@@ -695,16 +692,13 @@ export default {
     },
     changeRecGuid: {
       type: String,
-      required: false,
       default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
@@ -712,7 +706,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
     schoolPropertyLabel() {
       const arr = [];
       if (this.funding?.beforeSchool) {
@@ -788,13 +781,6 @@ export default {
             this.isMultiAgeExtendedChildCareValid))
       );
     },
-  },
-  created() {
-    this.formatTime24to12 = formatTime24to12;
-    this.rules = rules;
-  },
-  methods: {
-    isNullOrBlank,
   },
 };
 </script>

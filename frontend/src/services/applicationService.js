@@ -39,13 +39,13 @@ export default {
     console.log(facility);
     console.log('this.isCCOFComplete = ' + this.isCCOFCompleteGroupV2(facility.funding));
     console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
-    console.log('this.isECEWEComplete = ' + this.isECEWEComplete(facility.ecewe));
+    console.log('this.isECEWEFacilityComplete = ' + this.isECEWEFacilityComplete(facility.ecewe));
     return (
       this.isFacilityInformationComplete(facility.facilityInfo) &&
       this.isCCOFCompleteGroupV2(facility.funding) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri) &&
-      this.isECEWEComplete(facility.ecewe)
+      this.isECEWEFacilityComplete(facility.ecewe)
       //   (!this.facility?.hasRfi || this.facility?.isRFIComplete) &&
       //   (!this.facility?.hasNmf || this.facility?.isNMFComplete)
       //   (this.isAFSComplete)
@@ -174,12 +174,19 @@ export default {
     return !hasEmptyFields(ccfri, requiredFields);
   },
 
-  isECEWEComplete(ecewe) {
+  isECEWEOrganizationComplete(ecewe) {
+    if (isEmpty(ecewe)) return false;
+    const requiredFields = ['optInECEWE', 'optInOrOut'];
+
     console.log(ecewe);
-    if (ecewe?.optInOrOut == null) return false;
-    if (ecewe?.optInOrOut === OPT_STATUSES.OPT_OUT) return true;
-    const requiredFields = [];
+    // if (ecewe?.optInOrOut == null) return false;
+    // if (ecewe?.optInOrOut === OPT_STATUSES.OPT_OUT) return true;
+
     return !hasEmptyFields(ecewe, requiredFields);
+  },
+
+  isECEWEFacilityComplete(ecewe) {
+    return ecewe?.optInOrOut != null;
   },
 
   getActiveApplicationTemplate() {
