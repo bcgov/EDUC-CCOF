@@ -404,7 +404,6 @@ export default {
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
       'applicationStatus',
-      'applicationMap',
       'applicationId',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
