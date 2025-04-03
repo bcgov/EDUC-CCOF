@@ -31,7 +31,14 @@ export default {
       'isCCOFUnlocked',
       'changeRequestStatus',
     ]),
-    ...mapState(useApplicationStore, ['applicationStatus', 'unlockBaseFunding', 'programYearId']),
+    ...mapState(useApplicationStore, [
+      'applicationStatus',
+      'isApplicationFormValidated',
+      'isApplicationProcessing',
+      'unlockBaseFunding',
+      'programYearId',
+      'showApplicationTemplateV1',
+    ]),
     ...mapState(useOrganizationStore, ['organizationModel', 'organizationId', 'organizationProviderType']),
     isLocked() {
       if (isChangeRequest(this)) {
@@ -47,53 +54,23 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED';
     },
-    isModelEmpty() {
-      return !Object.values(this.model)?.some((item) => item);
-    },
     isGroup() {
       return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    if (!this.isModelEmpty) {
-      await this.save(false);
-    }
-    next();
-  },
-  watch: {
-    '$route.params.urlGuid': {
-      async handler() {
-        let facilityId = this.$route.params.urlGuid;
-        if (facilityId) {
-          await this.loadFacility(facilityId);
-        } else {
-          await this.newFacility();
-        }
-
-        this.loading = false;
-      },
-      immediate: true,
-      deep: true,
-    },
-    facilityModel: {
-      handler() {
-        this.model = { ...this.facilityModel };
-        this.$refs.form?.resetValidation();
-      },
-      immediate: true,
-      deep: true,
+    baseFundingId() {
+      return this.isChangeRequest
+        ? this.changeRequestMap
+            ?.get(this.changeRequestId)
+            ?.changeActions?.find((ca) => ca.changeActionId === this.changeActionId)
+            ?.newFacilities?.find((fac) => fac.facilityId === this.facilityId).baseFunding?.ccofBaseFundingId
+        : this.getNavByFacilityId(this.facilityId)?.ccofBaseFundingId;
     },
   },
-  data() {
-    return {
-      rules,
-      processing: false,
-      loading: true,
-      model: {},
-    };
+  created() {
+    this.rules = rules;
   },
-
   methods: {
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useFacilityStore, [
       'loadFacility',
       'saveFacility',
@@ -102,42 +79,42 @@ export default {
       'addFacilityToStore',
     ]),
     ...mapActions(useOrganizationStore, ['loadOrganization']),
-    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh']),
+    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'forceNavBarRefresh', 'getNavByFacilityId']),
     resetFacilityAddress() {
-      if (this.loading) return;
-      this.model.isFacilityAddressEnteredManually = null;
-      this.model.facilityAddress = null;
-      this.model.city = null;
-      this.model.province = null;
-      this.model.postalCode = null;
+      if (this.isApplicationProcessing) return;
+      this.facilityModel.isFacilityAddressEnteredManually = null;
+      this.facilityModel.facilityAddress = null;
+      this.facilityModel.city = null;
+      this.facilityModel.province = null;
+      this.facilityModel.postalCode = null;
     },
     resetFacilityContact() {
-      if (this.loading) return;
-      this.model.contactName = null;
-      this.model.position = null;
-      this.model.phone = null;
-      this.model.email = null;
+      if (this.isApplicationProcessing) return;
+      this.facilityModel.contactName = null;
+      this.facilityModel.position = null;
+      this.facilityModel.phone = null;
+      this.facilityModel.email = null;
     },
     populateFacilityAddress() {
       if (!this.isGroup) {
         // FAMILY application
         // TODO (vietle-cgi) - confirm with the business when the Family application is updated.
-        this.model.postalCode = this.organizationModel?.postalCode1;
-        this.model.province = this.organizationModel?.province1;
-      } else if (this.model.isFacilityAddressSameAsOrgStreetAddress) {
+        this.facilityModel.postalCode = this.organizationModel?.postalCode1;
+        this.facilityModel.province = this.organizationModel?.province1;
+      } else if (this.facilityModel.isFacilityAddressSameAsOrgStreetAddress) {
         // GROUP application
-        this.model.facilityAddress = this.organizationModel?.address2;
-        this.model.city = this.organizationModel?.city2;
-        this.model.province = this.organizationModel?.province2;
-        this.model.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
+        this.facilityModel.facilityAddress = this.organizationModel?.address2;
+        this.facilityModel.city = this.organizationModel?.city2;
+        this.facilityModel.province = this.organizationModel?.province2;
+        this.facilityModel.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
       }
     },
     populateFacilityContact() {
-      if (!this.model.isFacilityContactSameAsOrgContact) return;
-      this.model.contactName = this.organizationModel?.contactName;
-      this.model.position = this.organizationModel?.position;
-      this.model.phone = this.organizationModel?.phone;
-      this.model.email = this.organizationModel?.email;
+      if (!this.facilityModel.isFacilityContactSameAsOrgContact) return;
+      this.facilityModel.contactName = this.organizationModel?.contactName;
+      this.facilityModel.position = this.organizationModel?.position;
+      this.facilityModel.phone = this.organizationModel?.phone;
+      this.facilityModel.email = this.organizationModel?.email;
     },
     previous() {
       const defaultPath = isChangeRequest(this) ? PATHS.ROOT.CHANGE_LANDING : PATHS.ROOT.HOME;
@@ -163,51 +140,32 @@ export default {
         await this.save(false);
       }
 
-      let baseFundingId;
-      if (this.isChangeRequest) {
-        baseFundingId = this.changeRequestMap
-          ?.get(this.changeRequestId)
-          ?.changeActions?.find((ca) => ca.changeActionId == this.changeActionId)
-          ?.newFacilities.find((fac) => fac.facilityId == this.facilityId).baseFunding?.ccofBaseFundingId;
-      } else {
-        const navBarStore = useNavBarStore();
-        baseFundingId = navBarStore.getNavByFacilityId(this.facilityId).ccofBaseFundingId;
+      if (!this.baseFundingId) {
+        console.error('Unable to find baseFundingId');
+        return;
       }
 
-      if (baseFundingId) {
-        if (this.isChangeRequest) {
-          this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, baseFundingId));
-        } else {
-          this.$router.push(
-            pcfUrlGuid(
-              this.isGroup ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
-              this.programYearId,
-              baseFundingId,
-            ),
-          );
-        }
+      if (this.isChangeRequest) {
+        this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRequestId, this.baseFundingId));
       } else {
-        console.log('error, should never get here');
+        this.$router.push(
+          pcfUrlGuid(
+            this.isGroup ? PATHS.CCOF_GROUP_FUNDING : PATHS.CCOF_FAMILY_FUNDING,
+            this.programYearId,
+            this.baseFundingId,
+          ),
+        );
       }
-    },
-    validateForm() {
-      this.$refs.form?.validate();
-    },
-    async saveClicked() {
-      await this.save(true);
     },
     async save(isSave) {
       try {
-        if (this.isLocked) {
-          return;
-        }
-        this.processing = true;
+        if (this.isLocked || this.isApplicationProcessing) return;
+        this.setIsApplicationProcessing(true);
         if (isEmpty(this.organizationModel)) {
           await this.loadOrganization(this.organizationId);
         }
         this.populateFacilityAddress();
         this.populateFacilityContact();
-        this.setFacilityModel({ ...this.model });
         await this.saveFacility({
           isChangeRequest: isChangeRequest(this),
           changeRequestId: this.$route.params.changeRecGuid,
@@ -222,18 +180,21 @@ export default {
           );
         }
         if (!this.$route.params.urlGuid && isSave) {
-          if (isChangeRequest(this)) {
-            this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
-          } else {
-            this.$router.push(pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId));
-          }
+          this.$router.push(
+            isChangeRequest(this)
+              ? changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId)
+              : pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId),
+          );
         }
-        this.setNavBarFacilityComplete({ facilityId: this.facilityId, complete: this.model.isFacilityComplete });
+        this.setNavBarFacilityComplete({
+          facilityId: this.facilityId,
+          complete: this.facilityModel.isFacilityComplete,
+        });
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
-        this.processing = false;
+        this.setIsApplicationProcessing(false);
       }
     },
   },
