@@ -390,6 +390,7 @@ export default {
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',
+      'applicationMap',
       'getFacilityListForPCFByProgramYearId',
       'formattedProgramYear',
       'applicationType',
@@ -403,7 +404,6 @@ export default {
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
       'applicationStatus',
-      'applicationMap',
       'applicationId',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
@@ -713,7 +713,9 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.$router.push(closureUrl(this.selectedProgramYear?.programYearId));
+      this.$router.push(
+        closureUrl(this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.latestProgramYearId),
+      );
     },
     async getAllMessagesVuex() {
       try {
