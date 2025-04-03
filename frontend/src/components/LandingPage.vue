@@ -714,15 +714,9 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      if (this.selectedProgramYear) {
-        // if this is defined then slider should be showing, otherwise we only have one application
-        this.$router.push(closureUrl(this.selectedProgramYear.programYearId));
-      }
-      const programYears = [];
-      this.applicationMap.forEach((item) => {
-        programYears.push(item.ccofProgramYearId);
-      });
-      this.$router.push(closureUrl(programYears[0]));
+      this.$router.push(
+        closureUrl(this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.latestProgramYearId),
+      );
     },
     async getAllMessagesVuex() {
       try {
