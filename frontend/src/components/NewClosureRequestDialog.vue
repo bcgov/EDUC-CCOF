@@ -142,7 +142,7 @@ export default {
       this.$emit('close');
     },
     createOrganizationClosure() {
-      // ClosureService.createNewClosureChangeRequest({});
+      ClosureService.createNewClosureChangeRequest({});
     },
   },
 };

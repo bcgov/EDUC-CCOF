@@ -247,13 +247,14 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 }
 
 async function createNewClosureChangeRequest(req, res) {
-  const closure = new MappableObjectForBack(req.body, ClosureMappings);
+  const closureChangeAction = new MappableObjectForBack(req.body, ClosureMappings);
   try {
     const createChangeRequestReponse = await createChangeRequest(req, res);
-
+    // closureChangeAction.ccof_change_action = createChangeRequestResponse.
+    // const changeActionClosureGuid = await postOperation('ccof_change_action_closure', closureChangeAction);
     return createChangeRequestReponse;
   } catch (e) {
-    //
+    log.error('error', e);
   }
   //   const facilityGuid = await postOperation('accounts', facility);
   //   //After the 'ChangeActionNewFacility' entity is created, grab the guid
