@@ -269,4 +269,5 @@ export default {
   gap: 8px;
   padding: 10px 0px 10px 10px;
 }
+/*  */
 </style>
