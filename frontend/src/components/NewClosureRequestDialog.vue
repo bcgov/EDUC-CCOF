@@ -37,10 +37,10 @@
           />
         </v-row>
         <v-row>
-          <v-col cols="12" lg="6" class="pl-0">
+          <v-col cols="12" lg="9" class="pl-0">
             <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
           </v-col>
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="3" class="pr-0">
             <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
               <v-row class="ml-4">
                 <v-radio label="Yes" value="Yes" />
@@ -50,6 +50,28 @@
           </v-col>
         </v-row>
         <!-- JonahCurlCGI todo: add warning if "parents pay for this closure" set to no -->
+        <v-container v-if="selectedFacility && parentsWillPayForClosure === 'Yes'" width="100%" class="pa-0">
+          <v-row>
+            <v-col cols="12" lg="9" class="pl-0">
+              <!-- JonahCurlCGI todo: add info icon -->
+              <h3 class="text-primary left-align mt-2">Is this a full facility closure?</h3>
+            </v-col>
+            <v-col cols="12" lg="3" class="pr-0">
+              <v-radio-group v-model="fullFacilityClosure" required :rules="rules.required">
+                <v-row class="ml-4">
+                  <v-radio label="Yes" value="Yes" />
+                  <v-radio label="No" value="No" />
+                </v-row>
+              </v-radio-group>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" lg="9" class="pl-0">
+              <h3 class="text-primary left-align mt-2">Dates:</h3>
+            </v-col>
+            <v-col> </v-col>
+          </v-row>
+        </v-container>
       </v-container>
     </template>
     <template #button>
@@ -97,6 +119,7 @@ export default {
       isLoading: false,
       selectedFacility: undefined,
       parentsWillPayForClosure: undefined,
+      fullFacilityClosure: undefined,
     };
   },
   computed: {
