@@ -38,9 +38,47 @@ const newClosureChangeRequestSchema = {
     in: ['body'],
     exists: { errorMessage: '[applicationId] is required' },
   },
+  changeType: {
+    in: ['body'],
+    equals: 'NEW_CLOSURE',
+    errorMessage: '[changeType] must be NEW_CLOSURE',
+  },
+  closureReason: {
+    in: ['body'],
+    isString: true,
+    notEmpty: true,
+    errorMessage: '[closureReason] must be a non-empty string',
+  },
+  endDate: {
+    in: ['body'],
+    errorMessage: '[endDate] is invalid',
+    isDate: true,
+  },
+  facilityId: {
+    in: ['body'],
+    exists: { errorMessage: '[facilityId] is required' },
+  },
+  fullClosure: {
+    in: ['body'],
+    errorMessage: 'fullClosure must be true or false',
+    isBoolean: true, // Ensures value is a boolean
+    toBoolean: true, // Converts values like "true" and "false" to actual booleans
+  },
+  paidClosure: {
+    in: ['body'],
+    errorMessage: 'paidClosure must be true',
+    isBoolean: true, // Ensures value is a boolean
+    toBoolean: true, // Converts values like "true" and "false" to actual booleans
+    equals: true,
+  },
   programYearId: {
     in: ['body'],
     exists: { errorMessage: '[programYearId] is required' },
+  },
+  startDate: {
+    in: ['body'],
+    errorMessage: '[startDate] is invalid',
+    isDate: true,
   },
 };
 
