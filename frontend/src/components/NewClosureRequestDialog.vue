@@ -23,6 +23,7 @@
           <h3 class="text-primary mt-6">Select a Facility:</h3>
         </v-row>
         <v-row>
+          <!-- JonahCurlCGI todo: fix selector items to match format on wireframe -->
           <v-select
             v-model="selectedFacility"
             required
@@ -36,7 +37,7 @@
           />
         </v-row>
         <v-row>
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="6" class="pl-0">
             <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
           </v-col>
           <v-col cols="12" lg="6">
@@ -48,11 +49,16 @@
             </v-radio-group>
           </v-col>
         </v-row>
-        <!-- Button below used for testing create closure endpoint -->
-        <!-- <v-row><v-btn @click="createOrganizationClosure()">test</v-btn></v-row> -->
+        <!-- JonahCurlCGI todo: add warning if "parents pay for this closure" set to no -->
       </v-container>
     </template>
-    <template #button> </template>
+    <template #button>
+      <v-container>
+        <!-- JonahCurlCGI todo: remove before pushing
+         Button below used for testing create closure endpoint -->
+        <v-row><v-btn @click="createOrganizationClosure()">test</v-btn></v-row>
+      </v-container>
+    </template>
   </AppDialog>
 </template>
 
