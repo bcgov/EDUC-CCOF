@@ -48,19 +48,21 @@ const rules = {
   fileRules: [
     (v) => !!v || 'This is required',
     (value) => {
-      return !value || value?.name?.length < 255 || 'File name can be max 255 characters.';
+      return !value || !value.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
     },
     (value) => {
       return (
         !value ||
-        value.size < MAX_FILE_SIZE ||
+        !value.length ||
+        value[0].size < MAX_FILE_SIZE ||
         `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
       );
     },
     (value) => {
       return (
         !value ||
-        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value.name)?.toLowerCase()) ||
+        !value.length ||
+        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value[0].name)?.toLowerCase()) ||
         `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`
       );
     },
