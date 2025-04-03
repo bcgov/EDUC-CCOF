@@ -175,6 +175,9 @@ export default {
           this.organizationId,
           this.$route.params.programYearGuid,
         );
+        this.closures = this.closures?.filter((closure) => {
+          return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.DRAFT;
+        });
         this.isLoading = false;
       } catch (error) {
         console.log(error);
@@ -214,6 +217,9 @@ export default {
       }
     },
     getPaymentEligibilityText(paymentEligibility) {
+      if (!paymentEligibility) {
+        return '';
+      }
       paymentEligibility = paymentEligibility.replace(
         `${CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI}`,
         CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI,
