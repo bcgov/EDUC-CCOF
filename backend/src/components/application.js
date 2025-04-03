@@ -698,13 +698,8 @@ async function getApplicationSummary(req, res) {
       });
     }
 
-    let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
-
-    const facilities = Array.from(facilityMap.values()).filter((facility) => {
-      if (facilityFilters === null || facilityFilters.length < 1) return true;
-      return facilityFilters.includes(facility.facilityId);
-    });
-
+    const facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : [];
+    const facilities = facilityFilters.length > 0 ? Array.from(facilityMap.values()).filter((facility) => facilityFilters.includes(facility.facilityId)) : Array.from(facilityMap.values());
     const facilityPromises = [];
     const limit = pLimit(6);
     for (const facility of facilities) {

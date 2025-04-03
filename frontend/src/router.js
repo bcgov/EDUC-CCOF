@@ -58,7 +58,7 @@ import {
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
-import { Subtitle_Banners } from '@/utils/constants/SubTitleBanners.js';
+import { SUBTITLE_BANNERS } from '@/utils/constants/SubTitleBanners.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 const router = createRouter({
@@ -121,7 +121,7 @@ const router = createRouter({
       component: CcofApplicationTypeSelector,
       meta: {
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -130,7 +130,7 @@ const router = createRouter({
       component: CcofNewApplicationIntermediate,
       meta: {
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -142,7 +142,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -154,7 +154,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
 
@@ -167,7 +167,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -179,7 +179,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -191,7 +191,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -203,7 +203,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -215,7 +215,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -227,7 +227,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -239,7 +239,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -251,7 +251,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -263,7 +263,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -275,7 +275,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -287,7 +287,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -298,7 +298,7 @@ const router = createRouter({
         pageTitle: 'Renew Organization',
         requiresAuth: true,
         showNavBar: false,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -310,7 +310,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -322,7 +322,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -333,7 +333,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -344,7 +344,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -366,7 +366,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -378,7 +378,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -390,7 +390,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -402,7 +402,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -414,7 +414,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -426,7 +426,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -438,7 +438,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -450,7 +450,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.APPLICATION,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },
     {
@@ -525,7 +525,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
+        subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
       },
     },
     {
@@ -536,7 +536,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: true,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -568,7 +568,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -580,7 +580,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -592,7 +592,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -604,7 +604,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -616,7 +616,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -628,7 +628,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -640,7 +640,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -652,7 +652,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -664,7 +664,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -676,7 +676,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -688,7 +688,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -699,7 +699,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.SUPPORTING_DOCUMENT_UPLOAD,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -710,7 +710,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
         showNavBar: true,
-        subtitleBanner: Subtitle_Banners.ADDFACILITY,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
       },
     },
     {
@@ -731,7 +731,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.MTFI,
         requiresAuth: true,
         showNavBar: false,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {
@@ -743,7 +743,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {
@@ -755,7 +755,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {
@@ -767,7 +767,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {
@@ -778,7 +778,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.CHANGENOTIFICATION,
+        subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
       },
     },
     {
@@ -810,7 +810,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {
@@ -822,7 +822,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
-        subtitleBanner: Subtitle_Banners.MTFI,
+        subtitleBanner: SUBTITLE_BANNERS.MTFI,
       },
     },
     {

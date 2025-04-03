@@ -23,12 +23,11 @@ async function getOrganization(req, res) {
 }
 
 function mapOrganizationForBack(data) {
-  let organizationForBack = new MappableObjectForBack(data, OrganizationMappings).toJSON();
-
+  const organizationForBack = new MappableObjectForBack(data, OrganizationMappings).toJSON();
+  organizationForBack.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
   if (organizationForBack.ccof_facilitystartdate) {
     organizationForBack.ccof_facilitystartdate = `${organizationForBack.ccof_facilitystartdate}-01-01`;
   }
-
   return organizationForBack;
 }
 
@@ -86,7 +85,6 @@ async function createOrganization(req, res) {
 async function updateOrganization(req, res) {
   try {
     const organization = mapOrganizationForBack(req.body);
-    organization.ccof_accounttype = ACCOUNT_TYPE.ORGANIZATION;
     const response = await patchOperationWithObjectId('accounts', req.params.organizationId, organization);
     return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, OrganizationMappings));
   } catch (e) {

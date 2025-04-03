@@ -115,10 +115,11 @@ export default {
       if (!this.$route.params.urlGuid) return;
       this.setIsApplicationProcessing(true);
       await this.loadFacility(this.$route.params.urlGuid);
-      this.setIsApplicationProcessing(false);
     } catch (error) {
       console.error(`Failed to get Facility data with error - ${error}`);
       this.setFailureAlert('An error occurred while loading facility. Please try again later.');
+    } finally {
+      this.setIsApplicationProcessing(false);
     }
   },
 };

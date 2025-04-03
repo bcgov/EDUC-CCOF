@@ -58,10 +58,11 @@ export default {
         } else {
           await this.newFacility();
         }
-        this.setIsApplicationProcessing(false);
       } catch (error) {
         console.error(`Failed to get Facility data with error - ${error}`);
         this.setFailureAlert('An error occurred while loading facility. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
       }
     },
   },
