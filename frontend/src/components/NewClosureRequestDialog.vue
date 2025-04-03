@@ -36,13 +36,17 @@
           />
         </v-row>
         <v-row>
-          <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
-          <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
-            <v-row class="ml-4">
-              <v-radio label="Yes" value="Yes" />
-              <v-radio label="No" value="No" />
-            </v-row>
-          </v-radio-group>
+          <v-col cols="12" lg="6">
+            <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
+          </v-col>
+          <v-col cols="12" lg="6">
+            <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
+              <v-row class="ml-4">
+                <v-radio label="Yes" value="Yes" />
+                <v-radio label="No" value="No" />
+              </v-row>
+            </v-radio-group>
+          </v-col>
         </v-row>
         <!-- Button below used for testing create closure endpoint -->
         <!-- <v-row><v-btn @click="createOrganizationClosure()">test</v-btn></v-row> -->
