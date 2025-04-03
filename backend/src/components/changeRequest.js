@@ -152,7 +152,7 @@ async function updateChangeRequest(req, res) {
 }
 
 // create Change Request
-async function createChangeRequest(req, res) {
+async function createRawChangeRequest(req, res) {
   try {
     let changeRequest = req.body;
     let changeType = changeRequest.changeType;
@@ -178,10 +178,21 @@ async function createChangeRequest(req, res) {
     if (payload && payload.ccof_change_action_change_request?.length > 0) {
       changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
     }
-    return res.status(HttpStatus.CREATED).json({
+    return {
       changeRequestId: changeRequestId,
       changeActionId: changeActionId,
-    });
+    };
+  } catch (e) {
+    log.error('error', e);
+    throw e;
+  }
+}
+
+// create Change Request
+async function createChangeRequest(req, res) {
+  try {
+    const rawChangeRequest = await createRawChangeRequest(req, res);
+    return res.status(HttpStatus.CREATED).json(rawChangeRequest);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -249,13 +260,11 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 async function createNewClosureChangeRequest(req, res) {
   const changeActionClosure = new MappableObjectForBack(req.body, ClosureMappings).toJSON();
   try {
-    // const createChangeRequestReponse = await createChangeRequest(req, res);
-    // changeActionClosure.ccof_change_action = createChangeRequestReponse.changeActionId;
-    // console.log(`Look here ${createChangeRequestReponse}`);
-    // console.log(createChangeRequestReponse);
-    const changeActionClosureGuid = await postOperation('ccof_change_action_closure', changeActionClosure);
+    const createChangeRequestReponse = await createRawChangeRequest(req, res);
+    changeActionClosure.ccof_change_action = createChangeRequestReponse.changeActionId;
+    const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
     console.log(`changeActionClosureGuid=${changeActionClosureGuid}`);
-    return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
+    return res.status(HttpStatus.CREATED).json(createChangeRequestReponse);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
