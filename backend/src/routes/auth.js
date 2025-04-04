@@ -6,7 +6,7 @@ const express = require('express');
 const auth = require('../components/auth');
 const log = require('../components/logger');
 const {v4: uuidv4} = require('uuid');
-const {getUserGuid} = require('../components/utils');
+const {getUserGuid, isIdir, isIdirUser} = require('../components/utils');
 
 const {
   body,
@@ -56,33 +56,33 @@ router.get('/error', (_req, res) => {
 router.get('/login', passport.authenticate('oidcBceid', {
   failureRedirect: 'error'
 }));
+
 router.get('/login-idir', passport.authenticate('oidcIdir', {
   failureRedirect: 'error'
 }));
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
+  const idToken = req.session?.passport?.user?.idToken;
+
   req.logout(function(err) {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
+
     req.session.destroy();
-    let retUrl;
-    if (req.query && req.query.sessionExpired) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/session-expired');
-    } else if (req.query && req.query.loginError) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/login-error');
-    } else if (req.query && req.query.loginBceid) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid');
-    } else if (req.query && req.query.loginBceidActivateUser) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_user');
-    } else if (req.query && req.query.loginBceidActivateDistrictUser) {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/api/auth/login_bceid_activate_district_user');
+
+    let endpoint = '';
+    if (req.query?.sessionExpired) {
+      endpoint = '/session-expired';
     } else {
-      retUrl = encodeURIComponent(config.get('logoutEndpoint') + '?redirect_uri=' + config.get('server:frontend') + '/logout');
+      endpoint = '/logout';
     }
-    log.info('URL: ' + config.get('siteMinder_logout_endpoint') + retUrl);
-    res.redirect(config.get('siteMinder_logout_endpoint') + retUrl );
+
+    const redirectUri = `${config.get('server:frontend')}${endpoint}`;
+    const retUrl = encodeURIComponent(`${config.get('logoutEndpoint')}?post_logout_redirect_uri=${redirectUri}&id_token_hint=${idToken}`);
+    const logoutUrl = config.get('siteMinder_logout_endpoint') + retUrl;
+
+    log.verbose(`URL: ${logoutUrl}`);
+    res.redirect(logoutUrl);
   });
 });
 
