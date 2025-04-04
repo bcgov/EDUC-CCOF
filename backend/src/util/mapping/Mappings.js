@@ -333,11 +333,6 @@ const ClosureMappings = [
   { back: 'ccof_enddate', front: 'endDate' },
   { back: 'ccof_closure_status', front: 'closureStatus' },
   { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
-  { back: 'ccof_paid_closure', front: 'paidClosure' },
-  { back: 'ccof_is_full_closure', front: 'fullClosure' },
-  { back: 'ccof_closure_reason', front: 'closureReason' },
-  { back: 'ccof_any_details_added_on_request', front: 'closureDescription' },
-  { back: 'ccof_startdate', front: 'documents' },
 ];
 
 const UserProfileBaseCCFRIMappings = [

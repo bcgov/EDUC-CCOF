@@ -41,6 +41,18 @@ const ChangeActionRequestMappings = [
   { back: 'createdon', front: 'createdOn' },
 ];
 
+const ChangeActionClosureMappings = [
+  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_paid_closure', front: 'paidClosure' },
+  { back: 'ccof_is_full_closure', front: 'fullClosure' },
+  { back: 'ccof_closure_reason', front: 'closureReason' },
+  { back: 'ccof_any_details_added_on_request', front: 'closureDescription' },
+  // { back: 'ccof_startdate', front: 'documents' },
+];
+
 const NewFacilityMappings = [
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
