@@ -2,7 +2,7 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, ChangeActionClosureMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, ClosureMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
@@ -14,6 +14,7 @@ const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
+const { create } = require('lodash');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -257,14 +258,22 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
   }
 }
 
+function mapChangeActionClosureObjectForBack(changeActionClosure) {
+  const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
+  changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
+  changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
+  return changeActionClosureMapp;
+}
+
 async function createNewClosureChangeRequest(req, res) {
-  const changeActionClosure = new MappableObjectForBack(req.body, ClosureMappings).toJSON();
+  const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
   try {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
-    changeActionClosure.ccof_change_action = createChangeRequestReponse.changeActionId;
+    console.log(createChangeRequestReponse);
+    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(3263ee98-8411-f011-998a-7ced8d05e0a9)`;
+    console.log('changeActionClosure=', changeActionClosure);
     const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
-    console.log(`changeActionClosureGuid=${changeActionClosureGuid}`);
-    return res.status(HttpStatus.CREATED).json(createChangeRequestReponse);
+    return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
