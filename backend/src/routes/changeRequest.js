@@ -85,11 +85,14 @@ const newClosureChangeRequestSchema = {
   },
   paidClosure: {
     in: ['body'],
-    isBoolean: {
-      errorMessage: '[paidClosure] must be a boolean',
+    isNumeric: {
+      errorMessage: '[paidClosure] must be a number',
     },
-    toBoolean: true,
-    // JonahCurlCGI todo: check if we should only allow true values
+    equals: {
+      options: '1',
+      errorMessage: '[paidClosure] must be 1',
+    },
+    toInt: true,
   },
   programYearId: {
     in: ['body'],
