@@ -42,10 +42,10 @@ const ChangeActionRequestMappings = [
 ];
 
 const ChangeActionClosureMappings = [
-  { back: '_ccof_program_year_value', front: 'programYearId' },
-  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
-  { back: 'ccof_startdate', front: 'startDate' },
-  { back: 'ccof_enddate', front: 'endDate' },
+  // { back: '_ccof_program_year_value', front: 'programYearId' },
+  // { back: '_ccof_facilityinfo_value', front: 'facilityId' },
+  { back: 'ccof_closure_start_date', front: 'startDate' },
+  { back: 'ccof_closure_end_date', front: 'endDate' },
   { back: 'ccof_paid_closure', front: 'paidClosure' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
   { back: 'ccof_closure_reason', front: 'closureReason' },
@@ -92,6 +92,7 @@ const ChangeRequestUnlockMapping = [
 
 module.exports = {
   ChangeRequestMappings,
+  ChangeActionClosureMappings,
   ChangeActionRequestMappings,
   NewFacilityMappings,
   MtfiMappings,
