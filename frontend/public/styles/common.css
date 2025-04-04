@@ -211,3 +211,14 @@ ol.declarationBList {
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
+
+/* SUMMARY DECLARATION */
+.summary-label {
+  color: grey;
+  font-size: small;
+}
+
+.summary-value {
+  font-size: medium;
+  color: black;
+}

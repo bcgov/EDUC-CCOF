@@ -5,7 +5,7 @@
       <v-icon v-if="isComplete" class="text-success" size="large">mdi-check-circle-outline</v-icon>
       <template v-else>
         <v-icon class="text-error" size="large">mdi-alert-circle-outline</v-icon>
-        <span class="text-error">Your form is missing required information. Click here to view.</span>
+        <span class="text-error ml-1">Your form is missing required information. Click to view.</span>
       </template>
     </template>
   </h4>
