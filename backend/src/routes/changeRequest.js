@@ -19,6 +19,7 @@ const {
 const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
+const { isBoolean } = require('lodash');
 
 module.exports = router;
 
@@ -40,8 +41,10 @@ const newClosureChangeRequestSchema = {
   },
   changeType: {
     in: ['body'],
-    equals: 'NEW_CLOSURE',
-    errorMessage: '[changeType] must be NEW_CLOSURE',
+    equals: {
+      options: 'NEW_CLOSURE',
+      errorMessage: '[changeType] must be NEW_CLOSURE',
+    },
   },
   closureReason: {
     in: ['body'],
@@ -51,8 +54,24 @@ const newClosureChangeRequestSchema = {
   },
   endDate: {
     in: ['body'],
-    errorMessage: '[endDate] is invalid',
+    isISO8601: {
+      errorMessage: '[startDate] must be a valid ISO 8601 date',
+    },
     isDate: true,
+    custom: {
+      options: (value, { req }) => {
+        const startDate = new Date(req.body.startDate);
+        const endDate = new Date(value);
+
+        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+          throw new Error('[startDate] and [endDate] must be valid dates');
+        }
+        if (endDate < startDate) {
+          throw new Error('[endDate] must be on or after [startDate]');
+        }
+        return true;
+      },
+    },
   },
   facilityId: {
     in: ['body'],
@@ -60,16 +79,17 @@ const newClosureChangeRequestSchema = {
   },
   fullClosure: {
     in: ['body'],
-    errorMessage: 'fullClosure must be true or false',
-    isBoolean: true, // Ensures value is a boolean
-    toBoolean: true, // Converts values like "true" and "false" to actual booleans
+    errorMessage: '[fullClosure] must be a boolean',
+    isBoolean: true,
+    toBoolean: true,
   },
   paidClosure: {
     in: ['body'],
-    errorMessage: 'paidClosure must be true',
-    isBoolean: true, // Ensures value is a boolean
-    toBoolean: true, // Converts values like "true" and "false" to actual booleans
-    equals: true,
+    isBoolean: {
+      errorMessage: '[paidClosure] must be a boolean',
+    },
+    toBoolean: true,
+    // JonahCurlCGI todo: check if we should only allow true values
   },
   programYearId: {
     in: ['body'],
@@ -77,7 +97,9 @@ const newClosureChangeRequestSchema = {
   },
   startDate: {
     in: ['body'],
-    errorMessage: '[startDate] is invalid',
+    isISO8601: {
+      errorMessage: '[startDate] must be a valid ISO 8601 date',
+    },
     isDate: true,
   },
 };
