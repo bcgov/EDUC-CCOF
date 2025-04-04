@@ -2,7 +2,7 @@
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
       <SummaryExpansionPanelTitle
-        :title="expansionPanelTitle"
+        title="Early Childhood Educator-Wage Enhancement (ECE-WE)"
         :loading="isApplicationProcessing"
         :is-complete="isValidForm && !showCSSEAWarning"
       />
@@ -366,7 +366,7 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
     },
@@ -406,11 +406,6 @@ export default {
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
-    },
-    expansionPanelTitle() {
-      const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
-      return `Early Childhood Educator-Wage Enhancement (ECE-WE) - ${title}`;
-      // return 'Early Childhood Educator-Wage Enhancement (ECE-WE)';
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
@@ -490,33 +485,12 @@ export default {
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
-}
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
+}
+
+:deep(.v-field__input) {
+  padding-left: 0px;
 }
 </style>

@@ -10,7 +10,7 @@
       </div>
       <v-row>
         <!-- Do not allow PCF to be submitted if CR is active-->
-        <v-card v-if="isSomeChangeRequestActive() && !isChangeRequest" width="100%" class="mx-3 my-10">
+        <v-card v-if="isSomeChangeRequestActive && !isChangeRequest" width="100%" class="mx-3 my-10">
           <v-row>
             <v-col class="py-0">
               <v-card-title class="py-1 noticeAlert">
@@ -54,10 +54,10 @@
         </v-card>
       </v-row>
 
-      <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5 text-primary">
+      <div v-if="!isSomeChangeRequestActive" class="text-center text-h5 text-primary">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!areAllFacilitiesComplete && !isApplicationProcessing" elevation="4" class="my-8">
+      <v-card v-if="!isApplicationFormComplete && !isApplicationProcessing" elevation="4" class="my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -286,8 +286,8 @@
       </v-card>
     </div>
     <NavButton
-      :is-submit-displayed="true"
-      :is-submit-disabled="!isPageComplete || isReadOnly || (isSomeChangeRequestActive() && !isChangeRequest)"
+      :is-submit-displayed="!isReadOnly"
+      :is-submit-disabled="isSubmitDisabled"
       :is-processing="isApplicationProcessing"
       class="mt-10"
       @previous="previous"
@@ -358,7 +358,6 @@ export default {
   data() {
     return {
       model: {},
-      // payload: {},
       showFacilityInformationSummaryDialog: false,
       showSubmissionConfirmationDialog: false,
       selectedFacilityId: null,
@@ -371,7 +370,7 @@ export default {
     ...mapState(useAppStore, ['programYearList', 'getLanguageYearLabel']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'formattedProgramYear',
@@ -480,34 +479,30 @@ export default {
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
+    isSomeChangeRequestActive() {
+      //Status of : "Submitted" "Action Required";
+      return isAnyChangeRequestActive(this.changeRequestStore);
+    },
     areAllFacilitiesComplete() {
       return this.sortedFacilities?.every((facility) => facility.isComplete);
     },
-    isPageComplete() {
+    isApplicationFormComplete() {
       return (
-        this.model.agreeConsentCertify &&
-        this.model.orgContactName &&
         this.areAllFacilitiesComplete &&
-        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup)
+        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup) &&
+        ApplicationService.isECEWEOrganizationComplete(this.summaryModel?.ecewe, this.isGroup, this.languageYearLabel)
+      );
+    },
+    isSubmitDisabled() {
+      return (
+        this.isReadOnly ||
+        (!this.isChangeRequest && this.isSomeChangeRequestActive) ||
+        !this.model.agreeConsentCertify ||
+        !this.model.orgContactName ||
+        !this.isApplicationFormComplete
       );
     },
   },
-  // watch: {
-  //   isLoadingComplete: {
-  //     handler: function (val) {
-  //       if (val) {
-  //         setTimeout(() => {
-  //           const keys = Object.keys(this.payload);
-  //           //If this is a change request, we'll have 2 items in the payload.
-  //           if ((!this.isChangeRequest && keys.length > 1) || (this.isChangeRequest && keys.length > 2)) {
-  //             this.updateApplicationStatus(this.payload);
-  //             this.forceNavBarRefresh();
-  //           }
-  //         }, 1000);
-  //       }
-  //     },
-  //   },
-  // },
   async created() {
     await this.loadData();
   },
@@ -518,11 +513,10 @@ export default {
       'loadChangeRequestSummaryDeclaration',
       'loadSummary',
       'setDeclarationModel',
-      'updateApplicationStatus',
       'updateDeclaration',
     ]),
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
-    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete', 'forceNavBarRefresh']),
+    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete']),
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
     openFacilitySummary(facilityId) {
@@ -531,10 +525,6 @@ export default {
     },
     toggleFacilityInformationSummaryDialog() {
       this.showFacilityInformationSummaryDialog = !this.showFacilityInformationSummaryDialog;
-    },
-    isSomeChangeRequestActive() {
-      //Status of : "Submitted" "Action Required";
-      return isAnyChangeRequestActive(this.changeRequestStore);
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');

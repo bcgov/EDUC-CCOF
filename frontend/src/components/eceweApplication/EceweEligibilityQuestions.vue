@@ -174,7 +174,7 @@
                   </v-row>
                 </div>
             </v-container>
-            </v-card>
+          </v-card>
       </template>
 
       <!-- previous year's ECE-WE question logic below -->

@@ -1,7 +1,15 @@
 import { isEmpty } from 'lodash';
 
 import { hasEmptyFields } from '@/utils/common.js';
-import { APPLICATION_TEMPLATE_VERSIONS, DOCUMENT_TYPES, OPT_STATUSES, ORGANIZATION_TYPES } from '@/utils/constants.js';
+import {
+  APPLICATION_TEMPLATE_VERSIONS,
+  DOCUMENT_TYPES,
+  ECEWE_DESCRIBE_ORG_TYPES,
+  ECEWE_SECTOR_TYPES,
+  OPT_STATUSES,
+  ORGANIZATION_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
 
 export default {
   isOrganizationComplete(organization, isGroup) {
@@ -36,10 +44,10 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
-    console.log(facility);
-    console.log('this.isCCOFComplete = ' + this.isCCOFCompleteGroupV2(facility.funding));
-    console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
-    console.log('this.isECEWEFacilityComplete = ' + this.isECEWEFacilityComplete(facility.ecewe));
+    // console.log(facility);
+    // console.log('this.isCCOFComplete = ' + this.isCCOFCompleteGroupV2(facility.funding));
+    // console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
+    // console.log('this.isECEWEFacilityComplete = ' + this.isECEWEFacilityComplete(facility.ecewe));
     return (
       this.isFacilityInformationComplete(facility.facilityInfo) &&
       this.isCCOFCompleteGroupV2(facility.funding) &&
@@ -174,14 +182,43 @@ export default {
     return !hasEmptyFields(ccfri, requiredFields);
   },
 
-  isECEWEOrganizationComplete(ecewe) {
+  isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel) {
     if (isEmpty(ecewe)) return false;
-    const requiredFields = ['optInECEWE', 'optInOrOut'];
-
-    console.log(ecewe);
-    // if (ecewe?.optInOrOut == null) return false;
-    // if (ecewe?.optInOrOut === OPT_STATUSES.OPT_OUT) return true;
-
+    if (!isGroup || !ecewe.optInECEWE) return ecewe.optInECEWE != null;
+    const requiredFields = [];
+    // CCFRI-3819 - Updated ECEWE template for the 2025–26 fiscal year and beyond.
+    if (languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+      requiredFields.push('publicSector', 'describeOrgCSSEA');
+      if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
+        requiredFields.push('applicableSector');
+        if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED) {
+          requiredFields.push('isUnionAgreementReached');
+        }
+      }
+      if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
+        requiredFields.push('fundingModel', 'isUnionAgreementReached');
+      }
+    }
+    // Previous year's ECE-WE template
+    else {
+      requiredFields.push('belongsToUnion');
+      if (languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
+        requiredFields.push('publicSector');
+      }
+      if (ecewe.belongsToUnion) {
+        requiredFields.push('applicableSector');
+        if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
+          requiredFields.push('fundingModel');
+        }
+        if (
+          ecewe.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION ||
+          ecewe.fundingModel === 100000001 || // All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.
+          ecewe.fundingModel === 100000002 // Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.
+        ) {
+          requiredFields.push('confirmation');
+        }
+      }
+    }
     return !hasEmptyFields(ecewe, requiredFields);
   },
 

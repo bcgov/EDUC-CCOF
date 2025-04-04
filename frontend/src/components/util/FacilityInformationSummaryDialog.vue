@@ -104,18 +104,6 @@
       </v-expansion-panel>
 
       <v-expansion-panel
-        :key="`${facility.facilityId}-ecewe-summary-org`"
-        :value="`${facility.facilityId}-ecewe-summary-org`"
-        variant="accordion"
-      >
-        <ECEWESummary
-          :ecewe="summaryModel.ecewe"
-          :ecewe-facility="null"
-          :program-year-id="summaryModel?.application?.programYearId"
-        />
-      </v-expansion-panel>
-
-      <v-expansion-panel
         :key="`${facility.facilityId}-ecewe-summary-a`"
         :value="`${facility.facilityId}-ecewe-summary-a`"
         variant="accordion"
