@@ -262,6 +262,7 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
+  changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
   return changeActionClosureMapp;
 }
 
@@ -270,7 +271,7 @@ async function createNewClosureChangeRequest(req, res) {
   try {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
     console.log(createChangeRequestReponse);
-    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(3263ee98-8411-f011-998a-7ced8d05e0a9)`;
+    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
     console.log('changeActionClosure=', changeActionClosure);
     const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
     return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
