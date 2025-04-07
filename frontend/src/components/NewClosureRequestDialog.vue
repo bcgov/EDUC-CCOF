@@ -9,7 +9,7 @@
           <p class="left-align mt-6">
             Closures may impact your CCFRI payments. See the
             <a
-              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
+              href="https://www2.gov.bc.ca/gov/content?id=733BCA6294F34DCAB28CD6BE73D67F92"
               target="_blank"
               class="text-decoration-underline"
             >
@@ -43,28 +43,35 @@
           <v-col cols="12" lg="3" class="pr-0">
             <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
               <v-row class="ml-4">
-                <v-radio label="Yes" value="Yes" />
-                <v-radio label="No" value="No" />
+                <v-radio label="Yes" value="1" />
+                <v-radio label="No" value="0" />
               </v-row>
             </v-radio-group>
           </v-col>
         </v-row>
-        <!-- JonahCurlCGI todo: add warning if "parents pay for this closure" set to no -->
-        <v-container v-if="selectedFacility && parentsWillPayForClosure === 'Yes'" width="100%" class="pa-0">
+        <v-row v-if="parentsWillPayForClosure === '0'">
+          <!-- JonahCurlCGI todo: fix with finalized wording when available -->
+          <AppAlertBanner type="warning"> Must be a paid closure </AppAlertBanner>
+        </v-row>
+        <v-container v-if="selectedFacility && parentsWillPayForClosure === '1'" width="100%" class="pa-0">
           <v-row>
             <v-col cols="12" lg="9" class="pl-0">
               <!-- JonahCurlCGI todo: add info icon -->
-              <h3 class="text-primary left-align mt-2">Is this a full facility closure?</h3>
+              <h3 class="text-primary left-align mt-2">
+                Is this a full facility closure?
+                <AppTooltip tooltip-content="Select no if only some care categories will be affected by the closure." />
+              </h3>
             </v-col>
             <v-col cols="12" lg="3" class="pr-0">
               <v-radio-group v-model="fullFacilityClosure" required :rules="rules.required">
                 <v-row class="ml-4">
-                  <v-radio label="Yes" value="Yes" />
-                  <v-radio label="No" value="No" />
+                  <v-radio label="Yes" value="true" />
+                  <v-radio label="No" value="false" />
                 </v-row>
               </v-radio-group>
             </v-col>
           </v-row>
+          <v-row v-if="fullFacilityClosure === 'true'"></v-row>
           <v-row>
             <v-col cols="12" lg="9" class="pl-0">
               <h3 class="text-primary left-align mt-2">Dates:</h3>
@@ -96,10 +103,12 @@ import rules from '@/utils/rules.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 
 export default {
   name: 'NewClosureRequestDialog',
-  components: { AppButton, AppDialog },
+  components: { AppAlertBanner, AppButton, AppDialog, AppTooltip },
   mixins: [alertMixin],
   props: {
     show: {
