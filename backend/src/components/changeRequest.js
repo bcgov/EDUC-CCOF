@@ -270,9 +270,7 @@ async function createNewClosureChangeRequest(req, res) {
   try {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
-    console.log(createChangeRequestReponse);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
-    console.log('changeActionClosure=', changeActionClosure);
     const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
     return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
   } catch (e) {
