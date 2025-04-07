@@ -38,10 +38,10 @@ export default {
         organization?.organizationType,
       )
     ) {
-      requiredFields.push['incNumber'];
+      requiredFields.push('incNumber');
     }
     if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP && isGroup) {
-      requiredFields.push[('contactName', 'position')];
+      requiredFields.push('contactName', 'position');
     }
     return !hasEmptyFields(organization, requiredFields);
   },
@@ -60,6 +60,7 @@ export default {
     );
   },
 
+  // FACILITY INFORMATION VALIDATIONS
   isFacilityInformationComplete(facilityInfo) {
     if (isEmpty(facilityInfo)) return false;
     const requiredFields = [
@@ -79,11 +80,12 @@ export default {
       'healthAuthority',
     ];
     if (facilityInfo.hasReceivedFunding) {
-      requiredFields.push['fundingFacility'];
+      requiredFields.push('fundingFacility');
     }
     return !hasEmptyFields(facilityInfo, requiredFields);
   },
 
+  // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
@@ -158,6 +160,7 @@ export default {
     return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
   },
 
+  // LICENCE UPLOAD VALIDATIONS
   isLicenceUploadComplete(uploadedDocuments) {
     const uploadedLicenceDocuments = uploadedDocuments?.filter(
       (doc) => doc.documentType === DOCUMENT_TYPES.APPLICATION_LICENCE,
@@ -165,6 +168,7 @@ export default {
     return uploadedLicenceDocuments?.length > 0;
   },
 
+  // CCFRI VALIDATIONS
   isCCFRIComplete(ccfri) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
@@ -207,44 +211,55 @@ export default {
     });
   },
 
+  // ECE-WE VALIDATIONS
   isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel) {
     if (isEmpty(ecewe)) return false;
     if (!isGroup || !ecewe.optInECEWE) return ecewe.optInECEWE != null;
     const requiredFields = [];
-    // CCFRI-3819 - Updated ECEWE template for the 2025–26 fiscal year and beyond.
     if (languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
-      requiredFields.push('publicSector', 'describeOrgCSSEA');
-      if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
-        requiredFields.push('applicableSector');
-        if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED) {
-          requiredFields.push('isUnionAgreementReached');
-        }
-      }
-      if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
-        requiredFields.push('fundingModel', 'isUnionAgreementReached');
-      }
-    }
-    // Previous year's ECEWE template
-    else {
-      requiredFields.push('belongsToUnion');
-      if (languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
-        requiredFields.push('publicSector');
-      }
-      if (ecewe.belongsToUnion) {
-        requiredFields.push('applicableSector');
-        if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
-          requiredFields.push('fundingModel');
-        }
-        if (
-          ecewe.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION ||
-          ecewe.fundingModel === 100000001 || // All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.
-          ecewe.fundingModel === 100000002 // Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.
-        ) {
-          requiredFields.push('confirmation');
-        }
-      }
+      requiredFields.push(...this.requiredFieldsForECEWEOrganization202526Template(ecewe));
+    } else {
+      requiredFields.push(...this.requiredFieldsForECEWEOrganizationPreviousYearsTemplate(ecewe, languageYearLabel));
     }
     return !hasEmptyFields(ecewe, requiredFields);
+  },
+
+  // 2025–26 FY and beyond (CCFRI-3819)
+  requiredFieldsForECEWEOrganization202526Template(ecewe) {
+    const requiredFields = ['publicSector', 'describeOrgCSSEA'];
+    if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
+      requiredFields.push('applicableSector');
+      if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED) {
+        requiredFields.push('isUnionAgreementReached');
+      }
+    }
+    if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
+      requiredFields.push('fundingModel', 'isUnionAgreementReached');
+    }
+    return requiredFields;
+  },
+
+  // Before 2025-26 FY
+  requiredFieldsForECEWEOrganizationPreviousYearsTemplate(ecewe, languageYearLabel) {
+    const requiredFields = ['belongsToUnion'];
+    if (languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
+      requiredFields.push('publicSector');
+    }
+    if (!ecewe.belongsToUnion) return requiredFields;
+
+    requiredFields.push('applicableSector');
+    if (ecewe.applicableSector === ECEWE_SECTOR_TYPES.CSSEA) {
+      requiredFields.push('fundingModel');
+    }
+    // 100000001 = All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.
+    // 100000002 = Some of our facilities have both non-provincially funded ECEs that do not receive Low-Wage Redress Funding AND provincially funded ECEs receiving Low-Wage Redress Funding.
+    if (
+      ecewe.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION ||
+      [100000001, 100000002].includes(ecewe.fundingModel)
+    ) {
+      requiredFields.push('confirmation');
+    }
+    return requiredFields;
   },
 
   isECEWEFacilityComplete(ecewe) {
