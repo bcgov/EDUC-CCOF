@@ -297,9 +297,6 @@ export default {
         : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.summaryModel?.application?.programYearId);
     },
   },
-  mounted() {
-    this.$refs.organizationSummaryForm.validate();
-  },
 };
 </script>
 <style scoped>

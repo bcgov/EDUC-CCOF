@@ -57,7 +57,6 @@
       >
         <CCFRISummary
           :ccfri="facility?.ccfri"
-          :facility-id="facility.facilityId"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
         />

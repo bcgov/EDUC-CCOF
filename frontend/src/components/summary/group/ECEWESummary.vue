@@ -65,7 +65,10 @@
             </v-row>
             <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
               <template
-                v-if="languageYearLabel === programYearTypes.FY2025_26 && ecewe?.optInECEWE === OPT_STATUSES.OPT_IN"
+                v-if="
+                  getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 &&
+                  ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
+                "
               >
                 <v-row v-if="!facilityInformationExists" no-gutters>
                   <v-col cols="12">
@@ -200,7 +203,8 @@
                 <v-row v-if="!facilityInformationExists" no-gutters>
                   <v-col
                     v-if="
-                      languageYearLabel !== programYearTypes.HISTORICAL && ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
+                      getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL &&
+                      ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
                     "
                     cols="12"
                   >
@@ -323,7 +327,6 @@ import {
   PATHS,
   pcfUrl,
   changeUrl,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
@@ -367,12 +370,6 @@ export default {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
-    languageYearLabel() {
-      return this.getLanguageYearLabel;
-    },
-    programYearTypes() {
-      return PROGRAM_YEAR_LANGUAGE_TYPES;
-    },
     showUnionQuestion() {
       return this.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
@@ -381,10 +378,10 @@ export default {
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
           this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
           this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+          this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) ||
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
           this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
+          this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL)
       );
     },
     showFundingModel() {
@@ -478,9 +475,6 @@ export default {
     this.OPT_STATUSES = OPT_STATUSES;
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES;
-  },
-  mounted() {
-    this.$refs.eceweSummaryForm.validate();
   },
 };
 </script>

@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, sortBy } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -9,7 +9,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, CCFRI_FEE_CORRECT_TYPES, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
@@ -52,6 +52,7 @@ function mapFacility(facility) {
     const programYearList = appStore.programYearList.list;
     facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
     facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
+    facility.ccfri.childCareTypes = decorateCcfriChildCareTypes(facility.ccfri, facility.childCareLicenses);
   }
 
   facility.facilitySummary = {
@@ -64,6 +65,89 @@ function mapFacility(facility) {
     isComplete: ApplicationService.isFacilityComplete(facility),
   };
   return facility;
+}
+
+/* Note (jbeckett-cgi):
+- If the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
+- This checks for all licenses available for the facility, and displays what is missing to the user.
+*/
+function decorateCcfriChildCareTypes(ccfri, childCareLicenses) {
+  const applicationStore = useApplicationStore();
+  if (ccfri?.childCareTypes?.length < childCareLicenses?.length) {
+    const childCareTypesArr = [];
+    const findChildCareTypes = (yearToSearch, checkForMissingPrevFees = false) => {
+      childCareLicenses?.forEach((category) => {
+        const found = ccfri?.childCareTypes?.find((searchItem) => {
+          return (
+            searchItem.childCareCategoryId == category.childCareCategoryId &&
+            searchItem.programYearId == yearToSearch.programYearId
+          );
+        });
+
+        if (found) {
+          childCareTypesArr.push(found);
+        } else {
+          if (checkForMissingPrevFees) {
+            //check to see if childcarecat exists in last years CCFRI app.
+            const pastChildCareTypefound = ccfri?.prevYearCcfriApp.childCareTypes.find((prevChildCareCat) => {
+              return (
+                prevChildCareCat.childCareCategoryId == category.childCareCategoryId &&
+                prevChildCareCat.programYearId == yearToSearch.programYearId
+              );
+            });
+            if (pastChildCareTypefound) {
+              return;
+            }
+            //else we are missing fees from last year, for a child care category that the user has license for.
+            //This usually happens when the facility has a new licence for this year. Add the category to the summary
+          }
+
+          const theCat = cloneDeep(category);
+          theCat.programYear = yearToSearch.name;
+          childCareTypesArr.push(theCat);
+        }
+      });
+    };
+
+    findChildCareTypes(ccfri.currentYear);
+
+    //only show last year fees if new app or previous year fees are incorrect
+    if (
+      !applicationStore.isRenewal ||
+      ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.NO ||
+      !ccfri.previousCcfriId
+    ) {
+      findChildCareTypes(ccfri.prevYear);
+    }
+
+    //check if we are missing any feed cards from the last year if previous fees are correct
+    else if (
+      applicationStore.isRenewal &&
+      ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES &&
+      ccfri.previousCcfriId
+    ) {
+      findChildCareTypes(ccfri.prevYear, true);
+    }
+
+    //age group asc
+    childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);
+
+    //sort by program year
+    return childCareTypesArr.sort((a, b) => {
+      const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase
+      const nameB = b.programYear.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+    });
+  } else {
+    return sortBy(ccfri.childCareTypes, 'orderNumber');
+  }
 }
 
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {

@@ -454,9 +454,6 @@ export default {
         : pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
     },
   },
-  mounted() {
-    this.$refs.facilitySummaryForm.validate();
-  },
 };
 </script>
 <style scoped>

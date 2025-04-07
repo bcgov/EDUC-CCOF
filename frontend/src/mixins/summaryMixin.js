@@ -7,7 +7,13 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
-import { ORGANIZATION_PROVIDER_TYPES, ORGANIZATION_TYPES, PATHS } from '@/utils/constants.js';
+import {
+  OPT_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
+  ORGANIZATION_TYPES,
+  PATHS,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
@@ -51,9 +57,11 @@ export default {
   created() {
     this.rules = rules;
     this.formatTime24to12 = formatTime24to12;
+    this.OPT_STATUSES = OPT_STATUSES;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
     this.PATHS = PATHS;
+    this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
   },
   methods: {
     getOptInOptOut,

@@ -3,6 +3,7 @@ import { isEmpty } from 'lodash';
 import { hasEmptyFields } from '@/utils/common.js';
 import {
   APPLICATION_TEMPLATE_VERSIONS,
+  CCFRI_HAS_CLOSURE_FEE_TYPES,
   DOCUMENT_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_SECTOR_TYPES,
@@ -12,6 +13,9 @@ import {
 } from '@/utils/constants.js';
 
 export default {
+  /*
+   **** Summary Declaration validations
+   */
   isOrganizationComplete(organization, isGroup) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
@@ -44,17 +48,13 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
-    // console.log(facility);
-    // console.log('this.isCCOFComplete = ' + this.isCCOFCompleteGroupV2(facility.funding));
-    // console.log('this.isCCFRIComplete = ' + this.isCCFRIComplete(facility.ccfri));
-    // console.log('this.isECEWEFacilityComplete = ' + this.isECEWEFacilityComplete(facility.ecewe));
     return (
       this.isFacilityInformationComplete(facility.facilityInfo) &&
       this.isCCOFCompleteGroupV2(facility.funding) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri) &&
       this.isECEWEFacilityComplete(facility.ecewe)
-      //   (!this.facility?.hasRfi || this.facility?.isRFIComplete) &&
+      //   (!this.facility?.hasRfi || this.facility?.isRFIComplete)
       //   (!this.facility?.hasNmf || this.facility?.isNMFComplete)
       //   (this.isAFSComplete)
     );
@@ -84,12 +84,6 @@ export default {
     return !hasEmptyFields(facilityInfo, requiredFields);
   },
 
-  /*
-   **** Licence and Service Details Validations
-   */
-  // Application Template version 2
-
-  // Group Provider - Application Template Version 2
   isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
@@ -112,7 +106,6 @@ export default {
           this.isMultiAgeExtendedChildCareValid(funding)))
     );
   },
-
   hasLicenceCategory(funding) {
     return (
       funding?.hasUnder36Months ||
@@ -164,9 +157,6 @@ export default {
   isMultiAgeExtendedChildCareValid(funding) {
     return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
   },
-  /*
-   **** END OF Licence and Service Details Validations
-   */
 
   isLicenceUploadComplete(uploadedDocuments) {
     const uploadedLicenceDocuments = uploadedDocuments?.filter(
@@ -178,8 +168,43 @@ export default {
   isCCFRIComplete(ccfri) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
-    const requiredFields = [];
-    return !hasEmptyFields(ccfri, requiredFields);
+    const requiredFields = ['hasClosureFees'];
+    const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
+      this.isChildCareTypeComplete(childCareType),
+    );
+    return (
+      !hasEmptyFields(ccfri, requiredFields) &&
+      areAllChildCareTypesComplete &&
+      (ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO || this.areClosureDatesComplete(ccfri?.dates))
+    );
+  },
+
+  isChildCareTypeComplete(childCareType) {
+    const requiredFields = [
+      'programYear',
+      'childCareCategory',
+      'feeFrequency',
+      'approvedFeeApr',
+      'approvedFeeMay',
+      'approvedFeeJun',
+      'approvedFeeJul',
+      'approvedFeeAug',
+      'approvedFeeSep',
+      'approvedFeeOct',
+      'approvedFeeNov',
+      'approvedFeeDec',
+      'approvedFeeJan',
+      'approvedFeeFeb',
+      'approvedFeeMar',
+    ];
+    return !hasEmptyFields(childCareType, requiredFields);
+  },
+
+  areClosureDatesComplete(closureDates) {
+    return closureDates?.every((date) => {
+      const requiredFields = ['formattedStartDate', 'formattedEndDate', 'closureReason', 'feesPaidWhileClosed'];
+      return !hasEmptyFields(date, requiredFields);
+    });
   },
 
   isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel) {
@@ -199,7 +224,7 @@ export default {
         requiredFields.push('fundingModel', 'isUnionAgreementReached');
       }
     }
-    // Previous year's ECE-WE template
+    // Previous year's ECEWE template
     else {
       requiredFields.push('belongsToUnion');
       if (languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
@@ -225,6 +250,9 @@ export default {
   isECEWEFacilityComplete(ecewe) {
     return ecewe?.optInOrOut != null;
   },
+  /*
+   **** End of Summary Declaration validations
+   */
 
   getActiveApplicationTemplate() {
     const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
