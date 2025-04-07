@@ -267,9 +267,9 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
 }
 
 async function createNewClosureChangeRequest(req, res) {
-  const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
   try {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
+    const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     console.log(createChangeRequestReponse);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
     console.log('changeActionClosure=', changeActionClosure);
