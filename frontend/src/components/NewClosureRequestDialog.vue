@@ -66,8 +66,8 @@
             </v-col>
           </v-row>
           <v-row v-if="fullFacilityClosure === 'false'" align="center" class="text-primary pl-0">
-            <h3>Affected Care Categorie(s)</h3>
-            <p class="ml-2">(select all that apply):</p>
+            <h3 class="pr-2">Affected Care Categorie(s)</h3>
+            <p>(select all that apply):</p>
           </v-row>
           <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
             <v-select
@@ -81,16 +81,70 @@
               multiple
               chips
               clearable
+              @update:model-value="handleAgeGroupSelectionChange"
             />
           </v-row>
-          <v-row>
-            <v-col cols="12" lg="9" class="pl-0">
+          <v-row class="text-primary">
+            <v-col cols="12" lg="3" class="pl-0">
               <h3 class="text-primary left-align mt-2">
                 Dates:
                 <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
               </h3>
             </v-col>
-            <v-col> </v-col>
+            <v-col cols="12" lg="4" class="pl-0 pr-0">
+              <AppDateInput
+                v-model="formattedStartDate"
+                :min="fiscalStartAndEndDates.startDate"
+                :max="formattedEndDate ? formattedEndDate : fiscalStartAndEndDates.endDate"
+                :rules="[
+                  ...rules.required,
+                  rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                  rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                  rules.MMDDYYYY,
+                ]"
+                label="Start Date"
+                clearable
+              />
+            </v-col>
+            <v-col cols="12" lg="1" class="pt-6">to</v-col>
+            <v-col cols="12" lg="4" class="pl-0 pr-0">
+              <AppDateInput
+                v-model="formattedEndDate"
+                :min="formattedStartDate ? formattedStartDate : fiscalStartAndEndDates.startDate"
+                :max="fiscalStartAndEndDates.endDate"
+                :rules="[
+                  ...rules.required,
+                  rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                  rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                  rules.MMDDYYYY,
+                ]"
+                label="Start Date"
+                clearable
+              />
+            </v-col>
+          </v-row>
+          <v-row class="text-primary">
+            <v-col cols="12" lg="3" align="start" class="pl-0">
+              <h3>Reason:</h3>
+            </v-col>
+            <v-col cols="12" lg="9" align="start" class="pr-0 pl-0">
+              <v-text-field v-model="reason" variant="outlined" required :rules="rules.required"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row class="text-primary">
+            <h3>Request Description:</h3>
+          </v-row>
+          <v-row class="text-primary">
+            <v-textarea v-model="requestDescription" variant="outlined" label="Detailed description of request" />
+          </v-row>
+          <v-row>
+            <AppDocumentUpload
+              :loading="isLoading"
+              :uploaded-documents="uploadedDocuments"
+              title="Supporting Documents"
+              class="text-primary left-align"
+              :required="false"
+            />
           </v-row>
         </v-container>
       </v-container>
@@ -111,8 +165,10 @@ import { ref } from 'vue';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import { CCLOSURE_AFFECTED_AGE_GROUPS, CLOSURE_AFFECTED_AGE_GROUPS_TEXTS } from '@/utils/constants.js';
+import { CLOSURE_AFFECTED_AGE_GROUPS, CLOSURE_AFFECTED_AGE_GROUPS_TEXTS } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
 
@@ -123,7 +179,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 export default {
   name: 'NewClosureRequestDialog',
-  components: { AppButton, AppDialog, AppTooltip },
+  components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppTooltip },
   mixins: [alertMixin],
   props: {
     show: {
@@ -144,21 +200,26 @@ export default {
       selectedFacility: undefined,
       parentsWillPayForClosure: undefined,
       fullFacilityClosure: undefined,
+      formattedStartDate: undefined,
+      formattedEndDate: undefined,
       ageGroups: [
         { label: 'Select All', value: 'all' },
-        { label: 'CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_0_18', value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_0_18 },
-        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_18_36, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_18_36 },
-        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_3Y_K, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_3Y_K },
-        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_K, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_K },
-        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_G, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_G },
-        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.PRE, value: CLOSURE_AFFECTED_AGE_GROUPS.PRE },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_0_18, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_0_18 },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_18_36, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_18_36 },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_3Y_K, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_3Y_K },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_K, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_K },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_G, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_G },
+        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.PRE, value: CLOSURE_AFFECTED_AGE_GROUPS.PRE },
       ],
       selectedAgeGroups: ref([]),
+      reason: undefined,
+      requestDescription: undefined,
+      uploadedDocuments: [],
     };
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById']),
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
+    ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
@@ -178,7 +239,16 @@ export default {
     createOrganizationClosure() {
       ClosureService.createNewClosureChangeRequest({});
     },
-    handleAgeGroupSelectionChange() {},
+    // JonahCurlCGI todo: implement the "select all" option
+    handleAgeGroupSelectionChange(newSelection) {
+      console.log(newSelection);
+      if (newSelection.includes('all')) {
+        this.selectedAgeGroups.value = this.ageGroups.filter((o) => o.value !== 'all').map((o) => o.label);
+      } else {
+        this.selectedAgeGroups.value = newSelection;
+      }
+      console.log(this.selectedAgeGroups);
+    },
   },
 };
 </script>
