@@ -455,6 +455,15 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   PRE: 100000005,
 });
 
+export const CLOSURE_AFFECTED_AGE_GROUPS_TEXTS = Object.freeze({
+  AGE_0_18: '0 to 18 months',
+  AGE_18_36: '18 to 36 months',
+  AGE_3Y_K: '3 Years to Kindergarten',
+  OOSC_K: 'Out of School Care - Kindergarten',
+  OOSC_G: 'Out of School Care - Grade 1+',
+  PRE: 'Preschool',
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
