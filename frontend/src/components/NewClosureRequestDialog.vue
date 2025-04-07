@@ -22,7 +22,7 @@
         <v-row>
           <h3 class="text-primary mt-6">Select a Facility:</h3>
         </v-row>
-        <v-row>
+        <v-row class="text-primary">
           <!-- JonahCurlCGI todo: fix selector items to match format on wireframe -->
           <v-select
             v-model="selectedFacility"
@@ -33,7 +33,6 @@
             placeholder="Select a facility"
             variant="outlined"
             class="mt-2"
-            color="blue"
           />
         </v-row>
         <v-row>
@@ -49,14 +48,9 @@
             </v-radio-group>
           </v-col>
         </v-row>
-        <v-row v-if="parentsWillPayForClosure === '0'">
-          <!-- JonahCurlCGI todo: fix with finalized wording when available -->
-          <AppAlertBanner type="warning"> Must be a paid closure </AppAlertBanner>
-        </v-row>
-        <v-container v-if="selectedFacility && parentsWillPayForClosure === '1'" width="100%" class="pa-0">
+        <v-container v-if="selectedFacility && parentsWillPayForClosure" width="100%" class="pa-0">
           <v-row>
             <v-col cols="12" lg="9" class="pl-0">
-              <!-- JonahCurlCGI todo: add info icon -->
               <h3 class="text-primary left-align mt-2">
                 Is this a full facility closure?
                 <AppTooltip tooltip-content="Select no if only some care categories will be affected by the closure." />
@@ -71,10 +65,30 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-row v-if="fullFacilityClosure === 'true'"></v-row>
+          <v-row v-if="fullFacilityClosure === 'false'" align="center" class="text-primary pl-0">
+            <h3>Affected Care Categorie(s)</h3>
+            <p class="ml-2">(select all that apply):</p>
+          </v-row>
+          <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
+            <v-select
+              v-model="selectedAgeGroups"
+              :items="ageGroups"
+              item-title="label"
+              item-value="value"
+              label="Select affected care categories"
+              variant="outlined"
+              class="mt-2"
+              multiple
+              chips
+              clearable
+            />
+          </v-row>
           <v-row>
             <v-col cols="12" lg="9" class="pl-0">
-              <h3 class="text-primary left-align mt-2">Dates:</h3>
+              <h3 class="text-primary left-align mt-2">
+                Dates:
+                <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
+              </h3>
             </v-col>
             <v-col> </v-col>
           </v-row>
@@ -93,22 +107,23 @@
 
 <script>
 import { mapState } from 'pinia';
+import { ref } from 'vue';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
+import { CCLOSURE_AFFECTED_AGE_GROUPS, CLOSURE_AFFECTED_AGE_GROUPS_TEXTS } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
+import ClosureService from '@/services/closureService.js';
 
 import alertMixin from '@/mixins/alertMixin';
-import ClosureService from '@/services/closureService.js';
-import rules from '@/utils/rules.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
-import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 
 export default {
   name: 'NewClosureRequestDialog',
-  components: { AppAlertBanner, AppButton, AppDialog, AppTooltip },
+  components: { AppButton, AppDialog, AppTooltip },
   mixins: [alertMixin],
   props: {
     show: {
@@ -129,6 +144,16 @@ export default {
       selectedFacility: undefined,
       parentsWillPayForClosure: undefined,
       fullFacilityClosure: undefined,
+      ageGroups: [
+        { label: 'Select All', value: 'all' },
+        { label: 'CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_0_18', value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_0_18 },
+        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_18_36, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_18_36 },
+        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_3Y_K, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_3Y_K },
+        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_K, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_K },
+        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_G, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_G },
+        // { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.PRE, value: CLOSURE_AFFECTED_AGE_GROUPS.PRE },
+      ],
+      selectedAgeGroups: ref([]),
     };
   },
   computed: {
@@ -153,6 +178,7 @@ export default {
     createOrganizationClosure() {
       ClosureService.createNewClosureChangeRequest({});
     },
+    handleAgeGroupSelectionChange() {},
   },
 };
 </script>
