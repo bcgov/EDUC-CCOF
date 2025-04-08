@@ -35,14 +35,42 @@
             variant="outlined"
             class="mt-2"
           >
-            <template #item="{ props, item }">
-              <v-list-item v-bind="props">
-                <v-row>
-                  <v-list-item-subtitle class="text-xs">
-                    {{ item.raw.facilityId }} - ${{ item.raw.licenseNumber }}
-                  </v-list-item-subtitle>
-                </v-row>
+            <template #item="{ props, item, index }">
+              <v-list-item
+                :value="props.value"
+                :active="props.active"
+                :title="null"
+                @click="props.onClick"
+                class="py-2"
+              >
+                <div>
+                  <v-row class="text-primary w-100" no-gutters>
+                    <v-col cols="12" md="8" align="start">
+                      <div class="text-h6">{{ item.raw.facilityName }}</div>
+                      <div>License #: {{ item.raw.licenseNumber }}</div>
+                    </v-col>
+                    <v-col cols="12" md="4" align="start">
+                      <div>Facility ID:</div>
+                      <div>{{ item.raw.facilityAccountNumber }}</div>
+                    </v-col>
+                  </v-row>
+                </div>
               </v-list-item>
+              <v-divider v-if="index < facilityList.length - 1" class="mx-4" />
+            </template>
+            <template #selection="{ item }">
+              <div>
+                <v-row class="text-primary w-100" no-gutters>
+                  <v-col cols="12" md="8" align="start">
+                    <div class="text-h6">{{ item.raw.facilityName }}</div>
+                    <div>License #: {{ item.raw.licenseNumber }}</div>
+                  </v-col>
+                  <v-col cols="12" md="4" align="start">
+                    <div>Facility ID:</div>
+                    <div>{{ item.raw.facilityAccountNumber }}</div>
+                  </v-col>
+                </v-row>
+              </div>
             </template>
           </v-select>
         </v-row>
@@ -253,6 +281,7 @@ export default {
     // ...mapState(useAuthStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
+      console.log(this.getFacilityListForPCFByProgramYearId(this.programYearId));
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
     allAgeGroupsSelected() {
@@ -285,7 +314,6 @@ export default {
     closeDialog() {
       this.$emit('close');
     },
-    // JonahCurlCGI todo: implement the "select all" option
     toggleSelectAll() {
       this.selectedAgeGroups = this.allAgeGroupsSelected ? [] : this.ageGroups;
     },
