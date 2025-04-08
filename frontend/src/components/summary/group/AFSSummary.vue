@@ -136,7 +136,6 @@ export default {
     //Because we have to check if there are required uploaded documents, we use our custom validation instead of relying on Vuetify's form validation.
     this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
-
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,
