@@ -82,7 +82,7 @@
           </v-row>
           <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
             <v-select
-              v-model="selectedAgeGroups"
+              v-model.lazy="selectedAgeGroups"
               :items="ageGroups"
               item-title="label"
               item-value="value"
@@ -92,8 +92,20 @@
               multiple
               chips
               clearable
-              @update:model-value="handleAgeGroupSelectionChange"
-            />
+            >
+              <template #prepend-item>
+                <v-list-item title="Select All" @click="toggleSelectAll">
+                  <template #prepend>
+                    <v-checkbox-btn
+                      :color="someAgeGroupsSelected ? '#003366' : undefined"
+                      :indeterminate="someAgeGroupsSelected && !allAgeGroupsSelected"
+                      :model-value="someAgeGroupsSelected"
+                    />
+                  </template>
+                </v-list-item>
+                <v-divider class="mt-2" />
+              </template>
+            </v-select>
           </v-row>
           <v-row class="text-primary">
             <v-col cols="12" lg="3" class="pl-0">
@@ -129,7 +141,7 @@
                   rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                   rules.MMDDYYYY,
                 ]"
-                label="Start Date"
+                label="End Date"
                 clearable
               />
             </v-col>
@@ -178,7 +190,7 @@
 
 <script>
 import { mapState } from 'pinia';
-import { ref } from 'vue';
+import { shallowRef } from 'vue';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
@@ -192,6 +204,7 @@ import ClosureService from '@/services/closureService.js';
 import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/Auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 export default {
@@ -220,7 +233,6 @@ export default {
       formattedStartDate: undefined,
       formattedEndDate: undefined,
       ageGroups: [
-        { label: 'Select All', value: 'all' },
         { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_0_18, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_0_18 },
         { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_18_36, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_18_36 },
         { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_3Y_K, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_3Y_K },
@@ -228,7 +240,7 @@ export default {
         { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_G, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_G },
         { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.PRE, value: CLOSURE_AFFECTED_AGE_GROUPS.PRE },
       ],
-      selectedAgeGroups: ref([]),
+      selectedAgeGroups: [],
       reason: undefined,
       requestDescription: undefined,
       uploadedDocuments: [],
@@ -237,10 +249,17 @@ export default {
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
+    // todo: add useAuthStore functions
+    // ...mapState(useAuthStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
-      console.log(this.getFacilityListForPCFByProgramYearId(this.programYearId));
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+    },
+    allAgeGroupsSelected() {
+      return this.selectedAgeGroups?.length === this.ageGroups?.length;
+    },
+    someAgeGroupsSelected() {
+      return this.selectedAgeGroups?.length > 0;
     },
     formComplete() {
       return (
@@ -248,7 +267,7 @@ export default {
         this.selectedFacility &&
         this.parentsWillPayForClosure !== null &&
         this.fullFacilityClosure !== null &&
-        (this.fullFacilityClosure || this.selectedAgeGroups.size > 0) &&
+        (this.fullFacilityClosure || this.selectedAgeGroups.length > 0) &&
         this.formattedStartDate &&
         this.formattedEndDate &&
         this.reason
@@ -267,26 +286,23 @@ export default {
       this.$emit('close');
     },
     // JonahCurlCGI todo: implement the "select all" option
-    handleAgeGroupSelectionChange(newSelection) {
-      if (newSelection.includes('all')) {
-        this.selectedAgeGroups.value = this.ageGroups.filter((o) => o.value !== 'all').map((o) => o.label);
-      } else {
-        this.selectedAgeGroups.value = newSelection;
-      }
+    toggleSelectAll() {
+      this.selectedAgeGroups = this.allAgeGroupsSelected ? [] : this.ageGroups;
     },
     submit() {
       const payload = {
+        applicationId: this.applicationId,
         programYearId: this.programYearId,
         facilityId: this.selectedFacility,
-        startDate: new Date(this.formattedStartDate),
-        endDate: new Date(this.formattedEndDate),
+        startDate: new Date(this.formattedStartDate).toISOString().slice(0, 10),
+        endDate: new Date(this.formattedEndDate).toISOString().slice(0, 10),
         paidClosure: this.parentsWillPayForClosure,
         fullClosure: this.fullFacilityClosure,
         ageGroups: this.fullFacilityClosure ? undefined : this.selectedAgeGroups.value.join(','),
         closureReason: this.reason,
         description: this.requestDescription,
         changeType: 'NEW_CLOSURE',
-        documents: this.uploadedDocuments,
+        // documents: this.uploadedDocuments,
       };
       ClosureService.createNewClosureChangeRequest(payload);
       this.closeDialog();
