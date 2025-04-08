@@ -1,98 +1,45 @@
 import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
-import ApiService from '../../common/apiService.js';
-import { ApiRoutes } from '../../utils/constants.js';
-import { checkSession } from '../../utils/session.js';
+import ApiService from '@/common/apiService.js';
+import { ApiRoutes } from '@/utils/constants.js';
+import { checkSession } from '@/utils/session.js';
 
 export const useFundingStore = defineStore('funding', {
   state: () => ({
-    isValidForm: undefined,
-    ccofBaseFundingId: undefined,
     fundingModel: {},
     loadedModel: {},
-    modelStore: {},
   }),
   getters: {
     isNewFundingStarted: (state) => !isEmpty(state.fundingModel),
-    getModelById: (state) => (fundingId) => state.modelStore[fundingId],
   },
   actions: {
-    setFundingModel(value) {
-      this.fundingModel = value;
+    setFundingModel(model) {
+      this.fundingModel = { ...model };
     },
-    setLoadedModel(value) {
-      this.loadedModel = value;
+    setLoadedModel(model) {
+      this.loadedModel = { ...model };
     },
-    setIsValidForm(value) {
-      this.isValidForm = value;
-    },
-    setCcofBaseFundingId(value) {
-      this.ccofBaseFundingId = value;
-    },
-    setModelStore(value) {
-      this.modelStore = value;
-    },
-    addModelToStore({ fundingId, model }) {
-      if (fundingId) {
-        this.modelStore[fundingId] = model;
-      }
-    },
-    deleteFromStore(fundingId) {
-      delete this.modelStore[fundingId];
-    },
-    async saveFunding() {
+    async saveFunding(fundingId) {
       checkSession();
-
-      if (isEqual(this.fundingModel, this.loadedModel)) {
-        return;
-      }
-
-      let payload = { ...this.fundingModel };
+      if (isEqual(this.fundingModel, this.loadedModel)) return;
       this.setLoadedModel(this.fundingModel);
-
-      let deleteFields = [];
-      if (payload.hasClosedMonth !== 'yes') {
-        for (let i = 1; i <= 12; i++) {
-          deleteFields.push('closedIn' + i);
-        }
-      }
-
-      if (payload.isSchoolProperty !== 'yes') {
-        deleteFields.push('beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten');
-        payload.isSchoolProperty = 0;
-      } else {
-        payload.isSchoolProperty = 1;
-        ['beforeSchool', 'afterSchool', 'beforeKindergarten', 'afterKindergarten'].forEach((item) => {
-          payload[item] = payload[item] ? 1 : 0;
-        });
-      }
-
-      deleteFields.forEach((field) => delete payload[field]);
-      let response = await ApiService.apiAxios.put(ApiRoutes.GROUP_FUND_AMOUNT + '/' + this.ccofBaseFundingId, payload);
+      const response = await ApiService.apiAxios.put(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`, this.fundingModel);
       return response;
     },
     async loadFunding(fundingId) {
-      this.setCcofBaseFundingId(fundingId);
-      let model = this.getModelById(fundingId);
-      if (model) {
+      try {
+        checkSession();
+        const model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
+        // TODO (vietle-cgi) - review this function when working on Family Application changes
+        if (model.familyLicenseType) {
+          model.familyLicenseType = String(model.familyLicenseType);
+        }
         this.setFundingModel(model);
         this.setLoadedModel(model);
-      } else {
-        checkSession();
-        try {
-          let response = await ApiService.apiAxios.get(ApiRoutes.GROUP_FUND_AMOUNT + '/' + fundingId);
-          let model = response.data;
-          if (model.familyLicenseType) {
-            model.familyLicenseType = '' + model.familyLicenseType;
-          }
-          this.setFundingModel(model);
-          this.setLoadedModel(model);
-          this.addModelToStore({ fundingId, model });
-        } catch (error) {
-          console.log(`Failed to get Funding - ${error}`);
-          throw error;
-        }
+      } catch (error) {
+        console.log(`Failed to get Licence and Service details - ${error}`);
+        throw error;
       }
     },
   },

@@ -26,6 +26,7 @@ export const ApiRoutes = Object.freeze({
   CCFRIFACILITY: baseRoot + '/facility/ccfri',
   CCFRI_FEES: baseRoot + '/facility/fees',
   CCFRI_DATES: baseRoot + '/facility/dates',
+  CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
@@ -54,6 +55,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CANADA_POST: baseRoot + '/canadaPost',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -67,6 +69,9 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
   MTFI: 'Midterm Parent Fee Increase',
+  FACILITY_INFO: 'Facility Information',
+  LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
+  ORGANIZATION_CLOSURES: 'Organization Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -139,6 +144,8 @@ export const PATHS = {
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
+
+  CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
@@ -161,6 +168,10 @@ export function changeUrlGuid(
   changeType = CHANGE_TYPES.NEW_FACILITY,
 ) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
+}
+
+export function closureUrl(programYearGuid = ':programYearGuid') {
+  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
@@ -386,3 +397,67 @@ export const BCSSA_REGION_LINKS = Object.freeze({
   FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
   FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
 });
+
+export const ERROR_MESSAGES = Object.freeze({
+  REQUIRED: 'This field is required',
+  LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
+  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+});
+
+export const ORGANIZATION_TYPES = Object.freeze({
+  NON_PROFIT_SOCIETY: 100000000,
+  PUBLIC_INSTITUTION: 100000001,
+  REGISTERED_COMPANY: 100000002,
+  LOCAL_GOVERNMENT: 100000003,
+  FIRST_NATIONS_GOVERNMENT: 100000004,
+  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
+});
+
+export const CLOSURE_STATUSES = Object.freeze({
+  DRAFT: 100000000,
+  SUBMITTED: 100000001,
+  IN_PROGRESS: 100000002,
+  APPROVED: 100000003,
+  DENIED: 100000004,
+  CANCELLED: 100000005,
+});
+
+export const CLOSURE_STATUS_TEXTS = Object.freeze({
+  PENDING: 'Pending',
+  APPROVED: 'Approved',
+  INELIGIBLE: 'Ineligible',
+  REMOVED_BY_PROVIDER: 'Removed by Provider',
+});
+
+export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
+  CCFRI: 100000000,
+  CCFRI_AND_CCOF: 100000001,
+  CCOF: 100000002,
+  INELIGIBLE: 100000003,
+  PENDING: 100000004,
+});
+
+export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
+  CCFRI: 'CCFRI',
+  CCFRI_AND_CCOF: 'CCFRI & CCOF',
+  CCOF: 'CCOF',
+  INELIGIBLE: 'Ineligible',
+  PENDING: 'Pending',
+});
+
+export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
+  PASS: 1,
+  FAIL: 2,
+  INTEGRATION_ERROR: 3,
+});
+
+export const TOOLTIP_TYPES = Object.freeze({
+  INFO: 'Information',
+  ERROR: 'Error',
+  WARNING: 'Warning',
+});
+
+export const APPLICATION_TEMPLATE_VERSIONS = [
+  { id: '1', isActive: false, note: 'Original application template' },
+  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
+];

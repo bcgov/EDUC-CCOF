@@ -148,7 +148,6 @@ objects:
           BANNER_COLOR: '${BANNER_COLOR}',
           BANNER_ENVIRONMENT: '${BANNER_ENVIRONMENT}',
           VUE_APP_BCEID_REG_URL: '${VUE_APP_BCEID_REG_URL}',
-          DECB_VALIDATION_BYPASS: false,
         };
       snowplow.js: |-
         // <!-- Snowplow starts plowing - Standalone vE.2.14.0 -->

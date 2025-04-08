@@ -61,7 +61,7 @@
       persistent
       max-width="525px"
       title="Delete Application"
-      :loading="isLoading"
+      :loading="processing"
       @close="dialog = false"
     >
       <template #content>

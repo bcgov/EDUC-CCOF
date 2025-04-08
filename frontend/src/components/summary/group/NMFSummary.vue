@@ -2,14 +2,7 @@
   <v-row no-gutters class="d-flex flex-column">
     <v-form ref="nmfSummaryForm" v-model="isValidForm">
       <v-expansion-panel-title>
-        <h4 style="color: #003466">
-          NMF
-          <v-icon v-if="isValidForm" color="green" size="large"> mdi-check-circle-outline </v-icon>
-          <v-icon v-if="!isValidForm" color="#ff5252" size="large"> mdi-alert-circle-outline </v-icon>
-          <span v-if="!isValidForm" style="color: #ff5252"
-            >Your form is missing required information. Click here to view</span
-          >
-        </h4>
+        <SummaryExpansionPanelTitle title="NMF" :is-complete="isValidForm" />
       </v-expansion-panel-title>
       <v-expansion-panel-text eager class="ml-2">
         <v-row no-gutters class="d-flex flex-column">
@@ -172,7 +165,7 @@
         </v-row>
         <div class="mt-6">
           <router-link v-if="!isValidForm" :to="pcfLink">
-            <u class="error-message">To add this information, click here. This will bring you to a different page.</u>
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
       </v-expansion-panel-text>
@@ -181,7 +174,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-
+import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 import rules from '@/utils/rules.js';
@@ -189,6 +182,7 @@ import { PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'NMFSummary',
+  components: { SummaryExpansionPanelTitle },
   props: {
     ccfriId: {
       type: String,
@@ -214,7 +208,7 @@ export default {
     return {
       PATHS,
       rules,
-      isValidForm: true,
+      isValidForm: false,
       formObj: {
         formName: 'NMFSummary',
         formId: this.facilityId,
@@ -229,9 +223,10 @@ export default {
     },
   },
   watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
+    isValidForm: {
+      handler() {
+        this.$refs.nmfSummaryForm.validate();
+        if (this.isLoadingComplete && this.isValidForm !== null) {
           this.$emit('isSummaryValid', this.formObj, this.isValidForm);
         }
       },
@@ -246,7 +241,7 @@ export default {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

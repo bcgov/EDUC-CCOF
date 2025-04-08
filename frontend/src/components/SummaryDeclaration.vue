@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <v-form id="printable-form" ref="form" v-model="isValidForm">
+    <v-form id="printable-form" ref="form">
       <div class="text-center">
         <div class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
@@ -57,7 +57,7 @@
       <div v-if="!isSomeChangeRequestActive()" class="text-center text-h5" style="color: #003466">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
-      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-8 mt-8">
+      <v-card v-if="!isSummaryComplete && !isProcessing" elevation="4" class="mx-12 my-8">
         <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
@@ -75,11 +75,10 @@
             </v-col>
           </v-row>
           <v-expansion-panels v-model="expand['global']" multiple variant="accordion">
-            <v-row v-if="isMainLoading">
+            <v-row v-if="isProcessing">
               <v-col>
                 <v-skeleton-loader
-                  v-if="isMainLoading"
-                  :loading="isMainLoading"
+                  :loading="isProcessing"
                   type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
                 />
               </v-col>
@@ -137,7 +136,6 @@
                       <CCOFSummary
                         v-else
                         :funding="facility.funding"
-                        :facility-id="facility.facilityId"
                         :change-rec-guid="facility.changeRequestId"
                         :program-year-id="summaryModel?.application?.programYearId"
                         @is-summary-valid="isFormComplete"
@@ -432,7 +430,6 @@
           </v-row>
         </v-card>
       </v-row>
-
       <NavButton
         v-if="!printableVersion"
         :is-submit-displayed="true"
@@ -520,7 +517,6 @@ export default {
   data() {
     return {
       model: {},
-      isValidForm: false,
       isLoading: false,
       isProcessing: false,
       dialog: false,
@@ -543,16 +539,9 @@ export default {
       'isChangeRequest',
     ]),
     ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['canSubmit', 'navBarList', 'changeRequestId']),
+    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, [
-      'declarationModel',
-      'summaryModel',
-      'facilities',
-      'isSummaryLoading',
-      'isMainLoading',
-      'isLoadingComplete',
-    ]),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities', 'isLoadingComplete']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'formattedProgramYear',
@@ -614,9 +603,6 @@ export default {
       ) {
         //ministry unlocks declaration for PCF or Change Request New Facility
         return false;
-      } else if (!this.canSubmit) {
-        //checkboxes
-        return true;
       } else if (
         this.isChangeRequest &&
         !(this.model.externalStatus == 'INCOMPLETE' || this.model.externalStatus == 'ACTION_REQUIRED')
@@ -738,15 +724,7 @@ export default {
     ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
     isPageComplete() {
-      if (
-        (this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete) ||
-        (this.canSubmit && this.model.orgContactName && this.model.agreeConsentCertify)
-      ) {
-        this.isValidForm = true;
-      } else {
-        this.isValidForm = false;
-      }
-      return this.isValidForm;
+      return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
     },
 
     isSomeChangeRequestActive() {
@@ -1041,7 +1019,7 @@ li {
 }
 
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
 }
 

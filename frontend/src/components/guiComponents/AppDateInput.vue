@@ -40,6 +40,7 @@ export default {
 
 :deep(input[type='date']::-webkit-calendar-picker-indicator) {
   position: absolute;
+  cursor: pointer;
 }
 
 :deep(input::-webkit-datetime-edit) {

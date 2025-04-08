@@ -19,10 +19,9 @@ const OrganizationMappings = [
   // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
-  { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
+  { back: 'ccof_is_org_mailing_address_entered_manually', front: 'isOrgMailingAddressEnteredManually' },
+  { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'nameOfCareProvider' },
-  // { back: 'QQQQQQQQ', front: 'facilityName' },
 ];
 
 const FacilityMappings = [
@@ -42,9 +41,10 @@ const FacilityMappings = [
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: '_ccof_change_request_value', front: 'changeRequestId' }, //likely won't stay here
-
-  // XXXXXXXXXXXXX: 'licenseEffectiveDate',
-  // XXXXXXXXXXXXX: 'hasReceivedFunding',
+  { back: 'ccof_is_facility_address_entered_manually', front: 'isFacilityAddressEnteredManually' },
+  { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
+  { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
+  { back: 'ccof_healthauthority', front: 'healthAuthority' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -201,10 +201,16 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom' },
   { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo' },
   { back: 'ccof_maximumnumberofchildcarespacesyouoffer', front: 'maxSpaces' },
+
+  { back: 'ccof_has_under36months', front: 'hasUnder36Months' },
+  { back: 'ccof_has_30monthtoschoolage', front: 'has30MonthToSchoolAge' },
+  { back: 'ccof_has_schoolagecareonschoolground', front: 'hasSchoolAgeCareOnSchoolGrounds' },
+  { back: 'ccof_has_preschool', front: 'hasPreschool' },
+  { back: 'ccof_has_multiagechildcare', front: 'hasMultiAge' },
+
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
-
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
@@ -222,6 +228,11 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_maximumnumberofspacesyouofferextendedhours', front: 'maxCapacityExtended' },
   { back: 'ccof_maxnoofdaysperweekextendedhoursoffered', front: 'maxDaysPerWeekExtended' },
   { back: 'ccof_maxnoofweeksperyearextendedhoursoffered', front: 'maxWeeksPerYearExtended' },
+
+  { back: 'ccof_has_under36months_extendedcc', front: 'hasUnder36MonthsExtendedCC' },
+  { back: 'ccof_has_30monthtoschoolage_extendedcc', front: 'has30MonthToSchoolAgeExtendedCC' },
+  { back: 'ccof_has_schoolagecareonschoolground_extendedc', front: 'hasSchoolAgeCareOnSchoolGroundsExtendedCC' },
+  { back: 'ccof_has_multiagechildcare_extendedcc', front: 'hasMultiAgeExtendedCC' },
 
   { back: 'ccof_under36months4hoursoflessextendedcc', front: 'extendedChildCareUnder36Months4OrLess' },
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
@@ -268,6 +279,8 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
+  { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
 ];
 
 const UserProfileApplicationMappings = [
@@ -276,6 +289,7 @@ const UserProfileApplicationMappings = [
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
   { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
@@ -294,6 +308,7 @@ const UserProfileFacilityMappings = [
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   { back: 'ccof_facilitystatus_formatted', front: 'facilityStatus' },
 ];
+
 const UserProfileBaseFundingMappings = [
   //base funding
   { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },
@@ -308,6 +323,17 @@ const OrganizationFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+];
+
+const ClosureMappings = [
+  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
+  { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
@@ -513,6 +539,7 @@ module.exports = {
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  ClosureMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,

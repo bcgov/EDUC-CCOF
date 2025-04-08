@@ -1,7 +1,7 @@
 <template>
   <v-card elevation="2" class="pa-4">
     <div class="mb-2">Please select one of the following options regarding the approvable fee schedule:</div>
-    <v-radio-group v-model="updatedValue" :rules="rules.required" :disabled="readonly" color="primary">
+    <v-radio-group v-model="updatedValue" :rules="rules.required" :disabled="readonly">
       <v-radio label="I accept" :value="AFS_STATUSES.ACCEPT" />
       <div v-if="!readonly && updatedValue === AFS_STATUSES.ACCEPT" class="text-body-2 pl-2">
         After submission please wait to receive notification confirming your approval to participate in CCFRI.
