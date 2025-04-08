@@ -72,10 +72,6 @@ export default {
       type: String,
       default: '',
     },
-    isProcessing: {
-      type: Boolean,
-      default: true,
-    },
   },
   emits: ['isSummaryValid'],
   data() {
@@ -126,12 +122,6 @@ export default {
         this.reloadAfs();
       },
     },
-    isProcessing: {
-      handler() {
-        if (this.isProcessing) return;
-        this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-      },
-    },
   },
   async created() {
     this.AFS_STATUSES = AFS_STATUSES;
@@ -141,7 +131,12 @@ export default {
     if (this.isChangeRequest) {
       await this.getChangeDocs();
     }
+
+    //ccfri-4572-update validation for AFS Summary
+    //Because we have to check if there are required uploaded documents, we use our custom validation instead of relying on Vuetify's form validation.
+    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
+
   methods: {
     ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
     isEmpty,

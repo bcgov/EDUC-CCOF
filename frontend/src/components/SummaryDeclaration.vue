@@ -196,7 +196,6 @@
                       :ccfri-id="facility?.ccfri?.ccfriId"
                       :facility-id="facility?.facilityId"
                       :program-year-id="summaryModel?.application?.programYearId"
-                      :is-processing="isProcessing"
                       @is-summary-valid="isFormComplete"
                     />
                   </v-expansion-panel>
