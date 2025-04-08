@@ -29,11 +29,22 @@
             required
             :rules="rules.required"
             :items="facilityList"
+            item-value="facilityName"
             item-title="facilityName"
             placeholder="Select a facility"
             variant="outlined"
             class="mt-2"
-          />
+          >
+            <template #item="{ props, item }">
+              <v-list-item v-bind="props">
+                <v-row>
+                  <v-list-item-subtitle class="text-xs">
+                    {{ item.raw.facilityId }} - ${{ item.raw.licenseNumber }}
+                  </v-list-item-subtitle>
+                </v-row>
+              </v-list-item>
+            </template>
+          </v-select>
         </v-row>
         <v-row>
           <v-col cols="12" lg="9" class="pl-0">
@@ -150,10 +161,16 @@
       </v-container>
     </template>
     <template #button>
-      <v-container>
-        <!-- JonahCurlCGI todo: remove before pushing
-         Button below used for testing create closure endpoint -->
-        <v-row><v-btn @click="createOrganizationClosure()">test</v-btn></v-row>
+      <v-container width="80%">
+        <v-row>
+          <v-col cols="12" md="6" align="left">
+            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
+          </v-col>
+          <v-col cols="12" md="6" align="right">
+            <!-- JonahCurlCGI todo: implement functionality -->
+            <AppButton :disabled="!formComplete" @click="submit">Submit</AppButton>
+          </v-col>
+        </v-row>
       </v-container>
     </template>
   </AppDialog>
@@ -222,7 +239,20 @@ export default {
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
+      console.log(this.getFacilityListForPCFByProgramYearId(this.programYearId));
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+    },
+    formComplete() {
+      return (
+        !this.isLoading &&
+        this.selectedFacility &&
+        this.parentsWillPayForClosure !== null &&
+        this.fullFacilityClosure !== null &&
+        (this.fullFacilityClosure || this.selectedAgeGroups.size > 0) &&
+        this.formattedStartDate &&
+        this.formattedEndDate &&
+        this.reason
+      );
     },
   },
   watch: {
@@ -236,18 +266,30 @@ export default {
     closeDialog() {
       this.$emit('close');
     },
-    createOrganizationClosure() {
-      ClosureService.createNewClosureChangeRequest({});
-    },
     // JonahCurlCGI todo: implement the "select all" option
     handleAgeGroupSelectionChange(newSelection) {
-      console.log(newSelection);
       if (newSelection.includes('all')) {
         this.selectedAgeGroups.value = this.ageGroups.filter((o) => o.value !== 'all').map((o) => o.label);
       } else {
         this.selectedAgeGroups.value = newSelection;
       }
-      console.log(this.selectedAgeGroups);
+    },
+    submit() {
+      const payload = {
+        programYearId: this.programYearId,
+        facilityId: this.selectedFacility,
+        startDate: new Date(this.formattedStartDate),
+        endDate: new Date(this.formattedEndDate),
+        paidClosure: this.parentsWillPayForClosure,
+        fullClosure: this.fullFacilityClosure,
+        ageGroups: this.fullFacilityClosure ? undefined : this.selectedAgeGroups.value.join(','),
+        closureReason: this.reason,
+        description: this.requestDescription,
+        changeType: 'NEW_CLOSURE',
+        documents: this.uploadedDocuments,
+      };
+      ClosureService.createNewClosureChangeRequest(payload);
+      this.closeDialog();
     },
   },
 };
