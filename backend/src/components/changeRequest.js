@@ -261,10 +261,6 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 function mapChangeActionClosureObjectForBack(changeActionClosure) {
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
   changeActionClosureMapp.ccof_closure_type = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
-  // JonahCurlCGI todo: remove the next three lines once these attributes are switched to not required on CMS
-  // changeActionClosureMapp.ccof_closure_approved_under_emergency_policy = 1;
-  // changeActionClosureMapp.ccof_enrollment_report_submitted_or_reviewed = 1;
-  // changeActionClosureMapp.ccof_emergency_closure_type = 100000000;
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
@@ -277,7 +273,6 @@ async function createNewClosureChangeRequest(req, res) {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
-    console.log(changeActionClosure);
     const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
     return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
   } catch (e) {
