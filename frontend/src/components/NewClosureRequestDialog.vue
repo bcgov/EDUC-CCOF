@@ -29,48 +29,39 @@
             required
             :rules="rules.required"
             :items="facilityList"
-            item-value="facilityName"
+            item-value="facilityId"
             item-title="facilityName"
             placeholder="Select a facility"
             variant="outlined"
             class="mt-2"
           >
             <template #item="{ props, item, index }">
-              <v-list-item
-                :value="props.value"
-                :active="props.active"
-                :title="null"
-                @click="props.onClick"
-                class="py-2"
-              >
-                <div>
-                  <v-row class="text-primary w-100" no-gutters>
-                    <v-col cols="12" md="8" align="start">
-                      <div class="text-h6">{{ item.raw.facilityName }}</div>
-                      <div>License #: {{ item.raw.licenseNumber }}</div>
-                    </v-col>
-                    <v-col cols="12" md="4" align="start">
-                      <div>Facility ID:</div>
-                      <div>{{ item.raw.facilityAccountNumber }}</div>
-                    </v-col>
-                  </v-row>
-                </div>
+              <v-list-item :value="props.value" :active="props.active" :title="null" @click="props.onClick">
+                <v-row class="text-primary">
+                  <v-col cols="12" md="8" align="start">
+                    <h4>{{ item.raw.facilityName }}</h4>
+                    <p>License #: {{ item.raw.licenseNumber }}</p>
+                  </v-col>
+                  <v-col cols="12" md="4" align="start">
+                    <p>Facility ID:</p>
+                    <p>{{ item.raw.facilityAccountNumber }}</p>
+                  </v-col>
+                </v-row>
               </v-list-item>
               <v-divider v-if="index < facilityList.length - 1" class="mx-4" />
             </template>
             <template #selection="{ item }">
-              <div>
-                <v-row class="text-primary w-100" no-gutters>
-                  <v-col cols="12" md="8" align="start">
-                    <div class="text-h6">{{ item.raw.facilityName }}</div>
-                    <div>License #: {{ item.raw.licenseNumber }}</div>
-                  </v-col>
-                  <v-col cols="12" md="4" align="start">
-                    <div>Facility ID:</div>
-                    <div>{{ item.raw.facilityAccountNumber }}</div>
-                  </v-col>
-                </v-row>
-              </div>
+              <!-- JonahCurlCGI todo: fix formatting -->
+              <v-row class="w-100 text-primary py-1" no-gutters>
+                <v-col cols="12" md="8" align="start">
+                  <h4>{{ item.raw.facilityName }}</h4>
+                  <p>License #: {{ item.raw.licenseNumber }}</p>
+                </v-col>
+                <v-col cols="12" md="4" align="start">
+                  <p>Facility ID:</p>
+                  <p>{{ item.raw.facilityAccountNumber }}</p>
+                </v-col>
+              </v-row>
             </template>
           </v-select>
         </v-row>
@@ -207,7 +198,6 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col cols="12" md="6" align="right">
-            <!-- JonahCurlCGI todo: implement functionality -->
             <AppButton :disabled="!formComplete" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
@@ -277,11 +267,9 @@ export default {
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
-    // todo: add useAuthStore functions
-    // ...mapState(useAuthStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationName']),
     facilityList() {
-      console.log(this.getFacilityListForPCFByProgramYearId(this.programYearId));
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
     allAgeGroupsSelected() {
@@ -296,11 +284,19 @@ export default {
         this.selectedFacility &&
         this.parentsWillPayForClosure !== null &&
         this.fullFacilityClosure !== null &&
-        (this.fullFacilityClosure || this.selectedAgeGroups.length > 0) &&
+        (this.fullFacilityClosure === 'true' || this.selectedAgeGroups.length > 0) &&
         this.formattedStartDate &&
         this.formattedEndDate &&
         this.reason
       );
+    },
+    applicationId() {
+      for (const application of this.userInfo.applications) {
+        if (application.ccofProgramYearId === this.programYearId) {
+          return application.applicationId;
+        }
+      }
+      return '';
     },
   },
   watch: {
@@ -322,11 +318,12 @@ export default {
         applicationId: this.applicationId,
         programYearId: this.programYearId,
         facilityId: this.selectedFacility,
+        organizationId: this.userInfo?.organizationId,
         startDate: new Date(this.formattedStartDate).toISOString().slice(0, 10),
         endDate: new Date(this.formattedEndDate).toISOString().slice(0, 10),
         paidClosure: this.parentsWillPayForClosure,
         fullClosure: this.fullFacilityClosure,
-        ageGroups: this.fullFacilityClosure ? undefined : this.selectedAgeGroups.value.join(','),
+        ageGroups: this.fullFacilityClosure === 'true' ? undefined : this.selectedAgeGroups.join(','),
         closureReason: this.reason,
         description: this.requestDescription,
         changeType: 'NEW_CLOSURE',
