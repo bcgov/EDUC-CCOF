@@ -49,6 +49,7 @@ const ChangeActionClosureMappings = [
   { back: 'ccof_closure_reason', front: 'closureReason' },
   { back: 'ccof_any_details_added_on_request', front: 'closureDescription' },
   { back: 'ccof_closure_type', front: 'changeType' },
+  { back: 'ccof_affected_age_groups', front: 'ageGroups' },
   // { back: 'ccof_startdate', front: 'documents' },
 ];
 
