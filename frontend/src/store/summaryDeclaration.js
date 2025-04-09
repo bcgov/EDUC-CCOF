@@ -13,6 +13,7 @@ import {
   ApiRoutes,
   CCFRI_FEE_CORRECT_TYPES,
   CHANGE_REQUEST_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
@@ -43,9 +44,10 @@ function getProgramYear(selectedGuid, programYearList) {
  *
  * @param {Object} facility - The facility to add details to
  */
-function mapFacility(facility) {
+function mapFacility(facility, isGroup) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
+  const ccfriAppStore = useCcfriAppStore();
   const navBarStore = useNavBarStore();
 
   facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
@@ -56,6 +58,10 @@ function mapFacility(facility) {
   const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
   facility.hasRfi = facilityInNavBar?.hasRfi;
   facility.hasNmf = facilityInNavBar?.hasNmf;
+  facility.enableAfs = facilityInNavBar?.enableAfs;
+  facility.afs = ccfriAppStore.approvableFeeSchedules?.find(
+    (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
+  );
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
@@ -73,7 +79,7 @@ function mapFacility(facility) {
     licenseNumber: facility.facilityInfo?.licenseNumber,
     ccfriOptInStatus: facility.ccfri?.ccfriOptInStatus,
     eceweOptInStatus: facility.ecewe?.optInOrOut,
-    isComplete: ApplicationService.isFacilityComplete(facility),
+    isComplete: ApplicationService.isFacilityComplete(facility, isGroup, applicationStore.applicationTemplateVersion),
   };
   return facility;
 }
@@ -324,7 +330,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           applicationStore.getApplicationUploadedDocuments(),
         ]);
 
-        this.facilities = payload.facilities.map(mapFacility);
+        const isGroup = summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+        this.facilities = payload.facilities.map((facility) => mapFacility(facility, isGroup));
 
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {

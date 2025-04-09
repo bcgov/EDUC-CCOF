@@ -2,6 +2,7 @@ import { isEmpty } from 'lodash';
 
 import { hasEmptyFields } from '@/utils/common.js';
 import {
+  AFS_STATUSES,
   APPLICATION_TEMPLATE_VERSIONS,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   DOCUMENT_TYPES,
@@ -47,26 +48,24 @@ export default {
     return !hasEmptyFields(organization, requiredFields);
   },
 
-  isFacilityComplete(facility) {
-    console.log(facility);
+  isFacilityComplete(facility, isGroup, applicationTemplateVersion) {
     if (isEmpty(facility)) return false;
-    // console.log(this.isFacilityInformationComplete(facility.facilityInfo));
-    // console.log(this.isCCOFCompleteGroupV2(facility.funding));
     return (
-      this.isFacilityInformationComplete(facility.facilityInfo) &&
-      this.isCCOFCompleteGroupV2(facility.funding) &&
+      this.isFacilityInformationComplete(facility.facilityInfo, applicationTemplateVersion) &&
+      this.isCCOFComplete(facility.funding, isGroup, applicationTemplateVersion) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri) &&
       (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.isProgramYearLanguageHistorical)) &&
       (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
-      //   (this.isAFSComplete)
+      (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
       this.isECEWEFacilityComplete(facility.ecewe)
     );
   },
 
   // FACILITY INFORMATION VALIDATIONS
-  isFacilityInformationComplete(facilityInfo) {
+  isFacilityInformationComplete(facilityInfo, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
+    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const requiredFields = [
       'facilityName',
       'yearBeganOperation',
@@ -81,8 +80,10 @@ export default {
       'licenseNumber',
       'licenseEffectiveDate',
       'hasReceivedFunding',
-      'healthAuthority',
     ];
+    if (!showApplicationTemplateV1) {
+      requiredFields.push('healthAuthority');
+    }
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
       requiredFields.push('fundingFacility');
     }
@@ -90,6 +91,43 @@ export default {
   },
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
+  isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
+    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
+    // TODO (vietle-cgi) - add Family Application validation
+    if (showApplicationTemplateV1) {
+      return isGroup ? this.isCCOFCompleteGroupV1(funding) : true;
+    }
+    return isGroup ? this.isCCOFCompleteGroupV2(funding) : true;
+  },
+  isCCOFCompleteGroupV1(funding) {
+    if (isEmpty(funding)) return false;
+    const requiredFields = [
+      'maxDaysPerWeek',
+      'maxWeeksPerYear',
+      'hoursFrom',
+      'hoursTo',
+      'maxLicensesCapacity',
+      'maxGroupChildCareUnder36',
+      'maxGroupChildCare36',
+      'maxPreschool',
+      'maxGroupChildCareSchool',
+      'maxGroupChildCareMultiAge',
+      'isExtendedHours',
+    ];
+    if (funding.maxPreschool > 0) {
+      requiredFields.push('monday', 'tusday', 'wednesday', 'thursday', 'friday');
+    }
+    if (funding.maxGroupChildCareSchool > 0) {
+      requiredFields.push('isSchoolProperty');
+    }
+    if (funding.maxGroupChildCareSchool > 0 && funding.isSchoolProperty) {
+      requiredFields.push('schoolPropertyLabel');
+    }
+    if (funding.isExtendedHours) {
+      requiredFields.push('maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
+    }
+    return !hasEmptyFields(funding, requiredFields);
+  },
   isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
@@ -311,6 +349,18 @@ export default {
       requiredFields.push('remoteCommunitiesComments');
     }
     return !hasEmptyFields(nmf, requiredFields);
+  },
+
+  // AFS VALIDATIONS
+  isAFSComplete(afs, uploadedDocuments) {
+    if (afs?.afsStatus == null) return false;
+    if (afs.afsStatus === AFS_STATUSES.UPLOAD_DOCUMENTS) {
+      const afsDocuments = uploadedDocuments?.filter((document) =>
+        [DOCUMENT_TYPES.APPLICATION_AFS, DOCUMENT_TYPES.APPLICATION_AFS_SUBMITTED].includes(document.documentType),
+      );
+      return afsDocuments?.length > 0;
+    }
+    return true;
   },
 
   // ECE-WE VALIDATIONS

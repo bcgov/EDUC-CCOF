@@ -3,16 +3,16 @@
     <div class="px-2 py-4">
       <v-row no-gutters>
         <v-col cols="8" class="px-2">
-          <div class="summary-label">Facility Name</div>
-          <div :class="facility.facilityName ? '' : 'text-error'" class="summary-value">
+          <p class="summary-label">Facility Name</p>
+          <p :class="facility.facilityName ? '' : 'text-error'" class="summary-value">
             {{ facility.facilityName ?? 'Required' }}
-          </div>
+          </p>
         </v-col>
         <v-col cols="3" class="px-2">
-          <div class="summary-label">Facility ID</div>
-          <div class="summary-value">
+          <p class="summary-label">Facility ID</p>
+          <p class="summary-value">
             {{ facility.facilityAccountNumber ?? '--' }}
-          </div>
+          </p>
         </v-col>
         <v-col cols="1" class="d-flex justify-end">
           <v-icon size="small">mdi-open-in-new</v-icon>
@@ -20,22 +20,22 @@
       </v-row>
       <v-row no-gutters class="pt-2">
         <v-col cols="6" md="4" class="px-2">
-          <div class="summary-label">Licence Number</div>
-          <div :class="facility.licenseNumber ? '' : 'text-error'" class="summary-value">
+          <p class="summary-label">Licence Number</p>
+          <p :class="facility.licenseNumber ? '' : 'text-error'" class="summary-value">
             {{ facility.licenseNumber ?? 'Required' }}
-          </div>
+          </p>
         </v-col>
         <v-col cols="6" md="4" class="px-2">
-          <div class="summary-label">CCFRI</div>
-          <div :class="facility.ccfriOptInStatus != null ? '' : 'text-error'" class="summary-value">
+          <p class="summary-label">CCFRI</p>
+          <p :class="facility.ccfriOptInStatus != null ? '' : 'text-error'" class="summary-value">
             {{ getOptInOptOut(facility.ccfriOptInStatus) ?? 'Required' }}
-          </div>
+          </p>
         </v-col>
         <v-col cols="6" md="4" class="px-2">
-          <div class="summary-label">ECE-WE</div>
-          <div :class="facility.eceweOptInStatus != null ? '' : 'text-error'" class="summary-value">
+          <p class="summary-label">ECE-WE</p>
+          <p :class="facility.eceweOptInStatus != null ? '' : 'text-error'" class="summary-value">
             {{ getOptInOptOut(facility.eceweOptInStatus) ?? 'Required' }}
-          </div>
+          </p>
         </v-col>
       </v-row>
       <v-row no-gutters class="pa-2 pb-0">
@@ -72,34 +72,11 @@ export default {
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
-:deep(::placeholder) {
-  color: red !important;
-  opacity: 1 !important;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
 .error-card {
   border-top: 5px solid #d8292f !important;
 }
 
 .success-card {
   border-top: 5px solid #2e8540 !important;
-}
-
-:deep(.v-field__input) {
-  padding-left: 0px;
 }
 </style>

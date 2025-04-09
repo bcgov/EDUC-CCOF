@@ -560,7 +560,7 @@
 import { mapState } from 'pinia';
 import { useNavBarStore } from '@/store/navBar.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
-import { PATHS, CHANGE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, changeUrlGuid, pcfUrlGuid } from '@/utils/constants.js';
+import { PATHS, CHANGE_TYPES, changeUrlGuid, pcfUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'RFISummary',

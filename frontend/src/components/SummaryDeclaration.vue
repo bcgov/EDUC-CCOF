@@ -75,13 +75,13 @@
           :loading="isApplicationProcessing"
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         />
-        <v-expansion-panels v-else multiple variant="accordion">
-          <v-expansion-panel v-if="!isRenewal" variant="accordion" value="organization-summary">
+        <v-expansion-panels v-else multiple>
+          <v-expansion-panel v-if="!isRenewal" value="organization-summary">
             <OrganizationSummary />
           </v-expansion-panel>
-          <v-expansion-panel variant="accordion" value="facility-information-summary">
+          <v-expansion-panel value="facility-information-summary">
             <v-expansion-panel-title>
-              <h4 style="color: #003466">
+              <h4 class="text-primary">
                 Facility Information
                 <v-icon v-if="areAllFacilitiesComplete" size="large" class="text-success">
                   mdi-check-circle-outline
@@ -95,16 +95,29 @@
               </h4>
             </v-expansion-panel-title>
             <v-expansion-panel-text eager>
-              <v-text-field
-                v-if="facilities?.length > 2"
-                v-model="facilityFilter"
-                clearable
-                variant="outlined"
-                label="Filter by Facility Name"
-                max-width="500"
-              />
+              <v-row v-if="facilities?.length > 2" no-gutters>
+                <div class="text-primary pt-4 pb-2 mr-4">
+                  <span class="mr-2">Filter by Facility</span>
+                  <v-icon>mdi-filter</v-icon>
+                </div>
+                <v-col cols="12" lg="6">
+                  <v-text-field
+                    v-model="facilityFilter"
+                    clearable
+                    variant="outlined"
+                    label="Filter by Facility Name"
+                    max-width="600"
+                  />
+                </v-col>
+              </v-row>
               <v-row class="pt-0">
-                <v-col v-for="facility in sortedFacilities" :key="facility?.facilityId" cols="12" lg="6" class="my-1">
+                <v-col
+                  v-for="facility in sortedFacilitiesToDisplay"
+                  :key="facility?.facilityId"
+                  cols="12"
+                  lg="6"
+                  class="my-1"
+                >
                   <FacilityInformationSummaryCard
                     :facility="facility"
                     @click="openFacilitySummary(facility?.facilityId)"
@@ -120,7 +133,7 @@
             max-width="85%"
             @close="toggleFacilityInformationSummaryDialog"
           />
-          <v-expansion-panel value="ecewe-summary-org" variant="accordion">
+          <v-expansion-panel value="ecewe-summary-org">
             <ECEWESummary
               :ecewe="summaryModel.ecewe"
               :ecewe-facility="null"
@@ -129,7 +142,6 @@
           </v-expansion-panel>
           <v-expansion-panel
             v-if="hasChangeNotificationFormDocuments"
-            variant="accordion"
             value="change-notification-form-summary"
             class="mt-10"
           >
@@ -470,11 +482,20 @@ export default {
         (!this.isRenewal && !this.organizationAccountNumber) || (this.isChangeRequest && !this.isDeclarationBDisplayed)
       );
     },
-    sortedFacilities() {
-      return this.facilities
-        .map((facility) => facility.facilitySummary)
-        .filter((facility) => facility.facilityName?.includes(this.facilityFilter ?? ''))
-        .sort((a, b) => (a.isComplete === b.isComplete ? 0 : a.isComplete ? 1 : -1));
+    mappedFacilities() {
+      return this.facilities?.map((facility) => facility.facilitySummary);
+    },
+    sortedFacilitiesToDisplay() {
+      return this.mappedFacilities
+        ?.filter((facility) => facility.facilityName?.includes(this.facilityFilter ?? ''))
+        .sort((a, b) => {
+          if (a.isComplete === b.isComplete) {
+            const nameA = a.facilityName?.toLowerCase() ?? '';
+            const nameB = b.facilityName?.toLowerCase() ?? '';
+            return nameA.localeCompare(nameB);
+          }
+          return a.isComplete ? 1 : -1;
+        });
     },
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
@@ -484,7 +505,7 @@ export default {
       return isAnyChangeRequestActive(this.changeRequestStore);
     },
     areAllFacilitiesComplete() {
-      return this.sortedFacilities?.every((facility) => facility.isComplete);
+      return this.mappedFacilities?.every((facility) => facility.isComplete);
     },
     isApplicationFormComplete() {
       return (

@@ -6,24 +6,56 @@
 * Source: Copied from commit 59d5425 on Dec 19, 2024 with some minor changes.
 -->
 <template>
-  <v-row no-gutters class="d-flex flex-column">
-    <v-form ref="organizationSummaryForm" v-model="isValidForm">
-      <v-expansion-panel-title>
-        <SummaryExpansionPanelTitle
-          title="Organization Information"
-          :loading="isApplicationProcessing"
-          :is-complete="isValidForm"
+  <v-form ref="organizationSummaryForm" v-model="isValidForm">
+    <v-expansion-panel-title>
+      <SummaryExpansionPanelTitle
+        title="Organization Information"
+        :loading="isApplicationProcessing"
+        :is-complete="isValidForm"
+      />
+    </v-expansion-panel-title>
+    <v-expansion-panel-text eager>
+      <div>
+        <p class="summary-label">
+          Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)
+        </p>
+        <v-text-field
+          placeholder="Required"
+          :model-value="summaryModel?.organization?.legalName"
+          class=""
+          density="compact"
+          flat
+          variant="solo"
+          hide-details
+          readonly
+          :rules="rules.required"
         />
-      </v-expansion-panel-title>
-      <v-expansion-panel-text eager>
-        <div>
-          <p class="summary-label">
-            Legal Name (first, middle and last) or Organization (As it appears in BC Corporate Registry)
-          </p>
+      </div>
+
+      <div>
+        <p class="summary-label">Organization Mailing Address</p>
+        <v-text-field
+          placeholder="Required"
+          class="summary-value"
+          :model-value="summaryModel?.organization?.address1"
+          density="compact"
+          flat
+          variant="solo"
+          hide-details
+          readonly
+          :rules="rules.required"
+        />
+      </div>
+
+      <v-row
+        v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
+        no-gutters
+      >
+        <v-col cols="12" md="6">
+          <p class="summary-label">Organization Contact Name</p>
           <v-text-field
             placeholder="Required"
-            :model-value="summaryModel?.organization?.legalName"
-            class=""
+            :model-value="summaryModel?.organization?.contactName"
             density="compact"
             flat
             variant="solo"
@@ -31,14 +63,13 @@
             readonly
             :rules="rules.required"
           />
-        </div>
-
-        <div>
-          <p class="summary-label">Organization Mailing Address</p>
+        </v-col>
+        <v-col cols="12" md="6">
+          <p class="summary-label">Position</p>
           <v-text-field
             placeholder="Required"
             class="summary-value"
-            :model-value="summaryModel?.organization?.address1"
+            :model-value="summaryModel?.organization?.position"
             density="compact"
             flat
             variant="solo"
@@ -46,186 +77,168 @@
             readonly
             :rules="rules.required"
           />
-        </div>
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col cols="12" md="4">
+          <p class="summary-label">City/Town</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.city1"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Province</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.province1"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Postal Code</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.postalCode1"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+      </v-row>
 
-        <v-row
-          v-if="summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
-          no-gutters
+      <v-row no-gutters>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Business phone</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.phone"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">E-mail Address of Signing Authority</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.email"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+      </v-row>
+
+      <v-row no-gutters>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Provider Type</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.application?.organizationProviderType"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Type of Organization</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="organizationType"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Business BCeID</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="userInfo.userName"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+        <v-col
+          v-if="
+            summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
+            summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.REGISTERED_COMPANY
+          "
+          cols="12"
+          md="4"
         >
-          <v-col cols="12" md="6">
-            <p class="summary-label">Organization Contact Name</p>
-            <v-text-field
-              placeholder="Required"
-              :model-value="summaryModel?.organization?.contactName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="6">
-            <p class="summary-label">Position</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.position"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <v-col cols="12" md="4">
-            <p class="summary-label">City/Town</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.city1"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Province</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.province1"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Postal Code</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.postalCode1"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row no-gutters>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Business phone</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.phone"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">E-mail Address of Signing Authority</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.email"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row no-gutters>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Provider Type</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.application?.organizationProviderType"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Type of Organization</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="organizationType"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Business BCeID</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="userInfo.userName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col
-            v-if="
-              summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
-              summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.REGISTERED_COMPANY
-            "
-            cols="12"
-            md="4"
-          >
-            <p class="summary-label">Incorporation Number</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.incNumber"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-        <div>
-          <p class="summary-label">Organization Street Address</p>
+          <p class="summary-label">Incorporation Number</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.incNumber"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </v-col>
+      </v-row>
+      <div>
+        <p class="summary-label">Organization Street Address</p>
+        <v-text-field
+          class="summary-value"
+          :model-value="summaryModel?.organization?.address2"
+          :rules="rules.required"
+          density="compact"
+          flat
+          variant="solo"
+          hide-details
+          readonly
+        />
+      </div>
+      <v-row no-gutters>
+        <v-col cols="12" md="4">
+          <p class="summary-label">City/Town</p>
           <v-text-field
             class="summary-value"
-            :model-value="summaryModel?.organization?.address2"
+            :model-value="summaryModel?.organization?.city2"
             :rules="rules.required"
             density="compact"
             flat
@@ -233,54 +246,39 @@
             hide-details
             readonly
           />
-        </div>
-        <v-row no-gutters>
-          <v-col cols="12" md="4">
-            <p class="summary-label">City/Town</p>
-            <v-text-field
-              class="summary-value"
-              :model-value="summaryModel?.organization?.city2"
-              :rules="rules.required"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Province</p>
-            <v-text-field
-              class="summary-value"
-              :model-value="summaryModel?.organization?.province2"
-              :rules="rules.required"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Postal Code</p>
-            <v-text-field
-              class="summary-value"
-              :model-value="summaryModel?.organization?.postalCode2"
-              :rules="rules.required"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-            />
-          </v-col>
-        </v-row>
-        <router-link v-if="!isValidForm" :to="routingPath">
-          <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-        </router-link>
-      </v-expansion-panel-text>
-    </v-form>
-  </v-row>
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Province</p>
+          <v-text-field
+            class="summary-value"
+            :model-value="summaryModel?.organization?.province2"
+            :rules="rules.required"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+          />
+        </v-col>
+        <v-col cols="12" md="4">
+          <p class="summary-label">Postal Code</p>
+          <v-text-field
+            class="summary-value"
+            :model-value="summaryModel?.organization?.postalCode2"
+            :rules="rules.required"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+          />
+        </v-col>
+      </v-row>
+      <router-link v-if="!isValidForm" :to="routingPath">
+        <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+      </router-link>
+    </v-expansion-panel-text>
+  </v-form>
 </template>
 <script>
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -304,42 +302,9 @@ export default {
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black !important;
-}
-
-*:disabled {
-  background-color: dimgrey !important;
-  color: red !important;
-  opacity: 1 !important;
-}
-
 :deep(::placeholder) {
-  color: red !important;
+  color: #d8292f !important;
   opacity: 1 !important;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
 }
 
 :deep(.v-field__input) {

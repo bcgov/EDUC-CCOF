@@ -98,7 +98,8 @@
       <div>
         <p class="summary-label">
           Please tell us anything else you'd like us to know about how your facility's business case supports setting
-          fees higher than the Affordability Benchmarks outlined in the 2023-24 Funding Guidelines.
+          fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
+          <a :href="getFundingUrl(programYearId)" target="_blank">Funding Guidelines.</a>
         </p>
         <v-textarea
           :model-value="nmfApp?.otherComments"
@@ -118,6 +119,9 @@
   </v-form>
 </template>
 <script>
+import { mapState } from 'pinia';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
 import { PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
@@ -135,7 +139,6 @@ export default {
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },
@@ -145,6 +148,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAppStore, ['getFundingUrl']),
+    ...mapState(useApplicationStore, ['formattedProgramYear']),
     routingPath() {
       return pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.ccfriId);
     },
