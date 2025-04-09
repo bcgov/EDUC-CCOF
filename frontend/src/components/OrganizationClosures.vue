@@ -106,9 +106,16 @@
     <NavButton @previous="previous" />
     <NewClosureRequestDialog
       :show="showNewClosureRequestDialog"
-      :programYearId="$route.params.programYearGuid"
+      :program-year-id="$route.params.programYearGuid"
       max-width="60%"
       @close="toggleNewClosureRequestDialog"
+      @submitted="submittedNewClosureRequest"
+    />
+    <ClosureConfirmationDialog
+      :show="showClosureConfirmationDialog"
+      max-width="60%"
+      :closure-request-type="closureRequestType"
+      @close="toggleClosureConfirmationDialog"
     />
   </v-container>
 </template>
@@ -117,6 +124,8 @@ import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
+import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -130,13 +139,13 @@ import {
   CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  CLOSURE_REQUEST_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import NewClosureRequestDialog from './NewClosureRequestDialog.vue';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, NewClosureRequestDialog },
+  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -157,6 +166,8 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
+      showClosureConfirmationDialog: false,
+      closureRequestType: undefined,
     };
   },
   computed: {
@@ -273,6 +284,14 @@ export default {
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
+    },
+    toggleClosureConfirmationDialog() {
+      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+    },
+    submittedNewClosureRequest() {
+      this.closureRequestType = CLOSURE_REQUEST_TYPES.NEW_CLOSURE;
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+      this.toggleClosureConfirmationDialog();
     },
   },
 };

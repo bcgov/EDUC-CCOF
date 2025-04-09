@@ -110,6 +110,7 @@
               class="mt-2"
               multiple
               chips
+              :rules="rulesAgeGroups"
               clearable
             >
               <template #prepend-item>
@@ -195,7 +196,7 @@
       <v-container width="80%">
         <v-row>
           <v-col cols="12" md="6" align="left">
-            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
+            <AppButton :primary="false" :disabled="isLoading" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col cols="12" md="6" align="right">
             <AppButton :disabled="!formComplete" @click="submit">Submit</AppButton>
@@ -208,7 +209,6 @@
 
 <script>
 import { mapState } from 'pinia';
-import { shallowRef } from 'vue';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
@@ -233,13 +233,15 @@ export default {
     show: {
       type: Boolean,
       default: false,
+      required: true,
     },
     programYearId: {
       type: String,
       default: '',
+      required: true,
     },
   },
-  emits: ['close'],
+  emits: ['close', 'submitted'],
   data() {
     return {
       rules,
@@ -262,6 +264,7 @@ export default {
       reason: undefined,
       requestDescription: undefined,
       uploadedDocuments: [],
+      rulesAgeGroups: [(v) => this.fullFacilityClosure === 'true' || v?.length > 0 || 'This field is required'],
     };
   },
   computed: {
@@ -313,7 +316,8 @@ export default {
     toggleSelectAll() {
       this.selectedAgeGroups = this.allAgeGroupsSelected ? [] : this.ageGroups;
     },
-    submit() {
+    async submit() {
+      this.isLoading = true;
       const payload = {
         applicationId: this.applicationId,
         programYearId: this.programYearId,
@@ -329,8 +333,14 @@ export default {
         changeType: 'NEW_CLOSURE',
         // documents: this.uploadedDocuments,
       };
-      ClosureService.createNewClosureChangeRequest(payload);
-      this.closeDialog();
+      try {
+        await ClosureService.createNewClosureChangeRequest(payload);
+        this.$emit('submitted');
+      } catch (e) {
+        console.log(e);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };

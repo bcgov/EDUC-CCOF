@@ -464,6 +464,12 @@ export const CLOSURE_AFFECTED_AGE_GROUPS_TEXTS = Object.freeze({
   PRE: 'Preschool',
 });
 
+export const CLOSURE_REQUEST_TYPES = Object.freeze({
+  NEW_CLOSURE: 1,
+  DELETE_CLOSURE: 2,
+  UPDATE_CLOSURE: 3,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
