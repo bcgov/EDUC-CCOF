@@ -525,21 +525,19 @@ export default {
     },
   },
   async created() {
+    this.PATHS = PATHS;
     await this.loadData();
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [
       'loadDeclaration',
-      'loadChangeRequestDeclaration',
       'loadChangeRequestSummaryDeclaration',
       'loadSummary',
       'setDeclarationModel',
       'updateDeclaration',
     ]),
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
-    ...mapActions(useNavBarStore, ['setNavBarFacilityComplete', 'setNavBarFundingComplete']),
-    ...mapActions(useOrganizationStore, ['setIsOrganizationComplete']),
-    ...mapActions(useReportChangesStore, ['getChangeRequestList', 'setCRIsLicenseComplete', 'setCRIsEceweComplete']),
+    ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     openFacilitySummary(facilityId) {
       this.selectedFacilityId = facilityId;
       this.toggleFacilityInformationSummaryDialog();
@@ -597,7 +595,6 @@ export default {
       }
     },
     async submit() {
-      this.isApplicationProcessing = true;
       try {
         this.setIsApplicationProcessing(true);
         this.setDeclarationModel(this.model);
@@ -612,7 +609,6 @@ export default {
       } catch (error) {
         this.setFailureAlert('An error occurred while SUBMITTING application. Please try again later.' + error);
       } finally {
-        this.isApplicationProcessing = false;
         this.setIsApplicationProcessing(false);
       }
     },

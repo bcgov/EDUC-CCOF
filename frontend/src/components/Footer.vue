@@ -34,8 +34,4 @@ export default {
 .v-btn.footer:hover:before {
   background: none;
 }
-
-@media print {
-  #app-footer { display: none; }
-}
 </style>

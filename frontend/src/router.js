@@ -348,16 +348,6 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrl(PATHS.SUMMARY_DECLARATION) + '/printable',
-      name: 'Printable Summary',
-      component: SummaryDeclaration,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false,
-      },
-    },
-    {
       path: pcfUrl(PATHS.CCFRI_HOME),
       name: 'ccfri-home',
       component: CcfriEceLandingPage,
@@ -714,16 +704,6 @@ const router = createRouter({
       },
     },
     {
-      path: changeUrl(PATHS.SUMMARY_DECLARATION) + '/printable',
-      name: 'Printable Summary and Declaration New Facility',
-      component: SummaryDeclaration,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: false,
-      },
-    },
-    {
       path: PATHS.MTFI_INFO,
       name: 'Midterm-Fee-Increase-Information',
       component: MtfiInfo,
@@ -779,26 +759,6 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
-      },
-    },
-    {
-      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.CHANGE_NOTIFICATION) + '/printable',
-      name: 'Printable Change Notification Summary',
-      component: SummaryDeclarationChangeRequest,
-      meta: {
-        pageTitle: 'Printable Change Notification Summary',
-        requiresAuth: true,
-        showNavBar: false,
-      },
-    },
-    {
-      path: changeUrl(PATHS.SUMMARY_DECLARATION, ':changeRecGuid', CHANGE_TYPES.MTFI) + '/printable',
-      name: 'Printable MTFI Summary',
-      component: SummaryDeclarationChangeRequest,
-      meta: {
-        pageTitle: 'Printable MTFI Summary',
-        requiresAuth: true,
-        showNavBar: false,
       },
     },
     {

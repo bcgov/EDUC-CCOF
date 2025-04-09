@@ -155,10 +155,4 @@ a {
     display: none;
   }
 }
-
-@media print {
-  #app-header {
-    display: none;
-  }
-}
 </style>

@@ -7,7 +7,6 @@ const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfil
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
-const { printPdf } = require('./application');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
@@ -140,11 +139,6 @@ async function updateChangeRequest(req, res) {
   try {
     log.verbose('update change Request: payload', changeRequest);
     const response = await patchOperationWithObjectId('ccof_change_requests', req.params.changeRequestId, changeRequest);
-
-    if (changeRequest.ccof_externalstatus === CHANGE_REQUEST_EXTERNAL_STATUS_CODES.SUBMITTED) {
-      printPdf(req).then();
-    }
-
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

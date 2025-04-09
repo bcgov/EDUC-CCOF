@@ -151,7 +151,7 @@
       </div>
 
       <!---Declaration Start--->
-      <v-row justify="center" class="pb-12" :class="printableVersion ? 'ma-0' : 'ma-12'">
+      <v-row justify="center" class="pb-12 ma-12">
         <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
           <v-row>
             <v-col class="pa-0">
@@ -304,7 +304,6 @@
         </v-card>
       </v-row>
       <NavButton
-        v-if="!printableVersion"
         :is-submit-displayed="true"
         class="mt-10"
         :is-submit-disabled="!isPageComplete() || isReadOnly || isSomeApplicationUnlocked"
@@ -382,7 +381,6 @@ export default {
       landingPage: PATHS.ROOT.HOME,
       invalidSummaryForms: [],
       payload: {},
-      printableVersion: false,
       expand: [],
       model: {},
     };
@@ -465,11 +463,6 @@ export default {
       this.model.declarationBStatus = undefined;
     }
     this.isProcessing = false;
-  },
-  async mounted() {
-    if (this.$route.path.endsWith('printable')) {
-      this.printableVersion = true;
-    }
   },
   methods: {
     ...mapActions(useSummaryDeclarationStore, [
@@ -557,9 +550,6 @@ export default {
     async isFormComplete(formObj, isComplete) {
       if (!isComplete) {
         this.invalidSummaryForms.push(formObj);
-      }
-      if (this.printableVersion) {
-        this.expandAllPanels();
       }
     },
     hasChangeRequestType(changeType) {
