@@ -369,7 +369,7 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['fundingModelTypeList']),
     showUnionQuestion() {
       return this.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },

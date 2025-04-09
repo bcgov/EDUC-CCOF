@@ -12,9 +12,7 @@
       <template v-if="(!isRenewal && isGroup) || isChangeRequest">
         <v-row no-gutters>
           <v-col cols="12" md="8" class="pr-2">
-            <div class="summary-label">
-              Facility Name (as it appears on the Community Care Assisted Living Act Licence)
-            </div>
+            <p class="summary-label">Facility Name (as it appears on the Community Care Assisted Living Act Licence)</p>
             <v-textarea
               placeholder="Required"
               :model-value="facilityInfo.facilityName"
@@ -30,7 +28,7 @@
             />
           </v-col>
           <v-col cols="12" md="2">
-            <div class="summary-label">Year Facility Began Operation (YYYY)</div>
+            <p class="summary-label">Year Facility Began Operation (YYYY)</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.yearBeganOperation"
@@ -44,25 +42,23 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <div class="summary-label">Facility Street Address</div>
-            <v-text-field
-              placeholder="Required"
-              :model-value="facilityInfo?.facilityAddress"
-              class="summary-value"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
+        <div>
+          <p class="summary-label">Facility Street Address</p>
+          <v-text-field
+            placeholder="Required"
+            :model-value="facilityInfo?.facilityAddress"
+            class="summary-value"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </div>
         <v-row no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">City/Town</div>
+            <p class="summary-label">City/Town</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.city"
@@ -76,7 +72,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Province</div>
+            <p class="summary-label">Province</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.province"
@@ -90,7 +86,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Postal Code</div>
+            <p class="summary-label">Postal Code</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.postalCode"
@@ -106,7 +102,7 @@
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">Facility Contact Name</div>
+            <p class="summary-label">Facility Contact Name</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.contactName"
@@ -120,7 +116,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Position</div>
+            <p class="summary-label">Position</p>
             <v-text-field
               placeholder="Required"
               :model-value="facilityInfo?.position"
@@ -135,96 +131,41 @@
           </v-col>
         </v-row>
         <v-row no-gutters>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Facility Phone Number</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.phone"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  :hide-details="isNullOrBlank(facilityInfo?.phone) || isValidForm"
-                  readonly
-                  :rules="[...rules.required, rules.phone]"
-                />
-              </v-col>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Facility Email Address</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.email"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  :hide-details="isNullOrBlank(facilityInfo?.email) || isValidForm"
-                  readonly
-                  :rules="[...rules.required, ...rules.email]"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Facility Licence Number</div>
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.licenseNumber"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</div>
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="facilityInfo?.licenseEffectiveDate"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-              <v-col cols="12" md="4">
-                <div class="summary-label">Health Authority</div>
-                <v-text-field
-                  :model-value="getHealthAuthorityNameById(facilityInfo?.healthAuthority)"
-                  placeholder="Required"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                  class="summary-value"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <div class="summary-label">
-              Has this facility or you as the applicant ever received funding under the Child Care Operating Funding
-              Program?
-            </div>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Facility Phone Number</p>
             <v-text-field
               placeholder="Required"
-              :model-value="yesNoFacilityLabel"
+              :model-value="facilityInfo?.phone"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(facilityInfo?.phone) || isValidForm"
+              readonly
+              :rules="[...rules.required, rules.phone]"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Facility Email Address</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.email"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(facilityInfo?.email) || isValidForm"
+              readonly
+              :rules="[...rules.required, ...rules.email]"
+            />
+          </v-col>
+        </v-row>
+        <v-row no-gutters>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Facility Licence Number</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.licenseNumber"
               class="summary-value"
               density="compact"
               flat
@@ -234,162 +175,159 @@
               :rules="rules.required"
             />
           </v-col>
-          <v-row
-            v-if="facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY'"
-            no-gutters
-            class="d-flex justify-start pt-2"
-          >
-            <v-col cols="10" class="d-flex justify-start ml-3">
-              <span class="summary-label">Facility Name</span>
-            </v-col>
-            <v-col cols="10" class="d-flex justify-start">
-              <v-text-field
-                placeholder="Required"
-                :model-value="facilityInfo?.fundingFacility"
-                class="summary-value"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-          </v-row>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="facilityInfo?.licenseEffectiveDate"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Health Authority</p>
+            <v-text-field
+              :model-value="getHealthAuthorityNameById(facilityInfo?.healthAuthority)"
+              placeholder="Required"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+              class="summary-value"
+            />
+          </v-col>
         </v-row>
+        <div>
+          <p class="summary-label">
+            Has this facility or you as the applicant ever received funding under the Child Care Operating Funding
+            Program?
+          </p>
+          <v-text-field
+            placeholder="Required"
+            :model-value="facilityHasReceivedFundingLabels"
+            class="summary-value"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+          <template v-if="facilityInfo?.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY">
+            <p class="summary-label">Facility Name</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.fundingFacility"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </template>
+        </div>
       </template>
 
       <!-- FAMILY APPLICATION -->
       <template v-else-if="!isRenewal && !isGroup">
-        <v-row no-gutters>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">
-                  Facility Name (as it appears on the Community Care Assisted Living Act Licence)
-                </span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo.facilityName"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col cols="12" lg="6">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">Postal Code</span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.postalCode"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div>
+          <p class="summary-label">Facility Name (as it appears on the Community Care Assisted Living Act Licence)</p>
+          <v-text-field
+            placeholder="Required"
+            :model-value="facilityInfo.facilityName"
+            class="summary-value"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </div>
+        <div>
+          <p class="summary-label">Postal Code</p>
+          <v-text-field
+            placeholder="Required"
+            :model-value="facilityInfo?.postalCode"
+            class="summary-value"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </div>
         <v-row no-gutters>
           <v-col cols="12" lg="6">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">Facility Licence Number</span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.licenseNumber"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
+            <p class="summary-label">Facility Licence Number</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.licenseNumber"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
           </v-col>
           <v-col cols="12" lg="6">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  class="summary-value"
-                  :model-value="facilityInfo?.licenseEffectiveDate"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
+            <p class="summary-label">Effective Date of Current Licence (YYYY-MM-DD)</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="facilityInfo?.licenseEffectiveDate"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
           </v-col>
         </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <v-row no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">
-                  Has this facility or you as the applicant ever received funding under the Child Care Operating Funding
-                  Program?
-                </span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.hasReceivedFunding?.toUpperCase()"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-            <v-row v-if="facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YES'" no-gutters>
-              <v-col cols="12">
-                <span class="summary-label">Facility Name</span>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  placeholder="Required"
-                  :model-value="facilityInfo?.fundingFacility"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  readonly
-                  :rules="rules.required"
-                />
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
+        <div>
+          <p class="summary-label">
+            Has this facility or you as the applicant ever received funding under the Child Care Operating Funding
+            Program?
+          </p>
+          <v-text-field
+            placeholder="Required"
+            :model-value="facilityHasReceivedFundingLabels"
+            class="summary-value"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+          <template v-if="facilityInfo?.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES">
+            <p class="summary-label">Facility Name</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="facilityInfo?.fundingFacility"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </template>
+        </div>
       </template>
       <!-- ccof base funding CAN be undefined if new app, so send them to page before if that is the case.  -->
       <router-link v-if="!isValidForm" :to="isGroup ? routingPathGroup : routingPathFamily">
@@ -438,11 +376,6 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getHealthAuthorityNameById']),
-    yesNoFacilityLabel() {
-      return this.facilityInfo?.hasReceivedFunding?.toUpperCase() === 'YESFACILITY'
-        ? 'YES AS FACILITY'
-        : this.facilityInfo?.hasReceivedFunding?.toUpperCase();
-    },
     routingPathGroup() {
       return this.isChangeRequest
         ? changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRecGuid, this.facilityId)

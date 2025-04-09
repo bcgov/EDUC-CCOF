@@ -9,7 +9,12 @@ import { useAuthStore } from '@/store/auth.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { ApiRoutes, CCFRI_FEE_CORRECT_TYPES, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import {
+  ApiRoutes,
+  CCFRI_FEE_CORRECT_TYPES,
+  CHANGE_REQUEST_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
@@ -41,10 +46,16 @@ function getProgramYear(selectedGuid, programYearList) {
 function mapFacility(facility) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
+  const navBarStore = useNavBarStore();
+
   facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
   facility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
     (document) => document.facilityId === facility.facilityId,
   );
+  facility.isProgramYearLanguageHistorical = appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+  const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
+  facility.hasRfi = facilityInNavBar?.hasRfi;
+  facility.hasNmf = facilityInNavBar?.hasNmf;
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {

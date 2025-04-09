@@ -3,11 +3,13 @@ import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import {
+  FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   ORGANIZATION_TYPES,
@@ -21,6 +23,7 @@ export default {
   components: { NavButton, SummaryExpansionPanelTitle },
   mixins: [alertMixin],
   computed: {
+    ...mapState(useAppStore, ['getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationProcessing',
@@ -53,10 +56,23 @@ export default {
           return '';
       }
     },
+    facilityHasReceivedFundingLabels() {
+      switch (this.facilityInfo?.hasReceivedFunding) {
+        case FACILITY_HAS_RECEIVE_FUNDING_VALUES.NO:
+          return 'No';
+        case FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES:
+          return 'Yes';
+        case FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY:
+          return 'Yes, as facility';
+        default:
+          return null;
+      }
+    },
   },
   created() {
     this.rules = rules;
     this.formatTime24to12 = formatTime24to12;
+    this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
     this.OPT_STATUSES = OPT_STATUSES;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
     this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;

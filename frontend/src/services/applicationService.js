@@ -7,6 +7,7 @@ import {
   DOCUMENT_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_SECTOR_TYPES,
+  FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -47,16 +48,19 @@ export default {
   },
 
   isFacilityComplete(facility) {
+    console.log(facility);
     if (isEmpty(facility)) return false;
+    // console.log(this.isFacilityInformationComplete(facility.facilityInfo));
+    // console.log(this.isCCOFCompleteGroupV2(facility.funding));
     return (
       this.isFacilityInformationComplete(facility.facilityInfo) &&
       this.isCCOFCompleteGroupV2(facility.funding) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri) &&
-      this.isECEWEFacilityComplete(facility.ecewe)
-      //   (!this.facility?.hasRfi || this.facility?.isRFIComplete)
-      //   (!this.facility?.hasNmf || this.facility?.isNMFComplete)
+      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.isProgramYearLanguageHistorical)) &&
+      (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
       //   (this.isAFSComplete)
+      this.isECEWEFacilityComplete(facility.ecewe)
     );
   },
 
@@ -79,7 +83,7 @@ export default {
       'hasReceivedFunding',
       'healthAuthority',
     ];
-    if (facilityInfo.hasReceivedFunding) {
+    if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
       requiredFields.push('fundingFacility');
     }
     return !hasEmptyFields(facilityInfo, requiredFields);
@@ -211,6 +215,104 @@ export default {
     });
   },
 
+  // RFI VALIDATIONS
+  isRFIComplete(rfi, isProgramYearLanguageHistorical) {
+    return (
+      !isEmpty(rfi) &&
+      this.isExceptionalCircumstancesComplete(rfi) &&
+      this.isDirectCareStaffWagesIncreasesComplete(rfi, isProgramYearLanguageHistorical) &&
+      this.isPSEIncreaseInHoursOfOperationComplete(rfi) &&
+      this.isPSEIncreasingConnectionToIndigenousComplete(rfi) &&
+      this.isAffordableCCForUnderservedPopulationsComplete(rfi)
+    );
+  },
+
+  isExceptionalCircumstancesComplete(rfi) {
+    if (!rfi.exceptionalCircumstances) return rfi.exceptionalCircumstances === 0;
+    if (!rfi.circumstanceOccurWithin6Month) return rfi.circumstanceOccurWithin6Month === 0;
+    const requiredFields = ['expenseInformationNote'];
+    const isExpenseInformationComplete = rfi.expenseList?.every((expense) => {
+      const requiredFields = ['description', 'date', 'frequency', 'expense'];
+      return !hasEmptyFields(expense, requiredFields);
+    });
+    const isOtherSourcesOfMinistryFunding = rfi.fundingList?.every((fund) => {
+      const requiredFields = ['fundingProgram', 'date', 'status', 'amount', 'expenses'];
+      return !hasEmptyFields(fund, requiredFields);
+    });
+    return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete && isOtherSourcesOfMinistryFunding;
+  },
+
+  isDirectCareStaffWagesIncreasesComplete(rfi, isProgramYearLanguageHistorical) {
+    if (!rfi.feeIncreaseDueToWage) return rfi.feeIncreaseDueToWage === 0;
+    const requiredFields = [
+      'isBargainingAgreement',
+      'lossOfCareStaff',
+      'healthAndSafetyConcerns',
+      'textbox1',
+      'textbox2',
+      'textbox3',
+      'textbox4',
+      'textbox5',
+      'textbox6',
+    ];
+    if (isProgramYearLanguageHistorical) {
+      requiredFields.push('increaseInWriting');
+    }
+    const isWagesIncreasesTableComplete = rfi.wageList?.every((wage) => {
+      const requiredFields = [
+        'staffNumber',
+        'staffRole',
+        'wageBeforeIncrease',
+        'wageAfterIncrease',
+        'averageHours',
+        'wageDate',
+      ];
+      return !hasEmptyFields(wage, requiredFields);
+    });
+    return !hasEmptyFields(rfi, requiredFields) && isWagesIncreasesTableComplete;
+  },
+
+  isPSEIncreaseInHoursOfOperationComplete(rfi) {
+    if (!rfi.feeIncreaseExtendedHours) return rfi.feeIncreaseExtendedHours === 0;
+    const requiredFields = ['serviceExpansionDetailsNote', 'notes2'];
+    const isServiceExpansionDetailsComplete = rfi.expansionList?.every((expansion) => {
+      const requiredFields = ['timefrom', 'timeto', 'newtimefrom', 'newtimeto', 'date', 'expense', 'frequency'];
+      return !hasEmptyFields(expansion, requiredFields);
+    });
+    return !hasEmptyFields(rfi, requiredFields) && isServiceExpansionDetailsComplete;
+  },
+
+  isPSEIncreasingConnectionToIndigenousComplete(rfi) {
+    if (!rfi.IndigenousConnection) return rfi.IndigenousConnection === 0;
+    const requiredFields = ['iCEIDetailsNote'];
+    const isExpenseInformationComplete = rfi.indigenousExpenseList?.every((expansion) => {
+      const requiredFields = ['description', 'date', 'frequency', 'expense'];
+      return !hasEmptyFields(expansion, requiredFields);
+    });
+    return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete;
+  },
+
+  isAffordableCCForUnderservedPopulationsComplete(rfi) {
+    if (!rfi.underservedPop) return rfi.underservedPop === 0;
+    const requiredFields = ['underservedChildCareTypes', 'orgsustainability', 'outOfPocketFees'];
+    return !hasEmptyFields(rfi, requiredFields);
+  },
+
+  // NMF VALIDATIONS
+  isNMFComplete(nmf) {
+    const requiredFields = ['supportNeeds', 'lowIncomeFamilies', 'remoteCommunities'];
+    if (nmf?.supportNeeds) {
+      requiredFields.push('supportNeedsComments');
+    }
+    if (nmf?.lowIncomeFamilies) {
+      requiredFields.push('lowIncomeFamiliesComments');
+    }
+    if (nmf?.remoteCommunities) {
+      requiredFields.push('remoteCommunitiesComments');
+    }
+    return !hasEmptyFields(nmf, requiredFields);
+  },
+
   // ECE-WE VALIDATIONS
   isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel) {
     if (isEmpty(ecewe)) return false;
@@ -265,6 +367,7 @@ export default {
   isECEWEFacilityComplete(ecewe) {
     return ecewe?.optInOrOut != null;
   },
+
   /*
    **** End of Summary Declaration validations
    */

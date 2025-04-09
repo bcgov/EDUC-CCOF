@@ -70,7 +70,6 @@
         <RFISummary
           :rfi-app="facility?.rfiApp"
           :ccfri-id="facility?.ccfri?.ccfriId"
-          :facility-id="facility.facilityId"
           :change-rec-guid="facility?.changeRequestId"
           :program-year-id="programYearId"
         />

@@ -191,6 +191,12 @@ export const CCFRI_FEE_CORRECT_TYPES = {
   NO: 100000001,
 };
 
+export const FACILITY_HAS_RECEIVE_FUNDING_VALUES = {
+  YES: 100000000,
+  NO: 100000001,
+  YES_FACILITY: 100000002,
+};
+
 export const ORGANIZATION_PROVIDER_TYPES_IDS = {
   GROUP: 100000000,
   FAMILY: 100000001,
@@ -210,6 +216,11 @@ export const ECEWE_SECTOR_TYPES = {
 
 //2024 and previous ONLY - question to be removed in future years
 export const ECEWE_BELONGS_TO_UNION = {
+  YES: 1,
+  NO: 0,
+};
+
+export const YES_NO_VALUES = {
   YES: 1,
   NO: 0,
 };

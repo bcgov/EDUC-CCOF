@@ -11,7 +11,7 @@
       <v-expansion-panel-text eager>
         <v-row no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">Type of Organization</div>
+            <p class="summary-label">Type of Organization</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -25,7 +25,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Provider Type</div>
+            <p class="summary-label">Provider Type</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -41,9 +41,9 @@
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" md="8" class="pr-2">
-            <div class="summary-label">
+            <p class="summary-label">
               Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
-            </div>
+            </p>
             <v-text-field
               placeholder="Required"
               :model-value="summaryModel?.organization?.legalName"
@@ -64,7 +64,7 @@
             cols="12"
             md="4"
           >
-            <div class="summary-label">Incorporation Number</div>
+            <p class="summary-label">Incorporation Number</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -78,25 +78,23 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <div class="summary-label">Organization Mailing Address</div>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.address1"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
+        <div>
+          <p class="summary-label">Organization Mailing Address</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.address1"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </div>
         <v-row no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">City/Town</div>
+            <p class="summary-label">City/Town</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -110,7 +108,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Province</div>
+            <p class="summary-label">Province</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -124,7 +122,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Postal Code</div>
+            <p class="summary-label">Postal Code</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -138,25 +136,23 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
-          <v-col cols="12">
-            <div class="summary-label">Organization Street Address</div>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.address2"
-              :rules="rules.required"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-            />
-          </v-col>
-        </v-row>
+        <div>
+          <p class="summary-label">Organization Street Address</p>
+          <v-text-field
+            placeholder="Required"
+            class="summary-value"
+            :model-value="summaryModel?.organization?.address2"
+            :rules="rules.required"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+          />
+        </div>
         <v-row no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">City/Town</div>
+            <p class="summary-label">City/Town</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -170,7 +166,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Province</div>
+            <p class="summary-label">Province</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -184,7 +180,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Postal Code</div>
+            <p class="summary-label">Postal Code</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -200,7 +196,7 @@
         </v-row>
         <v-row v-if="isGroup && !isSoleProprietorshipPartnership" no-gutters>
           <v-col cols="12" md="4">
-            <div class="summary-label">Organization Contact Name</div>
+            <p class="summary-label">Organization Contact Name</p>
             <v-text-field
               placeholder="Required"
               :model-value="summaryModel?.organization?.contactName"
@@ -213,7 +209,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Position</div>
+            <p class="summary-label">Position</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -229,7 +225,7 @@
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" md="4" class="pr-2">
-            <div class="summary-label">Phone Number of the Organization's Authorized Signing Authority</div>
+            <p class="summary-label">Phone Number of the Organization's Authorized Signing Authority</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -243,7 +239,7 @@
             />
           </v-col>
           <v-col cols="12" md="4" class="pr-2">
-            <div class="summary-label">Email Address of the Organization's Authorized Signing Authority</div>
+            <p class="summary-label">Email Address of the Organization's Authorized Signing Authority</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -257,7 +253,7 @@
             />
           </v-col>
           <v-col cols="12" md="4">
-            <div class="summary-label">Business BCeID</div>
+            <p class="summary-label">Business BCeID</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
