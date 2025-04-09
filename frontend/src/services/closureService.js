@@ -20,7 +20,7 @@ export default {
   async createNewClosureChangeRequest(payload) {
     console.log(payload);
     try {
-      // if (isEmpty(payload)) return;
+      if (isEmpty(payload)) return;
       await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_CLOSURE, payload);
     } catch (error) {
       console.log(`Failed to create organization closure request - ${error}`);
