@@ -338,6 +338,7 @@ export default {
         this.$emit('submitted');
       } catch (e) {
         console.log(e);
+        this.setFailureAlert('Failed to submit new closure request');
       } finally {
         this.isLoading = false;
       }
