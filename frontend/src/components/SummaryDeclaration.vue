@@ -560,7 +560,6 @@ export default {
           declarationPromise,
         ]);
 
-        // TODO (vietle-cgi) - review these codes to see where to put them....
         if (!isEmpty(this.declarationModel)) {
           this.model = cloneDeep(this.declarationModel);
         }

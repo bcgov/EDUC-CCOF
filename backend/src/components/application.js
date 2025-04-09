@@ -160,7 +160,6 @@ async function getApprovableFeeSchedules(req, res) {
 
 async function upsertParentFees(req, res) {
   const body = req.body;
-  let hasError = false;
 
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
@@ -170,8 +169,7 @@ async function upsertParentFees(req, res) {
       try {
         await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
       } catch (e) {
-        hasError = true;
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
       }
     } else if (feeGroup?.feeFrequency) {
       const childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
@@ -201,7 +199,7 @@ async function upsertParentFees(req, res) {
       try {
         await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       } catch (e) {
-        hasError = true;
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
       }
     }
   }); //end forEach
@@ -219,22 +217,13 @@ async function upsertParentFees(req, res) {
 
   try {
     await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-  } catch (e) {
-    hasError = true;
-  }
 
-  //dates array will always exist - even if blank.
-  //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
-  try {
+    //dates array will always exist - even if blank.
+    //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
     await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
-  } catch (e) {
-    hasError = true;
-  }
-
-  if (hasError) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-  } else {
     return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
