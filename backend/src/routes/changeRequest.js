@@ -75,7 +75,8 @@ const newClosureChangeRequestSchema = {
   },
   facilityId: {
     in: ['body'],
-    exists: { errorMessage: '[facilityId] is required' },
+    exists: true,
+    errorMessage: '[facilityId] is required',
   },
   fullClosure: {
     in: ['body'],
@@ -85,24 +86,20 @@ const newClosureChangeRequestSchema = {
   },
   paidClosure: {
     in: ['body'],
-    isNumeric: {
-      errorMessage: '[paidClosure] must be a number',
-    },
-    equals: {
-      options: '1',
-      errorMessage: '[paidClosure] must be 1',
-    },
+    isNumeric: true,
+    exists: true,
     toInt: true,
+    errorMessage: '[paidClosure] must be 0 or 1',
   },
   programYearId: {
     in: ['body'],
-    exists: { errorMessage: '[programYearId] is required' },
+    exists: true,
+    errorMessage: '[programYearId] is required',
   },
   startDate: {
     in: ['body'],
-    isISO8601: {
-      errorMessage: '[startDate] must be a valid ISO 8601 date',
-    },
+    isISO8601: true,
+    errorMessage: '[startDate] must be a valid ISO 8601 date',
     isDate: true,
   },
 };
