@@ -23,7 +23,6 @@
           <h3 class="text-primary mt-6">Select a Facility:</h3>
         </v-row>
         <v-row class="text-primary">
-          <!-- JonahCurlCGI todo: fix selector items to match format on wireframe -->
           <v-select
             v-model="selectedFacility"
             required
@@ -181,6 +180,7 @@
             <v-textarea v-model="requestDescription" variant="outlined" label="Detailed description of request" />
           </v-row>
           <v-row>
+            <!-- JonahCurlCGI todo: add document uploading -->
             <AppDocumentUpload
               :loading="isLoading"
               :uploaded-documents="uploadedDocuments"
