@@ -48,6 +48,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
+  CHANGE_REQUEST_NEW_CLOSURE: baseRoot + '/changeRequest/newClosure',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
@@ -357,6 +358,7 @@ export const DOCUMENT_TYPES = Object.freeze({
   APPLICATION_SUPPORTING: 'SUPPORTING',
   CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
   CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
+  CLOSURE_REQUEST: 'Closure Request Documents',
 });
 
 export const MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
@@ -443,6 +445,30 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCOF: 'CCOF',
   INELIGIBLE: 'Ineligible',
   PENDING: 'Pending',
+});
+
+export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
+  AGE_0_18: 100000000,
+  AGE_18_36: 100000001,
+  AGE_3Y_K: 100000002,
+  OOSC_K: 100000003,
+  OOSC_G: 100000004,
+  PRE: 100000005,
+});
+
+export const CLOSURE_AFFECTED_AGE_GROUPS_TEXTS = Object.freeze({
+  AGE_0_18: '0 to 18 months',
+  AGE_18_36: '18 to 36 months',
+  AGE_3Y_K: '3 Years to Kindergarten',
+  OOSC_K: 'Out of School Care - Kindergarten',
+  OOSC_G: 'Out of School Care - Grade 1+',
+  PRE: 'Preschool',
+});
+
+export const CLOSURE_REQUEST_TYPES = Object.freeze({
+  NEW_CLOSURE: 1,
+  DELETE_CLOSURE: 2,
+  UPDATE_CLOSURE: 3,
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({

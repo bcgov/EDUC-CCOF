@@ -2,8 +2,8 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings, ChangeActionRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
+const { ChangeRequestMappings, ChangeActionRequestMappings, ChangeActionClosureMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
+const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, ClosureMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -14,6 +14,7 @@ const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
+const { create } = require('lodash');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -152,7 +153,7 @@ async function updateChangeRequest(req, res) {
 }
 
 // create Change Request
-async function createChangeRequest(req, res) {
+async function createRawChangeRequest(req, res) {
   try {
     let changeRequest = req.body;
     let changeType = changeRequest.changeType;
@@ -163,6 +164,12 @@ async function createChangeRequest(req, res) {
       changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
     } else if (changeType === 'PDF_CHANGE') {
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
+    } else if (changeType === 'NEW_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+    } else if (changeType === 'EDIT_EXISTING_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+    } else if (changeType === 'REMOVE_A_CLOSURE') {
+      changeType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     }
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
@@ -172,10 +179,21 @@ async function createChangeRequest(req, res) {
     if (payload && payload.ccof_change_action_change_request?.length > 0) {
       changeActionId = payload.ccof_change_action_change_request[0].ccof_change_actionid;
     }
-    return res.status(HttpStatus.CREATED).json({
+    return {
       changeRequestId: changeRequestId,
       changeActionId: changeActionId,
-    });
+    };
+  } catch (e) {
+    log.error('error', e);
+    throw e;
+  }
+}
+
+// create Change Request
+async function createChangeRequest(req, res) {
+  try {
+    const rawChangeRequest = await createRawChangeRequest(req, res);
+    return res.status(HttpStatus.CREATED).json(rawChangeRequest);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -237,6 +255,29 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
   } catch (e) {
     log.error('error', e);
     return e.data ? e.data : e?.status;
+  }
+}
+
+function mapChangeActionClosureObjectForBack(changeActionClosure) {
+  const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
+  changeActionClosureMapp.ccof_closure_type = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+  changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
+  changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
+  changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
+
+  return changeActionClosureMapp;
+}
+
+async function createNewClosureChangeRequest(req, res) {
+  try {
+    const createChangeRequestReponse = await createRawChangeRequest(req, res);
+    const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
+    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
+    const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
+    return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
@@ -362,6 +403,7 @@ module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
+  createNewClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
