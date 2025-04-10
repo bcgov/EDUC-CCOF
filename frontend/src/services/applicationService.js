@@ -273,10 +273,12 @@ export default {
       const requiredFields = ['description', 'date', 'frequency', 'expense'];
       return !hasEmptyFields(expense, requiredFields);
     });
-    const isOtherSourcesOfMinistryFunding = rfi.fundingList?.every((fund) => {
-      const requiredFields = ['fundingProgram', 'date', 'status', 'amount', 'expenses'];
-      return !hasEmptyFields(fund, requiredFields);
-    });
+    const isOtherSourcesOfMinistryFunding =
+      !isEmpty(rfi.fundingList) &&
+      rfi.fundingList?.every((fund) => {
+        const requiredFields = ['fundingProgram', 'date', 'status', 'amount', 'expenses'];
+        return !hasEmptyFields(fund, requiredFields);
+      });
     return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete && isOtherSourcesOfMinistryFunding;
   },
 
@@ -296,37 +298,43 @@ export default {
     if (isProgramYearLanguageHistorical) {
       requiredFields.push('increaseInWriting');
     }
-    const isWagesIncreasesTableComplete = rfi.wageList?.every((wage) => {
-      const requiredFields = [
-        'staffNumber',
-        'staffRole',
-        'wageBeforeIncrease',
-        'wageAfterIncrease',
-        'averageHours',
-        'wageDate',
-      ];
-      return !hasEmptyFields(wage, requiredFields);
-    });
+    const isWagesIncreasesTableComplete =
+      !isEmpty(rfi.wageList) &&
+      rfi.wageList?.every((wage) => {
+        const requiredFields = [
+          'staffNumber',
+          'staffRole',
+          'wageBeforeIncrease',
+          'wageAfterIncrease',
+          'averageHours',
+          'wageDate',
+        ];
+        return !hasEmptyFields(wage, requiredFields);
+      });
     return !hasEmptyFields(rfi, requiredFields) && isWagesIncreasesTableComplete;
   },
 
   isPSEIncreaseInHoursOfOperationComplete(rfi) {
     if (!rfi.feeIncreaseExtendedHours) return rfi.feeIncreaseExtendedHours === 0;
     const requiredFields = ['serviceExpansionDetailsNote', 'notes2'];
-    const isServiceExpansionDetailsComplete = rfi.expansionList?.every((expansion) => {
-      const requiredFields = ['timefrom', 'timeto', 'newtimefrom', 'newtimeto', 'date', 'expense', 'frequency'];
-      return !hasEmptyFields(expansion, requiredFields);
-    });
+    const isServiceExpansionDetailsComplete =
+      !isEmpty(rfi.expansionList) &&
+      rfi.expansionList?.every((expansion) => {
+        const requiredFields = ['timefrom', 'timeto', 'newtimefrom', 'newtimeto', 'date', 'expense', 'frequency'];
+        return !hasEmptyFields(expansion, requiredFields);
+      });
     return !hasEmptyFields(rfi, requiredFields) && isServiceExpansionDetailsComplete;
   },
 
   isPSEIncreasingConnectionToIndigenousComplete(rfi) {
     if (!rfi.IndigenousConnection) return rfi.IndigenousConnection === 0;
     const requiredFields = ['iCEIDetailsNote'];
-    const isExpenseInformationComplete = rfi.indigenousExpenseList?.every((expansion) => {
-      const requiredFields = ['description', 'date', 'frequency', 'expense'];
-      return !hasEmptyFields(expansion, requiredFields);
-    });
+    const isExpenseInformationComplete =
+      !isEmpty(rfi.indigenousExpenseList) &&
+      rfi.indigenousExpenseList?.every((expansion) => {
+        const requiredFields = ['description', 'date', 'frequency', 'expense'];
+        return !hasEmptyFields(expansion, requiredFields);
+      });
     return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete;
   },
 

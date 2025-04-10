@@ -42,7 +42,16 @@
           class="elevation-2 mb-6"
         >
           <template #no-data>
-            <span class="text-error">Required</span>
+            <v-text-field
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+              class="center-placeholder"
+            />
           </template>
           <template #[`item.description`]="{ item }">
             <v-text-field
@@ -133,7 +142,16 @@
           class="elevation-2 mb-6"
         >
           <template #no-data>
-            <span class="text-error">Required</span>
+            <v-text-field
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+              class="center-placeholder"
+            />
           </template>
           <template #[`item.fundingProgram`]="{ item }">
             <v-text-field
@@ -288,7 +306,16 @@
             class="elevation-2 mb-6"
           >
             <template #no-data>
-              <span class="text-error">Required</span>
+              <v-text-field
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+                class="center-placeholder"
+              />
             </template>
             <template #[`item.staffNumber`]="{ item }">
               <v-text-field
@@ -421,7 +448,16 @@
           class="elevation-2 mb-6"
         >
           <template #no-data>
-            <span class="text-error">Required</span>
+            <v-text-field
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+              class="center-placeholder"
+            />
           </template>
           <template #[`item.timefrom`]="{ item }">
             <v-text-field
@@ -540,7 +576,16 @@
             class="elevation-2 mb-6"
           >
             <template #no-data>
-              <span class="text-error">Required</span>
+              <v-text-field
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+                class="center-placeholder"
+              />
             </template>
             <template #[`item.description`]="{ item }">
               <v-text-field
@@ -764,5 +809,9 @@ export default {
 
 :deep(.v-field__input) {
   padding-left: 0px;
+}
+
+:deep(.center-placeholder .v-field__input) {
+  text-align: center;
 }
 </style>
