@@ -51,12 +51,12 @@
             </template>
             <template #selection="{ item }">
               <!-- JonahCurlCGI todo: fix formatting -->
-              <v-row class="w-100 text-primary py-1" no-gutters>
-                <v-col cols="12" md="8" align="start">
+              <v-row>
+                <v-col cols="12" md="8" align="start" class="ml-0">
                   <h4>{{ item.raw.facilityName }}</h4>
                   <p>License #: {{ item.raw.licenseNumber }}</p>
                 </v-col>
-                <v-col cols="12" md="4" align="start">
+                <v-col cols="12" md="4" align="end">
                   <p>Facility ID:</p>
                   <p>{{ item.raw.facilityAccountNumber }}</p>
                 </v-col>
@@ -335,6 +335,7 @@ export default {
       };
       try {
         await ClosureService.createNewClosureChangeRequest(payload);
+        this.clearInputs();
         this.$emit('submitted');
       } catch (e) {
         console.log(e);
@@ -342,6 +343,17 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    clearInputs() {
+      this.selectedFacility = undefined;
+      this.formattedStartDate = undefined;
+      this.formattedEndDate = undefined;
+      this.parentsWillPayForClosure = undefined;
+      this.fullFacilityClosure = undefined;
+      this.selectedAgeGroups = [];
+      this.reason = undefined;
+      this.requestDescription = undefined;
+      this.uploadedDocuments = [];
     },
   },
 };
