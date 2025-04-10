@@ -1,159 +1,138 @@
 <template>
   <v-container fluid>
-    <div class="text-center">
-      <p class="text-h5">Child Care Operating Funding Program{{ pageTitle }}</p>
-      <h2>Summary and Declaration</h2>
-      <p class="text-primary text-h5">
-        {{ userInfo.organizationName }}
-      </p>
-    </div>
-
-    <v-card v-if="!isSummaryComplete && !isProcessing" class="my-8 mx-4 mx-lg-12" elevation="4">
-      <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
-        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-        Incomplete Form
-      </v-card-title>
-      <div class="pa-4">
-        <p>You will not be able to submit your application until it is complete.</p>
-        <p>Incomplete sections are marked with a red exclamation point.</p>
+    <div class="mx-4 mx-lg-12 mb-12">
+      <div class="text-center mb-8">
+        <p class="text-h5">Child Care Operating Funding Program{{ pageTitle }}</p>
+        <h2>Summary and Declaration</h2>
+        <p class="text-primary text-h5">
+          {{ userInfo.organizationName }}
+        </p>
       </div>
-    </v-card>
 
-    <v-card v-if="isSomeApplicationUnlocked" class="my-8 mx-4 mx-lg-12" elevation="4">
-      <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
-        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-        You have an unlocked PCF application still in progress.
-      </v-card-title>
-      <p class="pa-4">You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
-    </v-card>
+      <v-card v-if="!isSummaryComplete && !isProcessing" class="my-8" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          Incomplete Form
+        </v-card-title>
+        <div class="pa-4">
+          <p>You will not be able to submit your application until it is complete.</p>
+          <p>Incomplete sections are marked with a red exclamation point.</p>
+        </div>
+      </v-card>
 
-    <div>
-      <v-card class="py-0 px-3 mx-4 mx-lg-12 mt-4 rounded-lg" elevation="4">
-        <v-row class="d-flex justify-start">
-          <v-col class="pa-0">
-            <v-card-title class="rounded-t-lg pt-3 pb-3 card-title"> Summary </v-card-title>
-          </v-col>
-        </v-row>
-        <v-row v-if="isProcessing">
-          <v-skeleton-loader
-            :loading="isProcessing"
-            type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-          />
-        </v-row>
-        <div v-else>
+      <v-card v-if="isSomeApplicationUnlocked" class="my-8" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 px-8 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          You have an unlocked PCF application still in progress.
+        </v-card-title>
+        <p class="pa-4">
+          You will be unable to submit a change request until the Program Confirmation Form is updated.
+        </p>
+      </v-card>
+
+      <v-card class="rounded-lg" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 card-title"> Summary </v-card-title>
+        <v-skeleton-loader
+          v-if="isProcessing"
+          :loading="isProcessing"
+          type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+        />
+        <div v-else class="px-4 pb-4">
           <v-expansion-panels focusable multiple variant="accordion" class="mt-6 rounded">
-            <v-row no-gutters class="d-flex flex-column mb-2">
-              <!-- Change Notification Form Summary -->
-              <v-expansion-panel
-                v-if="hasChangeRequestType('PDF_CHANGE')"
-                variant="accordion"
-                class="mb-8"
-                value="change-notification-form-summary"
-              >
-                <ChangeNotificationFormSummary
-                  :is-processing="isProcessing"
-                  :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
-                />
-              </v-expansion-panel>
+            <!-- Change Notification Form Summary -->
+            <v-expansion-panel
+              v-if="hasChangeRequestType('PDF_CHANGE')"
+              variant="accordion"
+              class="mb-8"
+              value="change-notification-form-summary"
+            >
+              <ChangeNotificationFormSummary
+                :is-processing="isProcessing"
+                :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
+              />
+            </v-expansion-panel>
 
-              <!-- MTFI Summary -->
-              <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
-                <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
-                  <v-expansion-panel
-                    v-if="facility"
-                    :key="`${facility.facilityId}-facility-information`"
-                    value="facility-name"
-                    variant="accordion"
-                  >
-                    <v-row no-gutters class="d-flex pl-6 py-5">
-                      <v-col class="col-6 col-lg-4">
-                        <p class="summary-label">Facility Name</p>
-                        <p label="--" class="summary-value">
-                          {{ facility.facilityName ? facility.facilityName : '--' }}
-                        </p>
-                      </v-col>
-                      <v-col class="col-6 col-lg-3">
-                        <p class="summary-label">Facility ID</p>
-                        <p label="--" class="summary-value">
-                          {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
-                        </p>
-                      </v-col>
-                      <v-col class="col-6 col-lg-3">
-                        <p class="summary-label">Licence Number</p>
-                        <p label="--" class="summary-value">
-                          {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
-                        </p>
-                      </v-col>
-                    </v-row>
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    :key="`${facility.facilityId}-mtfi-summary`"
-                    :value="`${facility.facilityId}-mtfi-summary`"
-                    variant="accordion"
-                  >
-                    <MTFISummary
-                      :old-ccfri="facility?.oldCcfri"
-                      :new-ccfri="facility?.newCcfri"
-                      :facility-id="facility.facilityId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.hasRfi"
-                    :key="`${facility.facilityId}-ccfri-summary`"
-                    :value="`${facility.facilityId}-ccfri-summary`"
-                    variant="accordion"
-                  >
-                    <RFISummary
-                      :rfi-app="facility?.rfiApp"
-                      :ccfri-id="facility?.ccfriApplicationId"
-                      :facility-id="facility.facilityId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                  <v-expansion-panel
-                    v-if="facility?.enableAfs"
-                    :key="`${facility.facilityId}-afs-summary`"
-                    :value="`${facility.facilityId}-afs-summary`"
-                    variant="accordion"
-                  >
-                    <AFSSummary
-                      :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
-                      :facility-id="facility?.facilityId"
-                      :program-year-id="summaryModel?.application?.programYearId"
-                      @is-summary-valid="isFormComplete"
-                    />
-                  </v-expansion-panel>
-                </div>
-              </v-row>
+            <!-- MTFI Summary -->
+            <v-row v-if="hasChangeRequestType('MTFI')" no-gutters class="d-flex flex-column mb-2 mt-10">
+              <div v-for="facility in facilities" :key="facility?.facilityId" class="mt-0 py-0">
+                <v-expansion-panel
+                  v-if="facility"
+                  :key="`${facility.facilityId}-facility-information`"
+                  value="facility-name"
+                  variant="accordion"
+                >
+                  <v-row no-gutters class="d-flex pl-6 py-5 rounded-t-lg facility-info">
+                    <v-col class="col-6 col-lg-4">
+                      <p class="summary-label">Facility Name</p>
+                      <p label="--" class="summary-value">
+                        {{ facility.facilityName ? facility.facilityName : '--' }}
+                      </p>
+                    </v-col>
+                    <v-col class="col-6 col-lg-3">
+                      <p class="summary-label">Facility ID</p>
+                      <p class="summary-value">
+                        {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                      </p>
+                    </v-col>
+                    <v-col class="col-6 col-lg-3">
+                      <p class="summary-label">Licence Number</p>
+                      <p class="summary-value">
+                        {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                      </p>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel>
+                <v-expansion-panel
+                  :key="`${facility.facilityId}-mtfi-summary`"
+                  :value="`${facility.facilityId}-mtfi-summary`"
+                  variant="accordion"
+                >
+                  <MTFISummary :old-ccfri="facility?.oldCcfri" :new-ccfri="facility?.newCcfri" />
+                </v-expansion-panel>
+                <v-expansion-panel
+                  v-if="facility?.hasRfi"
+                  :key="`${facility.facilityId}-ccfri-summary`"
+                  :value="`${facility.facilityId}-ccfri-summary`"
+                  variant="accordion"
+                >
+                  <RFISummary
+                    :rfi-app="facility?.rfiApp"
+                    :ccfri-id="facility?.ccfriApplicationId"
+                    :facility-id="facility.facilityId"
+                  />
+                </v-expansion-panel>
+                <v-expansion-panel
+                  v-if="facility?.enableAfs"
+                  :key="`${facility.facilityId}-afs-summary`"
+                  :value="`${facility.facilityId}-afs-summary`"
+                  variant="accordion"
+                >
+                  <AFSSummary
+                    :ccfri-id="facility?.newCcfri?.ccfriApplicationId"
+                    :facility-id="facility?.facilityId"
+                    :program-year-id="summaryModel?.application?.programYearId"
+                  />
+                </v-expansion-panel>
+              </div>
             </v-row>
           </v-expansion-panels>
         </div>
       </v-card>
-    </div>
 
-    <!---Declaration Start--->
-    <v-row justify="center" class="pb-12 mx-4 mx-lg-12">
-      <v-card class="py-0 px-3 mx-0 mt-10 rounded-lg col-11" elevation="4">
-        <v-row>
-          <v-col class="pa-0">
-            <v-card-title class="rounded-t-lg pt-3 pb-3 card-title"> Declaration </v-card-title>
-          </v-col>
-        </v-row>
-        <v-row v-if="isProcessing">
-          <v-col>
-            <v-skeleton-loader
-              v-if="isProcessing"
-              :loading="isProcessing"
-              type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
-            />
-          </v-col>
-        </v-row>
-        <v-row v-if="!isProcessing">
-          <v-col class="pb-0 px-8">
+      <!---Declaration Start--->
+
+      <v-card class="mt-12 rounded-lg" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 card-title"> Declaration </v-card-title>
+        <v-skeleton-loader
+          v-if="isProcessing"
+          :loading="isProcessing"
+          type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+        />
+        <div v-else class="px-8 py-4">
+          <div class="mb-4">
             <!-- Currently this component is only used for Report Other Changes or MTFI change Requests. Add New Facility uses PCF Summary Dec-->
             <!-- Declaration A   should always been shown for Report Other Changes -->
-            <div v-if="isDeclarationADisplayed">
+            <template v-if="isDeclarationADisplayed">
               <p>
                 I hereby confirm that the information I have provided in this application is complete and accurate. I
                 certify that I have read and understand the following requirements:
@@ -185,10 +164,10 @@
                 imposed, the court may order you to pay to the government all or part of any amount you received under
                 the Early Learning and Child Care Act as a result of committing the offence.
               </p>
-            </div>
+            </template>
 
             <!-- Declaration B should always been shown for MTFI-->
-            <div v-else-if="isDeclarationBDisplayed">
+            <template v-else-if="isDeclarationBDisplayed">
               <p>
                 I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                 information provided is true and complete to the best of my knowledge and belief.
@@ -247,11 +226,9 @@
                 Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments made
                 are at the Provider's own risk.
               </p>
-            </div>
-          </v-col>
-        </v-row>
-        <v-row v-if="!isProcessing">
-          <v-col cols="12" class="pl-6 pt-0 pb-0">
+            </template>
+          </div>
+          <div>
             <v-checkbox
               v-if="!isRenewal"
               v-model="model.agreeConsentCertify"
@@ -261,29 +238,25 @@
               label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
             />
             <v-checkbox
-              v-else-if="isRenewal"
+              v-else
               v-model="model.agreeConsentCertify"
               class="pt-0"
               :disabled="isReadOnly"
               :value="1"
               label="I agree, consent, and certify"
             />
-          </v-col>
-        </v-row>
-        <v-row v-if="!isProcessing">
-          <v-col class="pt-0">
             <v-text-field
-              v-if="!isProcessing"
               id="signatureTextField"
               v-model="model.orgContactName"
               variant="outlined"
               :disabled="isReadOnly"
               label="Your Organization's Authorized Signing Authority"
             />
-          </v-col>
-        </v-row>
+          </div>
+        </div>
       </v-card>
-    </v-row>
+    </div>
+
     <NavButton
       :is-submit-displayed="true"
       class="mt-10"
@@ -338,6 +311,7 @@ import RFISummary from '@/components/summary/group/RFISummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
+import ChangeRequestService from '@/services/changeRequestService';
 import DocumentService from '@/services/documentService';
 
 export default {
@@ -354,7 +328,6 @@ export default {
     return {
       isProcessing: false,
       dialog: false,
-      invalidSummaryForms: [],
       payload: {},
       model: {},
     };
@@ -382,9 +355,11 @@ export default {
       return isAnyApplicationUnlocked(applicationList);
     },
     isSummaryComplete() {
-      if (this.hasChangeRequestType('MTFI') && this.summaryModel?.mtfiFacilities?.length === 0) return false;
+      if (this.hasChangeRequestType('MTFI')) {
+        return ChangeRequestService.isMTFIComplete(this.summaryModel?.mtfiFacilities);
+      }
       if (this.changeType === CHANGE_TYPES.CHANGE_NOTIFICATION) return this.isChangeNotificationFormComplete;
-      return this.invalidSummaryForms.length < 1;
+      return false;
     },
     facilities() {
       return this.summaryModel?.mtfiFacilities;
@@ -513,11 +488,6 @@ export default {
         );
       } else {
         this.$router.push(this.previousPath);
-      }
-    },
-    async isFormComplete(formObj, isComplete) {
-      if (!isComplete) {
-        this.invalidSummaryForms.push(formObj);
       }
     },
     hasChangeRequestType(changeType) {

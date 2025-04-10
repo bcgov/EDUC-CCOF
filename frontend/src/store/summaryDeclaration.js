@@ -437,8 +437,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
     // Assumption: a change request can only have 1 MTFI change action
     async loadChangeRequestSummaryForMtfi(payload) {
-      const navBarStore = useNavBarStore();
+      const appStore = useAppStore();
       const applicationStore = useApplicationStore();
+      const ccfriAppStore = useCcfriAppStore();
+      const navBarStore = useNavBarStore();
 
       try {
         const summaryModel = this.summaryModel;
@@ -446,6 +448,11 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
+
+        await Promise.all([
+          ccfriAppStore.getApprovableFeeSchedulesForFacilities(summaryModel.mtfiFacilities),
+          applicationStore.getApplicationUploadedDocuments(),
+        ]);
 
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility) => {
@@ -480,6 +487,17 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 mtfiFacility.rfiApp = (
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
+
+              mtfiFacility.afs = ccfriAppStore.approvableFeeSchedules?.find(
+                (item) => item.ccfriApplicationId === mtfiFacility?.ccfriApplicationId,
+              );
+
+              mtfiFacility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
+                (document) => document.facilityId === mtfiFacility.facilityId,
+              );
+
+              mtfiFacility.isProgramYearLanguageHistorical =
+                appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
             }
             this.setSummaryModel(summaryModel);
           }),

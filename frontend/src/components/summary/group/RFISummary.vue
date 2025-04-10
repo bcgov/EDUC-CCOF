@@ -34,53 +34,65 @@
 
       <div v-if="rfiApp?.exceptionalCircumstances && rfiApp?.circumstanceOccurWithin6Month" class="my-2">
         <h5 class="my-2">Expense Information</h5>
-        <v-row no-gutters class="d-flex">
-          <v-col
-            v-for="header in ['Expense Description', 'Date', 'Payment Frequency Details', 'Expense Amount']"
-            :key="header"
-            class="d-flex justify-start col-3 pa-0 pr-2"
-          >
-            <span class="summary-label">{{ header }}</span>
-          </v-col>
-        </v-row>
-
-        <v-row v-if="rfiApp?.expenseList.length === 0" no-gutters class="d-flex">
-          <v-col v-for="n in 4" :key="n" class="d-flex justify-start col-3 pa-0 pr-2">
+        <v-data-table
+          :headers="exceptionalCircumstancesExpenseInfoTableHeaders"
+          :items="rfiApp?.expenseList"
+          :mobile="null"
+          mobile-breakpoint="md"
+          class="elevation-2 mb-6"
+        >
+          <template #no-data>
+            <span class="text-error">Required</span>
+          </template>
+          <template #[`item.description`]="{ item }">
             <v-text-field
+              :model-value="item.description"
               placeholder="Required"
-              class="summary-value"
+              readonly
               density="compact"
               flat
               variant="solo"
               hide-details
               :rules="rules.required"
             />
-          </v-col>
-        </v-row>
-
-        <v-row v-for="(item, index) in rfiApp?.expenseList" v-else :key="index" no-gutters class="d-flex">
-          <v-col
-            v-for="(field, key) in {
-              description: item.description,
-              date: item.date,
-              frequency: item.frequency,
-              expense: item.expense,
-            }"
-            :key="key"
-            class="d-flex justify-start col-3 pa-0 pr-2"
-          >
+          </template>
+          <template #[`item.date`]="{ item }">
             <v-text-field
-              :placeholder="field ? '' : 'Required'"
-              class="summary-value"
-              :model-value="field"
+              :model-value="item.date"
+              placeholder="Required"
+              readonly
               density="compact"
               flat
               variant="solo"
               hide-details
               :rules="rules.required"
             />
-          </v-col>
-        </v-row>
+          </template>
+          <template #[`item.frequency`]="{ item }">
+            <v-text-field
+              :model-value="item.frequency"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.expense`]="{ item }">
+            <v-text-field
+              :model-value="item.expense"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+        </v-data-table>
 
         <p class="summary-label">Please describe the reason for each expense listed above.</p>
         <v-textarea
@@ -112,49 +124,78 @@
           hide-details
           :rules="rules.required"
         />
-        <v-row v-if="rfiApp?.q3" no-gutters>
-          <v-col
-            v-for="(field, key) in {
-              fundingProgram: 'Funding Program',
-              date: 'Application Date',
-              status: 'Status of Application',
-              amount: 'Amount Received',
-              expenses: 'Expense(s)',
-            }"
-            :key="key"
-            class="col-2 pa-0 pr-2"
-          >
-            <span class="summary-label">{{ field }}</span>
-
-            <v-row v-if="rfiApp?.fundingList.length === 0" no-gutters class="d-flex">
-              <v-text-field
-                v-for="n in 1"
-                :key="n"
-                placeholder="Required"
-                class="summary-value"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                :rules="rules.required"
-              />
-            </v-row>
-
+        <v-data-table
+          v-if="rfiApp?.q3"
+          :headers="otherSourcesFundingTableHeaders"
+          :items="rfiApp?.fundingList"
+          :mobile="null"
+          mobile-breakpoint="md"
+          class="elevation-2 mb-6"
+        >
+          <template #no-data>
+            <span class="text-error">Required</span>
+          </template>
+          <template #[`item.fundingProgram`]="{ item }">
             <v-text-field
-              v-for="(item, index) in rfiApp?.fundingList"
-              v-else
-              :key="key + index"
-              :placeholder="item[key] ? '' : 'Required'"
-              class="summary-value"
-              :model-value="item[key]"
+              :model-value="item.fundingProgram"
+              placeholder="Required"
+              readonly
               density="compact"
               flat
               variant="solo"
               hide-details
               :rules="rules.required"
             />
-          </v-col>
-        </v-row>
+          </template>
+          <template #[`item.date`]="{ item }">
+            <v-text-field
+              :model-value="item.date"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.status`]="{ item }">
+            <v-text-field
+              :model-value="item.status"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.amount`]="{ item }">
+            <v-text-field
+              :model-value="item.amount"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.expenses`]="{ item }">
+            <v-text-field
+              :model-value="item.expenses"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+        </v-data-table>
       </div>
 
       <div class="my-4">
@@ -171,157 +212,186 @@
           :rules="rules.required"
         />
 
-        <div v-if="rfiApp?.feeIncreaseDueToWage">
-          <template v-if="getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
-            <p class="summary-label">
-              Was the wage increase committed to (in writing) before the January 2022 release of the Funding Guidelines?
-            </p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="getYesNoValue(rfiApp?.increaseInWriting)"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </template>
-
-          <div>
-            <p class="summary-label">
-              Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?
-            </p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="getYesNoValue(rfiApp?.isBargainingAgreement)"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </div>
-
-          <div>
-            <p class="summary-label">
-              Has the facility been unable to hire and/or retain Direct Care staff due to wages?
-            </p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="getYesNoValue(rfiApp?.lossOfCareStaff)"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </div>
-
-          <div>
-            <p class="summary-label">
-              Is this creating challenges in maintaining the staff-to-child ratios required under the facility licence?
-            </p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="getYesNoValue(rfiApp?.healthAndSafetyConcerns)"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </div>
-        </div>
-
-        <v-row v-if="rfiApp?.feeIncreaseDueToWage" no-gutters class="d-flex">
-          <v-col
-            v-for="header in [
-              'Number of staff receiving wage increase',
-              'Direct Care staff role',
-              'Wage before increase',
-              'Wage after increase',
-              'Average hours per week at this facility',
-              'Date',
-            ]"
-            :key="header"
-            class="d-flex justify-start col-2 pa-0 pr-2"
-          >
-            <span class="summary-label">{{ header }}</span>
-          </v-col>
-        </v-row>
-
-        <v-row v-if="rfiApp?.wageList.length === 0" no-gutters class="d-flex">
-          <v-col v-for="n in 6" :key="n" class="d-flex justify-start col-2 pa-0 pr-2">
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-
-        <v-row v-for="(item, index) in rfiApp?.wageList" v-else :key="index" no-gutters class="d-flex">
-          <v-col
-            v-for="(field, key) in {
-              staffNumber: item.staffNumber,
-              staffRole: item.staffRole,
-              wageBeforeIncrease: item.wageBeforeIncrease,
-              wageAfterIncrease: item.wageAfterIncrease,
-              averageHours: item.averageHours,
-              wageDate: item.wageDate,
-            }"
-            :key="key"
-            class="d-flex justify-start col-2 pa-0 pr-2"
-          >
-            <v-text-field
-              :placeholder="field ? '' : 'Required'"
-              class="summary-value"
-              :model-value="field"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-
         <template v-if="rfiApp?.feeIncreaseDueToWage">
-          <p class="summary-label">
-            Is there anything else about your facility's challenges or staffing you would like us to know?
-          </p>
-          <div
-            v-for="(label, index) in [
-              'When did your facility\'s challenges with hiring and keeping staff begin?',
-              'How many Direct Care staff have left your facility due to wages?',
-              'What have you done to try to recruit staff?',
-              'Have you had to adjust your hours/days of operation?',
-              'Is your facility unable to fill spaces due to insufficient staffing?',
-              'Is there anything else you would like us to know about the wage increase(s)?',
-            ]"
-            :key="index"
+          <div>
+            <template v-if="getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
+              <p class="summary-label">
+                Was the wage increase committed to (in writing) before the January 2022 release of the Funding
+                Guidelines?
+              </p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getYesNoValue(rfiApp?.increaseInWriting)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+
+            <div>
+              <p class="summary-label">
+                Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?
+              </p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getYesNoValue(rfiApp?.isBargainingAgreement)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </div>
+
+            <div>
+              <p class="summary-label">
+                Has the facility been unable to hire and/or retain Direct Care staff due to wages?
+              </p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getYesNoValue(rfiApp?.lossOfCareStaff)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </div>
+
+            <div>
+              <p class="summary-label">
+                Is this creating challenges in maintaining the staff-to-child ratios required under the facility
+                licence?
+              </p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="getYesNoValue(rfiApp?.healthAndSafetyConcerns)"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </div>
+          </div>
+          <v-data-table
+            :headers="wageIncreasesTableHeaders"
+            :items="rfiApp?.wageList"
+            :mobile="null"
+            mobile-breakpoint="md"
+            class="elevation-2 mb-6"
           >
-            <p class="summary-label">{{ label }}</p>
-            <v-textarea
-              placeholder="Required"
-              class="mt-1 ml-0 summary-value"
-              :model-value="rfiApp?.[`textbox${index + 1}`]"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              no-resize
-              rows="3"
-              :rules="rules.required"
-            />
+            <template #no-data>
+              <span class="text-error">Required</span>
+            </template>
+            <template #[`item.staffNumber`]="{ item }">
+              <v-text-field
+                :model-value="item.staffNumber"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.staffRole`]="{ item }">
+              <v-text-field
+                :model-value="item.staffRole"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.wageBeforeIncrease`]="{ item }">
+              <v-text-field
+                :model-value="item.wageBeforeIncrease"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.wageAfterIncrease`]="{ item }">
+              <v-text-field
+                :model-value="item.wageAfterIncrease"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.averageHours`]="{ item }">
+              <v-text-field
+                :model-value="item.averageHours"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.wageDate`]="{ item }">
+              <v-text-field
+                :model-value="item.wageDate"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+          </v-data-table>
+          <div>
+            <p class="summary-label mb-2">
+              Is there anything else about your facility's challenges or staffing you would like us to know?
+            </p>
+            <div
+              v-for="(label, index) in [
+                'When did your facility\'s challenges with hiring and keeping staff begin?',
+                'How many Direct Care staff have left your facility due to wages?',
+                'What have you done to try to recruit staff?',
+                'Have you had to adjust your hours/days of operation?',
+                'Is your facility unable to fill spaces due to insufficient staffing?',
+                'Is there anything else you would like us to know about the wage increase(s)?',
+              ]"
+              :key="index"
+            >
+              <p class="summary-label">{{ label }}</p>
+              <v-textarea
+                placeholder="Required"
+                class="mt-1 ml-0 summary-value"
+                :model-value="rfiApp?.[`textbox${index + 1}`]"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                no-resize
+                rows="3"
+                :rules="rules.required"
+              />
+            </div>
           </div>
         </template>
       </div>
@@ -342,59 +412,103 @@
           hide-details
           :rules="rules.required"
         />
-
-        <template v-if="rfiApp?.feeIncreaseExtendedHours">
-          <v-row no-gutters class="d-flex">
-            <v-col
-              v-for="(field, key) in {
-                timefrom: 'Previous Hours From',
-                timeto: 'Previous Hours To',
-                newtimefrom: 'New Hours From',
-                newtimeto: 'New Hours To',
-                date: 'Date of Change',
-                expense: 'Amount of Expense',
-                frequency: 'Payment frequency',
-              }"
-              :key="key"
-              cols="6"
-              lg="auto"
-              class="pr-4 pr-lg-8 pr-xl-12"
-            >
-              <span class="summary-label">{{ field }}</span>
-
-              <v-row v-if="rfiApp?.expansionList.length === 0" no-gutters class="d-flex">
-                <v-text-field
-                  v-for="n in 1"
-                  :key="n"
-                  placeholder="Required"
-                  class="summary-value"
-                  density="compact"
-                  flat
-                  variant="solo"
-                  hide-details
-                  :rules="rules.required"
-                />
-              </v-row>
-
-              <v-text-field
-                v-for="(item, index) in rfiApp?.expansionList"
-                :key="key + index"
-                :placeholder="item[key] ? '' : 'Required'"
-                class="summary-value"
-                :model-value="
-                  ['timefrom', 'timeto', 'newtimefrom', 'newtimeto'].includes(key)
-                    ? formatTime24to12(item[key])
-                    : item[key]
-                "
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                :rules="rules.required"
-              />
-            </v-col>
-          </v-row>
-        </template>
+        <v-data-table
+          v-if="rfiApp?.feeIncreaseExtendedHours"
+          :headers="expansionHoursOperationTableHeaders"
+          :items="rfiApp?.expansionList"
+          :mobile="null"
+          mobile-breakpoint="lg"
+          class="elevation-2 mb-6"
+        >
+          <template #no-data>
+            <span class="text-error">Required</span>
+          </template>
+          <template #[`item.timefrom`]="{ item }">
+            <v-text-field
+              :model-value="formatTime24to12(item.timefrom)"
+              placeholder="Required"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+              readonly
+            />
+          </template>
+          <template #[`item.timeto`]="{ item }">
+            <v-text-field
+              :model-value="formatTime24to12(item.timeto)"
+              placeholder="Required"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              required
+              readonly
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.newtimefrom`]="{ item }">
+            <v-text-field
+              :model-value="formatTime24to12(item.newtimefrom)"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.newtimeto`]="{ item }">
+            <v-text-field
+              :model-value="formatTime24to12(item.newtimeto)"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.date`]="{ item }">
+            <v-text-field
+              :model-value="item.date"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.expense`]="{ item }">
+            <v-text-field
+              :model-value="item.expense"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+          <template #[`item.frequency`]="{ item }">
+            <v-text-field
+              :model-value="item.frequency"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </template>
+        </v-data-table>
       </div>
 
       <div class="my-4">
@@ -418,53 +532,65 @@
 
         <template v-if="rfiApp?.IndigenousConnection">
           <h5 class="my-2">Expense Information</h5>
-          <v-row no-gutters class="d-flex">
-            <v-col
-              v-for="(label, key) in {
-                description: 'Expense Description',
-                date: 'Date',
-                frequency: 'Payment Frequency Details',
-                expense: 'Expense Amount',
-              }"
-              :key="key"
-              class="d-flex justify-start col-3 pa-0 pr-2"
-            >
-              <span class="summary-label">{{ label }}</span>
-            </v-col>
-          </v-row>
-
-          <v-row v-if="rfiApp?.indigenousExpenseList.length === 0" no-gutters class="d-flex">
-            <v-col v-for="n in 4" :key="n" class="d-flex justify-start col-3 pa-0 pr-2">
+          <v-data-table
+            :headers="pseIndigenousExpenseInfoTableHeaders"
+            :items="rfiApp?.indigenousExpenseList"
+            :mobile="null"
+            mobile-breakpoint="md"
+            class="elevation-2 mb-6"
+          >
+            <template #no-data>
+              <span class="text-error">Required</span>
+            </template>
+            <template #[`item.description`]="{ item }">
               <v-text-field
+                :model-value="item.description"
                 placeholder="Required"
-                class="summary-value"
+                readonly
                 density="compact"
                 flat
                 variant="solo"
                 hide-details
                 :rules="rules.required"
               />
-            </v-col>
-          </v-row>
-
-          <v-row v-for="(item, index) in rfiApp?.indigenousExpenseList" v-else :key="index" no-gutters class="d-flex">
-            <v-col
-              v-for="key in ['description', 'date', 'frequency', 'expense']"
-              :key="key + index"
-              class="d-flex justify-start col-3 pa-0 pr-2"
-            >
+            </template>
+            <template #[`item.date`]="{ item }">
               <v-text-field
+                :model-value="item.date"
                 placeholder="Required"
-                class="summary-value"
-                :model-value="item[key]"
+                readonly
                 density="compact"
                 flat
                 variant="solo"
                 hide-details
                 :rules="rules.required"
               />
-            </v-col>
-          </v-row>
+            </template>
+            <template #[`item.frequency`]="{ item }">
+              <v-text-field
+                :model-value="item.frequency"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.expense`]="{ item }">
+              <v-text-field
+                :model-value="item.expense"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+          </v-data-table>
 
           <p class="summary-label">Is there anything else about your expenses you would like us to know?</p>
           <v-textarea
@@ -582,6 +708,42 @@ export default {
   data() {
     return {
       isValidForm: false,
+      exceptionalCircumstancesExpenseInfoTableHeaders: [
+        { title: 'Expense Description', value: 'description', sortable: true, width: '35%' },
+        { title: 'Date', value: 'date', sortable: true, width: '20%' },
+        { title: 'Payment Frequency Details', value: 'frequency', sortable: true },
+        { title: 'Expense Amount', value: 'expense', sortable: true },
+      ],
+      otherSourcesFundingTableHeaders: [
+        { title: 'Funding Program', value: 'fundingProgram', sortable: true },
+        { title: 'Application Date', value: 'date', sortable: true },
+        { title: 'Status of Application', value: 'status', sortable: true },
+        { title: 'Amount Received', value: 'amount', sortable: true },
+        { title: 'Expense(s)', value: 'expenses', sortable: true },
+      ],
+      wageIncreasesTableHeaders: [
+        { title: 'Number of staff receiving wage increase', value: 'staffNumber', sortable: true },
+        { title: 'Direct Care staff role', value: 'staffRole', sortable: true },
+        { title: 'Wage before increase', value: 'wageBeforeIncrease', sortable: true },
+        { title: 'Wage after increase', value: 'wageAfterIncrease', sortable: true },
+        { title: 'Average hours per week at this facility', value: 'averageHours', sortable: true },
+        { title: 'Date', value: 'wageDate', sortable: true, width: '16%' },
+      ],
+      expansionHoursOperationTableHeaders: [
+        { title: 'Previous Hours From', value: 'timefrom', sortable: true },
+        { title: 'Previous Hours To', value: 'timeto', sortable: true },
+        { title: 'New Hours From', value: 'newtimefrom', sortable: true },
+        { title: 'New Hours To', value: 'newtimeto', sortable: true },
+        { title: 'Date of Change', value: 'date', sortable: true },
+        { title: 'Amount of Expense', value: 'expense', sortable: true },
+        { title: 'Payment frequency', value: 'frequency', sortable: true },
+      ],
+      pseIndigenousExpenseInfoTableHeaders: [
+        { title: 'Expense Description', value: 'description', sortable: true, width: '35%' },
+        { title: 'Date', value: 'date', sortable: true, width: '20%' },
+        { title: 'Payment Frequency Details', value: 'frequency', sortable: true },
+        { title: 'Expense Amount', value: 'expense', sortable: true },
+      ],
     };
   },
   computed: {
