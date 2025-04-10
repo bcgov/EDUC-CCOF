@@ -299,7 +299,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         throw error;
       }
     },
-    async loadSummary(changeRecGuid = undefined) {
+    async loadSummary() {
       checkSession();
       const applicationStore = useApplicationStore();
       const ccfriAppStore = useCcfriAppStore();
@@ -343,7 +343,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           ).data;
         }
         this.setSummaryModel(summaryModel);
-        if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
         throw error;
@@ -365,7 +364,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       checkSession();
       try {
         this.setIsLoadingComplete(false);
-
         const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {

@@ -2,63 +2,43 @@
   <v-container fluid>
     <div class="mx-4 mx-lg-12">
       <div class="text-center">
-        <div class="text-h4">
+        <p class="text-h4">
           Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-        </div>
-        <h2>Summary and Declaration</h2>
-        <div class="text-h5 text-primary">{{ userInfo.organizationName }}</div>
+        </p>
+        <h2 class="my-2">Summary and Declaration</h2>
+        <p class="text-h5 text-primary">{{ userInfo.organizationName }}</p>
       </div>
-      <v-row>
-        <!-- Do not allow PCF to be submitted if CR is active-->
-        <v-card v-if="isSomeChangeRequestActive && !isChangeRequest" width="100%" class="mx-3 my-10">
-          <v-row>
-            <v-col class="py-0">
-              <v-card-title class="py-1 noticeAlert">
-                <span style="float: left">
-                  <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                </span>
-                You have a change request for the {{ getChangeRequestYear }} funding term still in progress.
-              </v-card-title>
-            </v-col>
-          </v-row>
-          <v-card-text>
-            The {{ formattedProgramYear }} Program Confirmation Form cannot be submitted until the change is
-            complete.<br /><br />
-            <br />
 
-            <v-btn theme="dark" class="blueButton mb-10" @click="goToChangeRequestHistory()"> View My Changes </v-btn>
-          </v-card-text>
-        </v-card>
-      </v-row>
+      <!-- Do not allow PCF to be submitted if CR is active -->
+      <v-card v-if="isSomeChangeRequestActive && !isChangeRequest" elevation="4" class="my-8">
+        <v-card-title class="rounded-t-lg py-3 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          You have a change request for the {{ getChangeRequestYear }} funding term still in progress.
+        </v-card-title>
+        <div class="pa-4">
+          <p>
+            The {{ formattedProgramYear }} Program Confirmation Form cannot be submitted until the change is complete.
+          </p>
+          <AppButton class="mt-4" @click="goToChangeRequestHistory">View My Changes</AppButton>
+        </div>
+      </v-card>
 
-      <!-- Do not allow CR New Fac to be submitted if PCF is unlocked-->
-      <v-row class="" justify="center">
-        <v-card v-if="isSomeApplicationUnlocked && isChangeRequest" class="py-0 px-3 mx-0 mt-10 rounded-lg col-11">
-          <v-container class="pa-0 col-12">
-            <v-row>
-              <v-col class="pa-0">
-                <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
-                  <span style="float: left">
-                    <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  </span>
-                  You have an unlocked PCF application still in progress.
-                </v-card-title>
-              </v-col>
-            </v-row>
-          </v-container>
-
-          <br />
-          <p>You will be unable to submit a change request until the Program Confirmation Form is updated.</p>
-          <br />
-          <br />
-        </v-card>
-      </v-row>
+      <!-- Do not allow CR New Fac to be submitted if PCF is unlocked -->
+      <v-card v-if="isSomeApplicationUnlocked && isChangeRequest" elevation="4" class="my-8">
+        <v-card-title class="rounded-t-lg py-3 noticeAlert">
+          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+          You have an unlocked PCF application still in progress.
+        </v-card-title>
+        <p class="pa-4">
+          You will be unable to submit a change request until the Program Confirmation Form is updated.
+        </p>
+      </v-card>
 
       <div v-if="!isSomeChangeRequestActive" class="text-center text-h5 text-primary">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
       <v-card v-if="!isApplicationFormComplete && !isApplicationProcessing" elevation="4" class="my-8">
-        <v-card-title class="rounded-t-lg pt-3 pb-3 noticeAlert">
+        <v-card-title class="rounded-t-lg py-3 noticeAlert">
           <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
           Incomplete Form
         </v-card-title>
@@ -140,12 +120,9 @@
               :program-year-id="summaryModel?.application?.programYearId"
             />
           </v-expansion-panel>
-          <v-expansion-panel
-            v-if="hasChangeNotificationFormDocuments"
-            value="change-notification-form-summary"
-            class="mt-10"
-          >
+          <v-expansion-panel v-if="hasChangeNotificationFormDocuments" value="change-notification-form-summary">
             <ChangeNotificationFormSummary
+              :is-processing="isApplicationProcessing"
               :change-notification-form-documents="summaryModel?.changeNotificationFormDocuments"
             />
           </v-expansion-panel>
@@ -327,44 +304,45 @@
 <script>
 import { cloneDeep, isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
-import { useAuthStore } from '@/store/auth.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useAppStore } from '@/store/app.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
-import ApplicationService from '@/services/applicationService';
-import DocumentService from '@/services/documentService';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
-import {
-  AFS_STATUSES,
-  DOCUMENT_TYPES,
-  PATHS,
-  CHANGE_REQUEST_TYPES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-} from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import NavButton from '@/components/util/NavButton.vue';
-import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
-import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
+import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
-import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
+import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
+import ApplicationService from '@/services/applicationService';
+import DocumentService from '@/services/documentService';
+import {
+  AFS_STATUSES,
+  CHANGE_REQUEST_TYPES,
+  DOCUMENT_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+} from '@/utils/constants.js';
 import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
 
 export default {
   components: {
+    AppButton,
     AppDialog,
+    ChangeNotificationFormSummary,
     ECEWESummary,
-    OrganizationSummary,
     FacilityInformationSummaryCard,
     FacilityInformationSummaryDialog,
-    ChangeNotificationFormSummary,
     NavButton,
+    OrganizationSummary,
   },
   mixins: [alertMixin],
   data() {
@@ -377,35 +355,29 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
-    ...mapState(useNavBarStore, ['previousPath', 'isChangeRequest']),
-    ...mapState(useAppStore, ['programYearList', 'getLanguageYearLabel']),
-    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'isOrganizationComplete']),
-    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'summaryModel', 'facilities']),
+    ...mapState(useAppStore, ['getLanguageYearLabel', 'programYearList']),
     ...mapState(useApplicationStore, [
+      'applicationMap',
       'applicationUploadedDocuments',
+      'applicationStatus',
       'formattedProgramYear',
+      'isApplicationProcessing',
       'isRenewal',
       'programYearId',
       'unlockBaseFunding',
-      'isLicenseUploadComplete',
       'unlockDeclaration',
       'unlockEcewe',
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
-      'applicationStatus',
-      'isEceweComplete',
-      'applicationMap',
-      'isApplicationProcessing',
     ]),
+    ...mapState(useAuthStore, ['isMinistryUser', 'userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
-    ...mapState(useReportChangesStore, ['changeRequestStore', 'isCREceweComplete', 'isCRLicenseComplete']),
+    ...mapState(useNavBarStore, ['changeRequestId', 'isChangeRequest', 'navBarList', 'previousPath']),
+    ...mapState(useOrganizationStore, ['organizationAccountNumber']),
+    ...mapState(useReportChangesStore, ['changeRequestStore', 'isChangeNotificationFormComplete']),
+    ...mapState(useSummaryDeclarationStore, ['declarationModel', 'facilities', 'summaryModel']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
-    },
-    programYearTypes() {
-      return PROGRAM_YEAR_LANGUAGE_TYPES;
     },
     getFundingAgreementNumber() {
       return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
@@ -431,7 +403,7 @@ export default {
       return currProgramYear.name;
     },
     isReadOnly() {
-      if (this.isMinistryUser || this.applicationStatus === 'SUBMITTED') {
+      if (this.isMinistryUser) {
         return true;
       }
       if (
@@ -452,15 +424,15 @@ export default {
       ) {
         //ensure summary dec is locked for completed CR when viewing a historical record.
         return true;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        //ensure summary dec is locked for completed CR when viewing a historical record.
+        return true;
       }
       return false;
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
       return isAnyApplicationUnlocked(applicationList);
-    },
-    isFacilitiesAvailable() {
-      return this.facilities?.length > 0;
     },
     allFacilitiesApproved() {
       return this.facilities?.every((facility) => {
@@ -508,10 +480,17 @@ export default {
       return this.mappedFacilities?.every((facility) => facility.isComplete);
     },
     isApplicationFormComplete() {
+      const isChangeNotificationFormComplete =
+        !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
       return (
         this.areAllFacilitiesComplete &&
         ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup) &&
-        ApplicationService.isECEWEOrganizationComplete(this.summaryModel?.ecewe, this.isGroup, this.languageYearLabel)
+        ApplicationService.isECEWEOrganizationComplete(
+          this.summaryModel?.ecewe,
+          this.isGroup,
+          this.languageYearLabel,
+        ) &&
+        (!this.isChangeRequest || isChangeNotificationFormComplete)
       );
     },
     isSubmitDisabled() {
@@ -529,15 +508,15 @@ export default {
     await this.loadData();
   },
   methods: {
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     ...mapActions(useSummaryDeclarationStore, [
-      'loadDeclaration',
       'loadChangeRequestSummaryDeclaration',
+      'loadDeclaration',
       'loadSummary',
       'setDeclarationModel',
       'updateDeclaration',
     ]),
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
-    ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     openFacilitySummary(facilityId) {
       this.selectedFacilityId = facilityId;
       this.toggleFacilityInformationSummaryDialog();
@@ -551,14 +530,13 @@ export default {
     async loadData() {
       try {
         this.setIsApplicationProcessing(true);
-        const declarationPromise = this.isChangeRequest
-          ? this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid)
-          : this.loadDeclaration();
-        await Promise.all([
-          this.getChangeRequestList(),
-          this.loadSummary(this.$route.params?.changeRecGuid),
-          declarationPromise,
-        ]);
+
+        await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
+        if (this.isChangeRequest) {
+          await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
+        } else {
+          await this.loadDeclaration();
+        }
 
         if (!isEmpty(this.declarationModel)) {
           this.model = cloneDeep(this.declarationModel);
@@ -587,7 +565,7 @@ export default {
           }
         }
       } catch (error) {
-        console.log('Error loading application Summary Declaration.', error);
+        console.error('Error loading application Summary Declaration.', error);
         this.setFailureAlert('Error loading application Summary Declaration.');
       } finally {
         this.setIsApplicationProcessing(false);

@@ -13,25 +13,17 @@
           <v-card-title class="text-center pb-0">
             <h3>Organization Information</h3>
           </v-card-title>
-          <v-row>
-            <v-card v-if="isSomeChangeRequestActive && isLocked" width="100%" class="mx-3 my-10">
-              <v-row>
-                <v-col class="py-0">
-                  <v-card-title class="py-1 noticeAlert">
-                    <span style="float: left">
-                      <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                    </span>
-                    You have a change request in progress.
-                  </v-card-title>
-                </v-col>
-              </v-row>
-              <v-card-text>
-                We will complete the assessment of your Program Confirmation Form once your change has been
-                processed.<br /><br />
-                <br />
-              </v-card-text>
-            </v-card>
-          </v-row>
+
+          <v-card v-if="isSomeChangeRequestActive && isLocked" elevation="4" class="mt-4 mb-8">
+            <v-card-title class="rounded-t-lg py-3 noticeAlert">
+              <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+              You have a change request in progress.
+            </v-card-title>
+            <p class="pa-4">
+              We will complete the assessment of your Program Confirmation Form once your change has been processed.
+            </p>
+          </v-card>
+
           <v-container>
             <v-row>
               <v-col>
