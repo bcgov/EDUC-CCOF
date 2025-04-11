@@ -1,12 +1,10 @@
 <template>
-  <AppDialog v-model="isDisplayed" :title="title" persistent max-width="50%" @close="closeDialog">
+  <AppDialog v-model="isDisplayed" title="Success" persistent max-width="40%" @close="closeDialog">
     <template #content>
       <v-row class="mb-2">
         <v-col align="center">
-          <!-- JonahCurlCGI todo: fill with wording once available -->
           <p class="pt-4 text-h6">Your message has been submitted.</p>
-          <p class="pt-4 text-h6">Reference:</p>
-          <p class="pt-4 text-h6">Typical response times are 3-5 business days.</p>
+          <p class="pt-4 text-h6">Reference: {{ changeRequestReferenceId }}</p>
         </v-col>
       </v-row>
     </template>
@@ -25,7 +23,6 @@
 <script>
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
-import { CLOSURE_REQUEST_TYPES } from '@/utils/constants';
 
 export default {
   name: 'NewRequestConfirmationDialog',
@@ -36,9 +33,9 @@ export default {
       default: false,
       required: true,
     },
-    closureRequestType: {
-      type: Number,
-      default: 0,
+    changeRequestReferenceId: {
+      type: String,
+      default: '',
       required: true,
     },
   },
@@ -48,16 +45,7 @@ export default {
       isDisplayed: false,
     };
   },
-  computed: {
-    title() {
-      switch (this.closureRequestType) {
-        case CLOSURE_REQUEST_TYPES.NEW_CLOSURE:
-          return 'New Closure Request Submitted';
-        default:
-          return '';
-      }
-    },
-  },
+  computed: {},
   watch: {
     show: {
       handler(value) {

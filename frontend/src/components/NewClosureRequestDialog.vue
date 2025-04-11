@@ -357,9 +357,9 @@ export default {
         documents: this.processDocuments(this.documents),
       };
       try {
-        await ClosureService.createNewClosureChangeRequest(payload);
+        const response = await ClosureService.createNewClosureChangeRequest(payload);
         this.clearInputs();
-        this.$emit('submitted');
+        this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
         console.log(e);
         this.setFailureAlert('Failed to submit new closure request');
