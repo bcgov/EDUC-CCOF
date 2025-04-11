@@ -173,32 +173,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     summaryModel: {},
     facilities: [],
   }),
-  getters: {
-    isCCFRIComplete: (state) => {
-      return state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every(
-            (facility) =>
-              facility.ccfri?.ccof_formcomplete &&
-              (facility.ccfri?.ccfriOptInStatus === 1 || facility.ccfri?.ccfriOptInStatus === 0) &&
-              (facility.ccfri?.unlockRfi === 1 || facility.ccfri?.hasRfi ? facility.ccfri?.isRfiComplete : true) &&
-              (facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf ? facility.ccfri?.isNmfComplete : true),
-          )
-        : false;
-    },
-
-    isFacilityComplete: (state) => {
-      return state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every((facility) => facility.facilityInfo?.isFacilityComplete == true)
-        : false;
-    },
-    areCheckBoxesComplete: (state, getters) => {
-      const isComplete =
-        state.summaryModel?.application?.isEceweComplete &&
-        state.summaryModel?.application?.isLicenseUploadComplete &&
-        getters.isCCFRIComplete;
-      return isComplete;
-    },
-  },
   actions: {
     setDeclarationModel(value) {
       this.declarationModel = value;
@@ -337,18 +311,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         this.setSummaryModel(summaryModel);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
-        throw error;
-      }
-    },
-    async updateApplicationStatus(applicationObj) {
-      checkSession();
-      try {
-        await ApiService.apiAxios.put(
-          `${ApiRoutes.APPLICATION_STATUS}/${applicationObj.applicationId}`,
-          applicationObj,
-        );
-      } catch (error) {
-        console.log(`Failed to update application status - ${error}`);
         throw error;
       }
     },
