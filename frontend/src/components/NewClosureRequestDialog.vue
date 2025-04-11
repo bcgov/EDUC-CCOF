@@ -70,11 +70,15 @@
           <v-col cols="12" lg="9" class="pl-0">
             <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
           </v-col>
-          <v-col cols="12" lg="3" class="pr-0">
+          <v-col cols="12" lg="3" class="pr-0 pl-0">
             <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
-              <v-row class="ml-4">
-                <v-radio label="Yes" value="1" />
-                <v-radio label="No" value="0" />
+              <v-row justify="start">
+                <v-col cols="6">
+                  <v-radio label="Yes" value="1" />
+                </v-col>
+                <v-col cols="6">
+                  <v-radio label="No" value="0" />
+                </v-col>
               </v-row>
             </v-radio-group>
           </v-col>
@@ -87,22 +91,26 @@
                 <AppTooltip tooltip-content="Select no if only some care categories will be affected by the closure." />
               </h3>
             </v-col>
-            <v-col cols="12" lg="3" class="pr-0">
+            <v-col cols="12" lg="3" class="pr-0 pl-0">
               <v-radio-group
                 v-model="fullFacilityClosure"
                 required
                 :rules="rules.required"
                 @update:model-value="handleFullFacilityClosureChange"
               >
-                <v-row class="ml-4">
-                  <v-radio label="Yes" value="true" />
-                  <v-radio label="No" value="false" />
+                <v-row justify="start">
+                  <v-col cols="6">
+                    <v-radio label="Yes" value="true" />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-radio label="No" value="false" />
+                  </v-col>
                 </v-row>
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-row v-if="fullFacilityClosure === 'false'" align="center" class="text-primary pl-0">
-            <h3 class="pr-2">Affected Care Categorie(s)</h3>
+          <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
+            <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
             <p>(select all that apply):</p>
           </v-row>
           <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
@@ -114,7 +122,7 @@
               item-value="value"
               label="Select affected care categories"
               variant="outlined"
-              class="mt-2"
+              class="mt-2 text-left"
               multiple
               chips
               :rules="rulesAgeGroups"
@@ -185,7 +193,12 @@
             <h3>Request Description:</h3>
           </v-row>
           <v-row class="text-primary">
-            <v-textarea v-model="requestDescription" variant="outlined" label="Detailed description of request" />
+            <v-textarea
+              v-model="requestDescription"
+              variant="outlined"
+              label="Detailed description of request"
+              class="text-left"
+            />
           </v-row>
           <v-row>
             <AppDocumentUpload
@@ -203,10 +216,10 @@
     <template #button>
       <v-container width="80%">
         <v-row>
-          <v-col cols="12" md="6" align="left">
+          <v-col cols="6" md="6" align="left">
             <AppButton :primary="false" :disabled="isLoading" @click="closeDialog">Cancel</AppButton>
           </v-col>
-          <v-col cols="12" md="6" align="right">
+          <v-col cols="6" md="6" align="right">
             <AppButton :disabled="!formComplete" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
