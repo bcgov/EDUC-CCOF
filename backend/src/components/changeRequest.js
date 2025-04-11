@@ -3,7 +3,7 @@
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeRequestMappings, ChangeActionRequestMappings, ChangeActionClosureMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, ClosureMappings } = require('../util/mapping/Mappings');
+const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -15,6 +15,7 @@ const HttpStatus = require('http-status-codes');
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 const { create } = require('lodash');
+const { createChangeActionDocuments } = require('./document');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -273,8 +274,16 @@ async function createNewClosureChangeRequest(req, res) {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
-    const changeActionClosureGuid = await postOperation('ccof_change_action_closures', changeActionClosure);
-    return res.status(HttpStatus.CREATED).json(changeActionClosureGuid);
+    const postOperations = [postOperation('ccof_change_action_closures', changeActionClosure)];
+    if (req.body.documents?.length > 0) {
+      for (const document of req.body.documents) {
+        const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
+        mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
+        postOperations.push(postChangeActionDocument(mappedDocument));
+      }
+    }
+    await Promise.all(postOperations);
+    return res.status(HttpStatus.CREATED).json(postOperations[0]);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

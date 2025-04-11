@@ -183,10 +183,11 @@
             <!-- JonahCurlCGI todo: add document uploading -->
             <AppDocumentUpload
               :loading="isLoading"
-              :uploaded-documents="uploadedDocuments"
+              :document-type="documentType"
               title="Supporting Documents"
               class="text-primary left-align"
               :required="false"
+              @update-documents-to-upload="updateDocuments"
             />
           </v-row>
         </v-container>
@@ -224,6 +225,8 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { DOCUMENT_TYPES } from '@/utils/constants';
+import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 export default {
   name: 'NewClosureRequestDialog',
@@ -265,6 +268,7 @@ export default {
       requestDescription: undefined,
       uploadedDocuments: [],
       rulesAgeGroups: [(v) => this.fullFacilityClosure === 'true' || v?.length > 0 || 'This field is required'],
+      documentType: DOCUMENT_TYPES.CLOSURE_REQUEST,
     };
   },
   computed: {
@@ -316,6 +320,23 @@ export default {
     toggleSelectAll() {
       this.selectedAgeGroups = this.allAgeGroupsSelected ? [] : this.ageGroups;
     },
+    updateDocuments(documents) {
+      this.documents = documents;
+    },
+    processDocuments(documents) {
+      const processedDocuments = [];
+      for (const document of documents) {
+        const obj = {
+          documentType: this.documentType,
+          fileSize: document.fileSize,
+          fileName: document.fileName,
+          documentBody: document.documentBody,
+          description: document.description,
+        };
+        processedDocuments.push(obj);
+      }
+      return processedDocuments;
+    },
     async submit() {
       this.isLoading = true;
       const payload = {
@@ -330,8 +351,8 @@ export default {
         ageGroups: this.fullFacilityClosure === 'true' ? undefined : this.selectedAgeGroups.join(','),
         closureReason: this.reason,
         description: this.requestDescription,
-        changeType: 'NEW_CLOSURE',
-        // documents: this.uploadedDocuments,
+        changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
+        documents: this.processDocuments(this.documents),
       };
       try {
         await ClosureService.createNewClosureChangeRequest(payload);
@@ -353,7 +374,7 @@ export default {
       this.selectedAgeGroups = [];
       this.reason = undefined;
       this.requestDescription = undefined;
-      this.uploadedDocuments = [];
+      this.documents = [];
     },
   },
 };

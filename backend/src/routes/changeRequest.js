@@ -35,14 +35,11 @@ const newFacilityChangeRequestSchema = {
 };
 
 const newClosureChangeRequestSchema = {
-  applicationId: {
-    in: ['body'],
-    exists: { errorMessage: '[applicationId] is required' },
-  },
+  ...newFacilityChangeRequestSchema,
   changeType: {
     in: ['body'],
     equals: {
-      options: 'NEW_CLOSURE',
+      options: `${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`,
       errorMessage: '[changeType] must be NEW_CLOSURE',
     },
   },
@@ -90,11 +87,6 @@ const newClosureChangeRequestSchema = {
     exists: true,
     toInt: true,
     errorMessage: '[paidClosure] must be 0 or 1',
-  },
-  programYearId: {
-    in: ['body'],
-    exists: true,
-    errorMessage: '[programYearId] is required',
   },
   startDate: {
     in: ['body'],
