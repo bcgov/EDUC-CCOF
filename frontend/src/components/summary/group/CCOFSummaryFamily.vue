@@ -542,62 +542,26 @@
   </v-row>
 </template>
 <script>
-import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-import globalMixin from '@/mixins/globalMixin.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
-import { formatTime24to12 } from '@/utils/format';
-import rules from '@/utils/rules.js';
 
 export default {
   name: 'CCOFSummary',
-  components: { SummaryExpansionPanelTitle },
-  mixins: [globalMixin],
+  mixins: [summaryMixin],
   props: {
     funding: {
       type: Object,
       required: true,
     },
-    facilityId: {
-      type: String,
-      required: true,
-    },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
-      PATHS,
-      rules,
-      isValidForm: true,
-      formObj: {
-        formName: 'CCOFSummary',
-        formId: this.funding?.ccofBaseFundingId,
-      },
+      isValidForm: false,
     };
-  },
-  computed: {
-    ...mapState(useSummaryDeclarationStore, ['summaryModel', 'isLoadingComplete']),
-    ...mapState(useNavBarStore, ['navBarList']),
-  },
-  watch: {
-    isValidForm: {
-      handler() {
-        this.$refs.ccofSummaryForm.validate();
-        if (this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
-  },
-  created() {
-    this.formatTime24to12 = formatTime24to12;
   },
   methods: {
     getRoutingPath() {
@@ -612,37 +576,13 @@ export default {
 </script>
 
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
 :deep(.summary-value .v-label) {
   color: #d8292f !important;
   opacity: 1 !important;
 }
+
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
-}
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
 }
 </style>

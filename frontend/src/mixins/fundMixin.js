@@ -3,6 +3,7 @@ import { mapActions, mapState } from 'pinia';
 
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useApplicationStore } from '@/store/application.js';
 import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -50,64 +51,25 @@ export default {
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
     hasLicenceCategory() {
-      return (
-        this.fundingModel.hasUnder36Months ||
-        this.fundingModel.has30MonthToSchoolAge ||
-        this.fundingModel.hasSchoolAgeCareOnSchoolGrounds ||
-        this.fundingModel.hasPreschool ||
-        this.fundingModel.hasMultiAge
-      );
+      return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
     hasSchoolAgeCareServices() {
-      return (
-        this.fundingModel.beforeSchool ||
-        this.fundingModel.afterSchool ||
-        this.fundingModel.beforeKindergarten ||
-        this.fundingModel.afterKindergarten
-      );
+      return ApplicationService.hasSchoolAgeCareServices(this.fundingModel);
     },
     hasLicenceCategoryWithExtendedChildCare() {
-      return (
-        this.fundingModel.hasUnder36MonthsExtendedCC ||
-        this.fundingModel.has30MonthToSchoolAgeExtendedCC ||
-        this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.fundingModel.hasMultiAgeExtendedCC
-      );
-    },
-    totalMaxSpacesUnder36ExtendedChildCare() {
-      return (
-        this.fundingModel.extendedChildCareUnder36Months4OrLess +
-        this.fundingModel.extendedChildCareUnder36Months4OrMore
-      );
-    },
-    totalMaxSpaces30MonthToSchoolAgeExtendedChildCare() {
-      return (
-        this.fundingModel.extendedChildCare36MonthsToSchoolAge4OrLess +
-        this.fundingModel.extendedChildCare36MonthsToSchoolAge4OrMore
-      );
-    },
-    totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare() {
-      return this.fundingModel.extendedChildCareSchoolAge4OrLess + this.fundingModel.extendedChildCareSchoolAge4OrMore;
-    },
-    totalMaxSpacesMultiAgeExtendedChildCare() {
-      return this.fundingModel.multiAgeCare4OrLess + this.fundingModel.multiAgeCare4more;
+      return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.fundingModel);
     },
     isUnder36ExtendedChildCareValid() {
-      return !this.fundingModel.hasUnder36MonthsExtendedCC || this.totalMaxSpacesUnder36ExtendedChildCare > 0;
+      return ApplicationService.isUnder36ExtendedChildCareValid(this.fundingModel);
     },
     is30MonthToSchoolAgeExtendedChildCareValid() {
-      return (
-        !this.fundingModel.has30MonthToSchoolAgeExtendedCC || this.totalMaxSpaces30MonthToSchoolAgeExtendedChildCare > 0
-      );
+      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.fundingModel);
     },
     isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return (
-        !this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare > 0
-      );
+      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.fundingModel);
     },
     isMultiAgeExtendedChildCareValid() {
-      return !this.fundingModel.hasMultiAgeExtendedCC || this.totalMaxSpacesMultiAgeExtendedChildCare > 0;
+      return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
     },
     isFormComplete() {
       // TODO (vietle-cgi) - review this logic once the Family application is updated.

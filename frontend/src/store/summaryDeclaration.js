@@ -1,14 +1,21 @@
-import { isEmpty } from 'lodash';
+import { cloneDeep, isEmpty, sortBy } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { ApiRoutes, CHANGE_REQUEST_TYPES } from '@/utils/constants.js';
+import {
+  ApiRoutes,
+  CCFRI_FEE_CORRECT_TYPES,
+  CHANGE_REQUEST_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function parseLicenseCategories(licenseCategories) {
@@ -37,10 +44,24 @@ function getProgramYear(selectedGuid, programYearList) {
  *
  * @param {Object} facility - The facility to add details to
  */
-function mapFacility(facility) {
+function mapFacility(facility, isGroup) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
+  const ccfriAppStore = useCcfriAppStore();
+  const navBarStore = useNavBarStore();
+
   facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
+  facility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
+    (document) => document.facilityId === facility.facilityId,
+  );
+  facility.isProgramYearLanguageHistorical = appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+  const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
+  facility.hasRfi = facilityInNavBar?.hasRfi;
+  facility.hasNmf = facilityInNavBar?.hasNmf;
+  facility.enableAfs = facilityInNavBar?.enableAfs;
+  facility.afs = ccfriAppStore.approvableFeeSchedules?.find(
+    (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
+  );
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
@@ -48,61 +69,114 @@ function mapFacility(facility) {
     const programYearList = appStore.programYearList.list;
     facility.ccfri.currentYear = getProgramYear(ccofProgramYearId, programYearList);
     facility.ccfri.prevYear = getProgramYear(facility.ccfri.currentYear.previousYearId, programYearList);
+    facility.ccfri.childCareTypes = decorateCcfriChildCareTypes(facility.ccfri, facility.childCareLicenses);
   }
 
+  facility.facilitySummary = {
+    facilityId: facility.facilityId,
+    facilityName: facility.facilityInfo?.facilityName,
+    facilityAccountNumber: facility.facilityInfo?.facilityAccountNumber,
+    licenseNumber: facility.facilityInfo?.licenseNumber,
+    ccfriOptInStatus: facility.ccfri?.ccfriOptInStatus,
+    eceweOptInStatus: facility.ecewe?.optInOrOut,
+    isComplete: ApplicationService.isFacilityComplete(facility, isGroup, applicationStore.applicationTemplateVersion),
+  };
   return facility;
+}
+
+/* Note (jbeckett-cgi):
+- If the user has not selected fee Frequency type, the summary cards will not populate with all the correct fee cards.
+- This checks for all licenses available for the facility, and displays what is missing to the user.
+*/
+function decorateCcfriChildCareTypes(ccfri, childCareLicenses) {
+  const applicationStore = useApplicationStore();
+  if (ccfri?.childCareTypes?.length < childCareLicenses?.length) {
+    const childCareTypesArr = [];
+    const findChildCareTypes = (yearToSearch, checkForMissingPrevFees = false) => {
+      childCareLicenses?.forEach((category) => {
+        const found = ccfri?.childCareTypes?.find(
+          (searchItem) =>
+            searchItem.childCareCategoryId === category.childCareCategoryId &&
+            searchItem.programYearId === yearToSearch.programYearId,
+        );
+
+        if (found) {
+          childCareTypesArr.push(found);
+        } else {
+          if (checkForMissingPrevFees) {
+            //check to see if childcarecat exists in last years CCFRI app.
+            const pastChildCareTypefound = ccfri?.prevYearCcfriApp.childCareTypes.find(
+              (prevChildCareCat) =>
+                prevChildCareCat.childCareCategoryId === category.childCareCategoryId &&
+                prevChildCareCat.programYearId === yearToSearch.programYearId,
+            );
+            if (pastChildCareTypefound) {
+              return;
+            }
+            //else we are missing fees from last year, for a child care category that the user has license for.
+            //This usually happens when the facility has a new licence for this year. Add the category to the summary
+          }
+
+          const theCat = cloneDeep(category);
+          theCat.programYear = yearToSearch.name;
+          childCareTypesArr.push(theCat);
+        }
+      });
+    };
+
+    findChildCareTypes(ccfri.currentYear);
+
+    //only show last year fees if new app or previous year fees are incorrect
+    if (
+      !applicationStore.isRenewal ||
+      ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.NO ||
+      !ccfri.previousCcfriId
+    ) {
+      findChildCareTypes(ccfri.prevYear);
+    }
+
+    //check if we are missing any feed cards from the last year if previous fees are correct
+    else if (
+      applicationStore.isRenewal &&
+      ccfri.existingFeesCorrect === CCFRI_FEE_CORRECT_TYPES.YES &&
+      ccfri.previousCcfriId
+    ) {
+      findChildCareTypes(ccfri.prevYear, true);
+    }
+
+    //age group asc
+    childCareTypesArr.sort((a, b) => a.orderNumber - b.orderNumber);
+
+    //sort by program year
+    return childCareTypesArr.sort((a, b) => {
+      const nameA = a.programYear.toUpperCase(); // ignore upper and lowercase
+      const nameB = b.programYear.toUpperCase(); // ignore upper and lowercase
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+    });
+  } else {
+    return sortBy(ccfri.childCareTypes, 'orderNumber');
+  }
 }
 
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
   state: () => ({
-    isValidForm: undefined,
     declarationModel: {},
     summaryModel: {},
     facilities: [],
-    isSummaryLoading: true,
-    isLoadingComplete: false,
   }),
-  getters: {
-    isCCFRIComplete: (state) => {
-      return state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every(
-            (facility) =>
-              facility.ccfri?.ccof_formcomplete &&
-              (facility.ccfri?.ccfriOptInStatus === 1 || facility.ccfri?.ccfriOptInStatus === 0) &&
-              (facility.ccfri?.unlockRfi === 1 || facility.ccfri?.hasRfi ? facility.ccfri?.isRfiComplete : true) &&
-              (facility.ccfri?.unlockNmf === 1 || facility.ccfri?.hasNmf ? facility.ccfri?.isNmfComplete : true),
-          )
-        : false;
-    },
-
-    isFacilityComplete: (state) => {
-      return state.summaryModel?.facilities?.length > 0
-        ? state.summaryModel?.facilities.every((facility) => facility.facilityInfo?.isFacilityComplete == true)
-        : false;
-    },
-    areCheckBoxesComplete: (state, getters) => {
-      const isComplete =
-        state.summaryModel?.application?.isEceweComplete &&
-        state.summaryModel?.application?.isLicenseUploadComplete &&
-        getters.isCCFRIComplete;
-      return isComplete;
-    },
-  },
   actions: {
     setDeclarationModel(value) {
       this.declarationModel = value;
     },
     setSummaryModel(value) {
       this.summaryModel = value;
-    },
-    setIsSummaryLoading(value) {
-      this.isSummaryLoading = value;
-    },
-    isValidForm(value) {
-      this.isValidForm = value;
-    },
-    setIsLoadingComplete(value) {
-      this.isLoadingComplete = value;
     },
     async loadDeclaration() {
       checkSession();
@@ -189,7 +263,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         throw error;
       }
     },
-    async loadSummary(changeRecGuid = undefined) {
+    async loadSummary() {
       checkSession();
       const applicationStore = useApplicationStore();
       const ccfriAppStore = useCcfriAppStore();
@@ -201,8 +275,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         appID = applicationStore.applicationId;
       }
       try {
-        this.setIsSummaryLoading(true);
-
         const filterNavBarIds = navBarStore.navBarList.map((item) => item.facilityId);
 
         const applicationSummaryResponse = await ApiService.apiAxios.post(`${ApiRoutes.APPLICATION_SUMMARY}/${appID}`, {
@@ -217,56 +289,32 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           ecewe: undefined,
         };
 
-        const facilities = payload.facilities.map(mapFacility);
-
-        this.facilities = facilities;
-
-        this.setSummaryModel(summaryModel);
-
         await Promise.all([
           ccfriAppStore.getApprovableFeeSchedulesForFacilities(navBarStore.userProfileList),
           applicationStore.getApplicationUploadedDocuments(),
         ]);
+
+        const isGroup = summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+        this.facilities = payload.facilities.map((facility) => mapFacility(facility, isGroup));
 
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {
           summaryModel.organization = (
             await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${payload.application.organizationId}`)
           ).data;
-          this.setSummaryModel(summaryModel);
           summaryModel.ecewe = (
             await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${payload.application.applicationId}`)
           ).data;
-
-          this.setSummaryModel(summaryModel);
         }
         this.setSummaryModel(summaryModel);
-        this.setIsSummaryLoading(false);
-
-        if (!changeRecGuid) this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);
-        throw error;
-      }
-    },
-    async updateApplicationStatus(applicationObj) {
-      checkSession();
-      try {
-        await ApiService.apiAxios.put(
-          `${ApiRoutes.APPLICATION_STATUS}/${applicationObj.applicationId}`,
-          applicationObj,
-        );
-      } catch (error) {
-        console.log(`Failed to update application status - ${error}`);
         throw error;
       }
     },
     async loadChangeRequestSummaryDeclaration(changeRequestId) {
       checkSession();
       try {
-        this.setIsLoadingComplete(false);
-        this.setIsSummaryLoading(true);
-
         const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
@@ -311,8 +359,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             }
           }),
         );
-        this.setIsSummaryLoading(false);
-        this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
         throw error;
@@ -341,9 +387,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
     // Assumption: a change request can only have 1 MTFI change action
     async loadChangeRequestSummaryForMtfi(payload) {
-      const navBarStore = useNavBarStore();
+      const appStore = useAppStore();
       const applicationStore = useApplicationStore();
-      this.setIsSummaryLoading(true);
+      const ccfriAppStore = useCcfriAppStore();
+      const navBarStore = useNavBarStore();
 
       try {
         const summaryModel = this.summaryModel;
@@ -351,6 +398,11 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           (item) => item.changeType === CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE,
         );
         summaryModel.mtfiFacilities = mtfiChangeAction?.mtfi;
+
+        await Promise.all([
+          ccfriAppStore.getApprovableFeeSchedulesForFacilities(summaryModel.mtfiFacilities),
+          applicationStore.getApplicationUploadedDocuments(),
+        ]);
 
         await Promise.all(
           summaryModel.mtfiFacilities.map(async (mtfiFacility) => {
@@ -385,11 +437,21 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
                 mtfiFacility.rfiApp = (
                   await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RFI}/${mtfiFacility.ccfriApplicationId}/rfi`)
                 ).data;
+
+              mtfiFacility.afs = ccfriAppStore.approvableFeeSchedules?.find(
+                (item) => item.ccfriApplicationId === mtfiFacility?.ccfriApplicationId,
+              );
+
+              mtfiFacility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
+                (document) => document.facilityId === mtfiFacility.facilityId,
+              );
+
+              mtfiFacility.isProgramYearLanguageHistorical =
+                appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
             }
             this.setSummaryModel(summaryModel);
           }),
         );
-        this.setIsSummaryLoading(false);
       } catch (error) {
         console.log(`Failed to load Summary for change request MTFI - ${error}`);
         throw error;

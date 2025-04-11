@@ -94,14 +94,14 @@
                         :rules="rules.required"
                       >
                         <v-col cols="12" md="4" class="d-flex ml-16">
-                          <v-radio label="Opt-In" :value="ECEWE_OPT_IN_TYPES.OPT_IN" />
+                          <v-radio label="Opt-In" :value="OPT_STATUSES.OPT_IN" />
                         </v-col>
                         <v-col cols="12" md="4" class="d-flex ml-16">
-                          <v-radio label="Opt-Out" :value="ECEWE_OPT_IN_TYPES.OPT_OUT" />
+                          <v-radio label="Opt-Out" :value="OPT_STATUSES.OPT_OUT" />
                         </v-col>
                       </v-radio-group>
                     </v-row>
-                    <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion" class="ml-16">
+                    <v-row v-if="facility.optInOrOut === OPT_STATUSES.OPT_IN && showUnionQuestion" class="ml-16">
                       <v-radio-group
                         v-model="facility.facilityUnionStatus"
                         class=""
@@ -119,7 +119,7 @@
                     </v-row>
                   </template>
 
-                  <v-row v-if="facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion">
+                  <v-row v-if="facility.optInOrOut === OPT_STATUSES.OPT_IN && showUnionQuestion">
                     <v-col cols="12">
                       <strong>
                         {{
@@ -176,7 +176,7 @@ import {
   pcfUrl,
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-  ECEWE_OPT_IN_TYPES,
+  OPT_STATUSES,
   ECEWE_FACILITY_UNION_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -268,7 +268,7 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
+    this.OPT_STATUSES = OPT_STATUSES;
     this.ECEWE_FACILITY_UNION_TYPES = ECEWE_FACILITY_UNION_TYPES;
   },
   methods: {
@@ -284,7 +284,7 @@ export default {
     ]),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     getOptInString(facility) {
-      return facility.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN ? 'In' : 'Out';
+      return facility.optInOrOut === OPT_STATUSES.OPT_IN ? 'In' : 'Out';
     },
     showUpdateButton(index) {
       if (this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
@@ -309,7 +309,7 @@ export default {
     toggleAll() {
       this.uiFacilities.forEach((_fac, index) => {
         this.toggleRadio(index);
-        this.uiFacilities[index].optInOrOut = ECEWE_OPT_IN_TYPES.OPT_IN;
+        this.uiFacilities[index].optInOrOut = OPT_STATUSES.OPT_IN;
       });
     },
     previous() {
@@ -352,8 +352,7 @@ export default {
     //if a facility decides to opt-out of ecewe - we should reset the union respone to 'non unionzed' before save
     resetUnionResponse() {
       this.uiFacilities.forEach((el) => {
-        if (el.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_OUT)
-          el.facilityUnionStatus = ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED;
+        if (el.optInOrOut === OPT_STATUSES.OPT_OUT) el.facilityUnionStatus = ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED;
       });
     },
     async saveFacilities(showConfirmation) {

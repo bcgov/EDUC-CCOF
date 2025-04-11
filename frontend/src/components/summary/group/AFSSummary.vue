@@ -4,7 +4,7 @@
       <v-expansion-panel-title>
         <SummaryExpansionPanelTitle
           title="Approvable Fee Schedule"
-          :loading="isEmpty(afs) || processing"
+          :loading="isEmpty(afs) || processing || isApplicationProcessing"
           :is-complete="isValidForm"
         />
       </v-expansion-panel-title>
@@ -43,12 +43,11 @@ import { mapState, mapActions } from 'pinia';
 import AfsDecisionCard from '@/components/ccfriApplication/AFS/AfsDecisionCard.vue';
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration';
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { AFS_STATUSES, DOCUMENT_TYPES, PATHS, pcfUrlGuid, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
@@ -57,8 +56,8 @@ export default {
     AfsDecisionCard,
     ApprovableParentFeesCards,
     AppDocumentUpload,
-    SummaryExpansionPanelTitle,
   },
+  mixins: [summaryMixin],
   props: {
     ccfriId: {
       type: String,
@@ -73,14 +72,9 @@ export default {
       default: '',
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       afs: {},
-      formObj: {
-        formName: 'AFSSummary',
-        formId: this.facilityId,
-      },
       processing: false,
       changeRequestDocs: [],
     };
@@ -88,7 +82,6 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['applicationUploadedDocuments', 'applicationId']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
 
@@ -131,13 +124,9 @@ export default {
     if (this.isChangeRequest) {
       await this.getChangeDocs();
     }
-
-    //ccfri-4572-update validation for AFS Summary
-    //Because we have to check if there are required uploaded documents, we use our custom validation instead of relying on Vuetify's form validation.
-    this.$emit('isSummaryValid', this.formObj, this.isValidForm);
   },
   methods: {
-    ...mapActions(useSupportingDocumentUploadStore, ['saveUploadedDocuments', 'getDocuments']),
+    ...mapActions(useSupportingDocumentUploadStore, ['getDocuments']),
     isEmpty,
     reloadAfs() {
       this.afs = this.approvableFeeSchedules?.find((item) => item.ccfriApplicationId === this.ccfriId);

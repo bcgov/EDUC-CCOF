@@ -37,6 +37,7 @@ const FacilityMappings = [
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
+  { back: 'ccof_everreceivedfundingundertheccofprogram', front: 'hasReceivedFunding' },
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
