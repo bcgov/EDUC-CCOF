@@ -216,7 +216,12 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import { CLOSURE_AFFECTED_AGE_GROUPS, CLOSURE_AFFECTED_AGE_GROUPS_TEXTS } from '@/utils/constants.js';
+import {
+  CHANGE_REQUEST_TYPES,
+  CLOSURE_AFFECTED_AGE_GROUPS,
+  CLOSURE_AFFECTED_AGE_GROUPS_TEXTS,
+  DOCUMENT_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
 
@@ -225,8 +230,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { DOCUMENT_TYPES } from '@/utils/constants';
-import { CHANGE_REQUEST_TYPES } from '@/utils/constants';
 
 export default {
   name: 'NewClosureRequestDialog',
