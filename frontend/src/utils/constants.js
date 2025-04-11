@@ -28,6 +28,7 @@ export const ApiRoutes = Object.freeze({
   CCFRI_DATES: baseRoot + '/facility/dates',
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
+  LICENSE_CATEGORIES: '/licenseCategories',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
@@ -172,7 +173,11 @@ export function changeUrlGuid(
 }
 
 export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
+  return `${PATHS.CLOSURES}/${programYearGuid}`;
+}
+
+export function licenseCategoriesUrl(facilityId = ':facilityId') {
+  return `${ApiRoutes.FACILITY}/${facilityId}${ApiRoutes.LICENSE_CATEGORIES}`;
 }
 
 export const NAV_BAR_GROUPS = {
