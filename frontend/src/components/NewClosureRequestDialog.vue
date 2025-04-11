@@ -28,11 +28,13 @@
             required
             :rules="rules.required"
             :items="facilityList"
+            :loading="isLoading"
             item-value="facilityId"
             item-title="facilityName"
             placeholder="Select a facility"
             variant="outlined"
             class="mt-2"
+            @update:model-value="handleFacilityChange"
           >
             <template #item="{ props, item, index }">
               <v-list-item :value="props.value" :active="props.active" :title="null" @click="props.onClick">
@@ -86,7 +88,12 @@
               </h3>
             </v-col>
             <v-col cols="12" lg="3" class="pr-0">
-              <v-radio-group v-model="fullFacilityClosure" required :rules="rules.required">
+              <v-radio-group
+                v-model="fullFacilityClosure"
+                required
+                :rules="rules.required"
+                @update:model-value="handleFullFacilityClosureChange"
+              >
                 <v-row class="ml-4">
                   <v-radio label="Yes" value="true" />
                   <v-radio label="No" value="false" />
@@ -101,6 +108,7 @@
           <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
             <v-select
               v-model.lazy="selectedAgeGroups"
+              :loading="isLoading"
               :items="ageGroups"
               item-title="label"
               item-value="value"
@@ -215,14 +223,10 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import {
-  CHANGE_REQUEST_TYPES,
-  CLOSURE_AFFECTED_AGE_GROUPS,
-  CLOSURE_AFFECTED_AGE_GROUPS_TEXTS,
-  DOCUMENT_TYPES,
-} from '@/utils/constants.js';
+import { CHANGE_REQUEST_TYPES, CLOSURE_AFFECTED_AGE_GROUPS, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
+import FacilityService from '@/services/facilityService';
 
 import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
@@ -253,18 +257,12 @@ export default {
       isDisplayed: false,
       isLoading: false,
       selectedFacility: undefined,
+      selectedFacilityWasChanged: true,
       parentsWillPayForClosure: undefined,
       fullFacilityClosure: undefined,
       formattedStartDate: undefined,
       formattedEndDate: undefined,
-      ageGroups: [
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_0_18, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_0_18 },
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_18_36, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_18_36 },
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.AGE_3Y_K, value: CLOSURE_AFFECTED_AGE_GROUPS.AGE_3Y_K },
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_K, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_K },
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.OOSC_G, value: CLOSURE_AFFECTED_AGE_GROUPS.OOSC_G },
-        { label: CLOSURE_AFFECTED_AGE_GROUPS_TEXTS.PRE, value: CLOSURE_AFFECTED_AGE_GROUPS.PRE },
-      ],
+      ageGroups: [],
       selectedAgeGroups: [],
       reason: undefined,
       requestDescription: undefined,
@@ -316,11 +314,48 @@ export default {
     },
   },
   methods: {
+    async handleFacilityChange(facilityId) {
+      this.isLoading = true;
+      this.selectedFacilityWasChanged = true;
+      this.facilityId = facilityId;
+      this.selectedAgeGroups = [];
+      const ageGroups = [];
+      if (facilityId && this.fullFacilityClosure === 'false') {
+        try {
+          const facilityAgeGroups = await FacilityService.getLicenseCategories(facilityId);
+          this.selectedFacilityWasChanged = false;
+          for (const ageGroup of facilityAgeGroups) {
+            ageGroups.push({
+              label: ageGroup.childCareCategory,
+              value: CLOSURE_AFFECTED_AGE_GROUPS[ageGroup.childCareCategory],
+            });
+          }
+          ageGroups.sort((a, b) => a.value - b.value);
+        } catch (e) {
+          console.log(e);
+          this.setFailureAlert('Failed to load age categories for facility');
+        }
+      }
+      this.ageGroups = ageGroups;
+      this.isLoading = false;
+    },
+    async handleFullFacilityClosureChange(fullFacilityClosure) {
+      this.fullFacilityClosure = fullFacilityClosure;
+      if (this.selectedFacilityWasChanged && fullFacilityClosure === 'false') {
+        await this.handleFacilityChange(this.facilityId);
+      }
+    },
     closeDialog() {
       this.$emit('close');
     },
     toggleSelectAll() {
-      this.selectedAgeGroups = this.allAgeGroupsSelected ? [] : this.ageGroups;
+      const ageGroups = [];
+      if (!this.allAgeGroupsSelected) {
+        for (const ageGroup of this.ageGroups) {
+          ageGroups.push(ageGroup.value);
+        }
+      }
+      this.selectedAgeGroups = ageGroups;
     },
     updateDocuments(documents) {
       this.documents = documents;

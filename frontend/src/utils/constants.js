@@ -454,21 +454,12 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
 });
 
 export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
-  AGE_0_18: 100000000,
-  AGE_18_36: 100000001,
-  AGE_3Y_K: 100000002,
-  OOSC_K: 100000003,
-  OOSC_G: 100000004,
-  PRE: 100000005,
-});
-
-export const CLOSURE_AFFECTED_AGE_GROUPS_TEXTS = Object.freeze({
-  AGE_0_18: '0 to 18 months',
-  AGE_18_36: '18 to 36 months',
-  AGE_3Y_K: '3 Years to Kindergarten',
-  OOSC_K: 'Out of School Care - Kindergarten',
-  OOSC_G: 'Out of School Care - Grade 1+',
-  PRE: 'Preschool',
+  '0 to 18 months': 100000000,
+  '18 to 36 months': 100000001,
+  '3 Years to Kindergarten': 100000002,
+  'Out of School Care - Kindergarten': 100000003,
+  'Out of School Care - Grade 1+': 100000004,
+  Preschool: 100000005,
 });
 
 export const CLOSURE_REQUEST_TYPES = Object.freeze({
