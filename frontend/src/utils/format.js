@@ -46,5 +46,6 @@ export function formatFiscalYearName(fiscalYearName) {
  *   - A formatted date string in the user's local timezone with a short month format (e.g., PST timezone - "Nov 26, 2025").
  */
 export function formatUTCDateToShortDateString(date) {
+  if (!date) return null;
   return new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 }

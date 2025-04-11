@@ -31,12 +31,7 @@ const {
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
 } = require('../util/mapping/Mappings');
-const {
-  getCCFRIClosureDates,
-  getLicenseCategoriesByFacilityId,
-  getFacilityChildCareTypesByCcfriId,
-  getFacilityByFacilityId
-} = require('./facility');
+const { getCCFRIClosureDates, getLicenseCategoriesByFacilityId, getFacilityChildCareTypesByCcfriId, getFacilityByFacilityId } = require('./facility');
 const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
@@ -49,12 +44,14 @@ async function renewCCOFApplication(req, res) {
   try {
     const application = req.body;
     const payload = {
-      ccof_providertype: application.providerType == 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
+      ccof_providertype: application.providerType === 'GROUP' ? ORGANIZATION_PROVIDER_TYPES.GROUP : ORGANIZATION_PROVIDER_TYPES.FAMILY,
       ccof_applicationtype: CCOF_APPLICATION_TYPES.RENEW,
+      ccof_application_template_version: application.applicationTemplateVersion,
       'ccof_ProgramYear@odata.bind': `/ccof_program_years(${application.programYearId})`,
       'ccof_Organization@odata.bind': `/ccof_program_years(${application.organizationId})`,
     };
     const applicationGuid = await postOperation('ccof_applications', payload);
+
     //After the application is created, get the application guid
     return res.status(HttpStatus.CREATED).json({ applicationId: applicationGuid });
   } catch (e) {
@@ -518,7 +515,7 @@ async function printPdf(req, numOfRetries = 0) {
 function getCurrentDateForPdfFileName() {
   const date = new Date();
   const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: "America/Vancouver",
+    timeZone: 'America/Vancouver',
     month: 'short',
   });
   const month = dateTimeFormatter.format(date).toUpperCase();
@@ -701,15 +698,8 @@ async function getApplicationSummary(req, res) {
       });
     }
 
-    let facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : null;
-
-    const facilities = Array
-      .from(facilityMap.values())
-      .filter((facility) => {
-        if (facilityFilters === null || facilityFilters.length < 1) return true;
-        return facilityFilters.includes(facility.facilityId);
-      });
-
+    const facilityFilters = Array.isArray(req.body.facilities) ? req.body.facilities : [];
+    const facilities = facilityFilters.length > 0 ? Array.from(facilityMap.values()).filter((facility) => facilityFilters.includes(facility.facilityId)) : Array.from(facilityMap.values());
     const facilityPromises = [];
     const limit = pLimit(6);
     for (const facility of facilities) {
@@ -719,7 +709,7 @@ async function getApplicationSummary(req, res) {
 
     return res.status(HttpStatus.OK).json({
       application: applicationSummary,
-      facilities: facilitiesWithSummaryData
+      facilities: facilitiesWithSummaryData,
     });
   } catch (e) {
     log.error('An error occurred while getting getApplicationSummary', e);
