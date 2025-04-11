@@ -269,10 +269,12 @@ export default {
     if (!rfi.exceptionalCircumstances) return rfi.exceptionalCircumstances === 0;
     if (!rfi.circumstanceOccurWithin6Month) return rfi.circumstanceOccurWithin6Month === 0;
     const requiredFields = ['expenseInformationNote'];
-    const isExpenseInformationComplete = rfi.expenseList?.every((expense) => {
-      const requiredFields = ['description', 'date', 'frequency', 'expense'];
-      return !hasEmptyFields(expense, requiredFields);
-    });
+    const isExpenseInformationComplete =
+      !isEmpty(rfi.expenseList) &&
+      rfi.expenseList?.every((expense) => {
+        const requiredFields = ['description', 'date', 'frequency', 'expense'];
+        return !hasEmptyFields(expense, requiredFields);
+      });
     const isOtherSourcesOfMinistryFunding =
       !isEmpty(rfi.fundingList) &&
       rfi.fundingList?.every((fund) => {

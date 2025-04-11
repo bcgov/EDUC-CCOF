@@ -169,11 +169,9 @@ function decorateCcfriChildCareTypes(ccfri, childCareLicenses) {
 
 export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
   state: () => ({
-    isValidForm: undefined,
     declarationModel: {},
     summaryModel: {},
     facilities: [],
-    isLoadingComplete: false,
   }),
   getters: {
     isCCFRIComplete: (state) => {
@@ -207,12 +205,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     },
     setSummaryModel(value) {
       this.summaryModel = value;
-    },
-    isValidForm(value) {
-      this.isValidForm = value;
-    },
-    setIsLoadingComplete(value) {
-      this.isLoadingComplete = value;
     },
     async loadDeclaration() {
       checkSession();
@@ -363,7 +355,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     async loadChangeRequestSummaryDeclaration(changeRequestId) {
       checkSession();
       try {
-        this.setIsLoadingComplete(false);
         const payload = (await ApiService.apiAxios.get(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`))?.data;
         const changeRequestTypes = [];
         payload?.changeActions?.forEach((item) => {
@@ -408,7 +399,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             }
           }),
         );
-        this.setIsLoadingComplete(true);
       } catch (error) {
         console.log(`Failed to load Summary and Declaration for Change Request - ${error}`);
         throw error;
