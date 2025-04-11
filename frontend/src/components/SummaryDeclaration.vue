@@ -175,7 +175,7 @@
                 the Early Learning and Child Care Act as a result of committing the offence.
               </p>
             </template>
-            <!-- Minstry Requirements for Change Request Add New Facility is  after Dec A is signed, to have provider sign Dec B also-->
+            <!-- Ministry Requirements for Change Request Add New Facility is after Dec A is signed, to have provider sign Dec B also -->
             <template v-else-if="isDeclarationBDisplayed">
               <p>
                 I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the

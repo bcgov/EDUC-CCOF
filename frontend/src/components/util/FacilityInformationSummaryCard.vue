@@ -11,7 +11,7 @@
         <v-col cols="3" class="px-2">
           <p class="summary-label">Facility ID</p>
           <p class="summary-value">
-            {{ facility.facilityAccountNumber ?? '--' }}
+            {{ facility.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}
           </p>
         </v-col>
         <v-col cols="1" class="d-flex justify-end">
@@ -56,6 +56,7 @@
 
 <script>
 import { getOptInOptOut } from '@/utils/common.js';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
 
 export default {
   props: {
@@ -65,6 +66,9 @@ export default {
         return {};
       },
     },
+  },
+  created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
   },
   methods: {
     getOptInOptOut,

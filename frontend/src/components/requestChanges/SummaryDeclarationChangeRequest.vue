@@ -64,20 +64,20 @@
                   <v-row no-gutters class="d-flex pl-6 py-5 rounded-t-lg facility-info">
                     <v-col class="col-6 col-lg-4">
                       <p class="summary-label">Facility Name</p>
-                      <p label="--" class="summary-value">
-                        {{ facility.facilityName ? facility.facilityName : '--' }}
+                      <p class="summary-value">
+                        {{ facility.facilityName ? facility.facilityName : EMPTY_PLACEHOLDER }}
                       </p>
                     </v-col>
                     <v-col class="col-6 col-lg-3">
                       <p class="summary-label">Facility ID</p>
                       <p class="summary-value">
-                        {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : '--' }}
+                        {{ facility.facilityAccountNumber ? facility.facilityAccountNumber : EMPTY_PLACEHOLDER }}
                       </p>
                     </v-col>
                     <v-col class="col-6 col-lg-3">
                       <p class="summary-label">Licence Number</p>
                       <p class="summary-value">
-                        {{ facility.licenseNumber ? facility.licenseNumber : '--' }}
+                        {{ facility.licenseNumber ? facility.licenseNumber : EMPTY_PLACEHOLDER }}
                       </p>
                     </v-col>
                   </v-row>
@@ -297,6 +297,7 @@ import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import {
+  EMPTY_PLACEHOLDER,
   PATHS,
   CHANGE_REQUEST_TYPES,
   CHANGE_TYPES,
@@ -377,19 +378,17 @@ export default {
       return this.hasChangeRequestType('PDF_CHANGE') && !this.model.enabledDeclarationB;
     },
     pageTitle() {
-      let changeRequestTypes = this.summaryModel?.changeRequestTypes;
-      if (changeRequestTypes?.length === 1) {
-        return changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE)
-          ? ' - Request a Parent Fee Increase'
-          : '';
-      }
-      return '';
+      const changeRequestTypes = this.summaryModel?.changeRequestTypes;
+      return changeRequestTypes?.length === 1 && changeRequestTypes?.includes(CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE)
+        ? ' - Request a Parent Fee Increase'
+        : '';
     },
     isPageComplete() {
       return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
     },
   },
   async created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.PATHS = PATHS;
     await this.loadData();
   },

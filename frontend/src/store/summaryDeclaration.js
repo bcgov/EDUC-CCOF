@@ -94,24 +94,22 @@ function decorateCcfriChildCareTypes(ccfri, childCareLicenses) {
     const childCareTypesArr = [];
     const findChildCareTypes = (yearToSearch, checkForMissingPrevFees = false) => {
       childCareLicenses?.forEach((category) => {
-        const found = ccfri?.childCareTypes?.find((searchItem) => {
-          return (
-            searchItem.childCareCategoryId == category.childCareCategoryId &&
-            searchItem.programYearId == yearToSearch.programYearId
-          );
-        });
+        const found = ccfri?.childCareTypes?.find(
+          (searchItem) =>
+            searchItem.childCareCategoryId === category.childCareCategoryId &&
+            searchItem.programYearId === yearToSearch.programYearId,
+        );
 
         if (found) {
           childCareTypesArr.push(found);
         } else {
           if (checkForMissingPrevFees) {
             //check to see if childcarecat exists in last years CCFRI app.
-            const pastChildCareTypefound = ccfri?.prevYearCcfriApp.childCareTypes.find((prevChildCareCat) => {
-              return (
-                prevChildCareCat.childCareCategoryId == category.childCareCategoryId &&
-                prevChildCareCat.programYearId == yearToSearch.programYearId
-              );
-            });
+            const pastChildCareTypefound = ccfri?.prevYearCcfriApp.childCareTypes.find(
+              (prevChildCareCat) =>
+                prevChildCareCat.childCareCategoryId === category.childCareCategoryId &&
+                prevChildCareCat.programYearId === yearToSearch.programYearId,
+            );
             if (pastChildCareTypefound) {
               return;
             }

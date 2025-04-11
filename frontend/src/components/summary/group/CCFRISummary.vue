@@ -418,17 +418,18 @@ export default {
   },
   computed: {
     routingPath() {
-      if (!this.ccfri && isChangeRequest(this)) {
-        return changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid);
-      } else if (!this.ccfri) {
-        pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
-      } else if (isChangeRequest(this)) {
-        return changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.changeRecGuid, this.ccfri?.ccfriId);
-      } else if (this.isRenewal) {
-        return pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.ccfri?.ccfriId);
-      } else {
-        return pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.ccfri?.ccfriId);
+      if (!this.ccfri) {
+        return isChangeRequest(this)
+          ? changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid)
+          : pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
       }
+      if (isChangeRequest(this)) {
+        return changeUrlGuid(PATHS.CCFRI_NEW_FEES, this.changeRecGuid, this.ccfri?.ccfriId);
+      }
+      if (this.isRenewal) {
+        return pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.ccfri?.ccfriId);
+      }
+      return pcfUrlGuid(PATHS.CCFRI_NEW_FEES, this.programYearId, this.ccfri?.ccfriId);
     },
   },
   created() {
