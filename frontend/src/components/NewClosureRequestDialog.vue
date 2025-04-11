@@ -180,7 +180,6 @@
             <v-textarea v-model="requestDescription" variant="outlined" label="Detailed description of request" />
           </v-row>
           <v-row>
-            <!-- JonahCurlCGI todo: add document uploading -->
             <AppDocumentUpload
               :loading="isLoading"
               :document-type="documentType"
