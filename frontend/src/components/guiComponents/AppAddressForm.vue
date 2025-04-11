@@ -26,7 +26,7 @@
           />
           <AppAddressLookup
             v-else
-            v-model="model.address"
+            :saved-address="model.address"
             :disabled="disabled"
             :rules="rules.required"
             :label="addressLabel"
@@ -156,6 +156,7 @@ export default {
   methods: {
     updateAddress(value) {
       if (!value || !(value instanceof Object)) return;
+      this.model.address = value.Text;
       const address = value.Description?.split(',');
       this.model.city = address[0]?.trim();
       this.model.province = address[1]?.trim();
