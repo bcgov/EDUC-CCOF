@@ -195,10 +195,14 @@ export default {
         this.setFailureAlert('Failed to load closures');
       }
     },
-    // JonahCurlCGI - todo: implement the following functions
-    setClosureToView(closureToView) {
-      this.closureToView = closureToView;
+    setClosureToView(closure) {
+      if (closure && !closure.licenseNumber) {
+        const facility = this.getNavByFacilityId(closure.facilityId);
+        closure.licenseNumber = facility?.licenseNumber;
+      }
+      this.closureToView = closure;
     },
+    // JonahCurlCGI - todo: implement the following functions
     updateClosure(closure) {
       // stub
     },
