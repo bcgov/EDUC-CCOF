@@ -1,6 +1,17 @@
 <template>
   <AppDialog v-model="isDisplayed" title="Closure Details" @close="closeDialog">
-    <template #content> {{ closure }} </template>
+    <template #content>
+      <v-container class="pa-5">
+        <v-row>License Number</v-row>
+        <v-row>{{ closure.licenseNumber }}</v-row>
+        <v-row>Closure Reason</v-row>
+        <v-row>{{ closure.closureReason }}</v-row>
+        <v-row>Closure Type</v-row>
+        <v-row>{{ closureType }}</v-row>
+        <v-row>Affected Care Types</v-row>
+        <v-row>{{ affectedCareTypes }}</v-row>
+      </v-container>
+    </template>
     <template #button>
       <v-row justify="center">
         <AppButton :primary="false" @click="closeDialog">Back to Summary</AppButton>
@@ -34,6 +45,12 @@ export default {
       isDisplayed: false,
       isLoading: false,
     };
+  },
+  computed: {
+    closureType() {
+      return this.closure.fullClosure ? 'Full' : 'Partial';
+    },
+    affectedCareTypes() {},
   },
   watch: {
     show: {
