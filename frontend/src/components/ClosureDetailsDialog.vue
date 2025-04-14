@@ -1,6 +1,6 @@
 <template>
   <AppDialog v-model="isDisplayed" title="Closure Details" @close="closeDialog">
-    <template #content> </template>
+    <template #content> {{ closure }} </template>
     <template #button> </template>
   </AppDialog>
 </template>
@@ -18,6 +18,10 @@ export default {
     show: {
       type: Boolean,
       default: false,
+    },
+    closure: {
+      type: Object,
+      default: undefined,
     },
   },
   emits: ['close'],
