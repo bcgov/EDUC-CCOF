@@ -19,7 +19,7 @@
         <v-container v-if="closure?.fullClosure === false" class="pa-0">
           <v-row class="pt-4">Affected Care Types</v-row>
           <v-row>
-            <h3 class="value">
+            <h3 class="value" align="left">
               {{ affectedCareTypes }}
             </h3>
           </v-row>
@@ -67,11 +67,11 @@ export default {
       return this.closure?.fullClosure ? 'Full' : 'Partial';
     },
     affectedCareTypes() {
-      if (this.closure?.fullClosure === false && this.closure?.ageGroups) {
+      if (this.closure?.fullClosure === false && this.closure.ageGroups) {
         const ageGroups = [];
         const ageGroupVals = this.closure.ageGroups.split(',');
         ageGroupVals.sort();
-        for (const ageGroupVal of ageGroupVal) {
+        for (const ageGroupVal of ageGroupVals) {
           ageGroups.push(CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(ageGroupVal)]);
         }
         return ageGroups.join(', ');
