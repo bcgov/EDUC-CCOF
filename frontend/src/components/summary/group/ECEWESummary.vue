@@ -421,16 +421,13 @@ export default {
     },
     routingPath() {
       if (this.isChangeRequest) {
-        if (!this.eceweFacility) {
-          return changeUrl(this.PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
-        }
-        return changeUrl(this.PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
-      } else {
-        if (!this.eceweFacility) {
-          return pcfUrl(this.PATHS.ECEWE_ELIGIBILITY, this.programYearId);
-        }
-        return pcfUrl(this.PATHS.ECEWE_FACILITITES, this.programYearId);
+        return !this.eceweFacility
+          ? changeUrl(this.PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid)
+          : changeUrl(this.PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
       }
+      return !this.eceweFacility
+        ? pcfUrl(this.PATHS.ECEWE_ELIGIBILITY, this.programYearId)
+        : pcfUrl(this.PATHS.ECEWE_FACILITITES, this.programYearId);
     },
     optInOptOut() {
       return this.getOptInOptOut(this.eceweFacility?.optInOrOut);
