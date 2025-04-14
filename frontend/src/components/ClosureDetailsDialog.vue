@@ -18,7 +18,7 @@
         </v-row>
         <v-container v-if="closure?.fullClosure === false" class="pa-0">
           <v-row class="pt-4">Affected Care Types</v-row>
-          <v-row>
+          <v-row class="mr-3">
             <h3 class="value" align="left">
               {{ affectedCareTypes }}
             </h3>
