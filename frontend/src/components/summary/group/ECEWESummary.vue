@@ -322,18 +322,15 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useAppStore } from '@/store/app.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
-import { getOptInOptOut, isChangeRequest } from '@/utils/common.js';
+import { isChangeRequest } from '@/utils/common.js';
 import {
-  PATHS,
   pcfUrl,
   changeUrl,
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  OPT_STATUSES,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_BELONGS_TO_UNION,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 
 export default {
@@ -372,22 +369,22 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useAppStore, ['fundingModelTypeList']),
     showUnionQuestion() {
-      return this.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+      return this.fundingModel && this.getLanguageYearLabel === this.PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
     showApplicableSector() {
       return (
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
+          this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
           this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
-          this.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) ||
-        (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
-          this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL)
+          this.getLanguageYearLabel !== this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) ||
+        (this.ecewe?.belongsToUnion === this.ECEWE_BELONGS_TO_UNION.YES &&
+          this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
+          this.getLanguageYearLabel === this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL)
       );
     },
     showFundingModel() {
       return (
-        this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
+        this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
       );
@@ -400,7 +397,7 @@ export default {
     },
     showWageConfirmation() {
       return (
-        this.ecewe?.optInECEWE === OPT_STATUSES.OPT_IN &&
+        this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
@@ -425,18 +422,18 @@ export default {
     routingPath() {
       if (this.isChangeRequest) {
         if (!this.eceweFacility) {
-          return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
+          return changeUrl(this.PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
         }
-        return changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
+        return changeUrl(this.PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
       } else {
         if (!this.eceweFacility) {
-          return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
+          return pcfUrl(this.PATHS.ECEWE_ELIGIBILITY, this.programYearId);
         }
-        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
+        return pcfUrl(this.PATHS.ECEWE_FACILITITES, this.programYearId);
       }
     },
     optInOptOut() {
-      return getOptInOptOut(this.eceweFacility?.optInOrOut);
+      return this.getOptInOptOut(this.eceweFacility?.optInOrOut);
     },
     facilityUnionStatus() {
       switch (this.eceweFacility?.facilityUnionStatus) {
@@ -473,7 +470,6 @@ export default {
     },
   },
   created() {
-    this.OPT_STATUSES = OPT_STATUSES;
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES;
   },
