@@ -246,6 +246,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { readonly } from 'vue';
 
 export default {
   name: 'NewClosureRequestDialog',
