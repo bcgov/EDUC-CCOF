@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 
@@ -11,6 +13,17 @@ export default {
       return response?.data;
     } catch (error) {
       console.log(`Failed to get organization closures - ${error}`);
+      throw error;
+    }
+  },
+
+  async createNewClosureChangeRequest(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_NEW_CLOSURE, payload);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to create organization closure request - ${error}`);
       throw error;
     }
   },

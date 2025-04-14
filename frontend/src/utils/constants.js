@@ -28,6 +28,7 @@ export const ApiRoutes = Object.freeze({
   CCFRI_DATES: baseRoot + '/facility/dates',
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
+  LICENSE_CATEGORIES: '/licenseCategories',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
@@ -48,6 +49,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
+  CHANGE_REQUEST_NEW_CLOSURE: baseRoot + '/changeRequest/newClosure',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
@@ -171,7 +173,11 @@ export function changeUrlGuid(
 }
 
 export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
+  return `${PATHS.CLOSURES}/${programYearGuid}`;
+}
+
+export function licenseCategoriesUrl(facilityId = ':facilityId') {
+  return `${ApiRoutes.FACILITY}/${facilityId}${ApiRoutes.LICENSE_CATEGORIES}`;
 }
 
 export const NAV_BAR_GROUPS = {
@@ -277,6 +283,7 @@ export const CHANGE_REQUEST_TYPES = {
   DATE_DIRECT_DEPOSIT_INFO: 100000012,
   PDF_CHANGE: 100000013,
   NEW_CATEGORY: 100000014,
+  NEW_CLOSURE: 100000015,
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
@@ -368,6 +375,7 @@ export const DOCUMENT_TYPES = Object.freeze({
   APPLICATION_SUPPORTING: 'SUPPORTING',
   CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
   CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
+  CLOSURE_REQUEST: 'Closure Request Documents',
 });
 
 export const MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
@@ -454,6 +462,21 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCOF: 'CCOF',
   INELIGIBLE: 'Ineligible',
   PENDING: 'Pending',
+});
+
+export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
+  '0 to 18 months': 100000000,
+  '18 to 36 months': 100000001,
+  '3 Years to Kindergarten': 100000002,
+  'Out of School Care - Kindergarten': 100000003,
+  'Out of School Care - Grade 1+': 100000004,
+  Preschool: 100000005,
+});
+
+export const CLOSURE_REQUEST_TYPES = Object.freeze({
+  NEW_CLOSURE: 1,
+  DELETE_CLOSURE: 2,
+  UPDATE_CLOSURE: 3,
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
