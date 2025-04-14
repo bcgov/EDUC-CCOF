@@ -1,7 +1,11 @@
 <template>
   <AppDialog v-model="isDisplayed" title="Closure Details" @close="closeDialog">
     <template #content> {{ closure }} </template>
-    <template #button> </template>
+    <template #button>
+      <v-row justify="center">
+        <AppButton :primary="false" @click="closeDialog">Back to Summary</AppButton>
+      </v-row>
+    </template>
   </AppDialog>
 </template>
 
