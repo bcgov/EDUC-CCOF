@@ -50,7 +50,9 @@ export default {
     closureType() {
       return this.closure.fullClosure ? 'Full' : 'Partial';
     },
-    affectedCareTypes() {},
+    affectedCareTypes() {
+      return '';
+    },
   },
   watch: {
     show: {
