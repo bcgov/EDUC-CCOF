@@ -91,7 +91,7 @@
                     />
                   </v-col>
                   <v-col cols="12">
-                    <span class="summary-label pt-3"> Which of the following describes your organziation? </span>
+                    <span class="summary-label pt-3"> Which of the following describes your organization? </span>
                     <v-text-field
                       placeholder="Required"
                       :model-value="describeCSSEA"
@@ -333,6 +333,7 @@ import {
   OPT_STATUSES,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_BELONGS_TO_UNION,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 
 export default {

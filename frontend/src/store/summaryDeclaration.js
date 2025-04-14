@@ -44,17 +44,21 @@ function getProgramYear(selectedGuid, programYearList) {
  *
  * @param {Object} facility - The facility to add details to
  */
-function mapFacility(facility, isGroup) {
+function mapFacility(facility, isGroup, eceweOrg) {
   const applicationStore = useApplicationStore();
   const appStore = useAppStore();
   const ccfriAppStore = useCcfriAppStore();
   const navBarStore = useNavBarStore();
 
+  facility.eceweOrg = eceweOrg;
   facility.licenseCategories = parseLicenseCategories(facility.childCareLicenses);
   facility.uploadedDocuments = applicationStore.applicationUploadedDocuments?.filter(
     (document) => document.facilityId === facility.facilityId,
   );
-  facility.isProgramYearLanguageHistorical = appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+  facility.languageYearLabel = appStore.getLanguageYearLabel;
+  facility.isRenewal = applicationStore.isRenewal;
+  facility.isGroup = isGroup;
+  facility.applicationTemplateVersion = applicationStore.applicationTemplateVersion;
   const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
   facility.hasRfi = facilityInNavBar?.hasRfi;
   facility.hasNmf = facilityInNavBar?.hasNmf;
@@ -79,7 +83,7 @@ function mapFacility(facility, isGroup) {
     licenseNumber: facility.facilityInfo?.licenseNumber,
     ccfriOptInStatus: facility.ccfri?.ccfriOptInStatus,
     eceweOptInStatus: facility.ecewe?.optInOrOut,
-    isComplete: ApplicationService.isFacilityComplete(facility, isGroup, applicationStore.applicationTemplateVersion),
+    isComplete: ApplicationService.isFacilityComplete(facility),
   };
   return facility;
 }
@@ -294,9 +298,6 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           applicationStore.getApplicationUploadedDocuments(),
         ]);
 
-        const isGroup = summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
-        this.facilities = payload.facilities.map((facility) => mapFacility(facility, isGroup));
-
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {
           summaryModel.organization = (
@@ -306,6 +307,10 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
             await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${payload.application.applicationId}`)
           ).data;
         }
+
+        const isGroup = summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+        this.facilities = payload.facilities.map((facility) => mapFacility(facility, isGroup, summaryModel.ecewe));
+
         this.setSummaryModel(summaryModel);
       } catch (error) {
         console.log(`Failed to load Summary - ${error}`);

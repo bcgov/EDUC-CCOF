@@ -15,7 +15,7 @@
       />
       <v-expansion-panels v-model="expandedPanels" multiple>
         <v-expansion-panel
-          v-if="facility?.facilityInfo"
+          v-if="!isRenewal && facility?.facilityInfo"
           :key="`${facility.facilityId}-facility-information`"
           :value="`${facility.facilityId}-facility-information`"
           variant="accordion"
@@ -24,9 +24,6 @@
             :facility-info="facility?.facilityInfo"
             :funding="facility?.funding"
             :facility-id="facility.facilityId"
-            :ccfri-status="facility?.ccfri?.ccfriOptInStatus"
-            :ecewe-status="facility?.ecewe?.optInOrOut"
-            :license-categories="facility?.licenseCategories"
             :change-rec-guid="facility?.changeRequestId"
             :program-year-id="programYearId"
           />
