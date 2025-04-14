@@ -1,16 +1,28 @@
 <template>
   <AppDialog v-model="isDisplayed" title="Closure Details" @close="closeDialog">
     <template #content>
-      <v-container class="pa-5">
-        <v-row>License Number</v-row>
-        <v-row>{{ closure.licenseNumber }}</v-row>
-        <v-row>Closure Reason</v-row>
-        <v-row>{{ closure.closureReason }}</v-row>
-        <v-row>Closure Type</v-row>
-        <v-row>{{ closureType }}</v-row>
-        <v-row>Affected Care Types</v-row>
-        <v-row>{{ affectedCareTypes }}</v-row>
-      </v-container>
+      <v-card class="ma-2 pl-8 pt-4 pb-6 border-top text">
+        <v-row>
+          <p>License Number</p>
+        </v-row>
+        <v-row>
+          <h3 class="value">{{ closure.licenseNumber }}</h3>
+        </v-row>
+        <v-row class="pt-4">Closure Reason</v-row>
+        <v-row>
+          <h3 class="value">{{ closure.closureReason }}</h3>
+        </v-row>
+        <v-row class="pt-4">Closure Type</v-row>
+        <v-row>
+          <h3 class="value">{{ closureType }}</h3>
+        </v-row>
+        <v-row class="pt-4">Affected Care Types</v-row>
+        <v-row>
+          <h3 class="value">
+            {{ affectedCareTypes }}
+          </h3>
+        </v-row>
+      </v-card>
     </template>
     <template #button>
       <v-row justify="center">
@@ -51,7 +63,7 @@ export default {
       return this.closure.fullClosure ? 'Full' : 'Partial';
     },
     affectedCareTypes() {
-      return '';
+      return 'ja;sdf';
     },
   },
   watch: {
@@ -68,3 +80,14 @@ export default {
   },
 };
 </script>
+<style>
+.border-top {
+  border-top: 4px solid gray; /* or any color you want */
+}
+.text {
+  color: #acacac;
+}
+.value {
+  color: #636363;
+}
+</style>
