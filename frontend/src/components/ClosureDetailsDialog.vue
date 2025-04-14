@@ -6,22 +6,24 @@
           <p>License Number</p>
         </v-row>
         <v-row>
-          <h3 class="value">{{ closure.licenseNumber }}</h3>
+          <h3 class="value">{{ closure?.licenseNumber }}</h3>
         </v-row>
         <v-row class="pt-4">Closure Reason</v-row>
         <v-row>
-          <h3 class="value">{{ closure.closureReason }}</h3>
+          <h3 class="value">{{ closure?.closureReason }}</h3>
         </v-row>
         <v-row class="pt-4">Closure Type</v-row>
         <v-row>
           <h3 class="value">{{ closureType }}</h3>
         </v-row>
-        <v-row class="pt-4">Affected Care Types</v-row>
-        <v-row>
-          <h3 class="value">
-            {{ affectedCareTypes }}
-          </h3>
-        </v-row>
+        <v-container v-if="closure?.fullClosure === false" class="pa-0">
+          <v-row class="pt-4">Affected Care Types</v-row>
+          <v-row>
+            <h3 class="value">
+              {{ affectedCareTypes }}
+            </h3>
+          </v-row>
+        </v-container>
       </v-card>
     </template>
     <template #button>
@@ -35,6 +37,8 @@
 <script>
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import { CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT } from '@/utils/constants.js';
+
 import alertMixin from '@/mixins/alertMixin';
 
 export default {
@@ -60,10 +64,19 @@ export default {
   },
   computed: {
     closureType() {
-      return this.closure.fullClosure ? 'Full' : 'Partial';
+      return this.closure?.fullClosure ? 'Full' : 'Partial';
     },
     affectedCareTypes() {
-      return 'ja;sdf';
+      if (this.closure?.fullClosure === false && this.closure?.ageGroups) {
+        const ageGroups = [];
+        const ageGroupVals = this.closure.ageGroups.split(',');
+        ageGroupVals.sort();
+        for (const ageGroupVal of ageGroupVal) {
+          ageGroups.push(CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(ageGroupVal)]);
+        }
+        return ageGroups.join(', ');
+      }
+      return '';
     },
   },
   watch: {
