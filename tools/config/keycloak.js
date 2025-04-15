@@ -177,7 +177,7 @@ async function getAccessToken(kcBaseUrl, adminClientId, adminClientSecret) {
 }
 
 async function getClient(token, kcAdminUrl, clientId) {
-  console.log("Finding the client with get-client");
+  console.log(`Getting ${clientId} with getClient`);
   const response = await fetch(`${kcAdminUrl}/clients`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -185,22 +185,25 @@ async function getClient(token, kcAdminUrl, clientId) {
   return clients.find((c) => c.clientId === clientId);
 }
 
-async function deleteClientIfExists(token, kcAdminUrl, clientId) {
-  if (!clientId) {
+async function deleteClientIfExists(token, kcAdminUrl, id, clientId = undefined) {
+  if (clientId) {
+    console.log(`Attempting to delete client: ${clientId}`);
+  }
+  if (!id) {
     console.log(
-      "The client-id in delete-client-id-if-exists is empty. No client to delete?",
+      `The id called with deleteClientIfExists is empty. No client to delete?`,
     );
     return;
   }
-  console.log("Deleting an existing client-id with delete-client-id-if-exists");
-  await fetch(`${kcAdminUrl}/clients/${clientId}`, {
+  console.log(`Deleting ${clientId ? clientId : 'the existing client'} by id with deleteClientIfExists`);
+  await fetch(`${kcAdminUrl}/clients/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
 async function createClient(token, kcAdminUrl, clientMap) {
-  console.log("Creating keycloak client");
+  console.log(`Creating keycloak client: ${clientMap.clientId}`);
   await fetch(`${kcAdminUrl}/clients`, {
     method: "POST",
     headers: {
@@ -227,7 +230,7 @@ export async function main() {
   const clientName = `${envVars.appName}-${envVars.env}`;
   const client = await getClient(token, kcAdminUrl, clientName);
 
-  await deleteClientIfExists(token, kcAdminUrl, client ? client.id : null);
+  await deleteClientIfExists(token, kcAdminUrl, client ? client.id : null, client.clientId);
 
   await createClient(
     token,
