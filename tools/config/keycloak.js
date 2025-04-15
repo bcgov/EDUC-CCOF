@@ -230,7 +230,7 @@ export async function main() {
   const clientName = `${envVars.appName}-${envVars.env}`;
   const client = await getClient(token, kcAdminUrl, clientName);
 
-  await deleteClientIfExists(token, kcAdminUrl, client ? client.id : null, client.clientId);
+  await deleteClientIfExists(token, kcAdminUrl, client ? client.id : null, client?.clientId);
 
   await createClient(
     token,
