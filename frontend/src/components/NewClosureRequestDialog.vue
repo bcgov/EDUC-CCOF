@@ -14,7 +14,6 @@
         <h3 class="mt-6">Select a Facility:</h3>
         <v-select
           v-model="selectedFacility"
-          required
           :rules="rules.required"
           :items="facilityList"
           :loading="isLoading"
@@ -30,8 +29,8 @@
               :value="props.value"
               :active="props.active"
               :title="null"
-              @click="props.onClick"
               class="text-primary"
+              @click="props.onClick"
             >
               <v-row>
                 <v-col cols="12" md="8" align="start">
@@ -65,19 +64,19 @@
             <h3 class="left-align mt-2">Will parents pay for this closure?</h3>
           </v-col>
           <v-col cols="12" lg="3" class="pl-0">
-            <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
+            <v-radio-group v-model="parentsWillPayForClosure" :rules="rules.required">
               <v-row justify="start">
                 <v-col cols="6">
-                  <v-radio label="Yes" value="1" />
+                  <v-radio label="Yes" :value="1" />
                 </v-col>
                 <v-col cols="6">
-                  <v-radio label="No" value="0" />
+                  <v-radio label="No" :value="0" />
                 </v-col>
               </v-row>
             </v-radio-group>
           </v-col>
         </v-row>
-        <v-container v-if="selectedFacility && parentsWillPayForClosure" width="100%" class="pa-0">
+        <v-container v-if="selectedFacility && parentsWillPayForClosure !== undefined" width="100%" class="pa-0">
           <v-row>
             <v-col cols="12" lg="9">
               <h3 class="left-align mt-2">
@@ -88,22 +87,21 @@
             <v-col cols="12" lg="3" class="pl-0">
               <v-radio-group
                 v-model="fullFacilityClosure"
-                required
                 :rules="rules.required"
                 @update:model-value="handleFullFacilityClosureChange"
               >
                 <v-row justify="start">
                   <v-col cols="6">
-                    <v-radio label="Yes" value="true" />
+                    <v-radio label="Yes" :value="true" />
                   </v-col>
                   <v-col cols="6">
-                    <v-radio label="No" value="false" />
+                    <v-radio label="No" :value="false" />
                   </v-col>
                 </v-row>
               </v-radio-group>
             </v-col>
           </v-row>
-          <div v-if="fullFacilityClosure === 'false'">
+          <div v-if="fullFacilityClosure === false">
             <v-row class="ml-0">
               <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
               <p>(select all that apply):</p>
@@ -180,7 +178,7 @@
               <h3>Reason:</h3>
             </v-col>
             <v-col cols="12" lg="9" align="start">
-              <v-text-field v-model="reason" variant="outlined" required :rules="rules.required"></v-text-field>
+              <v-text-field v-model="reason" variant="outlined" :rules="rules.required"></v-text-field>
             </v-col>
           </v-row>
           <h3>Request Description:</h3>
@@ -268,7 +266,7 @@ export default {
       reason: undefined,
       requestDescription: undefined,
       uploadedDocuments: [],
-      rulesAgeGroups: [(v) => this.fullFacilityClosure === 'true' || v?.length > 0 || 'This field is required'],
+      rulesAgeGroups: [(v) => this.fullFacilityClosure || v?.length > 0 || 'This field is required'],
       documentType: DOCUMENT_TYPES.CLOSURE_REQUEST,
     };
   },
@@ -292,7 +290,7 @@ export default {
         this.selectedFacility &&
         this.parentsWillPayForClosure !== null &&
         this.fullFacilityClosure !== null &&
-        (this.fullFacilityClosure === 'true' || this.selectedAgeGroups.length > 0) &&
+        (this.fullFacilityClosure || this.selectedAgeGroups.length > 0) &&
         this.formattedStartDate &&
         this.formattedEndDate &&
         this.reason
@@ -321,7 +319,7 @@ export default {
       this.facilityId = facilityId;
       this.selectedAgeGroups = [];
       const ageGroups = [];
-      if (facilityId && this.fullFacilityClosure === 'false') {
+      if (facilityId && this.fullFacilityClosure === false) {
         try {
           const facilityAgeGroups = await FacilityService.getLicenseCategories(facilityId);
           this.selectedFacilityWasChanged = false;
@@ -342,7 +340,7 @@ export default {
     },
     async handleFullFacilityClosureChange(fullFacilityClosure) {
       this.fullFacilityClosure = fullFacilityClosure;
-      if (this.selectedFacilityWasChanged && fullFacilityClosure === 'false') {
+      if (this.selectedFacilityWasChanged && fullFacilityClosure === false) {
         await this.handleFacilityChange(this.facilityId);
       }
     },
@@ -386,7 +384,7 @@ export default {
         endDate: new Date(this.formattedEndDate).toISOString().slice(0, 10),
         paidClosure: this.parentsWillPayForClosure,
         fullClosure: this.fullFacilityClosure,
-        ageGroups: this.fullFacilityClosure === 'true' ? undefined : this.selectedAgeGroups.join(','),
+        ageGroups: this.fullFacilityClosure ? undefined : this.selectedAgeGroups.join(','),
         closureReason: this.reason,
         description: this.requestDescription,
         changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
