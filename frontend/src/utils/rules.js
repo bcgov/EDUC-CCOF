@@ -10,16 +10,13 @@ const rules = {
     function (v) {
       if (v === 0 || v === false) {
         return true;
-      } else if (!v) {
+      } else if ((typeof v === 'object' && isEmpty(v)) || !v) {
         return ERROR_MESSAGES.REQUIRED;
       }
 
       return true;
     },
   ],
-  notEmpty(message = ERROR_MESSAGES.REQUIRED) {
-    return (v) => !isEmpty(v) || message;
-  },
   equalTo(expectedValue, message = 'Invalid value') {
     return (v) => v === expectedValue || message;
   },
