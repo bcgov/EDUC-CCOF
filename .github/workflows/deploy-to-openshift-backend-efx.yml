@@ -113,9 +113,10 @@ jobs:
           KC_CLIENT_SECRET: ${{ secrets.KC_ADMIN_CLIENT_SECRET }}
           KC_ENV: test
           APP_NAME: ${{ env.APP_NAME }}
-        script: |
-          const { main } = require('./tools/config/keycloak.js');
-          await main();
+        with:
+          script: |
+            const { main } = require('./tools/config/keycloak.js');
+            await main();
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
