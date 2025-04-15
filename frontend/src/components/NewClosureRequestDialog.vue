@@ -1,7 +1,7 @@
 <template>
   <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
     <template #content>
-      <v-container width="80%" class="left-align text-primary">
+      <v-container width="80%" class="left-align text-primary pa-0">
         <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
         <p class="left-align mt-6 text-black">
           Closures may impact your CCFRI payments. See the
