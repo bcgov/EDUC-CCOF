@@ -179,7 +179,9 @@ jobs:
               ${{ secrets.SOAM_IDP_HINT_IDIR }} \
               ${{ secrets.SPLUNK_TOKEN }} \
               ${{ secrets.REDIS_PASSWORD }} \
-              ${{ secrets.D365_API_PREFIX }}
+              ${{ secrets.D365_API_PREFIX }} \
+              ${{ secrets.CANADA_POST_API_ENDPOINT }} \
+              ${{ secrets.CANADA_POST_API_KEY }}
 
           # Start rollout of the application
           oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
