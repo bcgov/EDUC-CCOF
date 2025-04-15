@@ -190,7 +190,7 @@
           />
           <AppDocumentUpload
             :loading="isLoading"
-            :document-type="documentType"
+            :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
             title="Supporting Documents"
             class="left-align"
             :required="false"
@@ -252,7 +252,6 @@ export default {
   emits: ['close', 'submitted'],
   data() {
     return {
-      rules,
       isDisplayed: false,
       isLoading: false,
       selectedFacility: undefined,
@@ -266,8 +265,6 @@ export default {
       reason: undefined,
       requestDescription: undefined,
       uploadedDocuments: [],
-      rulesAgeGroups: [(v) => this.fullFacilityClosure || v?.length > 0 || 'This field is required'],
-      documentType: DOCUMENT_TYPES.CLOSURE_REQUEST,
     };
   },
   computed: {
@@ -277,6 +274,9 @@ export default {
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationName']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+    },
+    rulesAgeGroups() {
+      return this.fullFacilityClosure ? rules.required : [];
     },
     allAgeGroupsSelected() {
       return this.selectedAgeGroups?.length === this.ageGroups?.length;
@@ -288,8 +288,8 @@ export default {
       return (
         !this.isLoading &&
         this.selectedFacility &&
-        this.parentsWillPayForClosure !== null &&
-        this.fullFacilityClosure !== null &&
+        this.parentsWillPayForClosure !== undefined &&
+        this.fullFacilityClosure !== undefined &&
         (this.fullFacilityClosure || this.selectedAgeGroups.length > 0) &&
         this.formattedStartDate &&
         this.formattedEndDate &&
@@ -297,12 +297,10 @@ export default {
       );
     },
     applicationId() {
-      for (const application of this.userInfo.applications) {
-        if (application.ccofProgramYearId === this.programYearId) {
-          return application.applicationId;
-        }
-      }
-      return '';
+      const application = this.userInfo.applications?.find(
+        (application) => application.ccofProgramYearId === this.programYearId,
+      );
+      return application?.applicationId;
     },
   },
   watch: {
@@ -311,6 +309,10 @@ export default {
         this.isDisplayed = value;
       },
     },
+  },
+  created() {
+    this.rules = rules;
+    this.DOCUMENT_TYPES = DOCUMENT_TYPES;
   },
   methods: {
     async handleFacilityChange(facilityId) {
@@ -363,7 +365,7 @@ export default {
       const processedDocuments = [];
       for (const document of documents) {
         const obj = {
-          documentType: this.documentType,
+          documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
           fileSize: document.fileSize,
           fileName: document.fileName,
           documentBody: document.documentBody,
