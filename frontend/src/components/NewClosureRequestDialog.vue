@@ -5,11 +5,7 @@
         <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
         <p class="left-align mt-6 text-black">
           Closures may impact your CCFRI payments. See the
-          <a
-            href="https://www2.gov.bc.ca/gov/content?id=733BCA6294F34DCAB28CD6BE73D67F92"
-            target="_blank"
-            class="text-decoration-underline"
-          >
+          <a :href="getFundingUrl(programYearId)" target="_blank" class="text-decoration-underline">
             CCFRI Funding Guidelines</a
           >
           for information on the maximum closure period. Information about eligibility for CCOF Base Funding during
@@ -277,7 +273,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getProgramYearNameById']),
+    ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationName']),
