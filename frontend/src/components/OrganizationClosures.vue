@@ -114,7 +114,7 @@
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
       max-width="60%"
-      :closure-request-type="closureRequestType"
+      :change-request-reference-id="changeRequestReferenceId"
       @close="toggleClosureConfirmationDialog"
     />
   </v-container>
@@ -167,7 +167,7 @@ export default {
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
       showClosureConfirmationDialog: false,
-      closureRequestType: undefined,
+      changeRequestReferenceId: undefined,
     };
   },
   computed: {
@@ -291,7 +291,8 @@ export default {
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
-    submittedNewClosureRequest() {
+    submittedNewClosureRequest(changeRequestReferenceId) {
+      this.changeRequestReferenceId = changeRequestReferenceId;
       this.closureRequestType = CLOSURE_REQUEST_TYPES.NEW_CLOSURE;
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
       this.toggleClosureConfirmationDialog();
