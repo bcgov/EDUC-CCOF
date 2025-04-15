@@ -14,7 +14,7 @@
           </p>
           <h3 class="mt-6">Select a Facility:</h3>
           <v-select
-            v-model="selectedFacility"
+            v-model="input.facilityId"
             :rules="rules.required"
             :items="facilityList"
             :loading="isLoading"
@@ -65,7 +65,7 @@
               <h3 class="left-align mt-2">Will parents pay for this closure?</h3>
             </v-col>
             <v-col cols="12" lg="3" class="pl-0">
-              <v-radio-group v-model="parentsWillPayForClosure" :rules="rules.required">
+              <v-radio-group v-model="input.paidClosure" :rules="rules.required">
                 <v-row justify="start">
                   <v-col cols="6">
                     <v-radio label="Yes" :value="1" />
@@ -77,7 +77,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-container v-if="selectedFacility && parentsWillPayForClosure !== undefined" width="100%" class="pa-0">
+          <v-container v-if="input.facilityId && input.paidClosure !== undefined" width="100%" class="pa-0">
             <v-row>
               <v-col cols="12" lg="9">
                 <h3 class="left-align mt-2">
@@ -89,7 +89,7 @@
               </v-col>
               <v-col cols="12" lg="3" class="pl-0">
                 <v-radio-group
-                  v-model="fullFacilityClosure"
+                  v-model="input.fullClosure"
                   :rules="rules.required"
                   @update:model-value="handleFullFacilityClosureChange"
                 >
@@ -104,13 +104,13 @@
                 </v-radio-group>
               </v-col>
             </v-row>
-            <div v-if="fullFacilityClosure === false">
+            <div v-if="input.fullClosure === false">
               <v-row class="ml-0">
                 <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
               <v-select
-                v-model.lazy="selectedAgeGroups"
+                v-model.lazy="input.ageGroups"
                 :loading="isLoading"
                 :items="ageGroups"
                 item-title="label"
@@ -146,9 +146,9 @@
               </v-col>
               <v-col cols="12" lg="4">
                 <AppDateInput
-                  v-model="formattedStartDate"
+                  v-model="input.startDate"
                   :min="fiscalStartAndEndDates.startDate"
-                  :max="formattedEndDate ? formattedEndDate : fiscalStartAndEndDates.endDate"
+                  :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
                     rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
@@ -162,8 +162,8 @@
               <v-col cols="12" lg="1" class="pt-6" align="center">to</v-col>
               <v-col cols="12" lg="4">
                 <AppDateInput
-                  v-model="formattedEndDate"
-                  :min="formattedStartDate ? formattedStartDate : fiscalStartAndEndDates.startDate"
+                  v-model="input.endDate"
+                  :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
@@ -181,12 +181,12 @@
                 <h3>Reason:</h3>
               </v-col>
               <v-col cols="12" lg="9" align="start">
-                <v-text-field v-model="reason" variant="outlined" :rules="rules.required"></v-text-field>
+                <v-text-field v-model="input.closureReason" variant="outlined" :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
             <h3>Request Description:</h3>
             <v-textarea
-              v-model="requestDescription"
+              v-model="input.description"
               variant="outlined"
               label="Detailed description of request"
               class="text-left"
@@ -235,7 +235,6 @@ import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 export default {
   name: 'NewClosureRequestDialog',
@@ -259,35 +258,29 @@ export default {
       isValidForm: false,
       isDisplayed: false,
       isLoading: false,
-      selectedFacility: undefined,
+      input: {
+        ageGroups: [],
+        documents: [],
+      },
       selectedFacilityWasChanged: true,
-      parentsWillPayForClosure: undefined,
-      fullFacilityClosure: undefined,
-      formattedStartDate: undefined,
-      formattedEndDate: undefined,
       ageGroups: [],
-      selectedAgeGroups: [],
-      reason: undefined,
-      requestDescription: undefined,
-      uploadedDocuments: [],
     };
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationName']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
     rulesAgeGroups() {
-      return this.fullFacilityClosure === false ? rules.required : [];
+      return this.input.fullClosure === false ? rules.required : [];
     },
     allAgeGroupsSelected() {
-      return this.selectedAgeGroups?.length === this.ageGroups?.length;
+      return this.input.ageGroups?.length === this.ageGroups?.length;
     },
     someAgeGroupsSelected() {
-      return this.selectedAgeGroups?.length > 0;
+      return this.input.ageGroups?.length > 0;
     },
     applicationId() {
       const application = this.userInfo.applications?.find(
@@ -312,9 +305,9 @@ export default {
       this.isLoading = true;
       this.selectedFacilityWasChanged = true;
       this.facilityId = facilityId;
-      this.selectedAgeGroups = [];
+      this.input.ageGroups = [];
       const ageGroups = [];
-      if (facilityId && this.fullFacilityClosure === false) {
+      if (facilityId && this.input.fullClosure === false) {
         try {
           const facilityAgeGroups = await FacilityService.getLicenseCategories(facilityId);
           this.selectedFacilityWasChanged = false;
@@ -333,9 +326,9 @@ export default {
       this.ageGroups = ageGroups;
       this.isLoading = false;
     },
-    async handleFullFacilityClosureChange(fullFacilityClosure) {
-      this.fullFacilityClosure = fullFacilityClosure;
-      if (this.selectedFacilityWasChanged && fullFacilityClosure === false) {
+    async handleFullFacilityClosureChange(fullClosure) {
+      this.input.fullClosure = fullClosure;
+      if (this.selectedFacilityWasChanged && fullClosure === false) {
         await this.handleFacilityChange(this.facilityId);
       }
     },
@@ -349,10 +342,10 @@ export default {
           ageGroups.push(ageGroup.value);
         }
       }
-      this.selectedAgeGroups = ageGroups;
+      this.input.ageGroups = ageGroups;
     },
     updateDocuments(documents) {
-      this.documents = documents;
+      this.input.documents = documents;
     },
     processDocuments(documents) {
       const processedDocuments = [];
@@ -370,23 +363,16 @@ export default {
     },
     async submit() {
       this.isLoading = true;
-      const payload = {
-        applicationId: this.applicationId,
-        programYearId: this.programYearId,
-        facilityId: this.selectedFacility,
-        organizationId: this.userInfo?.organizationId,
-        startDate: new Date(this.formattedStartDate).toISOString().slice(0, 10),
-        endDate: new Date(this.formattedEndDate).toISOString().slice(0, 10),
-        paidClosure: this.parentsWillPayForClosure,
-        fullClosure: this.fullFacilityClosure,
-        ageGroups: this.fullFacilityClosure ? undefined : this.selectedAgeGroups.join(','),
-        closureReason: this.reason,
-        description: this.requestDescription,
-        changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
-        documents: this.processDocuments(this.documents),
-      };
+      this.input.applicationId = this.applicationId;
+      this.input.programYearId = this.programYearId;
+      this.input.organizationId = this.userInfo?.organizationId;
+      this.input.startDate = new Date(this.input.startDate).toISOString().slice(0, 10);
+      this.input.endDate = new Date(this.input.endDate).toISOString().slice(0, 10);
+      this.input.changeType = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+      this.input.documents = this.processDocuments(this.input.documents);
+      this.input.ageGroups = this.input.fullClosure ? undefined : this.input.ageGroups.join(',');
       try {
-        const response = await ClosureService.createNewClosureChangeRequest(payload);
+        const response = await ClosureService.createNewClosureChangeRequest(this.input);
         this.clearInputs();
         this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
@@ -397,15 +383,10 @@ export default {
       }
     },
     clearInputs() {
-      this.selectedFacility = undefined;
-      this.formattedStartDate = undefined;
-      this.formattedEndDate = undefined;
-      this.parentsWillPayForClosure = undefined;
-      this.fullFacilityClosure = undefined;
-      this.selectedAgeGroups = [];
-      this.reason = undefined;
-      this.requestDescription = undefined;
-      this.documents = [];
+      this.input = {
+        ageGroups: [],
+        documents: [],
+      };
     },
   },
 };
