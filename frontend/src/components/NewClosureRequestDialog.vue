@@ -188,24 +188,20 @@
             </v-col>
           </v-row>
           <h3>Request Description:</h3>
-          <v-row>
-            <v-textarea
-              v-model="requestDescription"
-              variant="outlined"
-              label="Detailed description of request"
-              class="text-left"
-            />
-          </v-row>
-          <v-row>
-            <AppDocumentUpload
-              :loading="isLoading"
-              :document-type="documentType"
-              title="Supporting Documents"
-              class="left-align"
-              :required="false"
-              @update-documents-to-upload="updateDocuments"
-            />
-          </v-row>
+          <v-textarea
+            v-model="requestDescription"
+            variant="outlined"
+            label="Detailed description of request"
+            class="text-left"
+          />
+          <AppDocumentUpload
+            :loading="isLoading"
+            :document-type="documentType"
+            title="Supporting Documents"
+            class="left-align"
+            :required="false"
+            @update-documents-to-upload="updateDocuments"
+          />
         </v-container>
       </v-container>
     </template>
