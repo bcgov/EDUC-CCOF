@@ -1,51 +1,53 @@
 <template>
-  <v-container>
-    <v-row justify="center">
-      <div class="pa-10 text-h4">Welcome to CCOF!</div>
-    </v-row>
-    <v-row justify="center">
-      <p class="px-10 text-h6">
-        If you select the incorrect provider type, you will need to contact the program at 1 (888) 338-6622 (Option 2).
-        <br />
-        If you are unsure which type to select, you can view a PDF version of the
-        <a
-          class="text-decoration-underline"
-          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1320_ccof_family_application.pdf"
-          target="_blank"
-          >family form</a
-        >
-        and the
-        <a
-          class="text-decoration-underline"
-          href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1321_ccof_group_application.pdf"
-          target="_blank"
-          >group form</a
-        >.
-      </p>
-    </v-row>
-    <v-row justify="space-around">
-      <v-col cols="6">
-        <LargeCard title="Group Provider">
-          <template #content>
-            <p>
-              You have a Group or Multi-Age Licence for more than eight children for a facility that is not your
-              personal residence
-            </p>
-          </template>
-          <template #button>
-            <v-btn theme="dark" class="blueButton" @click="toGroup"> GO </v-btn>
-          </template>
-        </LargeCard>
+  <v-container max-width="1600">
+    <p class="text-h4 text-center">Welcome to Child Care Operating Funding (CCOF)</p>
+    <p class="px-4 mt-12 mb-4">
+      Select the applicable provider type for your Organization. If you are unsure which type to select, you can preview
+      a PDF version of the
+      <a
+        href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1320_ccof_family_application.pdf"
+        target="_blank"
+      >
+        <u>Family Form</u>
+      </a>
+      or
+      <a
+        href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1321_ccof_group_application.pdf"
+        target="_blank"
+      >
+        <u>Group Form</u></a
+      >. To learn more about eligibility visit the
+      <a
+        href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/base-funding"
+        target="_blank"
+      >
+        <u>Child Care Operating Funding - Base Funding</u>
+      </a>
+      page. If you choose the wrong option, you will need to contact the program at 1(888)338-6622 (Option 2).
+    </p>
+    <v-row class="px-4 pb-8">
+      <v-col cols="12" md="6" class="d-flex">
+        <v-card class="pa-4 d-flex flex-column flex-grow-1 elevation-4" min-height="220">
+          <v-card-title>Group Provider</v-card-title>
+          <v-card-text>
+            You have a Group or Multi-Age Licence for eight or more children for a facility that is not your personal
+            residence.
+          </v-card-text>
+          <v-card-actions>
+            <AppButton size="medium" @click="toGroup">Start Application</AppButton>
+          </v-card-actions>
+        </v-card>
       </v-col>
-      <v-col cols="6">
-        <LargeCard title="Family Provider">
-          <template #content>
-            <p>Family, In-Home or Multi-Age Licence for eight or fewer children in a personal residence</p>
-          </template>
-          <template #button>
-            <v-btn theme="dark" class="blueButton" @click="toFamily()"> GO </v-btn>
-          </template>
-        </LargeCard>
+      <v-col cols="12" md="6" class="d-flex">
+        <v-card class="pa-4 d-flex flex-column flex-grow-1 elevation-4" min-height="220">
+          <v-card-title>Family Provider</v-card-title>
+          <v-card-text>
+            Family, In-Home or Multi-Age Licence for eight or fewer children in a personal residence.
+          </v-card-text>
+          <v-card-actions>
+            <AppButton size="medium" @click="toFamily">Start Application</AppButton>
+          </v-card-actions>
+        </v-card>
       </v-col>
     </v-row>
     <NavButton @previous="previous" />
@@ -55,7 +57,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import LargeCard from '@/components/guiComponents/LargeCard.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import { useAppStore } from '@/store/app.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -63,7 +65,7 @@ import { PATHS, pcfUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js
 
 export default {
   name: 'CcofApplicationTypeSelector',
-  components: { LargeCard, NavButton },
+  components: { AppButton, NavButton },
   computed: {
     ...mapState(useAppStore, ['programYearList']),
   },
