@@ -1,76 +1,74 @@
 <template>
   <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
     <template #content>
-      <v-container width="80%">
-        <v-row class="text-primary">
-          <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
-        </v-row>
-        <v-row>
-          <p class="left-align mt-6">
-            Closures may impact your CCFRI payments. See the
-            <a
-              href="https://www2.gov.bc.ca/gov/content?id=733BCA6294F34DCAB28CD6BE73D67F92"
-              target="_blank"
-              class="text-decoration-underline"
-            >
-              CCFRI Funding Guidelines</a
-            >
-            for information on the maximum closure period. Information about eligibility for CCOF Base Funding during
-            Emergency closures is available on the CCOF website.
-          </p>
-        </v-row>
-        <v-row>
-          <h3 class="text-primary mt-6">Select a Facility:</h3>
-        </v-row>
-        <v-row class="text-primary">
-          <v-select
-            v-model="selectedFacility"
-            required
-            :rules="rules.required"
-            :items="facilityList"
-            :loading="isLoading"
-            item-value="facilityId"
-            item-title="facilityName"
-            placeholder="Select a facility"
-            variant="outlined"
-            class="mt-2"
-            @update:model-value="handleFacilityChange"
+      <v-container width="80%" class="left-align text-primary">
+        <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
+        <p class="left-align mt-6 text-black">
+          Closures may impact your CCFRI payments. See the
+          <a
+            href="https://www2.gov.bc.ca/gov/content?id=733BCA6294F34DCAB28CD6BE73D67F92"
+            target="_blank"
+            class="text-decoration-underline"
           >
-            <template #item="{ props, item, index }">
-              <v-list-item :value="props.value" :active="props.active" :title="null" @click="props.onClick">
-                <v-row class="text-primary">
-                  <v-col cols="12" md="8" align="start">
-                    <h4>{{ item.raw.facilityName }}</h4>
-                    <p>License #: {{ item.raw.licenseNumber }}</p>
-                  </v-col>
-                  <v-col cols="12" md="4" align="start">
-                    <p>Facility ID:</p>
-                    <p>{{ item.raw.facilityAccountNumber }}</p>
-                  </v-col>
-                </v-row>
-              </v-list-item>
-              <v-divider v-if="index < facilityList.length - 1" class="mx-4" />
-            </template>
-            <template #selection="{ item }">
-              <!-- JonahCurlCGI todo: fix formatting -->
+            CCFRI Funding Guidelines</a
+          >
+          for information on the maximum closure period. Information about eligibility for CCOF Base Funding during
+          Emergency closures is available on the CCOF website.
+        </p>
+        <h3 class="mt-6">Select a Facility:</h3>
+        <v-select
+          v-model="selectedFacility"
+          required
+          :rules="rules.required"
+          :items="facilityList"
+          :loading="isLoading"
+          item-value="facilityId"
+          item-title="facilityName"
+          placeholder="Select a facility"
+          variant="outlined"
+          class="mt-2"
+          @update:model-value="handleFacilityChange"
+        >
+          <template #item="{ props, item, index }">
+            <v-list-item
+              :value="props.value"
+              :active="props.active"
+              :title="null"
+              @click="props.onClick"
+              class="text-primary"
+            >
               <v-row>
-                <v-col cols="12" md="8" align="start" class="ml-0">
+                <v-col cols="12" md="8" align="start">
                   <h4>{{ item.raw.facilityName }}</h4>
                   <p>License #: {{ item.raw.licenseNumber }}</p>
                 </v-col>
-                <v-col cols="12" md="4" align="end">
+                <v-col cols="12" md="4" align="start">
                   <p>Facility ID:</p>
                   <p>{{ item.raw.facilityAccountNumber }}</p>
                 </v-col>
               </v-row>
-            </template>
-          </v-select>
-        </v-row>
+            </v-list-item>
+            <v-divider v-if="index < facilityList.length - 1" class="mx-4" />
+          </template>
+          <template #selection="{ item }">
+            <!-- JonahCurlCGI todo: fix formatting -->
+            <v-row>
+              <v-col cols="12" md="8" align="start" class="ml-0">
+                <h4>{{ item.raw.facilityName }}</h4>
+                <p>License #: {{ item.raw.licenseNumber }}</p>
+              </v-col>
+              <v-col cols="12" md="4" align="end">
+                <p>Facility ID:</p>
+                <p>{{ item.raw.facilityAccountNumber }}</p>
+              </v-col>
+            </v-row>
+          </template>
+        </v-select>
         <v-row>
-          <v-col cols="12" lg="9" class="pl-0">
-            <h3 class="text-primary left-align mt-2">Will parents pay for this closure?</h3>
+          <v-col cols="12" lg="9">
+            <h3 class="left-align mt-2">Will parents pay for this closure?</h3>
           </v-col>
-          <v-col cols="12" lg="3" class="pr-0 pl-0">
+          <v-col cols="12" lg="3" class="pl-0">
             <v-radio-group v-model="parentsWillPayForClosure" required :rules="rules.required">
               <v-row justify="start">
                 <v-col cols="6">
@@ -85,13 +83,13 @@
         </v-row>
         <v-container v-if="selectedFacility && parentsWillPayForClosure" width="100%" class="pa-0">
           <v-row>
-            <v-col cols="12" lg="9" class="pl-0">
-              <h3 class="text-primary left-align mt-2">
+            <v-col cols="12" lg="9">
+              <h3 class="left-align mt-2">
                 Is this a full facility closure?
                 <AppTooltip tooltip-content="Select no if only some care categories will be affected by the closure." />
               </h3>
             </v-col>
-            <v-col cols="12" lg="3" class="pr-0 pl-0">
+            <v-col cols="12" lg="3" class="pl-0">
               <v-radio-group
                 v-model="fullFacilityClosure"
                 required
@@ -109,11 +107,11 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
-            <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
-            <p>(select all that apply):</p>
-          </v-row>
-          <v-row v-if="fullFacilityClosure === 'false'" class="text-primary pl-0">
+          <div v-if="fullFacilityClosure === 'false'">
+            <v-row class="ml-0">
+              <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
+              <p>(select all that apply):</p>
+            </v-row>
             <v-select
               v-model.lazy="selectedAgeGroups"
               :loading="isLoading"
@@ -122,7 +120,7 @@
               item-value="value"
               label="Select affected care categories"
               variant="outlined"
-              class="mt-2 text-left"
+              class="mt-2 pl-0 text-left"
               multiple
               chips
               :rules="rulesAgeGroups"
@@ -141,15 +139,15 @@
                 <v-divider class="mt-2" />
               </template>
             </v-select>
-          </v-row>
-          <v-row class="text-primary">
-            <v-col cols="12" lg="3" class="pl-0">
-              <h3 class="text-primary left-align mt-2">
+          </div>
+          <v-row>
+            <v-col cols="12" lg="3">
+              <h3 class="left-align mt-2">
                 Dates:
                 <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
               </h3>
             </v-col>
-            <v-col cols="12" lg="4" class="pl-0 pr-0">
+            <v-col cols="12" lg="4">
               <AppDateInput
                 v-model="formattedStartDate"
                 :min="fiscalStartAndEndDates.startDate"
@@ -164,8 +162,8 @@
                 clearable
               />
             </v-col>
-            <v-col cols="12" lg="1" class="pt-6">to</v-col>
-            <v-col cols="12" lg="4" class="pl-0 pr-0">
+            <v-col cols="12" lg="1" class="pt-6" align="center">to</v-col>
+            <v-col cols="12" lg="4">
               <AppDateInput
                 v-model="formattedEndDate"
                 :min="formattedStartDate ? formattedStartDate : fiscalStartAndEndDates.startDate"
@@ -181,18 +179,16 @@
               />
             </v-col>
           </v-row>
-          <v-row class="text-primary">
-            <v-col cols="12" lg="3" align="start" class="pl-0">
+          <v-row>
+            <v-col cols="12" lg="3" align="start">
               <h3>Reason:</h3>
             </v-col>
-            <v-col cols="12" lg="9" align="start" class="pr-0 pl-0">
+            <v-col cols="12" lg="9" align="start">
               <v-text-field v-model="reason" variant="outlined" required :rules="rules.required"></v-text-field>
             </v-col>
           </v-row>
-          <v-row class="text-primary">
-            <h3>Request Description:</h3>
-          </v-row>
-          <v-row class="text-primary">
+          <h3>Request Description:</h3>
+          <v-row>
             <v-textarea
               v-model="requestDescription"
               variant="outlined"
@@ -205,7 +201,7 @@
               :loading="isLoading"
               :document-type="documentType"
               title="Supporting Documents"
-              class="text-primary left-align"
+              class="left-align"
               :required="false"
               @update-documents-to-upload="updateDocuments"
             />
