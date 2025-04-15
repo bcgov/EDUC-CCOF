@@ -1,35 +1,31 @@
 <template>
-  <AppDialog v-model="isDisplayed" title="Closure Details" @close="closeDialog">
+  <AppDialog v-model="isDisplayed" title="Closure Details" text-alignment="left" @close="closeDialog">
     <template #content>
-      <v-card class="ma-2 pl-8 pt-4 pb-6 border-top text">
-        <v-row>
-          <p>License Number</p>
-        </v-row>
-        <v-row>
-          <h3 class="value">{{ closure?.licenseNumber }}</h3>
-        </v-row>
-        <v-row class="pt-4">Closure Reason</v-row>
-        <v-row>
-          <h3 class="value">{{ closure?.closureReason }}</h3>
-        </v-row>
-        <v-row class="pt-4">Closure Type</v-row>
-        <v-row>
-          <h3 class="value">{{ closureType }}</h3>
-        </v-row>
-        <v-container v-if="closure?.fullClosure === false" class="pa-0">
-          <v-row class="pt-4">Affected Care Types</v-row>
-          <v-row class="mr-3">
-            <h3 class="value" align="left">
-              {{ affectedCareTypes }}
-            </h3>
-          </v-row>
-        </v-container>
+      <v-card class="pa-4 border-top">
+        <div class="pb-6">
+          <p class="pb-2">License Number</p>
+          <strong>{{ closure?.licenseNumber }}</strong>
+        </div>
+        <div class="pb-6">
+          <p class="pb-2">Closure Reason</p>
+          <strong>{{ closure?.closureReason }}</strong>
+        </div>
+        <div class="pb-6">
+          <p class="pb-2">Closure Type</p>
+          <strong>{{ closureType }}</strong>
+        </div>
+        <div v-if="closure?.fullClosure === false" class="mr-2">
+          <p class="pb-2">Affected Care Types</p>
+          <strong align="left">
+            {{ affectedCareTypes }}
+          </strong>
+        </div>
       </v-card>
     </template>
     <template #button>
-      <v-row justify="center">
+      <div justify="center">
         <AppButton :primary="false" @click="closeDialog">Back to Summary</AppButton>
-      </v-row>
+      </div>
     </template>
   </AppDialog>
 </template>
@@ -39,12 +35,9 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import { CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT } from '@/utils/constants.js';
 
-import alertMixin from '@/mixins/alertMixin';
-
 export default {
   name: 'ClosureDetailsDialog',
   components: { AppButton, AppDialog },
-  mixins: [alertMixin],
   props: {
     show: {
       type: Boolean,
@@ -59,7 +52,6 @@ export default {
   data() {
     return {
       isDisplayed: false,
-      isLoading: false,
     };
   },
   computed: {
@@ -67,16 +59,16 @@ export default {
       return this.closure?.fullClosure ? 'Full' : 'Partial';
     },
     affectedCareTypes() {
-      if (this.closure?.fullClosure === false && this.closure.ageGroups) {
-        const ageGroups = [];
-        const ageGroupVals = this.closure.ageGroups.split(',');
-        ageGroupVals.sort();
-        for (const ageGroupVal of ageGroupVals) {
-          ageGroups.push(CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(ageGroupVal)]);
-        }
-        return ageGroups.join(', ');
+      if (!this.closure || this.closure.fullClosure || !this.closure.ageGroups) {
+        return '';
       }
-      return '';
+      const ageGroups = [];
+      const ageGroupVals = this.closure.ageGroups.split(',');
+      ageGroupVals.sort();
+      for (const ageGroupVal of ageGroupVals) {
+        ageGroups.push(CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(ageGroupVal)]);
+      }
+      return ageGroups.join(', ');
     },
   },
   watch: {
@@ -93,14 +85,8 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .border-top {
-  border-top: 4px solid gray; /* or any color you want */
-}
-.text {
-  color: #acacac;
-}
-.value {
-  color: #636363;
+  border-top: 4px solid gray;
 }
 </style>

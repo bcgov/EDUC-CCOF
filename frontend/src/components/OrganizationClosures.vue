@@ -72,7 +72,7 @@
                 :primary="false"
                 size="large"
                 class="text-body-2"
-                @click="() => setClosureToView(item)"
+                @click="setClosureToView(item)"
               >
                 View Details
               </AppButton>
@@ -106,7 +106,7 @@
       :show="showClosureDetailsDialog"
       max-width="60%"
       :closure="closureToView"
-      @close="() => setClosureToView(undefined)"
+      @close="setClosureToView(undefined)"
     />
   </v-container>
 </template>
@@ -171,7 +171,7 @@ export default {
       });
     },
     showClosureDetailsDialog() {
-      return this.closureToView !== undefined;
+      return this.closureToView != null;
     },
   },
   async created() {
@@ -196,7 +196,7 @@ export default {
       }
     },
     setClosureToView(closure) {
-      if (closure && !closure.licenseNumber) {
+      if (closure) {
         const facility = this.getNavByFacilityId(closure.facilityId);
         closure.licenseNumber = facility?.licenseNumber;
       }
