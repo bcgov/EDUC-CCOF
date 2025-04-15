@@ -18,7 +18,7 @@ const rules = {
     },
   ],
   notEmpty(message = ERROR_MESSAGES.REQUIRED) {
-    return (v) => isEmpty(v) || message;
+    return (v) => !isEmpty(v) || message;
   },
   equalTo(expectedValue, message = 'Invalid value') {
     return (v) => v === expectedValue || message;
