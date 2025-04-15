@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import StaticConfig from '@/common/staticConfig'
+import StaticConfig from '@/common/staticConfig';
 
 export default {
   name: 'TheEnvBar',
@@ -27,9 +27,5 @@ export default {
 .env-text {
   color: #ffffff;
   font-size: 0.8rem;
-}
-
-@media print {
-  #app-env-bar { display: none; }
 }
 </style>

@@ -35,10 +35,10 @@
               Spaces Fund, UBCM Community Child Care Space Creation Program, Start-up Grants, Rapid Renovation Funding)?
             </p>
             <v-radio-group v-model="model.supportNeeds" inline :disabled="isReadOnly" :rules="rules.required">
-              <v-radio label="Yes" value="Yes" />
-              <v-radio label="No" value="No" />
+              <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+              <v-radio label="No" :value="YES_NO_VALUES.NO" />
             </v-radio-group>
-            <div v-if="model.supportNeeds === 'Yes'">
+            <div v-if="model.supportNeeds">
               <div class="text-h6 text--primary pt-2">
                 <p>
                   Please enter your Project ID, Funding Program, and Application Date. If you are not sure what your
@@ -62,10 +62,10 @@
               low-income families?
             </p>
             <v-radio-group v-model="model.lowIncomeFamilies" inline :disabled="isReadOnly" :rules="rules.required">
-              <v-radio label="Yes" value="Yes" />
-              <v-radio label="No" value="No" />
+              <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+              <v-radio label="No" :value="YES_NO_VALUES.NO" />
             </v-radio-group>
-            <div v-if="model.lowIncomeFamilies === 'Yes'" class="text-h6 text--primary pt-2">
+            <div v-if="model.lowIncomeFamilies" class="text-h6 text--primary pt-2">
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
                 v-model="model.lowIncomeFamiliesComments"
@@ -83,10 +83,10 @@
               who may not otherwise be able to access child care?
             </p>
             <v-radio-group v-model="model.remoteCommunities" inline :disabled="isReadOnly" :rules="rules.required">
-              <v-radio label="Yes" value="Yes" />
-              <v-radio label="No" value="No" />
+              <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+              <v-radio label="No" :value="YES_NO_VALUES.NO" />
             </v-radio-group>
-            <div v-if="model.remoteCommunities === 'Yes'" class="text-h6 text--primary pt-2">
+            <div v-if="model.remoteCommunities" class="text-h6 text--primary pt-2">
               <p>Please describe the service(s) and associated expenses.</p>
               <v-textarea
                 v-model="model.remoteCommunitiesComments"
@@ -143,6 +143,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
+import { YES_NO_VALUES } from '@/utils/constants.js';
 
 export default {
   name: 'NmfRequestMoreInfo',
@@ -195,6 +196,7 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.YES_NO_VALUES = YES_NO_VALUES;
   },
   methods: {
     ...mapActions(useNavBarStore, ['setNavBarNMFComplete']),

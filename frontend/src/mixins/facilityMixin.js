@@ -13,7 +13,15 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import {
+  FACILITY_HAS_RECEIVE_FUNDING_VALUES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+  changeUrl,
+  changeUrlGuid,
+  pcfUrl,
+  pcfUrlGuid,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -68,6 +76,7 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
