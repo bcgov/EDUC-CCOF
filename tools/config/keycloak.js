@@ -35,29 +35,27 @@ function getKcBaseClientMap(envVars) {
   if (env !== "prod") {
     prefix = `${env}.`;
   }
-  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca/*`;
+  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca/`;
 
-  let redirectUris = [];
+  let redirectUris = [`${rootUrl}*`];
   if (env === "dev") {
     redirectUris = [
-      "https://dev.mychildcareservices.gov.bc.ca/*",
+      ...redirectUris,
       "http://localhost*",
       "https://qa.mychildcareservices.gov.bc.ca/*",
     ];
   } else if (env === "test") {
     redirectUris = [
-      "https://uat.mychildcareservices.gov.bc.ca/*",
+      ...redirectUris,
       "https://efx.mychildcareservices.gov.bc.ca/*",
     ];
-  } else if (env === "prod") {
-    redirectUris = ["https://mychildcareservices.gov.bc.ca/*"];
   }
 
   return {
     description: `${app.toUpperCase()} login client`,
     consentRequired: false,
     clientId: `${app}-${env}`,
-    adminUrl: rootUrl,
+    adminUrl: "",
     frontchannelLogout: false,
     redirectUris: redirectUris,
     publicClient: false,
@@ -96,7 +94,7 @@ function getKcBaseClientMap(envVars) {
     surrogateAuthRequired: false,
     serviceAccountsEnabled: false,
     name: app.toUpperCase(),
-    rootUrl: rootUrl,
+    rootUrl,
     clientAuthenticatorType: "client-secret",
     baseUrl: "",
     notBefore: 0,
@@ -154,7 +152,7 @@ function getKcBaseClientMap(envVars) {
       "basic",
       "email",
     ],
-    webOrigins: [rootUrl],
+    webOrigins: ["+"],
   };
 }
 
