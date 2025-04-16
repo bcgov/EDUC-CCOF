@@ -118,6 +118,12 @@
       :closure="closureToView"
       @close="setClosureToView(undefined)"
     />
+    <ClosureDetailsDialog
+      :show="showClosureDetailsDialog"
+      max-width="60%"
+      :closure="closureToView"
+      @close="setClosureToView(undefined)"
+    />
   </v-container>
 </template>
 <script>
@@ -146,7 +152,7 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog },
+  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
