@@ -72,7 +72,7 @@
                 :primary="false"
                 size="large"
                 class="text-body-2"
-                @click="viewDetails(item)"
+                @click="setClosureToView(item)"
               >
                 View Details
               </AppButton>
@@ -102,12 +102,19 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
+    <ClosureDetailsDialog
+      :show="showClosureDetailsDialog"
+      max-width="60%"
+      :closure="closureToView"
+      @close="setClosureToView(undefined)"
+    />
   </v-container>
 </template>
 <script>
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -127,7 +134,7 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton },
+  components: { NavButton, AppButton, ClosureDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -147,6 +154,7 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
+      closureToView: undefined,
     };
   },
   computed: {
@@ -161,6 +169,9 @@ export default {
           closure?.facilityName?.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
+    },
+    showClosureDetailsDialog() {
+      return this.closureToView != null;
     },
   },
   async created() {
@@ -184,10 +195,14 @@ export default {
         this.setFailureAlert('Failed to load closures');
       }
     },
-    // JonahCurlCGI - todo: implement the following functions
-    viewDetails(closure) {
-      // stub
+    setClosureToView(closure) {
+      if (closure) {
+        const facility = this.getNavByFacilityId(closure.facilityId);
+        closure.licenseNumber = facility?.licenseNumber;
+      }
+      this.closureToView = closure;
     },
+    // JonahCurlCGI - todo: implement the following functions
     updateClosure(closure) {
       // stub
     },
