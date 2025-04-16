@@ -56,6 +56,8 @@ function getKcBaseClientMap(envVars) {
       `${rootUrl}/logout`,
       `${rootUrl}/session-expired`
     ]
+  } else {
+    redirectUris = [];
   }
 
   return {
