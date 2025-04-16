@@ -782,6 +782,9 @@ export default {
       );
     },
   },
+  mounted() {
+    this.$refs.ccofSummaryForm.validate();
+  },
 };
 </script>
 <style scoped>
