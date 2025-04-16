@@ -1,5 +1,6 @@
 export function isEmailValid(email) {
-  return email && /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
+  if (typeof email !== 'string' || email.length > 254) return false;
+  return /^(?!.*\.\.)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 }
 
 export function isNumberOfDaysPerWeekValid(count) {
