@@ -13,8 +13,8 @@
               </template>
 
               <div class="flex-left pt-2">
-                <v-radio class="pt-2 pr-8" label="Yes" :value="ECEWE_OPT_IN_TYPES.OPT_IN" />
-                <v-radio class="pt-1" label="No" :value="ECEWE_OPT_IN_TYPES.OPT_OUT" />
+                <v-radio class="pt-2 pr-8" label="Yes" :value="OPT_STATUSES.OPT_IN" />
+                <v-radio class="pt-1" label="No" :value="OPT_STATUSES.OPT_OUT" />
               </div>
             </v-radio-group>
           </v-col>
@@ -25,7 +25,7 @@
     <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
 
       <!-- ccfri 3819 new order and re-wording of all ece-we questions -->
-      <template v-if="languageYearLabel === programYearTypes.FY2025_26 && model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN">
+      <template v-if="languageYearLabel === programYearTypes.FY2025_26 && model.optInECEWE === OPT_STATUSES.OPT_IN">
           <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
               <v-row class="justify-left">
@@ -174,12 +174,12 @@
                   </v-row>
                 </div>
             </v-container>
-            </v-card>
+          </v-card>
       </template>
 
       <!-- previous year's ECE-WE question logic below -->
       <template v-else>
-        <v-card v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+        <v-card v-if="model.optInECEWE === OPT_STATUSES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
           <v-container>
             <v-row class="justify-center">
               <v-col align-self="start">
@@ -204,7 +204,7 @@
         </v-card>
 
         <div v-if="languageYearLabel !== programYearTypes.HISTORICAL">
-          <v-card v-if="model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
+          <v-card v-if="model.optInECEWE === OPT_STATUSES.OPT_IN" elevation="4" class="py-2 px-5 my-10 rounded-lg">
             <v-container>
               <v-row class="justify-left">
                 <v-col align-self="start">
@@ -373,7 +373,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import {
-  ECEWE_OPT_IN_TYPES,
+  OPT_STATUSES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
   ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
@@ -436,18 +436,18 @@ export default {
     showApplicableSectorQuestion() {
       //This question is only valid from 2023-24 and before.
       //The template manages 2025 onward so it should only get called for historical applications
-      return  this.model.belongsToUnion === 1 && this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+      return  this.model.belongsToUnion === 1 && this.model.optInECEWE === OPT_STATUSES.OPT_IN
     },
     showConfirmationQuestion() {
       //This question is only valid from 2023-24 and before.
-      return this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION && this.model.belongsToUnion === 1 && this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+      return this.model.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION && this.model.belongsToUnion === 1 && this.model.optInECEWE === OPT_STATUSES.OPT_IN
 
     },
     showFundingModelQuestion() {
       return (
         this.model.applicableSector === ECEWE_SECTOR_TYPES.CSSEA &&
         this.model.belongsToUnion === 1 &&
-        this.model.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+        this.model.optInECEWE === OPT_STATUSES.OPT_IN
       );
     },
     showJJEPQuestion() {
@@ -465,7 +465,7 @@ export default {
   },
   created() {
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES
+    this.OPT_STATUSES = OPT_STATUSES
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES
     this.ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = ECEWE_IS_PUBLIC_SECTOR_EMPLOYER

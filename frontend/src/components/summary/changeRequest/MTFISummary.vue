@@ -9,7 +9,7 @@
           <div v-for="(item, index) in oldCcfri?.childCareTypes" :key="index">
             <div class="ma-0 pa-0">
               <div class="pa-0 mx-0 my-5">
-                <p class="text-h6 blueText">
+                <p class="text-h6 text-primary">
                   Parent Fees {{ item.programYear }}: <strong>Full-time {{ item.childCareCategory }}</strong>
                   (Over four hours, five days a week)
                 </p>
@@ -457,7 +457,7 @@
         </div>
 
         <div v-if="!isValidForm || !isNewCcfriValid">
-          <router-link :to="getRoutingPath">
+          <router-link :to="routingPath">
             <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
           </router-link>
         </div>
@@ -467,48 +467,30 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
 import { deepCloneObject } from '@/utils/common.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 export default {
-  components: { SummaryExpansionPanelTitle },
+  mixins: [summaryMixin],
   props: {
     oldCcfri: {
       type: Object,
-      required: false,
       default: () => ({}),
     },
     newCcfri: {
       type: Object,
-      required: false,
       default: () => ({}),
     },
-    facilityId: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
-      PATHS,
-      rules,
-      isValidForm: true,
-      formObj: {
-        formName: 'MTFISummary',
-        formId: this.facilityId,
-      },
+      isValidForm: false,
       newModel: {},
     };
   },
   computed: {
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
-    getRoutingPath() {
+    routingPath() {
       return changeUrlGuid(
         PATHS.MTFI_GROUP_FEE_VERIFICATION,
         this.$route.params.changeRecGuid,
@@ -520,16 +502,6 @@ export default {
       return this.newModel?.childCareTypes?.length === this.oldCcfri?.childCareTypes?.length;
     },
   },
-  watch: {
-    isLoadingComplete: {
-      handler: function (val) {
-        if (val) {
-          if (!this.isNewCcfriValid) this.isValidForm = false;
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm);
-        }
-      },
-    },
-  },
   created() {
     this.newModel = deepCloneObject(this.newCcfri);
   },
@@ -537,32 +509,6 @@ export default {
 </script>
 
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black !important;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
-}
-
 .gridContainer {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -577,10 +523,6 @@ export default {
   justify-items: end;
   justify-content: end;
   padding: 0px 16px 0px 8px;
-}
-
-.blueText {
-  color: #003466 !important;
 }
 
 :deep(::placeholder) {

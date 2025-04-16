@@ -181,14 +181,14 @@
                 label="Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?"
                 class="application-label"
               >
-                <v-radio label="No" value="no" />
-                <v-radio label="Yes" value="yes" />
-                <v-radio label="Yes, as facility" value="yesFacility" />
+                <v-radio label="No" :value="FACILITY_HAS_RECEIVE_FUNDING_VALUES.NO" />
+                <v-radio label="Yes" :value="FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES" />
+                <v-radio label="Yes, as facility" :value="FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY" />
               </v-radio-group>
             </v-col>
           </v-row>
 
-          <v-row v-if="facilityModel.hasReceivedFunding === 'yesFacility'">
+          <v-row v-if="facilityModel.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY">
             <v-col>
               <v-text-field
                 v-model="facilityModel.fundingFacility"

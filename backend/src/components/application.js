@@ -1,6 +1,5 @@
 'use strict';
 
-const { compress } = require('compress-pdf');
 const {
   getOperation,
   postOperation,
@@ -35,7 +34,6 @@ const { getCCFRIClosureDates, getLicenseCategoriesByFacilityId, getFacilityChild
 const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
-const { getBrowserContext, closeBrowser } = require('../util/browser');
 const pLimit = require('p-limit');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
@@ -162,7 +160,6 @@ async function getApprovableFeeSchedules(req, res) {
 
 async function upsertParentFees(req, res) {
   const body = req.body;
-  let hasError = false;
 
   //the front end sends over an array of objects. This loops through the array and sends a dynamics API request
   //for each object.
@@ -172,8 +169,7 @@ async function upsertParentFees(req, res) {
       try {
         await deleteOperationWithObjectId('ccof_application_ccfri_childcarecategories', feeGroup.parentFeeGUID);
       } catch (e) {
-        hasError = true;
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
       }
     } else if (feeGroup?.feeFrequency) {
       const childCareCategory = `/ccof_childcare_categories(${feeGroup.childCareCategory})`;
@@ -203,7 +199,7 @@ async function upsertParentFees(req, res) {
       try {
         await patchOperationWithObjectId('ccof_application_ccfri_childcarecategories', url, payload);
       } catch (e) {
-        hasError = true;
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
       }
     }
   }); //end forEach
@@ -221,22 +217,13 @@ async function upsertParentFees(req, res) {
 
   try {
     await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-  } catch (e) {
-    hasError = true;
-  }
 
-  //dates array will always exist - even if blank.
-  //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
-  try {
+    //dates array will always exist - even if blank.
+    //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
     await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
-  } catch (e) {
-    hasError = true;
-  }
-
-  if (hasError) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json();
-  } else {
     return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
@@ -394,8 +381,6 @@ async function submitApplication(req, res) {
         response = await patchOperationWithObjectId('ccof_applicationccfris', ccof_applicationccfriid, facility);
       }
     }
-
-    printPdf(req).then();
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -426,89 +411,6 @@ async function postPdf(req, buffer) {
     await postChangeRequestSummaryDocument(payload);
   }
   return payload;
-}
-
-async function printPdf(req, numOfRetries = 0) {
-  const url = `${req.headers.referer}/printable`;
-
-  log.info('printPdf :: user is', req.session?.passport?.user?.displayName);
-  log.verbose('printPdf :: correlationId is', req.session.correlationID);
-  log.info('printPdf :: applicationId is', req.params.applicationId);
-  log.verbose('printPdf :: url path is', url);
-
-  const browserContext = await getBrowserContext();
-
-  try {
-    log.info('printPdf :: starting new browser page');
-    const page = await browserContext.newPage();
-
-    // set navigation timeouts to 5 mins. So large organizations waiting to load do not throw error.
-    page.setDefaultTimeout(300000);
-    await page.setRequestInterception(true);
-
-    page.on('request', (request) => {
-      const headers = request.headers();
-      headers['cookie'] = req.headers.cookie;
-      request.continue({ headers });
-    });
-
-    log.info('printPdf :: starting page load');
-    const startTime = Date.now();
-    await page.goto(url, { waitUntil: 'networkidle0' });
-    log.info(`printPdf :: Page loaded successfully in ${Date.now() - startTime}ms`);
-
-    log.info('printPdf :: Waiting for signature field to appear');
-    await page.waitForSelector('#signatureTextField', { visible: true });
-
-    const signatureContent = await page.$eval('#signatureTextField', (el) => el.value.trim());
-
-    if (!signatureContent) {
-      await sleep(2000);
-      throw new Error('printPdf :: ERROR: No signature found on Declaration.');
-    }
-
-    log.info(`printPdf :: signatureTextField content is: ${signatureContent}`);
-
-    log.info('printPdf :: Begin Generating PDF');
-    const pdfStartTime = Date.now();
-    const pdfBuffer = await page.pdf({
-      displayHeaderFooter: false,
-      printBackground: true,
-      timeout: 300000,
-      width: 1280,
-    });
-    log.info(`printPdf :: PDF generated in ${Date.now() - pdfStartTime}ms`);
-
-    log.info('printPdf :: Compressing PDF');
-    const compressedPdfBuffer = await compress(pdfBuffer, {
-      gsModule: process.env.GHOSTSCRIPT_PATH, // this is set in dockerfile to fix ghostscript error on deploy
-    });
-    log.info(`printPdf :: Compression completed for applicationId=${req.params.applicationId}`);
-
-    log.info('printPdf :: Sending PDF to storage');
-    const payload = await postPdf(req, compressedPdfBuffer);
-
-    log.info(`printPdf :: PDF successfully stored for applicationId=${req.params.applicationId}`);
-    await browserContext.close();
-    closeBrowser();
-
-    return payload;
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.stack || e.message : JSON.stringify(e);
-    log.error(`printPdf :: Error occurred for applicationId=${req.params.applicationId}, ${errorMessage}`);
-
-    await browserContext?.close();
-
-    if (numOfRetries >= 5) {
-      log.error(`printPdf :: Maximum retries reached for applicationId=${req.params.applicationId}. Aborting.`);
-      closeBrowser();
-    } else {
-      const retryCount = numOfRetries + 1;
-      await sleep(5000);
-      log.info(`printPdf :: Retrying (${retryCount}/5) for applicationId=${req.params.applicationId}`);
-      await printPdf(req, retryCount);
-    }
-  }
 }
 
 //returns current date in DDMMMYYYY format when saving pdf file name
@@ -858,6 +760,5 @@ module.exports = {
   getApprovableFeeSchedules,
   patchCCFRIApplication,
   deleteCCFRIApplication,
-  printPdf,
   deletePcfApplication,
 };

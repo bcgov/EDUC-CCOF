@@ -1,21 +1,23 @@
 <template>
   <v-dialog persistent min-width="350px">
     <v-card>
-      <v-card-title class="dialog-title text-wrap">
-        <v-row no-gutters justify="space-between" align="center">
-          <v-col cols="10" md="11">
-            <h3 class="dialog-header">{{ title }}</h3>
-          </v-col>
-          <v-col cols="2" md="1" align="center">
-            <v-btn v-if="!loading" variant="text" icon="mdi-window-close" @click="$emit('close')" />
-          </v-col>
-        </v-row>
-      </v-card-title>
-      <div class="yellow-line"></div>
-      <v-card-text align="center">
+      <div class="sticky-header">
+        <v-card-title class="dialog-title text-wrap">
+          <v-row no-gutters justify="space-between" align="center">
+            <v-col cols="10" md="11">
+              <h3 class="dialog-header">{{ title }}</h3>
+            </v-col>
+            <v-col cols="2" md="1" align="center">
+              <v-btn v-if="!loading" variant="text" icon="mdi-window-close" @click="$emit('close')" />
+            </v-col>
+          </v-row>
+        </v-card-title>
+        <div class="yellow-line" />
+      </div>
+      <v-card-text :align="textAlignment">
         <slot name="content"></slot>
       </v-card-text>
-      <v-card-actions align="center" class="mb-4">
+      <v-card-actions :align="textAlignment" class="mb-4">
         <slot name="button"></slot>
       </v-card-actions>
     </v-card>
@@ -33,6 +35,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    textAlignment: {
+      type: String,
+      default: 'center',
+    },
   },
   emits: ['close'],
 };
@@ -48,6 +54,11 @@ export default {
   background-color: #003366;
   color: white;
   padding: 10px 30px;
+}
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .yellow-line {
   background-color: #ffc72c;

@@ -3,7 +3,7 @@
 import { isPlainObject, sortBy } from 'lodash';
 import useRfdc from 'rfdc';
 
-import { BCSSA_REGION_LINKS, PATHS, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { BCSSA_REGION_LINKS, OPT_STATUSES, PATHS, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
@@ -150,4 +150,32 @@ export function getBCSSALink(languageYearLabel) {
   }
 
   //todo- more links will need to be added for future program years when provided by the buisness
+}
+
+export function hasEmptyFields(obj, requiredFields) {
+  return requiredFields?.some((field) => obj[field] == null || obj[field] === '');
+}
+
+export function getOptInOptOut(status) {
+  switch (status) {
+    case OPT_STATUSES.OPT_IN:
+      return 'Opt-In';
+    case OPT_STATUSES.OPT_OUT:
+      return 'Opt-Out';
+    default:
+      return null;
+  }
+}
+
+export function getYesNoValue(value) {
+  switch (value) {
+    case 0:
+    case 100000001:
+      return 'No';
+    case 1:
+    case 100000000:
+      return 'Yes';
+    default:
+      return null;
+  }
 }

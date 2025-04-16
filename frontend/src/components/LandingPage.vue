@@ -11,8 +11,9 @@
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
-      A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement
-      to receive funding. Contact BC Registries immediately to resolve.
+      Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
+      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve.
+      Please disregard this message if you have already resolved your status.
     </AppAlertBanner>
 
     <v-row>

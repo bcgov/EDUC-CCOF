@@ -197,6 +197,12 @@ export const CCFRI_FEE_CORRECT_TYPES = {
   NO: 100000001,
 };
 
+export const FACILITY_HAS_RECEIVE_FUNDING_VALUES = {
+  YES: 100000000,
+  NO: 100000001,
+  YES_FACILITY: 100000002,
+};
+
 export const ORGANIZATION_PROVIDER_TYPES_IDS = {
   GROUP: 100000000,
   FAMILY: 100000001,
@@ -220,7 +226,12 @@ export const ECEWE_BELONGS_TO_UNION = {
   NO: 0,
 };
 
-export const ECEWE_OPT_IN_TYPES = {
+export const YES_NO_VALUES = {
+  YES: 1,
+  NO: 0,
+};
+
+export const OPT_STATUSES = {
   OPT_IN: 1,
   OPT_OUT: 0,
 };
@@ -484,3 +495,5 @@ export const APPLICATION_TEMPLATE_VERSIONS = [
   { id: '1', isActive: false, note: 'Original application template' },
   { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
 ];
+
+export const EMPTY_PLACEHOLDER = '--';

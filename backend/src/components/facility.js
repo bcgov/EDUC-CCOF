@@ -29,21 +29,10 @@ function buildNewFacilityPayload(req) {
 
 function mapFacilityObjectForBack(data) {
   const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
-
   facilityForBack.ccof_facilitystartdate = facilityForBack.ccof_facilitystartdate ? `${facilityForBack.ccof_facilitystartdate}-01-01` : null;
   if (facilityForBack.ccof_licensestartdate) {
     facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
   }
-  if (data.hasReceivedFunding === 'no') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000001;
-  } else if (data.hasReceivedFunding === 'yes') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000000;
-  } else if (data.hasReceivedFunding === 'yesFacility') {
-    facilityForBack.ccof_everreceivedfundingundertheccofprogram = 100000002;
-  } else if (data.hasReceivedFunding) {
-    console.error('unexpected value for data.hasReceivedFunding', data.hasReceivedFunding);
-  }
-
   return facilityForBack;
 }
 
@@ -52,24 +41,10 @@ function mapFacilityObjectForFront(data) {
     const year = data.ccof_facilitystartdate.split('-')[0];
     data.ccof_facilitystartdate = year;
   }
-
   if (data.ccof_licensestartdate) {
     data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
   }
-
   const obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
-
-  //TODO: map this if it is returned from dynamics
-  if (data.ccof_everreceivedfundingundertheccofprogram === 100000001) {
-    obj.hasReceivedFunding = 'no';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000000) {
-    obj.hasReceivedFunding = 'yes';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram === 100000002) {
-    obj.hasReceivedFunding = 'yesFacility';
-  } else if (data.ccof_everreceivedfundingundertheccofprogram) {
-    console.error('unexpected value for data.ccof_everreceivedfundingundertheccofprogram', data.ccof_everreceivedfundingundertheccofprogram);
-  }
-
   return obj;
 }
 
