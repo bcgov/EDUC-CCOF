@@ -2,7 +2,7 @@
   <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
     <template #content>
       <v-form v-model="isValidForm">
-        <v-container width="80%" class="left-align text-primary pa-0">
+        <v-container width="80%" class="text-primary pa-0">
           <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
           <p class="left-align mt-6 text-black">
             Closures may impact your CCFRI payments. See the
@@ -393,9 +393,6 @@ export default {
 </script>
 
 <style scoped>
-.left-align {
-  text-align: left;
-}
 .drop-down-select {
   white-space: nowrap;
   overflow: hidden;
