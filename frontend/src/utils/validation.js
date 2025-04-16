@@ -12,8 +12,7 @@ export function isNumberOfWeeksPerYearValid(count) {
 }
 
 export function isPhoneNumberValid(phone) {
-  // https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch04s02.html
-  return phone && /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(phone);
+  return phone && /^(?:\(\d{3}\)|\d{3})[-. ]?\d{3}[-. ]?\d{4}$/.test(phone);
 }
 
 export function isPostalCodeValid(postalCode) {
