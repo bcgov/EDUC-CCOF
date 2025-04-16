@@ -383,7 +383,6 @@ export default {
         documents: this.processDocuments(this.input.documents),
         changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
       };
-      console.log(payload);
       try {
         const response = await ClosureService.createNewClosureChangeRequest(payload);
         this.clearInputs();

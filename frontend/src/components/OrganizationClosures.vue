@@ -294,6 +294,9 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
