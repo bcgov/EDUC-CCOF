@@ -13,8 +13,6 @@ const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
-const { create } = require('lodash');
-const { createChangeActionDocuments } = require('./document');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();

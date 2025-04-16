@@ -48,17 +48,18 @@ export default {
     return !hasEmptyFields(organization, requiredFields);
   },
 
-  isFacilityComplete(facility, isGroup, applicationTemplateVersion) {
+  isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
     return (
-      this.isFacilityInformationComplete(facility.facilityInfo, applicationTemplateVersion) &&
-      this.isCCOFComplete(facility.funding, isGroup, applicationTemplateVersion) &&
+      this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
+      (facility.isRenewal ||
+        this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion)) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri) &&
-      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.isProgramYearLanguageHistorical)) &&
+      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
       (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
       (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
-      this.isECEWEFacilityComplete(facility.ecewe)
+      this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
   },
 
@@ -252,7 +253,8 @@ export default {
   },
 
   // RFI VALIDATIONS
-  isRFIComplete(rfi, isProgramYearLanguageHistorical) {
+  isRFIComplete(rfi, languageYearLabel) {
+    const isProgramYearLanguageHistorical = languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
     return (
       !isEmpty(rfi) &&
       this.isExceptionalCircumstancesComplete(rfi) &&
@@ -279,7 +281,7 @@ export default {
     return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete && isOtherSourcesOfMinistryFunding;
   },
 
-  isDirectCareStaffWagesIncreasesComplete(rfi, isProgramYearLanguageHistorical) {
+  isDirectCareStaffWagesIncreasesComplete(rfi, languageYearLabel) {
     if (!rfi.feeIncreaseDueToWage) return rfi.feeIncreaseDueToWage === 0;
     const requiredFields = [
       'isBargainingAgreement',
@@ -292,7 +294,7 @@ export default {
       'textbox5',
       'textbox6',
     ];
-    if (isProgramYearLanguageHistorical) {
+    if (languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) {
       requiredFields.push('increaseInWriting');
     }
     const wageRequiredFields = [
@@ -412,7 +414,11 @@ export default {
     return requiredFields;
   },
 
-  isECEWEFacilityComplete(ecewe) {
+  isECEWEFacilityComplete(ecewe, eceweOrg, languageYearLabel) {
+    if (isEmpty(ecewe)) return false;
+    if (ecewe.optInOrOut && eceweOrg?.fundingModel && languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+      return ecewe?.facilityUnionStatus != null;
+    }
     return ecewe?.optInOrOut != null;
   },
 

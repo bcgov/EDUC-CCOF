@@ -247,30 +247,30 @@
                 validate the accuracy of any information that I have provided.
               </p>
             </template>
+            <div class="my-2">
+              <v-checkbox
+                v-if="!isRenewal"
+                v-model="model.agreeConsentCertify"
+                :disabled="isReadOnly"
+                :value="1"
+                label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
+              />
+              <v-checkbox
+                v-else
+                v-model="model.agreeConsentCertify"
+                :disabled="isReadOnly"
+                :value="1"
+                label="I agree, consent, and certify"
+              />
+              <v-text-field
+                id="signatureTextField"
+                v-model="model.orgContactName"
+                variant="outlined"
+                :disabled="isReadOnly"
+                label="Your Organization's Authorized Signing Authority"
+              />
+            </div>
           </v-container>
-          <div class="px-6">
-            <v-checkbox
-              v-if="!isRenewal"
-              v-model="model.agreeConsentCertify"
-              :disabled="isReadOnly"
-              :value="1"
-              label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
-            />
-            <v-checkbox
-              v-else-if="isRenewal"
-              v-model="model.agreeConsentCertify"
-              :disabled="isReadOnly"
-              :value="1"
-              label="I agree, consent, and certify"
-            />
-            <v-text-field
-              id="signatureTextField"
-              v-model="model.orgContactName"
-              variant="outlined"
-              :disabled="isReadOnly"
-              label="Your Organization's Authorized Signing Authority"
-            />
-          </div>
         </v-skeleton-loader>
       </v-card>
     </div>
