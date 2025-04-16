@@ -157,12 +157,6 @@ async function createRawChangeRequest(req, res) {
       changeType = CHANGE_REQUEST_TYPES.NEW_FACILITY;
     } else if (changeType === 'PDF_CHANGE') {
       changeType = CHANGE_REQUEST_TYPES.PDF_CHANGE;
-    } else if (changeType === 'NEW_CLOSURE') {
-      changeType = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
-    } else if (changeType === 'EDIT_EXISTING_CLOSURE') {
-      changeType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
-    } else if (changeType === 'REMOVE_A_CLOSURE') {
-      changeType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     }
     changeRequest = mapChangeRequestForBack(changeRequest, changeType);
     const changeRequestId = await postOperation('ccof_change_requests', changeRequest);
