@@ -1,10 +1,16 @@
 <template>
-  <AppDialog v-model="isDisplayed" title="New Closure Request" :loading="isLoading" @close="closeDialog">
+  <AppDialog
+    v-model="isDisplayed"
+    title="New Closure Request"
+    :loading="isLoading"
+    text-alignment="left"
+    @close="closeDialog"
+  >
     <template #content>
       <v-form v-model="isValidForm">
         <v-container width="80%" class="text-primary pa-0">
           <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
-          <p class="left-align mt-6 text-black">
+          <p class="mt-6 text-black">
             Closures may impact your CCFRI payments. See the
             <a :href="getFundingUrl(programYearId)" target="_blank" class="text-decoration-underline">
               CCFRI Funding Guidelines</a
@@ -62,15 +68,15 @@
           </v-select>
           <v-row>
             <v-col cols="12" lg="9">
-              <h3 class="left-align mt-2">Will parents pay for this closure?</h3>
+              <h3 class="mt-2">Will parents pay for this closure?</h3>
             </v-col>
             <v-col cols="12" lg="3" class="pl-0">
               <v-radio-group v-model="input.paidClosure" :rules="rules.required">
                 <v-row justify="start">
-                  <v-col cols="6">
+                  <v-col cols="6" class="pl-3 pr-0 pt-0">
                     <v-radio label="Yes" :value="1" />
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" class="pl-0 pt-0">
                     <v-radio label="No" :value="0" />
                   </v-col>
                 </v-row>
@@ -80,7 +86,7 @@
           <v-container v-if="input.facilityId && input.paidClosure !== undefined" width="100%" class="pa-0">
             <v-row>
               <v-col cols="12" lg="9">
-                <h3 class="left-align mt-2">
+                <h3 class="mt-2">
                   Is this a full facility closure?
                   <AppTooltip
                     tooltip-content="Select no if only some care categories will be affected by the closure."
@@ -94,10 +100,10 @@
                   @update:model-value="handleFullFacilityClosureChange"
                 >
                   <v-row justify="start">
-                    <v-col cols="6">
+                    <v-col cols="6" class="pl-3 pr-0 pt-0">
                       <v-radio label="Yes" :value="true" />
                     </v-col>
-                    <v-col cols="6">
+                    <v-col cols="6" class="pl-0 pt-0">
                       <v-radio label="No" :value="false" />
                     </v-col>
                   </v-row>
@@ -106,7 +112,7 @@
             </v-row>
             <div v-if="input.fullClosure === false">
               <v-row class="ml-0">
-                <h3 align="start" class="pr-2">Affected Care Categorie(s)</h3>
+                <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
               <v-select
@@ -139,7 +145,7 @@
             </div>
             <v-row>
               <v-col cols="12" lg="3">
-                <h3 class="left-align mt-2">
+                <h3 class="mt-2">
                   Dates:
                   <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
                 </h3>
@@ -159,7 +165,7 @@
                   clearable
                 />
               </v-col>
-              <v-col cols="12" lg="1" class="pt-6" align="center">to</v-col>
+              <v-col cols="12" lg="1" class="pt-6">to</v-col>
               <v-col cols="12" lg="4">
                 <AppDateInput
                   v-model="input.endDate"
@@ -177,10 +183,10 @@
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12" lg="3" align="start">
+              <v-col cols="12" lg="3">
                 <h3>Reason:</h3>
               </v-col>
-              <v-col cols="12" lg="9" align="start">
+              <v-col cols="12" lg="9">
                 <v-text-field v-model="input.closureReason" variant="outlined" :rules="rules.required"></v-text-field>
               </v-col>
             </v-row>
@@ -195,7 +201,7 @@
               :loading="isLoading"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
-              class="left-align"
+              class=""
               :required="false"
               @update-documents-to-upload="updateDocuments"
             />
@@ -206,7 +212,7 @@
     <template #button>
       <v-container width="80%">
         <v-row>
-          <v-col cols="6" md="6" align="left">
+          <v-col cols="6" md="6">
             <AppButton :primary="false" :disabled="isLoading" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col cols="6" md="6" align="right">
