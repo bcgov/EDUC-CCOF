@@ -253,7 +253,7 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 
 function mapChangeActionClosureObjectForBack(changeActionClosure) {
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
-  changeActionClosureMapp.ccof_closure_type = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+  changeActionClosureMapp.ccof_closure_type = changeActionClosure.changeType;
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
@@ -262,6 +262,20 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
 }
 
 async function createNewClosureChangeRequest(req, res) {
+  try {
+    const createChangeRequestReponse = await createRawChangeRequest(req, res);
+    const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
+    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
+    const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
+    const asyncOperationResponses = await Promise.all(asyncOperations);
+    return res.status(HttpStatus.CREATED).json({ changeActionClosureId: asyncOperationResponses[0], changeRequestReferenceId: asyncOperationResponses[1].ccof_name });
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function createDeleteClosureChangeRequest(req, res) {
   try {
     const createChangeRequestReponse = await createRawChangeRequest(req, res);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);

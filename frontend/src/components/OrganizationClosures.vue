@@ -216,7 +216,7 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      // stub
+      console.log(closure);
     },
     hasPendingStatus(closure) {
       return [CLOSURE_STATUSES.SUBMITTED, CLOSURE_STATUSES.IN_PROGRESS].includes(closure.closureStatus);
