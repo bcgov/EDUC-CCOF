@@ -116,7 +116,7 @@
       max-width="60%"
       :change-request-reference-id="changeRequestReferenceId"
       :closure="closureToView"
-      @close="setClosureToView(undefined)"
+      @close="toggleClosureConfirmationDialog"
     />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
