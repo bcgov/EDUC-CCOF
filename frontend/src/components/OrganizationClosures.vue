@@ -74,7 +74,7 @@
                 :primary="false"
                 size="large"
                 class="text-body-2"
-                @click="viewDetails(item)"
+                @click="setClosureToView(item)"
               >
                 View Details
               </AppButton>
@@ -115,7 +115,8 @@
       :show="showClosureConfirmationDialog"
       max-width="60%"
       :change-request-reference-id="changeRequestReferenceId"
-      @close="toggleClosureConfirmationDialog"
+      :closure="closureToView"
+      @close="setClosureToView(undefined)"
     />
   </v-container>
 </template>
@@ -123,6 +124,7 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
@@ -167,6 +169,7 @@ export default {
       ],
       showClosureConfirmationDialog: false,
       changeRequestReferenceId: undefined,
+      closureToView: undefined,
     };
   },
   computed: {
@@ -181,6 +184,9 @@ export default {
           closure?.facilityName?.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
+    },
+    showClosureDetailsDialog() {
+      return this.closureToView != null;
     },
   },
   async created() {
@@ -204,13 +210,14 @@ export default {
         this.setFailureAlert('Failed to load closures');
       }
     },
-    toggleNewClosureRequestDialog() {
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    setClosureToView(closure) {
+      if (closure) {
+        const facility = this.getNavByFacilityId(closure.facilityId);
+        closure.licenseNumber = facility?.licenseNumber;
+      }
+      this.closureToView = closure;
     },
     // JonahCurlCGI - todo: implement the following functions
-    viewDetails(closure) {
-      // stub
-    },
     updateClosure(closure) {
       // stub
     },

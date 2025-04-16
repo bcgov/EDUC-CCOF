@@ -130,9 +130,9 @@
               density="compact"
               flat
               variant="solo"
-              hide-details
+              :hide-details="isNullOrBlank(summaryModel?.organization?.postalCode1) || isValidForm"
               readonly
-              :rules="rules.required"
+              :rules="[...rules.required, ...rules.postalCode]"
             />
           </v-col>
         </v-row>
@@ -185,11 +185,11 @@
               placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.postalCode2"
-              :rules="rules.required"
+              :rules="[...rules.required, ...rules.postalCode]"
               density="compact"
               flat
               variant="solo"
-              hide-details
+              :hide-details="isNullOrBlank(summaryModel?.organization?.postalCode2) || isValidForm"
               readonly
             />
           </v-col>
@@ -233,9 +233,9 @@
               density="compact"
               flat
               variant="solo"
-              hide-details
+              :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
               readonly
-              :rules="rules.required"
+              :rules="[...rules.required, rules.phone]"
             />
           </v-col>
           <v-col cols="12" md="4" class="pr-2">
@@ -247,9 +247,9 @@
               density="compact"
               flat
               variant="solo"
-              hide-details
+              :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
               readonly
-              :rules="rules.required"
+              :rules="[...rules.required, ...rules.email]"
             />
           </v-col>
           <v-col cols="12" md="4">
@@ -267,9 +267,11 @@
             />
           </v-col>
         </v-row>
-        <router-link v-if="!isValidForm" :to="routingPath">
-          <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-        </router-link>
+        <div v-if="!isValidForm" class="mt-4">
+          <router-link :to="routingPath">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
+        </div>
       </v-expansion-panel-text>
     </v-form>
   </v-row>
@@ -292,6 +294,9 @@ export default {
         ? pcfUrl(PATHS.CCOF_GROUP_ORG, this.summaryModel?.application?.programYearId)
         : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.summaryModel?.application?.programYearId);
     },
+  },
+  mounted() {
+    this.$refs.organizationSummaryForm.validate();
   },
 };
 </script>

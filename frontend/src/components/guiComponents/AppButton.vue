@@ -23,6 +23,7 @@ export default {
         'BC-Gov-SecondaryButton-disabled': this.$attrs.disabled && this.$attrs.variant === undefined && !this.primary,
         'text-app-button': this.$attrs.variant !== '',
         small: this.$attrs.size === 'small',
+        medium: this.$attrs.size === 'medium',
       };
     },
   },
@@ -111,6 +112,12 @@ export default {
 .small {
   font-size: 14px;
   height: 30px !important;
+  padding: 0px;
+}
+
+.medium {
+  font-size: 16px;
+  height: 40px !important;
   padding: 0px;
 }
 </style>
