@@ -105,6 +105,19 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
 
+      - name: Setup Keycloak Client
+        uses: actions/github-script@v7
+        env:
+          KC_REALM_ID: ${{ secrets.KC_REALM_ID }}
+          KC_CLIENT_ID: ${{ secrets.KC_ADMIN_CLIENT_ID }}
+          KC_CLIENT_SECRET: ${{ secrets.KC_ADMIN_CLIENT_SECRET }}
+          KC_ENV: test
+          APP_NAME: ${{ env.APP_NAME }}
+        with:
+          script: |
+            const { main } = require('./tools/config/keycloak.js');
+            await main();
+
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1
         with:
