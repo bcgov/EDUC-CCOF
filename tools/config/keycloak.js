@@ -190,17 +190,8 @@ async function getClient(token, kcAdminUrl, clientId) {
   return clients.find((c) => c.clientId === clientId);
 }
 
-async function deleteClientIfExists(token, kcAdminUrl, id, clientId = undefined) {
-  if (clientId) {
-    console.log(`Attempting to delete client: ${clientId}`);
-  }
-  if (!id) {
-    console.log(
-      `The id called with deleteClientIfExists is empty. No client to delete?`,
-    );
-    return;
-  }
-  console.log(`Deleting ${clientId || 'the existing client'} by id with deleteClientIfExists`);
+async function deleteClientIfExists(token, kcAdminUrl, id, clientId) {
+  console.log(`Attempting to delete client: ${clientId}`);
   await fetch(`${kcAdminUrl}/clients/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
@@ -241,7 +232,11 @@ export async function main() {
   const clientName = `${envVars.appName}-${envVars.env}`;
   const client = await getClient(token, kcAdminUrl, clientName);
 
-  await deleteClientIfExists(token, kcAdminUrl, client ? client.id : null, client?.clientId);
+  if (!client) {
+    console.log(`Client ${clientName} does not yet exist`);
+  } else {
+    await deleteClientIfExists(token, kcAdminUrl, client.id, client.clientId);
+  }
 
   await createClient(
     token,
