@@ -195,13 +195,12 @@
               v-model="input.description"
               variant="outlined"
               label="Detailed description of request"
-              class="text-left"
+              class="text-left mt-3"
             />
             <AppDocumentUpload
               :loading="isLoading"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
-              class=""
               :required="false"
               @update-documents-to-upload="updateDocuments"
             />
@@ -369,16 +368,24 @@ export default {
     },
     async submit() {
       this.isLoading = true;
-      this.input.applicationId = this.applicationId;
-      this.input.programYearId = this.programYearId;
-      this.input.organizationId = this.userInfo?.organizationId;
-      this.input.startDate = new Date(this.input.startDate).toISOString().slice(0, 10);
-      this.input.endDate = new Date(this.input.endDate).toISOString().slice(0, 10);
-      this.input.changeType = CHANGE_REQUEST_TYPES.NEW_CLOSURE;
-      this.input.documents = this.processDocuments(this.input.documents);
-      this.input.ageGroups = this.input.fullClosure ? undefined : this.input.ageGroups.join(',');
+      const payload = {
+        applicationId: this.applicationId,
+        programYearId: this.programYearId,
+        organizationId: this.userInfo?.organizationId,
+        facilityId: this.input.facilityId,
+        paidClosure: this.input.paidClosure,
+        fullClosure: this.input.fullClosure,
+        ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
+        startDate: new Date(this.input.startDate).toISOString().slice(0, 10),
+        endDate: new Date(this.input.endDate).toISOString().slice(0, 10),
+        closureReason: this.input.closureReason,
+        description: this.input.description,
+        documents: this.processDocuments(this.input.documents),
+        changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
+      };
+      console.log(payload);
       try {
-        const response = await ClosureService.createNewClosureChangeRequest(this.input);
+        const response = await ClosureService.createNewClosureChangeRequest(payload);
         this.clearInputs();
         this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
@@ -397,11 +404,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.drop-down-select {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-</style>
