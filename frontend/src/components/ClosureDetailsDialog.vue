@@ -16,16 +16,16 @@
         </div>
         <div v-if="closure?.fullClosure === false" class="mr-2">
           <p class="pb-2">Affected Care Types</p>
-          <strong align="left">
+          <strong>
             {{ affectedCareTypes }}
           </strong>
         </div>
       </v-card>
     </template>
     <template #button>
-      <div justify="center">
+      <v-row justify="center">
         <AppButton :primary="false" @click="closeDialog">Back to Summary</AppButton>
-      </div>
+      </v-row>
     </template>
   </AppDialog>
 </template>
