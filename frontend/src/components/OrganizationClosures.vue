@@ -114,7 +114,7 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ClosureDetailsDialog from './ClosureDetailsDialog.vue';
+import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';

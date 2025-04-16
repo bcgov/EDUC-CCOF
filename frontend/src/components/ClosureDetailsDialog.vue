@@ -3,7 +3,7 @@
     <template #content>
       <v-card class="pa-4 border-top">
         <div class="pb-6">
-          <p class="pb-2">License Number</p>
+          <p class="pb-2">Licence Number</p>
           <strong>{{ closure?.licenseNumber }}</strong>
         </div>
         <div class="pb-6">
@@ -62,13 +62,10 @@ export default {
       if (!this.closure || this.closure.fullClosure || !this.closure.ageGroups) {
         return '';
       }
-      const ageGroups = [];
+
       const ageGroupVals = this.closure.ageGroups.split(',');
       ageGroupVals.sort();
-      for (const ageGroupVal of ageGroupVals) {
-        ageGroups.push(CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(ageGroupVal)]);
-      }
-      return ageGroups.join(', ');
+      return ageGroupVals.map((val) => CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT[Number(val)]).join(', ');
     },
   },
   watch: {
