@@ -35,9 +35,9 @@ function getKcBaseClientMap(envVars) {
   if (env !== "prod") {
     prefix = `${env}.`;
   }
-  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca/`;
+  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca`;
 
-  let redirectUris = [`${rootUrl}*`];
+  let redirectUris = [`${rootUrl}/*`];
   if (env === "dev") {
     redirectUris = [
       ...redirectUris,
@@ -49,6 +49,13 @@ function getKcBaseClientMap(envVars) {
       ...redirectUris,
       "https://efx.mychildcareservices.gov.bc.ca/*",
     ];
+  } else if (env === "prod") {
+    redirectUris = [
+      `${rootUrl}/api/auth/callback`,
+      `${rootUrl}/api/auth/callback_idir`,
+      `${rootUrl}/logout`,
+      `${rootUrl}/session-expired`
+    ]
   }
 
   return {
