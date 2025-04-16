@@ -195,7 +195,7 @@ async function deleteClientIfExists(token, kcAdminUrl, id, clientId = undefined)
     );
     return;
   }
-  console.log(`Deleting ${clientId ? clientId : 'the existing client'} by id with deleteClientIfExists`);
+  console.log(`Deleting ${clientId || 'the existing client'} by id with deleteClientIfExists`);
   await fetch(`${kcAdminUrl}/clients/${id}`, {
     method: "DELETE",
     headers: { Authorization: `Bearer ${token}` },
