@@ -139,7 +139,6 @@ import {
   CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
-  CLOSURE_REQUEST_TYPES,
   PATHS,
 } from '@/utils/constants.js';
 
@@ -293,7 +292,6 @@ export default {
     },
     submittedNewClosureRequest(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
-      this.closureRequestType = CLOSURE_REQUEST_TYPES.NEW_CLOSURE;
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
       this.toggleClosureConfirmationDialog();
     },
