@@ -201,8 +201,9 @@ async function deleteClientIfExists(token, kcAdminUrl, id, clientId = undefined)
 }
 
 async function createClient(token, kcAdminUrl, clientMap) {
-  console.log(`Creating keycloak client: ${clientMap.clientId}`);
-  await fetch(`${kcAdminUrl}/clients`, {
+  const { clientId } = clientMap;
+  console.log(`Creating keycloak client: ${clientId}`);
+  const response = await fetch(`${kcAdminUrl}/clients`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -210,6 +211,11 @@ async function createClient(token, kcAdminUrl, clientMap) {
     },
     body: JSON.stringify(clientMap),
   });
+
+  if (response.status >= 400) {
+    const { status, statusText } = response;
+    throw new Error(`An error ocurred while creating ${clientId}.\nStatus: ${status}\nMessage: ${statusText}`);
+  };
 }
 
 export async function main() {
