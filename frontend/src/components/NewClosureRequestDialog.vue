@@ -40,11 +40,11 @@
                 @click="props.onClick"
               >
                 <v-row>
-                  <v-col cols="12" md="8" align="start">
+                  <v-col cols="12" md="8" class="text-left">
                     <h4>{{ item.raw.facilityName }}</h4>
-                    <p>License #: {{ item.raw.licenseNumber }}</p>
+                    <p>Licence #: {{ item.raw.licenseNumber }}</p>
                   </v-col>
-                  <v-col cols="12" md="4" align="start">
+                  <v-col cols="12" md="4" class="text-left">
                     <p>Facility ID:</p>
                     <p>{{ item.raw.facilityAccountNumber }}</p>
                   </v-col>
@@ -53,13 +53,12 @@
               <v-divider v-if="index < facilityList.length - 1" class="mx-4" />
             </template>
             <template #selection="{ item }">
-              <!-- JonahCurlCGI todo: fix formatting -->
               <v-row>
-                <v-col cols="12" md="8" align="start" class="ml-0">
+                <v-col cols="12" md="8" class="ml-0">
                   <h4>{{ item.raw.facilityName }}</h4>
-                  <p>License #: {{ item.raw.licenseNumber }}</p>
+                  <p>Licence #: {{ item.raw.licenseNumber }}</p>
                 </v-col>
-                <v-col cols="12" md="4" align="end">
+                <v-col cols="12" md="4">
                   <p>Facility ID:</p>
                   <p>{{ item.raw.facilityAccountNumber }}</p>
                 </v-col>
@@ -377,15 +376,15 @@ export default {
         paidClosure: this.input.paidClosure,
         fullClosure: this.input.fullClosure,
         ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
-        startDate: new Date(this.input.startDate).toISOString().slice(0, 10),
-        endDate: new Date(this.input.endDate).toISOString().slice(0, 10),
+        startDate: `${this.input.startDate}T12:00:00-07:00`,
+        endDate: `${this.input.endDate}T12:00:00-07:00`,
         closureReason: this.input.closureReason,
-        description: this.input.description,
+        closureDescription: this.input.description,
         documents: this.processDocuments(this.input.documents),
         changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
       };
       try {
-        const response = await ClosureService.createNewClosureChangeRequest(payload);
+        const response = await ClosureService.createClosureChangeRequest(payload);
         this.clearInputs();
         this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
@@ -404,3 +403,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+:deep(.v-select__selection) {
+  width: 100%;
+}
+</style>

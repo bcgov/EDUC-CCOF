@@ -145,8 +145,7 @@ async function updateChangeRequest(req, res) {
   }
 }
 
-// create Change Request
-async function createRawChangeRequest(req, res) {
+async function createRawChangeRequest(req) {
   try {
     let changeRequest = req.body;
     let changeType = changeRequest.changeType;
@@ -176,10 +175,9 @@ async function createRawChangeRequest(req, res) {
   }
 }
 
-// create Change Request
 async function createChangeRequest(req, res) {
   try {
-    const rawChangeRequest = await createRawChangeRequest(req, res);
+    const rawChangeRequest = await createRawChangeRequest(req);
     return res.status(HttpStatus.CREATED).json(rawChangeRequest);
   } catch (e) {
     log.error('error', e);
@@ -247,7 +245,6 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
 
 function mapChangeActionClosureObjectForBack(changeActionClosure) {
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
-  changeActionClosureMapp.ccof_closure_type = changeActionClosure.changeType;
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
@@ -255,9 +252,9 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
   return changeActionClosureMapp;
 }
 
-async function createNewClosureChangeRequest(req, res) {
+async function createClosureChangeRequest(req, res) {
   try {
-    const createChangeRequestReponse = await createRawChangeRequest(req, res);
+    const createChangeRequestReponse = await createRawChangeRequest(req);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
@@ -412,8 +409,7 @@ module.exports = {
   getChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
-  createNewClosureChangeRequest,
-  createRemoveClosureChangeRequest,
+  createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
