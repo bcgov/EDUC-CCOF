@@ -377,7 +377,7 @@ export default {
           this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
           this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
           this.getLanguageYearLabel !== this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) ||
-        (this.ecewe?.belongsToUnion === this.ECEWE_BELONGS_TO_UNION.YES &&
+        (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
           this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
           this.getLanguageYearLabel === this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL)
       );

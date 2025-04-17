@@ -74,7 +74,7 @@
                 :primary="false"
                 size="large"
                 class="text-body-2"
-                @click="viewDetails(item)"
+                @click="setClosureToView(item)"
               >
                 View Details
               </AppButton>
@@ -117,12 +117,19 @@
       :change-request-reference-id="changeRequestReferenceId"
       @close="toggleClosureConfirmationDialog"
     />
+    <ClosureDetailsDialog
+      :show="showClosureDetailsDialog"
+      max-width="60%"
+      :closure="closureToView"
+      @close="setClosureToView(undefined)"
+    />
   </v-container>
 </template>
 <script>
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
@@ -139,13 +146,12 @@ import {
   CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
-  CLOSURE_REQUEST_TYPES,
   PATHS,
 } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog },
+  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -168,6 +174,7 @@ export default {
       ],
       showClosureConfirmationDialog: false,
       changeRequestReferenceId: undefined,
+      closureToView: undefined,
     };
   },
   computed: {
@@ -182,6 +189,9 @@ export default {
           closure?.facilityName?.toLowerCase().includes(this.filter.toLowerCase())
         );
       });
+    },
+    showClosureDetailsDialog() {
+      return this.closureToView != null;
     },
   },
   async created() {
@@ -205,13 +215,14 @@ export default {
         this.setFailureAlert('Failed to load closures');
       }
     },
-    toggleNewClosureRequestDialog() {
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    setClosureToView(closure) {
+      if (closure) {
+        const facility = this.getNavByFacilityId(closure.facilityId);
+        closure.licenseNumber = facility?.licenseNumber;
+      }
+      this.closureToView = closure;
     },
     // JonahCurlCGI - todo: implement the following functions
-    viewDetails(closure) {
-      // stub
-    },
     updateClosure(closure) {
       // stub
     },
@@ -288,12 +299,14 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
     submittedNewClosureRequest(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
-      this.closureRequestType = CLOSURE_REQUEST_TYPES.NEW_CLOSURE;
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
       this.toggleClosureConfirmationDialog();
     },

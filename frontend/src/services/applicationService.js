@@ -1,18 +1,27 @@
 import { isEmpty } from 'lodash';
 
-import { hasEmptyFields } from '@/utils/common.js';
+import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
   APPLICATION_TEMPLATE_VERSIONS,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   DOCUMENT_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
+  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_SECTOR_TYPES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
+import {
+  isEmailValid,
+  isNumberOfDaysPerWeekValid,
+  isNumberOfWeeksPerYearValid,
+  isPhoneNumberValid,
+  isPostalCodeValid,
+  isYearValid,
+} from '@/utils/validation';
 
 export default {
   /*
@@ -45,7 +54,12 @@ export default {
     if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP && isGroup) {
       requiredFields.push('contactName', 'position');
     }
-    return !hasEmptyFields(organization, requiredFields);
+    const areFieldsValid =
+      isEmailValid(organization.email) &&
+      isPhoneNumberValid(organization.phone) &&
+      isPostalCodeValid(organization.postalCode1) &&
+      isPostalCodeValid(organization.postalCode2);
+    return !hasEmptyFields(organization, requiredFields) && areFieldsValid;
   },
 
   isFacilityComplete(facility) {
@@ -88,7 +102,13 @@ export default {
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
       requiredFields.push('fundingFacility');
     }
-    return !hasEmptyFields(facilityInfo, requiredFields);
+    const isFacilityInBC = facilityInfo.province === 'BC';
+    const areFieldsValid =
+      isEmailValid(facilityInfo.email) &&
+      isPhoneNumberValid(facilityInfo.phone) &&
+      isPostalCodeValid(facilityInfo.postalCode) &&
+      isYearValid(facilityInfo.yearBeganOperation);
+    return !hasEmptyFields(facilityInfo, requiredFields) && areFieldsValid && isFacilityInBC;
   },
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
@@ -127,7 +147,15 @@ export default {
     if (funding.isExtendedHours) {
       requiredFields.push('maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
     }
-    return !hasEmptyFields(funding, requiredFields);
+    const areFieldsValid =
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended));
+    return !hasEmptyFields(funding, requiredFields) && areFieldsValid && isExtendedChildCareValid;
   },
   isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;
@@ -139,16 +167,25 @@ export default {
       'isSchoolProperty',
       'isExtendedHours',
     ];
+    const areFieldsValid =
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended) &&
+        this.hasLicenceCategoryWithExtendedChildCare(funding) &&
+        this.isUnder36ExtendedChildCareValid(funding) &&
+        this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
+        this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
+        this.isMultiAgeExtendedChildCareValid(funding));
     return (
       !hasEmptyFields(funding, requiredFields) &&
+      areFieldsValid &&
       this.hasValidLicenceCategory(funding) &&
       (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
-      (funding?.isExtendedHours === 0 ||
-        (this.hasLicenceCategoryWithExtendedChildCare(funding) &&
-          this.isUnder36ExtendedChildCareValid(funding) &&
-          this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
-          this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
-          this.isMultiAgeExtendedChildCareValid(funding)))
+      isExtendedChildCareValid
     );
   },
   hasLicenceCategory(funding) {
@@ -373,7 +410,11 @@ export default {
     } else {
       requiredFields.push(...this.requiredFieldsForECEWEOrganizationPreviousYearsTemplate(ecewe, languageYearLabel));
     }
-    return !hasEmptyFields(ecewe, requiredFields);
+    const isCSSEAValid =
+      languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 ||
+      ecewe?.publicSector !== ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO ||
+      ecewe?.describeOrgCSSEA !== ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA;
+    return !hasEmptyFields(ecewe, requiredFields) && isCSSEAValid;
   },
 
   // 2025–26 FY and beyond (CCFRI-3819)
