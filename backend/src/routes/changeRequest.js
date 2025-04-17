@@ -19,7 +19,6 @@ const {
 const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { param, validationResult, checkSchema } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
-const { isBoolean } = require('lodash');
 
 module.exports = router;
 
@@ -52,13 +51,11 @@ const closureChangeRequestSchema = {
   },
   facilityId: {
     in: ['body'],
-    exists: true,
-    errorMessage: '[facilityId] is required',
+    exists: { errorMessage: '[facilityId] is required' },
   },
   organizationId: {
     in: ['body'],
-    exists: true,
-    errorMessage: '[organizationId] is required',
+    exists: { errorMessage: '[organizationId] is required' },
   },
 };
 
