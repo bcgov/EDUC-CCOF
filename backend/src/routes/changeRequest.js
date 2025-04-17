@@ -9,7 +9,7 @@ const {
   updateChangeRequest,
   createChangeRequest,
   createChangeRequestFacility,
-  createNewClosureChangeRequest,
+  createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
@@ -34,8 +34,15 @@ const newFacilityChangeRequestSchema = {
   },
 };
 
-const newClosureChangeRequestSchema = {
-  ...newFacilityChangeRequestSchema,
+const closureChangeRequestSchema = {
+  applicationId: {
+    in: ['body'],
+    exists: { errorMessage: '[applicationId] is required' },
+  },
+  programYearId: {
+    in: ['body'],
+    exists: { errorMessage: '[programYearId] is required' },
+  },
   changeType: {
     in: ['body'],
     equals: {
@@ -43,56 +50,15 @@ const newClosureChangeRequestSchema = {
       errorMessage: '[changeType] must be NEW_CLOSURE',
     },
   },
-  closureReason: {
-    in: ['body'],
-    isString: true,
-    notEmpty: true,
-    errorMessage: '[closureReason] must be a non-empty string',
-  },
-  endDate: {
-    in: ['body'],
-    isISO8601: {
-      errorMessage: '[startDate] must be a valid ISO 8601 date',
-    },
-    isDate: true,
-    custom: {
-      options: (value, { req }) => {
-        const startDate = new Date(req.body.startDate);
-        const endDate = new Date(value);
-
-        if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-          throw new Error('[startDate] and [endDate] must be valid dates');
-        }
-        if (endDate < startDate) {
-          throw new Error('[endDate] must be on or after [startDate]');
-        }
-        return true;
-      },
-    },
-  },
   facilityId: {
     in: ['body'],
     exists: true,
     errorMessage: '[facilityId] is required',
   },
-  fullClosure: {
+  organizationId: {
     in: ['body'],
-    errorMessage: '[fullClosure] must be a boolean',
-    isBoolean: true,
-    toBoolean: true,
-  },
-  paidClosure: {
-    in: ['body'],
-    isNumeric: true,
     exists: true,
-    toInt: true,
-    errorMessage: '[paidClosure] must be 0 or 1',
-  },
-  startDate: {
-    in: ['body'],
-    isISO8601: true,
-    errorMessage: '[startDate] must be a valid ISO 8601 date',
-    isDate: true,
+    errorMessage: '[organizationId] is required',
   },
 };
 
@@ -158,9 +124,9 @@ router.post(
 /**
  * Create the change Request
  */
-router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(newClosureChangeRequestSchema)], (req, res) => {
+router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
-  return createNewClosureChangeRequest(req, res);
+  return createClosureChangeRequest(req, res);
 });
 
 /**
