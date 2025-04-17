@@ -258,6 +258,13 @@ async function createClosureChangeRequest(req, res) {
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
+    if (req.body.documents?.length > 0) {
+      for (const document of req.body.documents) {
+        const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
+        mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
+        asyncOperations.push(postChangeActionDocument(mappedDocument));
+      }
+    }
     const asyncOperationResponses = await Promise.all(asyncOperations);
     return res.status(HttpStatus.CREATED).json({ changeActionClosureId: asyncOperationResponses[0], changeRequestReferenceId: asyncOperationResponses[1].ccof_name });
   } catch (e) {
