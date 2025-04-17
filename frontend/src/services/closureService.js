@@ -17,7 +17,7 @@ export default {
     }
   },
 
-  async createNewClosureChangeRequest(payload) {
+  async createClosureChangeRequest(payload) {
     try {
       if (isEmpty(payload)) return;
       const response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_CLOSURE, payload);
