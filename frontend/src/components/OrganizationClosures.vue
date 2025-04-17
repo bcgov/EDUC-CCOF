@@ -148,7 +148,6 @@ import {
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   PATHS,
 } from '@/utils/constants.js';
-import { createRemoveClosureChangeRequest } from '../../../backend/src/components/changeRequest';
 
 export default {
   name: 'OrganizationClosures',
