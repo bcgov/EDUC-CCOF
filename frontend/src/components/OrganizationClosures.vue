@@ -117,6 +117,7 @@
       :change-request-reference-id="changeRequestReferenceId"
       @close="toggleClosureConfirmationDialog"
     />
+    />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
       max-width="60%"
@@ -146,7 +147,6 @@ import {
   CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
-  CLOSURE_REQUEST_TYPES,
   PATHS,
 } from '@/utils/constants.js';
 
@@ -303,12 +303,14 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
     submittedNewClosureRequest(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
-      this.closureRequestType = CLOSURE_REQUEST_TYPES.NEW_CLOSURE;
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
       this.toggleClosureConfirmationDialog();
     },

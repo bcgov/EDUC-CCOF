@@ -28,7 +28,6 @@ export const ApiRoutes = Object.freeze({
   CCFRI_DATES: baseRoot + '/facility/dates',
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
-  LICENSE_CATEGORIES: '/licenseCategories',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
   FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
@@ -49,7 +48,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
-  CHANGE_REQUEST_NEW_CLOSURE: baseRoot + '/changeRequest/newClosure',
+  CHANGE_REQUEST_CLOSURE: baseRoot + '/changeRequest/closure',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
@@ -174,10 +173,6 @@ export function changeUrlGuid(
 
 export function closureUrl(programYearGuid = ':programYearGuid') {
   return `${PATHS.CLOSURES}/${programYearGuid}`;
-}
-
-export function licenseCategoriesUrl(facilityId = ':facilityId') {
-  return `${ApiRoutes.FACILITY}/${facilityId}${ApiRoutes.LICENSE_CATEGORIES}`;
 }
 
 export const NAV_BAR_GROUPS = {
@@ -462,6 +457,15 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCOF: 'CCOF',
   INELIGIBLE: 'Ineligible',
   PENDING: 'Pending',
+});
+
+export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
+  100000000: '0 to 18 months',
+  100000001: '18 to 36 months',
+  100000002: '3 Years to Kindergarten',
+  100000003: 'Out of School Care - Kindergarten',
+  100000004: 'Out of School Care - Grade 1+',
+  100000005: 'Preschool',
 });
 
 export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
