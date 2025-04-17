@@ -3,7 +3,8 @@
     <template v-if="title">
       <div class="mb-2">
         <span class="text-h6 font-weight-bold mr-6">{{ title }}</span>
-        <span> (Required)</span>
+        <span v-if="required">(Required)</span>
+        <span v-else>(Optional):</span>
       </div>
       <div class="mb-4">
         {{ FILE_REQUIREMENTS_TEXT }}
@@ -106,6 +107,10 @@ export default {
     uploadedDocuments: {
       type: Array,
       default: () => [],
+    },
+    required: {
+      type: Boolean,
+      default: true,
     },
   },
   emits: ['updateDocumentsToUpload', 'deleteUploadedDocument', 'validateDocumentsToUpload'],
