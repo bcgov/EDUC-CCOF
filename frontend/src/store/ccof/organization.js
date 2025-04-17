@@ -2,6 +2,7 @@ import { isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -38,10 +39,10 @@ export const useOrganizationStore = defineStore('organization', {
       this.isStarted = isStarted;
     },
     setOrganizationModel(model) {
-      this.organizationModel = model;
+      this.organizationModel = { ...model };
     },
     setLoadedModel(model) {
-      this.loadedModel = model;
+      this.loadedModel = { ...model };
     },
     setIsOrganizationComplete(value) {
       this.isOrganizationComplete = value;
@@ -56,7 +57,10 @@ export const useOrganizationStore = defineStore('organization', {
         return;
       }
 
-      const payload = { ...this.organizationModel };
+      const payload = {
+        ...this.organizationModel,
+        applicationTemplateVersion: ApplicationService.getActiveApplicationTemplate(),
+      };
       payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       this.setLoadedModel({ ...this.organizationModel });
@@ -98,12 +102,13 @@ export const useOrganizationStore = defineStore('organization', {
       const eceweAppStore = useEceweAppStore();
 
       checkSession();
-      let nextApp = appStore.programYearList?.list?.find(
+      const nextApp = appStore.programYearList?.list?.find(
         (el) => el.previousYearId == applicationStore.latestProgramYearId,
       );
-      let payload = {
+      const payload = {
         providerType: this.organizationProviderType,
         programYearId: nextApp?.programYearId,
+        applicationTemplateVersion: ApplicationService.getActiveApplicationTemplate(),
         organizationId: this.organizationId,
       };
       try {
@@ -123,7 +128,7 @@ export const useOrganizationStore = defineStore('organization', {
       checkSession();
 
       try {
-        let response = await ApiService.apiAxios.get(ApiRoutes.ORGANIZATION + '/' + organizationId);
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}`);
         this.setOrganizationModel(response.data);
         this.setLoadedModel(response.data);
         this.setIsOrganizationComplete(response.data?.isOrganizationComplete);

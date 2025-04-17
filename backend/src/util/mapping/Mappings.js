@@ -37,6 +37,7 @@ const FacilityMappings = [
   { back: 'telephone1', front: 'phone' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
   { back: 'ccof_licensestartdate', front: 'licenseEffectiveDate' },
+  { back: 'ccof_everreceivedfundingundertheccofprogram', front: 'hasReceivedFunding' },
   { back: 'ccof_facilityreceived_ccof_funding', front: 'fundingFacility' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
@@ -279,7 +280,7 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'organization_accountnumber', front: 'organizationAccountNumber' },
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
-  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizaitonBypassGoodStandingCheck' },
+  { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
   { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
 ];
 
@@ -289,6 +290,7 @@ const UserProfileApplicationMappings = [
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_providertype', front: 'organizationProviderType' }, // group or family
   { back: 'ccof_applicationtype', front: 'applicationType' },
+  { back: 'ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_licensecomplete', front: 'isLicenseUploadComplete' },
   { back: 'ccof_ecewe_eligibility_complete', front: 'isEceweComplete' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
@@ -322,6 +324,20 @@ const OrganizationFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+];
+
+const ClosureMappings = [
+  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ccof_facilityinfo_value', front: 'facilityId' },
+  { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_startdate', front: 'startDate' },
+  { back: 'ccof_enddate', front: 'endDate' },
+  { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
+  { back: 'ccof_age_affected_groups', front: 'ageGroups' },
+  { back: 'ccof_closure_reason', front: 'closureReason' },
+  { back: 'ccof_is_full_closure', front: 'fullClosure' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
@@ -527,6 +543,7 @@ module.exports = {
   CCFRIFacilityMappings,
   CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
+  ClosureMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,

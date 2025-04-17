@@ -29,12 +29,10 @@ env:
 
   NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
 
-  # NOTE: Some of these settings are temporary until puppeteer/chromium is decomissioned
-  # for printing. Original values for CPU were 50m min, 250m max. Max replicas were 5
   MIN_REPLICAS: "3"
-  MAX_REPLICAS: "7"
-  MIN_CPU: "200m"
-  MAX_CPU: "750m"
+  MAX_REPLICAS: "5"
+  MIN_CPU: "50m"
+  MAX_CPU: "250m"
   MIN_MEM: "200Mi"
   MAX_MEM: "700Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
@@ -107,6 +105,19 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: ${{ env.BRANCH }}
+
+      - name: Setup Keycloak Client
+        uses: actions/github-script@v7
+        env:
+          KC_REALM_ID: ${{ secrets.KC_REALM_ID }}
+          KC_CLIENT_ID: ${{ secrets.KC_ADMIN_CLIENT_ID }}
+          KC_CLIENT_SECRET: ${{ secrets.KC_ADMIN_CLIENT_SECRET }}
+          KC_ENV: prod
+          APP_NAME: ${{ env.APP_NAME }}
+        with:
+          script: |
+            const { main } = require('./tools/config/keycloak.js');
+            await main();
 
       - name: Install oc
         uses: redhat-actions/openshift-tools-installer@v1

@@ -193,3 +193,32 @@ ol.declarationBList {
   padding-left: 20px;
   list-style-position: inside;
 }
+
+.status-gray {
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-green {
+  background-color: #c8e6cb;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-yellow {
+  background-color: #fdfac8;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+/* SUMMARY DECLARATION */
+.summary-label {
+  color: grey;
+  font-size: small;
+}
+
+.summary-value {
+  font-size: medium;
+  color: black;
+}

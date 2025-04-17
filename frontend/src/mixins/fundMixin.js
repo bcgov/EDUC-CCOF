@@ -3,12 +3,13 @@ import { mapActions, mapState } from 'pinia';
 
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import { useAppStore } from '@/store/app.js';
+import ApplicationService from '@/services/applicationService';
 import { useApplicationStore } from '@/store/application.js';
 import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isNullOrBlank } from '@/utils/common.js';
 import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import formatTime from '@/utils/formatTime.js';
 import rules from '@/utils/rules.js';
@@ -19,8 +20,13 @@ export default {
   computed: {
     ...mapState(useFundingStore, ['fundingModel']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useAppStore, ['familyLicenseCategory']),
-    ...mapState(useApplicationStore, ['unlockBaseFunding', 'applicationStatus']),
+    ...mapState(useApplicationStore, [
+      'unlockBaseFunding',
+      'applicationStatus',
+      'isApplicationFormValidated',
+      'isApplicationProcessing',
+      'showApplicationTemplateV1',
+    ]),
     ...mapState(useNavBarStore, [
       'changeRequestId',
       'changeType',
@@ -44,69 +50,37 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
-    showErrorMessage() {
-      return !this.isLocked && this.isValidated;
-    },
     hasLicenceCategory() {
-      return (
-        this.model.hasUnder36Months ||
-        this.model.has30MonthToSchoolAge ||
-        this.model.hasSchoolAgeCareOnSchoolGrounds ||
-        this.model.hasPreschool ||
-        this.model.hasMultiAge
-      );
+      return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
     hasSchoolAgeCareServices() {
-      return (
-        this.model.beforeSchool ||
-        this.model.afterSchool ||
-        this.model.beforeKindergarten ||
-        this.model.afterKindergarten
-      );
+      return ApplicationService.hasSchoolAgeCareServices(this.fundingModel);
     },
     hasLicenceCategoryWithExtendedChildCare() {
-      return (
-        this.model.hasUnder36MonthsExtendedCC ||
-        this.model.has30MonthToSchoolAgeExtendedCC ||
-        this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.model.hasMultiAgeExtendedCC
-      );
-    },
-    totalMaxSpacesUnder36ExtendedChildCare() {
-      return this.model.extendedChildCareUnder36Months4OrLess + this.model.extendedChildCareUnder36Months4OrMore;
-    },
-    totalMaxSpaces30MonthToSchoolAgeExtendedChildCare() {
-      return (
-        this.model.extendedChildCare36MonthsToSchoolAge4OrLess + this.model.extendedChildCare36MonthsToSchoolAge4OrMore
-      );
-    },
-    totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare() {
-      return this.model.extendedChildCareSchoolAge4OrLess + this.model.extendedChildCareSchoolAge4OrMore;
-    },
-    totalMaxSpacesMultiAgeExtendedChildCare() {
-      return this.model.multiAgeCare4OrLess + this.model.multiAgeCare4more;
+      return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.fundingModel);
     },
     isUnder36ExtendedChildCareValid() {
-      return !this.model.hasUnder36MonthsExtendedCC || this.totalMaxSpacesUnder36ExtendedChildCare > 0;
+      return ApplicationService.isUnder36ExtendedChildCareValid(this.fundingModel);
     },
     is30MonthToSchoolAgeExtendedChildCareValid() {
-      return !this.model.has30MonthToSchoolAgeExtendedCC || this.totalMaxSpaces30MonthToSchoolAgeExtendedChildCare > 0;
+      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.fundingModel);
     },
     isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return (
-        !this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-        this.totalMaxSpacesSchoolAgeCareOnSchoolGroundsExtendedChildCare > 0
-      );
+      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.fundingModel);
     },
     isMultiAgeExtendedChildCareValid() {
-      return !this.model.hasMultiAgeExtendedCC || this.totalMaxSpacesMultiAgeExtendedChildCare > 0;
+      return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
     },
     isFormComplete() {
+      // TODO (vietle-cgi) - review this logic once the Family application is updated.
+      if (this.showApplicationTemplateV1 || this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
+        return this.fundingModel.isCCOFComplete;
+      }
       return (
-        this.model.isCCOFComplete &&
+        this.fundingModel.isCCOFComplete &&
         this.hasLicenceCategory &&
-        (!this.model.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
-        (this.model.isExtendedHours === 0 ||
+        (!this.fundingModel.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
+        (this.fundingModel.isExtendedHours === 0 ||
           (this.hasLicenceCategoryWithExtendedChildCare &&
             this.isUnder36ExtendedChildCareValid &&
             this.is30MonthToSchoolAgeExtendedChildCareValid &&
@@ -115,45 +89,36 @@ export default {
       );
     },
   },
-  data() {
-    return {
-      processing: false,
-      loading: true,
-      isValidated: false,
-      model: {},
-      rules,
-    };
+  created() {
+    this.rules = rules;
   },
   methods: {
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useFundingStore, ['saveFunding', 'loadFunding', 'fundingId', 'setFundingModel', 'addModelToStore']),
     ...mapActions(useNavBarStore, ['setNavBarFundingComplete']),
-    isGroup() {
-      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
-    },
+
     previous() {
       this.$router.push(this.previousPath);
     },
     next() {
       this.$router.push(this.nextPath);
     },
-    validateForm() {
-      this.isValidated = true;
-      this.$refs.form?.validate();
-    },
     async save(isSave) {
-      this.processing = true;
-      // TODO (vietle-cgi) - review this logic once the Family application is updated.
-      this.model.isCCOFComplete = this.isGroup() ? this.isFormComplete : this.model.isCCOFComplete;
-      this.setFundingModel({ ...this.model });
-      this.addModelToStore({ fundingId: this.$route.params.urlGuid, model: this.model });
-      this.setNavBarFundingComplete({ fundingId: this.$route.params.urlGuid, complete: this.model.isCCOFComplete });
       try {
-        await this.saveFunding();
+        if (this.isLocked || this.isApplicationProcessing) return;
+        this.setIsApplicationProcessing(true);
+        this.fundingModel.isCCOFComplete = this.isFormComplete;
+        this.setNavBarFundingComplete({
+          fundingId: this.$route.params.urlGuid,
+          complete: this.fundingModel.isCCOFComplete,
+        });
+
+        await this.saveFunding(this.$route.params.urlGuid);
 
         if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
           const newFac = this.getChangeActionNewFacByFacilityId(this.fundingModel.facilityId);
 
-          newFac.baseFunding.isCCOFComplete = this.model.isCCOFComplete;
+          newFac.baseFunding.isCCOFComplete = this.fundingModel.isCCOFComplete;
         }
         if (isSave) {
           this.setSuccessAlert('Success! Funding information has been saved.');
@@ -161,91 +126,134 @@ export default {
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
         console.log(error);
+      } finally {
+        this.setIsApplicationProcessing(false);
       }
-      this.processing = false;
     },
     formatTime,
     resetSelectedClosedMonths() {
-      if (isEmpty(this.model)) return;
+      if (isEmpty(this.fundingModel)) return;
       for (let i = 1; i <= 12; i++) {
-        this.model[`closedIn${i}`] = null;
+        this.fundingModel[`closedIn${i}`] = null;
       }
     },
     resetGroupChildCareSchoolAgeRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.maxGroupChildCareSchool = null;
-      this.model.beforeSchool = null;
-      this.model.beforeKindergarten = null;
-      this.model.afterKindergarten = null;
-      this.model.afterSchool = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.maxGroupChildCareSchool = null;
+      this.fundingModel.beforeSchool = null;
+      this.fundingModel.beforeKindergarten = null;
+      this.fundingModel.afterKindergarten = null;
+      this.fundingModel.afterSchool = null;
     },
     resetPreschoolRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.maxPreschool = null;
-      this.model.monday = null;
-      this.model.tusday = null;
-      this.model.wednesday = null;
-      this.model.thursday = null;
-      this.model.friday = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.maxPreschool = null;
+      this.fundingModel.monday = null;
+      this.fundingModel.tusday = null;
+      this.fundingModel.wednesday = null;
+      this.fundingModel.thursday = null;
+      this.fundingModel.friday = null;
     },
     resetExtendedHoursFields() {
-      if (isEmpty(this.model)) return;
-      this.model.maxDaysPerWeekExtended = null;
-      this.model.maxWeeksPerYearExtended = null;
-      this.model.hasUnder36MonthsExtendedCC = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.maxDaysPerWeekExtended = null;
+      this.fundingModel.maxWeeksPerYearExtended = null;
+      this.fundingModel.hasUnder36MonthsExtendedCC = null;
       this.resetUnder36MonthsExtendedCCRelatedFields();
-      this.model.has30MonthToSchoolAgeExtendedCC = null;
+      this.fundingModel.has30MonthToSchoolAgeExtendedCC = null;
       this.reset30MonthsToSchoolAgeExtendedCCRelatedFields();
-      this.model.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
       this.resetSchoolAgeExtendedCCRelatedFields();
-      this.model.hasMultiAgeExtendedCC = null;
+      this.fundingModel.hasMultiAgeExtendedCC = null;
       this.resetMultiAgeExtendedCCRelatedFields();
     },
     resetUnder36MonthsExtendedCCRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.extendedChildCareUnder36Months4OrLess = null;
-      this.model.extendedChildCareUnder36Months4OrMore = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.extendedChildCareUnder36Months4OrLess = null;
+      this.fundingModel.extendedChildCareUnder36Months4OrMore = null;
     },
     reset30MonthsToSchoolAgeExtendedCCRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.extendedChildCare36MonthsToSchoolAge4OrLess = null;
-      this.model.extendedChildCare36MonthsToSchoolAge4OrMore = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.extendedChildCare36MonthsToSchoolAge4OrLess = null;
+      this.fundingModel.extendedChildCare36MonthsToSchoolAge4OrMore = null;
     },
     resetSchoolAgeExtendedCCRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.extendedChildCareSchoolAge4OrLess = null;
-      this.model.extendedChildCareSchoolAge4OrMore = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.extendedChildCareSchoolAge4OrLess = null;
+      this.fundingModel.extendedChildCareSchoolAge4OrMore = null;
     },
     resetMultiAgeExtendedCCRelatedFields() {
-      if (isEmpty(this.model)) return;
-      this.model.multiAgeCare4OrLess = null;
-      this.model.multiAgeCare4more = null;
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.multiAgeCare4OrLess = null;
+      this.fundingModel.multiAgeCare4more = null;
     },
-  },
-  async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
-    next();
-  },
-  watch: {
-    '$route.params.urlGuid': {
-      async handler() {
-        let ccofBaseFundingId = this.$route.params.urlGuid;
-        if (ccofBaseFundingId) {
-          await this.loadFunding(ccofBaseFundingId);
-        }
 
-        this.loading = false;
-      },
-      immediate: true,
-      deep: true,
+    /*
+      CCFRI-4682 - Legacy code to support application template (V1).
+    */
+    groupValueRuleMaxGroupChildCareUnder36() {
+      return this.groupValueRule(
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
     },
-    fundingModel: {
-      handler() {
-        this.model = { ...this.fundingModel };
-        this.$refs.form?.resetValidation();
-      },
-      immediate: true,
-      deep: true,
+    groupValueRuleMaxGroupChildCare36() {
+      return this.groupValueRule(
+        'maxGroupChildCare36',
+        'maxGroupChildCareUnder36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
     },
+    groupValueRuleMaxPreschool() {
+      return this.groupValueRule(
+        'maxPreschool',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxGroupChildCareSchool() {
+      return this.groupValueRule(
+        'maxGroupChildCareSchool',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareMultiAge',
+      );
+    },
+    groupValueRuleMaxGroupChildCareMultiAge() {
+      return this.groupValueRule(
+        'maxGroupChildCareMultiAge',
+        'maxGroupChildCareUnder36',
+        'maxGroupChildCare36',
+        'maxPreschool',
+        'maxGroupChildCareSchool',
+      );
+    },
+    groupValueRule(forFieldName, otherFieldNAme1, otherFieldNAme2, otherFieldNAme3, otherFieldNAme4) {
+      if (isNullOrBlank(this.fundingModel[`${forFieldName}`]) || this.fundingModel[`${forFieldName}`] > 0) return true;
+      if (
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme1}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme2}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme3}`]) ||
+        isNullOrBlank(this.fundingModel[`${otherFieldNAme4}`])
+      )
+        return true;
+      const sum =
+        (this.fundingModel[`${otherFieldNAme1}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme2}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme3}`] || 0) +
+        (this.fundingModel[`${otherFieldNAme4}`] || 0);
+      return sum > 0 ? true : 'At least one Licence Type should have a maximum capacity above zero.';
+    },
+    /*
+      CCFRI-4682 - END OF Legacy code to support application template (V1).
+    */
   },
 };

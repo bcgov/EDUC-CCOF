@@ -26,6 +26,7 @@ export const ApiRoutes = Object.freeze({
   CCFRIFACILITY: baseRoot + '/facility/ccfri',
   CCFRI_FEES: baseRoot + '/facility/fees',
   CCFRI_DATES: baseRoot + '/facility/dates',
+  CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
@@ -70,6 +71,7 @@ export const PAGE_TITLES = Object.freeze({
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
+  ORGANIZATION_CLOSURES: 'Organization Closures',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -142,6 +144,8 @@ export const PATHS = {
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
+
+  CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
@@ -166,6 +170,10 @@ export function changeUrlGuid(
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
+export function closureUrl(programYearGuid = ':programYearGuid') {
+  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
+}
+
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
@@ -181,6 +189,12 @@ export const CCFRI_HAS_CLOSURE_FEE_TYPES = {
 export const CCFRI_FEE_CORRECT_TYPES = {
   YES: 100000000,
   NO: 100000001,
+};
+
+export const FACILITY_HAS_RECEIVE_FUNDING_VALUES = {
+  YES: 100000000,
+  NO: 100000001,
+  YES_FACILITY: 100000002,
 };
 
 export const ORGANIZATION_PROVIDER_TYPES_IDS = {
@@ -206,7 +220,12 @@ export const ECEWE_BELONGS_TO_UNION = {
   NO: 0,
 };
 
-export const ECEWE_OPT_IN_TYPES = {
+export const YES_NO_VALUES = {
+  YES: 1,
+  NO: 0,
+};
+
+export const OPT_STATUSES = {
   OPT_IN: 1,
   OPT_OUT: 0,
 };
@@ -405,6 +424,47 @@ export const ORGANIZATION_TYPES = Object.freeze({
   SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
 });
 
+export const CLOSURE_STATUSES = Object.freeze({
+  DRAFT: 100000000,
+  SUBMITTED: 100000001,
+  IN_PROGRESS: 100000002,
+  APPROVED: 100000003,
+  DENIED: 100000004,
+  CANCELLED: 100000005,
+});
+
+export const CLOSURE_STATUS_TEXTS = Object.freeze({
+  PENDING: 'Pending',
+  APPROVED: 'Approved',
+  INELIGIBLE: 'Ineligible',
+  REMOVED_BY_PROVIDER: 'Removed by Provider',
+});
+
+export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
+  CCFRI: 100000000,
+  CCFRI_AND_CCOF: 100000001,
+  CCOF: 100000002,
+  INELIGIBLE: 100000003,
+  PENDING: 100000004,
+});
+
+export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
+  CCFRI: 'CCFRI',
+  CCFRI_AND_CCOF: 'CCFRI & CCOF',
+  CCOF: 'CCOF',
+  INELIGIBLE: 'Ineligible',
+  PENDING: 'Pending',
+});
+
+export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
+  100000000: '0 to 18 months',
+  100000001: '18 to 36 months',
+  100000002: '3 Years to Kindergarten',
+  100000003: 'Out of School Care - Kindergarten',
+  100000004: 'Out of School Care - Grade 1+',
+  100000005: 'Preschool',
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
@@ -416,3 +476,10 @@ export const TOOLTIP_TYPES = Object.freeze({
   ERROR: 'Error',
   WARNING: 'Warning',
 });
+
+export const APPLICATION_TEMPLATE_VERSIONS = [
+  { id: '1', isActive: false, note: 'Original application template' },
+  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
+];
+
+export const EMPTY_PLACEHOLDER = '--';

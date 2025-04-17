@@ -11,8 +11,9 @@
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
-      A BC Registries check has returned as "not in good standing" for your organization. Good standing is a requirement
-      to receive funding. Contact BC Registries immediately to resolve.
+      Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
+      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve.
+      Please disregard this message if you have already resolved your status.
     </AppAlertBanner>
 
     <v-row>
@@ -238,16 +239,21 @@
       type="paragraph, text@3, text@3, paragraph"
     />
     <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
-      <v-row no-gutters>
-        <v-col class="col-12 col-md-6 ml-4 mb-4">
-          <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
-          <h2 v-if="getFundingAgreementNumberByYear">
-            Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
-          </h2>
+      <v-row class="ml-2" no-gutters>
+        <v-col cols="12" md="6">
+          <div>
+            <h2>Fiscal Year: {{ programYearNameForFacilityCards }}</h2>
+            <h2 v-if="getFundingAgreementNumberByYear">
+              Funding Agreement Number: {{ getFundingAgreementNumberByYear }}
+            </h2>
+          </div>
+        </v-col>
+        <v-col cols="12" md="6" class="my-2 my-md-0 d-flex justify-md-end">
+          <AppButton size="large" height="50" @click="goToOrganizationClosures">Organization Closures</AppButton>
         </v-col>
       </v-row>
-      <v-row no-gutters justify="space-between">
-        <v-col class="col-12 col-lg-7 ml-4">
+      <v-row>
+        <v-col cols="12" md="4" order="2" order-md="1">
           <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
@@ -259,12 +265,13 @@
             variant="filled"
             label="Filter by Facility Name "
             :bind="input"
+            class="mx-2"
           />
         </v-col>
-        <v-col v-if="applicationIds?.length > 1" class="col-12 col-lg-4">
-          <v-row class="justify-right align-center mr-4">
-            <h3 class="mr-4">Select fiscal year:</h3>
-            <FiscalYearSlider @select-program-year="selectProgramYear" />
+        <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
+          <v-row class="justify-md-end">
+            <h3 class="ml-5">Select fiscal year:</h3>
+            <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
           </v-row>
         </v-col>
       </v-row>
@@ -332,6 +339,7 @@ import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -339,6 +347,7 @@ import {
   PATHS,
   pcfUrl,
   pcfUrlGuid,
+  closureUrl,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -349,7 +358,7 @@ import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { AppAlertBanner, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
@@ -382,6 +391,7 @@ export default {
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',
+      'applicationMap',
       'getFacilityListForPCFByProgramYearId',
       'formattedProgramYear',
       'applicationType',
@@ -395,7 +405,6 @@ export default {
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
       'applicationStatus',
-      'applicationMap',
       'applicationId',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
@@ -596,7 +605,7 @@ export default {
     showNotGoodStandingWarning() {
       return (
         this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.userInfo.organizaitonBypassGoodStandingCheck
+        !this.userInfo.organizationBypassGoodStandingCheck
       );
     },
   },
@@ -703,6 +712,11 @@ export default {
       } else {
         this.goToLicenseUpload();
       }
+    },
+    goToOrganizationClosures() {
+      this.$router.push(
+        closureUrl(this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.latestProgramYearId),
+      );
     },
     async getAllMessagesVuex() {
       try {

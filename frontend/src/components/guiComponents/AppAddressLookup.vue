@@ -1,5 +1,6 @@
 <template>
   <v-combobox
+    v-model="selectedAddress"
     :loading="loading"
     :items="matchedAddresses"
     item-title="Text"
@@ -27,7 +28,13 @@ import CanadaPostService from '@/services/canadaPostService';
 export default {
   name: 'AppAddressLookup',
   mixins: [alertMixin],
-  emits: ['updateAddress', 'update:modelValue'],
+  props: {
+    savedAddress: {
+      type: String,
+      default: '',
+    },
+  },
+  emits: ['updateAddress'],
   data() {
     return {
       loading: false,
@@ -40,6 +47,7 @@ export default {
       FIND: 'Find',
       RETRIEVE: 'Retrieve',
     };
+    this.selectedAddress = this.savedAddress;
   },
   methods: {
     // Delay triggering findMatchedAddresses() until after the user stops typing to reduce unnecessary API calls and improve performance.
@@ -67,11 +75,9 @@ export default {
     },
     async selectAddress(value) {
       if (!value || !(value instanceof Object)) return;
-      this.selectedAddress = value;
       if (value?.Next === this.NEXT_ACTION.FIND) {
         await this.findMatchedAddresses(value?.Id, false);
       } else {
-        this.$emit('update:modelValue', value.Text);
         this.$emit('updateAddress', value);
       }
     },

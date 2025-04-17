@@ -2,13 +2,13 @@
   <v-form ref="eceweSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
       <SummaryExpansionPanelTitle
-        :title="expansionPanelTitle"
-        :loading="isProcessing"
+        title="Early Childhood Educator-Wage Enhancement (ECE-WE)"
+        :loading="isApplicationProcessing"
         :is-complete="isValidForm && !showCSSEAWarning"
       />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
-      <v-skeleton-loader :loading="!isLoadingComplete" type="table-tbody">
+      <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody">
         <v-container fluid class="pa-0">
           <div>
             <!-- This is facility level information. Because this component is rendered twice but with two models, this is slightly different.
@@ -28,11 +28,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-              <v-col
-                v-if="eceweFacility?.optInOrOut === ECEWE_OPT_IN_TYPES.OPT_IN && showUnionQuestion"
-                cols="12"
-                md="6"
-              >
+              <v-col v-if="eceweFacility?.optInOrOut === OPT_STATUSES.OPT_IN && showUnionQuestion" cols="12" md="6">
                 <span class="summary-label pt-3">Union Status:</span>
                 <v-text-field
                   placeholder="Required"
@@ -70,7 +66,8 @@
             <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
               <template
                 v-if="
-                  languageYearLabel === programYearTypes.FY2025_26 && ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+                  getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 &&
+                  ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
                 "
               >
                 <v-row v-if="!facilityInformationExists" no-gutters>
@@ -94,7 +91,7 @@
                     />
                   </v-col>
                   <v-col cols="12">
-                    <span class="summary-label pt-3"> Which of the following describes your organziation? </span>
+                    <span class="summary-label pt-3"> Which of the following describes your organization? </span>
                     <v-text-field
                       placeholder="Required"
                       :model-value="describeCSSEA"
@@ -185,7 +182,7 @@
 
               <!-- previous year's ECE-WE question logic below -->
               <template v-else>
-                <v-row v-if="ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN" no-gutters>
+                <v-row v-if="ecewe?.optInECEWE === OPT_STATUSES.OPT_IN" no-gutters>
                   <v-col cols="12">
                     <span class="summary-label pt-3">
                       Do any of the ECE employees at any facility in your organization belong to a union
@@ -206,8 +203,8 @@
                 <v-row v-if="!facilityInformationExists" no-gutters>
                   <v-col
                     v-if="
-                      languageYearLabel !== programYearTypes.HISTORICAL &&
-                      ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN
+                      getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL &&
+                      ecewe?.optInECEWE === OPT_STATUSES.OPT_IN
                     "
                     cols="12"
                   >
@@ -311,11 +308,9 @@
               </template>
             </div>
           </div>
-          <div v-if="!isValidForm || showCSSEAWarning">
-            <router-link :to="routingPath">
-              <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
-            </router-link>
-          </div>
+          <router-link v-if="!isValidForm || showCSSEAWarning" :to="routingPath">
+            <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
+          </router-link>
         </v-container>
       </v-skeleton-loader>
     </v-expansion-panel-text>
@@ -323,103 +318,73 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useAppStore } from '@/store/app.js';
-
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
 import {
-  PATHS,
   pcfUrl,
   changeUrl,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
   ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  ECEWE_OPT_IN_TYPES,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_BELONGS_TO_UNION,
 } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
 
 export default {
-  components: { SummaryExpansionPanelTitle },
+  mixins: [summaryMixin],
   props: {
     ecewe: {
       type: Object,
-      required: false,
       default: () => ({}),
     },
     eceweFacility: {
       type: Object,
-      required: false,
       default: () => ({}),
-    },
-    isProcessing: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     changeRecGuid: {
       type: String,
-      required: false,
       default: '',
     },
     programYearId: {
       type: String,
-      required: false,
       default: '',
     },
     //we need this prop so at the facility level we have the required data from org level to show unionized question
     fundingModel: {
       type: Number,
-      required: false,
       default: null,
     },
   },
-  emits: ['isSummaryValid'],
   data() {
     return {
       isChangeRequest: isChangeRequest(this),
-      PATHS,
-      rules,
       isValidForm: false,
-      formObj: {
-        formName: 'ECEWESummary',
-      },
     };
   },
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
-    ...mapState(useSummaryDeclarationStore, ['isLoadingComplete']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getFundingUrl', 'getLanguageYearLabel']),
-    languageYearLabel() {
-      return this.getLanguageYearLabel;
-    },
-    programYearTypes() {
-      return PROGRAM_YEAR_LANGUAGE_TYPES;
-    },
+    ...mapState(useAppStore, ['fundingModelTypeList']),
     showUnionQuestion() {
-      return this.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+      return this.fundingModel && this.getLanguageYearLabel === this.PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
     },
     showApplicableSector() {
       return (
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+          this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
           this.ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
-          this.languageYearLabel !== this.programYearTypes.HISTORICAL) ||
+          this.getLanguageYearLabel !== this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL) ||
         (this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
-          this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
-          this.languageYearLabel === this.programYearTypes.HISTORICAL)
+          this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
+          this.getLanguageYearLabel === this.PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL)
       );
     },
     showFundingModel() {
       return (
-        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.CSSEA
       );
@@ -432,14 +397,10 @@ export default {
     },
     showWageConfirmation() {
       return (
-        this.ecewe?.optInECEWE === ECEWE_OPT_IN_TYPES.OPT_IN &&
+        this.ecewe?.optInECEWE === this.OPT_STATUSES.OPT_IN &&
         this.ecewe?.belongsToUnion === ECEWE_BELONGS_TO_UNION.YES &&
         this.ecewe?.applicableSector === ECEWE_SECTOR_TYPES.OTHER_UNION
       );
-    },
-    expansionPanelTitle() {
-      const title = this.facilityInformationExists ? 'Facility Information' : 'Organization Information';
-      return `Early Childhood Educator-Wage Enhancement (ECE-WE) - ${title}`;
     },
     facilityInformationExists() {
       return !!this.eceweFacility;
@@ -460,26 +421,16 @@ export default {
     },
     routingPath() {
       if (this.isChangeRequest) {
-        if (!this.eceweFacility) {
-          return changeUrl(PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid);
-        }
-        return changeUrl(PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
-      } else {
-        if (!this.eceweFacility) {
-          return pcfUrl(PATHS.ECEWE_ELIGIBILITY, this.programYearId);
-        }
-        return pcfUrl(PATHS.ECEWE_FACILITITES, this.programYearId);
+        return !this.eceweFacility
+          ? changeUrl(this.PATHS.ECEWE_ELIGIBILITY, this.$route.params?.changeRecGuid)
+          : changeUrl(this.PATHS.ECEWE_FACILITITES, this.$route.params?.changeRecGuid);
       }
+      return !this.eceweFacility
+        ? pcfUrl(this.PATHS.ECEWE_ELIGIBILITY, this.programYearId)
+        : pcfUrl(this.PATHS.ECEWE_FACILITITES, this.programYearId);
     },
     optInOptOut() {
-      switch (this.eceweFacility?.optInOrOut) {
-        case ECEWE_OPT_IN_TYPES.OPT_OUT:
-          return 'Opt-Out';
-        case ECEWE_OPT_IN_TYPES.OPT_IN:
-          return 'Opt-In';
-        default:
-          return '';
-      }
+      return this.getOptInOptOut(this.eceweFacility?.optInOrOut);
     },
     facilityUnionStatus() {
       switch (this.eceweFacility?.facilityUnionStatus) {
@@ -515,65 +466,19 @@ export default {
       );
     },
   },
-  watch: {
-    isValidForm: {
-      handler() {
-        this.$refs.eceweSummaryForm.validate();
-        //validate for this page is kinda slow. isValidForm becomes null when validation is in process.. that throws off the warning message on SummaryDec.vue
-        //if form is invalid, it will be set to false and the emit will still fire.
-        if (!this.isProcessing && this.isLoadingComplete && this.isValidForm !== null) {
-          this.$emit('isSummaryValid', this.formObj, this.isValidForm && !this.showCSSEAWarning);
-        }
-      },
-    },
-  },
   created() {
-    this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
-    this.ECEWE_OPT_IN_TYPES = ECEWE_OPT_IN_TYPES;
     this.ECEWE_DESCRIBE_ORG_TYPES = ECEWE_DESCRIBE_ORG_TYPES;
     this.ECEWE_SECTOR_TYPES = ECEWE_SECTOR_TYPES;
-  },
-  methods: {
-    getYesNoValue(value) {
-      if (value === 1 || value === 100000000) {
-        return 'Yes';
-      } else if (value === 0) {
-        return 'No';
-      } else {
-        return null;
-      }
-    },
   },
 };
 </script>
 <style scoped>
-.summary-label {
-  color: grey;
-  font-size: small;
-}
-
-.summary-value {
-  font-size: medium;
-  color: black;
-}
-
-.summary-label-smaller {
-  color: grey;
-  font-size: x-small;
-}
-
-.summary-label-bold {
-  color: black;
-  font-size: small;
-  font-style: initial;
-}
-.summary-value-small {
-  color: black;
-  font-size: small;
-  font-weight: bold;
-}
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
+}
+
+:deep(.v-field__input) {
+  padding-left: 0px;
 }
 </style>
