@@ -117,7 +117,6 @@
       :change-request-reference-id="changeRequestReferenceId"
       @close="toggleClosureConfirmationDialog"
     />
-    />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
       max-width="60%"
@@ -149,6 +148,7 @@ import {
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   PATHS,
 } from '@/utils/constants.js';
+import { createRemoveClosureChangeRequest } from '../../../backend/src/components/changeRequest';
 
 export default {
   name: 'OrganizationClosures',
@@ -231,7 +231,7 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      console.log(closure);
+      // await createRemoveClosureChangeRequest(closure.closureId);
     },
     hasPendingStatus(closure) {
       return [CLOSURE_STATUSES.SUBMITTED, CLOSURE_STATUSES.IN_PROGRESS].includes(closure.closureStatus);

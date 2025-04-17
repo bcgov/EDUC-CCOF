@@ -468,15 +468,6 @@ export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
   100000005: 'Preschool',
 });
 
-export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
-  100000000: '0 to 18 months',
-  100000001: '18 to 36 months',
-  100000002: '3 Years to Kindergarten',
-  100000003: 'Out of School Care - Kindergarten',
-  100000004: 'Out of School Care - Grade 1+',
-  100000005: 'Preschool',
-});
-
 export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   '0 to 18 months': 100000000,
   '18 to 36 months': 100000001,
