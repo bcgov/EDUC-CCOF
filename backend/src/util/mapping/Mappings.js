@@ -336,6 +336,9 @@ const ClosureMappings = [
   { back: 'ccof_enddate', front: 'endDate' },
   { back: 'ccof_closure_status', front: 'closureStatus' },
   { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
+  { back: 'ccof_age_affected_groups', front: 'ageGroups' },
+  { back: 'ccof_closure_reason', front: 'closureReason' },
+  { back: 'ccof_is_full_closure', front: 'fullClosure' },
   { back: '_ccof_change_action_closure_value', front: 'changeActionClosureId' },
 ];
 

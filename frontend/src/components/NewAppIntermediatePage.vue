@@ -1,51 +1,37 @@
 <template>
-  <v-container>
-    <div class="row pt-4 justify-center">
-      <v-container>
-        <v-row class="justify-center text-h5 pb-5" style="color: #003466"> Welcome to CCOF! </v-row>
-      </v-container>
-      <v-container>
-        <v-row class="justify-center pb-5" style="color: #003466">
-          <p style="max-width: 801px">
-            If your organization currently receives funding from the Child Care Operating Funding (CCOF) program, do not
-            submit a new application. You can request support for applying on MyCCBC by calling the program at
-            1-888-338-6622 (Option 2).
-          </p>
-        </v-row>
-      </v-container>
-      <v-row class="justify-center">
-        <v-col class="d-flex justify-center">
-          <v-btn theme="dark" class="blueButton" @click="backToLanding()"> Cancel </v-btn>
-        </v-col>
-        <v-col class="d-flex justify-center">
-          <v-btn theme="dark" class="blueButton" @click="newApplication()"> Start Application </v-btn>
-        </v-col>
-      </v-row>
-    </div>
+  <v-container max-width="1200">
+    <p class="text-h4 text-primary text-center">Welcome to Child Care Operating Funding (CCOF)</p>
+    <p class="text-primary px-8 px-lg-16 my-16">
+      If your organization currently receives funding from the Child Care Operating Funding (CCOF) program, do not
+      submit a new application. You can request support for applying on MyCCBC by calling the program at 1-888-338-6622
+      (Option 2).
+    </p>
+    <v-row>
+      <v-col cols="12" sm="6" class="d-flex justify-center">
+        <AppButton id="cancel-button" :primary="false" size="medium" min-width="200px" @click="backToLanding">
+          Cancel
+        </AppButton>
+      </v-col>
+      <v-col cols="12" sm="6" class="d-flex justify-center">
+        <AppButton id="start-application" size="medium" min-width="200px" @click="newApplication">
+          Start Application
+        </AppButton>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAuthStore } from '../store/auth.js';
-import { useAppStore } from '../store/app.js';
-import { useOrganizationStore } from '../store/ccof/organization.js';
-import { useApplicationStore } from '../store/application.js';
-
-import { PATHS, pcfUrl } from '../utils/constants.js';
-import alertMixin from '../mixins/alertMixin.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 export default {
   name: 'NewAppIntermediatePage',
-  components: {},
-  mixins: [alertMixin],
-  data() {
-    return {};
-  },
+  components: { AppButton },
   computed: {
-    ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
-    ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useApplicationStore, ['formattedProgramYear']),
     ...mapState(useAppStore, ['programYearList']),
   },
   methods: {
@@ -60,5 +46,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>
