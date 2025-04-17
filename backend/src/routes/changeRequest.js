@@ -44,9 +44,9 @@ const closureChangeRequestSchema = {
   },
   changeType: {
     in: ['body'],
-    equals: {
-      options: `${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`,
-      errorMessage: '[changeType] must be NEW_CLOSURE',
+    isIn: {
+      options: [[`${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
+      errorMessage: '[changeType] must be NEW_CLOSURE or REMOVE_A_CLOSURE',
     },
   },
   facilityId: {
@@ -56,6 +56,17 @@ const closureChangeRequestSchema = {
   organizationId: {
     in: ['body'],
     exists: { errorMessage: '[organizationId] is required' },
+  },
+  closureId: {
+    in: ['body'],
+    custom: {
+      options: (value, { req }) => {
+        if (req.body.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE && !value) {
+          throw new Error('[closureId] is required for closure removal requests');
+        }
+        return true;
+      },
+    },
   },
 };
 
@@ -124,14 +135,6 @@ router.post(
 router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
   return createClosureChangeRequest(req, res);
-});
-
-/**
- * Create a remove closure change request
- */
-router.delete('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [query('closureId').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return createRemoveClosureChangeRequest(req, res);
 });
 
 /**

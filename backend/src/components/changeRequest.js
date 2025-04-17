@@ -266,27 +266,6 @@ async function createClosureChangeRequest(req, res) {
   }
 }
 
-async function createRemoveClosureChangeRequest(req, res) {
-  try {
-    // const createChangeRequestReponse = await createRawChangeRequest(req, res);
-    // const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
-    // changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
-    // const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
-    // if (req.body.documents?.length > 0) {
-    //   for (const document of req.body.documents) {
-    //     const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
-    //     mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
-    //     asyncOperations.push(postChangeActionDocument(mappedDocument));
-    //   }
-    // }
-    // const asyncOperationResponses = await Promise.all(asyncOperations);
-    return res.status(HttpStatus.CREATED).json({ result: 'hehe' });
-  } catch (e) {
-    log.error('error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
 async function createChangeRequestFacility(req, res) {
   const facility = buildNewFacilityPayload(req);
   try {
