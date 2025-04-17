@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import { validateHourDifference } from '@/utils/common.js';
 import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
 import { getFileExtension, humanFileSize } from '@/utils/file';
@@ -9,7 +11,7 @@ const rules = {
     function (v) {
       if (v === 0 || v === false) {
         return true;
-      } else if (!v) {
+      } else if ((typeof v === 'object' && isEmpty(v)) || !v) {
         return ERROR_MESSAGES.REQUIRED;
       }
 

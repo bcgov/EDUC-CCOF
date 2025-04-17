@@ -8,7 +8,9 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large">Add New Closure</AppButton>
+          <AppButton :loading="isLoading" size="large" @click="toggleNewClosureRequestDialog"
+            >Add New Closure</AppButton
+          >
           <div class="text-h6 font-weight-bold my-4">
             Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
           </div>
@@ -102,6 +104,19 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
+    <NewClosureRequestDialog
+      :show="showNewClosureRequestDialog"
+      :program-year-id="$route.params.programYearGuid"
+      max-width="60%"
+      @close="toggleNewClosureRequestDialog"
+      @submitted="submittedNewClosureRequest"
+    />
+    <ClosureConfirmationDialog
+      :show="showClosureConfirmationDialog"
+      max-width="60%"
+      :change-request-reference-id="changeRequestReferenceId"
+      @close="toggleClosureConfirmationDialog"
+    />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
       max-width="60%"
@@ -116,6 +131,8 @@ import { mapState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
+import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -134,11 +151,12 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, ClosureDetailsDialog },
+  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      showNewClosureRequestDialog: false,
       closures: undefined,
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -154,6 +172,8 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
+      showClosureConfirmationDialog: false,
+      changeRequestReferenceId: undefined,
       closureToView: undefined,
     };
   },
@@ -272,8 +292,23 @@ export default {
           return '';
       }
     },
+    formattedDate(date) {
+      const newDate = new Date(date);
+      return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
+    },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
+    },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    },
+    toggleClosureConfirmationDialog() {
+      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+    },
+    submittedNewClosureRequest(changeRequestReferenceId) {
+      this.changeRequestReferenceId = changeRequestReferenceId;
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+      this.toggleClosureConfirmationDialog();
     },
   },
 };
