@@ -10,6 +10,7 @@ const {
   createChangeRequest,
   createChangeRequestFacility,
   createNewClosureChangeRequest,
+  createRemoveClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
   saveChangeRequestDocs,
@@ -156,11 +157,19 @@ router.post(
 );
 
 /**
- * Create the change Request
+ * Create a new closure change request
  */
 router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(newClosureChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
   return createNewClosureChangeRequest(req, res);
+});
+
+/**
+ * Create a remove closure change request
+ */
+router.delete('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [query('closureId').notEmpty().isUUID()], (req, res) => {
+  validationResult(req).throw();
+  return createRemoveClosureChangeRequest(req, res);
 });
 
 /**

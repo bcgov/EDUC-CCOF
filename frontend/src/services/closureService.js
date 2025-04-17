@@ -23,7 +23,18 @@ export default {
       const response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_CLOSURE, payload);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to create organization closure request - ${error}`);
+      console.log(`Failed to create new closure request - ${error}`);
+      throw error;
+    }
+  },
+
+  async createRemoveClosureChangeRequest(closureId) {
+    try {
+      if (!closureId) return;
+      const response = await ApiService.apiAxios.delete(`${ApiRoutes.CHANGE_REQUEST_CLOSURE}?closureId=${closureId}`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to create remove closure request - ${error}`);
       throw error;
     }
   },
