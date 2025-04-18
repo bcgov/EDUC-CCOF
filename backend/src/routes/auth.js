@@ -64,7 +64,7 @@ router.get('/login-idir', passport.authenticate('oidcIdir', {
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
   const idToken = req.session?.passport?.user?.idToken;
-  const isIdir = (req.session?.passport?.user?._json?.idir_username) ? true : false;
+  const isIdir = req.session?.passport?.user?._json?.idir_username !== undefined;
 
   req.logout(function(err) {
     if (err) return next(err);
