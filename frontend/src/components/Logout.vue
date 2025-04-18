@@ -10,7 +10,7 @@
             </v-card-title>
             <v-card-text id="logout_descriptor">
               <v-row style="margin: 0.3rem"> You have Logged out. </v-row>
-              <a id="login-button" :href="routes.LOGIN" class="ma-1" dark color="#003366" @click="clearStorage"
+              <a id="login-button" :href="logoutUrl" class="ma-1" dark color="#003366" @click="clearStorage"
                 >Log In</a
               ><span>again if you wish to continue.</span>
             </v-card-text>
@@ -33,6 +33,11 @@ export default {
     return {
       routes: AuthRoutes,
     };
+  },
+  computed: {
+    logoutUrl() {
+      return this.$route.query.idir === "true" ? AuthRoutes.LOGIN_IDIR : AuthRoutes.LOGIN;
+    }
   },
   mounted() {
     const authStore = useAuthStore();
