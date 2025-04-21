@@ -109,7 +109,7 @@
       :program-year-id="$route.params.programYearGuid"
       max-width="60%"
       @close="toggleNewClosureRequestDialog"
-      @submitted="submittedNewClosureRequest"
+      @submitted="newClosureRequestSubmitted"
     />
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
@@ -302,13 +302,14 @@ export default {
     toggleNewClosureRequestDialog() {
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
     },
-    toggleClosureConfirmationDialog() {
+    async toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+      await this.loadData();
     },
-    submittedNewClosureRequest(changeRequestReferenceId) {
+    newClosureRequestSubmitted(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
-      this.toggleClosureConfirmationDialog();
+      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
   },
 };
