@@ -8,7 +8,7 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large" @click="toggleNewClosureRequestDialog"
+          <AppButton :loading="isLoading" size="large" @click="setClosureRequestType(CLOSURE_REQUEST_TYPES.NEW_CLOSURE)"
             >Add New Closure</AppButton
           >
           <div class="text-h6 font-weight-bold my-4">
@@ -107,8 +107,9 @@
     <NewClosureRequestDialog
       :show="showNewClosureRequestDialog"
       :program-year-id="$route.params.programYearGuid"
+      :request-type="closureRequestType"
       max-width="60%"
-      @close="toggleNewClosureRequestDialog"
+      @close="setClosureRequestType"
       @submitted="submittedNewClosureRequest"
     />
     <ClosureConfirmationDialog
@@ -142,12 +143,14 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
+  CHANGE_REQUEST_TYPES,
   CLOSURE_STATUSES,
   CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   PATHS,
 } from '@/utils/constants.js';
+import { CLOSURE_REQUEST_TYPES } from '../utils/constants';
 
 export default {
   name: 'OrganizationClosures',
@@ -175,6 +178,7 @@ export default {
       showClosureConfirmationDialog: false,
       changeRequestReferenceId: undefined,
       closureToView: undefined,
+      closureRequestType: undefined,
     };
   },
   computed: {
@@ -193,8 +197,12 @@ export default {
     showClosureDetailsDialog() {
       return this.closureToView != null;
     },
+    showClosureChangeRequestDialog() {
+      return this.closureRequestType !== undefined;
+    },
   },
   async created() {
+    this.CLOSURE_REQUEST_TYPES = CLOSURE_REQUEST_TYPES;
     await this.loadData();
   },
   methods: {
@@ -214,9 +222,6 @@ export default {
         console.log(error);
         this.setFailureAlert('Failed to load closures');
       }
-    },
-    toggleNewClosureRequestDialog() {
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
     },
     setClosureToView(closure) {
       if (closure) {
@@ -302,8 +307,8 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    toggleNewClosureRequestDialog() {
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    setClosureRequestType(closureRequestType) {
+      this.closureRequestType = closureRequestType;
     },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
