@@ -298,14 +298,14 @@ export default {
     toggleNewClosureRequestDialog() {
       this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
     },
-    async toggleClosureConfirmationDialog() {
+    toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
-      await this.loadData();
     },
-    newClosureRequestSubmitted(changeRequestReferenceId) {
+    async newClosureRequestSubmitted(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
-      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+      this.toggleNewClosureRequestDialog();
+      this.toggleClosureConfirmationDialog();
+      await this.loadData();
     },
   },
 };
