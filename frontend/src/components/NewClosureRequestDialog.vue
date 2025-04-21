@@ -22,6 +22,7 @@
           <v-select
             v-model="input.facilityId"
             :rules="rules.required"
+            :disabled="isDisabled"
             :items="facilityList"
             :loading="isLoading"
             item-value="facilityId"
@@ -246,14 +247,24 @@ export default {
   components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppTooltip },
   mixins: [alertMixin],
   props: {
-    show: {
-      type: Boolean,
-      default: false,
-      required: true,
+    closure: {
+      type: Object,
+      default: undefined,
+      required: false,
     },
     programYearId: {
       type: String,
       default: '',
+      required: true,
+    },
+    requestType: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    show: {
+      type: Boolean,
+      default: false,
       required: true,
     },
   },
@@ -263,10 +274,6 @@ export default {
       isValidForm: false,
       isDisplayed: false,
       isLoading: false,
-      input: {
-        ageGroups: [],
-        documents: [],
-      },
       selectedFacilityWasChanged: true,
       ageGroups: [],
     };
@@ -275,6 +282,9 @@ export default {
     ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
+    isDisabled() {
+      return this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
@@ -292,6 +302,15 @@ export default {
         (application) => application.ccofProgramYearId === this.programYearId,
       );
       return application?.applicationId;
+    },
+    input() {
+      if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+        return {
+          ageGroups: [],
+          documents: [],
+        };
+      }
+      return this.closure;
     },
   },
   watch: {
