@@ -105,10 +105,10 @@
     </v-card>
     <NavButton @previous="previous" />
     <NewClosureRequestDialog
-      :show="showNewClosureRequestDialog"
+      :closure="closureForRequest"
       :program-year-id="$route.params.programYearGuid"
       :request-type="closureRequestType"
-      :closure="closureForRequest"
+      :show="showNewClosureRequestDialog"
       max-width="60%"
       @submitted="newClosureRequestSubmitted"
       @close="setClosureRequestType(undefined)"
