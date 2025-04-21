@@ -129,9 +129,9 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -142,16 +142,16 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
-  CLOSURE_STATUSES,
-  CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  CLOSURE_STATUS_TEXTS,
+  CLOSURE_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog },
+  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, NewClosureRequestDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -291,10 +291,6 @@ export default {
         default:
           return '';
       }
-    },
-    formattedDate(date) {
-      const newDate = new Date(date);
-      return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
