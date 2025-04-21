@@ -8,7 +8,7 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large" @click="setClosureRequestType(CLOSURE_REQUEST_TYPES.NEW_CLOSURE)"
+          <AppButton :loading="isLoading" size="large" @click="setClosureRequestType(CHANGE_REQUEST_TYPES.NEW_CLOSURE)"
             >Add New Closure</AppButton
           >
           <div class="text-h6 font-weight-bold my-4">
@@ -108,9 +108,10 @@
       :show="showNewClosureRequestDialog"
       :program-year-id="$route.params.programYearGuid"
       :request-type="closureRequestType"
+      :closure="closureForRequest"
       max-width="60%"
       @submitted="newClosureRequestSubmitted"
-      @close="setClosureRequestType"
+      @close="setClosureRequestType(undefined)"
     />
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
@@ -150,7 +151,6 @@ import {
   CLOSURE_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
-import { CLOSURE_REQUEST_TYPES } from '../utils/constants';
 
 export default {
   name: 'OrganizationClosures',
@@ -159,7 +159,6 @@ export default {
   data() {
     return {
       isLoading: false,
-      showNewClosureRequestDialog: false,
       closures: undefined,
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -179,6 +178,7 @@ export default {
       changeRequestReferenceId: undefined,
       closureToView: undefined,
       closureRequestType: undefined,
+      closureForRequest: undefined,
     };
   },
   computed: {
@@ -194,6 +194,13 @@ export default {
         );
       });
     },
+    showNewClosureRequestDialog() {
+      return [
+        CHANGE_REQUEST_TYPES.NEW_CLOSURE,
+        CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE,
+        CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE,
+      ].includes(this.closureRequestType);
+    },
     showClosureDetailsDialog() {
       return this.closureToView != null;
     },
@@ -202,7 +209,7 @@ export default {
     },
   },
   async created() {
-    this.CLOSURE_REQUEST_TYPES = CLOSURE_REQUEST_TYPES;
+    this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     await this.loadData();
   },
   methods: {
@@ -235,7 +242,8 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      // await createRemoveClosureChangeRequest(closure.closureId);
+      this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+      this.closureForRequest = closure;
     },
     hasPendingStatus(closure) {
       return [CLOSURE_STATUSES.SUBMITTED, CLOSURE_STATUSES.IN_PROGRESS].includes(closure.closureStatus);
