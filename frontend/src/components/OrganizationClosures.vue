@@ -8,7 +8,9 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large">Add New Closure</AppButton>
+          <AppButton :loading="isLoading" size="large" @click="toggleNewClosureRequestDialog"
+            >Add New Closure</AppButton
+          >
           <div class="text-h6 font-weight-bold my-4">
             Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
           </div>
@@ -102,6 +104,19 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
+    <NewClosureRequestDialog
+      :show="showNewClosureRequestDialog"
+      :program-year-id="$route.params.programYearGuid"
+      max-width="60%"
+      @close="toggleNewClosureRequestDialog"
+      @submitted="newClosureRequestSubmitted"
+    />
+    <ClosureConfirmationDialog
+      :show="showClosureConfirmationDialog"
+      max-width="60%"
+      :change-request-reference-id="changeRequestReferenceId"
+      @close="toggleClosureConfirmationDialog"
+    />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
       max-width="60%"
@@ -114,8 +129,10 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -125,20 +142,21 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
-  CLOSURE_STATUSES,
-  CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  CLOSURE_STATUS_TEXTS,
+  CLOSURE_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, ClosureDetailsDialog },
+  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, NewClosureRequestDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      showNewClosureRequestDialog: false,
       closures: undefined,
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -154,6 +172,8 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
+      showClosureConfirmationDialog: false,
+      changeRequestReferenceId: undefined,
       closureToView: undefined,
     };
   },
@@ -274,6 +294,23 @@ export default {
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
+    },
+    toggleNewClosureRequestDialog() {
+      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    },
+    toggleClosureConfirmationDialog() {
+      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+    },
+    // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
+    // to allow the user to view the closure following the post request.
+    async newClosureRequestSubmitted(closureChangeRequest) {
+      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+      closureChangeRequest.facilityName = facility?.facilityName;
+      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+      this.closures.push(closureChangeRequest);
+      this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
+      this.toggleNewClosureRequestDialog();
+      this.toggleClosureConfirmationDialog();
     },
   },
 };
