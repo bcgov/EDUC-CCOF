@@ -285,6 +285,10 @@ export default {
       isValidForm: false,
       isDisplayed: false,
       isLoading: false,
+      input: {
+        ageGroups: [],
+        documents: [],
+      },
       selectedFacilityWasChanged: true,
       ageGroups: [],
     };
@@ -402,7 +406,7 @@ export default {
         closureReason: this.input.closureReason,
         closureDescription: this.input.description,
         documents: this.processDocuments(this.input.documents),
-        changeType: CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE,
+        changeType: this.requestType,
       };
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);

@@ -242,7 +242,7 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+      this.setClosureRequestType(CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE);
       this.closureForRequest = closure;
     },
     hasPendingStatus(closure) {
