@@ -97,6 +97,7 @@
                 <v-radio-group
                   v-model="input.fullClosure"
                   :rules="rules.required"
+                  :disabled="isDisabled"
                   @update:model-value="handleFullFacilityClosureChange"
                 >
                   <v-row justify="start">
@@ -118,6 +119,7 @@
               <v-select
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
+                :disabled="isDisabled"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -153,6 +155,7 @@
               <v-col cols="12" lg="4">
                 <AppDateInput
                   v-model="input.startDate"
+                  :disabled="isDisabled"
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="[
@@ -169,6 +172,7 @@
               <v-col cols="12" lg="4">
                 <AppDateInput
                   v-model="input.endDate"
+                  :disabled="isDisabled"
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="[
@@ -187,18 +191,25 @@
                 <h3>Reason:</h3>
               </v-col>
               <v-col cols="12" lg="9">
-                <v-text-field v-model="input.closureReason" variant="outlined" :rules="rules.required"></v-text-field>
+                <v-text-field
+                  v-model="input.closureReason"
+                  :disabled="isDisabled"
+                  variant="outlined"
+                  :rules="rules.required"
+                ></v-text-field>
               </v-col>
             </v-row>
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
+              :disabled="isDisabled"
               variant="outlined"
               label="Detailed description of request"
               class="text-left mt-3"
             />
             <AppDocumentUpload
               :loading="isLoading"
+              :disabled="isDisabled"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
               :required="false"
@@ -302,15 +313,6 @@ export default {
         (application) => application.ccofProgramYearId === this.programYearId,
       );
       return application?.applicationId;
-    },
-    input() {
-      if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
-        return {
-          ageGroups: [],
-          documents: [],
-        };
-      }
-      return this.closure;
     },
   },
   watch: {
