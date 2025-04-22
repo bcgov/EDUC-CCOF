@@ -71,7 +71,7 @@
               <h3 class="mt-2">Will parents pay for this closure?</h3>
             </v-col>
             <v-col cols="12" lg="3" class="pl-0">
-              <v-radio-group v-model="input.paidClosure" :rules="rules.required">
+              <v-radio-group v-model="input.paidClosure" :rules="rules.required" :disabled="isDisabled">
                 <v-row justify="start">
                   <v-col cols="6" class="pl-3 pr-0 pt-0">
                     <v-radio label="Yes" :value="1" />
