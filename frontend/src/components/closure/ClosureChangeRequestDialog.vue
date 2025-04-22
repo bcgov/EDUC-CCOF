@@ -251,10 +251,9 @@ import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
-import { readonly } from 'vue';
 
 export default {
-  name: 'NewClosureRequestDialog',
+  name: 'ClosureChangeRequestDialog',
   components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppTooltip },
   mixins: [alertMixin],
   props: {
@@ -323,6 +322,13 @@ export default {
     show: {
       handler(value) {
         this.isDisplayed = value;
+        if (this.isDisabled) {
+          if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+            this.clearInputs();
+          } else {
+            this.input = this.closure;
+          }
+        }
       },
     },
   },

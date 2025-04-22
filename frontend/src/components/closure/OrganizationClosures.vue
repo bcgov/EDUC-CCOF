@@ -104,11 +104,11 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
-    <NewClosureRequestDialog
+    <ClosureChangeRequestDialog
       :closure="closureForRequest"
       :program-year-id="$route.params.programYearGuid"
       :request-type="closureRequestType"
-      :show="showNewClosureRequestDialog"
+      :show="showClosureChangeRequestDialog"
       max-width="60%"
       @submitted="newClosureRequestSubmitted"
       @close="setClosureRequestType(undefined)"
@@ -131,10 +131,10 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
+import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
+import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -154,7 +154,7 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, NewClosureRequestDialog },
+  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, ClosureChangeRequestDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -194,7 +194,7 @@ export default {
         );
       });
     },
-    showNewClosureRequestDialog() {
+    showClosureChangeRequestDialog() {
       return [
         CHANGE_REQUEST_TYPES.NEW_CLOSURE,
         CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE,
@@ -320,7 +320,7 @@ export default {
     },
     newClosureRequestSubmitted(changeRequestReferenceId) {
       this.changeRequestReferenceId = changeRequestReferenceId;
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+      this.setClosureRequestType(undefined);
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
   },

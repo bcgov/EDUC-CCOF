@@ -12,7 +12,6 @@ import Logout from '@/components/Logout.vue';
 import MessagesPage from '@/components/MessagesPage.vue';
 import MinistryLogin from '@/components/MinistryLogin.vue';
 import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage.vue';
-import OrganizationClosures from '@/components/OrganizationClosures.vue';
 import NMF from '@/components/RFI/NMF.vue';
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
 import SessionExpired from '@/components/SessionExpired.vue';
@@ -33,6 +32,7 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount.vue';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation.vue';
+import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
