@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 
 import { DateTimeFormatterBuilder, ResolverStyle } from '@js-joda/core';
 
@@ -47,10 +48,5 @@ export function formatFiscalYearName(fiscalYearName) {
  */
 export function formatUTCDateToShortDateString(date) {
   if (!date) return null;
-  return new Date(date.slice(0, 10)).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    timeZone: 'Europe/London',
-  });
+  return moment.utc(date).format('MMM D, YYYY');
 }

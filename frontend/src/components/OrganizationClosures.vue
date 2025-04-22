@@ -301,11 +301,14 @@ export default {
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
-    async newClosureRequestSubmitted(changeRequestReferenceId) {
-      this.changeRequestReferenceId = changeRequestReferenceId;
+    async newClosureRequestSubmitted(closureChangeRequest) {
+      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+      closureChangeRequest.facilityName = facility?.facilityName;
+      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+      this.closures.push(closureChangeRequest);
+      this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.toggleNewClosureRequestDialog();
       this.toggleClosureConfirmationDialog();
-      await this.loadData();
     },
   },
 };
