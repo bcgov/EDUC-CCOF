@@ -31,30 +31,26 @@ function getKcAdminUrl(baseUrl, realmId) {
 function getKcBaseClientMap(envVars) {
   const env = envVars.env;
   const app = envVars.appName;
-  let prefix = "";
-  if (env !== "prod") {
-    prefix = `${env}.`;
-  }
-  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca`;
 
-  let redirectUris = [`${rootUrl}/*`];
+  let redirectUris = [];
   if (env === "dev") {
     redirectUris = [
-      ...redirectUris,
       "http://localhost*",
+      "https://dev.mychildcareservices.gov.bc.ca/*",
       "https://qa.mychildcareservices.gov.bc.ca/*",
     ];
   } else if (env === "test") {
     redirectUris = [
-      ...redirectUris,
+      "https://test.mychildcareservices.gov.bc.ca/*",
       "https://efx.mychildcareservices.gov.bc.ca/*",
     ];
   } else if (env === "prod") {
+    const prodUrl = "https://mychildcareservices.gov.bc.ca";
     redirectUris = [
-      `${rootUrl}/api/auth/callback`,
-      `${rootUrl}/api/auth/callback_idir`,
-      `${rootUrl}/logout`,
-      `${rootUrl}/session-expired`
+      `${prodUrl}/api/auth/callback`,
+      `${prodUrl}/api/auth/callback_idir`,
+      `${prodUrl}/logout`,
+      `${prodUrl}/session-expired`,
     ]
   } else {
     redirectUris = [];
@@ -103,7 +99,7 @@ function getKcBaseClientMap(envVars) {
     surrogateAuthRequired: false,
     serviceAccountsEnabled: false,
     name: app.toUpperCase(),
-    rootUrl,
+    rootUrl: "",
     clientAuthenticatorType: "client-secret",
     baseUrl: "",
     notBefore: 0,
