@@ -301,6 +301,8 @@ export default {
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
+    // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
+    // to allow the user to view the closure following the post request.
     async newClosureRequestSubmitted(closureChangeRequest) {
       const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
       closureChangeRequest.facilityName = facility?.facilityName;
