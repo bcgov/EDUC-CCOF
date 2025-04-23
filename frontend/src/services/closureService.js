@@ -17,6 +17,18 @@ export default {
     }
   },
 
+  async getChangeActionClosure(changeActionClosureId) {
+    try {
+      if (!changeActionClosureId) return [];
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.DOCUMENT_CHANGE_ACTION_CLOSURE}/${changeActionClosureId}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get Change Action Closure - ${error}`);
+    }
+  },
+
   async createClosureChangeRequest(payload) {
     try {
       if (isEmpty(payload)) return;

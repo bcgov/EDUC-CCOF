@@ -336,6 +336,30 @@ async function getChangeRequestDocs(req, res) {
   }
 }
 
+async function getChangeActionClosureDocs(req, res) {
+  const { changeActionClosureId } = req.params;
+  log.verbose(changeActionClosureId);
+
+  try {
+    const changeActionClosure = await getOperation(`ccof_change_action_closures(${changeActionClosureId})?$select=_ccof_change_action_value,ccof_any_details_added_on_request`);
+    const response = new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON();
+    response.documents = [];
+    if (changeActionClosure?._ccof_application_value) {
+      const getDocumentsResponse = await getChangeActionDocument(changeActionClosure._ccof_change_action_value);
+      if (getDocumentsResponse?.value) {
+        getDocumentsResponse.value.forEach((document) => {
+          response.documents.push(new MappableObjectForFront(document, DocumentsMappings));
+        });
+      }
+    }
+    log.verbose(getDocumentsResponse.value);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    log.info(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function saveChangeRequestDocs(req, res) {
   try {
     const documents = req.body;
@@ -399,6 +423,7 @@ module.exports = {
   createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
+  getChangeActionClosureDocs,
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,

@@ -12,6 +12,7 @@ const {
   createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
+  getChangeActionClosureDocs,
   saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
@@ -148,6 +149,17 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequestDocs(req, res);
+  },
+);
+
+router.get(
+  '/changeActionClosure/:changeActionClosureId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('changeRequestId', 'URL param: [changeActionClosureId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getChangeActionClosureDocs(req, res);
   },
 );
 

@@ -56,6 +56,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CHANGE_ACTION_CLOSURE: baseRoot + '/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
 });
 
