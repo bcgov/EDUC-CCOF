@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import AccountManagement from '@/components/accountMgmt/AccountManagement.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import CcfriEstimator from '@/components/CcfriEstimator.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
@@ -792,6 +793,14 @@ const router = createRouter({
       meta: {
         pageTitle: 'submission-history',
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.ACCOUNT_MGMT,
+      name: 'account-mgmt',
+      component: AccountManagement,
+      meta: {
         requiresAuth: true,
       },
     },
