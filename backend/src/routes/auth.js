@@ -73,7 +73,7 @@ router.get('/logout', async (req, res, next) => {
 
     let endpoint = '';
     if (req.query?.sessionExpired) {
-      endpoint = '/session-expired';
+      endpoint = `/session-expired?idir=${isIdir}`;
     } else {
       endpoint = `/logout?idir=${isIdir}`;
     }
