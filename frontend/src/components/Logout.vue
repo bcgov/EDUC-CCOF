@@ -28,8 +28,8 @@ export default {
   },
   computed: {
     loginUrl() {
-      return this.$route.query.idir === "true" ? AuthRoutes.LOGIN_IDIR : AuthRoutes.LOGIN;
-    }
+      return this.$route.query.idir === 'true' ? AuthRoutes.LOGIN_IDIR : AuthRoutes.LOGIN;
+    },
   },
   mounted() {
     const authStore = useAuthStore();
