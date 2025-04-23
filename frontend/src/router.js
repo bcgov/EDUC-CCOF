@@ -20,6 +20,7 @@ import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
+import CcfriClosures from '@/components/ccfriApplication/Closures.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
@@ -425,6 +426,18 @@ const router = createRouter({
       component: currentFees,
       meta: {
         pageTitle: 'CCFRI Current Fees',
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'ccfri-closures-guid',
+      component: CcfriClosures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
