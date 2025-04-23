@@ -320,13 +320,14 @@ export default {
   },
   watch: {
     show: {
-      handler(value) {
+      async handler(value) {
         this.isDisplayed = value;
-        if (this.isDisabled) {
+        if (this.isDisplayed) {
           if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
             this.clearInputs();
           } else {
             this.input = this.closure;
+            this.input.documents = await ClosureService.getChangeActionClosure(this.input.changeActionClosureId);
           }
         }
       },
