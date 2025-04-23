@@ -64,7 +64,7 @@ router.get('/login-idir', passport.authenticate('oidcIdir', {
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
   const idToken = req.session?.passport?.user?.idToken;
-  const isIdir = req.session?.passport?.user?._json?.idir_username !== undefined;
+  const isIdir = !!req.session?.passport?.user?._json?.idir_username;
 
   req.logout(function(err) {
     if (err) return next(err);
@@ -142,8 +142,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
   }
 });
 async function generateTokens(req, res) {
-  let isIdir = (req.session?.passport?.user?._json?.idir_user_guid) ? true : false;
-  const result = await auth.renew(req.user.refreshToken, isIdir);
+  const result = await auth.renew(req.user.refreshToken);
   if (result && result.jwt && result.refreshToken) {
     req.user.jwt = result.jwt;
     req.user.refreshToken = result.refreshToken;
