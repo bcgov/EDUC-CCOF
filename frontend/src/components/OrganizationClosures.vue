@@ -292,10 +292,6 @@ export default {
           return '';
       }
     },
-    formattedDate(date) {
-      const newDate = new Date(date);
-      return `${this.months[newDate.getUTCMonth()]} ${newDate.getUTCDate()}, ${newDate.getUTCFullYear()}`;
-    },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
