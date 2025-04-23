@@ -54,7 +54,6 @@ import {
   PATHS,
   changeUrl,
   changeUrlGuid,
-  closureUrl,
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
@@ -796,20 +795,20 @@ const router = createRouter({
       },
     },
     {
-      path: '/:catchAll(.*)',
-      name: 'notfound',
-      redirect: '/',
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: closureUrl(),
+      path: `${PATHS.CLOSURES}/:programYearGuid`,
       name: 'organization-closures',
       component: OrganizationClosures,
       meta: {
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'notfound',
+      redirect: '/',
+      meta: {
         requiresAuth: true,
       },
     },
