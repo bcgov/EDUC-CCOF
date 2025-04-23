@@ -109,7 +109,7 @@
       :program-year-id="$route.params.programYearGuid"
       max-width="60%"
       @close="toggleNewClosureRequestDialog"
-      @submitted="submittedNewClosureRequest"
+      @submitted="newClosureRequestSubmitted"
     />
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
@@ -129,9 +129,9 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -142,16 +142,16 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
-  CLOSURE_STATUSES,
-  CLOSURE_STATUS_TEXTS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  CLOSURE_STATUS_TEXTS,
+  CLOSURE_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, NewClosureRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog },
+  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, NewClosureRequestDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -305,9 +305,15 @@ export default {
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
-    submittedNewClosureRequest(changeRequestReferenceId) {
-      this.changeRequestReferenceId = changeRequestReferenceId;
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
+    // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
+    // to allow the user to view the closure following the post request.
+    async newClosureRequestSubmitted(closureChangeRequest) {
+      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+      closureChangeRequest.facilityName = facility?.facilityName;
+      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+      this.closures.push(closureChangeRequest);
+      this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
+      this.toggleNewClosureRequestDialog();
       this.toggleClosureConfirmationDialog();
     },
   },

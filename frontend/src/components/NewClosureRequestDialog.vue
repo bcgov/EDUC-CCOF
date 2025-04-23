@@ -238,7 +238,7 @@ import FacilityService from '@/services/facilityService';
 import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useAuthStore } from '@/store/Auth.js';
+import { useAuthStore } from '@/store/auth.js';
 
 export default {
   name: 'NewClosureRequestDialog',
@@ -375,8 +375,8 @@ export default {
         paidClosure: this.input.paidClosure,
         fullClosure: this.input.fullClosure,
         ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
-        startDate: `${this.input.startDate}T12:00:00-07:00`,
-        endDate: `${this.input.endDate}T12:00:00-07:00`,
+        startDate: this.input.startDate,
+        endDate: this.input.endDate,
         closureReason: this.input.closureReason,
         closureDescription: this.input.description,
         documents: this.processDocuments(this.input.documents),
@@ -385,7 +385,8 @@ export default {
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         this.clearInputs();
-        this.$emit('submitted', response.changeRequestReferenceId);
+        payload.changeRequestReferenceId = response.changeRequestReferenceId;
+        this.$emit('submitted', payload);
       } catch (e) {
         console.log(e);
         this.setFailureAlert('Failed to submit new closure request');
