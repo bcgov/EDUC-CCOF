@@ -13,11 +13,11 @@
 </template>
 
 <script>
-import { AuthRoutes } from '../utils/constants.js';
+import { AuthRoutes } from '@/utils/constants.js';
 
-import { useAuthStore } from '../store/auth.js';
+import { useAuthStore } from '@/store/auth.js';
 
-import AppSimpleCard from './util/AppSimpleCard.vue';
+import AppSimpleCard from '@/components/util/AppSimpleCard.vue';
 
 export default {
   name: 'SessionExpired',
