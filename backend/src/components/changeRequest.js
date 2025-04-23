@@ -344,7 +344,7 @@ async function getChangeActionClosureDocs(req, res) {
     const changeActionClosure = await getOperation(`ccof_change_action_closures(${changeActionClosureId})?$select=_ccof_change_action_value,ccof_any_details_added_on_request`);
     const response = new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON();
     response.documents = [];
-    if (changeActionClosure?._ccof_application_value) {
+    if (changeActionClosure?._ccof_change_action_value) {
       const getDocumentsResponse = await getChangeActionDocument(changeActionClosure._ccof_change_action_value);
       if (getDocumentsResponse?.value) {
         getDocumentsResponse.value.forEach((document) => {
@@ -352,7 +352,6 @@ async function getChangeActionClosureDocs(req, res) {
         });
       }
     }
-    log.verbose(getDocumentsResponse.value);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     log.info(e);

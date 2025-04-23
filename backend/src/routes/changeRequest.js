@@ -152,11 +152,14 @@ router.get(
   },
 );
 
+/**
+ * Get Change Action Closure
+ */
 router.get(
   '/changeActionClosure/:changeActionClosureId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeActionClosureId] is required').not().isEmpty()],
+  [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
     return getChangeActionClosureDocs(req, res);
