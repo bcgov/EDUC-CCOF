@@ -327,16 +327,20 @@ const OrganizationFacilityMappings = [
 ];
 
 const ClosureMappings = [
-  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
-  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: 'ccof_application_ccfri_closureid', front: 'closureId' },
+  { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId' },
   { back: '_ccof_facilityinfo_value', front: 'facilityId' },
   { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
   { back: 'ccof_startdate', front: 'startDate' },
   { back: 'ccof_enddate', front: 'endDate' },
   { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_closure_type', front: 'closureType' },
   { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
   { back: 'ccof_age_affected_groups', front: 'ageGroups' },
-  { back: 'ccof_closure_reason', front: 'closureReason' },
+  { back: 'ccof_comment', front: 'closureReason' },
+  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
 ];
 

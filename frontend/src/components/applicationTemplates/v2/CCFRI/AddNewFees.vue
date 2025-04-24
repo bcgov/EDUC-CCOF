@@ -56,8 +56,8 @@
         tile
         :ripple="false"
       >
-        <v-card-title class="pa-2 pa-md-4 backG">
-          <span class="text-h5 px-5"> Parent Fees {{ item.programYear }}: Full-Time {{ item.childCareCategory }} </span>
+        <v-card-title class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+          Parent Fees {{ item.programYear }}: Full-Time {{ item.childCareCategory }}
         </v-card-title>
         <v-card-text class="px-8 pt-8">
           <v-radio-group
@@ -245,10 +245,8 @@
       </v-card>
     </div>
     <v-card elevation="6" class="mt-12 rounded-lg">
-      <v-card-title class="pa-2 pa-md-4 backG">
-        <span class="text-h5 px-5">
-          Is there any other information about this facility you would like us to know?
-        </span>
+      <v-card-title class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+        Is there any other information about this facility you would like us to know?
       </v-card-title>
       <v-textarea
         v-model="CCFRIFacilityModel.ccfriApplicationNotes"
@@ -274,9 +272,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.backG {
-  background-color: lightgray;
-}
-</style>

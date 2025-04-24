@@ -430,7 +430,7 @@ export const ORGANIZATION_TYPES = Object.freeze({
 });
 
 export const CLOSURE_STATUSES = Object.freeze({
-  DRAFT: 100000000,
+  PENDING: 100000000,
   SUBMITTED: 100000001,
   IN_PROGRESS: 100000002,
   APPROVED: 100000003,
@@ -477,6 +477,12 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   'Out of School Care - Kindergarten': 100000003,
   'Out of School Care - Grade 1+': 100000004,
   Preschool: 100000005,
+});
+
+export const CLOSURE_TYPES = Object.freeze({
+  KNOWN_CLOSURES: 100000000,
+  EMERGENCY_CLOSURES: 100000001,
+  NON_OPERATIONAL_CLOSURES: 100000002,
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({

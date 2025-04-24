@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="isValidForm" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container fluid>
       <ApplicationPCFHeader
         page-title="Child Care Fee Reduction Initiative (CCFRI)"
@@ -9,29 +9,21 @@
       <div class="mx-lg-16 mb-12">
         <div class="text-center px-4 px-lg-8 my-8">
           <p>
-            Closure dates impact pay. As outlined in the Closure Policy, closure periods are any days when a facility is
-            not open and providing licensed child care, not including provincial statuary holidays. To be approved for
-            the CCFRI, facilities must not charge parent fees for closure periods greater than two consecutive weeks per
-            month, up to a maximum of four weeks per funding agreement term.
-          </p>
-          <p class="mt-4">
-            The ministry may approve a provider to charge parent fees during additional closure periods that align with
-            a history of past closures or are due to circumstances outside of the provider's control if the facility
-            needs to charge parent fees during the closure period to maintain operational viability. Facilities may not
-            charge parent fees for any closure periods beyond those approved by the ministry in writing.
+            It is important to tell us your planned closures for the {{ formattedProgramYear }} funding term to avoid
+            any impacts on payments. Only report closures for which parent fees will be charged. For CCFRI approval,
+            facilities must not charge parent fees for periods greater than two consecutive weeks per month, up to a
+            maximum of four weeks per funding agreement term. See the Funding Guidelines for more information.
           </p>
         </div>
         <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody">
           <v-card elevation="6" width="100%" class="rounded-lg my-4 mb-12">
+            <v-card-title class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+              Do you charge parent fees at this facility for any closures on business days?
+            </v-card-title>
             <v-card-text class="pa-0">
-              <div class="pa-2 pa-md-4 ma-0 lightgray-background">
-                <p class="text-h5 text--primary px-5 py-0 my-0">
-                  Do you charge parent fees at this facility for any closures on business days?
-                </p>
-              </div>
               <div class="px-md-12 px-7 py-4">
                 <div class="span-label font-regular">
-                  <p v-if="languageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
+                  <p v-if="getLanguageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
                     Do you charge parent fees at this facility for any closures on business days (other than designated
                     holidays)? Only indicate the date of closures where parent fees are charged.
                   </p>
@@ -50,13 +42,8 @@
                   <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
                 </v-radio-group>
 
-                <template
-                  v-if="closureFees == 'Yes' || CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES"
-                >
-                  <AppAlertBanner type="info" class="mb-8">
-                    Only closures where parents are paying fees need to be reported.
-                  </AppAlertBanner>
-                  <v-card v-for="(obj, index) in CCFRIFacilityModel.dates" :key="obj.id" class="px-6 py-4 pl-md-0 mb-8">
+                <template v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
+                  <v-card v-for="(obj, index) in updatedClosures" :key="obj.id" class="px-6 py-4 pl-md-0 mb-8">
                     <v-row no-gutters class="align-center">
                       <v-col cols="12" md="1" class="close-column text-center">
                         <v-btn
@@ -65,14 +52,14 @@
                           size="large"
                           icon="mdi-close"
                           color="primary"
-                          @click="removeIndex(index)"
+                          @click="removeClosure(index)"
                         />
                       </v-col>
                       <v-col cols="12" md="11">
                         <v-row>
                           <v-col cols="12" md="4">
                             <AppDateInput
-                              v-model="obj.formattedStartDate"
+                              v-model="obj.startDate"
                               :min="fiscalStartAndEndDates.startDate"
                               :max="fiscalStartAndEndDates.endDate"
                               :rules="[
@@ -84,25 +71,25 @@
                               :hide-details="isReadOnly"
                               label="Start Date"
                               clearable
-                              @input="isDateLegal(obj)"
+                              @input="validateClosureDates(obj)"
                             />
                           </v-col>
 
                           <v-col cols="12" md="4">
                             <AppDateInput
-                              v-model="obj.formattedEndDate"
-                              :min="obj.formattedStartDate"
+                              v-model="obj.endDate"
+                              :min="obj.startDate"
                               :max="fiscalStartAndEndDates.endDate"
                               :rules="[
                                 ...rules.required,
-                                rules.min(obj.formattedStartDate, 'Must exceed start date'),
+                                rules.min(obj.startDate, 'Must exceed start date'),
                                 rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                               ]"
                               :disabled="isReadOnly"
                               :hide-details="isReadOnly"
                               clearable
                               label="End Date"
-                              @input="isDateLegal(obj)"
+                              @input="validateClosureDates(obj)"
                             />
                           </v-col>
 
@@ -121,23 +108,21 @@
                         <v-row no-gutters>
                           <p class="span-label font-regular pt-2 pr-4">
                             Is this a full facility closure?
-                            <AppTooltip
-                              tooltip-content="If only selected care groups are affected, select No (Partial Closure)"
-                            />
+                            <AppTooltip tooltip-content="Select no if only some care categories will be affected." />
                           </p>
                           <v-radio-group
-                            v-model="obj.isFullFacilityClosure"
+                            v-model="obj.fullClosure"
                             :disabled="isReadOnly"
                             inline
                             color="primary"
                             :rules="rules.required"
                           >
-                            <v-radio label="Yes" :value="1" />
-                            <v-radio label="No" :value="0" />
+                            <v-radio label="Yes" :value="true" />
+                            <v-radio label="No" :value="false" />
                           </v-radio-group>
                         </v-row>
 
-                        <v-row v-if="obj.isFullFacilityClosure === YES_NO_VALUES.NO" no-gutters>
+                        <v-row v-if="obj.fullClosure === false" no-gutters>
                           <p class="span-label font-regular pt-2 pr-4 mb-2">
                             Select all care categories that are affected by the closure:
                           </p>
@@ -156,9 +141,9 @@
                           <AppAlertBanner type="error" class="mb-4">Invalid Dates</AppAlertBanner>
 
                           <v-card-text v-if="obj.datesInvalid">
-                            Closure Start Date: {{ obj.formattedStartDate }}
+                            Closure Start Date: {{ obj.startDate }}
                             <br />
-                            Closure End Date: {{ obj.formattedEndDate }} <br /><br />
+                            Closure End Date: {{ obj.endDate }} <br /><br />
 
                             Please review your facility closure dates.
                             <br />
@@ -167,9 +152,9 @@
                             It appears that the closure start and end dates you've selected for this facility overlap
                             with dates you've previously selected.
                             <br /><br />
-                            Closure Start Date: {{ obj.formattedStartDate }}
+                            Closure Start Date: {{ obj.startDate }}
                             <br />
-                            Closure End Date: {{ obj.formattedEndDate }} <br /><br />
+                            Closure End Date: {{ obj.endDate }} <br /><br />
 
                             Please review your existing facility closure dates to ensure consistency and avoid any
                             potential overlap of Facility closure dates.
@@ -180,7 +165,7 @@
                     </v-row>
                   </v-card>
 
-                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow">
+                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow()">
                     Add New Closure
                   </AppButton>
                 </template>
@@ -193,27 +178,22 @@
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
-        :is-save-disabled="isReadOnly || hasIllegalDates()"
-        :is-next-disabled="isApplicationProcessing || !isFormComplete() || hasIllegalDates()"
-        :is-processing="processing"
+        :is-save-disabled="isReadOnly || hasIllegalDates"
+        :is-next-disabled="isApplicationProcessing || !isFormComplete"
+        :is-processing="isApplicationProcessing"
         @previous="previous"
         @next="next"
-        @validate-form="validateForm()"
+        @validate-form="validateApplicationForm"
         @save="save(true)"
       />
     </v-container>
   </v-form>
 </template>
 <script>
+import moment from 'moment';
+import { isEmpty, cloneDeep } from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { isEqual, isEmpty, cloneDeep } from 'lodash';
 import { uuid } from 'vue-uuid';
-
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -221,28 +201,31 @@ import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
+
+import ClosureService from '@/services/closureService.js';
+
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import rules from '@/utils/rules.js';
 
 import {
-  PATHS,
-  pcfUrlGuid,
-  pcfUrl,
-  changeUrl,
-  changeUrlGuid,
   CHANGE_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-  ApiRoutes,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_FEE_CORRECT_TYPES,
-  YES_NO_VALUES,
+  CLOSURE_PAYMENT_ELIGIBILITIES,
+  CLOSURE_STATUSES,
+  CLOSURE_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
-import ApiService from '@/common/apiService.js';
 
 //builds an array of dates to keep track of all days of the selected closure period.
 //this array is used to check if a user selects an overlapping date
@@ -278,22 +261,13 @@ export default {
   },
   data() {
     return {
-      pastCcfriGuid: undefined,
-      closureFees: 'No',
-      dateObj: {
-        closureReason: '',
-        isFullFacilityClosure: undefined,
-      },
-      showRfiDialog: false,
-      rfi3percentCategories: [],
-      isUnlocked: true,
-      processing: false,
+      closures: [],
+      updatedClosures: [],
       isValidForm: false,
-      chosenDates: [],
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getFundingUrl', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationId',
       'applicationStatus',
@@ -322,56 +296,62 @@ export default {
       'ccfriId',
       'getClosureDateLength',
     ]),
+    ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useReportChangesStore, ['userProfileChangeRequests', 'changeRequestStatus']),
-    languageYearLabel() {
-      return this.getLanguageYearLabel;
-    },
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
-    },
-    fundingUrl() {
-      return this.getFundingUrl(this.programYearId);
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockCcfri) {
         return false;
-      } else if (this.isChangeRequest) {
-        if (!this.changeRequestStatus) {
-          return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
       }
-      return false;
+      if (this.isChangeRequest) {
+        return this.changeRequestStatus && this.changeRequestStatus !== 'INCOMPLETE';
+      }
+      return this.applicationStatus === 'SUBMITTED';
     },
     childCareCategories() {
       return this.CCFRIFacilityModel?.childCareTypes?.filter(
         (careType) => careType.programYearId === this.$route.params.programYearGuid,
       );
     },
+    hasIllegalDates() {
+      return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
+    },
+    isFormComplete() {
+      if (
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
+        this.updatedClosures?.length === 0
+      ) {
+        return false;
+      }
+      return this.isValidForm && !this.hasIllegalDates;
+    },
   },
   watch: {
-    //get facilityID from here and then set it !
     '$route.params.urlGuid': {
       async handler() {
         window.scrollTo(0, 0);
         try {
           this.setIsApplicationProcessing(true);
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
-          await this.decorateWithCareTypes(this.currentFacility.facilityId);
-          // this.loadCCFisCCRIMedian();
-          this.updateChosenDates();
+          this.closures = await ClosureService.getApplicationClosures(this.$route.params.urlGuid);
+          this.updatedClosures = cloneDeep(this.closures);
+          console.log(this.closures);
         } catch (error) {
           console.log(error);
-          this.setFailureAlert('An error occured while getting.');
+          this.setFailureAlert('An error occurred while loading. Please try again later.');
         } finally {
           this.setIsApplicationProcessing(false);
         }
       },
       immediate: true,
+    },
+    isApplicationFormValidated: {
+      handler() {
+        this.$refs.form?.validate();
+      },
     },
   },
   created() {
@@ -379,7 +359,6 @@ export default {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
     this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
-    this.YES_NO_VALUES = YES_NO_VALUES;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
@@ -399,26 +378,29 @@ export default {
     addRow(radioButtonClicked = false) {
       //when opening table for the first time, add a row so it always populates with one.
       //check below so if user hits the radio button multiple times, it won't keep adding rows
-      if (radioButtonClicked && this.CCFRIFacilityModel.dates.length > 0) return;
-      this.updateChosenDates();
-      const newObj = { ...this.dateObj, id: uuid.v1() };
-      this.CCFRIFacilityModel.dates.push(newObj);
+      if (radioButtonClicked && this.updatedClosures.length > 0) return;
+      const newClosure = { id: uuid.v1() };
+      this.updatedClosures.push(newClosure);
     },
-    updateChosenDates() {
-      this.chosenDates = [];
-      this.CCFRIFacilityModel.dates.forEach((dateObj) => {
-        this.chosenDates = this.chosenDates + dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
-      });
+    populateClosurePayload(closure) {
+      closure.closureStatus = closure.closureStatus ?? CLOSURE_STATUSES.PENDING;
+      closure.closureType = closure.closureType ?? CLOSURE_TYPES.KNOWN_CLOSURES;
+      closure.feesPaidWhileClosed = closure.feesPaidWhileClosed ?? 1;
+      closure.paymentEligibility = closure.paymentEligibility ?? String(CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI);
+      closure.ccfriApplicationId = closure.ccfriApplicationId ?? this.$route.params.urlGuid;
+      closure.facilityId = closure.facilityId ?? this.CCFRIFacilityModel.facilityId;
+      closure.organizationId = closure.organizationId ?? this.organizationId;
+      closure.programYearId = closure.programYearId ?? this.programYearId;
     },
-    isDateLegal(obj) {
-      // Get all dates from chosenDates except for the currently edited row
-      const otherChosenDates = this.CCFRIFacilityModel.dates
-        .filter((dateObj) => dateObj.id !== obj.id)
+    validateClosureDates(obj) {
+      // Get all closure dates except for the currently edited row
+      const otherClosureDates = this.updatedClosures
+        .filter((dateObj) => dateObj.id !== obj.id || dateObj.closureId !== obj.closureId)
         .reduce((acc, dateObj) => {
-          return [...acc, ...dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate)];
+          return [...acc, ...dateFunction(dateObj.startDate, dateObj.endDate)];
         }, []);
 
-      const dates = dateFunction(obj.formattedStartDate, obj.formattedEndDate);
+      const dates = dateFunction(obj.startDate, obj.endDate);
 
       //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
       //datesInvalid is true if user breaks any other date rule.
@@ -429,11 +411,11 @@ export default {
       //end dates for either field cannot be after end of fiscal year
 
       if (
-        obj.formattedEndDate < obj.formattedStartDate ||
-        obj.formattedStartDate < this.fiscalStartAndEndDates.startDate ||
-        obj.formattedEndDate < this.fiscalStartAndEndDates.startDate ||
-        obj.formattedStartDate > this.fiscalStartAndEndDates.endDate ||
-        obj.formattedEndDate > this.fiscalStartAndEndDates.endDate
+        obj.endDate < obj.startDate ||
+        obj.startDate < this.fiscalStartAndEndDates.startDate ||
+        obj.endDate < this.fiscalStartAndEndDates.startDate ||
+        obj.startDate > this.fiscalStartAndEndDates.endDate ||
+        obj.endDate > this.fiscalStartAndEndDates.endDate
       ) {
         obj.datesInvalid = true;
         return;
@@ -442,110 +424,74 @@ export default {
       obj.datesOverlap = false;
       obj.datesInvalid = false;
       dates.forEach((date) => {
-        if (otherChosenDates.includes(date)) {
+        if (otherClosureDates.includes(date)) {
           obj.datesOverlap = true;
         }
       });
     },
-    hasIllegalDates() {
-      return this.CCFRIFacilityModel?.dates?.some((el) => el.datesOverlap || el.datesInvalid);
-    },
-    hasDataToDelete() {
-      //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
-      return this.CCFRIFacilityModel.childCareTypes.some((careType) => {
-        return careType.deleteMe;
-      });
-    },
-    removeIndex(index) {
-      this.CCFRIFacilityModel.dates.splice(index, 1);
-      if (isEmpty(this.CCFRIFacilityModel.dates)) this.addRow(false);
-      this.updateChosenDates();
+    removeClosure(index) {
+      console.log(index);
+      this.updatedClosures.splice(index, 1);
+      if (isEmpty(this.updatedClosures)) this.addRow(false);
     },
     previous() {
-      if (this.isReadOnly) {
-        this.$router.push(pcfUrl(PATHS.CCFRI_HOME, this.programYearId));
-      } else if (this.isChangeRequest) {
-        this.$router.push(changeUrl(PATHS.CCFRI_HOME, this.changeRequestId));
-      } else if (this.isRenewal) {
-        this.$router.push(pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, this.programYearId, this.$route.params.urlGuid));
-      } else {
-        this.$router.push(this.previousPath);
-      }
+      this.$router.push(this.previousPath);
     },
-    async next() {
-      //do not call RFI fee caluclation on NEW PCF or CR NEW FAC
-      if (this.isRenewal && !this.isChangeRequest) {
-        console.log('calculating RFI');
-        this.rfi3percentCategories = await this.getCcfriOver3percent();
-        if (this.rfi3percentCategories.length > 0) {
-          if (this.currentFacility.hasRfi) {
-            //already has RFI. just go to the next page
-            this.$router.push(this.nextPath);
-          } else {
-            this.showRfiDialog = true;
-          }
-        } else {
-          //no need for RFI.
-          if (this.currentFacility.hasRfi) {
-            this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: false });
-            // Use nextTick to ensure the DOM is updated before continuing
-            await this.$nextTick();
-            console.log('deleting RFI');
-            await ApiService.apiAxios.delete(ApiRoutes.APPLICATION_RFI + '/' + this.$route.params.urlGuid + '/rfi');
-            await this.$nextTick();
-          }
-          this.$router.push(this.nextPath);
-        }
-      } else if (this.isChangeRequest && (this.currentFacility?.unlockRfi || this.currentFacility?.hasRfi)) {
-        this.setNavBarValue({ facilityId: this.currentFacility?.facilityId, property: 'hasRfi', value: true });
-        this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.changeRequestId, this.$route.params.urlGuid));
-      } else {
-        console.log('RFI calulation not needed.');
-        //Not renewal or CR
-        this.$router.push(this.nextPath);
-      }
+    next() {
+      this.$router.push(this.nextPath);
     },
-    validateForm() {
-      this.$refs.isValidForm?.validate();
-    },
-    isFormComplete() {
-      if (
-        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
-        this.CCFRIFacilityModel.dates.length === 0
-      ) {
-        return false;
-      }
-      return this.isValidForm; //false makes button clickable, true disables button
-    },
-    hasModelChanged() {
-      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
+    hasClosureChanged(closure, updatedClosure) {
+      console.log(closure);
+      console.log(updatedClosure);
+      return (
+        closure?.closureReason !== updatedClosure?.closureReason ||
+        closure?.fullClosure !== updatedClosure?.fullClosure ||
+        moment.utc(closure?.startDate).format('YYYY-MM-DD') !== updatedClosure?.startDate ||
+        moment.utc(closure?.endDate).format('YYYY-MM-DD') !== updatedClosure?.endDate
+      );
     },
     async save(showMessage) {
-      //only save data to Dynamics if the form has changed.
-      if (this.hasModelChanged() || this.hasDataToDelete()) {
-        this.processing = true;
-        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete() });
+      if (this.isReadonly) return;
+      try {
+        this.setIsApplicationProcessing(true);
+        const closuresToCreate = this.updatedClosures?.filter((updatedClosure) => !updatedClosure.closureId);
+        closuresToCreate?.forEach((closure) => this.populateClosurePayload(closure));
+        const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) => {
+          const found = this.closures?.find(
+            (closure) =>
+              closure.closureId === updatedClosure.closureId && this.hasClosureChanged(closure, updatedClosure),
+          );
+          return found;
+        });
+        closuresToUpdate?.forEach((closure) => this.populateClosurePayload(closure));
+        const closuresToDelete = this.closures?.filter((closure) => {
+          const found = this.updatedClosures?.find((updatedClosure) => updatedClosure.closureId === closure.closureId);
+          return !found;
+        });
+        console.log('closuresToCreate');
+        console.log(closuresToCreate);
+        console.log('closuresToUpdate');
+        console.log(closuresToUpdate);
+        console.log('closuresToDelete');
+        console.log(closuresToDelete);
+        await ClosureService.createClosures(closuresToCreate);
+        await ClosureService.updateClosures(closuresToUpdate);
+        await ClosureService.deleteClosures(closuresToDelete);
 
-        if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
-          const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
-          newFac.ccfri.isCCFRIComplete = this.isFormComplete();
+        // if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
+        //   const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+        //   newFac.ccfri.isCCFRIComplete = this.isFormComplete();
+        // }
+        if (showMessage) {
+          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
         }
-        try {
-          this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-          await this.saveCcfri({
-            isFormComplete: this.isFormComplete(),
-            hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
-          });
-          if (showMessage) {
-            this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
-          }
-          //remove the facility to delete from the vuex store
-          this.deleteChildCareTypes();
-        } catch (error) {
-          console.info(error);
-          this.setFailureAlert('An error occurred while saving.');
-        }
-        this.processing = false;
+        //remove the facility to delete from the vuex store
+        this.deleteChildCareTypes();
+      } catch (error) {
+        console.info(error);
+        this.setFailureAlert('An error occurred while saving.');
+      } finally {
+        this.setIsApplicationProcessing(false);
         this.forceNavBarRefresh();
       }
     },
