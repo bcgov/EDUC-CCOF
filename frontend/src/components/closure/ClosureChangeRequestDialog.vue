@@ -228,7 +228,7 @@
       <v-container width="80%">
         <v-row>
           <v-col md="6">
-            <AppButton :primary="false" :disabled="isLoading" @click="closeDialog">Cancel</AppButton>
+            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
             <AppButton :disabled="!isValidForm" @click="submit">{{
@@ -243,18 +243,14 @@
 
 <script>
 import { mapState } from 'pinia';
+import { cloneDeep } from 'lodash';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import {
-  CHANGE_REQUEST_TYPES,
-  CLOSURE_AFFECTED_AGE_GROUPS,
-  CLOSURE_STATUSES,
-  DOCUMENT_TYPES,
-} from '@/utils/constants.js';
+import { CHANGE_REQUEST_TYPES, CLOSURE_AFFECTED_AGE_GROUPS, DOCUMENT_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
 import FacilityService from '@/services/facilityService';
@@ -263,6 +259,7 @@ import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
+import { isEmpty } from 'lodash';
 
 export default {
   name: 'ClosureChangeRequestDialog',
@@ -328,7 +325,16 @@ export default {
       return this.input.fullClosure === false ? rules.required : [];
     },
     rulesReasonForClosureRemoval() {
-      return this.requestType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? [] : rules.required;
+      return this.requestType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
+        ? []
+        : [
+            (v) => {
+              if (isEmpty(v)) {
+                return 'You must add a reason before you can remove this closure.';
+              }
+              return true;
+            },
+          ];
     },
     allAgeGroupsSelected() {
       return this.input.ageGroups?.length === this.ageGroups?.length;
@@ -346,24 +352,26 @@ export default {
   watch: {
     show: {
       async handler(value) {
+        this.isLoading = true;
+        this.isDisplayed = value;
         if (value) {
-          if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
-            this.clearInputs();
-          } else {
-            this.input = this.closure;
+          this.clearData();
+          if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+            const input = cloneDeep(this.closure);
             this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
             if (this.closure.ageGroups) {
               const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
                 return Number(value);
               });
-              this.input.ageGroups = closureAgeGroups;
+              input.ageGroups = closureAgeGroups;
             }
-            const changeActionClosure = await ClosureService.getChangeActionClosure(this.input.changeActionClosureId);
-            this.uploadedDocuments = changeActionClosure?.documents;
-            this.input.description = changeActionClosure?.closureDescription;
+            const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
+            this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
+            input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+            this.input = input;
           }
         }
-        this.isDisplayed = value;
+        this.isLoading = false;
       },
     },
   },
@@ -410,6 +418,7 @@ export default {
       }
     },
     closeDialog() {
+      this.clearData();
       this.$emit('close');
     },
     toggleSelectAll() {
@@ -464,7 +473,6 @@ export default {
             organizationId: this.userInfo?.organizationId,
             closureId: this.closure.closureId,
             changeType: this.requestType,
-            closureStatus: CLOSURE_STATUSES.CANCELLED,
           };
         default:
           return undefined;
@@ -476,7 +484,7 @@ export default {
       console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
-        this.clearInputs();
+        this.clearData();
         this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
         console.log(e);
@@ -485,12 +493,14 @@ export default {
         this.isLoading = false;
       }
     },
-    clearInputs() {
+    clearData() {
+      this.selectedFacilityWasChanged = true;
+      this.ageGroups = [];
+      this.uploadedDocuments = [];
       this.input = {
         ageGroups: [],
         documents: [],
       };
-      this.uploadedDocuments = [];
     },
   },
 };

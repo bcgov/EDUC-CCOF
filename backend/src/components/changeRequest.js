@@ -258,6 +258,9 @@ async function createClosureChangeRequest(req, res) {
     const createChangeRequestReponse = await createRawChangeRequest(req);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
+    if (req.body.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+      changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
+    }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
     if (req.body.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE && !isEmpty(req.body.documents)) {
       req.body.documents.forEach((document) => {
@@ -265,12 +268,12 @@ async function createClosureChangeRequest(req, res) {
         mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
         asyncOperations.push(postChangeActionDocument(mappedDocument));
       });
-    } else if (req.body.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
-      const changeActionClosureId = await asyncOperations[0];
-      const closurePatchPayload = new MappableObjectForBack(req.body, ClosureMappings);
-      closurePatchPayload['ccof_change_action_closure@odata.bind'] = `/ccof_change_action_closures(${changeActionClosureId})`;
-      closurePatchPayload['ccof_change_request@odata.bind'] = `/ccof_change_requestss(${createChangeRequestReponse.changeRequestId})`;
-      await patchOperationWithObjectId('ccof_application_ccfri_closure', req.body.closureId, closurePatchPayload);
+      // } else if (req.body.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+      //   const changeActionClosureId = await asyncOperations[0];
+      //   const closurePatchPayload = new MappableObjectForBack(req.body, ClosureMappings);
+      // closurePatchPayload['ccof_change_action_closure@odata.bind'] = `/ccof_change_action_closures(${changeActionClosureId})`;
+      // closurePatchPayload['ccof_change_request@odata.bind'] = `/ccof_change_requestss(${createChangeRequestReponse.changeRequestId})`;
+      // await patchOperationWithObjectId('ccof_application_ccfri_closure', req.body.closureId, closurePatchPayload);
       // JonahCurlCGI todo: add patch request to chanfe change action closure id of closure
     }
     const asyncOperationResponses = await Promise.all(asyncOperations);
