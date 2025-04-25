@@ -182,16 +182,6 @@ async function createChangeRequest(req, res) {
     return res.status(HttpStatus.CREATED).json(rawChangeRequest);
   } catch (e) {
     log.error('error', e);
-    throw e;
-  }
-}
-
-async function createChangeRequest(req, res) {
-  try {
-    const rawChangeRequest = await createRawChangeRequest(req);
-    return res.status(HttpStatus.CREATED).json(rawChangeRequest);
-  } catch (e) {
-    log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
