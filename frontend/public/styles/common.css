@@ -212,6 +212,12 @@ ol.declarationBList {
   padding: 2px 6px 2px 6px;
 }
 
+.status-red {
+  background-color: #ffd3d4;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
 /* SUMMARY DECLARATION */
 .summary-label {
   color: grey;
