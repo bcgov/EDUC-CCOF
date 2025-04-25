@@ -351,21 +351,19 @@ async function getChangeRequestDocs(req, res) {
 
 async function getChangeActionClosure(req, res) {
   const { changeActionClosureId } = req.params;
-  log.verbose(changeActionClosureId);
-
   try {
     const changeActionClosure = await getOperation(`ccof_change_action_closures(${changeActionClosureId})?$select=_ccof_change_action_value,ccof_any_details_added_on_request`);
-    const response = new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON();
-    response.documents = [];
+    const changeActionClosureForFront = new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON();
+    changeActionClosureForFront.documents = [];
     if (changeActionClosure?._ccof_change_action_value) {
       const getDocumentsResponse = await getChangeActionDocument(changeActionClosure._ccof_change_action_value);
       if (getDocumentsResponse?.value) {
         getDocumentsResponse.value.forEach((document) => {
-          response.documents.push(new MappableObjectForFront(document, DocumentsMappings));
+          changeActionClosureForFront.documents.push(new MappableObjectForFront(document, DocumentsMappings));
         });
       }
     }
-    return res.status(HttpStatus.OK).json(response);
+    return res.status(HttpStatus.OK).json(changeActionClosureForFront);
   } catch (e) {
     log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
