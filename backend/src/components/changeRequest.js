@@ -180,6 +180,17 @@ async function createChangeRequest(req, res) {
   try {
     const rawChangeRequest = await createRawChangeRequest(req);
     return res.status(HttpStatus.CREATED).json(rawChangeRequest);
+    };
+  } catch (e) {
+    log.error('error', e);
+    throw e;
+  }
+}
+
+async function createChangeRequest(req, res) {
+  try {
+    const rawChangeRequest = await createRawChangeRequest(req);
+    return res.status(HttpStatus.CREATED).json(rawChangeRequest);
   } catch (e) {
     log.error('error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -262,13 +273,10 @@ async function createClosureChangeRequest(req, res) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
-    console.log(req.body.documents);
     if (req.body.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE && !isEmpty(req.body.documents)) {
-      console.log('heyo');
       req.body.documents.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
         mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
-        console.log(mappedDocument);
         asyncOperations.push(postChangeActionDocument(mappedDocument));
       });
     }

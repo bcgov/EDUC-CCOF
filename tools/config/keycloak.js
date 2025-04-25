@@ -28,36 +28,33 @@ function getKcAdminUrl(baseUrl, realmId) {
   return `${baseUrl}/auth/admin/realms/${realmId}`;
 }
 
+function getExplicitRedirectEndpoints(rootUrl) {
+  return [
+    `${rootUrl}/api/auth/callback`,
+    `${rootUrl}/api/auth/callback_idir`,
+    `${rootUrl}/logout`,
+    `${rootUrl}/session-expired`
+  ]
+}
+
 function getKcBaseClientMap(envVars) {
   const env = envVars.env;
   const app = envVars.appName;
-  let prefix = "";
-  if (env !== "prod") {
-    prefix = `${env}.`;
-  }
-  const rootUrl = `https://${prefix}mychildcareservices.gov.bc.ca`;
 
-  let redirectUris = [`${rootUrl}/*`];
+  let redirectUris = [];
   if (env === "dev") {
     redirectUris = [
-      ...redirectUris,
       "http://localhost*",
-      "https://qa.mychildcareservices.gov.bc.ca/*",
+      "https://dev.mychildcareservices.gov.bc.ca/*",
+      ...getExplicitRedirectEndpoints("https://qa.mychildcareservices.gov.bc.ca")
     ];
   } else if (env === "test") {
     redirectUris = [
-      ...redirectUris,
-      "https://efx.mychildcareservices.gov.bc.ca/*",
+      ...getExplicitRedirectEndpoints("https://test.mychildcareservices.gov.bc.ca"),
+      ...getExplicitRedirectEndpoints("https://efx.mychildcareservices.gov.bc.ca"),
     ];
   } else if (env === "prod") {
-    redirectUris = [
-      `${rootUrl}/api/auth/callback`,
-      `${rootUrl}/api/auth/callback_idir`,
-      `${rootUrl}/logout`,
-      `${rootUrl}/session-expired`
-    ]
-  } else {
-    redirectUris = [];
+    redirectUris = getExplicitRedirectEndpoints("https://mychildcareservices.gov.bc.ca");
   }
 
   return {
@@ -103,7 +100,7 @@ function getKcBaseClientMap(envVars) {
     surrogateAuthRequired: false,
     serviceAccountsEnabled: false,
     name: app.toUpperCase(),
-    rootUrl,
+    rootUrl: "",
     clientAuthenticatorType: "client-secret",
     baseUrl: "",
     notBefore: 0,

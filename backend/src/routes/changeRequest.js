@@ -131,7 +131,7 @@ router.post(
 );
 
 /**
- * Create a new closure change request
+ * Create the closure change request
  */
 router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();

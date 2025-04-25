@@ -159,6 +159,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      showNewClosureRequestDialog: false,
       closures: undefined,
       sortBy: [
         { key: 'facilityName', order: 'asc' },
@@ -203,9 +204,6 @@ export default {
     },
     showClosureDetailsDialog() {
       return this.closureToView != null;
-    },
-    showClosureChangeRequestDialog() {
-      return this.closureRequestType !== undefined;
     },
   },
   async created() {
@@ -314,14 +312,19 @@ export default {
     setClosureRequestType(closureRequestType) {
       this.closureRequestType = closureRequestType;
     },
-    async toggleClosureConfirmationDialog() {
+    toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
-      await this.loadData();
     },
-    newClosureRequestSubmitted(changeRequestReferenceId) {
-      this.changeRequestReferenceId = changeRequestReferenceId;
+    // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
+    // to allow the user to view the closure following the post request.
+    async newClosureRequestSubmitted(closureChangeRequest) {
+      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+      closureChangeRequest.facilityName = facility?.facilityName;
+      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+      this.closures.push(closureChangeRequest);
+      this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.setClosureRequestType(undefined);
-      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+      this.toggleClosureConfirmationDialog();
     },
   },
 };
