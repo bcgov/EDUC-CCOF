@@ -259,7 +259,6 @@ import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/Auth.js';
-import { isEmpty } from 'lodash';
 
 export default {
   name: 'ClosureChangeRequestDialog',
@@ -486,7 +485,6 @@ export default {
     async submit() {
       this.isLoading = true;
       const payload = this.getPayload();
-      console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
