@@ -24,6 +24,7 @@ export default {
       return response?.data;
     } catch (error) {
       console.log(`Failed to get Change Action Closure - ${error}`);
+      throw error;
     }
   },
 

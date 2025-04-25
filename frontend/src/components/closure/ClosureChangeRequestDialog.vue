@@ -110,20 +110,20 @@
                 <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
-              <v-combobox
+              <v-select
                 v-model="input.ageGroups"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
                 label="Select affected care categories"
                 variant="outlined"
-                class="mt-2 pl-0"
+                class="mt-2"
                 multiple
                 chips
                 clearable
                 :rules="rulesAgeGroups"
                 :loading="isLoading"
-                :disabled="isDisabled"
+                :disabled="isDisabled || isLoading"
               >
                 <template #prepend-item>
                   <v-list-item title="Select All" @click="toggleSelectAll">
@@ -137,7 +137,7 @@
                   </v-list-item>
                   <v-divider class="mt-2" />
                 </template>
-              </v-combobox>
+              </v-select>
             </div>
             <v-row>
               <v-col cols="12" lg="3">
@@ -243,7 +243,7 @@
 
 <script>
 import { mapState } from 'pinia';
-import { cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty } from 'lodash';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
@@ -354,13 +354,12 @@ export default {
   watch: {
     show: {
       async handler(value) {
-        this.isLoading = true;
         this.isDisplayed = value;
-        if (value) {
-          this.clearData();
-          if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
-            this.input = await this.initInput();
-          }
+        if (!value) return;
+        this.clearData();
+        this.isLoading = true;
+        if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+          this.input = await this.initInput();
         }
         this.isLoading = false;
       },
@@ -374,17 +373,23 @@ export default {
   methods: {
     async initInput() {
       const input = cloneDeep(this.closure);
-      this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-      if (this.closure.ageGroups) {
-        const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
-          return Number(value);
-        });
-        input.ageGroups = closureAgeGroups;
+      try {
+        this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
+        if (this.closure.ageGroups) {
+          const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
+            return Number(value);
+          });
+          input.ageGroups = closureAgeGroups;
+        }
+
+        const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
+        this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
+        input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        return input;
+      } catch (e) {
+        console.log(e);
+        this.setFailureAlert('Failed to load license categories');
       }
-      const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
-      this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
-      input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
-      return input;
     },
     async handleFacilityChange(facilityId) {
       this.isLoading = true;

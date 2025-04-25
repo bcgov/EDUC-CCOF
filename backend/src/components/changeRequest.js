@@ -2,8 +2,8 @@
 
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { ChangeRequestMappings, ChangeActionRequestMappings, ChangeActionClosureMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
-const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings, ClosureMappings } = require('../util/mapping/Mappings');
+const { ChangeActionClosureMappings, ChangeActionRequestMappings, ChangeRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
+const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
 const { ChangeRequestUnlockMapping } = require('../util/mapping/ChangeRequestMappings');
 
 const { mapFacilityObjectForBack } = require('./facility');
@@ -355,7 +355,7 @@ async function getChangeActionClosure(req, res) {
     }
     return res.status(HttpStatus.OK).json(changeActionClosureForFront);
   } catch (e) {
-    log.info(e);
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
