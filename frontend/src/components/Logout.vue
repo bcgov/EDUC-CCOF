@@ -1,38 +1,35 @@
 <template>
-  <v-container fluid class="full-height">
-    <!-- login article -->
-    <article name="logout-banner">
-      <v-row align="center" justify="center">
-        <v-col xs="10" sm="10" md="8" lg="4" xl="3">
-          <v-card class="session-expired-card">
-            <v-card-title class="gov-header">
-              <h4 id="logout_text">Logged Out</h4>
-            </v-card-title>
-            <v-card-text id="logout_descriptor">
-              <v-row style="margin: 0.3rem"> You have Logged out. </v-row>
-              <a id="login-button" :href="routes.LOGIN" class="ma-1" dark color="#003366" @click="clearStorage"
-                >Log In</a
-              ><span>again if you wish to continue.</span>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </article>
+  <v-container fluid>
+    <AppSimpleCard>
+      <template #title>Logged Out</template>
+      <template #text>
+        You have Logged out.
+        <br />
+        <a id="login-button" :href="loginUrl" @click="clearStorage">Log In</a>
+        again if you wish to continue.
+      </template>
+    </AppSimpleCard>
   </v-container>
 </template>
 
 <script>
-import { AuthRoutes } from '../utils/constants.js';
+import { AuthRoutes } from '@/utils/constants.js';
+import { useAuthStore } from '@/store/auth.js';
 
-import { useAuthStore } from '../store/auth.js';
+import AppSimpleCard from '@/components/util/AppSimpleCard.vue';
 
 export default {
   name: 'LogoutComponent',
-
+  components: { AppSimpleCard },
   data() {
     return {
       routes: AuthRoutes,
     };
+  },
+  computed: {
+    loginUrl() {
+      return this.$route.query.idir === 'true' ? AuthRoutes.LOGIN_IDIR : AuthRoutes.LOGIN;
+    },
   },
   mounted() {
     const authStore = useAuthStore();
