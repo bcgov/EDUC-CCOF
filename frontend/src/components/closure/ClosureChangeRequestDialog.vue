@@ -231,7 +231,7 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton :disabled="!isValidForm" @click="submit">{{
+            <AppButton :disabled="!isValidForm || isLoading" @click="submit">{{
               requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? 'Remove Closure' : 'Submit'
             }}</AppButton>
           </v-col>
@@ -318,6 +318,9 @@ export default {
     isDisabled() {
       return this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
+    showDocumentUpload() {
+      return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
+    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
@@ -357,18 +360,7 @@ export default {
         if (value) {
           this.clearData();
           if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
-            const input = cloneDeep(this.closure);
-            this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-            if (this.closure.ageGroups) {
-              const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
-                return Number(value);
-              });
-              input.ageGroups = closureAgeGroups;
-            }
-            const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
-            this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
-            input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
-            this.input = input;
+            this.input = await this.initInput();
           }
         }
         this.isLoading = false;
@@ -381,6 +373,20 @@ export default {
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
   },
   methods: {
+    async initInput() {
+      const input = cloneDeep(this.closure);
+      this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
+      if (this.closure.ageGroups) {
+        const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
+          return Number(value);
+        });
+        input.ageGroups = closureAgeGroups;
+      }
+      const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
+      this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
+      input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+      return input;
+    },
     async handleFacilityChange(facilityId) {
       this.isLoading = true;
       this.selectedFacilityWasChanged = true;
@@ -418,7 +424,6 @@ export default {
       }
     },
     closeDialog() {
-      this.clearData();
       this.$emit('close');
     },
     toggleSelectAll() {
@@ -484,7 +489,6 @@ export default {
       console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
-        this.clearData();
         this.$emit('submitted', response.changeRequestReferenceId);
       } catch (e) {
         console.log(e);

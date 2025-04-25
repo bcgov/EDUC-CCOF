@@ -262,19 +262,15 @@ async function createClosureChangeRequest(req, res) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
-    if (req.body.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE && !isEmpty(req.body.documents)) {
+    console.log(req.body.documents);
+    if (req.body.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE && !isEmpty(req.body.documents)) {
+      console.log('heyo');
       req.body.documents.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
         mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
+        console.log(mappedDocument);
         asyncOperations.push(postChangeActionDocument(mappedDocument));
       });
-      // } else if (req.body.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
-      //   const changeActionClosureId = await asyncOperations[0];
-      //   const closurePatchPayload = new MappableObjectForBack(req.body, ClosureMappings);
-      // closurePatchPayload['ccof_change_action_closure@odata.bind'] = `/ccof_change_action_closures(${changeActionClosureId})`;
-      // closurePatchPayload['ccof_change_request@odata.bind'] = `/ccof_change_requestss(${createChangeRequestReponse.changeRequestId})`;
-      // await patchOperationWithObjectId('ccof_application_ccfri_closure', req.body.closureId, closurePatchPayload);
-      // JonahCurlCGI todo: add patch request to chanfe change action closure id of closure
     }
     const asyncOperationResponses = await Promise.all(asyncOperations);
     return res.status(HttpStatus.CREATED).json({ changeActionClosureId: asyncOperationResponses[0], changeRequestReferenceId: asyncOperationResponses[1].ccof_name });
