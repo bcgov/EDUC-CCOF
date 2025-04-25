@@ -8,6 +8,9 @@ export default {
     try {
       if (!ccfriApplicationId) return [];
       const response = await ApiService.apiAxios.get(`${ApiRoutes.CLOSURES}?ccfriApplicationId=${ccfriApplicationId}`);
+      response?.data?.forEach(
+        (closure) => (closure.ageGroups = closure.ageGroups?.split(',')?.map((item) => Number(item.trim()))),
+      );
       return response?.data;
     } catch (error) {
       console.log(`Failed to get application closures - ${error}`);

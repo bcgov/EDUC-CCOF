@@ -122,18 +122,19 @@
                           </v-radio-group>
                         </v-row>
 
-                        <v-row v-if="obj.fullClosure === false" no-gutters>
-                          <p class="span-label font-regular pt-2 pr-4 mb-2">
+                        <v-row v-if="obj.fullClosure === false" no-gutters class="py-2">
+                          <p class="span-label font-regular pt-md-4 pr-8 mb-2">
                             Select all care categories that are affected by the closure:
                           </p>
                           <AppMultiSelectInput
-                            v-model="obj.affectedChildcareCategories"
+                            v-model="obj.ageGroups"
                             :items="childCareCategories"
-                            item-title="childCareCategory"
-                            item-value="childCareCategoryId"
+                            item-title="label"
+                            item-value="value"
                             label="Care Categories"
                             :disabled="isApplicationProcessing"
                             :rules="rules.required"
+                            min-width="250"
                           />
                         </v-row>
 
@@ -220,6 +221,7 @@ import {
   PROGRAM_YEAR_LANGUAGE_TYPES,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_FEE_CORRECT_TYPES,
+  CLOSURE_AFFECTED_AGE_GROUPS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_STATUSES,
   CLOSURE_TYPES,
@@ -312,9 +314,16 @@ export default {
       return this.applicationStatus === 'SUBMITTED';
     },
     childCareCategories() {
-      return this.CCFRIFacilityModel?.childCareTypes?.filter(
-        (careType) => careType.programYearId === this.$route.params.programYearGuid,
-      );
+      const ageGroups = [];
+      this.CCFRIFacilityModel?.childCareTypes
+        ?.filter((careType) => careType.programYearId === this.$route.params.programYearGuid)
+        ?.forEach((ageGroup) => {
+          ageGroups.push({
+            label: ageGroup.childCareCategory,
+            value: CLOSURE_AFFECTED_AGE_GROUPS[ageGroup.childCareCategory],
+          });
+        });
+      return ageGroups;
     },
     hasIllegalDates() {
       return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);

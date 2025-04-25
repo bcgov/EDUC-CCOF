@@ -44,7 +44,7 @@
   <NavButton
     :is-next-displayed="true"
     :is-save-displayed="true"
-    :is-save-disabled="isReadOnly || hasIllegalDates(CCFRIFacilityModel)"
+    :is-save-disabled="isSaveDisabled"
     :is-next-disabled="isApplicationProcessing || !CCFRIFacilityModel.isComplete"
     :is-processing="isApplicationProcessing"
     @previous="previous"

@@ -132,6 +132,9 @@ export default {
       }
       return false;
     },
+    isSaveDisabled() {
+      return this.isReadOnly || (this.showApplicationTemplateV1 && this.hasIllegalDates(this.CCFRIFacilityModel));
+    },
   },
   created() {
     this.rules = rules;
