@@ -180,7 +180,6 @@ async function createChangeRequest(req, res) {
   try {
     const rawChangeRequest = await createRawChangeRequest(req);
     return res.status(HttpStatus.CREATED).json(rawChangeRequest);
-    };
   } catch (e) {
     log.error('error', e);
     throw e;
@@ -350,7 +349,7 @@ async function getChangeRequestDocs(req, res) {
   }
 }
 
-async function getChangeActionClosureDocs(req, res) {
+async function getChangeActionClosure(req, res) {
   const { changeActionClosureId } = req.params;
   log.verbose(changeActionClosureId);
 
@@ -436,7 +435,7 @@ module.exports = {
   createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
-  getChangeActionClosureDocs,
+  getChangeActionClosure,
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,

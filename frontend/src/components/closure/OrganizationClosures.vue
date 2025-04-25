@@ -318,10 +318,12 @@ export default {
     // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
     // to allow the user to view the closure following the post request.
     async newClosureRequestSubmitted(closureChangeRequest) {
-      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
-      closureChangeRequest.facilityName = facility?.facilityName;
-      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
-      this.closures.push(closureChangeRequest);
+      if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+        const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+        closureChangeRequest.facilityName = facility?.facilityName;
+        closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+        this.closures.push(closureChangeRequest);
+      }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.setClosureRequestType(undefined);
       this.toggleClosureConfirmationDialog();

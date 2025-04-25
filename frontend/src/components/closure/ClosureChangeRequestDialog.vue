@@ -489,7 +489,8 @@ export default {
       console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
-        this.$emit('submitted', response.changeRequestReferenceId);
+        payload.changeRequestReferenceId = response.changeRequestReferenceId;
+        this.$emit('submitted', payload);
       } catch (e) {
         console.log(e);
         this.setFailureAlert('Failed to submit new closure request');

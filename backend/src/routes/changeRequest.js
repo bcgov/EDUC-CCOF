@@ -12,7 +12,7 @@ const {
   createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
-  getChangeActionClosureDocs,
+  getChangeActionClosure,
   saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
@@ -162,7 +162,7 @@ router.get(
   [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
-    return getChangeActionClosureDocs(req, res);
+    return getChangeActionClosure(req, res);
   },
 );
 
