@@ -21,7 +21,7 @@
       <v-row>
         <v-col cols="12" lg="7">
           <AppAlertBanner type="info">
-            <p>Note: You can only submit closures for the current funding agreement term.</p>
+            <p class="pb-2">Note: You can only submit closures for the current funding agreement term.</p>
             <p>
               To report a closure for a previous term, please return to the home page, select a different fiscal year,
               and go to View Organization Closures.
