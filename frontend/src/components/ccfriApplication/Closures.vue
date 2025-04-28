@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
+  <v-form ref="form">
     <v-container fluid>
       <ApplicationPCFHeader
         page-title="Child Care Fee Reduction Initiative (CCFRI)"
@@ -38,12 +38,12 @@
                   :rules="rules.required"
                   color="primary"
                 >
-                  <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(true)" />
+                  <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(false)" />
                   <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
                 </v-radio-group>
 
                 <template v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
-                  <v-card v-for="(obj, index) in updatedClosures" :key="obj.id" class="px-6 py-4 pl-md-0 mb-8">
+                  <v-card v-for="(obj, index) in updatedClosures" :key="obj.closureId" class="px-6 py-4 pl-md-0 mb-8">
                     <v-row no-gutters class="align-center">
                       <v-col cols="12" md="1" class="close-column text-center">
                         <v-btn
@@ -166,7 +166,7 @@
                     </v-row>
                   </v-card>
 
-                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow()">
+                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow(true)">
                     Add New Closure
                   </AppButton>
                 </template>
@@ -192,20 +192,19 @@
 </template>
 <script>
 import moment from 'moment';
-import { isEmpty, cloneDeep } from 'lodash';
+import { cloneDeep, isEmpty, isEqual } from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { uuid } from 'vue-uuid';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import ClosureService from '@/services/closureService.js';
+import ApplicationService from '@/services/applicationService';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -247,64 +246,51 @@ function dateFunction(date1, date2) {
 
 export default {
   components: {
-    ApplicationPCFHeader,
-    NavButton,
     AppAlertBanner,
-    AppDateInput,
-    AppDialog,
     AppButton,
+    AppDateInput,
     AppMultiSelectInput,
+    ApplicationPCFHeader,
     AppTooltip,
+    NavButton,
   },
   mixins: [alertMixin, globalMixin],
-  beforeRouteLeave(_to, _from, next) {
-    this.save(false);
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
     next();
   },
   data() {
     return {
       closures: [],
       updatedClosures: [],
-      isValidForm: false,
     };
   },
   computed: {
     ...mapState(useAppStore, ['getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
-      'applicationId',
       'applicationStatus',
       'fiscalStartAndEndDates',
       'formattedProgramYear',
       'isApplicationFormValidated',
       'isApplicationProcessing',
-      'isRenewal',
       'programYearId',
       'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, [
       'navBarList',
-      'changeRequestId',
       'changeType',
       'nextPath',
       'previousPath',
-      'getNavByCCFRIId',
       'isChangeRequest',
       'getChangeActionNewFacByFacilityId',
     ]),
-    ...mapState(useCcfriAppStore, [
-      'CCFRIFacilityModel',
-      'ccfriChildCareTypes',
-      'loadedModel',
-      'ccfriId',
-      'getClosureDateLength',
-    ]),
+    ...mapState(useCcfriAppStore, ['CCFRIFacilityModel', 'loadedModel']),
     ...mapState(useOrganizationStore, ['organizationId']),
-    ...mapState(useReportChangesStore, ['userProfileChangeRequests', 'changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['changeRequestStatus']),
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     isReadOnly() {
-      //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockCcfri) {
         return false;
       }
@@ -329,13 +315,11 @@ export default {
       return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
     },
     isFormComplete() {
-      if (
-        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
-        this.updatedClosures?.length === 0
-      ) {
-        return false;
-      }
-      return this.isValidForm && !this.hasIllegalDates;
+      const model = {
+        hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
+        closures: this.updatedClosures,
+      };
+      return ApplicationService.isClosuresComplete(model);
     },
   },
   watch: {
@@ -347,7 +331,7 @@ export default {
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           this.closures = await ClosureService.getApplicationClosures(this.$route.params.urlGuid);
           this.updatedClosures = cloneDeep(this.closures);
-          console.log(this.closures);
+          this.addRow(false);
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -371,35 +355,34 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
-    ...mapActions(useCcfriAppStore, [
-      'saveCcfri',
-      'loadCCFRIFacility',
-      'loadFacilityCareTypes',
-      'decorateWithCareTypes',
-      'loadCCFisCCRIMedian',
-      'getCcfriOver3percent',
-      'setFeeModel',
-      'addModelToStore',
-      'deleteChildCareTypes',
-      'setLoadedModel',
-    ]),
-    ...mapActions(useNavBarStore, ['forceNavBarRefresh', 'setNavBarValue', 'setNavBarCCFRIComplete']),
-    addRow(radioButtonClicked = false) {
-      //when opening table for the first time, add a row so it always populates with one.
-      //check below so if user hits the radio button multiple times, it won't keep adding rows
-      if (radioButtonClicked && this.updatedClosures.length > 0) return;
-      const newClosure = { id: uuid.v1() };
-      this.updatedClosures.push(newClosure);
+    ...mapActions(useCcfriAppStore, ['loadCCFRIFacility', 'updateApplicationCCFRI']),
+    ...mapActions(useNavBarStore, ['setNavBarCCFRIClosuresComplete']),
+    addRow(isAddButtonClicked) {
+      if (!isAddButtonClicked && this.updatedClosures.length > 0) return;
+      this.updatedClosures.push({});
     },
-    populateClosurePayload(closure) {
-      closure.closureStatus = closure.closureStatus ?? CLOSURE_STATUSES.PENDING;
-      closure.closureType = closure.closureType ?? CLOSURE_TYPES.KNOWN_CLOSURES;
-      closure.feesPaidWhileClosed = closure.feesPaidWhileClosed ?? 1;
-      closure.paymentEligibility = closure.paymentEligibility ?? String(CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI);
-      closure.ccfriApplicationId = closure.ccfriApplicationId ?? this.$route.params.urlGuid;
-      closure.facilityId = closure.facilityId ?? this.CCFRIFacilityModel.facilityId;
-      closure.organizationId = closure.organizationId ?? this.organizationId;
-      closure.programYearId = closure.programYearId ?? this.programYearId;
+    buildClosurePayload(closure) {
+      if (!closure) return {};
+      const payload = cloneDeep(closure);
+      const DEFAULT_TIME_SUFFIX = 'T12:00:00-07:00';
+      const appendDefaultTimeSuffix = (date) =>
+        date?.includes(DEFAULT_TIME_SUFFIX) ? date : `${date}${DEFAULT_TIME_SUFFIX}`;
+      if (closure.fullClosure === false && !isEmpty(closure.ageGroups)) {
+        payload.ageGroups = Array.isArray(closure.ageGroups) ? closure.ageGroups.join(',') : closure.ageGroups;
+      } else {
+        payload.ageGroups = null;
+      }
+      payload.closureStatus = closure.closureStatus ?? CLOSURE_STATUSES.PENDING;
+      payload.closureType = closure.closureType ?? CLOSURE_TYPES.KNOWN_CLOSURES;
+      payload.feesPaidWhileClosed = closure.feesPaidWhileClosed ?? 1;
+      payload.paymentEligibility = closure.paymentEligibility ?? String(CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI);
+      payload.startDate = closure.startDate ? appendDefaultTimeSuffix(closure.startDate) : null;
+      payload.endDate = closure.endDate ? appendDefaultTimeSuffix(closure.endDate) : null;
+      payload.ccfriApplicationId = closure.ccfriApplicationId ?? this.$route.params.urlGuid;
+      payload.facilityId = closure.facilityId ?? this.CCFRIFacilityModel.facilityId;
+      payload.organizationId = closure.organizationId ?? this.organizationId;
+      payload.programYearId = closure.programYearId ?? this.programYearId;
+      return payload;
     },
     validateClosureDates(obj) {
       // Get all closure dates except for the currently edited row
@@ -439,7 +422,6 @@ export default {
       });
     },
     removeClosure(index) {
-      console.log(index);
       this.updatedClosures.splice(index, 1);
       if (isEmpty(this.updatedClosures)) this.addRow(false);
     },
@@ -450,59 +432,83 @@ export default {
       this.$router.push(this.nextPath);
     },
     hasClosureChanged(closure, updatedClosure) {
-      console.log(closure);
-      console.log(updatedClosure);
+      // console.log(closure);
+      // console.log(updatedClosure);
+      const isAgeGroupsUpdated =
+        (!isEmpty(closure?.ageGroups) || !isEmpty(updatedClosure?.ageGroups)) &&
+        !isEqual(closure?.ageGroups, updatedClosure?.ageGroups);
       return (
         closure?.closureReason !== updatedClosure?.closureReason ||
         closure?.fullClosure !== updatedClosure?.fullClosure ||
         moment.utc(closure?.startDate).format('YYYY-MM-DD') !== updatedClosure?.startDate ||
-        moment.utc(closure?.endDate).format('YYYY-MM-DD') !== updatedClosure?.endDate
+        moment.utc(closure?.endDate).format('YYYY-MM-DD') !== updatedClosure?.endDate ||
+        isAgeGroupsUpdated
       );
     },
     async save(showMessage) {
       if (this.isReadonly) return;
       try {
         this.setIsApplicationProcessing(true);
-        const closuresToCreate = this.updatedClosures?.filter((updatedClosure) => !updatedClosure.closureId);
-        closuresToCreate?.forEach((closure) => this.populateClosurePayload(closure));
-        const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) => {
-          const found = this.closures?.find(
-            (closure) =>
-              closure.closureId === updatedClosure.closureId && this.hasClosureChanged(closure, updatedClosure),
-          );
-          return found;
-        });
-        closuresToUpdate?.forEach((closure) => this.populateClosurePayload(closure));
-        const closuresToDelete = this.closures?.filter((closure) => {
-          const found = this.updatedClosures?.find((updatedClosure) => updatedClosure.closureId === closure.closureId);
-          return !found;
-        });
-        console.log('closuresToCreate');
-        console.log(closuresToCreate);
-        console.log('closuresToUpdate');
-        console.log(closuresToUpdate);
-        console.log('closuresToDelete');
-        console.log(closuresToDelete);
-        await ClosureService.createClosures(closuresToCreate);
-        await ClosureService.updateClosures(closuresToUpdate);
-        await ClosureService.deleteClosures(closuresToDelete);
-
+        if (this.loadedModel?.hasClosureFees !== this.CCFRIFacilityModel?.hasClosureFees) {
+          await this.updateApplicationCCFRI(this.$route.params.urlGuid, {
+            hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
+          });
+          this.loadedModel.hasClosureFees = this.CCFRIFacilityModel.hasClosureFees;
+        }
+        await this.processUpdatedClosures();
+        console.log('SAVE: ');
+        console.log(this.isFormComplete);
+        this.setNavBarCCFRIClosuresComplete({ ccfriId: this.$route.params.urlGuid, complete: this.isFormComplete });
         // if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
         //   const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
         //   newFac.ccfri.isCCFRIComplete = this.isFormComplete();
         // }
         if (showMessage) {
-          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+          this.setSuccessAlert('Application saved successfully.');
         }
-        //remove the facility to delete from the vuex store
-        this.deleteChildCareTypes();
       } catch (error) {
-        console.info(error);
+        console.log(error);
         this.setFailureAlert('An error occurred while saving.');
       } finally {
         this.setIsApplicationProcessing(false);
-        this.forceNavBarRefresh();
       }
+    },
+
+    async processUpdatedClosures() {
+      const closuresToCreate = this.updatedClosures?.filter(
+        (updatedClosure) => !updatedClosure.closureId && !isEmpty(updatedClosure),
+      );
+      const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) => {
+        const found = this.closures?.find(
+          (closure) =>
+            closure.closureId === updatedClosure.closureId && this.hasClosureChanged(closure, updatedClosure),
+        );
+        return found;
+      });
+      const closuresToDelete = this.closures?.filter((closure) => {
+        const found = this.updatedClosures?.find((updatedClosure) => updatedClosure.closureId === closure.closureId);
+        return !found;
+      });
+      // console.log('closuresToCreate');
+      // console.log(closuresToCreate);
+      // console.log('closuresToUpdate');
+      // console.log(closuresToUpdate);
+      // console.log('closuresToDelete');
+      // console.log(closuresToDelete);
+      await Promise.all(
+        closuresToCreate?.map(async (closure) => {
+          const payload = this.buildClosurePayload(closure);
+          await ClosureService.createClosure(payload);
+        }),
+      );
+      await Promise.all(
+        closuresToUpdate?.map(async (closure) => {
+          const payload = this.buildClosurePayload(closure);
+          await ClosureService.updateClosure(payload);
+        }),
+      );
+      await ClosureService.deleteClosures(closuresToDelete);
+      this.closures = cloneDeep(this.updatedClosures);
     },
   },
 };

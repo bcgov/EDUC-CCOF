@@ -254,6 +254,12 @@ export const useNavBarStore = defineStore('navBar', {
         this.refreshNavBar++;
       }
     },
+    setNavBarCCFRIClosuresComplete({ ccfriId, complete }) {
+      const userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
+      if (isEmpty(userProfileItem)) return;
+      userProfileItem.isCCFRIClosuresComplete = complete;
+      this.refreshNavBarList();
+    },
     setNavBarAfsComplete({ ccfriId, complete }) {
       let userProfileItem;
       if (this.changeType === 'mtfi') {

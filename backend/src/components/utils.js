@@ -215,38 +215,6 @@ async function getApplicationDocument(applicationID) {
   }
 }
 
-async function postApplicationSummaryDocument(payload) {
-  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationSummaryDocument';
-  log.info('postApplicationSummaryDocument Url', url);
-  if (log.isDebugEnabled()) {
-    log.debug(`postApplicationSummaryDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
-  }
-  try {
-    const response = await axios.post(url, payload, getHttpHeader());
-    logResponse('postApplicationSummaryDocument', response);
-    return response.data;
-  } catch (e) {
-    log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
-  }
-}
-
-async function postChangeRequestSummaryDocument(payload) {
-  const url = config.get('dynamicsApi:apiEndpoint') + '/api/ChangeRequestSummaryDocument';
-  log.info('postChangeRequestSummaryDocument Url', url);
-  if (log.isDebugEnabled()) {
-    log.debug(`postChangeRequestSummaryDocument post data for ${url}  :: is :: `, minify(payload, ['documentbody']));
-  }
-  try {
-    const response = await axios.post(url, payload, getHttpHeader());
-    logResponse('postChangeRequestSummaryDocument', response);
-    return response.data;
-  } catch (e) {
-    log.error('postOperation Error', e.response ? e.response.status : e.message);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
-  }
-}
-
 async function getSubmissionPDFHistory(organizationId) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/SubmissionPDFHistory?OrgId=' + organizationId;
@@ -444,12 +412,10 @@ const utils = {
   getApplicationDocument,
   deleteDocument,
   getDocument,
-  postApplicationSummaryDocument,
   sleep,
   getChangeActionDocument,
   postChangeActionDocument,
   updateChangeRequestNewFacility,
-  postChangeRequestSummaryDocument,
   getSubmissionPDFHistory,
   getChangeActionDetails,
 };

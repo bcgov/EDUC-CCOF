@@ -18,28 +18,20 @@ export default {
     }
   },
 
-  async createClosures(closures) {
+  async createClosure(closure) {
     try {
-      if (isEmpty(closures)) return;
-      await Promise.all(
-        closures?.map(async (closure) => {
-          await ApiService.apiAxios.post(ApiRoutes.CLOSURES, closure);
-        }),
-      );
+      if (isEmpty(closure)) return;
+      await ApiService.apiAxios.post(ApiRoutes.CLOSURES, closure);
     } catch (error) {
-      console.error(`Failed to create closures - ${error}`);
+      console.error(`Failed to create closure - ${error}`);
       throw error;
     }
   },
 
-  async updateClosures(closures) {
+  async updateClosure(closure) {
     try {
-      if (isEmpty(closures)) return;
-      await Promise.all(
-        closures?.map(async (closure) => {
-          await ApiService.apiAxios.patch(`${ApiRoutes.CLOSURES}/${closure.closureId}`, closure);
-        }),
-      );
+      if (isEmpty(closure)) return;
+      await ApiService.apiAxios.patch(`${ApiRoutes.CLOSURES}/${closure.closureId}`, closure);
     } catch (error) {
       console.error(`Failed to update closures - ${error}`);
       throw error;
@@ -50,7 +42,7 @@ export default {
     try {
       if (isEmpty(closures)) return;
       const closureIds = closures.map((closure) => closure.closureId);
-      await ApiService.apiAxios.delete(ApiRoutes.CLOSURES, closureIds);
+      await ApiService.apiAxios.delete(ApiRoutes.CLOSURES, { data: closureIds });
     } catch (error) {
       console.error(`Failed to delete closures - ${error}`);
       throw error;

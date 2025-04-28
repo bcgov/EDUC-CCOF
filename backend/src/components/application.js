@@ -1,22 +1,12 @@
 'use strict';
 
-const {
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  deleteOperationWithObjectId,
-  sleep,
-  getLabelFromValue,
-  updateChangeRequestNewFacility,
-  postApplicationSummaryDocument,
-  postChangeRequestSummaryDocument,
-  getChangeActionDetails,
-} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue, updateChangeRequestNewFacility, getChangeActionDetails } = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const {
+  ClosureMappings,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
@@ -387,46 +377,6 @@ async function submitApplication(req, res) {
   }
 }
 
-async function postPdf(req, buffer) {
-  let payload;
-  if (req.params.applicationId) {
-    payload = {
-      ccof_applicationid: req.params.applicationId,
-      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filesize: buffer.byteLength,
-      subject: 'APPLICATION SUMMARY',
-      documentbody: buffer.toString('base64'),
-    };
-
-    await postApplicationSummaryDocument(payload);
-  } else {
-    payload = {
-      ccof_change_requestid: req.params.changeRequestId,
-      filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filesize: buffer.byteLength,
-      subject: 'CHANGE REQUEST SUMMARY',
-      documentbody: buffer.toString('base64'),
-    };
-
-    await postChangeRequestSummaryDocument(payload);
-  }
-  return payload;
-}
-
-//returns current date in DDMMMYYYY format when saving pdf file name
-function getCurrentDateForPdfFileName() {
-  const date = new Date();
-  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Vancouver',
-    month: 'short',
-  });
-  const month = dateTimeFormatter.format(date).toUpperCase();
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  return `${day}${month}${year}`;
-}
-
 function getFacilityInMap(map, facilityId) {
   let facility = map.get(facilityId);
   if (!facility) {
@@ -535,6 +485,10 @@ async function populateSummaryDataForFacility(facility) {
       const previousCcfriId = await getFacilityChildCareTypesByCcfriId(ccfri.previousCcfriId);
       facility.ccfri.prevYearCcfriApp = previousCcfriId;
     }
+
+    facility.ccfri.closures = [];
+    const closuresResponse = await getOperation(`ccof_application_ccfri_closures?$filter=_ccof_applicationccfri_value eq ${ccfri.ccfriId}`);
+    closuresResponse?.value?.forEach((closure) => facility.ccfri.closures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON()));
 
     if (ccfri?.hasRfi || ccfri?.unlockRfi) {
       const rfiApp = await getRfiApplicationByCcfriId(ccfri.ccfriId);

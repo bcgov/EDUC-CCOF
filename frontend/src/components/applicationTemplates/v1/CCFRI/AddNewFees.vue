@@ -588,8 +588,8 @@ export default {
     AppButton,
   },
   mixins: [alertMixin, globalMixin],
-  beforeRouteLeave(_to, _from, next) {
-    this.save(false);
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
     next();
   },
   data() {

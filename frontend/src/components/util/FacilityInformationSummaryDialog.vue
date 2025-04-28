@@ -86,6 +86,17 @@
           />
         </v-expansion-panel>
         <v-expansion-panel
+          :key="`${facility.facilityId}-closures-summary`"
+          :value="`${facility.facilityId}-closures-summary`"
+          variant="accordion"
+        >
+          <ClosuresSummary
+            :ccfri="facility?.ccfri"
+            :change-rec-guid="facility?.changeRequestId"
+            :program-year-id="programYearId"
+          />
+        </v-expansion-panel>
+        <v-expansion-panel
           v-if="facility?.ccfri?.enableAfs"
           :key="`${facility.facilityId}-afs-summary`"
           :value="`${facility.facilityId}-afs-summary`"
@@ -149,6 +160,7 @@ import FacilityInformationSummary from '@/components/summary/group/FacilityInfor
 import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import ClosuresSummary from '@/components/summary/group/ClosuresSummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
@@ -169,6 +181,7 @@ export default {
     CCFRISummary,
     CCOFSummary,
     CCOFSummaryFamily,
+    ClosuresSummary,
     ECEWESummary,
     FacilityInformationSummary,
     FacilityInformationSummaryDialogHeader,

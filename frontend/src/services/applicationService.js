@@ -72,6 +72,7 @@ export default {
       this.isCCFRIComplete(facility.ccfri) &&
       (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
       (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
+      this.isClosuresComplete(facility.ccfri) &&
       (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
@@ -386,6 +387,17 @@ export default {
       requiredFields.push('remoteCommunitiesComments');
     }
     return !hasEmptyFields(nmf, requiredFields);
+  },
+
+  // CLOSURES VALIDATIONS
+  isClosuresComplete(ccfri) {
+    const closureRequiredFields = ['startDate', 'endDate', 'closureReason', 'ageGroups'];
+    const areAllClosureItemsComplete =
+      !isEmpty(ccfri.closures) && ccfri.closures?.every((expense) => !hasEmptyFields(expense, closureRequiredFields));
+    return (
+      ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+      (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
+    );
   },
 
   // AFS VALIDATIONS
