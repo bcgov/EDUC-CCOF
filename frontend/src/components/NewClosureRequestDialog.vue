@@ -230,7 +230,12 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import { CHANGE_REQUEST_TYPES, CLOSURE_AFFECTED_AGE_GROUPS, DOCUMENT_TYPES } from '@/utils/constants.js';
+import {
+  CHANGE_REQUEST_TYPES,
+  CLOSURE_AFFECTED_AGE_GROUPS,
+  CHANGE_REQUEST_EXTERNAL_STATUS,
+  DOCUMENT_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
 import FacilityService from '@/services/facilityService';
@@ -381,6 +386,7 @@ export default {
         closureDescription: this.input.description,
         documents: this.processDocuments(this.input.documents),
         changeType: CHANGE_REQUEST_TYPES.NEW_CLOSURE,
+        externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.SUBMITTED,
       };
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
