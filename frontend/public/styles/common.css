@@ -201,13 +201,19 @@ ol.declarationBList {
 }
 
 .status-green {
-  background-color: #c8e6cb;
+  background-color: #dff0d8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
 
 .status-yellow {
-  background-color: #fdfac8;
+  background-color: #f9f1c6;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-red {
+  background-color: #f2dede;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }

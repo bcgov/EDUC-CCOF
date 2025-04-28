@@ -221,7 +221,7 @@ export default {
           this.$route.params.programYearGuid,
         );
         this.closures = this.closures?.filter((closure) => {
-          return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.DRAFT;
+          return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.MINISTRY_REMOVED;
         });
         this.isLoading = false;
       } catch (error) {
@@ -244,7 +244,7 @@ export default {
       // stub
     },
     hasPendingStatus(closure) {
-      return [CLOSURE_STATUSES.SUBMITTED, CLOSURE_STATUSES.IN_PROGRESS].includes(closure.closureStatus);
+      return closure.closureStatus === CLOSURE_STATUSES.PENDING;
     },
     getFacilityAccountNumber(facilityId) {
       const facility = this.getNavByFacilityId(facilityId);
@@ -252,15 +252,14 @@ export default {
     },
     getClosureStatusText(closureValue) {
       switch (closureValue) {
-        case CLOSURE_STATUSES.SUBMITTED:
-        case CLOSURE_STATUSES.IN_PROGRESS:
+        case CLOSURE_STATUSES.PENDING:
           return CLOSURE_STATUS_TEXTS.PENDING;
-        case CLOSURE_STATUSES.APPROVED:
+        case CLOSURE_STATUSES.COMPLETE_APPROVED:
           return CLOSURE_STATUS_TEXTS.APPROVED;
-        case CLOSURE_STATUSES.DENIED:
-          return CLOSURE_STATUS_TEXTS.INELIGIBLE;
+        case CLOSURE_STATUSES.COMPLETE_NOT_APPROVED:
+          return CLOSURE_STATUS_TEXTS.NOT_APPROVED;
         case CLOSURE_STATUSES.CANCELLED:
-          return CLOSURE_STATUS_TEXTS.REMOVED_BY_PROVIDER;
+          return CLOSURE_STATUS_TEXTS.CANCELLED;
         default:
           return '';
       }
@@ -295,12 +294,13 @@ export default {
     },
     getClosureStatusClass(status) {
       switch (status) {
-        case CLOSURE_STATUSES.SUBMITTED:
-        case CLOSURE_STATUSES.IN_PROGRESS:
+        case CLOSURE_STATUSES.PENDING:
           return 'status-gray';
-        case CLOSURE_STATUSES.APPROVED:
+        case CLOSURE_STATUSES.COMPLETE_APPROVED:
           return 'status-green';
-        case CLOSURE_STATUSES.DENIED:
+        case CLOSURE_STATUSES.COMPLETE_NOT_APPROVED:
+          return 'status-red';
+        case CLOSURE_STATUSES.CANCELLED:
           return 'status-yellow';
         default:
           return '';
@@ -320,7 +320,7 @@ export default {
     async newClosureRequestSubmitted(closureChangeRequest) {
       const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
       closureChangeRequest.facilityName = facility?.facilityName;
-      closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+      closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
       this.closures.push(closureChangeRequest);
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.toggleNewClosureRequestDialog();
