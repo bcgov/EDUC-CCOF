@@ -139,10 +139,22 @@
                 </template>
               </v-select>
             </div>
+            <v-row v-if="requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE">
+              <v-col cols="12" lg="3">
+                <h3 class="mt-2">Approved Dates:</h3>
+              </v-col>
+              <v-col cols="12" lg="4">
+                <AppDateInput v-model="input.approvedStartDate" label="Start Date" disabled />
+              </v-col>
+              <v-col cols="12" lg="1" class="pt-6">to</v-col>
+              <v-col cols="12" lg="4">
+                <AppDateInput v-model="input.approvedEndDate" label="End Date" disabled />
+              </v-col>
+            </v-row>
             <v-row>
               <v-col cols="12" lg="3">
                 <h3 class="mt-2">
-                  Dates:
+                  {{ requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE ? 'New ' : '' }}Dates:
                   <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
                 </h3>
               </v-col>
@@ -209,6 +221,7 @@
               :required="false"
               :uploaded-documents="uploadedDocuments"
               @update-documents-to-upload="updateDocuments"
+              @delete-uploaded-document="deleteUploadedDocument"
             />
           </v-container>
           <v-container v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE" class="pa-0 pt-4">
@@ -308,6 +321,8 @@ export default {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
           return 'New Closure Request';
+        case CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE:
+          return 'Update Closure Request';
         case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
           return 'Remove Closure Request';
         default:
@@ -358,7 +373,10 @@ export default {
         if (!value) return;
         this.clearData();
         this.isLoading = true;
-        if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+        if (
+          this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ||
+          this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE
+        ) {
           this.input = await this.initInput();
         }
         this.isLoading = false;
@@ -381,10 +399,11 @@ export default {
           });
           input.ageGroups = closureAgeGroups;
         }
-
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        input.approvedStartDate = input.startDate;
+        input.approvedEndDate = input.endDate;
         return input;
       } catch (e) {
         console.log(e);
@@ -442,23 +461,31 @@ export default {
     updateDocuments(documents) {
       this.input.documents = documents;
     },
-    processDocuments(documents) {
-      const processedDocuments = [];
-      for (const document of documents) {
-        const obj = {
-          documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
-          fileSize: document.fileSize,
-          fileName: document.fileName,
-          documentBody: document.documentBody,
-          description: document.description,
-        };
-        processedDocuments.push(obj);
-      }
+    deleteUploadedDocument(annotationId) {
+      this.uploadedDocuments = this.uploadedDocuments.filter((document) => document.annotationId !== annotationId);
+    },
+    getProcessedDocuments() {
+      const processedDocuments = this.input.documents.map((document) => {
+        return this.processDocument(document);
+      });
+      this.uploadedDocuments.forEach((document) => {
+        processedDocuments.push(this.processDocument(document));
+      });
       return processedDocuments;
+    },
+    processDocument(document) {
+      return {
+        documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
+        fileSize: document.fileSize,
+        fileName: document.fileName,
+        documentBody: document.documentBody,
+        description: document.description,
+      };
     },
     getPayload() {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
+        case CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE:
           return {
             applicationId: this.applicationId,
             programYearId: this.programYearId,
@@ -467,11 +494,11 @@ export default {
             paidClosure: this.input.paidClosure,
             fullClosure: this.input.fullClosure,
             ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
-            startDate: `${this.input.startDate}T12:00:00-07:00`,
-            endDate: `${this.input.endDate}T12:00:00-07:00`,
+            startDate: `${this.input.startDate}`,
+            endDate: `${this.input.endDate}`,
             closureReason: this.input.closureReason,
             closureDescription: this.input.description,
-            documents: this.processDocuments(this.input.documents),
+            documents: this.getProcessedDocuments(),
             changeType: this.requestType,
           };
         case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
@@ -503,6 +530,9 @@ export default {
     },
     clearData() {
       this.selectedFacilityWasChanged = true;
+      if (this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE) {
+        this.handleFullFacilityClosureChange(true);
+      }
       this.ageGroups = [];
       this.uploadedDocuments = [];
       this.input = {
