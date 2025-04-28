@@ -19,8 +19,14 @@
     </v-row>
     <v-card variant="outlined" class="pa-8 pt-4 my-6">
       <v-row>
-        <v-col cols="12" lg="7" class="mt-4 text-grey">
-          View the status of your closure requests, submit a new closure request or make a change.
+        <v-col cols="12" lg="7">
+          <AppAlertBanner type="info">
+            <p>Note: You can only submit closures for the current funding agreement term.</p>
+            <p>
+              To report a closure for a previous term, please return to the home page, select a different fiscal year,
+              and go to View Organization Closures.
+            </p>
+          </AppAlertBanner>
         </v-col>
         <v-col cols="12" lg="2" class="mt-4">
           <v-row class="text-primary d-flex justify-lg-end ml-1">
@@ -28,7 +34,7 @@
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
-        <v-col cols="12" lg="3" class="d-flex justify-lg-end">
+        <v-col cols="12" lg="3">
           <v-text-field
             v-model="filter"
             label="Filter by Facility Name and Facility ID"
@@ -128,6 +134,7 @@
 <script>
 import { mapState } from 'pinia';
 
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
@@ -151,7 +158,14 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, NewClosureRequestDialog },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    ClosureConfirmationDialog,
+    ClosureDetailsDialog,
+    NavButton,
+    NewClosureRequestDialog,
+  },
   mixins: [alertMixin],
   data() {
     return {
