@@ -12,8 +12,8 @@
 
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
       Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
-      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve.
-      Please disregard this message if you have already resolved your status.
+      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve. Please
+      disregard this message if you have already resolved your status.
     </AppAlertBanner>
 
     <v-row>
@@ -139,8 +139,8 @@
                 class="text-decoration-underline"
                 style="pointer-events: all"
                 href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-                >gov.bc.ca/childcareoperatingfunding</a
-              >
+                >gov.bc.ca/childcareoperatingfunding
+              </a>
             </p>
             <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
             <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
@@ -185,10 +185,10 @@
         </SmallCard>
       </v-col>
       <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
-        <SmallCard :disable="!isReportChangeButtonEnabled">
+        <SmallCard :disable="!organizationAccountNumber">
           <template #content>
-            <p class="text-h6">Request a change</p>
-            <p>Submit a request to change your Organization, licence, service detail, or parent fee information.</p>
+            <p class="text-h6">Account Management</p>
+            <p>Maintain or edit organization or facility information and request a change.</p>
           </template>
           <template #button>
             <v-row no-gutters>
@@ -198,12 +198,8 @@
                 </v-btn>
               </v-col>
               <v-col class="col-12">
-                <v-btn
-                  :class="buttonColor(!isReportChangeButtonEnabled)"
-                  theme="dark"
-                  @click="goToChangeRequestHistory()"
-                >
-                  Request a change
+                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" :href="PATHS.ROOT.ACCOUNT_MGMT">
+                  Manage Account
                 </v-btn>
               </v-col>
             </v-row>
@@ -562,12 +558,6 @@ export default {
     isCCOFApproved() {
       return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS_APPROVED;
     },
-    isReportChangeButtonEnabled() {
-      if (this.applicationType === 'RENEW' && this.organizationAccountNumber) {
-        return true;
-      }
-      return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
-    },
     isUpdateChangeRequestDisplayed() {
       const index = this.changeRequestStore?.findIndex(
         (changeRequest) => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED,
@@ -643,9 +633,6 @@ export default {
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.getNextProgramYear?.programYearId));
-    },
-    goToChangeRequestHistory() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
       this.goToLicenseUpload();
