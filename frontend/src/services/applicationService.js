@@ -69,10 +69,10 @@ export default {
       (facility.isRenewal ||
         this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion)) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
-      this.isCCFRIComplete(facility.ccfri) &&
+      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
       (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
-      this.isClosuresComplete(facility.ccfri) &&
+      this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
@@ -250,18 +250,19 @@ export default {
   },
 
   // CCFRI VALIDATIONS
-  isCCFRIComplete(ccfri) {
+  isCCFRIComplete(ccfri, applicationTemplateVersion) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
+    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const requiredFields = ['hasClosureFees'];
     const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
       this.isChildCareTypeComplete(childCareType),
     );
-    return (
-      !hasEmptyFields(ccfri, requiredFields) &&
-      areAllChildCareTypesComplete &&
-      (ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO || this.areClosureDatesComplete(ccfri?.dates))
-    );
+    const isClosuresComplete =
+      !showApplicationTemplateV1 ||
+      ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+      this.areClosureDatesComplete(ccfri?.dates);
+    return !hasEmptyFields(ccfri, requiredFields) && areAllChildCareTypesComplete && isClosuresComplete;
   },
 
   isChildCareTypeComplete(childCareType) {
@@ -390,7 +391,8 @@ export default {
   },
 
   // CLOSURES VALIDATIONS
-  isClosuresComplete(ccfri) {
+  isClosuresComplete(ccfri, applicationTemplateVersion) {
+    if (!applicationTemplateVersion || applicationTemplateVersion === 1) return true;
     const closureRequiredFields = ['startDate', 'endDate', 'closureReason', 'ageGroups'];
     const areAllClosureItemsComplete =
       !isEmpty(ccfri.closures) && ccfri.closures?.every((expense) => !hasEmptyFields(expense, closureRequiredFields));

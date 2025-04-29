@@ -6,7 +6,8 @@
     <v-expansion-panel-text eager>
       <div class="mb-2">
         <span class="summary-label">
-          Do you charge parent fees at this facility to any closures on business days (other than statutory holidays)
+          Do you charge parent fees at this facility for any closures on business days (other than provincial statutory
+          holidays)? Only indicate the date of closures where parent fees are charged.
         </span>
         <v-text-field
           placeholder="Required"

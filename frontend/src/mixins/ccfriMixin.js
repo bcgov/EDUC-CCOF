@@ -45,7 +45,6 @@ export default {
   mixins: [alertMixin, globalMixin],
   data() {
     return {
-      rules,
       pastCcfriGuid: undefined,
       closureFees: 'No',
       prevFeesCorrect: undefined,
@@ -307,12 +306,14 @@ export default {
     },
     isFormComplete() {
       if (
+        this.showApplicationTemplateV1 &&
         this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
         this.CCFRIFacilityModel.dates.length === 0
       ) {
         return false;
       }
-      return this.isValidForm; //false makes button clickable, true disables button
+      console.log('isFormComplete = ' + this.CCFRIFacilityModel.isComplete);
+      return this.CCFRIFacilityModel.isComplete; //false makes button clickable, true disables button
     },
     hasModelChanged() {
       return !isEqual(this.CCFRIFacilityModel, this.loadedModel);

@@ -17,161 +17,159 @@
         </div>
         <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody">
           <v-card elevation="6" width="100%" class="rounded-lg my-4 mb-12">
-            <v-card-title class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+            <p class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
               Do you charge parent fees at this facility for any closures on business days?
-            </v-card-title>
-            <v-card-text class="pa-0">
-              <div class="px-md-12 px-7 py-4">
-                <div class="span-label font-regular">
-                  <p v-if="getLanguageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
-                    Do you charge parent fees at this facility for any closures on business days (other than designated
-                    holidays)? Only indicate the date of closures where parent fees are charged.
-                  </p>
-                  <p v-else>
-                    Do you charge parent fees at this facility for any closures on business days (other than provincial
-                    statutory holidays)? Only indicate the date of closures where parent fees are charged.
-                  </p>
-                </div>
-                <v-radio-group
-                  v-model="CCFRIFacilityModel.hasClosureFees"
-                  :disabled="isReadOnly"
-                  :rules="rules.required"
-                  color="primary"
-                >
-                  <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(false)" />
-                  <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
-                </v-radio-group>
-
-                <template v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
-                  <v-card v-for="(obj, index) in updatedClosures" :key="obj.closureId" class="px-6 py-4 pl-md-0 mb-8">
-                    <v-row no-gutters class="align-center">
-                      <v-col cols="12" md="1" class="close-column text-center">
-                        <v-btn
-                          :disabled="isReadOnly"
-                          variant="text"
-                          size="large"
-                          icon="mdi-close"
-                          color="primary"
-                          @click="removeClosure(index)"
-                        />
-                      </v-col>
-                      <v-col cols="12" md="11">
-                        <v-row>
-                          <v-col cols="12" md="4">
-                            <AppDateInput
-                              v-model="obj.startDate"
-                              :min="fiscalStartAndEndDates.startDate"
-                              :max="fiscalStartAndEndDates.endDate"
-                              :rules="[
-                                ...rules.required,
-                                rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                                rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                              ]"
-                              :disabled="isReadOnly"
-                              :hide-details="isReadOnly"
-                              label="Start Date"
-                              clearable
-                              @input="validateClosureDates(obj)"
-                            />
-                          </v-col>
-
-                          <v-col cols="12" md="4">
-                            <AppDateInput
-                              v-model="obj.endDate"
-                              :min="obj.startDate"
-                              :max="fiscalStartAndEndDates.endDate"
-                              :rules="[
-                                ...rules.required,
-                                rules.min(obj.startDate, 'Must exceed start date'),
-                                rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                              ]"
-                              :disabled="isReadOnly"
-                              :hide-details="isReadOnly"
-                              clearable
-                              label="End Date"
-                              @input="validateClosureDates(obj)"
-                            />
-                          </v-col>
-
-                          <v-col cols="12" md="4">
-                            <v-text-field
-                              v-model="obj.closureReason"
-                              :disabled="isReadOnly"
-                              label="Closure Reason"
-                              variant="outlined"
-                              clearable
-                              :rules="rules.required"
-                            />
-                          </v-col>
-                        </v-row>
-
-                        <v-row no-gutters>
-                          <p class="span-label font-regular pt-2 pr-4">
-                            Is this a full facility closure?
-                            <AppTooltip tooltip-content="Select no if only some care categories will be affected." />
-                          </p>
-                          <v-radio-group
-                            v-model="obj.fullClosure"
-                            :disabled="isReadOnly"
-                            inline
-                            color="primary"
-                            :rules="rules.required"
-                          >
-                            <v-radio label="Yes" :value="true" />
-                            <v-radio label="No" :value="false" />
-                          </v-radio-group>
-                        </v-row>
-
-                        <v-row v-if="obj.fullClosure === false" no-gutters class="py-2">
-                          <p class="span-label font-regular pt-md-4 pr-8 mb-2">
-                            Select all care categories that are affected by the closure:
-                          </p>
-                          <AppMultiSelectInput
-                            v-model="obj.ageGroups"
-                            :items="childCareCategories"
-                            item-title="label"
-                            item-value="value"
-                            label="Care Categories"
-                            :disabled="isApplicationProcessing"
-                            :rules="rules.required"
-                            min-width="250"
-                          />
-                        </v-row>
-
-                        <v-card v-if="obj.datesOverlap || obj.datesInvalid" class="my-4">
-                          <AppAlertBanner type="error" class="mb-4">Invalid Dates</AppAlertBanner>
-
-                          <v-card-text v-if="obj.datesInvalid">
-                            Closure Start Date: {{ obj.startDate }}
-                            <br />
-                            Closure End Date: {{ obj.endDate }} <br /><br />
-
-                            Please review your facility closure dates.
-                            <br />
-                          </v-card-text>
-                          <v-card-text v-else-if="obj.datesOverlap">
-                            It appears that the closure start and end dates you've selected for this facility overlap
-                            with dates you've previously selected.
-                            <br /><br />
-                            Closure Start Date: {{ obj.startDate }}
-                            <br />
-                            Closure End Date: {{ obj.endDate }} <br /><br />
-
-                            Please review your existing facility closure dates to ensure consistency and avoid any
-                            potential overlap of Facility closure dates.
-                            <br />
-                          </v-card-text>
-                        </v-card>
-                      </v-col>
-                    </v-row>
-                  </v-card>
-
-                  <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow(true)">
-                    Add New Closure
-                  </AppButton>
-                </template>
+            </p>
+            <div class="py-4 px-8">
+              <div class="span-label font-regular">
+                <p v-if="getLanguageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
+                  Do you charge parent fees at this facility for any closures on business days (other than designated
+                  holidays)? Only indicate the date of closures where parent fees are charged.
+                </p>
+                <p v-else>
+                  Do you charge parent fees at this facility for any closures on business days (other than provincial
+                  statutory holidays)? Only indicate the date of closures where parent fees are charged.
+                </p>
               </div>
-            </v-card-text>
+              <v-radio-group
+                v-model="CCFRIFacilityModel.hasClosureFees"
+                :disabled="isReadOnly"
+                :rules="rules.required"
+                color="primary"
+              >
+                <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" @click="addRow(false)" />
+                <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
+              </v-radio-group>
+
+              <template v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
+                <v-card v-for="(obj, index) in updatedClosures" :key="obj.closureId" class="px-6 py-4 pl-md-0 mb-8">
+                  <v-row no-gutters class="align-center">
+                    <v-col cols="12" md="1" class="close-column text-center">
+                      <v-btn
+                        :disabled="isReadOnly"
+                        variant="text"
+                        size="large"
+                        icon="mdi-close"
+                        color="primary"
+                        @click="removeClosure(index)"
+                      />
+                    </v-col>
+                    <v-col cols="12" md="11">
+                      <v-row>
+                        <v-col cols="12" md="4">
+                          <AppDateInput
+                            v-model="obj.startDate"
+                            :min="fiscalStartAndEndDates.startDate"
+                            :max="fiscalStartAndEndDates.endDate"
+                            :rules="[
+                              ...rules.required,
+                              rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                              rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                            ]"
+                            :disabled="isReadOnly"
+                            :hide-details="isReadOnly"
+                            label="Start Date"
+                            clearable
+                            @input="validateClosureDates(obj)"
+                          />
+                        </v-col>
+
+                        <v-col cols="12" md="4">
+                          <AppDateInput
+                            v-model="obj.endDate"
+                            :min="obj.startDate"
+                            :max="fiscalStartAndEndDates.endDate"
+                            :rules="[
+                              ...rules.required,
+                              rules.min(obj.startDate, 'Must exceed start date'),
+                              rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                            ]"
+                            :disabled="isReadOnly"
+                            :hide-details="isReadOnly"
+                            clearable
+                            label="End Date"
+                            @input="validateClosureDates(obj)"
+                          />
+                        </v-col>
+
+                        <v-col cols="12" md="4">
+                          <v-text-field
+                            v-model="obj.closureReason"
+                            :disabled="isReadOnly"
+                            label="Closure Reason"
+                            variant="outlined"
+                            clearable
+                            :rules="rules.required"
+                          />
+                        </v-col>
+                      </v-row>
+
+                      <v-row no-gutters>
+                        <p class="span-label font-regular pt-2 pr-4">
+                          Is this a full facility closure?
+                          <AppTooltip tooltip-content="Select no if only some care categories will be affected." />
+                        </p>
+                        <v-radio-group
+                          v-model="obj.fullClosure"
+                          :disabled="isReadOnly"
+                          inline
+                          color="primary"
+                          :rules="rules.required"
+                        >
+                          <v-radio label="Yes" :value="true" />
+                          <v-radio label="No" :value="false" />
+                        </v-radio-group>
+                      </v-row>
+
+                      <v-row v-if="obj.fullClosure === false" no-gutters class="py-2">
+                        <p class="span-label font-regular pt-md-4 pr-8 mb-2">
+                          Select all care categories that are affected by the closure:
+                        </p>
+                        <AppMultiSelectInput
+                          v-model="obj.ageGroups"
+                          :items="childCareCategories"
+                          item-title="label"
+                          item-value="value"
+                          label="Care Categories"
+                          :disabled="isApplicationProcessing"
+                          :rules="rules.required"
+                          min-width="250"
+                        />
+                      </v-row>
+
+                      <v-card v-if="obj.datesOverlap || obj.datesInvalid" class="my-4">
+                        <AppAlertBanner type="error" class="mb-4">Invalid Dates</AppAlertBanner>
+
+                        <v-card-text v-if="obj.datesInvalid">
+                          Closure Start Date: {{ obj.startDate }}
+                          <br />
+                          Closure End Date: {{ obj.endDate }} <br /><br />
+
+                          Please review your facility closure dates.
+                          <br />
+                        </v-card-text>
+                        <v-card-text v-else-if="obj.datesOverlap">
+                          It appears that the closure start and end dates you've selected for this facility overlap with
+                          dates you've previously selected.
+                          <br /><br />
+                          Closure Start Date: {{ obj.startDate }}
+                          <br />
+                          Closure End Date: {{ obj.endDate }} <br /><br />
+
+                          Please review your existing facility closure dates to ensure consistency and avoid any
+                          potential overlap of Facility closure dates.
+                          <br />
+                        </v-card-text>
+                      </v-card>
+                    </v-col>
+                  </v-row>
+                </v-card>
+
+                <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow(true)">
+                  Add New Closure
+                </AppButton>
+              </template>
+            </div>
           </v-card>
         </v-skeleton-loader>
       </div>
