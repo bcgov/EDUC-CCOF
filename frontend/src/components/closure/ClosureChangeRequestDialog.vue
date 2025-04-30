@@ -215,7 +215,7 @@
             <v-textarea
               v-model="input.reasonForClosureRemoval"
               variant="outlined"
-              :rules="rulesReasonForClosureRemoval"
+              :rules="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? rules.required : []"
               label="Please describe the reason for removal."
               class="text-left mt-3"
             />
@@ -323,18 +323,6 @@ export default {
     },
     rulesAgeGroups() {
       return this.input.fullClosure === false ? rules.required : [];
-    },
-    rulesReasonForClosureRemoval() {
-      return this.requestType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
-        ? []
-        : [
-            (v) => {
-              if (isEmpty(v)) {
-                return 'You must add a reason before you can remove this closure.';
-              }
-              return true;
-            },
-          ];
     },
     allAgeGroupsSelected() {
       return this.input.ageGroups?.length === this.ageGroups?.length;
