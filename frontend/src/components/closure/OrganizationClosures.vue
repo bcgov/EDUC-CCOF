@@ -8,7 +8,7 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large" @click="toggleNewClosureRequestDialog"
+          <AppButton :loading="isLoading" size="large" @click="closureRequestType = CHANGE_REQUEST_TYPES.NEW_CLOSURE"
             >Add New Closure</AppButton
           >
           <div class="text-h6 font-weight-bold my-4">
@@ -110,12 +110,14 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
-    <NewClosureRequestDialog
-      :show="showNewClosureRequestDialog"
+    <ClosureChangeRequestDialog
+      :closure="closureForRequest"
       :program-year-id="$route.params.programYearGuid"
+      :request-type="closureRequestType"
+      :show="showClosureChangeRequestDialog"
       max-width="60%"
-      @close="toggleNewClosureRequestDialog"
       @submitted="newClosureRequestSubmitted"
+      @close="closureRequestType = null"
     />
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
@@ -127,7 +129,7 @@
       :show="showClosureDetailsDialog"
       max-width="60%"
       :closure="closureToView"
-      @close="setClosureToView(undefined)"
+      @close="setClosureToView(null)"
     />
   </v-container>
 </template>
@@ -136,10 +138,10 @@ import { mapState } from 'pinia';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ClosureConfirmationDialog from '@/components/util/ClosureConfirmationDialog.vue';
-import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
+import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
+import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
+import ClosureDetailsDialog from '@/components/closure/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import NewClosureRequestDialog from '@/components/NewClosureRequestDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -149,6 +151,7 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
+  CHANGE_REQUEST_TYPES,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
   CLOSURE_STATUS_TEXTS,
@@ -161,10 +164,10 @@ export default {
   components: {
     AppAlertBanner,
     AppButton,
+    ClosureChangeRequestDialog,
     ClosureConfirmationDialog,
     ClosureDetailsDialog,
     NavButton,
-    NewClosureRequestDialog,
   },
   mixins: [alertMixin],
   data() {
@@ -189,6 +192,8 @@ export default {
       showClosureConfirmationDialog: false,
       changeRequestReferenceId: undefined,
       closureToView: undefined,
+      closureRequestType: null,
+      closureForRequest: undefined,
     };
   },
   computed: {
@@ -204,11 +209,15 @@ export default {
         );
       });
     },
+    showClosureChangeRequestDialog() {
+      return !!this.closureRequestType;
+    },
     showClosureDetailsDialog() {
       return this.closureToView != null;
     },
   },
   async created() {
+    this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     await this.loadData();
   },
   methods: {
@@ -241,7 +250,8 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      // stub
+      this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+      this.closureForRequest = closure;
     },
     hasPendingStatus(closure) {
       return closure.closureStatus === CLOSURE_STATUSES.PENDING;
@@ -309,21 +319,20 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    toggleNewClosureRequestDialog() {
-      this.showNewClosureRequestDialog = !this.showNewClosureRequestDialog;
-    },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
     // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
     // to allow the user to view the closure following the post request.
-    async newClosureRequestSubmitted(closureChangeRequest) {
-      const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
-      closureChangeRequest.facilityName = facility?.facilityName;
-      closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
-      this.closures.push(closureChangeRequest);
+    newClosureRequestSubmitted(closureChangeRequest) {
+      if (this.closureRequestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+        const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+        closureChangeRequest.facilityName = facility?.facilityName;
+        closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
+        this.closures.push(closureChangeRequest);
+      }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
-      this.toggleNewClosureRequestDialog();
+      this.closureRequestType = null;
       this.toggleClosureConfirmationDialog();
     },
   },
