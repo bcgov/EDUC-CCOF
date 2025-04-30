@@ -508,6 +508,11 @@ export default {
 
 <style scoped>
 :deep(.v-select__selection) {
-  width: 100%;
+  width: 50%;
+}
+
+.v-select .v-chip {
+  display: inline-flex !important;
+  margin-right: 4px;
 }
 </style>
