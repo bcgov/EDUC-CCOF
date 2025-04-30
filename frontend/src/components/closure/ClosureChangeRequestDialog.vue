@@ -154,8 +154,8 @@
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                    rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                    rules.min(fiscalStartAndEndDates.startDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
+                    rules.max(fiscalStartAndEndDates.endDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
                     rules.MMDDYYYY,
                   ]"
                   label="Start Date"
@@ -171,8 +171,8 @@
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                    rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                    rules.min(fiscalStartAndEndDates.startDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
+                    rules.max(fiscalStartAndEndDates.endDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
                     rules.MMDDYYYY,
                   ]"
                   label="End Date"
@@ -353,6 +353,8 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
+    this.DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE =
+      'You can only submit closures for the current funding agreement term. To report a closure for a previous term, please return to the home page, select a different fiscal year, and go to View Organization Closures.';
   },
   methods: {
     async initInput() {
