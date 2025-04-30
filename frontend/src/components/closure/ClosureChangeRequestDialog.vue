@@ -258,7 +258,7 @@ import FacilityService from '@/services/facilityService';
 import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useAuthStore } from '@/store/auth.js';
+import { useAuthStore } from '@/store/Auth.js';
 
 export default {
   name: 'ClosureChangeRequestDialog',
