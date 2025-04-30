@@ -274,8 +274,8 @@ export default {
       required: true,
     },
     requestType: {
-      type: Number,
-      default: 0,
+      type: [Number, null],
+      default: null,
       required: true,
     },
     show: {
@@ -482,7 +482,6 @@ export default {
     async submit() {
       this.isLoading = true;
       const payload = this.getPayload();
-      console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         payload.changeRequestReferenceId = response.changeRequestReferenceId;

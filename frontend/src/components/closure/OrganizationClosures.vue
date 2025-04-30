@@ -123,7 +123,7 @@
       :show="showClosureDetailsDialog"
       max-width="60%"
       :closure="closureToView"
-      @close="setClosureToView(undefined)"
+      @close="setClosureToView(null)"
     />
   </v-container>
 </template>
@@ -131,10 +131,10 @@
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
-import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
-import NavButton from '@/components/util/NavButton.vue';
 import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
+import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
+import ClosureDetailsDialog from '@/components/closure/ClosureDetailsDialog.vue';
+import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import { useAppStore } from '@/store/app.js';
@@ -196,7 +196,7 @@ export default {
       });
     },
     showClosureChangeRequestDialog() {
-      return this.closureRequestType !== null;
+      return !!this.closureRequestType;
     },
     showClosureDetailsDialog() {
       return this.closureToView != null;
