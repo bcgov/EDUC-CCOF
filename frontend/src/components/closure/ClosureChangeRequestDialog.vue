@@ -388,7 +388,7 @@ export default {
         return input;
       } catch (e) {
         console.log(e);
-        this.setFailureAlert('Failed to load license categories');
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
       }
     },
     async handleFacilityChange(facilityId) {
@@ -466,7 +466,7 @@ export default {
             facilityId: this.input.facilityId,
             paidClosure: this.input.paidClosure,
             fullClosure: this.input.fullClosure,
-            ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
+            ageGroups: this.input.fullClosure ? null : this.input.ageGroups.join(','),
             startDate: `${this.input.startDate}T12:00:00-07:00`,
             endDate: `${this.input.endDate}T12:00:00-07:00`,
             closureReason: this.input.closureReason,
