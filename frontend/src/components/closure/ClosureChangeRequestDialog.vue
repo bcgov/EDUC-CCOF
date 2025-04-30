@@ -292,7 +292,6 @@ export default {
       isDisplayed: false,
       isLoading: false,
       input: {
-        ageGroups: [],
         documents: [],
       },
       selectedFacilityWasChanged: true,
@@ -375,13 +374,7 @@ export default {
       const input = cloneDeep(this.closure);
       try {
         this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-        if (this.closure.ageGroups) {
-          const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
-            return Number(value);
-          });
-          input.ageGroups = closureAgeGroups;
-        }
-
+        input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
@@ -467,8 +460,8 @@ export default {
             paidClosure: this.input.paidClosure,
             fullClosure: this.input.fullClosure,
             ageGroups: this.input.fullClosure ? null : this.input.ageGroups.join(','),
-            startDate: `${this.input.startDate}T12:00:00-07:00`,
-            endDate: `${this.input.endDate}T12:00:00-07:00`,
+            startDate: this.input.startDate,
+            endDate: this.input.endDate,
             closureReason: this.input.closureReason,
             closureDescription: this.input.description,
             documents: this.processDocuments(this.input.documents),
@@ -484,12 +477,13 @@ export default {
             changeType: this.requestType,
           };
         default:
-          return undefined;
+          return null;
       }
     },
     async submit() {
       this.isLoading = true;
       const payload = this.getPayload();
+      console.log(payload);
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
@@ -506,7 +500,6 @@ export default {
       this.ageGroups = [];
       this.uploadedDocuments = [];
       this.input = {
-        ageGroups: [],
         documents: [],
       };
     },

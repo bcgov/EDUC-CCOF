@@ -8,7 +8,7 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large" @click="setClosureRequestType(CHANGE_REQUEST_TYPES.NEW_CLOSURE)"
+          <AppButton :loading="isLoading" size="large" @click="closureRequestType = CHANGE_REQUEST_TYPES.NEW_CLOSURE"
             >Add New Closure</AppButton
           >
           <div class="text-h6 font-weight-bold my-4">
@@ -111,7 +111,7 @@
       :show="showClosureChangeRequestDialog"
       max-width="60%"
       @submitted="newClosureRequestSubmitted"
-      @close="setClosureRequestType(undefined)"
+      @close="closureRequestType = null"
     />
     <ClosureConfirmationDialog
       :show="showClosureConfirmationDialog"
@@ -154,7 +154,7 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { AppButton, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton, ClosureChangeRequestDialog },
+  components: { AppButton, ClosureChangeRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -178,7 +178,7 @@ export default {
       showClosureConfirmationDialog: false,
       changeRequestReferenceId: undefined,
       closureToView: undefined,
-      closureRequestType: undefined,
+      closureRequestType: null,
       closureForRequest: undefined,
     };
   },
@@ -196,11 +196,7 @@ export default {
       });
     },
     showClosureChangeRequestDialog() {
-      return [
-        CHANGE_REQUEST_TYPES.NEW_CLOSURE,
-        CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE,
-        CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE,
-      ].includes(this.closureRequestType);
+      return this.closureRequestType !== null;
     },
     showClosureDetailsDialog() {
       return this.closureToView != null;
@@ -240,7 +236,7 @@ export default {
       // stub
     },
     removeClosure(closure) {
-      this.setClosureRequestType(CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE);
+      this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
       this.closureForRequest = closure;
     },
     hasPendingStatus(closure) {
@@ -309,23 +305,20 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    setClosureRequestType(closureRequestType) {
-      this.closureRequestType = closureRequestType;
-    },
     toggleClosureConfirmationDialog() {
       this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
     },
     // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
     // to allow the user to view the closure following the post request.
-    async newClosureRequestSubmitted(closureChangeRequest) {
-      if (this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+    newClosureRequestSubmitted(closureChangeRequest) {
+      if (this.closureRequestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
         const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
         closureChangeRequest.facilityName = facility?.facilityName;
-        closureChangeRequest.closureStatus = CLOSURE_STATUSES.SUBMITTED;
+        closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
         this.closures.push(closureChangeRequest);
       }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
-      this.setClosureRequestType(undefined);
+      this.closureRequestType = null;
       this.toggleClosureConfirmationDialog();
     },
   },
