@@ -62,12 +62,6 @@ export default {
       chosenDates: [],
       fiscalYearStartDate: '',
       fiscalYearEndDate: '',
-
-      feeRules: [
-        (v) => !isNaN(parseFloat(v)) || 'Must be a number',
-        (v) => v <= 9999 || 'Max fee is $9999.00',
-        (v) => v >= 0 || 'Input a positve number',
-      ],
     };
   },
   computed: {
@@ -134,8 +128,20 @@ export default {
     isSaveDisabled() {
       return this.isReadOnly || (this.showApplicationTemplateV1 && this.hasIllegalDates(this.CCFRIFacilityModel));
     },
+    isFormComplete() {
+      if (
+        this.showApplicationTemplateV1 &&
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
+        this.CCFRIFacilityModel.dates.length === 0
+      ) {
+        return false;
+      }
+      console.log('isFormComplete = ' + this.CCFRIFacilityModel.isComplete);
+      return this.CCFRIFacilityModel.isComplete; //false makes button clickable, true disables button
+    },
   },
   created() {
+    this.feeRules = [rules.isNumber, rules.max(9999, 'Max fee is $9999.00'), rules.min(0, 'Input a positive number')];
     this.rules = rules;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
   },
@@ -304,17 +310,7 @@ export default {
         this.$router.push(this.nextPath);
       }
     },
-    isFormComplete() {
-      if (
-        this.showApplicationTemplateV1 &&
-        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
-        this.CCFRIFacilityModel.dates.length === 0
-      ) {
-        return false;
-      }
-      console.log('isFormComplete = ' + this.CCFRIFacilityModel.isComplete);
-      return this.CCFRIFacilityModel.isComplete; //false makes button clickable, true disables button
-    },
+
     hasModelChanged() {
       return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
@@ -322,15 +318,15 @@ export default {
       try {
         if (this.isReadOnly || (!this.hasModelChanged() && !this.hasDataToDelete())) return;
         this.setIsApplicationProcessing(true);
-        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete() });
+        this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete });
 
         if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
           const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
-          newFac.ccfri.isCCFRIComplete = this.isFormComplete();
+          newFac.ccfri.isCCFRIComplete = this.isFormComplete;
         }
         this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
         await this.saveCcfri({
-          isFormComplete: this.isFormComplete(),
+          isFormComplete: this.isFormComplete,
           hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
         });
         if (showMessage) {

@@ -20,17 +20,8 @@
       processing times. If approved, this fee will be posted on the Ministry website. <br /><br />
     </p>
 
-    <v-card
-      v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect"
-      elevation="6"
-      class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
-      min-height="230"
-      rounded
-      tiled
-      exact
-      tile
-      :ripple="false"
-    >
+    <!-- this is for read only mode - when user is viewing a submitted Renewal application - they don't see the page where we ask them if the current fees are correct -->
+    <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="my-10 rounded-lg">
       <v-card-text class="pt-7 pa-0">
         <div class="px-8">
           <p class="text-h5 text--primary">Are the previous year's fees correct for this facility?</p>
@@ -45,18 +36,8 @@
     </v-card>
 
     <div v-for="(item, index) in CCFRIFacilityModel.childCareTypes" :key="index">
-      <v-card
-        v-if="!item.deleteMe"
-        elevation="6"
-        class="px-0 py-0 mx-auto my-10 rounded-lg col-12"
-        min-height="230"
-        rounded
-        tiled
-        exact
-        tile
-        :ripple="false"
-      >
-        <p class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+      <v-card v-if="!item.deleteMe" elevation="6" class="my-10 rounded-lg">
+        <p class="px-6 py-3 card-title font-weight-bold">
           Parent Fees {{ item.programYear }}: Full-Time {{ item.childCareCategory }}
         </p>
         <div class="pa-8">
@@ -72,7 +53,7 @@
 
           <template v-if="item.feeFrequency">
             <div class="my-2">
-              <p>If you only offer care for <strong>4 days or fewer </strong> per week, select daily parent fee.</p>
+              <p>If you only offer care for <strong>4 days or fewer</strong> per week, select daily parent fee.</p>
               <p class="py-2">
                 Enter your
                 <strong>highest {{ item.feeFrequency?.toLowerCase() }} parent fee before CCFRI is applied</strong>
@@ -242,7 +223,7 @@
       </v-card>
     </div>
     <v-card elevation="6" class="mt-12 rounded-lg">
-      <p class="rounded-t-lg px-6 py-3 card-title font-weight-bold">
+      <p class="px-6 py-3 card-title font-weight-bold">
         Is there any other information about this facility you would like us to know?
       </p>
       <v-textarea

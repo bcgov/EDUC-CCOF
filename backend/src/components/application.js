@@ -210,7 +210,7 @@ async function upsertParentFees(req, res) {
 
     //dates array will always exist - even if blank.
     //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
-    await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
+    // await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
     return res.status(HttpStatus.OK).json();
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

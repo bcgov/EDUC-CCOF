@@ -21,16 +21,10 @@
               Do you charge parent fees at this facility for any closures on business days?
             </p>
             <div class="py-4 px-8">
-              <div class="span-label font-regular">
-                <p v-if="getLanguageYearLabel == PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL">
-                  Do you charge parent fees at this facility for any closures on business days (other than designated
-                  holidays)? Only indicate the date of closures where parent fees are charged.
-                </p>
-                <p v-else>
-                  Do you charge parent fees at this facility for any closures on business days (other than provincial
-                  statutory holidays)? Only indicate the date of closures where parent fees are charged.
-                </p>
-              </div>
+              <p class="span-label font-regular">
+                Do you charge parent fees at this facility for any closures on business days (other than provincial
+                statutory holidays)? Only indicate the date of closures where parent fees are charged.
+              </p>
               <v-radio-group
                 v-model="CCFRIFacilityModel.hasClosureFees"
                 :disabled="isReadOnly"
@@ -41,139 +35,19 @@
                 <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
               </v-radio-group>
 
-              <template v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES">
-                <v-card v-for="(obj, index) in updatedClosures" :key="obj.closureId" class="px-6 py-4 pl-md-0 mb-8">
-                  <v-row no-gutters class="align-center">
-                    <v-col cols="12" md="1" class="close-column text-center">
-                      <v-btn
-                        :disabled="isReadOnly"
-                        variant="text"
-                        size="large"
-                        icon="mdi-close"
-                        color="primary"
-                        @click="removeClosure(index)"
-                      />
-                    </v-col>
-                    <v-col cols="12" md="11">
-                      <v-row>
-                        <v-col cols="12" md="4">
-                          <AppDateInput
-                            v-model="obj.startDate"
-                            :min="fiscalStartAndEndDates.startDate"
-                            :max="fiscalStartAndEndDates.endDate"
-                            :rules="[
-                              ...rules.required,
-                              rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                              rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                            ]"
-                            :disabled="isReadOnly"
-                            :hide-details="isReadOnly"
-                            label="Start Date"
-                            clearable
-                            @input="validateClosureDates(obj)"
-                          />
-                        </v-col>
-
-                        <v-col cols="12" md="4">
-                          <AppDateInput
-                            v-model="obj.endDate"
-                            :min="obj.startDate"
-                            :max="fiscalStartAndEndDates.endDate"
-                            :rules="[
-                              ...rules.required,
-                              rules.min(obj.startDate, 'Must exceed start date'),
-                              rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                            ]"
-                            :disabled="isReadOnly"
-                            :hide-details="isReadOnly"
-                            clearable
-                            label="End Date"
-                            @input="validateClosureDates(obj)"
-                          />
-                        </v-col>
-
-                        <v-col cols="12" md="4">
-                          <v-text-field
-                            v-model="obj.closureReason"
-                            :disabled="isReadOnly"
-                            label="Closure Reason"
-                            variant="outlined"
-                            clearable
-                            :rules="rules.required"
-                          />
-                        </v-col>
-                      </v-row>
-
-                      <v-row no-gutters>
-                        <p class="span-label font-regular pt-2 pr-4">
-                          Is this a full facility closure?
-                          <AppTooltip tooltip-content="Select no if only some care categories will be affected." />
-                        </p>
-                        <v-radio-group
-                          v-model="obj.fullClosure"
-                          :disabled="isReadOnly"
-                          inline
-                          color="primary"
-                          :rules="rules.required"
-                        >
-                          <v-radio label="Yes" :value="true" />
-                          <v-radio label="No" :value="false" />
-                        </v-radio-group>
-                      </v-row>
-
-                      <v-row v-if="obj.fullClosure === false" no-gutters class="py-2">
-                        <p class="span-label font-regular pt-md-4 pr-8 mb-2">
-                          Select all care categories that are affected by the closure:
-                        </p>
-                        <AppMultiSelectInput
-                          v-model="obj.ageGroups"
-                          :items="childCareCategories"
-                          item-title="label"
-                          item-value="value"
-                          label="Care Categories"
-                          :disabled="isApplicationProcessing"
-                          :rules="rules.required"
-                          min-width="250"
-                        />
-                      </v-row>
-
-                      <v-card v-if="obj.datesOverlap || obj.datesInvalid" class="my-4">
-                        <AppAlertBanner type="error" class="mb-4">Invalid Dates</AppAlertBanner>
-
-                        <v-card-text v-if="obj.datesInvalid">
-                          Closure Start Date: {{ obj.startDate }}
-                          <br />
-                          Closure End Date: {{ obj.endDate }} <br /><br />
-
-                          Please review your facility closure dates.
-                          <br />
-                        </v-card-text>
-                        <v-card-text v-else-if="obj.datesOverlap">
-                          It appears that the closure start and end dates you've selected for this facility overlap with
-                          dates you've previously selected.
-                          <br /><br />
-                          Closure Start Date: {{ obj.startDate }}
-                          <br />
-                          Closure End Date: {{ obj.endDate }} <br /><br />
-
-                          Please review your existing facility closure dates to ensure consistency and avoid any
-                          potential overlap of Facility closure dates.
-                          <br />
-                        </v-card-text>
-                      </v-card>
-                    </v-col>
-                  </v-row>
-                </v-card>
-
-                <AppButton id="add-new-closure-button" :disabled="isReadOnly" class="my-4" @click="addRow(true)">
-                  Add New Closure
-                </AppButton>
-              </template>
+              <ApplicationClosureCard
+                v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES"
+                ref="closureCards"
+                :closures="closures"
+                :readonly="isApplicationProcessing || isReadOnly"
+                @update-closures="updateClosures"
+                @update-closures-complete="updateClosuresComplete"
+                @update-has-illegal-dates="updateHasIllegalDates"
+              />
             </div>
           </v-card>
         </v-skeleton-loader>
       </div>
-
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
@@ -193,16 +67,11 @@ import moment from 'moment';
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
 import { mapState, mapActions } from 'pinia';
 
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
-import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
-import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
+import ApplicationClosureCard from '@/components/util/ApplicationClosureCard.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import ClosureService from '@/services/closureService.js';
-import ApplicationService from '@/services/applicationService';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -215,10 +84,8 @@ import rules from '@/utils/rules.js';
 
 import {
   CHANGE_TYPES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_FEE_CORRECT_TYPES,
-  CLOSURE_AFFECTED_AGE_GROUPS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_STATUSES,
   CLOSURE_TYPES,
@@ -226,30 +93,10 @@ import {
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 
-//builds an array of dates to keep track of all days of the selected closure period.
-//this array is used to check if a user selects an overlapping date
-function dateFunction(date1, date2) {
-  const startDate = new Date(date1);
-  const endDate = new Date(date2);
-  const dates = [];
-  const currentDate = new Date(startDate.getTime());
-
-  while (currentDate <= endDate) {
-    dates.push(currentDate.toISOString().substring(0, 10));
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return dates;
-}
-
 export default {
   components: {
-    AppAlertBanner,
-    AppButton,
-    AppDateInput,
-    AppMultiSelectInput,
+    ApplicationClosureCard,
     ApplicationPCFHeader,
-    AppTooltip,
     NavButton,
   },
   mixins: [alertMixin, globalMixin],
@@ -261,18 +108,18 @@ export default {
     return {
       closures: [],
       updatedClosures: [],
+      hasIllegalDates: false,
+      areClosureItemsComplete: false,
     };
   },
   computed: {
     ...mapState(useAppStore, ['getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationStatus',
-      'fiscalStartAndEndDates',
       'formattedProgramYear',
       'isApplicationFormValidated',
       'isApplicationProcessing',
       'programYearId',
-      'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, [
       'navBarList',
@@ -297,27 +144,11 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED';
     },
-    childCareCategories() {
-      const ageGroups = [];
-      this.CCFRIFacilityModel?.childCareTypes
-        ?.filter((careType) => careType.programYearId === this.$route.params.programYearGuid)
-        ?.forEach((ageGroup) => {
-          ageGroups.push({
-            label: ageGroup.childCareCategory,
-            value: CLOSURE_AFFECTED_AGE_GROUPS[ageGroup.childCareCategory],
-          });
-        });
-      return ageGroups;
-    },
-    hasIllegalDates() {
-      return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
-    },
     isFormComplete() {
-      const model = {
-        hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
-        closures: this.updatedClosures,
-      };
-      return ApplicationService.isClosuresComplete(model);
+      return (
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+        (this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && this.areClosureItemsComplete)
+      );
     },
   },
   watch: {
@@ -328,8 +159,6 @@ export default {
           this.setIsApplicationProcessing(true);
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
           this.closures = await ClosureService.getApplicationClosures(this.$route.params.urlGuid);
-          this.updatedClosures = cloneDeep(this.closures);
-          this.addRow(false);
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -342,6 +171,7 @@ export default {
     isApplicationFormValidated: {
       handler() {
         this.$refs.form?.validate();
+        this.$refs.closureCards?.validateForm();
       },
     },
   },
@@ -349,15 +179,20 @@ export default {
     this.rules = rules;
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
-    this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useCcfriAppStore, ['loadCCFRIFacility', 'updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['setNavBarCCFRIClosuresComplete']),
-    addRow(isAddButtonClicked) {
-      if (!isAddButtonClicked && this.updatedClosures.length > 0) return;
-      this.updatedClosures.push({});
+    updateClosures(updatedClosures) {
+      if (isEmpty(updatedClosures)) return;
+      this.updatedClosures = cloneDeep(updatedClosures);
+    },
+    updateClosuresComplete(areClosureItemsComplete) {
+      this.areClosureItemsComplete = areClosureItemsComplete;
+    },
+    updateHasIllegalDates(hasIllegalDates) {
+      this.hasIllegalDates = hasIllegalDates;
     },
     buildClosurePayload(closure) {
       if (!closure) return {};
@@ -382,47 +217,6 @@ export default {
       payload.programYearId = closure.programYearId ?? this.programYearId;
       return payload;
     },
-    validateClosureDates(obj) {
-      // Get all closure dates except for the currently edited row
-      const otherClosureDates = this.updatedClosures
-        .filter((dateObj) => dateObj.id !== obj.id || dateObj.closureId !== obj.closureId)
-        .reduce((acc, dateObj) => {
-          return [...acc, ...dateFunction(dateObj.startDate, dateObj.endDate)];
-        }, []);
-
-      const dates = dateFunction(obj.startDate, obj.endDate);
-
-      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
-      //datesInvalid is true if user breaks any other date rule.
-
-      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
-      //Rules are: end date cannot be before start date
-      //start date for either field cannot be before the start of fiscal year
-      //end dates for either field cannot be after end of fiscal year
-
-      if (
-        obj.endDate < obj.startDate ||
-        obj.startDate < this.fiscalStartAndEndDates.startDate ||
-        obj.endDate < this.fiscalStartAndEndDates.startDate ||
-        obj.startDate > this.fiscalStartAndEndDates.endDate ||
-        obj.endDate > this.fiscalStartAndEndDates.endDate
-      ) {
-        obj.datesInvalid = true;
-        return;
-      }
-
-      obj.datesOverlap = false;
-      obj.datesInvalid = false;
-      dates.forEach((date) => {
-        if (otherClosureDates.includes(date)) {
-          obj.datesOverlap = true;
-        }
-      });
-    },
-    removeClosure(index) {
-      this.updatedClosures.splice(index, 1);
-      if (isEmpty(this.updatedClosures)) this.addRow(false);
-    },
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -430,8 +224,6 @@ export default {
       this.$router.push(this.nextPath);
     },
     hasClosureChanged(closure, updatedClosure) {
-      // console.log(closure);
-      // console.log(updatedClosure);
       const isAgeGroupsUpdated =
         (!isEmpty(closure?.ageGroups) || !isEmpty(updatedClosure?.ageGroups)) &&
         !isEqual(closure?.ageGroups, updatedClosure?.ageGroups);
@@ -473,20 +265,21 @@ export default {
     },
 
     async processUpdatedClosures() {
-      const closuresToCreate = this.updatedClosures?.filter(
-        (updatedClosure) => !updatedClosure.closureId && !isEmpty(updatedClosure),
+      const closuresToCreate = this.updatedClosures?.filter((closure) => !closure.closureId && !isEmpty(closure));
+      const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) =>
+        this.closures?.some(
+          (originalClosure) =>
+            originalClosure.closureId === updatedClosure.closureId &&
+            this.hasClosureChanged(originalClosure, updatedClosure),
+        ),
       );
-      const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) => {
-        const found = this.closures?.find(
-          (closure) =>
-            closure.closureId === updatedClosure.closureId && this.hasClosureChanged(closure, updatedClosure),
-        );
-        return found;
-      });
-      const closuresToDelete = this.closures?.filter((closure) => {
-        const found = this.updatedClosures?.find((updatedClosure) => updatedClosure.closureId === closure.closureId);
-        return !found;
-      });
+      const closuresToDelete =
+        this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES
+          ? this.closures?.filter(
+              (originalClosure) =>
+                !this.updatedClosures?.some((updatedClosure) => updatedClosure.closureId === originalClosure.closureId),
+            )
+          : this.closures;
       // console.log('closuresToCreate');
       // console.log(closuresToCreate);
       // console.log('closuresToUpdate');

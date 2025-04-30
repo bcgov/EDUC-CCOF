@@ -254,15 +254,14 @@ export default {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
     const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
-    const requiredFields = ['hasClosureFees'];
     const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
       this.isChildCareTypeComplete(childCareType),
     );
-    const isClosuresComplete =
-      !showApplicationTemplateV1 ||
-      ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
-      this.areClosureDatesComplete(ccfri?.dates);
-    return !hasEmptyFields(ccfri, requiredFields) && areAllChildCareTypesComplete && isClosuresComplete;
+    return (
+      areAllChildCareTypesComplete &&
+      // CCFRI-4636 - Closure-related questions were removed from the CCFRI (Parent Fees) section starting with Application Template Version 2.
+      (!showApplicationTemplateV1 || this.isClosuresComplete(ccfri, applicationTemplateVersion))
+    );
   },
 
   isChildCareTypeComplete(childCareType) {
@@ -286,9 +285,19 @@ export default {
     return !hasEmptyFields(childCareType, requiredFields);
   },
 
-  areClosureDatesComplete(closureDates) {
-    const requiredFields = ['formattedStartDate', 'formattedEndDate', 'closureReason', 'feesPaidWhileClosed'];
-    return closureDates?.every((date) => !hasEmptyFields(date, requiredFields));
+  // CLOSURES VALIDATIONS
+  isClosuresComplete(ccfri, applicationTemplateVersion) {
+    if (isEmpty(ccfri)) return false;
+    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
+    const closureRequiredFields = showApplicationTemplateV1
+      ? ['startDate', 'endDate', 'closureReason', 'feesPaidWhileClosed']
+      : ['startDate', 'endDate', 'closureReason', 'ageGroups'];
+    const areAllClosureItemsComplete =
+      !isEmpty(ccfri.closures) && ccfri.closures?.every((closure) => !hasEmptyFields(closure, closureRequiredFields));
+    return (
+      ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+      (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
+    );
   },
 
   // RFI VALIDATIONS
@@ -388,18 +397,6 @@ export default {
       requiredFields.push('remoteCommunitiesComments');
     }
     return !hasEmptyFields(nmf, requiredFields);
-  },
-
-  // CLOSURES VALIDATIONS
-  isClosuresComplete(ccfri, applicationTemplateVersion) {
-    if (!applicationTemplateVersion || applicationTemplateVersion === 1) return true;
-    const closureRequiredFields = ['startDate', 'endDate', 'closureReason', 'ageGroups'];
-    const areAllClosureItemsComplete =
-      !isEmpty(ccfri.closures) && ccfri.closures?.every((expense) => !hasEmptyFields(expense, closureRequiredFields));
-    return (
-      ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
-      (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
-    );
   },
 
   // AFS VALIDATIONS

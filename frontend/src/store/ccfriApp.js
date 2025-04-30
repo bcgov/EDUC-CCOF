@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { deepCloneObject, sleep } from '@/utils/common.js';
-import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, CCFRI_HAS_CLOSURE_FEE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes) {
@@ -174,14 +174,14 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     },
     async saveCcfri({ isFormComplete: isFormComplete, hasRfi: hasRfi }) {
       //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
-      if (this.CCFRIFacilityModel.hasClosureFees == 100000001) {
-        this.CCFRIFacilityModel.dates = [];
-      }
+      // if (this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO) {
+      //   this.CCFRIFacilityModel.dates = [];
+      // }
 
       let payload = [];
       let firstObj = {
         ccfriApplicationGuid: this.ccfriId,
-        facilityClosureDates: this.CCFRIFacilityModel.dates,
+        // facilityClosureDates: this.CCFRIFacilityModel.dates,
         ccof_formcomplete: isFormComplete,
         notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
@@ -197,11 +197,11 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       }
 
       //checks if blank - don't save empty rows
-      for (let i = this.CCFRIFacilityModel.dates.length - 1; i >= 0; i--) {
-        if (isEqual(this.CCFRIFacilityModel.dates[i], this.dateObj)) {
-          this.CCFRIFacilityModel.dates.splice(i, 1);
-        }
-      }
+      // for (let i = this.CCFRIFacilityModel.dates.length - 1; i >= 0; i--) {
+      //   if (isEqual(this.CCFRIFacilityModel.dates[i], this.dateObj)) {
+      //     this.CCFRIFacilityModel.dates.splice(i, 1);
+      //   }
+      // }
 
       //for each child care type - prepare an object for the payload
       //index will also match the order of how the cards are displayed.
