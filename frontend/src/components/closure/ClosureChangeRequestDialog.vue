@@ -23,7 +23,7 @@
             item-title="facilityName"
             placeholder="Select a facility"
             variant="outlined"
-            class="mt-2"
+            class="mt-2 max-width"
             @update:model-value="handleFacilityChange"
           >
             <template #item="{ props, item, index }">
