@@ -113,6 +113,7 @@
               <v-select
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
+                :disabled="isDisabled"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -121,7 +122,7 @@
                 class="mt-2"
                 multiple
                 chips
-                :rules="rulesAgeGroups"
+                :rules="rules.required"
                 clearable
               >
                 <template #prepend-item>
@@ -215,7 +216,7 @@
             <v-textarea
               v-model="input.reasonForClosureRemoval"
               variant="outlined"
-              :rules="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? rules.required : []"
+              :rules="rules.required"
               label="Please describe the reason for removal."
               class="text-left mt-3"
             />
@@ -320,9 +321,6 @@ export default {
     },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
-    },
-    rulesAgeGroups() {
-      return this.input.fullClosure === false ? rules.required : [];
     },
     allAgeGroupsSelected() {
       return this.input.ageGroups?.length === this.ageGroups?.length;
@@ -494,12 +492,7 @@ export default {
 </script>
 
 <style scoped>
-:deep(.v-select__selection) {
-  width: 50%;
-}
-
-.v-select .v-chip {
-  display: inline-flex !important;
-  margin-right: 4px;
+:deep(.max-width .v-select__selection) {
+  width: 100%;
 }
 </style>
