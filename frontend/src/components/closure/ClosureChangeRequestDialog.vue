@@ -111,7 +111,8 @@
                 <p>(select all that apply):</p>
               </v-row>
               <v-select
-                v-model="input.ageGroups"
+                v-model.lazy="input.ageGroups"
+                :loading="isLoading"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -120,10 +121,8 @@
                 class="mt-2"
                 multiple
                 chips
-                clearable
                 :rules="rulesAgeGroups"
-                :loading="isLoading"
-                :disabled="isDisabled || isLoading"
+                clearable
               >
                 <template #prepend-item>
                   <v-list-item title="Select All" @click="toggleSelectAll">
