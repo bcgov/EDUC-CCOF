@@ -342,6 +342,8 @@ const ClosureMappings = [
   { back: 'ccof_comment', front: 'closureReason' },
   { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
+  { back: 'ccof_paidclosure', front: 'paidClosure' },
+  { back: '_ccof_change_action_closure_value', front: 'changeActionClosureId' },
 ];
 
 const UserProfileBaseCCFRIMappings = [
