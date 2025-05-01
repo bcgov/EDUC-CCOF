@@ -23,7 +23,7 @@
             item-title="facilityName"
             placeholder="Select a facility"
             variant="outlined"
-            class="mt-2"
+            class="mt-2 max-width"
             @update:model-value="handleFacilityChange"
           >
             <template #item="{ props, item, index }">
@@ -111,7 +111,9 @@
                 <p>(select all that apply):</p>
               </v-row>
               <v-select
-                v-model="input.ageGroups"
+                v-model.lazy="input.ageGroups"
+                :loading="isLoading"
+                :disabled="isDisabled"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -120,10 +122,8 @@
                 class="mt-2"
                 multiple
                 chips
+                :rules="rules.required"
                 clearable
-                :rules="rulesAgeGroups"
-                :loading="isLoading"
-                :disabled="isDisabled || isLoading"
               >
                 <template #prepend-item>
                   <v-list-item title="Select All" @click="toggleSelectAll">
@@ -234,6 +234,16 @@
               class="text-left mt-3"
             />
           </v-container>
+          <v-container v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE" class="pa-0 pt-4">
+            <h3>Reason for closure removal:</h3>
+            <v-textarea
+              v-model="input.reasonForClosureRemoval"
+              variant="outlined"
+              :rules="rules.required"
+              label="Please describe the reason for removal."
+              class="text-left mt-3"
+            />
+          </v-container>
         </v-container>
       </v-form>
     </template>
@@ -288,8 +298,8 @@ export default {
       required: true,
     },
     requestType: {
-      type: Number,
-      default: 0,
+      type: [Number, null],
+      default: null,
       required: true,
     },
     show: {
@@ -305,7 +315,6 @@ export default {
       isDisplayed: false,
       isLoading: false,
       input: {
-        ageGroups: [],
         documents: [],
       },
       selectedFacilityWasChanged: true,
@@ -337,21 +346,6 @@ export default {
     },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
-    },
-    rulesAgeGroups() {
-      return this.input.fullClosure === false ? rules.required : [];
-    },
-    rulesReasonForClosureRemoval() {
-      return this.requestType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
-        ? []
-        : [
-            (v) => {
-              if (isEmpty(v)) {
-                return 'You must add a reason before you can remove this closure.';
-              }
-              return true;
-            },
-          ];
     },
     allAgeGroupsSelected() {
       return this.input.ageGroups?.length === this.ageGroups?.length;
@@ -393,21 +387,14 @@ export default {
       const input = cloneDeep(this.closure);
       try {
         this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-        if (this.closure.ageGroups) {
-          const closureAgeGroups = this.closure.ageGroups.split(',').map((value) => {
-            return Number(value);
-          });
-          input.ageGroups = closureAgeGroups;
-        }
+        input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
-        input.approvedStartDate = input.startDate;
-        input.approvedEndDate = input.endDate;
         return input;
       } catch (e) {
         console.log(e);
-        this.setFailureAlert('Failed to load license categories');
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
       }
     },
     async handleFacilityChange(facilityId) {
@@ -509,9 +496,10 @@ export default {
             organizationId: this.userInfo?.organizationId,
             closureId: this.closure.closureId,
             changeType: this.requestType,
+            closureReason: this.input.reasonForClosureRemoval,
           };
         default:
-          return undefined;
+          return null;
       }
     },
     async submit() {
@@ -536,7 +524,6 @@ export default {
       this.ageGroups = [];
       this.uploadedDocuments = [];
       this.input = {
-        ageGroups: [],
         documents: [],
       };
     },
@@ -545,7 +532,7 @@ export default {
 </script>
 
 <style scoped>
-:deep(.v-select__selection) {
+:deep(.max-width .v-select__selection) {
   width: 100%;
 }
 </style>

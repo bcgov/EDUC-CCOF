@@ -262,8 +262,8 @@ async function createClosureChangeRequest(req, res) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
-    if (req.body.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE && !isEmpty(req.body.documents)) {
-      req.body.documents.forEach((document) => {
+    if (req.body.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+      req.body.documents?.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
         mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
         asyncOperations.push(postChangeActionDocument(mappedDocument));
@@ -347,11 +347,9 @@ async function getChangeActionClosure(req, res) {
     changeActionClosureForFront.documents = [];
     if (changeActionClosure?._ccof_change_action_value) {
       const getDocumentsResponse = await getChangeActionDocument(changeActionClosure._ccof_change_action_value);
-      if (getDocumentsResponse?.value) {
-        getDocumentsResponse.value.forEach((document) => {
-          changeActionClosureForFront.documents.push(new MappableObjectForFront(document, DocumentsMappings));
-        });
-      }
+      getDocumentsResponse?.value?.forEach((document) => {
+        changeActionClosureForFront.documents.push(new MappableObjectForFront(document, DocumentsMappings));
+      });
     }
     return res.status(HttpStatus.OK).json(changeActionClosureForFront);
   } catch (e) {
