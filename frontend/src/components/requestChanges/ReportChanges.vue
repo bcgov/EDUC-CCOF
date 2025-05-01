@@ -396,7 +396,7 @@ export default {
       'setChangeActionId',
     ]),
     previous() {
-      this.$router.push(PATHS.ROOT.HOME);
+      this.$router.push(PATHS.ROOT.ACCOUNT_MGMT);
     },
     // FUTURE RELEASE - filter change request to be displayed in Change History by Program Year
     // isCurrentOrFuture(programYearId) {

@@ -7,6 +7,7 @@
 <script>
 import ContactInfo from '@/components/accountMgmt/ContactInfo.vue';
 import OrganizationInfo from '@/components/accountMgmt/OrganizationInfo.vue';
+
 export default {
   name: 'ManageOrganization',
   components: { ContactInfo, OrganizationInfo },
