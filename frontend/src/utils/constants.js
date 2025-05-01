@@ -432,6 +432,7 @@ export const CLOSURE_STATUSES = Object.freeze({
   COMPLETE_NOT_APPROVED: 100000002,
   CANCELLED: 100000003,
   MINISTRY_REMOVED: 100000004,
+  WITHDRAWN: 100000005,
 });
 
 export const CLOSURE_STATUS_TEXTS = Object.freeze({
@@ -439,6 +440,7 @@ export const CLOSURE_STATUS_TEXTS = Object.freeze({
   APPROVED: 'Approved',
   NOT_APPROVED: 'Not Approved',
   CANCELLED: 'Cancelled',
+  WITHDRAWN: 'Withdrawn',
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
