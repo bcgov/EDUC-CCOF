@@ -154,8 +154,9 @@
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
-                    rules.max(fiscalStartAndEndDates.endDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
+                    rules.min(fiscalStartAndEndDates.startDate, DATES_ERROR_MESSAGE),
+                    rules.max(fiscalStartAndEndDates.endDate, DATES_ERROR_MESSAGE),
+                    rules.max(input.endDate, 'Must be on or before the end date of the closure'),
                     rules.MMDDYYYY,
                   ]"
                   label="Start Date"
@@ -171,8 +172,9 @@
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
-                    rules.max(fiscalStartAndEndDates.endDate, DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE),
+                    rules.min(fiscalStartAndEndDates.startDate, DATES_ERROR_MESSAGE),
+                    rules.min(input.startDate, 'Must be on or after the start date of the closure'),
+                    rules.max(fiscalStartAndEndDates.endDate, DATES_ERROR_MESSAGE),
                     rules.MMDDYYYY,
                   ]"
                   label="End Date"
@@ -353,8 +355,7 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
-    this.DATE_OUTSIDE_FUNDING_AGREEMENT_TERM_ERROR_MESSAGE =
-      'You can only submit closures for the current funding agreement term. To report a closure for a previous term, please return to the home page, select a different fiscal year, and go to View Organization Closures.';
+    this.DATES_ERROR_MESSAGE = 'You can only submit closures for the current funding agreement term.';
   },
   methods: {
     async initInput() {
