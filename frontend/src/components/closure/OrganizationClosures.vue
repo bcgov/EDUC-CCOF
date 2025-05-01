@@ -232,7 +232,7 @@ export default {
       this.closureToView = closure;
     },
     updateClosure(closure) {
-      this.setClosureRequestType(CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE);
+      this.closureRequestType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
       this.closureForRequest = closure;
     },
     removeClosure(closure) {
