@@ -316,7 +316,7 @@ export default {
       }
     },
     isDisabled() {
-      return this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+      return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
     showDocumentUpload() {
       return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
@@ -463,6 +463,7 @@ export default {
             organizationId: this.userInfo?.organizationId,
             closureId: this.closure.closureId,
             changeType: this.requestType,
+            closureReason: this.input.reasonForClosureRemoval,
           };
         default:
           return null;
