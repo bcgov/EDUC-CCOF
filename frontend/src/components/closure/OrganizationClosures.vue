@@ -270,6 +270,8 @@ export default {
           return CLOSURE_STATUS_TEXTS.NOT_APPROVED;
         case CLOSURE_STATUSES.CANCELLED:
           return CLOSURE_STATUS_TEXTS.CANCELLED;
+        case CLOSURE_STATUSES.WITHDRAWN:
+          return CLOSURE_STATUS_TEXTS.WITHDRAWN;
         default:
           return '';
       }
@@ -311,6 +313,7 @@ export default {
         case CLOSURE_STATUSES.COMPLETE_NOT_APPROVED:
           return 'status-red';
         case CLOSURE_STATUSES.CANCELLED:
+        case CLOSURE_STATUSES.WITHDRAWN:
           return 'status-yellow';
         default:
           return '';
