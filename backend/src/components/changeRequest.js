@@ -270,6 +270,7 @@ async function createClosureChangeRequest(req, res) {
       });
     }
     const asyncOperationResponses = await Promise.all(asyncOperations);
+    await patchOperationWithObjectId('ccof_change_requests', createChangeRequestReponse.changeRequestId, { ccof_externalstatus: CHANGE_REQUEST_EXTERNAL_STATUS_CODES.SUBMITTED });
     return res.status(HttpStatus.CREATED).json({ changeActionClosureId: asyncOperationResponses[0], changeRequestReferenceId: asyncOperationResponses[1].ccof_name });
   } catch (e) {
     log.error('error', e);
