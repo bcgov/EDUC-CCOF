@@ -327,6 +327,7 @@ const OrganizationFacilityMappings = [
 ];
 
 const ClosureMappings = [
+  { back: 'ccof_application_ccfri_closureid', front: 'closureId' },
   { back: '_ccof_organizationfacility_value', front: 'organizationId' },
   { back: '_ccof_program_year_value', front: 'programYearId' },
   { back: '_ccof_facilityinfo_value', front: 'facilityId' },
@@ -338,6 +339,8 @@ const ClosureMappings = [
   { back: 'ccof_age_affected_groups', front: 'ageGroups' },
   { back: 'ccof_closure_reason', front: 'closureReason' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
+  { back: 'ccof_paidclosure', front: 'paidClosure' },
+  { back: '_ccof_change_action_closure_value', front: 'changeActionClosureId' },
 ];
 
 const UserProfileBaseCCFRIMappings = [

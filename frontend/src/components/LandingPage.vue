@@ -12,8 +12,8 @@
 
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
       Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
-      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve.
-      Please disregard this message if you have already resolved your status.
+      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve. Please
+      disregard this message if you have already resolved your status.
     </AppAlertBanner>
 
     <v-row>
@@ -347,7 +347,6 @@ import {
   PATHS,
   pcfUrl,
   pcfUrlGuid,
-  closureUrl,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -714,9 +713,10 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.$router.push(
-        closureUrl(this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.latestProgramYearId),
-      );
+      const programYearId = this.selectedProgramYear
+        ? this.selectedProgramYear.programYearId
+        : this.latestProgramYearId;
+      this.$router.push(`${PATHS.CLOSURES}/${programYearId}`);
     },
     async getAllMessagesVuex() {
       try {

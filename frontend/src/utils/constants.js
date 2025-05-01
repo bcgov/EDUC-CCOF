@@ -56,6 +56,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
 });
 
@@ -171,10 +172,6 @@ export function changeUrlGuid(
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
-export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.CLOSURES}/${programYearGuid}`;
-}
-
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
@@ -279,6 +276,8 @@ export const CHANGE_REQUEST_TYPES = {
   PDF_CHANGE: 100000013,
   NEW_CATEGORY: 100000014,
   NEW_CLOSURE: 100000015,
+  EDIT_EXISTING_CLOSURE: 100000016,
+  REMOVE_A_CLOSURE: 100000017,
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
