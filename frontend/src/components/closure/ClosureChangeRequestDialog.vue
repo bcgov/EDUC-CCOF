@@ -460,6 +460,7 @@ export default {
             organizationId: this.userInfo?.organizationId,
             closureId: this.closure.closureId,
             changeType: this.requestType,
+            closureReason: this.input.reasonForClosureRemoval,
           };
         default:
           return null;
