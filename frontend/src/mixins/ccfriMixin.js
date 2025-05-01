@@ -1,6 +1,5 @@
 import { cloneDeep, isEqual } from 'lodash';
 import { mapActions, mapState } from 'pinia';
-import { uuid } from 'vue-uuid';
 
 import ApiService from '@/common/apiService.js';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
@@ -11,6 +10,7 @@ import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import closureMixin from '@/mixins/closureMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -42,26 +42,12 @@ export default {
     FacilityHeader,
     NavButton,
   },
-  mixins: [alertMixin, globalMixin],
+  mixins: [alertMixin, closureMixin, globalMixin],
   data() {
     return {
-      pastCcfriGuid: undefined,
-      closureFees: 'No',
       prevFeesCorrect: undefined,
-      dateObj: {
-        closureReason: '',
-        feesPaidWhileClosed: undefined,
-      },
       showRfiDialog: false,
       rfi3percentCategories: [],
-      isUnlocked: true,
-      loading: true,
-      processing: false,
-      facilityProgramYears: [],
-      isValidForm: false,
-      chosenDates: [],
-      fiscalYearStartDate: '',
-      fiscalYearEndDate: '',
     };
   },
   computed: {
@@ -87,13 +73,7 @@ export default {
       'isChangeRequest',
       'getChangeActionNewFacByFacilityId',
     ]),
-    ...mapState(useCcfriAppStore, [
-      'CCFRIFacilityModel',
-      'ccfriChildCareTypes',
-      'loadedModel',
-      'ccfriId',
-      'getClosureDateLength',
-    ]),
+    ...mapState(useCcfriAppStore, ['CCFRIFacilityModel', 'ccfriChildCareTypes', 'loadedModel', 'ccfriId']),
     ...mapState(useReportChangesStore, ['userProfileChangeRequests', 'changeRequestStatus']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
@@ -110,40 +90,40 @@ export default {
     fundingUrl() {
       return this.getFundingUrl(this.programYearId);
     },
+    hasDataToDelete() {
+      return this.CCFRIFacilityModel.childCareTypes.some((careType) => careType.deleteMe);
+    },
+    hasModelChanged() {
+      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
+    },
     isReadOnly() {
-      //if submitted, lock er up. If unlock CCFRI - unlock
       if (this.currentFacility.unlockCcfri) {
         return false;
-      } else if (this.isChangeRequest) {
-        if (!this.changeRequestStatus) {
-          return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
       }
-      return false;
+      if (this.isChangeRequest) {
+        return this.changeRequestStatus && this.changeRequestStatus !== 'INCOMPLETE';
+      }
+      return this.applicationStatus === 'SUBMITTED';
     },
     isSaveDisabled() {
-      return this.isReadOnly || (this.showApplicationTemplateV1 && this.hasIllegalDates(this.CCFRIFacilityModel));
+      return this.isReadOnly || (this.showApplicationTemplateV1 && this.hasIllegalClosureDates);
     },
     isFormComplete() {
       if (
         this.showApplicationTemplateV1 &&
         this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES &&
-        this.CCFRIFacilityModel.dates.length === 0
+        !this.areClosureItemsComplete
       ) {
         return false;
       }
-      console.log('isFormComplete = ' + this.CCFRIFacilityModel.isComplete);
-      return this.CCFRIFacilityModel.isComplete; //false makes button clickable, true disables button
+      return this.CCFRIFacilityModel.isComplete;
     },
   },
   created() {
     this.feeRules = [rules.isNumber, rules.max(9999, 'Max fee is $9999.00'), rules.min(0, 'Input a positive number')];
     this.rules = rules;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
+    this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
@@ -165,90 +145,9 @@ export default {
       'setNavBarValue',
       'setNavBarCCFRIComplete',
     ]),
-    //builds an array of dates to keep track of all days of the selected closure period.
-    //this array is used to check if a user selects an overlapping date
-    dateFunction(date1, date2) {
-      const startDate = new Date(date1);
-      const endDate = new Date(date2);
-      const dates = [];
-      const currentDate = new Date(startDate.getTime());
 
-      while (currentDate <= endDate) {
-        dates.push(currentDate.toISOString().substring(0, 10));
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
-      return dates;
-    },
-    addRow(radioButtonClicked) {
-      //when opening table for the first time, add a row so it always populates with one.
-      //check below so if user hits the radio button multiple times, it won't keep adding rows
-      if (radioButtonClicked && this.CCFRIFacilityModel.dates.length > 0) return;
-      this.updateChosenDates();
-      const newObj = { ...this.dateObj, id: uuid.v1() };
-      this.CCFRIFacilityModel.dates.push(newObj);
-    },
-    allowedDates(val) {
-      return !this.chosenDates.includes(val);
-    },
-    updateChosenDates() {
-      this.chosenDates = [];
-      this.CCFRIFacilityModel.dates.forEach((dateObj) => {
-        this.chosenDates = this.chosenDates + this.dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate);
-      });
-    },
-    isDateLegal(obj) {
-      // Get all dates from chosenDates except for the currently edited row
-      const otherChosenDates = this.CCFRIFacilityModel.dates
-        .filter((dateObj) => dateObj.id !== obj.id)
-        .reduce((acc, dateObj) => {
-          return [...acc, ...this.dateFunction(dateObj.formattedStartDate, dateObj.formattedEndDate)];
-        }, []);
-
-      const dates = this.dateFunction(obj.formattedStartDate, obj.formattedEndDate);
-
-      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
-      //datesInvalid is true if user breaks any other date rule.
-
-      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
-      //Rules are: end date cannot be before start date
-      //start date for either field cannot be before the start of fiscal year
-      //end dates for either field cannot be after end of fiscal year
-
-      if (
-        obj.formattedEndDate < obj.formattedStartDate ||
-        obj.formattedStartDate < this.fiscalStartAndEndDates.startDate ||
-        obj.formattedEndDate < this.fiscalStartAndEndDates.startDate ||
-        obj.formattedStartDate > this.fiscalStartAndEndDates.endDate ||
-        obj.formattedEndDate > this.fiscalStartAndEndDates.endDate
-      ) {
-        obj.datesInvalid = true;
-        return;
-      }
-
-      obj.datesOverlap = false;
-      obj.datesInvalid = false;
-      dates.forEach((date) => {
-        if (otherChosenDates.includes(date)) {
-          obj.datesOverlap = true;
-        }
-      });
-    },
-    hasIllegalDates(ccfriFacilityModel) {
-      return ccfriFacilityModel?.dates?.some((el) => el.datesOverlap || el.datesInvalid);
-    },
-    hasDataToDelete() {
-      //checks all care types for the deleteMe flag. If true, we need to run save regardless if the model has been changed by the user.
-      return this.CCFRIFacilityModel.childCareTypes.some((careType) => {
-        return careType.deleteMe;
-      });
-    },
     closeDialog() {
       this.showRfiDialog = false;
-    },
-    removeIndex(index) {
-      this.CCFRIFacilityModel.dates.splice(index, 1);
-      this.updateChosenDates();
     },
     async toRfi() {
       try {
@@ -310,25 +209,26 @@ export default {
         this.$router.push(this.nextPath);
       }
     },
-
-    hasModelChanged() {
-      return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
-    },
     async save(showMessage) {
       try {
-        if (this.isReadOnly || (!this.hasModelChanged() && !this.hasDataToDelete())) return;
+        if (this.isReadOnly) return;
         this.setIsApplicationProcessing(true);
+        if (this.hasModelChanged || this.hasDataToDelete) {
+          await this.saveCcfri({
+            isFormComplete: this.isFormComplete,
+            hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
+          });
+          this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel));
+        }
+        if (this.showApplicationTemplateV1) {
+          await this.processUpdatedClosures();
+          await this.loadClosures(this.$route.params.urlGuid);
+        }
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete });
-
         if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
           const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
           newFac.ccfri.isCCFRIComplete = this.isFormComplete;
         }
-        this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel)); //when saving update the loaded model to look for changes
-        await this.saveCcfri({
-          isFormComplete: this.isFormComplete,
-          hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
-        });
         if (showMessage) {
           this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
         }

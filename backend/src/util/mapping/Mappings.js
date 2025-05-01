@@ -159,15 +159,6 @@ const NMFApplicationMappings = [
   { back: 'ccof_othercomment', front: 'otherComments' }, // "Please tell us anything else you’d like us to know ..."
 ];
 
-const CCFRIClosureDateMappings = [
-  { back: 'ccof_startdate', front: 'startDate' },
-  { back: 'ccof_enddate', front: 'endDate' },
-  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
-  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
-  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
-  { back: 'ccof_comment', front: 'closureReason' },
-];
-
 const CCOFApplicationMappings = [
   { back: 'ccof_applicationtype', front: 'applicationType' }, // 100000000 New Org
   { back: 'ccof_name', front: 'name' }, // APP-22000059
@@ -340,7 +331,6 @@ const ClosureMappings = [
   { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
   { back: 'ccof_age_affected_groups', front: 'ageGroups' },
   { back: 'ccof_comment', front: 'closureReason' },
-  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
   { back: 'ccof_paidclosure', front: 'paidClosure' },
   { back: '_ccof_change_action_closure_value', front: 'changeActionClosureId' },
@@ -547,7 +537,6 @@ module.exports = {
   MessageMappings,
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
-  CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   ClosureMappings,
   RFIApplicationMappings,

@@ -279,27 +279,28 @@
           </div>
 
           <template v-if="ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES">
-            <v-text-field
-              v-if="ccfri.dates.length === 0"
-              placeholder="Required"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              :rules="rules.required"
-              readonly
-            />
             <v-data-table
-              v-else
               :headers="closureTableHeaders"
-              :items="ccfri.dates"
+              :items="formattedClosures"
               :mobile="null"
               mobile-breakpoint="md"
               class="elevation-2"
             >
-              <template #[`item.formattedStartDate`]="{ item }">
+              <template #no-data>
                 <v-text-field
-                  v-model="item.formattedStartDate"
+                  placeholder="Required"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  :rules="rules.required"
+                  readonly
+                  class="center-placeholder"
+                />
+              </template>
+              <template #[`item.startDate`]="{ item }">
+                <v-text-field
+                  v-model="item.startDate"
                   placeholder="Required"
                   density="compact"
                   flat
@@ -310,9 +311,9 @@
                   class="no-padding-left"
                 />
               </template>
-              <template #[`item.formattedEndDate`]="{ item }">
+              <template #[`item.endDate`]="{ item }">
                 <v-text-field
-                  v-model="item.formattedEndDate"
+                  v-model="item.endDate"
                   placeholder="Required"
                   density="compact"
                   flat
@@ -337,7 +338,7 @@
                   class="no-padding-left"
                 />
               </template>
-              <template #[`item.feesPaidWhileClosed`]="{ item }">
+              <template #[`item.paidClosure`]="{ item }">
                 <v-text-field
                   placeholder="Required"
                   readonly
@@ -345,7 +346,7 @@
                   flat
                   variant="solo"
                   hide-details
-                  :model-value="getYesNoValue(item.feesPaidWhileClosed)"
+                  :model-value="getYesNoValue(item.paidClosure)"
                   :rules="rules.required"
                   class="no-padding-left"
                 />
@@ -391,6 +392,9 @@
   </v-form>
 </template>
 <script>
+import { isEmpty } from 'lodash';
+import moment from 'moment';
+
 import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid, CCFRI_HAS_CLOSURE_FEE_TYPES } from '@/utils/constants.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -415,14 +419,24 @@ export default {
     return {
       isValidForm: false,
       closureTableHeaders: [
-        { title: 'Closure Start Date', value: 'formattedStartDate', sortable: true },
-        { title: 'End Date', value: 'formattedEndDate', sortable: true },
-        { title: 'Reason', value: 'closureReason' },
-        { title: 'Did parents pay for this closure?', value: 'feesPaidWhileClosed', sortable: true },
+        { title: 'Closure Start Date', value: 'startDate', width: '20%', sortable: true },
+        { title: 'Closure End Date', value: 'endDate', width: '20%', sortable: true },
+        { title: 'Reason', value: 'closureReason', width: '30%' },
+        { title: 'Did parents pay for this closure?', value: 'paidClosure', width: '30%', sortable: true },
       ],
     };
   },
   computed: {
+    formattedClosures() {
+      return this.ccfri?.closures?.map((closure) => {
+        return {
+          startDate: closure?.startDate ? moment.utc(closure?.startDate).format('YYYY-MM-DD') : null,
+          endDate: closure?.endDate ? moment.utc(closure?.endDate).format('YYYY-MM-DD') : null,
+          closureReason: closure.closureReason,
+          paidClosure: closure.paidClosure,
+        };
+      });
+    },
     routingPath() {
       if (!this.ccfri) {
         return isChangeRequest(this)
@@ -442,6 +456,7 @@ export default {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
   },
   methods: {
+    isEmpty,
     generateProgYearText(programYear, childCareCategory) {
       return programYear && childCareCategory ? `Parent Fees ${programYear}: ${childCareCategory}:` : null;
     },
@@ -452,6 +467,10 @@ export default {
 :deep(::placeholder) {
   color: #d8292f !important;
   opacity: 1 !important;
+}
+
+:deep(.center-placeholder .v-field__input) {
+  text-align: center;
 }
 
 :deep(.no-padding-left .v-field__input) {

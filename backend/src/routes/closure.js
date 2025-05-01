@@ -17,9 +17,9 @@ const closureSchema = {
     in: ['body'],
     exists: { errorMessage: '[closureType] is required' },
   },
-  feesPaidWhileClosed: {
+  paidClosure: {
     in: ['body'],
-    exists: { errorMessage: '[feesPaidWhileClosed] is required' },
+    exists: { errorMessage: '[paidClosure] is required' },
   },
   paymentEligibility: {
     in: ['body'],

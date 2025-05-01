@@ -113,13 +113,14 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     ccfriMedianStore: {},
     previousFeeStore: {},
     approvableFeeSchedules: null,
+    loadedClosures: [],
+    updatedClosures: [],
+    hasIllegalClosureDates: false,
+    areClosureItemsComplete: false,
   }),
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
       return state.ccfriStore[ccfriId];
-    },
-    getClosureDateLength: (state) => {
-      return state.CCFRIFacilityModel?.dates?.length;
     },
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
@@ -173,15 +174,9 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       });
     },
     async saveCcfri({ isFormComplete: isFormComplete, hasRfi: hasRfi }) {
-      //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
-      // if (this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO) {
-      //   this.CCFRIFacilityModel.dates = [];
-      // }
-
       let payload = [];
       let firstObj = {
         ccfriApplicationGuid: this.ccfriId,
-        // facilityClosureDates: this.CCFRIFacilityModel.dates,
         ccof_formcomplete: isFormComplete,
         notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
@@ -195,13 +190,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
         };
       }
-
-      //checks if blank - don't save empty rows
-      // for (let i = this.CCFRIFacilityModel.dates.length - 1; i >= 0; i--) {
-      //   if (isEqual(this.CCFRIFacilityModel.dates[i], this.dateObj)) {
-      //     this.CCFRIFacilityModel.dates.splice(i, 1);
-      //   }
-      // }
 
       //for each child care type - prepare an object for the payload
       //index will also match the order of how the cards are displayed.

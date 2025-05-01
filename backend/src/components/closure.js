@@ -12,11 +12,11 @@ function mapClosureForBack(data) {
   closureForBack['ccof_FacilityInfo@odata.bind'] = `/accounts(${data?.facilityId})`;
   closureForBack['ccof_OrganizationFacility@odata.bind'] = `/accounts(${data?.organizationId})`;
   closureForBack['ccof_program_year@odata.bind'] = `/ccof_program_years(${data?.programYearId})`;
+  delete closureForBack._ccof_change_action_closure_value;
   delete closureForBack._ccof_applicationccfri_value;
   delete closureForBack._ccof_facilityinfo_value;
   delete closureForBack._ccof_organizationfacility_value;
   delete closureForBack._ccof_program_year_value;
-  console.log(closureForBack);
   return closureForBack;
 }
 
@@ -44,8 +44,8 @@ async function createClosure(req, res) {
 
 async function updateClosure(req, res) {
   try {
-    const response = await patchOperationWithObjectId('ccof_application_ccfri_closures', req.params.closureId, mapClosureForBack(req.body));
-    return res.status(HttpStatus.OK).json(response);
+    await patchOperationWithObjectId('ccof_application_ccfri_closures', req.params.closureId, mapClosureForBack(req.body));
+    return res.status(HttpStatus.OK).json();
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

@@ -42,7 +42,7 @@
                 :readonly="isApplicationProcessing || isReadOnly"
                 @update-closures="updateClosures"
                 @update-closures-complete="updateClosuresComplete"
-                @update-has-illegal-dates="updateHasIllegalDates"
+                @update-has-illegal-closure-dates="updateHasIllegalClosureDates"
               />
             </div>
           </v-card>
@@ -51,7 +51,7 @@
       <NavButton
         :is-next-displayed="true"
         :is-save-displayed="true"
-        :is-save-disabled="isReadOnly || hasIllegalDates"
+        :is-save-disabled="isReadOnly || hasIllegalClosureDates"
         :is-next-disabled="isApplicationProcessing || !isClosuresSectionComplete"
         :is-processing="isApplicationProcessing"
         @previous="previous"
@@ -65,10 +65,6 @@
 <script>
 import { mapState, mapActions } from 'pinia';
 
-import ApplicationClosureCard from '@/components/util/ApplicationClosureCard.vue';
-import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
-import NavButton from '@/components/util/NavButton.vue';
-
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -81,11 +77,6 @@ import alertMixin from '@/mixins/alertMixin.js';
 import closureMixin from '@/mixins/closureMixin.js';
 
 export default {
-  components: {
-    ApplicationClosureCard,
-    ApplicationPCFHeader,
-    NavButton,
-  },
   mixins: [alertMixin, closureMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

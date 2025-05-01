@@ -62,9 +62,17 @@
             </v-col>
           </v-row>
 
-          <template v-if="!showApplicationTemplateV1">
-            <v-row no-gutters>
-              <p class="span-label font-regular pt-2 pr-4">
+          <template v-if="showApplicationTemplateV1">
+            <p class="span-label font-regular">Did parents pay for this closure?</p>
+            <v-radio-group v-model="obj.paidClosure" :disabled="readonly" inline :rules="rules.required">
+              <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+              <v-radio label="No" :value="YES_NO_VALUES.NO" />
+            </v-radio-group>
+          </template>
+
+          <template v-else>
+            <div>
+              <p class="span-label font-regular pr-4">
                 Is this a full facility closure?
                 <AppTooltip tooltip-content="Select no if only some care categories will be affected." />
               </p>
@@ -78,10 +86,10 @@
                 <v-radio label="Yes" :value="true" />
                 <v-radio label="No" :value="false" />
               </v-radio-group>
-            </v-row>
+            </div>
 
-            <v-row v-if="obj.fullClosure === false" no-gutters class="py-2">
-              <p class="span-label font-regular pt-md-4 pr-8 mb-2">
+            <div v-if="obj.fullClosure === false" class="my-2">
+              <p class="span-label font-regular pr-8 mb-2">
                 Select all care categories that are affected by the closure:
               </p>
               <AppMultiSelectInput
@@ -94,7 +102,7 @@
                 :rules="rules.required"
                 min-width="250"
               />
-            </v-row>
+            </div>
           </template>
 
           <v-card v-if="obj.datesOverlap || obj.datesInvalid" class="my-4">
@@ -141,7 +149,7 @@ import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
-import { CLOSURE_AFFECTED_AGE_GROUPS } from '@/utils/constants.js';
+import { CLOSURE_AFFECTED_AGE_GROUPS, YES_NO_VALUES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -163,7 +171,7 @@ export default {
       default: false,
     },
   },
-  emits: ['updateClosures', 'updateClosuresComplete', 'updateHasIllegalDates'],
+  emits: ['updateClosures', 'updateClosuresComplete', 'updateHasIllegalClosureDates'],
   data() {
     return {
       updatedClosures: [],
@@ -185,11 +193,11 @@ export default {
         });
       return ageGroups;
     },
-    hasIllegalDates() {
+    hasIllegalClosureDates() {
       return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
     },
     areClosuresComplete() {
-      return this.isValidForm && !this.hasIllegalDates;
+      return this.isValidForm && !this.hasIllegalClosureDates;
     },
   },
   watch: {
@@ -205,14 +213,15 @@ export default {
         this.$emit('updateClosuresComplete', this.areClosuresComplete);
       },
     },
-    hasIllegalDates: {
+    hasIllegalClosureDates: {
       handler() {
-        this.$emit('updateHasIllegalDates', this.hasIllegalDates);
+        this.$emit('updateHasIllegalClosureDates', this.hasIllegalClosureDates);
       },
     },
   },
   created() {
     this.rules = rules;
+    this.YES_NO_VALUES = YES_NO_VALUES;
     this.updatedClosures = cloneDeep(this.closures);
     this.addRow(false);
     this.updatedClosures?.forEach((closure) => this.validateClosureDates(closure));

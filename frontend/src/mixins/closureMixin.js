@@ -1,13 +1,13 @@
 import { cloneDeep, isEmpty, isEqual } from 'lodash';
 import moment from 'moment';
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import ApplicationClosureCard from '@/components/util/ApplicationClosureCard.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import alertMixin from '@/mixins/alertMixin.js';
 import ClosureService from '@/services/closureService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
@@ -30,17 +30,9 @@ export default {
     AppAlertBanner,
     AppButton,
     AppDateInput,
+    ApplicationClosureCard,
     ApplicationPCFHeader,
     NavButton,
-  },
-  mixins: [alertMixin],
-  data() {
-    return {
-      closures: [],
-      updatedClosures: [],
-      hasIllegalDates: false,
-      areClosureItemsComplete: false,
-    };
   },
   computed: {
     ...mapState(useApplicationStore, [
@@ -56,6 +48,12 @@ export default {
     ...mapState(useCcfriAppStore, ['CCFRIFacilityModel', 'loadedModel']),
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useReportChangesStore, ['changeRequestStatus']),
+    ...mapWritableState(useCcfriAppStore, [
+      'areClosureItemsComplete',
+      'hasIllegalClosureDates',
+      'loadedClosures',
+      'updatedClosures',
+    ]),
     isClosuresSectionComplete() {
       return (
         this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
@@ -73,8 +71,8 @@ export default {
     async loadClosures(ccfriApplicationId) {
       try {
         if (!ccfriApplicationId) return;
-        this.closures = await ClosureService.getApplicationClosures(ccfriApplicationId);
-        this.updatedClosures = cloneDeep(this.closures);
+        this.loadedClosures = await ClosureService.getApplicationClosures(ccfriApplicationId);
+        this.updatedClosures = cloneDeep(this.loadedClosures);
       } catch (e) {
         console.log(`Failed to load closures with error - ${e}`);
         throw e;
@@ -87,8 +85,8 @@ export default {
     updateClosuresComplete(areClosureItemsComplete) {
       this.areClosureItemsComplete = areClosureItemsComplete;
     },
-    updateHasIllegalDates(hasIllegalDates) {
-      this.hasIllegalDates = hasIllegalDates;
+    updateHasIllegalClosureDates(hasIllegalClosureDates) {
+      this.hasIllegalClosureDates = hasIllegalClosureDates;
     },
     hasClosureChanged(originalClosure, updatedClosure) {
       const isAgeGroupsUpdated =
@@ -97,6 +95,7 @@ export default {
       return (
         originalClosure?.closureReason !== updatedClosure?.closureReason ||
         originalClosure?.fullClosure !== updatedClosure?.fullClosure ||
+        originalClosure?.paidClosure !== updatedClosure?.paidClosure ||
         moment.utc(originalClosure?.startDate).format('YYYY-MM-DD') !== updatedClosure?.startDate ||
         moment.utc(originalClosure?.endDate).format('YYYY-MM-DD') !== updatedClosure?.endDate ||
         isAgeGroupsUpdated
@@ -118,9 +117,9 @@ export default {
       payload.organizationId = closure.organizationId ?? this.organizationId;
       payload.programYearId = closure.programYearId ?? this.programYearId;
       if (this.showApplicationTemplateV1) {
-        payload.feesPaidWhileClosed = closure.feesPaidWhileClosed;
+        payload.paidClosure = closure.paidClosure ?? null;
       } else {
-        payload.feesPaidWhileClosed =
+        payload.paidClosure =
           this.CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES ? YES_NO_VALUES.YES : YES_NO_VALUES.NO;
         if (closure.fullClosure === false && !isEmpty(closure.ageGroups)) {
           payload.ageGroups = Array.isArray(closure.ageGroups) ? closure.ageGroups.join(',') : closure.ageGroups;
@@ -137,7 +136,7 @@ export default {
         return !closure.closureId && !isEmpty(closure);
       });
       const closuresToUpdate = this.updatedClosures?.filter((updatedClosure) =>
-        this.closures?.some(
+        this.loadedClosures?.some(
           (originalClosure) =>
             originalClosure.closureId === updatedClosure.closureId &&
             this.hasClosureChanged(originalClosure, updatedClosure),
@@ -145,17 +144,11 @@ export default {
       );
       const closuresToDelete =
         this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES
-          ? this.closures?.filter(
+          ? this.loadedClosures?.filter(
               (originalClosure) =>
                 !this.updatedClosures?.some((updatedClosure) => updatedClosure.closureId === originalClosure.closureId),
             )
-          : this.closures;
-      // console.log('closuresToCreate');
-      // console.log(closuresToCreate);
-      // console.log('closuresToUpdate');
-      // console.log(closuresToUpdate);
-      // console.log('closuresToDelete');
-      // console.log(closuresToDelete);
+          : this.loadedClosures;
       await Promise.all(
         closuresToCreate?.map(async (closure) => {
           const payload = this.buildClosurePayload(closure);

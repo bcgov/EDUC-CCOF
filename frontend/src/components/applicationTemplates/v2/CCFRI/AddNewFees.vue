@@ -13,8 +13,8 @@
       <span v-if="languageYearLabel != programYearTypes.HISTORICAL">
         CCFRI regions align with the BCSSA's grouping of school districts into 6 regional chapters. Use the
         <a :href="BCSSALink" target="_blank">BCSSA region lookup</a>
-        to find your region.</span
-      >
+        to find your region.
+      </span>
       <br /><br />
       Note: Fee increases will be reviewed and additional information may be requested, which may result in increased
       processing times. If approved, this fee will be posted on the Ministry website. <br /><br />
@@ -22,17 +22,11 @@
 
     <!-- this is for read only mode - when user is viewing a submitted Renewal application - they don't see the page where we ask them if the current fees are correct -->
     <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="my-10 rounded-lg">
-      <v-card-text class="pt-7 pa-0">
-        <div class="px-8">
-          <p class="text-h5 text--primary">Are the previous year's fees correct for this facility?</p>
-          <br />
-
-          <v-radio-group v-model="prevFeesCorrect" required :disabled="true" :rules="rules.required">
-            <v-radio label="Yes" value="Yes" />
-            <v-radio label="No" value="No" />
-          </v-radio-group>
-        </div>
-      </v-card-text>
+      <p class="px-6 py-3 card-title font-weight-bold">Are the previous year's fees correct for this facility?</p>
+      <v-radio-group v-model="prevFeesCorrect" :disabled="true" :rules="rules.required" class="pa-8">
+        <v-radio label="Yes" value="Yes" />
+        <v-radio label="No" value="No" />
+      </v-radio-group>
     </v-card>
 
     <div v-for="(item, index) in CCFRIFacilityModel.childCareTypes" :key="index">
@@ -232,6 +226,7 @@
         variant="outlined"
         name="input-7-4"
         label="Describe here"
+        hide-details
         class="pa-8"
       />
     </v-card>

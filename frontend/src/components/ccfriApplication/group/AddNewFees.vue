@@ -43,7 +43,7 @@
     :is-next-displayed="true"
     :is-save-displayed="true"
     :is-save-disabled="isSaveDisabled"
-    :is-next-disabled="isApplicationProcessing || !CCFRIFacilityModel.isComplete"
+    :is-next-disabled="isApplicationProcessing || !isFormComplete"
     :is-processing="isApplicationProcessing"
     @previous="previous"
     @next="next"
@@ -57,6 +57,7 @@ import AddNewFeesV2 from '@/components/applicationTemplates/v2/CCFRI/AddNewFees.
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ccfriMixin from '@/mixins/ccfriMixin.js';
+import closureMixin from '@/mixins/closureMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 
 export default {
@@ -65,7 +66,7 @@ export default {
     AddNewFeesV2,
     NavButton,
   },
-  mixins: [alertMixin, ccfriMixin, globalMixin],
+  mixins: [alertMixin, ccfriMixin, closureMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);
     next();
@@ -90,10 +91,10 @@ export default {
         this.setIsApplicationProcessing(true);
         await this.loadCCFRIFacility(this.$route.params.urlGuid);
         await this.decorateWithCareTypes(this.currentFacility.facilityId);
+        await this.loadClosures(this.$route.params.urlGuid);
         this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
         this.prevFeesCorrect =
           this.CCFRIFacilityModel.existingFeesCorrect === this.CCFRI_FEE_CORRECT_TYPES.YES ? 'Yes' : 'No';
-        this.updateChosenDates();
       } catch (error) {
         console.error(`Failed to get CCFRI with error - ${error}`);
         this.setFailureAlert('An error occurred while loading. Please try again later.');

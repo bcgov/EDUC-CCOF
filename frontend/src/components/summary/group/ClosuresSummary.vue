@@ -119,7 +119,6 @@
   </v-form>
 </template>
 <script>
-import { isEmpty } from 'lodash';
 import moment from 'moment';
 
 import { isChangeRequest } from '@/utils/common.js';
@@ -186,9 +185,6 @@ export default {
   created() {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
   },
-  methods: {
-    isEmpty,
-  },
 };
 </script>
 <style scoped>
@@ -197,11 +193,11 @@ export default {
   opacity: 1 !important;
 }
 
-:deep(.no-padding-left .v-field__input) {
-  padding-left: 0 !important;
-}
-
 :deep(.center-placeholder .v-field__input) {
   text-align: center;
+}
+
+:deep(.no-padding-left .v-field__input) {
+  padding-left: 0 !important;
 }
 </style>

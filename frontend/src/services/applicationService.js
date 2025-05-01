@@ -290,10 +290,14 @@ export default {
     if (isEmpty(ccfri)) return false;
     const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const closureRequiredFields = showApplicationTemplateV1
-      ? ['startDate', 'endDate', 'closureReason', 'feesPaidWhileClosed']
-      : ['startDate', 'endDate', 'closureReason', 'ageGroups'];
+      ? ['startDate', 'endDate', 'closureReason', 'paidClosure']
+      : ['startDate', 'endDate', 'closureReason', 'fullClosure'];
     const areAllClosureItemsComplete =
-      !isEmpty(ccfri.closures) && ccfri.closures?.every((closure) => !hasEmptyFields(closure, closureRequiredFields));
+      !isEmpty(ccfri.closures) &&
+      ccfri.closures?.every((closure) => {
+        const isAgeGroupsComplete = showApplicationTemplateV1 || closure.fullClosure || !isEmpty(closure.ageGroups);
+        return !hasEmptyFields(closure, closureRequiredFields) && isAgeGroupsComplete;
+      });
     return (
       ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
       (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
