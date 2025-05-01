@@ -12,6 +12,7 @@ const {
   createClosureChangeRequest,
   deleteChangeRequest,
   getChangeRequestDocs,
+  getChangeActionClosure,
   saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
@@ -44,9 +45,9 @@ const closureChangeRequestSchema = {
   },
   changeType: {
     in: ['body'],
-    equals: {
-      options: `${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`,
-      errorMessage: '[changeType] must be NEW_CLOSURE',
+    isIn: {
+      options: [[`${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
+      errorMessage: '[changeType] must be NEW_CLOSURE or REMOVE_A_CLOSURE',
     },
   },
   facilityId: {
@@ -56,6 +57,17 @@ const closureChangeRequestSchema = {
   organizationId: {
     in: ['body'],
     exists: { errorMessage: '[organizationId] is required' },
+  },
+  closureId: {
+    in: ['body'],
+    custom: {
+      options: (value, { req }) => {
+        if (req.body.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE && !value) {
+          throw new Error('[closureId] is required for closure removal requests');
+        }
+        return true;
+      },
+    },
   },
 };
 
@@ -119,7 +131,7 @@ router.post(
 );
 
 /**
- * Create the change Request
+ * Create the closure change request
  */
 router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
@@ -137,6 +149,20 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequestDocs(req, res);
+  },
+);
+
+/**
+ * Get Change Action Closure
+ */
+router.get(
+  '/changeActionClosure/:changeActionClosureId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getChangeActionClosure(req, res);
   },
 );
 

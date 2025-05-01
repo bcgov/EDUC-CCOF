@@ -2,7 +2,7 @@
   <AppDialog v-model="isDisplayed" title="Success" persistent max-width="40%" @close="closeDialog">
     <template #content>
       <div class="text-center">
-        <p class="pt-4 text-h6">Your message has been submitted.</p>
+        <p class="pt-4 text-h6">Your request has been submitted.</p>
         <p class="pt-4 text-h6">Reference: {{ changeRequestReferenceId }}</p>
       </div>
     </template>
