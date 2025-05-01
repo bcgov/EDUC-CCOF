@@ -139,14 +139,13 @@
                 </template>
               </v-select>
             </div>
+            <h3 class="mt-6">Dates:</h3>
+            <p class="text-black mt-4 mb-4">
+              Select the estimated end date, if applicable. To report a closure for a previous term, please return to
+              the home page, select a different fiscal year, and go to View Organization Closures.
+            </p>
             <v-row>
-              <v-col cols="12" lg="3">
-                <h3 class="mt-2">
-                  Dates:
-                  <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
-                </h3>
-              </v-col>
-              <v-col cols="12" lg="4">
+              <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
                   :disabled="isDisabled"
@@ -154,17 +153,16 @@
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, DATES_ERROR_MESSAGE),
-                    rules.max(fiscalStartAndEndDates.endDate, DATES_ERROR_MESSAGE),
-                    rules.max(input.endDate, 'Must be on or before the end date of the closure'),
+                    rules.min(fiscalStartAndEndDates.startDate, ''),
+                    rules.max(input.endDate ? input.endDate : fiscalStartAndEndDates.endDate, ''),
                     rules.MMDDYYYY,
                   ]"
                   label="Start Date"
                   clearable
                 />
               </v-col>
-              <v-col cols="12" lg="1" class="pt-6">to</v-col>
-              <v-col cols="12" lg="4">
+              <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
+              <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
                   :disabled="isDisabled"
@@ -172,9 +170,8 @@
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="[
                     ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, DATES_ERROR_MESSAGE),
-                    rules.min(input.startDate, 'Must be on or after the start date of the closure'),
-                    rules.max(fiscalStartAndEndDates.endDate, DATES_ERROR_MESSAGE),
+                    rules.min(input.startDate ? input.startDate : fiscalStartAndEndDates.startDate, ''),
+                    rules.max(fiscalStartAndEndDates.endDate, ''),
                     rules.MMDDYYYY,
                   ]"
                   label="End Date"
@@ -182,8 +179,21 @@
                 />
               </v-col>
             </v-row>
+            <div class="text-red mb-6">
+              <p
+                v-if="
+                  input.startDate < fiscalStartAndEndDates.startDate ||
+                  input.startDate > fiscalStartAndEndDates.endDate ||
+                  input.endDate < fiscalStartAndEndDates.startDate ||
+                  input.endDate > fiscalStartAndEndDates.endDate
+                "
+              >
+                You can only submit closures for the selected funding agreement term.
+              </p>
+              <p v-else-if="input.startDate > input.endDate">Start date must not exceed end date.</p>
+            </div>
             <v-row>
-              <v-col cols="12" lg="3">
+              <v-col cols="12" lg="3" class="mt-2">
                 <h3>Reason:</h3>
               </v-col>
               <v-col cols="12" lg="9">
@@ -355,7 +365,6 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
-    this.DATES_ERROR_MESSAGE = 'You can only submit closures for the current funding agreement term.';
   },
   methods: {
     async initInput() {
