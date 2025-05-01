@@ -379,8 +379,8 @@
                     inline
                     :rules="rules.required"
                   >
-                    <v-radio label="Yes" :value="1" />
-                    <v-radio label="No" :value="0" />
+                    <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+                    <v-radio label="No" :value="YES_NO_VALUES.NO" />
                   </v-radio-group>
                 </v-col>
 
@@ -557,6 +557,7 @@ import {
   ApiRoutes,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_FEE_CORRECT_TYPES,
+  YES_NO_VALUES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
@@ -708,6 +709,7 @@ export default {
   created() {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
+    this.YES_NO_VALUES = YES_NO_VALUES;
   },
   methods: {
     ...mapActions(useCcfriAppStore, [

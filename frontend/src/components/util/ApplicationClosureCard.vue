@@ -214,6 +214,7 @@ export default {
   created() {
     this.rules = rules;
     this.updatedClosures = cloneDeep(this.closures);
+    this.addRow(false);
     this.updatedClosures?.forEach((closure) => this.validateClosureDates(closure));
   },
   methods: {

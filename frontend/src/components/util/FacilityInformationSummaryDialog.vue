@@ -86,6 +86,7 @@
           />
         </v-expansion-panel>
         <v-expansion-panel
+          v-if="!showApplicationTemplateV1"
           :key="`${facility.facilityId}-closures-summary`"
           :value="`${facility.facilityId}-closures-summary`"
           variant="accordion"
@@ -167,7 +168,7 @@ import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import FacilityInformationSummaryDialogHeader from '@/components/util/FacilityInformationSummaryDialogHeader.vue';
-
+import { useApplicationStore } from '@/store/application.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import alertMixin from '@/mixins/alertMixin';
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -212,6 +213,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
     ...mapState(useSummaryDeclarationStore, ['facilities']),
     facility() {
       return this.facilities?.find((facility) => facility.facilityId === this.facilityId);
