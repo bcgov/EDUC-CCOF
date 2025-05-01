@@ -255,22 +255,22 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
 
 async function createClosureChangeRequest(req, res) {
   try {
-    const createChangeRequestReponse = await createRawChangeRequest(req);
+    const createChangeRequestResponse = await createRawChangeRequest(req);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
-    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestReponse.changeActionId})`;
+    changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestResponse.changeActionId})`;
     if (req.body.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
-    const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestReponse.changeRequestId})?$select=ccof_name`)];
+    const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestResponse.changeRequestId})?$select=ccof_name`)];
     if (req.body.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
       req.body.documents?.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
-        mappedDocument.ccof_change_action_id = createChangeRequestReponse.changeActionId;
+        mappedDocument.ccof_change_action_id = createChangeRequestResponse.changeActionId;
         asyncOperations.push(postChangeActionDocument(mappedDocument));
       });
     }
     const asyncOperationResponses = await Promise.all(asyncOperations);
-    await patchOperationWithObjectId('ccof_change_requests', createChangeRequestReponse.changeRequestId, { ccof_externalstatus: CHANGE_REQUEST_EXTERNAL_STATUS_CODES.SUBMITTED });
+    await patchOperationWithObjectId('ccof_change_requests', createChangeRequestResponse.changeRequestId, { ccof_externalstatus: CHANGE_REQUEST_EXTERNAL_STATUS_CODES.SUBMITTED });
     return res.status(HttpStatus.CREATED).json({ changeActionClosureId: asyncOperationResponses[0], changeRequestReferenceId: asyncOperationResponses[1].ccof_name });
   } catch (e) {
     log.error('error', e);
