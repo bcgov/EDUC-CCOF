@@ -365,7 +365,7 @@ export default {
       async handler(value) {
         this.isDisplayed = value;
         if (!value) return;
-        this.clearData();
+        await this.clearData();
         this.isLoading = true;
         if (
           this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ||
@@ -391,6 +391,8 @@ export default {
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        input.approvedStartDate = input.startDate;
+        input.approvedEndDate = input.endDate;
         return input;
       } catch (e) {
         console.log(e);
@@ -451,24 +453,6 @@ export default {
     deleteUploadedDocument(annotationId) {
       this.uploadedDocuments = this.uploadedDocuments.filter((document) => document.annotationId !== annotationId);
     },
-    getProcessedDocuments() {
-      const processedDocuments = this.input.documents.map((document) => {
-        return this.processDocument(document);
-      });
-      this.uploadedDocuments.forEach((document) => {
-        processedDocuments.push(this.processDocument(document));
-      });
-      return processedDocuments;
-    },
-    processDocument(document) {
-      return {
-        documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
-        fileSize: document.fileSize,
-        fileName: document.fileName,
-        documentBody: document.documentBody,
-        description: document.description,
-      };
-    },
     getPayload() {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
@@ -481,11 +465,19 @@ export default {
             paidClosure: this.input.paidClosure,
             fullClosure: this.input.fullClosure,
             ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
-            startDate: `${this.input.startDate}`,
-            endDate: `${this.input.endDate}`,
+            startDate: this.input.startDate,
+            endDate: this.input.endDate,
             closureReason: this.input.closureReason,
             closureDescription: this.input.description,
-            documents: this.getProcessedDocuments(),
+            documents: (this.input.documents + this.uploadedDocuments).map((document) => {
+              return {
+                documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
+                fileSize: document.fileSize,
+                fileName: document.fileName,
+                documentBody: document.documentBody,
+                description: document.description,
+              };
+            }),
             changeType: this.requestType,
           };
         case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
@@ -516,10 +508,11 @@ export default {
         this.isLoading = false;
       }
     },
-    clearData() {
+    async clearData() {
       this.selectedFacilityWasChanged = true;
+      this.facilityId = this.closure.facilityId;
       if (this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE) {
-        this.handleFullFacilityClosureChange(true);
+        await this.handleFullFacilityClosureChange(this.closure.fullClosure);
       }
       this.ageGroups = [];
       this.uploadedDocuments = [];
