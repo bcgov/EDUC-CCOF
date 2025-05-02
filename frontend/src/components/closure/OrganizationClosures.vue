@@ -24,7 +24,7 @@
             <p class="pb-2">Note: You can only submit closures for the current funding agreement term.</p>
             <p>
               To report a closure for a previous term, please return to the home page, select a different fiscal year,
-              and go to View Organization Closures.
+              and go to Organization Closures.
             </p>
           </AppAlertBanner>
         </v-col>
