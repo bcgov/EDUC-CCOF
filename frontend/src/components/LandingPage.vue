@@ -139,7 +139,8 @@
                 class="text-decoration-underline"
                 style="pointer-events: all"
                 href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-                >gov.bc.ca/childcareoperatingfunding
+              >
+                gov.bc.ca/childcareoperatingfunding
               </a>
             </p>
             <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
@@ -185,10 +186,10 @@
         </SmallCard>
       </v-col>
       <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
-        <SmallCard :disable="!organizationAccountNumber">
+        <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
-            <p class="text-h6">Account Management</p>
-            <p>Maintain or edit organization or facility information and request a change.</p>
+            <p class="text-h6">Request a change</p>
+            <p>Submit a request to change your Organization, licence, service detail, or parent fee information.</p>
           </template>
           <template #button>
             <v-row no-gutters>
@@ -198,8 +199,12 @@
                 </v-btn>
               </v-col>
               <v-col class="col-12">
-                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" :href="PATHS.ROOT.ACCOUNT_MGMT">
-                  Manage Account
+                <v-btn
+                  :class="buttonColor(!isReportChangeButtonEnabled)"
+                  theme="dark"
+                  @click="goToChangeRequestHistory()"
+                >
+                  Request a change
                 </v-btn>
               </v-col>
             </v-row>
@@ -223,6 +228,28 @@
             >
               Submit a report
             </v-btn>
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+        <SmallCard :disable="!organizationAccountNumber">
+          <template #content>
+            <p class="text-h6">Manage Organization and Facilities</p>
+            <p>View or update your organization, facility details, and funding agreement.</p>
+          </template>
+          <template #button>
+            <v-row no-gutters>
+              <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
+                <v-btn :class="buttonColor(false)" theme="dark" @click="goToChangeRequestHistory()">
+                  Update change request
+                </v-btn>
+              </v-col>
+              <v-col class="col-12">
+                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" :href="PATHS.ROOT.ACCOUNT_MGMT">
+                  Manage Organization and Facilities
+                </v-btn>
+              </v-col>
+            </v-row>
           </template>
         </SmallCard>
       </v-col>
@@ -557,6 +584,12 @@ export default {
     isCCOFApproved() {
       return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS_APPROVED;
     },
+    isReportChangeButtonEnabled() {
+      if (this.applicationType === 'RENEW' && this.organizationAccountNumber) {
+        return true;
+      }
+      return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
+    },
     isUpdateChangeRequestDisplayed() {
       const index = this.changeRequestStore?.findIndex(
         (changeRequest) => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED,
@@ -632,6 +665,9 @@ export default {
     renewApplication() {
       this.setIsRenewal(true);
       this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.getNextProgramYear?.programYearId));
+    },
+    goToChangeRequestHistory() {
+      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
       this.goToLicenseUpload();
