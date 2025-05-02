@@ -56,6 +56,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
 });
 
@@ -172,10 +173,6 @@ export function changeUrlGuid(
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
 }
 
-export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.CLOSURES}/${programYearGuid}`;
-}
-
 export const NAV_BAR_GROUPS = {
   CCOF: 'CCOF',
   CCFRI: 'CCFRI',
@@ -280,6 +277,8 @@ export const CHANGE_REQUEST_TYPES = {
   PDF_CHANGE: 100000013,
   NEW_CATEGORY: 100000014,
   NEW_CLOSURE: 100000015,
+  EDIT_EXISTING_CLOSURE: 100000016,
+  REMOVE_A_CLOSURE: 100000017,
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
@@ -434,6 +433,7 @@ export const CLOSURE_STATUSES = Object.freeze({
   COMPLETE_NOT_APPROVED: 100000002,
   CANCELLED: 100000003,
   MINISTRY_REMOVED: 100000004,
+  WITHDRAWN: 100000005,
 });
 
 export const CLOSURE_STATUS_TEXTS = Object.freeze({
@@ -441,6 +441,7 @@ export const CLOSURE_STATUS_TEXTS = Object.freeze({
   APPROVED: 'Approved',
   NOT_APPROVED: 'Not Approved',
   CANCELLED: 'Cancelled',
+  WITHDRAWN: 'Withdrawn',
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({

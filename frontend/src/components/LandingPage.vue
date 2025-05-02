@@ -343,7 +343,6 @@ import {
   PATHS,
   pcfUrl,
   pcfUrlGuid,
-  closureUrl,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -701,9 +700,10 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.$router.push(
-        closureUrl(this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.latestProgramYearId),
-      );
+      const programYearId = this.selectedProgramYear
+        ? this.selectedProgramYear.programYearId
+        : this.latestProgramYearId;
+      this.$router.push(`${PATHS.CLOSURES}/${programYearId}`);
     },
     async getAllMessagesVuex() {
       try {

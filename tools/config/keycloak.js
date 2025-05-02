@@ -32,8 +32,10 @@ function getExplicitRedirectEndpoints(rootUrl) {
   return [
     `${rootUrl}/api/auth/callback`,
     `${rootUrl}/api/auth/callback_idir`,
-    `${rootUrl}/logout`,
-    `${rootUrl}/session-expired`
+    `${rootUrl}/logout?idir=true`,
+    `${rootUrl}/logout?idir=false`,
+    `${rootUrl}/session-expired?idir=true`,
+    `${rootUrl}/session-expired?idir=false`,
   ]
 }
 
