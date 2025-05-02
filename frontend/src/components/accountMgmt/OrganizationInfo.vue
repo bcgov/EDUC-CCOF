@@ -1,5 +1,20 @@
 <template>
   <v-container class="pl-0 pr-0" fluid>
+    <v-row class="pb-1">
+      <v-col cols="12" sm="6"><h2>Organization Info</h2></v-col>
+      <v-col cols="12" sm="6">
+        <v-row no-gutters justify="beginning" justify-sm="end">
+          <v-btn
+            :class="isReportChangeButtonEnabled ? 'blueButton' : 'disabledButton'"
+            theme="dark"
+            :href="`${PATHS.ROOT.CHANGE_LANDING}#change-request-history`"
+            :disabled="!isReportChangeButtonEnabled"
+          >
+            Request a Change
+          </v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
     <v-row v-if="isLoadingModel" class="mb-4" no-gutters>
       <v-col cols="12" lg="6">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
