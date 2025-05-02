@@ -507,6 +507,25 @@ export default {
                 navBarId: navBarId++,
               });
             }
+            if (!this.showApplicationTemplateV1) {
+              items.push({
+                title: PAGE_TITLES.CCFRI_CLOSURES,
+                subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
+                id: item.facilityId,
+                link: {
+                  name: 'change-request-ccfri-closures-guid',
+                  params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
+                },
+                isAccessible: this.applicationStatus === 'SUBMITTED' || this.isCCFRIOptInComplete(),
+                icon: this.getCheckbox(item.isCCFRIClosuresComplete),
+                isActive:
+                  'change-request-ccfri-closures-guid' === this.$route.name &&
+                  this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++,
+              });
+            }
           }
         });
       }

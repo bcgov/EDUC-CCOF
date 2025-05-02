@@ -38,11 +38,9 @@
               <ApplicationClosureCard
                 v-if="CCFRIFacilityModel.hasClosureFees === CCFRI_FEE_CORRECT_TYPES.YES"
                 ref="closureCards"
-                :closures="closures"
+                :closures="loadedClosures"
                 :readonly="isApplicationProcessing || isReadOnly"
                 @update-closures="updateClosures"
-                @update-closures-complete="updateClosuresComplete"
-                @update-has-illegal-closure-dates="updateHasIllegalClosureDates"
               />
             </div>
           </v-card>
@@ -68,7 +66,6 @@ import { mapState, mapActions } from 'pinia';
 import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import rules from '@/utils/rules.js';
 
@@ -87,20 +84,12 @@ export default {
     next();
   },
   computed: {
-    ...mapState(useNavBarStore, [
-      'navBarList',
-      'changeType',
-      'nextPath',
-      'previousPath',
-      'isChangeRequest',
-      'getChangeActionNewFacByFacilityId',
-    ]),
-    ...mapState(useReportChangesStore, ['changeRequestStatus']),
+    ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     currentFacility() {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     isReadOnly() {
-      if (this.currentFacility.unlockCcfri) {
+      if (this.currentFacility?.unlockCcfri) {
         return false;
       }
       if (this.isChangeRequest) {
@@ -141,7 +130,7 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useCcfriAppStore, ['loadCCFRIFacility', 'updateApplicationCCFRI']),
-    ...mapActions(useNavBarStore, ['setNavBarCCFRIClosuresComplete']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarCCFRIClosuresComplete']),
     previous() {
       this.$router.push(this.previousPath);
     },
@@ -152,22 +141,26 @@ export default {
       if (this.isReadonly) return;
       try {
         this.setIsApplicationProcessing(true);
-        if (this.loadedModel?.hasClosureFees !== this.CCFRIFacilityModel?.hasClosureFees) {
-          await this.updateApplicationCCFRI(this.$route.params.urlGuid, {
-            hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
-          });
-          this.loadedModel.hasClosureFees = this.CCFRIFacilityModel.hasClosureFees;
+
+        await this.updateApplicationCCFRI(this.$route.params.urlGuid, {
+          hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
+          isCCFRIClosuresComplete: this.isClosuresSectionComplete,
+        });
+        this.loadedModel.hasClosureFees = this.CCFRIFacilityModel.hasClosureFees;
+
+        if (!this.hasIllegalClosureDates) {
+          await this.processUpdatedClosures();
         }
-        await this.processUpdatedClosures();
         await this.loadClosures(this.$route.params.urlGuid);
         this.setNavBarCCFRIClosuresComplete({
           ccfriId: this.$route.params.urlGuid,
           complete: this.isClosuresSectionComplete,
         });
-        // if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
-        //   const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
-        //   newFac.ccfri.isCCFRIComplete = this.isClosuresSectionComplete();
-        // }
+        if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
+          const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
+          newFac.ccfri.isCCFRIClosuresComplete = this.isClosuresSectionComplete;
+        }
+        this.refreshNavBarList();
         if (showMessage) {
           this.setSuccessAlert('Application saved successfully.');
         }

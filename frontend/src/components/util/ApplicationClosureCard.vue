@@ -139,7 +139,7 @@
 </template>
 <script>
 import { cloneDeep, isEmpty } from 'lodash';
-import { mapState } from 'pinia';
+import { mapState, mapWritableState } from 'pinia';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -171,7 +171,7 @@ export default {
       default: false,
     },
   },
-  emits: ['updateClosures', 'updateClosuresComplete', 'updateHasIllegalClosureDates'],
+  emits: ['updateClosures'],
   data() {
     return {
       updatedClosures: [],
@@ -179,12 +179,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'showApplicationTemplateV1']),
+    ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'programYearId', 'showApplicationTemplateV1']),
     ...mapState(useCcfriAppStore, ['CCFRIFacilityModel']),
+    ...mapWritableState(useCcfriAppStore, ['areClosureItemsComplete', 'hasIllegalClosureDates']),
     childCareCategories() {
       const ageGroups = [];
       this.CCFRIFacilityModel?.childCareTypes
-        ?.filter((careType) => careType.programYearId === this.$route.params.programYearGuid)
+        ?.filter((careType) => careType.programYearId === this.programYearId)
         ?.forEach((ageGroup) => {
           ageGroups.push({
             label: ageGroup.childCareCategory,
@@ -192,9 +193,6 @@ export default {
           });
         });
       return ageGroups;
-    },
-    hasIllegalClosureDates() {
-      return this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
     },
     areClosuresComplete() {
       return this.isValidForm && !this.hasIllegalClosureDates;
@@ -204,18 +202,14 @@ export default {
     updatedClosures: {
       handler() {
         if (isEmpty(this.updatedClosures)) return;
+        this.hasIllegalClosureDates = this.updatedClosures?.some((el) => el.datesOverlap || el.datesInvalid);
         this.$emit('updateClosures', cloneDeep(this.updatedClosures));
       },
       deep: true,
     },
     areClosuresComplete: {
       handler() {
-        this.$emit('updateClosuresComplete', this.areClosuresComplete);
-      },
-    },
-    hasIllegalClosureDates: {
-      handler() {
-        this.$emit('updateHasIllegalClosureDates', this.hasIllegalClosureDates);
+        this.areClosureItemsComplete = this.areClosuresComplete;
       },
     },
   },

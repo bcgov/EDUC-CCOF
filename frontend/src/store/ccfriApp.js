@@ -1,4 +1,4 @@
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -6,7 +6,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { deepCloneObject, sleep } from '@/utils/common.js';
-import { ApiRoutes, CCFRI_HAS_CLOSURE_FEE_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { ApiRoutes, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 function replaceChildCareLabel(currentYearLanguageLabel, childCareCategoryList, childCareTypes) {
@@ -181,6 +181,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
         notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
         hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
+        ccof_closureformcomplete: this.areClosureItemsComplete,
         existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
       };
       if (this.isRenewal) {

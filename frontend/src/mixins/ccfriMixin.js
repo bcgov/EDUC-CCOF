@@ -97,7 +97,7 @@ export default {
       return !isEqual(this.CCFRIFacilityModel, this.loadedModel);
     },
     isReadOnly() {
-      if (this.currentFacility.unlockCcfri) {
+      if (this.currentFacility?.unlockCcfri) {
         return false;
       }
       if (this.isChangeRequest) {
@@ -130,21 +130,13 @@ export default {
     ...mapActions(useCcfriAppStore, [
       'saveCcfri',
       'loadCCFRIFacility',
-      'loadFacilityCareTypes',
       'decorateWithCareTypes',
       'loadCCFisCCRIMedian',
       'getCcfriOver3percent',
-      'setFeeModel',
-      'addModelToStore',
       'deleteChildCareTypes',
       'setLoadedModel',
     ]),
-    ...mapActions(useNavBarStore, [
-      'addToRfiNavBarStore',
-      'forceNavBarRefresh',
-      'setNavBarValue',
-      'setNavBarCCFRIComplete',
-    ]),
+    ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarValue', 'setNavBarCCFRIComplete']),
 
     closeDialog() {
       this.showRfiDialog = false;
@@ -220,21 +212,21 @@ export default {
           });
           this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel));
         }
-        if (this.showApplicationTemplateV1) {
+        if (this.showApplicationTemplateV1 && !this.hasIllegalClosureDates) {
           await this.processUpdatedClosures();
           await this.loadClosures(this.$route.params.urlGuid);
         }
         this.setNavBarCCFRIComplete({ ccfriId: this.ccfriId, complete: this.isFormComplete });
-        if (this.changeType == CHANGE_TYPES.NEW_FACILITY) {
+        if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
           const newFac = this.getChangeActionNewFacByFacilityId(this.CCFRIFacilityModel.facilityId);
           newFac.ccfri.isCCFRIComplete = this.isFormComplete;
         }
+        //remove the facility to delete from the store
+        this.deleteChildCareTypes();
+        this.refreshNavBarList();
         if (showMessage) {
           this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
         }
-        //remove the facility to delete from the store
-        this.deleteChildCareTypes();
-        this.forceNavBarRefresh();
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');

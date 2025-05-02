@@ -56,7 +56,7 @@
               </p>
             </div>
             <v-row>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeApr"
                   type="number"
@@ -69,7 +69,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeMay"
                   type="number"
@@ -82,7 +82,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeJun"
                   type="number"
@@ -95,7 +95,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeJul"
                   type="number"
@@ -108,7 +108,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeAug"
                   type="number"
@@ -121,7 +121,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeSep"
                   type="number"
@@ -134,10 +134,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
                 />
               </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeOct"
                   type="number"
@@ -150,7 +147,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeOct')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeNov"
                   type="number"
@@ -163,7 +160,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeNov')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeDec"
                   type="number"
@@ -176,7 +173,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeDec')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeJan"
                   type="number"
@@ -189,7 +186,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJan')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeFeb"
                   type="number"
@@ -202,7 +199,7 @@
                   @update:model-value="convertBlankNumberToNull(item, 'approvedFeeFeb')"
                 />
               </v-col>
-              <v-col class="col-6 col-md-2">
+              <v-col cols="6" sm="4" md="3" lg="2">
                 <v-text-field
                   v-model.number="item.approvedFeeMar"
                   type="number"
@@ -248,8 +245,6 @@
           :readonly="isApplicationProcessing || isReadOnly"
           class="pb-2"
           @update-closures="updateClosures"
-          @update-closures-complete="updateClosuresComplete"
-          @update-has-illegal-closure-dates="updateHasIllegalClosureDates"
         />
       </div>
     </v-card>

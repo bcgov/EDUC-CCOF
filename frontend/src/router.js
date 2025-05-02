@@ -670,6 +670,18 @@ const router = createRouter({
       },
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'change-request-ccfri-closures-guid',
+      component: CcfriClosures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+      },
+    },
+    {
       path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,

@@ -62,6 +62,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
   { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
+  { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
 
 const RFIApplicationMappings = [
@@ -344,6 +345,7 @@ const UserProfileBaseCCFRIMappings = [
   { back: 'ccof_formcomplete', front: 'isCCFRIComplete' },
   { back: 'ccof_has_nmf', front: 'hasNmf' },
   { back: 'ccof_has_rfi', front: 'hasRfi' },
+  { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete' },
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete' },
 ];

@@ -57,6 +57,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           ccfriApplicationId: el.ccfri?.ccfriApplicationId,
           ccfriFacilityId: el.ccfri?.ccfriFacilityId,
           isCCFRIComplete: el.ccfri?.isCCFRIComplete,
+          isCCFRIClosuresComplete: el.ccfri?.isCCFRIClosuresComplete,
           hasNmf: el.ccfri?.hasNmf,
           hasRfi: el.ccfri?.hasRfi,
           isNmfComplete: el.ccfri?.isNmfComplete,

@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container class="mx-4 mx-lg-16">
+    <v-container fluid class="mx-8 mx-lg-16">
       <AddNewFeesV1 v-if="showApplicationTemplateV1" />
       <AddNewFeesV2 v-else />
     </v-container>

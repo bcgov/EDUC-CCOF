@@ -45,15 +45,15 @@ export default {
       'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, ['navBarList', 'changeType', 'isChangeRequest', 'getChangeActionNewFacByFacilityId']),
-    ...mapState(useCcfriAppStore, ['CCFRIFacilityModel', 'loadedModel']),
+    ...mapState(useCcfriAppStore, [
+      'areClosureItemsComplete',
+      'CCFRIFacilityModel',
+      'hasIllegalClosureDates',
+      'loadedModel',
+    ]),
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useReportChangesStore, ['changeRequestStatus']),
-    ...mapWritableState(useCcfriAppStore, [
-      'areClosureItemsComplete',
-      'hasIllegalClosureDates',
-      'loadedClosures',
-      'updatedClosures',
-    ]),
+    ...mapWritableState(useCcfriAppStore, ['loadedClosures', 'updatedClosures']),
     isClosuresSectionComplete() {
       return (
         this.CCFRIFacilityModel.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
@@ -81,12 +81,6 @@ export default {
     updateClosures(updatedClosures) {
       if (isEmpty(updatedClosures)) return;
       this.updatedClosures = cloneDeep(updatedClosures);
-    },
-    updateClosuresComplete(areClosureItemsComplete) {
-      this.areClosureItemsComplete = areClosureItemsComplete;
-    },
-    updateHasIllegalClosureDates(hasIllegalClosureDates) {
-      this.hasIllegalClosureDates = hasIllegalClosureDates;
     },
     hasClosureChanged(originalClosure, updatedClosure) {
       const isAgeGroupsUpdated =
