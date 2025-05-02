@@ -71,7 +71,7 @@
       <v-col cols="12" lg="6" class="mt-3 mt-lg-0 pl-lg-3">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row no-gutters class="my-2">
-            <AppLabel>Mailing{{ organizationModel.isSameAsMailing ? ' &amp; Physical' : '' }} Address:</AppLabel>
+            <AppLabel>Mailing Address</AppLabel>
           </v-row>
           <v-row no-gutters class="my-2">
             <v-col cols="12" sm="5" xl="4" xxl="3">
@@ -113,51 +113,49 @@
               </v-row>
             </v-col>
           </v-row>
-          <div v-if="!organizationModel.isSameAsMailing">
-            <v-row no-gutters class="mt-6 mb-2">
-              <AppLabel>Physical Address:</AppLabel>
-            </v-row>
-            <v-row no-gutters class="my-2">
-              <v-col cols="12" sm="5" xl="4" xxl="3">
-                <AppLabel>Street Address</AppLabel>
-              </v-col>
-              <v-col cols="12" sm="7" xl="8">
-                {{ organizationModel.address2 }}
-              </v-col>
-            </v-row>
-            <v-row no-gutters class="my-2">
-              <v-col cols="12">
-                <v-row no-gutters>
-                  <v-col cols="12" sm="5" xl="4" xxl="3">
-                    <AppLabel>City:</AppLabel>
-                  </v-col>
-                  <v-col cols="12" sm="7" xl="8" xxl="9">
-                    {{ organizationModel.city2 }}
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col cols="12" class="my-2 my-xl-0">
-                <v-row no-gutters>
-                  <v-col cols="12" sm="5" xl="4" xxl="3">
-                    <AppLabel>Province:</AppLabel>
-                  </v-col>
-                  <v-col cols="12" sm="7" xl="8" xxl="9">
-                    {{ organizationModel.province2 }}
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col cols="12">
-                <v-row no-gutters>
-                  <v-col cols="12" sm="5" xl="4" xxl="3">
-                    <AppLabel>Postal Code:</AppLabel>
-                  </v-col>
-                  <v-col cols="12" sm="7" xxl="8">
-                    {{ organizationModel.postalCode2 }}
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </div>
+          <v-row no-gutters class="mt-6 mb-2">
+            <AppLabel>Physical Address:</AppLabel>
+          </v-row>
+          <v-row no-gutters class="my-2">
+            <v-col cols="12" sm="5" xl="4" xxl="3">
+              <AppLabel>Street Address</AppLabel>
+            </v-col>
+            <v-col cols="12" sm="7" xl="8">
+              {{ organizationModel.address2 }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="my-2">
+            <v-col cols="12">
+              <v-row no-gutters>
+                <v-col cols="12" sm="5" xl="4" xxl="3">
+                  <AppLabel>City:</AppLabel>
+                </v-col>
+                <v-col cols="12" sm="7" xl="8" xxl="9">
+                  {{ organizationModel.city2 }}
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12" class="my-2 my-xl-0">
+              <v-row no-gutters>
+                <v-col cols="12" sm="5" xl="4" xxl="3">
+                  <AppLabel>Province:</AppLabel>
+                </v-col>
+                <v-col cols="12" sm="7" xl="8" xxl="9">
+                  {{ organizationModel.province2 }}
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12">
+              <v-row no-gutters>
+                <v-col cols="12" sm="5" xl="4" xxl="3">
+                  <AppLabel>Postal Code:</AppLabel>
+                </v-col>
+                <v-col cols="12" sm="7" xxl="8">
+                  {{ organizationModel.postalCode2 }}
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>

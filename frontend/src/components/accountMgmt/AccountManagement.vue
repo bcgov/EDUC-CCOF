@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       tab: undefined,
-      PATHS
+      PATHS,
     };
   },
   mounted() {
