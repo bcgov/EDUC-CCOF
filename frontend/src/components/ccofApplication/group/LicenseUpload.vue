@@ -141,7 +141,14 @@ export default {
   computed: {
     ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
-    ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'nextPath', 'previousPath', 'isChangeRequest']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'nextPath',
+      'previousPath',
+      'isChangeRequest',
+      'userProfileList',
+    ]),
     ...mapState(useApplicationStore, [
       'isRenewal',
       'formattedProgramYear',
@@ -168,15 +175,6 @@ export default {
       }
       return false;
     },
-    // getFacilityList(){
-    //   let facilityList;
-    //   if (this.isChangeRequest) {
-    //     facilityList =  this.navBarList.filter(el => el.changeRequestId === this.$route.params.changeRecGuid);
-    //   } else {
-    //     facilityList = this.navBarList.filter(el => !el.changeRequestId);
-    //   }
-    //   return facilityList;
-    // },
     nextButtonDisabled() {
       let facilityList = this.navBarList;
 
@@ -272,8 +270,7 @@ export default {
       const fileList = [];
       for (const facilityId of this.fileMap.keys()) {
         const file = this.fileMap.get(facilityId);
-        //let facilityList = this.getFacilityList;
-        let currFac = this.navBarList.find((fac) => fac.facilityId === facilityId);
+        const currFac = this.userProfileList.find((fac) => fac.facilityId === facilityId);
         const obj = {
           ccof_applicationid: this.applicationId,
           ccof_facility: facilityId,
