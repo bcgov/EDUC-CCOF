@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-12">
-    <h1 class="mb-6">Account Management</h1>
+    <h1 class="mb-6">Organization and Facilities</h1>
     <v-card>
       <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
         <v-tab value="organization-tab"> Organization and Contact Information </v-tab>
@@ -15,19 +15,35 @@
         </v-window>
       </v-card-text>
     </v-card>
+    <v-row>
+      <v-col>
+        <NavButton
+          :is-next-displayed="false"
+          :is-save-displayed="false"
+          :is-next-disabled="true"
+          :is-processing="false"
+          @previous="() => $router.push(PATHS.ROOT.HOME)"
+          @validate-form="validateForm()"
+          @save="save(true)"
+        />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 <script>
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { PATHS } from '@/utils/constants.js';
 
 import ManageOrganization from '@/components/accountMgmt/ManageOrganization.vue';
+import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization },
+  components: { ManageOrganization, NavButton },
   data() {
     return {
       tab: undefined,
+      PATHS
     };
   },
   mounted() {

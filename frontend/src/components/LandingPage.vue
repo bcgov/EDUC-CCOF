@@ -245,7 +245,11 @@
                 </v-btn>
               </v-col>
               <v-col class="col-12">
-                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" :href="PATHS.ROOT.ACCOUNT_MGMT">
+                <v-btn
+                  :class="buttonColor(!organizationAccountNumber)"
+                  theme="dark"
+                  @click="() => $router.push(PATHS.ROOT.ACCOUNT_MGMT)"
+                >
                   Manage Organization and Facilities
                 </v-btn>
               </v-col>
