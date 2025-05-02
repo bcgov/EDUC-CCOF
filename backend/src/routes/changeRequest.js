@@ -46,7 +46,7 @@ const closureChangeRequestSchema = {
   changeType: {
     in: ['body'],
     isIn: {
-      options: [[`${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
+      options: [[CHANGE_REQUEST_TYPES.NEW_CLOSURE, CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
       errorMessage: '[changeType] must be NEW_CLOSURE or REMOVE_A_CLOSURE',
     },
   },
@@ -62,10 +62,10 @@ const closureChangeRequestSchema = {
     in: ['body'],
     custom: {
       options: (value, { req }) => {
-        if (req.body.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE && !value) {
-          throw new Error('[closureId] is required for closure removal requests');
+        if ([CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE].includes(req.body.changeType) && value) {
+          return true;
         }
-        return true;
+        throw new Error('[closureId] is required for closure removal requests');
       },
     },
   },

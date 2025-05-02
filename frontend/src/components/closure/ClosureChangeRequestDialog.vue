@@ -453,50 +453,34 @@ export default {
     deleteUploadedDocument(annotationId) {
       this.uploadedDocuments = this.uploadedDocuments.filter((document) => document.annotationId !== annotationId);
     },
-    getPayload() {
-      switch (this.requestType) {
-        case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
-        case CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE:
-          return {
-            applicationId: this.applicationId,
-            programYearId: this.programYearId,
-            organizationId: this.userInfo?.organizationId,
-            facilityId: this.input.facilityId,
-            paidClosure: this.input.paidClosure,
-            fullClosure: this.input.fullClosure,
-            ageGroups: this.input.fullClosure ? undefined : this.input.ageGroups.join(','),
-            startDate: this.input.startDate,
-            endDate: this.input.endDate,
-            closureReason: this.input.closureReason,
-            closureDescription: this.input.description,
-            documents: (this.input.documents + this.uploadedDocuments).map((document) => {
-              return {
-                documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
-                fileSize: document.fileSize,
-                fileName: document.fileName,
-                documentBody: document.documentBody,
-                description: document.description,
-              };
-            }),
-            changeType: this.requestType,
-          };
-        case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
-          return {
-            applicationId: this.applicationId,
-            programYearId: this.programYearId,
-            facilityId: this.input.facilityId,
-            organizationId: this.userInfo?.organizationId,
-            closureId: this.closure.closureId,
-            changeType: this.requestType,
-            closureReason: this.input.reasonForClosureRemoval,
-          };
-        default:
-          return null;
-      }
-    },
     async submit() {
       this.isLoading = true;
-      const payload = this.getPayload();
+      const payload = {
+        applicationId: this.applicationId,
+        programYearId: this.programYearId,
+        organizationId: this.userInfo?.organizationId,
+        facilityId: this.input.facilityId,
+        changeType: this.requestType,
+        closureId: this.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE ? undefined : this.closure.closureId,
+        paidClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.paidClosure,
+        fullClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.fullClosure,
+        ageGroups:
+          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE || this.input.fullClosure
+            ? undefined
+            : this.input.ageGroups.join(','),
+        startDate: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.startDate,
+        endDate: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.endDate,
+        closureReason:
+          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
+            ? this.input.reasonForClosureRemoval
+            : this.input.closureReason,
+        closureDescription:
+          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.description,
+        documents:
+          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
+            ? undefined
+            : this.processDocuments([...this.input.documents, ...this.uploadedDocuments]),
+      };
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
@@ -507,6 +491,17 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+    processDocuments(documents) {
+      return documents.map((document) => {
+        return {
+          documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
+          fileSize: document.fileSize,
+          fileName: document.fileName,
+          documentBody: document.documentBody,
+          description: document.description,
+        };
+      });
     },
     async clearData() {
       this.selectedFacilityWasChanged = true;
