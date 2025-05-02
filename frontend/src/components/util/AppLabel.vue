@@ -1,7 +1,7 @@
 <template>
-  <label class="app-label">
+  <span class="app-label">
     <slot></slot>
-  </label>
+  </span>
 </template>
 <script>
 export default {

@@ -19,7 +19,6 @@
 </template>
 <script>
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useFacilityStore } from '@/store/ccof/facility.js';
 
 import ManageOrganization from '@/components/accountMgmt/ManageOrganization.vue';
 
@@ -33,7 +32,6 @@ export default {
   },
   mounted() {
     const organizationStore = useOrganizationStore();
-    const facilityStore = useFacilityStore();
     organizationStore.loadOrganization(organizationStore.organizationId);
   },
 };
