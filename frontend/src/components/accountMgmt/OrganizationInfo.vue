@@ -48,7 +48,7 @@
           </v-row>
           <v-row no-gutters class="my-2">
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization ID</AppLabel>
+              <AppLabel>Organization ID:</AppLabel>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
               {{ organizationAccountNumber }}
@@ -87,7 +87,7 @@
           </v-row>
           <v-row no-gutters class="my-2">
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address</AppLabel>
+              <AppLabel>Street Address:</AppLabel>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
               {{ organizationModel.address1 }}
