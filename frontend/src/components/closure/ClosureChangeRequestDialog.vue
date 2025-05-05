@@ -165,17 +165,17 @@
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="showDateError"
+                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
                   label="End Date"
                   clearable
                 />
               </v-col>
             </v-row>
-            <div v-if="showDateError" class="error-message mb-6">
+            <div v-if="input.startDate && input.endDate" class="error-message mb-6">
               <p v-if="fiscalYearError">
                 {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
               </p>
-              <p v-else>{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
+              <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
             </div>
             <v-row>
               <v-col cols="12" lg="3" class="mt-2">
@@ -228,7 +228,7 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton :disabled="!isValidForm || isLoading || showDateError" @click="submit">{{
+            <AppButton :disabled="disableSubmit" @click="submit">{{
               requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? 'Remove Closure' : 'Submit'
             }}</AppButton>
           </v-col>
@@ -318,12 +318,8 @@ export default {
     isDisabled() {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
-    showDateError() {
-      return (
-        this.input.startDate &&
-        this.input.endDate &&
-        (this.fiscalYearError || this.input.startDate > this.input.endDate)
-      );
+    endDateBeforeStartDateError() {
+      return this.input.startDate > this.input.endDate;
     },
     fiscalYearError() {
       return (
@@ -350,6 +346,9 @@ export default {
         (application) => application.ccofProgramYearId === this.programYearId,
       );
       return application?.applicationId;
+    },
+    disableSubmit() {
+      return !this.isValidForm || this.isLoading || this.fiscalYearError || this.endDateBeforeStartDateError;
     },
   },
   watch: {
