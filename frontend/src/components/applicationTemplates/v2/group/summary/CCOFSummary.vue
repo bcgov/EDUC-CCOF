@@ -51,8 +51,8 @@
           <v-col v-if="funding?.hasClosedMonth" cols="12" lg="6" class="pb-0 pt-0">
             <v-row no-gutters class="d-flex justify-start">
               <v-col cols="12" class="d-flex justify-start">
-                <span class="summary-label pt-3"
-                  >Months where ALL of the programs at this facility are closed for the entire month:
+                <span class="summary-label pt-3">
+                  Months where ALL of the programs at this facility are closed for the entire month:
                 </span>
               </v-col>
               <v-col v-if="funding?.closedIn1" cols="6" sm="4" class="d-flex justify-start">
@@ -477,7 +477,7 @@
         <v-row no-gutters class="pb-2">
           <v-col cols="12" md="6" class="summary-label pt-2">
             Do you <b>regularly offer</b> extended hours of child care
-            <b>(care before 6:00 am, after 7:00pm or overnight service regularly offered)</b>?
+            <b>(care before 6:00 AM, after 7:00 PM, or overnight service)</b>?
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field

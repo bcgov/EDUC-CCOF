@@ -1,86 +1,91 @@
 <template>
-  <v-container class="px-xl-12">
-    <v-form ref="form" v-model="isValidForm">
-      <div align="center">
-        <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
-          <v-card-title class="py-2 noticeAlert text-left">
-            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-            You have a change request in progress.
-          </v-card-title>
-          <v-card-text class="pa-4 text-left">
-            We will complete the assessment of your Program Confirmation Form once your change has been processed.
-          </v-card-text>
-        </v-card>
-      </div>
-      <v-card class="cc-top-level-card">
-        <v-card-title class="text-center text-wrap pb-0">
-          <h3>
-            Licence Upload
-            <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
-          </h3>
-        </v-card-title>
-        <div class="licence-upload-hint pb-5 mx-10 text-center">
-          Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility.
-          {{ FILE_REQUIREMENTS_TEXT }}
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
+    <v-container fluid class="mx-lg-16">
+      <v-form ref="form" v-model="isValidForm">
+        <div align="center">
+          <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
+            <v-card-title class="py-2 noticeAlert text-left">
+              <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+              You have a change request in progress.
+            </v-card-title>
+            <v-card-text class="pa-4 text-left">
+              We will complete the assessment of your Program Confirmation Form once your change has been processed.
+            </v-card-text>
+          </v-card>
         </div>
-        <v-data-table
-          v-if="!isLoading"
-          :headers="headers"
-          :items="licenseUploadData"
-          hide-default-footer
-          :items-per-page="-1"
-          :mobile="null"
-          mobile-breakpoint="md"
-          class="pa-4"
-        >
-          <template #item.document="{ item }">
-            <div v-if="item.document?.annotationid">
-              <span class="mr-2"> {{ item.document?.filename }} </span>
-              <v-icon v-if="!isLocked" small @click="deleteFile(item)">mdi-delete</v-icon>
-            </div>
-            <v-file-input
-              v-else
-              :id="item.facilityId"
-              color="#003366"
-              :rules="rules.fileRules"
-              prepend-icon="mdi-file-upload"
-              class="pt-4"
-              :accept="FILE_TYPES_ACCEPT"
-              :disabled="isLocked"
-              placeholder="Select your file"
-              @click:clear="deleteFile(item)"
-              @change="selectFile"
-            />
-          </template>
-        </v-data-table>
-        <v-card v-if="isLoading" class="pl-6 pr-6 pt-4">
-          <v-skeleton-loader :loading="true" type="button" />
-          <v-skeleton-loader max-height="375px" :loading="true" type="table-row-divider@3" />
+        <v-card class="cc-top-level-card">
+          <v-card-title class="text-center text-wrap pb-0">
+            <h3>
+              Licence Upload
+              <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
+            </h3>
+          </v-card-title>
+          <div class="licence-upload-hint pb-5 mx-10 text-center">
+            Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility.
+            {{ FILE_REQUIREMENTS_TEXT }}
+          </div>
+          <v-data-table
+            :headers="headers"
+            :items="licenseUploadData"
+            hide-default-footer
+            :items-per-page="-1"
+            :mobile="null"
+            mobile-breakpoint="md"
+            class="pa-4"
+          >
+            <template #header.document="{ column }">
+              <v-row align="center">
+                <v-col style="max-width: 40px">
+                  <AppTooltip tooltip-content="Upload the licence issued by your Health Authority." />
+                </v-col>
+                <v-col>{{ column.title }}</v-col>
+              </v-row>
+            </template>
+            <template #item.document="{ item }">
+              <div v-if="item.document?.annotationid">
+                <span class="mr-2"> {{ item.document?.filename }} </span>
+                <v-icon v-if="!isLocked" small @click="deleteFile(item)">mdi-delete</v-icon>
+              </div>
+              <v-file-input
+                v-else
+                :id="item.facilityId"
+                color="#003366"
+                :rules="rules.fileRules"
+                prepend-icon="mdi-file-upload"
+                class="pt-4"
+                :accept="FILE_TYPES_ACCEPT"
+                :disabled="isLocked"
+                placeholder="Select your file"
+                @click:clear="deleteFile(item)"
+                @change="selectFile"
+              />
+            </template>
+          </v-data-table>
         </v-card>
-      </v-card>
-      <NavButton
-        :is-next-displayed="true"
-        :is-save-displayed="true"
-        :is-save-disabled="!isValidForm || isLocked"
-        :is-next-disabled="!isValidForm || nextButtonDisabled"
-        :is-processing="isProcessing"
-        @previous="previous"
-        @next="next"
-        @validate-form="validateForm()"
-        @save="saveClicked()"
-      />
-    </v-form>
-  </v-container>
+      </v-form>
+    </v-container>
+  </v-skeleton-loader>
+  <NavButton
+    :is-next-displayed="true"
+    :is-save-displayed="true"
+    :is-save-disabled="!isValidForm || isLocked"
+    :is-next-disabled="!isValidForm || nextButtonDisabled"
+    :is-processing="isApplicationProcessing"
+    @previous="previous"
+    @next="next"
+    @validate-form="validateForm()"
+    @save="saveClicked()"
+  />
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useLicenseUploadStore } from '@/store/licenseUpload.js';
 
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -90,7 +95,7 @@ import rules from '@/utils/rules.js';
 import { isValidFile, readFile } from '@/utils/file.js';
 
 export default {
-  components: { NavButton },
+  components: { AppTooltip, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     if (!this.isLocked) {
@@ -98,14 +103,9 @@ export default {
     }
     next();
   },
-  props: {},
   data() {
     return {
-      isLoading: false,
-      isProcessing: false,
       licenseUploadData: [],
-      model: {},
-      tempFacilityId: null,
       isValidForm: true,
       currentrow: null,
       headers: [
@@ -113,33 +113,38 @@ export default {
           title: 'Facility Name',
           value: 'facilityName',
           sortable: true,
-          width: '30%',
+          width: '20%',
         },
         {
           title: 'Facility ID',
           value: 'facilityAccountNumber',
           sortable: false,
-          width: '20%',
+          width: '15%',
         },
         {
           title: 'Facility Licence Number',
           value: 'licenseNumber',
           sortable: false,
+          width: '15%',
+        },
+        {
+          title: 'Health Authority',
+          value: 'healthAuthority',
+          sortable: true,
           width: '20%',
         },
         {
-          title: 'Upload Licence',
+          id: 'document',
+          title: 'Upload Community Care and Assisted Living Act Licence',
           value: 'document',
           sortable: false,
           width: '30%',
         },
       ],
       fileMap: new Map(), // this is not reactive
-      fileAdded: false,
     };
   },
   computed: {
-    ...mapState(useFacilityStore, ['facilityModel', 'facilityId']),
     ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
     ...mapState(useNavBarStore, [
       'navBarList',
@@ -150,6 +155,7 @@ export default {
       'userProfileList',
     ]),
     ...mapState(useApplicationStore, [
+      'isApplicationProcessing',
       'isRenewal',
       'formattedProgramYear',
       'applicationStatus',
@@ -208,7 +214,11 @@ export default {
   },
   methods: {
     ...mapActions(useLicenseUploadStore, ['saveLicenseFiles', 'getLicenseFiles', 'deleteLicenseFiles']),
-    ...mapActions(useApplicationStore, ['setIsLicenseUploadCompleteInMap', 'setIsLicenseUploadComplete']),
+    ...mapActions(useApplicationStore, [
+      'setIsApplicationProcessing',
+      'setIsLicenseUploadCompleteInMap',
+      'setIsLicenseUploadComplete',
+    ]),
     ...mapActions(useNavBarStore, ['forceNavBarRefresh']),
     ...mapActions(useReportChangesStore, ['setCRIsLicenseComplete']),
     isSomeChangeRequestActive() {
@@ -241,8 +251,8 @@ export default {
       await this.save();
     },
     async save(showConfirmation = true) {
-      this.isProcessing = true;
       try {
+        this.setIsApplicationProcessing(true);
         await this.processLicenseFileDelete();
         if (this.fileMap.size > 0) {
           await this.processLicenseFilesSave();
@@ -262,8 +272,8 @@ export default {
         console.error(e);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
-        this.fileMap.clear(); // clear the map.
-        this.isProcessing = false;
+        this.fileMap.clear();
+        this.setIsApplicationProcessing(false);
       }
     },
     async processLicenseFilesSave() {
@@ -323,8 +333,8 @@ export default {
       }
     },
     async createTable() {
-      this.isLoading = true;
       try {
+        this.setIsApplicationProcessing(true);
         this.licenseUploadData = deepCloneObject(this.navBarList);
         let appID = this.applicationMap?.get(this.programYearId)?.applicationId;
 
@@ -341,8 +351,8 @@ export default {
       } catch (e) {
         console.error(e);
       } finally {
-        this.isLoading = false;
         this.fileMap?.clear();
+        this.setIsApplicationProcessing(false);
       }
     },
   },

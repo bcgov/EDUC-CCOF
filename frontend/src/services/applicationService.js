@@ -164,6 +164,7 @@ export default {
       'maxWeeksPerYear',
       'hoursFrom',
       'hoursTo',
+      'hasClosedMonth',
       'isSchoolProperty',
       'isExtendedHours',
     ];
@@ -180,13 +181,32 @@ export default {
         this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
         this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
         this.isMultiAgeExtendedChildCareValid(funding));
+    const isClosedMonthsValid =
+      !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
     return (
       !hasEmptyFields(funding, requiredFields) &&
       areFieldsValid &&
+      isClosedMonthsValid &&
       this.hasValidLicenceCategory(funding) &&
       (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
       isExtendedChildCareValid
     );
+  },
+  hasAllMonthsClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (!funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
+  },
+  hasNoMonthClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
   },
   hasLicenceCategory(funding) {
     return (
