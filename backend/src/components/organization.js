@@ -14,7 +14,6 @@ async function getOrganization(req, res) {
       return res.status(HttpStatus.NOT_FOUND).json({ message: 'Account found but is not organization.' });
     }
 
-    console.log('ORGANIZATION :: ', organization);
     organization = mapOrganizationObjectForFront(organization);
 
     return res.status(HttpStatus.OK).json(organization);
