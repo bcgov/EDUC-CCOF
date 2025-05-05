@@ -81,7 +81,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="item.closureStatus !== CLOSURE_STATUSES.COMPLETE_APPROVED"
                 size="large"
                 class="text-body-2"
                 @click="updateClosure(item)"
@@ -91,7 +91,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="item.closureStatus !== CLOSURE_STATUSES.COMPLETE_APPROVED"
                 size="large"
                 class="text-body-2"
                 @click="removeClosure(item)"
@@ -204,6 +204,7 @@ export default {
   },
   async created() {
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
+    this.CLOSURE_STATUSES = CLOSURE_STATUSES;
     await this.loadData();
   },
   methods: {
