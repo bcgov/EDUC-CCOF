@@ -1,6 +1,7 @@
 const OrganizationMappings = [
   { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
+  { back: 'accountnumber', front: 'accountNumber' },
   { back: 'address1_name', front: 'address1' }, //Address
   { back: 'address1_city', front: 'city1' },
   { back: 'address1_stateorprovince', front: 'province1' },
