@@ -145,47 +145,37 @@
               the home page, select a different fiscal year, and go to Organization Closures.
             </p>
             <v-row no-gutters>
-              <v-form v-model="validDates">
-                <v-col cols="12" lg="5">
-                  <AppDateInput
-                    v-model="input.startDate"
-                    :disabled="isDisabled"
-                    :min="fiscalStartAndEndDates.startDate"
-                    :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
-                    :rules="[...rules.required, ...validDateRules, rules.MMDDYYYY]"
-                    label="Start Date"
-                    clearable
-                    @update:model-value="validateDates(true)"
-                  />
-                </v-col>
-                <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
-                <v-col cols="12" lg="5">
-                  <AppDateInput
-                    v-model="input.endDate"
-                    ref="endDateRef"
-                    :disabled="isDisabled"
-                    :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
-                    :max="fiscalStartAndEndDates.endDate"
-                    :rules="[...rules.required, ...validDateRules, rules.MMDDYYYY]"
-                    label="End Date"
-                    clearable
-                    @update:model-value="validateDates(false)"
-                  />
-                </v-col>
-              </v-form>
+              <v-col cols="12" lg="5">
+                <AppDateInput
+                  v-model="input.startDate"
+                  :disabled="isDisabled"
+                  :min="fiscalStartAndEndDates.startDate"
+                  :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
+                  :rules="rules.required"
+                  :error="showDateError"
+                  label="Start Date"
+                  clearable
+                />
+              </v-col>
+              <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
+              <v-col cols="12" lg="5">
+                <AppDateInput
+                  v-model="input.endDate"
+                  :disabled="isDisabled"
+                  :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
+                  :max="fiscalStartAndEndDates.endDate"
+                  :rules="rules.required"
+                  :error="showDateError"
+                  label="End Date"
+                  clearable
+                />
+              </v-col>
             </v-row>
-            <div v-if="input.startDate && input.endDate" class="error-message mb-6">
-              <p
-                v-if="
-                  input.startDate < fiscalStartAndEndDates.startDate ||
-                  input.startDate > fiscalStartAndEndDates.endDate ||
-                  input.endDate < fiscalStartAndEndDates.startDate ||
-                  input.endDate > fiscalStartAndEndDates.endDate
-                "
-              >
+            <div v-if="showDateError" class="error-message mb-6">
+              <p v-if="fiscalYearError">
                 {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
               </p>
-              <p v-else-if="input.startDate > input.endDate">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
+              <p v-else>{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
             </div>
             <v-row>
               <v-col cols="12" lg="3" class="mt-2">
@@ -238,7 +228,7 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton :disabled="!isValidForm || isLoading" @click="submit">{{
+            <AppButton :disabled="!isValidForm || isLoading || showDateError" @click="submit">{{
               requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? 'Remove Closure' : 'Submit'
             }}</AppButton>
           </v-col>
@@ -301,7 +291,6 @@ export default {
   data() {
     return {
       isValidForm: false,
-      validDates: false,
       isDisplayed: false,
       isLoading: false,
       input: {
@@ -329,14 +318,20 @@ export default {
     isDisabled() {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
-    validDateRules() {
-      return this.input.startDate && this.input.endDate
-        ? [
-            rules.min(this.fiscalStartAndEndDates.startDate, ''),
-            rules.max(this.fiscalStartAndEndDates.endDate, ''),
-            this.input.startDate <= this.input.endDate ? true : '',
-          ]
-        : [];
+    showDateError() {
+      return (
+        this.input.startDate &&
+        this.input.endDate &&
+        (this.fiscalYearError || this.input.startDate > this.input.endDate)
+      );
+    },
+    fiscalYearError() {
+      return (
+        this.input.startDate < this.fiscalStartAndEndDates.startDate ||
+        this.input.startDate > this.fiscalStartAndEndDates.endDate ||
+        this.input.endDate < this.fiscalStartAndEndDates.startDate ||
+        this.input.endDate > this.fiscalStartAndEndDates.endDate
+      );
     },
     showDocumentUpload() {
       return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
@@ -426,13 +421,6 @@ export default {
       this.input.fullClosure = fullClosure;
       if (this.selectedFacilityWasChanged && fullClosure === false) {
         await this.handleFacilityChange(this.facilityId);
-      }
-    },
-    async validateDates(startDateChaged) {
-      if (startDateChaged) {
-        this.input.endDate = this.input.endDate;
-      } else {
-        this.input.startDate = this.input.startDate;
       }
     },
     closeDialog() {
