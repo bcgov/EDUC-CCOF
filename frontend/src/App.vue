@@ -140,7 +140,7 @@ h1 {
   border-color: #eeaaad !important;
 }
 
-v-row {
+.v-row {
   display: flex;
   flex-wrap: wrap;
   flex: 1 1 auto;
