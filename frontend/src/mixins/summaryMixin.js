@@ -33,8 +33,11 @@ export default {
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel']),
-    isSoleProprietorshipPartnership() {
-      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
+    isPartnership() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP;
+    },
+    isSoleProprietorship() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
     },
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
@@ -51,8 +54,10 @@ export default {
           return 'Local Government';
         case ORGANIZATION_TYPES.FIRST_NATIONS_GOVERNMENT:
           return 'First Nations Government';
-        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP:
-          return 'Sole Proprietorship or Partnership';
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
+          return 'Sole Proprietorship';
+        case ORGANIZATION_TYPES.PARTNERSHIP:
+          return 'Partnership';
         default:
           return '';
       }

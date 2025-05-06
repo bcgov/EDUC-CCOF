@@ -31,7 +31,6 @@ export default {
     if (isEmpty(organization)) return false;
     const requiredFields = [
       'organizationType',
-      'legalName',
       'address1',
       'city1',
       'province1',
@@ -51,7 +50,10 @@ export default {
     ) {
       requiredFields.push('incNumber');
     }
-    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP && isGroup) {
+    if (organization?.organizationType !== ORGANIZATION_TYPES.PARTNERSHIP) {
+      requiredFields.push('legalName');
+    }
+    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP && isGroup) {
       requiredFields.push('contactName', 'position');
     }
     const areFieldsValid =

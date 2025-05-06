@@ -39,7 +39,7 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters>
+        <v-row v-if="!isPartnership" no-gutters>
           <v-col cols="12" md="8" class="pr-2">
             <p class="summary-label">
               Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
@@ -194,7 +194,7 @@
             />
           </v-col>
         </v-row>
-        <v-row v-if="isGroup && !isSoleProprietorshipPartnership" no-gutters>
+        <v-row v-if="isGroup && !isSoleProprietorship" no-gutters>
           <v-col cols="12" md="4">
             <p class="summary-label">Organization Contact Name</p>
             <v-text-field
