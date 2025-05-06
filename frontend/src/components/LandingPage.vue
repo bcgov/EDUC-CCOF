@@ -239,16 +239,11 @@
           </template>
           <template #button>
             <v-row no-gutters>
-              <v-col v-if="isLoadingComplete && isUpdateChangeRequestDisplayed" class="col-12 mb-3">
-                <v-btn :class="buttonColor(false)" theme="dark" @click="goToChangeRequestHistory()">
-                  Update change request
-                </v-btn>
-              </v-col>
               <v-col class="col-12">
                 <v-btn
                   :class="buttonColor(!organizationAccountNumber)"
                   theme="dark"
-                  @click="() => $router.push(PATHS.ROOT.ACCOUNT_MGMT)"
+                  @click="goToMaintainOrgFacilities"
                 >
                   Manage Organization and Facilities
                 </v-btn>
@@ -731,6 +726,9 @@ export default {
     },
     goToSummaryDeclaration(programYearId = this.programYearId) {
       this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
+    },
+    goToMaintainOrgFacilities() {
+      this.$router.push(PATHS.ROOT.ACCOUNT_MGMT);
     },
     viewApplication(type) {
       if (type === 'NEW') {

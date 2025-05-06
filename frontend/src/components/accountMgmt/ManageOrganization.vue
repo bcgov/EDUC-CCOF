@@ -11,11 +11,6 @@ import OrganizationInfo from '@/components/accountMgmt/OrganizationInfo.vue';
 export default {
   name: 'ManageOrganization',
   components: { ContactInfo, OrganizationInfo },
-  data() {
-    return {
-      tab: undefined,
-    };
-  },
 };
 </script>
 <style scoped></style>

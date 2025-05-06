@@ -140,6 +140,14 @@ h1 {
   border-color: #eeaaad !important;
 }
 
+v-row {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
 .v-field-label {
   white-space: normal;
 }

@@ -23,7 +23,7 @@
               <AppLabel>Organization Name:</AppLabel>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationName }}
+              {{ organizationModel.legalName }}
             </v-col>
           </v-row>
           <v-row v-if="organizationModel.doingBusinessAs" no-gutters class="my-2">
@@ -39,7 +39,7 @@
               <AppLabel>Organization ID:</AppLabel>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationAccountNumber }}
+              {{ organizationModel.accountNumber }}
             </v-col>
           </v-row>
           <v-row no-gutters class="my-2">
@@ -114,7 +114,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="mt-6 mb-2">
-            <AppLabel>Physical Address:</AppLabel>
+            <AppLabel>Physical Address</AppLabel>
           </v-row>
           <v-row no-gutters class="my-2">
             <v-col cols="12" sm="5" xl="4" xxl="3">
@@ -135,6 +135,8 @@
                 </v-col>
               </v-row>
             </v-col>
+          </v-row>
+          <v-row no-gutters class="my-2">
             <v-col cols="12" class="my-2 my-xl-0">
               <v-row no-gutters>
                 <v-col cols="12" sm="5" xl="4" xxl="3">
@@ -145,6 +147,8 @@
                 </v-col>
               </v-row>
             </v-col>
+          </v-row>
+          <v-row no-gutters class="my-2">
             <v-col cols="12">
               <v-row no-gutters>
                 <v-col cols="12" sm="5" xl="4" xxl="3">
@@ -163,7 +167,6 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { PATHS } from '@/utils/constants.js';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
@@ -176,13 +179,10 @@ export default {
   },
   data() {
     return {
-      PATHS,
     };
   },
   computed: {
     ...mapState(useOrganizationStore, [
-      'organizationAccountNumber',
-      'organizationName',
       'organizationModel',
       'isLoadingModel',
     ]),

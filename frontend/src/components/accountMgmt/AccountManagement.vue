@@ -21,21 +21,14 @@
     </v-row>
     <v-row>
       <v-col>
-        <NavButton
-          :is-next-displayed="false"
-          :is-save-displayed="false"
-          :is-next-disabled="true"
-          :is-processing="false"
-          @previous="() => $router.push(PATHS.ROOT.HOME)"
-          @validate-form="validateForm()"
-          @save="save(true)"
-        />
+        <NavButton @previous="() => $router.push(PATHS.ROOT.HOME)" />
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+
 import { PATHS } from '@/utils/constants.js';
 
 import ManageOrganization from '@/components/accountMgmt/ManageOrganization.vue';
