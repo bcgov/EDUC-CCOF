@@ -500,25 +500,22 @@ export default {
         organizationId: this.userInfo?.organizationId,
         facilityId: this.input.facilityId,
         changeType: this.requestType,
-        closureId: this.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE ? undefined : this.closure?.closureId,
-        paidClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.paidClosure,
-        fullClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.fullClosure,
+        closureId: this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE ? undefined : this.closure?.closureId,
+        paidClosure: this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.paidClosure,
+        fullClosure: this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.fullClosure,
         ageGroups:
-          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE || this.input.fullClosure
+          this.request === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE || this.input.fullClosure
             ? undefined
             : this.input.ageGroups.join(','),
-        startDate: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.startDate,
-        endDate: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.endDate,
+        startDate: this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.startDate,
+        endDate: this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.endDate,
         closureReason:
-          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
+          this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
             ? this.input.reasonForClosureRemoval
             : this.input.closureReason,
         closureDescription:
-          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.description,
-        documents:
-          this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
-            ? undefined
-            : this.processDocuments([...this.input.documents, ...this.uploadedDocuments]),
+          this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.description,
+        documents: this.getProcessedDocuments(),
       };
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
@@ -531,16 +528,20 @@ export default {
         this.isLoading = false;
       }
     },
-    processDocuments(documents) {
-      return documents.map((document) => {
-        return {
-          documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
-          fileSize: document.fileSize,
-          fileName: document.fileName,
-          documentBody: document.documentBody,
-          description: document.description,
-        };
-      });
+    getProcessedDocuments() {
+      if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) return undefined;
+      const documents = this.uploadedDocuments.map((document) => this.processDocument(document));
+      this.input.documents?.forEach((document) => documents.push(this.processDocument(document)));
+      return documents;
+    },
+    processDocument(document) {
+      return {
+        documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
+        fileSize: document.fileSize,
+        fileName: document.fileName,
+        documentBody: document.documentBody,
+        description: document.description,
+      };
     },
     async clearData() {
       this.selectedFacilityWasChanged = true;
