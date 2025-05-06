@@ -19,8 +19,14 @@
     </v-row>
     <v-card variant="outlined" class="pa-8 pt-4 my-6">
       <v-row>
-        <v-col cols="12" lg="7" class="mt-4 text-grey">
-          View the status of your closure requests, submit a new closure request or make a change.
+        <v-col cols="12" lg="7">
+          <AppAlertBanner type="info">
+            <p class="pb-2">Note: You can only submit closures for the current funding agreement term.</p>
+            <p>
+              To report a closure for a previous term, please return to the home page, select a different fiscal year,
+              and go to Organization Closures.
+            </p>
+          </AppAlertBanner>
         </v-col>
         <v-col cols="12" lg="2" class="mt-4">
           <v-row class="text-primary d-flex justify-lg-end ml-1">
@@ -28,7 +34,7 @@
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
-        <v-col cols="12" lg="3" class="d-flex justify-lg-end">
+        <v-col cols="12" lg="3">
           <v-text-field
             v-model="filter"
             label="Filter by Facility Name and Facility ID"
@@ -81,7 +87,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="!hasApprovedStatus(item)"
                 size="large"
                 class="text-body-2"
                 @click="updateClosure(item)"
@@ -91,7 +97,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="!hasApprovedStatus(item)"
                 size="large"
                 class="text-body-2"
                 @click="removeClosure(item)"
@@ -130,6 +136,7 @@
 <script>
 import { mapState } from 'pinia';
 
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
 import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
@@ -154,7 +161,14 @@ import {
 
 export default {
   name: 'OrganizationClosures',
-  components: { AppButton, ClosureChangeRequestDialog, ClosureConfirmationDialog, ClosureDetailsDialog, NavButton },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    ClosureChangeRequestDialog,
+    ClosureConfirmationDialog,
+    ClosureDetailsDialog,
+    NavButton,
+  },
   mixins: [alertMixin],
   data() {
     return {
@@ -239,8 +253,8 @@ export default {
       this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
       this.closureForRequest = closure;
     },
-    hasPendingStatus(closure) {
-      return closure.closureStatus === CLOSURE_STATUSES.PENDING;
+    hasApprovedStatus(closure) {
+      return closure.closureStatus === CLOSURE_STATUSES.COMPLETE_APPROVED;
     },
     getFacilityAccountNumber(facilityId) {
       const facility = this.getNavByFacilityId(facilityId);
