@@ -139,49 +139,46 @@
                 </template>
               </v-select>
             </div>
-            <v-row>
-              <v-col cols="12" lg="3">
-                <h3 class="mt-2">
-                  Dates:
-                  <AppTooltip tooltip-content="Select the estimated end date, if applicable." />
-                </h3>
-              </v-col>
-              <v-col cols="12" lg="4">
+            <h3 class="mt-6">Dates:</h3>
+            <p class="text-black mt-4 mb-6">
+              Select the estimated end date, if applicable. To report a closure for a previous term, please return to
+              the home page, select a different fiscal year, and go to Organization Closures.
+            </p>
+            <v-row no-gutters>
+              <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
                   :disabled="isDisabled"
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
-                  :rules="[
-                    ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                    rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                    rules.MMDDYYYY,
-                  ]"
+                  :rules="rules.required"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="Start Date"
                   clearable
                 />
               </v-col>
-              <v-col cols="12" lg="1" class="pt-6">to</v-col>
-              <v-col cols="12" lg="4">
+              <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
+              <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
                   :disabled="isDisabled"
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
-                  :rules="[
-                    ...rules.required,
-                    rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                    rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
-                    rules.MMDDYYYY,
-                  ]"
+                  :rules="rules.required"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="End Date"
                   clearable
                 />
               </v-col>
             </v-row>
+            <div class="error-message mb-6">
+              <p v-if="fiscalYearError">
+                {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
+              </p>
+              <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
+            </div>
             <v-row>
-              <v-col cols="12" lg="3">
+              <v-col cols="12" lg="3" class="mt-2">
                 <h3>Reason:</h3>
               </v-col>
               <v-col cols="12" lg="9">
@@ -231,7 +228,7 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton :disabled="!isValidForm || isLoading" @click="submit">{{
+            <AppButton :disabled="disableSubmit" @click="submit">{{
               requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? 'Remove Closure' : 'Submit'
             }}</AppButton>
           </v-col>
@@ -250,7 +247,12 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import { CHANGE_REQUEST_TYPES, CLOSURE_AFFECTED_AGE_GROUPS, DOCUMENT_TYPES } from '@/utils/constants.js';
+import {
+  CHANGE_REQUEST_TYPES,
+  CLOSURE_AFFECTED_AGE_GROUPS,
+  DOCUMENT_TYPES,
+  ERROR_MESSAGES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 import ClosureService from '@/services/closureService.js';
 import FacilityService from '@/services/facilityService';
@@ -316,6 +318,19 @@ export default {
     isDisabled() {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
+    endDateBeforeStartDateError() {
+      return this.input.startDate && this.input.endDate && this.input.startDate > this.input.endDate;
+    },
+    fiscalYearError() {
+      return (
+        this.input.startDate &&
+        this.input.endDate &&
+        (this.input.startDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.startDate > this.fiscalStartAndEndDates.endDate ||
+          this.input.endDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.endDate > this.fiscalStartAndEndDates.endDate)
+      );
+    },
     showDocumentUpload() {
       return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
     },
@@ -333,6 +348,9 @@ export default {
         (application) => application.ccofProgramYearId === this.programYearId,
       );
       return application?.applicationId;
+    },
+    disableSubmit() {
+      return !this.isValidForm || this.isLoading;
     },
   },
   watch: {
@@ -353,6 +371,7 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
   },
   methods: {
     async initInput() {
