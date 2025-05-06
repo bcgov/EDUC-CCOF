@@ -2,17 +2,15 @@
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
     <v-container fluid class="mx-lg-16">
       <v-form ref="form" v-model="isValidForm">
-        <div align="center">
-          <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
-            <v-card-title class="py-2 noticeAlert text-left">
-              <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-              You have a change request in progress.
-            </v-card-title>
-            <v-card-text class="pa-4 text-left">
-              We will complete the assessment of your Program Confirmation Form once your change has been processed.
-            </v-card-text>
-          </v-card>
-        </div>
+        <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
+          <v-card-title class="py-2 noticeAlert">
+            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+            You have a change request in progress.
+          </v-card-title>
+          <v-card-text class="pa-4">
+            We will complete the assessment of your Program Confirmation Form once your change has been processed.
+          </v-card-text>
+        </v-card>
         <v-card class="cc-top-level-card">
           <v-card-title class="text-center text-wrap pb-0">
             <h3>
@@ -40,6 +38,9 @@
                 </v-col>
                 <v-col>{{ column.title }}</v-col>
               </v-row>
+            </template>
+            <template #item.healthAuthority="{ item }">
+              {{ getHealthAuthorityNameById(item.healthAuthority) }}
             </template>
             <template #item.document="{ item }">
               <div v-if="item.document?.annotationid">
@@ -80,19 +81,21 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 
-import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useLicenseUploadStore } from '@/store/licenseUpload.js';
-
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useLicenseUploadStore } from '@/store/licenseUpload.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+
 import { deepCloneObject, isAnyChangeRequestActive } from '@/utils/common.js';
 import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
-import rules from '@/utils/rules.js';
 import { isValidFile, readFile } from '@/utils/file.js';
+import rules from '@/utils/rules.js';
 
 export default {
   components: { AppTooltip, NavButton },
@@ -145,15 +148,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
-    ...mapState(useNavBarStore, [
-      'navBarList',
-      'changeRequestId',
-      'nextPath',
-      'previousPath',
-      'isChangeRequest',
-      'userProfileList',
-    ]),
+    ...mapState(useAppStore, ['getHealthAuthorityNameById']),
     ...mapState(useApplicationStore, [
       'isApplicationProcessing',
       'isRenewal',
@@ -166,6 +161,15 @@ export default {
       'programYearId',
     ]),
     ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'nextPath',
+      'previousPath',
+      'isChangeRequest',
+      'userProfileList',
+    ]),
+    ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
         if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {

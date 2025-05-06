@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import {
+  ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -72,6 +73,7 @@ export default {
   created() {
     this.rules = rules;
     this.formatTime24to12 = formatTime24to12;
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
     this.OPT_STATUSES = OPT_STATUSES;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
