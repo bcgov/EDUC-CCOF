@@ -350,7 +350,7 @@ export default {
       return application?.applicationId;
     },
     disableSubmit() {
-      return !this.isValidForm || this.isLoading || this.fiscalYearError || this.endDateBeforeStartDateError;
+      return !this.isValidForm || this.isLoading;
     },
   },
   watch: {
