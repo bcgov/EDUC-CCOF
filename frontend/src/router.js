@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import CcfriEstimator from '@/components/CcfriEstimator.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
@@ -791,6 +792,14 @@ const router = createRouter({
       meta: {
         pageTitle: 'submission-history',
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
+      name: 'org-facilities',
+      component: ManageOrgFacilities,
+      meta: {
         requiresAuth: true,
       },
     },

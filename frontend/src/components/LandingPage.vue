@@ -139,8 +139,9 @@
                 class="text-decoration-underline"
                 style="pointer-events: all"
                 href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding"
-                >gov.bc.ca/childcareoperatingfunding</a
               >
+                gov.bc.ca/childcareoperatingfunding
+              </a>
             </p>
             <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
             <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
@@ -227,6 +228,27 @@
             >
               Submit a report
             </v-btn>
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+        <SmallCard :disable="!organizationAccountNumber">
+          <template #content>
+            <p class="text-h6">Manage Organization and Facilities</p>
+            <p>View or update your organization, facility details, and funding agreement.</p>
+          </template>
+          <template #button>
+            <v-row no-gutters>
+              <v-col class="col-12">
+                <v-btn
+                  :class="buttonColor(!organizationAccountNumber)"
+                  theme="dark"
+                  @click="goToMaintainOrgFacilities"
+                >
+                  Manage Organization and Facilities
+                </v-btn>
+              </v-col>
+            </v-row>
           </template>
         </SmallCard>
       </v-col>
@@ -704,6 +726,9 @@ export default {
     },
     goToSummaryDeclaration(programYearId = this.programYearId) {
       this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
+    },
+    goToMaintainOrgFacilities() {
+      this.$router.push(PATHS.ROOT.MANAGE_ORG_FACILITIES);
     },
     viewApplication(type) {
       if (type === 'NEW') {
