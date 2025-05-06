@@ -152,7 +152,7 @@
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="showDateError"
+                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
                   label="Start Date"
                   clearable
                 />
