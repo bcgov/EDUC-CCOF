@@ -258,11 +258,11 @@ async function createClosureChangeRequest(req, res) {
     const createChangeRequestResponse = await createRawChangeRequest(req);
     const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestResponse.changeActionId})`;
-    if ([CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE].includes(req.body.changeType)) {
+    if (req.body.changeType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestResponse.changeRequestId})?$select=ccof_name`)];
-    if ([CHANGE_REQUEST_TYPES.NEW_CLOSURE, CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE].includes(req.body.changeType)) {
+    if (req.body.changeType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
       req.body.documents?.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
         mappedDocument.ccof_change_action_id = createChangeRequestResponse.changeActionId;
