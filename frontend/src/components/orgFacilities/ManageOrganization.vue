@@ -185,8 +185,13 @@ export default {
     ...mapState(useOrganizationStore, ['organizationId', 'organizationModel']),
   },
   async mounted() {
-    await this.loadOrganization(this.organizationId);
-    this.orgLoading = false;
+    try {
+      await this.loadOrganization(this.organizationId);
+      this.orgLoading = false;
+    } catch (error) {
+      console.error('Error loading organization: ', error);
+      this.orgLoading = false;
+    }
   },
   methods: {
     ...mapActions(useOrganizationStore, ['loadOrganization']),
