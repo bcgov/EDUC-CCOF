@@ -1,5 +1,10 @@
 <template>
   <v-container class="pl-0 pr-0" fluid>
+    <v-row>
+      <v-col>
+        <p>View and update your organization and contact details.</p>
+      </v-col>
+    </v-row>
     <v-row class="pb-1">
       <v-col cols="12"><h2>Organization Info</h2></v-col>
     </v-row>
@@ -118,15 +123,13 @@
           </v-row>
           <v-row no-gutters class="my-2">
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address</AppLabel>
+              <AppLabel>Street Address:</AppLabel>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
               {{ organizationModel.address2 }}
             </v-col>
-          </v-row>
-          <v-row no-gutters class="my-2">
             <v-col cols="12">
-              <v-row no-gutters>
+              <v-row no-gutters class="my-2">
                 <v-col cols="12" sm="5" xl="4" xxl="3">
                   <AppLabel>City:</AppLabel>
                 </v-col>
@@ -135,9 +138,7 @@
                 </v-col>
               </v-row>
             </v-col>
-          </v-row>
-          <v-row no-gutters class="my-2">
-            <v-col cols="12" class="my-2 my-xl-0">
+            <v-col cols="12">
               <v-row no-gutters>
                 <v-col cols="12" sm="5" xl="4" xxl="3">
                   <AppLabel>Province:</AppLabel>
@@ -147,10 +148,8 @@
                 </v-col>
               </v-row>
             </v-col>
-          </v-row>
-          <v-row no-gutters class="my-2">
             <v-col cols="12">
-              <v-row no-gutters>
+              <v-row no-gutters class="my-2">
                 <v-col cols="12" sm="5" xl="4" xxl="3">
                   <AppLabel>Postal Code:</AppLabel>
                 </v-col>
@@ -173,7 +172,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import AppLabel from '@/components/util/AppLabel.vue';
 
 export default {
-  name: 'OrganizationInfo',
+  name: 'ManageOrganization',
   components: {
     AppLabel,
   },

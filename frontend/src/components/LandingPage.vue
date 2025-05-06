@@ -728,7 +728,7 @@ export default {
       this.$router.push(pcfUrl(PATHS.SUMMARY_DECLARATION, programYearId));
     },
     goToMaintainOrgFacilities() {
-      this.$router.push(PATHS.ROOT.ACCOUNT_MGMT);
+      this.$router.push(PATHS.ROOT.MANAGE_ORG_FACILITIES);
     },
     viewApplication(type) {
       if (type === 'NEW') {

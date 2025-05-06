@@ -31,7 +31,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { PATHS } from '@/utils/constants.js';
 
-import ManageOrganization from '@/components/accountMgmt/ManageOrganization.vue';
+import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {

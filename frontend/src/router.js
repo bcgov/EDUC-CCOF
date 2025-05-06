@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import AccountManagement from '@/components/accountMgmt/AccountManagement.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
 import CcfriEstimator from '@/components/CcfriEstimator.vue';
 import ErrorPage from '@/components/ErrorPage.vue';
@@ -796,9 +796,9 @@ const router = createRouter({
       },
     },
     {
-      path: PATHS.ROOT.ACCOUNT_MGMT,
-      name: 'account-mgmt',
-      component: AccountManagement,
+      path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
+      name: 'org-facilities',
+      component: ManageOrgFacilities,
       meta: {
         requiresAuth: true,
       },

@@ -95,7 +95,7 @@ export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
     HOME: '/',
-    ACCOUNT_MGMT: '/account-mgmt',
+    MANAGE_ORG_FACILITIES: '/org-facilities',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
