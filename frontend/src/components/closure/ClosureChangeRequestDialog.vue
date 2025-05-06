@@ -152,7 +152,7 @@
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="Start Date"
                   clearable
                 />
@@ -165,13 +165,13 @@
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="End Date"
                   clearable
                 />
               </v-col>
             </v-row>
-            <div v-if="input.startDate && input.endDate" class="error-message mb-6">
+            <div class="error-message mb-6">
               <p v-if="fiscalYearError">
                 {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
               </p>
@@ -319,14 +319,16 @@ export default {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
     endDateBeforeStartDateError() {
-      return this.input.startDate > this.input.endDate;
+      return this.input.startDate && this.input.endDate && this.input.startDate > this.input.endDate;
     },
     fiscalYearError() {
       return (
-        this.input.startDate < this.fiscalStartAndEndDates.startDate ||
-        this.input.startDate > this.fiscalStartAndEndDates.endDate ||
-        this.input.endDate < this.fiscalStartAndEndDates.startDate ||
-        this.input.endDate > this.fiscalStartAndEndDates.endDate
+        this.input.startDate &&
+        this.input.endDate &&
+        (this.input.startDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.startDate > this.fiscalStartAndEndDates.endDate ||
+          this.input.endDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
     },
     showDocumentUpload() {
