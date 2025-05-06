@@ -363,7 +363,7 @@ export default {
       }
     },
     isTopHalfDisabled() {
-      return this.isLoading || this.requestType !== CHANGE_REQUEST_TYPES.NEW_CLSOURE;
+      return this.isLoading || this.requestType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE;
     },
     isBottomHalfDisabled() {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
