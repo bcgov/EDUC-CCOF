@@ -87,7 +87,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="!hasApprovedStatus(item)"
                 size="large"
                 class="text-body-2"
                 @click="updateClosure(item)"
@@ -97,7 +97,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="!hasApprovedStatus(item)"
                 size="large"
                 class="text-body-2"
                 @click="removeClosure(item)"
@@ -253,8 +253,8 @@ export default {
       this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
       this.closureForRequest = closure;
     },
-    hasPendingStatus(closure) {
-      return closure.closureStatus === CLOSURE_STATUSES.PENDING;
+    hasApprovedStatus(closure) {
+      return closure.closureStatus === CLOSURE_STATUSES.COMPLETE_APPROVED;
     },
     getFacilityAccountNumber(facilityId) {
       const facility = this.getNavByFacilityId(facilityId);
