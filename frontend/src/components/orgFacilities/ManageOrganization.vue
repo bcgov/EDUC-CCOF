@@ -8,7 +8,7 @@
     <v-row class="pb-1">
       <v-col cols="12"><h2>Organization Info</h2></v-col>
     </v-row>
-    <v-row v-if="isLoadingModel" class="mb-4" no-gutters>
+    <v-row v-if="orgLoading" class="mb-4" no-gutters>
       <v-col cols="12" lg="6">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-skeleton-loader type="paragraph" />
@@ -165,7 +165,7 @@
   </v-container>
 </template>
 <script>
-import { mapState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
@@ -178,13 +178,18 @@ export default {
   },
   data() {
     return {
+      orgLoading: true,
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, [
-      'organizationModel',
-      'isLoadingModel',
-    ]),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel']),
+  },
+  async mounted() {
+    await this.loadOrganization(this.organizationId);
+    this.orgLoading = false;
+  },
+  methods: {
+    ...mapActions(useOrganizationStore, ['loadOrganization']),
   },
 };
 </script>

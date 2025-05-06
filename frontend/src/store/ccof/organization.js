@@ -21,7 +21,6 @@ export const useOrganizationStore = defineStore('organization', {
     isStarted: false,
     organizationModel: {},
     loadedModel: {},
-    isLoadingModel: false,
   }),
   actions: {
     setOrganizationId(organizationId) {
@@ -129,15 +128,12 @@ export const useOrganizationStore = defineStore('organization', {
       checkSession();
 
       try {
-        this.isLoadingModel = true;
         const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}`);
         this.setOrganizationModel(response.data);
         this.setLoadedModel(response.data);
         this.setIsOrganizationComplete(response.data?.isOrganizationComplete);
-        this.isLoadingModel = false;
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
-        this.isLoadingModel = false;
         throw error;
       }
     },

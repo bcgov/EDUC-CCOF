@@ -27,8 +27,6 @@
   </v-container>
 </template>
 <script>
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-
 import { PATHS } from '@/utils/constants.js';
 
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
@@ -42,10 +40,6 @@ export default {
       tab: undefined,
       PATHS,
     };
-  },
-  mounted() {
-    const organizationStore = useOrganizationStore();
-    organizationStore.loadOrganization(organizationStore.organizationId);
   },
 };
 </script>
