@@ -196,7 +196,7 @@
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="Start Date"
                   clearable
                 />
@@ -209,20 +209,20 @@
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
-                  :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
+                  :error="fiscalYearError || endDateBeforeStartDateError"
                   label="End Date"
                   clearable
                 />
               </v-col>
             </v-row>
-            <div v-if="input.startDate && input.endDate" class="error-message mb-6">
+            <div class="error-message mb-6">
               <p v-if="fiscalYearError">
                 {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
               </p>
               <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
             </div>
             <v-row>
-              <v-col cols="12" lg="3">
+              <v-col cols="12" lg="3" class="mt-2">
                 <h3>Reason:</h3>
               </v-col>
               <v-col cols="12" lg="9">
@@ -369,14 +369,16 @@ export default {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
     endDateBeforeStartDateError() {
-      return this.input.startDate > this.input.endDate;
+      return this.input.startDate && this.input.endDate && this.input.startDate > this.input.endDate;
     },
     fiscalYearError() {
       return (
-        this.input.startDate < this.fiscalStartAndEndDates.startDate ||
-        this.input.startDate > this.fiscalStartAndEndDates.endDate ||
-        this.input.endDate < this.fiscalStartAndEndDates.startDate ||
-        this.input.endDate > this.fiscalStartAndEndDates.endDate
+        this.input.startDate &&
+        this.input.endDate &&
+        (this.input.startDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.startDate > this.fiscalStartAndEndDates.endDate ||
+          this.input.endDate < this.fiscalStartAndEndDates.startDate ||
+          this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
     },
     showDocumentUpload() {
@@ -398,7 +400,7 @@ export default {
       return application?.applicationId;
     },
     disableSubmit() {
-      return !this.isValidForm || this.isLoading || this.fiscalYearError || this.endDateBeforeStartDateError;
+      return !this.isValidForm || this.isLoading;
     },
   },
   watch: {
