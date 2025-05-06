@@ -221,7 +221,19 @@
               </p>
               <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
             </div>
-
+            <v-row>
+              <v-col cols="12" lg="3">
+                <h3>Reason:</h3>
+              </v-col>
+              <v-col cols="12" lg="9">
+                <v-text-field
+                  v-model="input.closureReason"
+                  :disabled="isDisabled"
+                  variant="outlined"
+                  :rules="rules.required"
+                ></v-text-field>
+              </v-col>
+            </v-row>
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
