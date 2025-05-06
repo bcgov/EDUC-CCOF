@@ -229,16 +229,6 @@
             <v-textarea
               v-model="input.reasonForClosureRemoval"
               variant="outlined"
-              :rules="rulesReasonForClosureRemoval"
-              label="Please describe the reason for removal."
-              class="text-left mt-3"
-            />
-          </v-container>
-          <v-container v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE" class="pa-0 pt-4">
-            <h3>Reason for closure removal:</h3>
-            <v-textarea
-              v-model="input.reasonForClosureRemoval"
-              variant="outlined"
               :rules="rules.required"
               label="Please describe the reason for removal."
               class="text-left mt-3"
@@ -461,7 +451,7 @@ export default {
         organizationId: this.userInfo?.organizationId,
         facilityId: this.input.facilityId,
         changeType: this.requestType,
-        closureId: this.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE ? undefined : this.closure.closureId,
+        closureId: this.changeType === CHANGE_REQUEST_TYPES.NEW_CLOSURE ? undefined : this.closure?.closureId,
         paidClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.paidClosure,
         fullClosure: this.changeType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? undefined : this.input.fullClosure,
         ageGroups:
@@ -505,7 +495,7 @@ export default {
     },
     async clearData() {
       this.selectedFacilityWasChanged = true;
-      this.facilityId = this.closure.facilityId;
+      this.facilityId = this.closure?.facilityId;
       if (this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE) {
         await this.handleFullFacilityClosureChange(this.closure.fullClosure);
       }
