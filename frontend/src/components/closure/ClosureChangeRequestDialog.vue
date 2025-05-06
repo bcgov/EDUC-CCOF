@@ -16,7 +16,7 @@
           <v-select
             v-model="input.facilityId"
             :rules="rules.required"
-            :disabled="isDisabled"
+            :disabled="isTopHalfDisabled"
             :items="facilityList"
             :loading="isLoading"
             item-value="facilityId"
@@ -65,7 +65,7 @@
               <h3 class="mt-2">Will parents pay for this closure?</h3>
             </v-col>
             <v-col cols="12" lg="3" class="pl-0">
-              <v-radio-group v-model="input.paidClosure" :rules="rules.required" :disabled="isDisabled">
+              <v-radio-group v-model="input.paidClosure" :rules="rules.required" :disabled="isTopHalfDisabled">
                 <v-row justify="start">
                   <v-col cols="6" class="pl-3 pr-0 pt-0">
                     <v-radio label="Yes" :value="1" />
@@ -91,7 +91,7 @@
                 <v-radio-group
                   v-model="input.fullClosure"
                   :rules="rules.required"
-                  :disabled="isDisabled"
+                  :disabled="isTopHalfDisabled"
                   @update:model-value="handleFullFacilityClosureChange"
                 >
                   <v-row justify="start">
@@ -113,7 +113,7 @@
               <v-select
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
-                :disabled="isDisabled"
+                :disabled="isTopHalfDisabled"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -164,7 +164,7 @@
                 <v-col cols="12" lg="4">
                   <AppDateInput
                     v-model="input.startDate"
-                    :disabled="isDisabled"
+                    :disabled="isBottomHalfDisabled"
                     :min="fiscalStartAndEndDates.startDate"
                     :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                     :rules="rules.required"
@@ -177,7 +177,7 @@
                 <v-col cols="12" lg="4">
                   <AppDateInput
                     v-model="input.endDate"
-                    :disabled="isDisabled"
+                    :disabled="isBottomHalfDisabled"
                     :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                     :max="fiscalStartAndEndDates.endDate"
                     :rules="rules.required"
@@ -192,7 +192,7 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
-                  :disabled="isDisabled"
+                  :disabled="isBottomHalfDisabled"
                   :min="fiscalStartAndEndDates.startDate"
                   :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
@@ -205,7 +205,7 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
-                  :disabled="isDisabled"
+                  :disabled="isBottomHalfDisabled"
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
@@ -228,7 +228,7 @@
               <v-col cols="12" lg="9">
                 <v-text-field
                   v-model="input.closureReason"
-                  :disabled="isDisabled"
+                  :disabled="isBottomHalfDisabled"
                   variant="outlined"
                   :rules="rules.required"
                 ></v-text-field>
@@ -237,14 +237,14 @@
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
-              :disabled="isDisabled"
+              :disabled="isBottomHalfDisabled"
               variant="outlined"
               label="Detailed description of request"
               class="text-left mt-3"
             />
             <AppDocumentUpload
               :loading="isLoading"
-              :readonly="isDisabled"
+              :readonly="isBottomHalfDisabled"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
               :required="false"
@@ -362,7 +362,10 @@ export default {
           return '';
       }
     },
-    isDisabled() {
+    isTopHalfDisabled() {
+      return this.isLoading || this.requestType !== CHANGE_REQUEST_TYPES.NEW_CLSOURE;
+    },
+    isBottomHalfDisabled() {
       return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
     endDateBeforeStartDateError() {
