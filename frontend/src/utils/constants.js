@@ -96,6 +96,7 @@ export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
     HOME: '/',
+    MANAGE_ORG_FACILITIES: '/org-facilities',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
@@ -417,6 +418,8 @@ export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
   INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
+  START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
 });
 
 export const ORGANIZATION_TYPES = Object.freeze({
