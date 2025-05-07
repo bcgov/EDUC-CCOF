@@ -67,6 +67,7 @@ export const PAGE_TITLES = Object.freeze({
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
+  CCFRI_CLOSURES: 'Closures',
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
@@ -124,6 +125,7 @@ export const PATHS = {
   CCFRI_HOME: '/ccfri',
   CCFRI_AFS: '/ccfri/afs',
   CCFRI_CURRENT_FEES: '/ccfri/current-fees',
+  CCFRI_CLOSURES: '/ccfri/closures',
   CCFRI_NEW_FEES: '/ccfri/new-fees',
   CCFRI_RFI: '/ccfri/req-info',
   CCFRI_NMF: '/ccfri/req-info/new-facility',
@@ -478,6 +480,12 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   'Out of School Care - Kindergarten': 100000003,
   'Out of School Care - Grade 1+': 100000004,
   Preschool: 100000005,
+});
+
+export const CLOSURE_TYPES = Object.freeze({
+  KNOWN_CLOSURES: 100000000,
+  EMERGENCY_CLOSURES: 100000001,
+  NON_OPERATIONAL_CLOSURES: 100000002,
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
