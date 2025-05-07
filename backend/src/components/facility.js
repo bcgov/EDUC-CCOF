@@ -204,7 +204,6 @@ async function updateFacilityLicenseType(facilityId, data) {
   const categories = await getLicenseCategory();
   const groupLicenseCategory = categories.groupLicenseCategory;
 
-  console.log('GroupLicenseCategory list: ', groupLicenseCategory);
   // Figure out new License categories from data form
   const newLicenseCategories = [];
   if (data.familyLicenseType) {
