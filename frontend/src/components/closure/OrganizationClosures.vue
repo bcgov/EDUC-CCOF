@@ -218,7 +218,6 @@ export default {
   },
   async created() {
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
-    this.CLOSURE_STATUSES = CLOSURE_STATUSES;
     await this.loadData();
   },
   methods: {
