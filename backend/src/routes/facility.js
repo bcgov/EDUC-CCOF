@@ -3,16 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const {
-  getFacility,
-  getFacilityChildCareTypes,
-  createFacility,
-  updateFacility,
-  deleteFacility,
-  getLicenseCategories,
-  getApprovedParentFees,
-  returnCCFRIClosureDates,
-} = require('../components/facility');
+const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const facilitySchema = {
@@ -64,15 +55,6 @@ router.get(
     return getApprovedParentFees(req, res);
   },
 );
-
-/**
- * Get closure dates for a facility
- *
- */
-router.get('/dates/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return returnCCFRIClosureDates(req, res);
-});
 
 /**
  * Create a new Facility

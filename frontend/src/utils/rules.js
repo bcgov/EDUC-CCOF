@@ -41,6 +41,7 @@ const rules = {
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';
   },
+  isNumber: (v) => !isNaN(parseFloat(v)) || 'Must be a number',
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [

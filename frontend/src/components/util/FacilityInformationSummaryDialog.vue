@@ -86,6 +86,18 @@
           />
         </v-expansion-panel>
         <v-expansion-panel
+          v-if="!showApplicationTemplateV1"
+          :key="`${facility.facilityId}-closures-summary`"
+          :value="`${facility.facilityId}-closures-summary`"
+          variant="accordion"
+        >
+          <ClosuresSummary
+            :ccfri="facility?.ccfri"
+            :change-rec-guid="facility?.changeRequestId"
+            :program-year-id="programYearId"
+          />
+        </v-expansion-panel>
+        <v-expansion-panel
           v-if="facility?.ccfri?.enableAfs"
           :key="`${facility.facilityId}-afs-summary`"
           :value="`${facility.facilityId}-afs-summary`"
@@ -149,13 +161,14 @@ import FacilityInformationSummary from '@/components/summary/group/FacilityInfor
 import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import ClosuresSummary from '@/components/summary/group/ClosuresSummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import FacilityInformationSummaryDialogHeader from '@/components/util/FacilityInformationSummaryDialogHeader.vue';
-
+import { useApplicationStore } from '@/store/application.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import alertMixin from '@/mixins/alertMixin';
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -169,6 +182,7 @@ export default {
     CCFRISummary,
     CCOFSummary,
     CCOFSummaryFamily,
+    ClosuresSummary,
     ECEWESummary,
     FacilityInformationSummary,
     FacilityInformationSummaryDialogHeader,
@@ -199,6 +213,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
     ...mapState(useSummaryDeclarationStore, ['facilities']),
     facility() {
       return this.facilities?.find((facility) => facility.facilityId === this.facilityId);

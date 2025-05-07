@@ -228,3 +228,7 @@ ol.declarationBList {
   font-size: medium;
   color: black;
 }
+
+.v-card.soft-outline {
+  border: 1px solid #00000040;
+}

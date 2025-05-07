@@ -150,7 +150,6 @@ async function getFacilityChildCareTypesByCcfriId(ccfriId) {
   ccfriData = mapCCFRIObjectForFront(ccfriData);
 
   ccfriData.childCareTypes = childCareTypes;
-  ccfriData.dates = await getCCFRIClosureDates(ccfriId);
   return ccfriData;
 }
 
@@ -162,41 +161,6 @@ async function getFacilityChildCareTypes(req, res) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
-}
-//a wrapper fn as getCCFRIClosureDates does not take in a req/res
-async function returnCCFRIClosureDates(req, res) {
-  try {
-    const dateData = { dates: await getCCFRIClosureDates(req.params.ccfriId) };
-    return res.status(HttpStatus.OK).json(dateData);
-  } catch (e) {
-    log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function getCCFRIClosureDates(ccfriId) {
-  const url = `ccof_applicationccfris(${ccfriId})?$select=ccof_name,&$expand=ccof_ccfri_closure_application_ccfri`;
-  let data = await getOperation(url);
-  data = data.ccof_ccfri_closure_application_ccfri;
-
-  const closureDates = [];
-
-  data.forEach((date) => {
-    const formattedStartDate = date.ccof_startdate ? new Date(date.ccof_startdate).toISOString().slice(0, 10) : date.ccof_startdate;
-    const formattedEndDate = date.ccof_enddate ? new Date(date.ccof_enddate).toISOString().slice(0, 10) : date.ccof_enddate;
-
-    closureDates.push({
-      closureDateId: date.ccof_application_ccfri_closureid,
-      startDate: date.ccof_startdate,
-      endDate: date.ccof_enddate,
-      feesPaidWhileClosed: date.ccof_paidclosure,
-      closureReason: date.ccof_comment,
-      formattedStartDate: formattedStartDate,
-      formattedEndDate: formattedEndDate,
-      id: date.ccof_application_ccfri_closureid,
-    });
-  });
-  return closureDates;
 }
 
 async function updateFacilityLicenseType(facilityId, data) {
@@ -391,10 +355,8 @@ module.exports = {
   deleteFacility,
   getLicenseCategories,
   updateFacilityLicenseType,
-  getCCFRIClosureDates,
   mapFacilityObjectForBack,
   getApprovedParentFees,
-  returnCCFRIClosureDates,
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
   getFacilityByFacilityId,
