@@ -157,6 +157,7 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
@@ -169,7 +170,7 @@ export default {
   },
   data() {
     return {
-      orgLoading: true,
+      orgLoading: false,
     };
   },
   computed: {
@@ -177,7 +178,10 @@ export default {
   },
   async mounted() {
     try {
-      await this.loadOrganization(this.organizationId);
+      if (isEmpty(this.organizationModel)) {
+        this.orgLoading = true;
+        await this.loadOrganization(this.organizationId);
+      }
       this.orgLoading = false;
     } catch (error) {
       console.error('Error loading organization: ', error);
