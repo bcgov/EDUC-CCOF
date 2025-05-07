@@ -23,6 +23,8 @@ import {
   isYearValid,
 } from '@/utils/validation';
 
+const showApplicationTemplateV1 = (version) => !version || version === 1;
+
 export default {
   /*
    **** Summary Declaration validations
@@ -81,7 +83,6 @@ export default {
   // FACILITY INFORMATION VALIDATIONS
   isFacilityInformationComplete(facilityInfo, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const requiredFields = [
       'facilityName',
       'yearBeganOperation',
@@ -97,7 +98,7 @@ export default {
       'licenseEffectiveDate',
       'hasReceivedFunding',
     ];
-    if (!showApplicationTemplateV1) {
+    if (!showApplicationTemplateV1(applicationTemplateVersion)) {
       requiredFields.push('healthAuthority');
     }
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
@@ -114,9 +115,8 @@ export default {
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     // TODO (vietle-cgi) - add Family Application validation
-    if (showApplicationTemplateV1) {
+    if (showApplicationTemplateV1(applicationTemplateVersion)) {
       return isGroup ? this.isCCOFCompleteGroupV1(funding) : true;
     }
     return isGroup ? this.isCCOFCompleteGroupV2(funding) : true;
@@ -253,14 +253,14 @@ export default {
   isCCFRIComplete(ccfri, applicationTemplateVersion) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
       this.isChildCareTypeComplete(childCareType),
     );
     return (
       areAllChildCareTypesComplete &&
       // CCFRI-4636 - Closure-related questions were removed from the CCFRI (Parent Fees) section starting with Application Template Version 2.
-      (!showApplicationTemplateV1 || this.isClosuresComplete(ccfri, applicationTemplateVersion))
+      (!showApplicationTemplateV1(applicationTemplateVersion) ||
+        this.isClosuresComplete(ccfri, applicationTemplateVersion))
     );
   },
 
@@ -288,14 +288,14 @@ export default {
   // CLOSURES VALIDATIONS
   isClosuresComplete(ccfri, applicationTemplateVersion) {
     if (isEmpty(ccfri)) return false;
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
-    const closureRequiredFields = showApplicationTemplateV1
+    const closureRequiredFields = showApplicationTemplateV1(applicationTemplateVersion)
       ? ['startDate', 'endDate', 'closureReason', 'paidClosure']
       : ['startDate', 'endDate', 'closureReason', 'fullClosure'];
     const areAllClosureItemsComplete =
       !isEmpty(ccfri.closures) &&
       ccfri.closures?.every((closure) => {
-        const isAgeGroupsComplete = showApplicationTemplateV1 || closure.fullClosure || !isEmpty(closure.ageGroups);
+        const isAgeGroupsComplete =
+          showApplicationTemplateV1(applicationTemplateVersion) || closure.fullClosure || !isEmpty(closure.ageGroups);
         return !hasEmptyFields(closure, closureRequiredFields) && isAgeGroupsComplete;
       });
     return (

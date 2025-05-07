@@ -67,9 +67,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 
-import rules from '@/utils/rules.js';
-
-import { CHANGE_TYPES, CCFRI_HAS_CLOSURE_FEE_TYPES, CCFRI_FEE_CORRECT_TYPES } from '@/utils/constants.js';
+import { CHANGE_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import closureMixin from '@/mixins/closureMixin.js';
 
@@ -122,11 +120,6 @@ export default {
       },
     },
   },
-  created() {
-    this.rules = rules;
-    this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
-    this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
-  },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useCcfriAppStore, ['loadCCFRIFacility', 'updateApplicationCCFRI']),
@@ -138,7 +131,7 @@ export default {
       this.$router.push(this.nextPath);
     },
     async save(showMessage) {
-      if (this.isReadonly) return;
+      if (this.isReadOnly) return;
       try {
         this.setIsApplicationProcessing(true);
 

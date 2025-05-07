@@ -222,7 +222,7 @@ export default {
   },
   methods: {
     addRow(isAddButtonClicked) {
-      if (!isAddButtonClicked && this.updatedClosures.length > 0) return;
+      if (!isAddButtonClicked && !isEmpty(this.updatedClosures)) return;
       this.updatedClosures.push({});
     },
     //builds an array of dates to keep track of all days of the selected closure period.

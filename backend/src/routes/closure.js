@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createClosure, deleteClosures, getClosures, updateClosure } = require('../components/closure');
-const { checkSchema, oneOf, query, param, validationResult } = require('express-validator');
+const { checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 module.exports = router;
 
