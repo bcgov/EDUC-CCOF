@@ -853,7 +853,6 @@ export default {
         this.setNavBarValue({ facilityId: this.currentFacility?.facilityId, property: 'hasRfi', value: true });
         this.$router.push(changeUrlGuid(PATHS.CCFRI_RFI, this.changeRequestId, this.$route.params.urlGuid));
       } else {
-        console.log('RFI calulation not needed.');
         //Not renewal or CR
         this.$router.push(this.nextPath);
       }
