@@ -182,9 +182,9 @@ export default {
         this.orgLoading = true;
         await this.loadOrganization(this.organizationId);
       }
-      this.orgLoading = false;
     } catch (error) {
       console.error('Error loading organization: ', error);
+    } finally {
       this.orgLoading = false;
     }
   },
