@@ -5,7 +5,7 @@
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
-            <v-tab value="organization-tab"> Organization and Contact Information </v-tab>
+            <v-tab value="organization-tab"> Organization Information </v-tab>
             <v-tab value="funding-agreement-tab"> Funding Agreement </v-tab>
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>

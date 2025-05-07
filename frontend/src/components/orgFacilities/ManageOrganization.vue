@@ -2,7 +2,7 @@
   <v-container class="pa-0" fluid>
     <v-row no-gutters>
       <v-col>
-        <p>View and update your organization and contact details.</p>
+        <p>View and update your organization information.</p>
       </v-col>
     </v-row>
     <v-row>
@@ -157,6 +157,7 @@
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
@@ -169,7 +170,7 @@ export default {
   },
   data() {
     return {
-      orgLoading: true,
+      orgLoading: false,
     };
   },
   computed: {
@@ -177,10 +178,13 @@ export default {
   },
   async mounted() {
     try {
-      await this.loadOrganization(this.organizationId);
-      this.orgLoading = false;
+      if (isEmpty(this.organizationModel)) {
+        this.orgLoading = true;
+        await this.loadOrganization(this.organizationId);
+      }
     } catch (error) {
       console.error('Error loading organization: ', error);
+    } finally {
       this.orgLoading = false;
     }
   },
