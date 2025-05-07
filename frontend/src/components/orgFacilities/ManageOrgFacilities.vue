@@ -5,15 +5,15 @@
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
-            <v-tab value="organization-tab"> Organization Information </v-tab>
-            <v-tab value="funding-agreement-tab"> Funding Agreement </v-tab>
+            <v-tab value="organization-tab">Organization Information</v-tab>
+            <v-tab value="funding-agreement-tab">Funding Agreement</v-tab>
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
-              <v-window-item value="organization-tab"> <ManageOrganization /></v-window-item>
-              <v-window-item value="funding-agreement-tab"><h2>Funding Agreement</h2> </v-window-item>
-              <v-window-item value="facilities-tab"> <h2>Facility(ies)</h2></v-window-item>
+              <v-window-item value="organization-tab"><ManageOrganization /></v-window-item>
+              <v-window-item value="funding-agreement-tab"><h2>Funding Agreement</h2></v-window-item>
+              <v-window-item value="facilities-tab"><ManageFacilities /></v-window-item>
             </v-window>
           </v-card-text>
         </v-card>
@@ -30,11 +30,12 @@
 import { PATHS } from '@/utils/constants.js';
 
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
+import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization, NavButton },
+  components: { ManageOrganization, ManageFacilities, NavButton },
   data() {
     return {
       tab: undefined,
