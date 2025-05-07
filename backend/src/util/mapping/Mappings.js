@@ -1,6 +1,7 @@
 const OrganizationMappings = [
   { back: 'ccof_facilitystartdate', front: 'yearBeganOperation' },
   { back: 'name', front: 'legalName' },
+  { back: 'accountnumber', front: 'accountNumber' },
   { back: 'address1_name', front: 'address1' }, //Address
   { back: 'address1_city', front: 'city1' },
   { back: 'address1_stateorprovince', front: 'province1' },
@@ -16,12 +17,13 @@ const OrganizationMappings = [
   { back: 'emailaddress1', front: 'email' },
   { back: 'ccof_instructionnumber', front: 'incNumber' }, //incorporation number
   { back: 'ccof_typeoforganization', front: 'organizationType' },
-  // { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
+  { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
   { back: 'ccof_formcomplete', front: 'isOrganizationComplete' },
   { back: 'ccof_is_mailing_address_same', front: 'isSameAsMailing' },
   { back: 'ccof_is_org_mailing_address_entered_manually', front: 'isOrgMailingAddressEnteredManually' },
   { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
+  { back: 'ccof_doingbusinessas', front: 'doingBusinessAs' },
 ];
 
 const FacilityMappings = [
@@ -62,6 +64,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
   { back: 'ccof_afs_status', front: 'afsStatus' },
   { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
+  { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
 
 const RFIApplicationMappings = [
@@ -157,15 +160,6 @@ const NMFApplicationMappings = [
   { back: 'ccof_remote_communities', front: 'remoteCommunities' }, // 1 or 0
   { back: 'ccof_remotecommunities_comment', front: 'remoteCommunitiesComments' }, // "Please describe the service and associated expenses."
   { back: 'ccof_othercomment', front: 'otherComments' }, // "Please tell us anything else you’d like us to know ..."
-];
-
-const CCFRIClosureDateMappings = [
-  { back: 'ccof_startdate', front: 'startDate' },
-  { back: 'ccof_enddate', front: 'endDate' },
-  { back: 'ccof_startdate@OData.Community.Display.V1.FormattedValue', front: 'formattedStartDate' },
-  { back: 'ccof_enddate@OData.Community.Display.V1.FormattedValue', front: 'formattedEndDate' },
-  { back: 'ccof_paidclosure', front: 'feesPaidWhileClosed' },
-  { back: 'ccof_comment', front: 'closureReason' },
 ];
 
 const CCOFApplicationMappings = [
@@ -329,16 +323,18 @@ const OrganizationFacilityMappings = [
 
 const ClosureMappings = [
   { back: 'ccof_application_ccfri_closureid', front: 'closureId' },
-  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
-  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ccof_applicationccfri_value', front: 'ccfriApplicationId' },
   { back: '_ccof_facilityinfo_value', front: 'facilityId' },
   { back: '_ccof_facilityinfo_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: '_ccof_organizationfacility_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
   { back: 'ccof_startdate', front: 'startDate' },
   { back: 'ccof_enddate', front: 'endDate' },
   { back: 'ccof_closure_status', front: 'closureStatus' },
+  { back: 'ccof_closure_type', front: 'closureType' },
   { back: 'ccof_payment_eligibility', front: 'paymentEligibility' },
   { back: 'ccof_age_affected_groups', front: 'ageGroups' },
-  { back: 'ccof_closure_reason', front: 'closureReason' },
+  { back: 'ccof_comment', front: 'closureReason' },
   { back: 'ccof_is_full_closure', front: 'fullClosure' },
   { back: 'ccof_paidclosure', front: 'paidClosure' },
   { back: '_ccof_change_action_closure_value', front: 'changeActionClosureId' },
@@ -352,6 +348,7 @@ const UserProfileBaseCCFRIMappings = [
   { back: 'ccof_formcomplete', front: 'isCCFRIComplete' },
   { back: 'ccof_has_nmf', front: 'hasNmf' },
   { back: 'ccof_has_rfi', front: 'hasRfi' },
+  { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete' },
   { back: 'ccof_rfi_formcomplete', front: 'isRfiComplete' },
 ];
@@ -545,7 +542,6 @@ module.exports = {
   MessageMappings,
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
-  CCFRIClosureDateMappings,
   OrganizationFacilityMappings,
   ClosureMappings,
   RFIApplicationMappings,

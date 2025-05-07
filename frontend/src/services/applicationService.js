@@ -23,6 +23,8 @@ import {
   isYearValid,
 } from '@/utils/validation';
 
+const showApplicationTemplateV1 = (version) => !version || version === 1;
+
 export default {
   /*
    **** Summary Declaration validations
@@ -71,9 +73,10 @@ export default {
       (facility.isRenewal ||
         this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion)) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
-      this.isCCFRIComplete(facility.ccfri) &&
+      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
       (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
+      this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
@@ -82,7 +85,6 @@ export default {
   // FACILITY INFORMATION VALIDATIONS
   isFacilityInformationComplete(facilityInfo, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     const requiredFields = [
       'facilityName',
       'yearBeganOperation',
@@ -98,7 +100,7 @@ export default {
       'licenseEffectiveDate',
       'hasReceivedFunding',
     ];
-    if (!showApplicationTemplateV1) {
+    if (!showApplicationTemplateV1(applicationTemplateVersion)) {
       requiredFields.push('healthAuthority');
     }
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
@@ -115,9 +117,8 @@ export default {
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
     // TODO (vietle-cgi) - add Family Application validation
-    if (showApplicationTemplateV1) {
+    if (showApplicationTemplateV1(applicationTemplateVersion)) {
       return isGroup ? this.isCCOFCompleteGroupV1(funding) : true;
     }
     return isGroup ? this.isCCOFCompleteGroupV2(funding) : true;
@@ -271,17 +272,17 @@ export default {
   },
 
   // CCFRI VALIDATIONS
-  isCCFRIComplete(ccfri) {
+  isCCFRIComplete(ccfri, applicationTemplateVersion) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
-    const requiredFields = ['hasClosureFees'];
     const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
       this.isChildCareTypeComplete(childCareType),
     );
     return (
-      !hasEmptyFields(ccfri, requiredFields) &&
       areAllChildCareTypesComplete &&
-      (ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO || this.areClosureDatesComplete(ccfri?.dates))
+      // CCFRI-4636 - Closure-related questions were removed from the CCFRI (Parent Fees) section starting with Application Template Version 2.
+      (!showApplicationTemplateV1(applicationTemplateVersion) ||
+        this.isClosuresComplete(ccfri, applicationTemplateVersion))
     );
   },
 
@@ -306,9 +307,23 @@ export default {
     return !hasEmptyFields(childCareType, requiredFields);
   },
 
-  areClosureDatesComplete(closureDates) {
-    const requiredFields = ['formattedStartDate', 'formattedEndDate', 'closureReason', 'feesPaidWhileClosed'];
-    return closureDates?.every((date) => !hasEmptyFields(date, requiredFields));
+  // CLOSURES VALIDATIONS
+  isClosuresComplete(ccfri, applicationTemplateVersion) {
+    if (isEmpty(ccfri)) return false;
+    const closureRequiredFields = showApplicationTemplateV1(applicationTemplateVersion)
+      ? ['startDate', 'endDate', 'closureReason', 'paidClosure']
+      : ['startDate', 'endDate', 'closureReason', 'fullClosure'];
+    const areAllClosureItemsComplete =
+      !isEmpty(ccfri.closures) &&
+      ccfri.closures?.every((closure) => {
+        const isAgeGroupsComplete =
+          showApplicationTemplateV1(applicationTemplateVersion) || closure.fullClosure || !isEmpty(closure.ageGroups);
+        return !hasEmptyFields(closure, closureRequiredFields) && isAgeGroupsComplete;
+      });
+    return (
+      ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+      (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
+    );
   },
 
   // RFI VALIDATIONS

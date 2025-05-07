@@ -57,6 +57,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           ccfriApplicationId: el.ccfri?.ccfriApplicationId,
           ccfriFacilityId: el.ccfri?.ccfriFacilityId,
           isCCFRIComplete: el.ccfri?.isCCFRIComplete,
+          isCCFRIClosuresComplete: el.ccfri?.isCCFRIClosuresComplete,
           hasNmf: el.ccfri?.hasNmf,
           hasRfi: el.ccfri?.hasRfi,
           isNmfComplete: el.ccfri?.isNmfComplete,
@@ -253,6 +254,12 @@ export const useNavBarStore = defineStore('navBar', {
         this.filterNavBar();
         this.refreshNavBar++;
       }
+    },
+    setNavBarCCFRIClosuresComplete({ ccfriId, complete }) {
+      const userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
+      if (isEmpty(userProfileItem)) return;
+      userProfileItem.isCCFRIClosuresComplete = complete;
+      this.refreshNavBarList();
     },
     setNavBarAfsComplete({ ccfriId, complete }) {
       let userProfileItem;

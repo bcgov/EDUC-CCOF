@@ -19,6 +19,7 @@ import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
+import Closures from '@/components/ccfriApplication/Closures.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
@@ -39,6 +40,7 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -431,6 +433,18 @@ const router = createRouter({
       },
     },
     {
+      path: pcfUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'ccfri-closures-guid',
+      component: Closures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+      },
+    },
+    {
       path: pcfUrlGuid(PATHS.CCFRI_AFS),
       name: 'ccfri-afs',
       component: ApprovableFeeSchedule,
@@ -657,6 +671,18 @@ const router = createRouter({
       },
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'change-request-ccfri-closures-guid',
+      component: Closures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+      },
+    },
+    {
       path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,
@@ -791,6 +817,14 @@ const router = createRouter({
       meta: {
         pageTitle: 'submission-history',
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
+      name: 'org-facilities',
+      component: ManageOrgFacilities,
+      meta: {
         requiresAuth: true,
       },
     },
