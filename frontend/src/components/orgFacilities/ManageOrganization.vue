@@ -2,7 +2,7 @@
   <v-container class="pa-0" fluid>
     <v-row no-gutters>
       <v-col>
-        <p>View and update your organization and contact details.</p>
+        <p>View and update your organization information.</p>
       </v-col>
     </v-row>
     <v-row>
