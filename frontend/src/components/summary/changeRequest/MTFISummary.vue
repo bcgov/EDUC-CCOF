@@ -532,4 +532,8 @@ export default {
   color: #d8292f !important;
   opacity: 1 !important;
 }
+
+:deep(.v-input__details) {
+  text-align: left;
+}
 </style>
