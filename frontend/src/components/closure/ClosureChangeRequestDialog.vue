@@ -145,55 +145,24 @@
               </v-select>
             </div>
             <h3 class="mt-6">Dates:</h3>
-            <p class="text-black mt-4 mb-6">
+            <p class="text-black mt-4">
               Select the estimated end date, if applicable. To report a closure for a previous term, please return to
               the home page, select a different fiscal year, and go to Organization Closures.
             </p>
             <div v-if="requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE">
+              <h3 class="mt-4">Approved Dates:</h3>
               <v-row>
-                <v-col cols="12" lg="3">
-                  <h3 class="mt-2">Approved Dates:</h3>
-                </v-col>
-                <v-col cols="12" lg="4">
+                <v-col cols="12" lg="5">
                   <AppDateInput v-model="input.approvedStartDate" label="Start Date" disabled />
                 </v-col>
-                <v-col cols="12" lg="1" class="pt-6">to</v-col>
-                <v-col cols="12" lg="4">
+                <v-col cols="12" lg="2" align="center" class="mt-md-4">to</v-col>
+                <v-col cols="12" lg="5">
                   <AppDateInput v-model="input.approvedEndDate" label="End Date" disabled />
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12" lg="3">
-                  <h3 class="mt-2">New Dates:</h3>
-                </v-col>
-                <v-col cols="12" lg="4">
-                  <AppDateInput
-                    v-model="input.startDate"
-                    :loading="isLoading"
-                    :min="fiscalStartAndEndDates.startDate"
-                    :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
-                    :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
-                    label="Start Date"
-                    clearable
-                  />
-                </v-col>
-                <v-col cols="12" lg="1" class="pt-6">to</v-col>
-                <v-col cols="12" lg="4">
-                  <AppDateInput
-                    v-model="input.endDate"
-                    :loading="isLoading"
-                    :min="fiscalStartAndEndDates.startDate"
-                    :max="fiscalStartAndEndDates.endDate"
-                    :rules="rules.required"
-                    :error="input.startDate && input.endDate && (fiscalYearError || endDateBeforeStartDateError)"
-                    label="End Date"
-                    clearable
-                  />
-                </v-col>
-              </v-row>
+              <h3>New Dates:</h3>
             </div>
-            <v-row v-else no-gutters>
+            <v-row>
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
@@ -207,7 +176,7 @@
                   clearable
                 />
               </v-col>
-              <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
+              <v-col cols="12" lg="2" align="center" class="mt-md-4">to</v-col>
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
@@ -222,12 +191,12 @@
                 />
               </v-col>
             </v-row>
-            <div class="error-message mb-6">
-              <p v-if="fiscalYearError">
-                {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
-              </p>
-              <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
-            </div>
+            <p v-if="fiscalYearError" class="error-message mb-4">
+              {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
+            </p>
+            <p v-else-if="endDateBeforeStartDateError" class="error-message mb-4">
+              {{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}
+            </p>
             <v-row>
               <v-col cols="12" lg="3" class="mt-2">
                 <h3>Reason:</h3>
@@ -352,9 +321,6 @@ export default {
       isValidForm: false,
       isDisplayed: false,
       isLoading: false,
-      input: {
-        documents: [],
-      },
       selectedFacilityWasChanged: true,
       ageGroups: [],
       uploadedDocuments: [],
@@ -422,13 +388,13 @@ export default {
       async handler(value) {
         this.isDisplayed = value;
         if (!value) return;
-        await this.clearData();
         this.isLoading = true;
+        await this.clearData();
         if (
           this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ||
           this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE
         ) {
-          this.input = await this.initInput();
+          await this.initInput();
         }
         this.isLoading = false;
       },
@@ -439,22 +405,26 @@ export default {
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
+    this.input = {
+      documents: [],
+    }; // Make input a constant, reassigning input causes issues with reactivity with input attributes
   },
   methods: {
     async initInput() {
-      const input = cloneDeep(this.closure);
       try {
         this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-        input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
+        this.input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments =
           changeActionClosure?.documents && this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
             ? changeActionClosure.documents
             : [];
-        input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
-        input.approvedStartDate = input.startDate;
-        input.approvedEndDate = input.endDate;
-        return input;
+        this.input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        this.input.approvedStartDate = this.closure.startDate;
+        this.input.approvedEndDate = this.closure.endDate;
+        Object.keys(this.closure).forEach((key) => {
+          if (key !== 'ageGroups') this.input[key] = this.closure[key];
+        });
       } catch (e) {
         console.log(e);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -582,9 +552,9 @@ export default {
       }
       this.ageGroups = [];
       this.uploadedDocuments = [];
-      this.input = {
-        documents: [],
-      };
+      Object.keys(this.input).forEach((key) => {
+        this.input[key] = key === 'documents' ? [] : undefined;
+      });
     },
   },
 };

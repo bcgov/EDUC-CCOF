@@ -336,6 +336,7 @@ export default {
       }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.closureRequestType = null;
+      this.closureForRequest = null;
       this.toggleClosureConfirmationDialog();
     },
   },
