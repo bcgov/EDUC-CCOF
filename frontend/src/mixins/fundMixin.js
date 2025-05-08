@@ -50,6 +50,12 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
+    hasAllMonthsClosed() {
+      return ApplicationService.hasAllMonthsClosed(this.fundingModel);
+    },
+    hasNoMonthClosed() {
+      return ApplicationService.hasNoMonthClosed(this.fundingModel);
+    },
     hasLicenceCategory() {
       return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
@@ -76,8 +82,11 @@ export default {
       if (this.showApplicationTemplateV1 || this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
         return this.fundingModel.isCCOFComplete;
       }
+      const isClosedMonthsValid =
+        !this.fundingModel.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
       return (
         this.fundingModel.isCCOFComplete &&
+        isClosedMonthsValid &&
         this.hasLicenceCategory &&
         (!this.fundingModel.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
         (this.fundingModel.isExtendedHours === 0 ||
@@ -103,7 +112,7 @@ export default {
     next() {
       this.$router.push(this.nextPath);
     },
-    async save(isSave) {
+    async save(showConfirmation) {
       try {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
@@ -120,8 +129,8 @@ export default {
 
           newFac.baseFunding.isCCOFComplete = this.fundingModel.isCCOFComplete;
         }
-        if (isSave) {
-          this.setSuccessAlert('Success! Funding information has been saved.');
+        if (showConfirmation) {
+          this.setSuccessAlert('Application saved successfully.');
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');

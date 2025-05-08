@@ -420,6 +420,8 @@ export const ERROR_MESSAGES = Object.freeze({
   INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
+  FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
+  NO_MONTH_SELECTED: 'You should select at least one month.',
 });
 
 export const ORGANIZATION_TYPES = Object.freeze({
@@ -428,7 +430,8 @@ export const ORGANIZATION_TYPES = Object.freeze({
   REGISTERED_COMPANY: 100000002,
   LOCAL_GOVERNMENT: 100000003,
   FIRST_NATIONS_GOVERNMENT: 100000004,
-  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
+  SOLE_PROPRIETORSHIP: 100000005,
+  PARTNERSHIP: 100000006,
 });
 
 export const CLOSURE_STATUSES = Object.freeze({

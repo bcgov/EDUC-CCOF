@@ -41,8 +41,11 @@ export default {
         this.organizationModel.organizationType,
       );
     },
-    isSoleProprietorshipPartnership() {
-      return this.organizationModel.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
+    isPartnership() {
+      return this.organizationModel.organizationType === ORGANIZATION_TYPES.PARTNERSHIP;
+    },
+    isSoleProprietorship() {
+      return this.organizationModel.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
     },
   },
   async created() {

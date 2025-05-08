@@ -281,6 +281,7 @@ export const useNavBarStore = defineStore('navBar', {
       const navBarItem = this.userProfileList.find((item) => item.facilityId === payload.facilityId);
       if (navBarItem) {
         navBarItem.facilityName = payload.facilityName;
+        navBarItem.healthAuthority = payload.healthAuthority;
         navBarItem.licenseNumber = payload.licenseNumber;
         this.filterNavBar();
         this.refreshNavBar++;
