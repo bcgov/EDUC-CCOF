@@ -485,7 +485,7 @@ export default {
         !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
       return (
         this.areAllFacilitiesComplete &&
-        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup) &&
+        (this.isRenewal || ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup)) &&
         ApplicationService.isECEWEOrganizationComplete(
           this.summaryModel?.ecewe,
           this.isGroup,

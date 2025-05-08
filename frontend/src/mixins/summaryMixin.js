@@ -9,6 +9,8 @@ import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import {
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
   ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
@@ -77,6 +79,11 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.ccfriFeeRules = [
+      rules.isNumber,
+      rules.max(CCFRI_MAX_FEE, `Max fee is $${CCFRI_MAX_FEE}.00`),
+      rules.min(CCFRI_MIN_FEE, 'Input a positive number'),
+    ];
     this.formatTime24to12 = formatTime24to12;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
