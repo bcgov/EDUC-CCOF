@@ -33,8 +33,12 @@ const organizationType = [
     id: 100000004,
   },
   {
-    name: 'Sole Proprietorship or Partnership',
+    name: 'Sole Proprietorship',
     id: 100000005,
+  },
+  {
+    name: 'Partnership',
+    id: 100000006,
   },
 ];
 

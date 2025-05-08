@@ -33,7 +33,6 @@ export default {
     if (isEmpty(organization)) return false;
     const requiredFields = [
       'organizationType',
-      'legalName',
       'address1',
       'city1',
       'province1',
@@ -53,7 +52,10 @@ export default {
     ) {
       requiredFields.push('incNumber');
     }
-    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP && isGroup) {
+    if (organization?.organizationType !== ORGANIZATION_TYPES.PARTNERSHIP) {
+      requiredFields.push('legalName');
+    }
+    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP && isGroup) {
       requiredFields.push('contactName', 'position');
     }
     const areFieldsValid =
@@ -165,6 +167,7 @@ export default {
       'maxWeeksPerYear',
       'hoursFrom',
       'hoursTo',
+      'hasClosedMonth',
       'isSchoolProperty',
       'isExtendedHours',
     ];
@@ -181,13 +184,32 @@ export default {
         this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
         this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
         this.isMultiAgeExtendedChildCareValid(funding));
+    const isClosedMonthsValid =
+      !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
     return (
       !hasEmptyFields(funding, requiredFields) &&
       areFieldsValid &&
+      isClosedMonthsValid &&
       this.hasValidLicenceCategory(funding) &&
       (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
       isExtendedChildCareValid
     );
+  },
+  hasAllMonthsClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (!funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
+  },
+  hasNoMonthClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
   },
   hasLicenceCategory(funding) {
     return (

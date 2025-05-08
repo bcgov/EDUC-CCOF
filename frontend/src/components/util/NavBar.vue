@@ -973,7 +973,7 @@ export default {
     getCCOFNavigation() {
       let items = [];
       items.push({
-        title: 'Organization',
+        title: 'Organization Information',
         link: { name: 'Group Organization Information' },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),
