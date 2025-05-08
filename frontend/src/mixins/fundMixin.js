@@ -112,7 +112,7 @@ export default {
     next() {
       this.$router.push(this.nextPath);
     },
-    async save(isSave) {
+    async save(showConfirmation) {
       try {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
@@ -129,8 +129,8 @@ export default {
 
           newFac.baseFunding.isCCOFComplete = this.fundingModel.isCCOFComplete;
         }
-        if (isSave) {
-          this.setSuccessAlert('Success! Funding information has been saved.');
+        if (showConfirmation) {
+          this.setSuccessAlert('Application saved successfully.');
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
