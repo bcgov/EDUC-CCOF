@@ -100,6 +100,7 @@
                 >
                   <FacilityInformationSummaryCard
                     :facility="facility"
+                    height="100%"
                     @click="openFacilitySummary(facility?.facilityId)"
                   />
                 </v-col>

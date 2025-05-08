@@ -9,6 +9,7 @@ import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import {
+  ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -32,8 +33,11 @@ export default {
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel']),
-    isSoleProprietorshipPartnership() {
-      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
+    isPartnership() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP;
+    },
+    isSoleProprietorship() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
     },
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
@@ -50,8 +54,10 @@ export default {
           return 'Local Government';
         case ORGANIZATION_TYPES.FIRST_NATIONS_GOVERNMENT:
           return 'First Nations Government';
-        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP:
-          return 'Sole Proprietorship or Partnership';
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
+          return 'Sole Proprietorship';
+        case ORGANIZATION_TYPES.PARTNERSHIP:
+          return 'Partnership';
         default:
           return '';
       }
@@ -72,6 +78,7 @@ export default {
   created() {
     this.rules = rules;
     this.formatTime24to12 = formatTime24to12;
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
     this.OPT_STATUSES = OPT_STATUSES;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;

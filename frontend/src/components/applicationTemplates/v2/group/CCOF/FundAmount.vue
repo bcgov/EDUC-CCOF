@@ -57,6 +57,7 @@
             <v-radio-group
               v-model="fundingModel.hasClosedMonth"
               :disabled="isLocked"
+              :rules="rules.required"
               inline
               label="Are there months when ALL of the programs at this facility are closed for the entire month?"
               class="application-label"
@@ -69,7 +70,7 @@
         </v-row>
 
         <template v-if="fundingModel.hasClosedMonth">
-          <div>If YES, check all the applicable months:</div>
+          <div>If YES, check all the fully closed months:</div>
           <v-row>
             <v-col cols="4" md="2" class="py-0">
               <v-checkbox
@@ -79,6 +80,7 @@
                 :disabled="isLocked"
                 label="Jan"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -89,6 +91,7 @@
                 :disabled="isLocked"
                 label="Feb"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -99,6 +102,7 @@
                 :disabled="isLocked"
                 label="Mar"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -109,6 +113,7 @@
                 :disabled="isLocked"
                 label="Apr"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -119,6 +124,7 @@
                 :disabled="isLocked"
                 label="May"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -129,6 +135,7 @@
                 :disabled="isLocked"
                 label="Jun"
                 color="primary"
+                hide-details
               />
             </v-col>
           </v-row>
@@ -142,6 +149,7 @@
                 :disabled="isLocked"
                 label="Jul"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -152,6 +160,7 @@
                 :disabled="isLocked"
                 label="Aug"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -162,6 +171,7 @@
                 :disabled="isLocked"
                 label="Sep"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -172,6 +182,7 @@
                 :disabled="isLocked"
                 label="Oct"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -182,6 +193,7 @@
                 :disabled="isLocked"
                 label="Nov"
                 color="primary"
+                hide-details
               />
             </v-col>
             <v-col cols="4" md="2" class="py-0">
@@ -192,9 +204,14 @@
                 :disabled="isLocked"
                 label="Dec"
                 color="primary"
+                hide-details
               />
             </v-col>
           </v-row>
+          <div v-if="showErrorMessage" class="error-message pl-4">
+            <p v-if="hasAllMonthsClosed">{{ ERROR_MESSAGES.FACILITY_MUST_OPERATE_ONE_MONTH }}</p>
+            <p v-else-if="hasNoMonthClosed">{{ ERROR_MESSAGES.NO_MONTH_SELECTED }}</p>
+          </div>
         </template>
       </v-container>
     </v-card>
@@ -485,7 +502,7 @@
           :rules="rules.required"
           :disabled="isLocked"
           inline
-          label="Do you regularly offer extended hours of child care (care before 6:00 am, after 7:00pm or overnight service regularly offered)?"
+          label="Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?"
           class="application-label"
           @update:model-value="resetExtendedHoursFields"
         >
@@ -522,8 +539,8 @@
     <v-card v-if="fundingModel.isExtendedHours" class="cc-top-level-card pa-2">
       <v-container>
         <div>
-          Select each licence category for which you offer extended hours (care before 6:00 am, after 7:00pm or
-          overnight service regularly offered)
+          Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or
+          overnight service)
         </div>
 
         <v-checkbox

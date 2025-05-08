@@ -82,6 +82,7 @@ export const useFacilityStore = defineStore('facility', {
           navBarStore.updateNavBar({
             facilityId: this.facilityId,
             facilityName: this.facilityModel.facilityName,
+            healthAuthority: this.facilityModel.healthAuthority,
             licenseNumber: this.facilityModel.licenseNumber,
           });
           return response;

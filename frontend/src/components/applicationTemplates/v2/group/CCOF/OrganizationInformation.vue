@@ -21,7 +21,7 @@
 
         <template v-if="organizationModel.organizationType">
           <v-divider class="my-2 mb-8" />
-          <v-row no-gutters>
+          <v-row v-if="!isPartnership" no-gutters>
             <div class="pt-4">
               <AppTooltip
                 tooltip-content="Legal Name as it appears as the licensee on your Community Care & Assisted Living Act Licence"
@@ -102,7 +102,7 @@
             <div class="my-4">Organization's Authorized Signing Authority Information</div>
           </div>
 
-          <v-row v-if="!isSoleProprietorshipPartnership">
+          <v-row v-if="!isSoleProprietorship">
             <v-col cols="12" md="6">
               <v-row no-gutters>
                 <div class="pt-4">
