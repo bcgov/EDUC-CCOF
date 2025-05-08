@@ -31,7 +31,7 @@
               {{ organizationModel.legalName }}
             </v-col>
           </v-row>
-          <v-row v-if="organizationModel.incNumber" dense>
+          <v-row v-if="shouldHaveIncorporationNumber" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <AppLabel>Incorporation Number:</AppLabel>
             </v-col>
@@ -168,6 +168,7 @@ import { mapActions, mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 
 import AppLabel from '@/components/util/AppLabel.vue';
 
@@ -183,6 +184,11 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId', 'organizationModel']),
+    shouldHaveIncorporationNumber() {
+      return [ORGANIZATION_TYPES.NON_PROFIT_SOCIETY, ORGANIZATION_TYPES.REGISTERED_COMPANY].includes(
+        this.organizationModel.organizationType,
+      );
+    },
   },
   async mounted() {
     try {
