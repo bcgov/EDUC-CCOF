@@ -31,6 +31,14 @@
               {{ organizationModel.legalName }}
             </v-col>
           </v-row>
+          <v-row v-if="organizationModel.incNumber" dense>
+            <v-col cols="12" sm="5" xl="4" xxl="3">
+              <AppLabel>Incorporation Number:</AppLabel>
+            </v-col>
+            <v-col cols="12" sm="7" xl="8" xxl="9">
+              {{ organizationModel.incNumber }}
+            </v-col>
+          </v-row>
           <v-row v-if="organizationModel.doingBusinessAs" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <AppLabel>Doing Business As:</AppLabel>
