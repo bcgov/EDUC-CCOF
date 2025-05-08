@@ -324,6 +324,7 @@ export default {
       selectedFacilityWasChanged: true,
       ageGroups: [],
       uploadedDocuments: [],
+      input: { documents: [] },
     };
   },
   computed: {
@@ -386,15 +387,15 @@ export default {
   watch: {
     show: {
       async handler(value) {
+        this.isLoading = true;
         this.isDisplayed = value;
         if (!value) return;
-        this.isLoading = true;
         await this.clearData();
         if (
           this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ||
           this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE
         ) {
-          await this.initInput();
+          this.input = await this.initInput();
         }
         this.isLoading = false;
       },
@@ -405,26 +406,22 @@ export default {
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
-    this.input = {
-      documents: [],
-    }; // Make input a constant, reassigning input causes issues with reactivity with input attributes
   },
   methods: {
     async initInput() {
       try {
+        const input = cloneDeep(this.closure);
         this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
-        this.input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
+        input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments =
           changeActionClosure?.documents && this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
             ? changeActionClosure.documents
             : [];
-        this.input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
-        this.input.approvedStartDate = this.closure.startDate;
-        this.input.approvedEndDate = this.closure.endDate;
-        Object.keys(this.closure).forEach((key) => {
-          if (key !== 'ageGroups') this.input[key] = this.closure[key];
-        });
+        input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        input.approvedStartDate = this.closure.startDate;
+        input.approvedEndDate = this.closure.endDate;
+        return input;
       } catch (e) {
         console.log(e);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -552,9 +549,7 @@ export default {
       }
       this.ageGroups = [];
       this.uploadedDocuments = [];
-      Object.keys(this.input).forEach((key) => {
-        this.input[key] = key === 'documents' ? [] : undefined;
-      });
+      this.input = { documents: [] };
     },
   },
 };
