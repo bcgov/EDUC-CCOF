@@ -5,6 +5,8 @@ import {
   AFS_STATUSES,
   APPLICATION_TEMPLATE_VERSIONS,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
   DOCUMENT_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
@@ -286,10 +288,7 @@ export default {
   },
 
   isChildCareTypeComplete(childCareType) {
-    const requiredFields = [
-      'programYear',
-      'childCareCategory',
-      'feeFrequency',
+    const feeFields = [
       'approvedFeeApr',
       'approvedFeeMay',
       'approvedFeeJun',
@@ -303,7 +302,14 @@ export default {
       'approvedFeeFeb',
       'approvedFeeMar',
     ];
-    return !hasEmptyFields(childCareType, requiredFields);
+    const requiredFields = ['programYear', 'childCareCategory', 'feeFrequency', ...feeFields];
+    const areFeesValid = feeFields.every(
+      (month) =>
+        !isNaN(parseFloat(childCareType[month])) &&
+        childCareType[month] >= CCFRI_MIN_FEE &&
+        childCareType[month] <= CCFRI_MAX_FEE,
+    );
+    return !hasEmptyFields(childCareType, requiredFields) && areFeesValid;
   },
 
   // CLOSURES VALIDATIONS

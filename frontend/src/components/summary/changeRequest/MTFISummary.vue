@@ -128,9 +128,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeApr) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -146,9 +146,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeMay) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -164,9 +164,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeJun) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -182,9 +182,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeJul) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -200,9 +200,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeAug) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -218,9 +218,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeSep) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -332,9 +332,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeOct) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       prefix="$"
                       class="summary-value"
@@ -349,9 +349,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeNov) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -367,9 +367,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeDec) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -385,9 +385,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeJan) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -403,9 +403,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeFeb) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -421,9 +421,9 @@
                       density="compact"
                       flat
                       variant="solo"
-                      hide-details
+                      :hide-details="isNullOrBlank(newModel.childCareTypes[index].approvedFeeMar) || isValidForm"
                       readonly
-                      :rules="rules.required"
+                      :rules="ccfriFeeRules"
                       placeholder="Required"
                       label=""
                       prefix="$"
@@ -468,8 +468,8 @@
 
 <script>
 import summaryMixin from '@/mixins/summaryMixin.js';
-import { PATHS, changeUrlGuid, CHANGE_TYPES } from '@/utils/constants.js';
 import { deepCloneObject } from '@/utils/common.js';
+import { CHANGE_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   mixins: [summaryMixin],
@@ -504,6 +504,9 @@ export default {
   },
   created() {
     this.newModel = deepCloneObject(this.newCcfri);
+  },
+  mounted() {
+    this.$refs.mtfiSummaryForm.validate();
   },
 };
 </script>

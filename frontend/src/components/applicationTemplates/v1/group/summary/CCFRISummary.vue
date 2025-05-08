@@ -79,9 +79,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeApr) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -94,9 +94,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeMay) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -109,9 +109,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeJun) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -124,9 +124,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeJul) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -139,9 +139,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeAug) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -154,9 +154,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeSep) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -169,9 +169,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeOct) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -184,9 +184,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeNov) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -199,9 +199,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeDec) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -214,9 +214,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeJan) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -229,9 +229,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeFeb) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -244,9 +244,9 @@
                 density="compact"
                 flat
                 variant="solo"
-                hide-details
+                :hide-details="isNullOrBlank(ccType.approvedFeeMar) || isValidForm"
                 readonly
-                :rules="rules.required"
+                :rules="ccfriFeeRules"
                 prefix="$"
               />
             </v-col>
@@ -454,6 +454,9 @@ export default {
   },
   created() {
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
+  },
+  mounted() {
+    this.$refs.ccfriSummaryForm.validate();
   },
   methods: {
     isEmpty,

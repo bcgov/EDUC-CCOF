@@ -509,3 +509,6 @@ export const APPLICATION_TEMPLATE_VERSIONS = [
 ];
 
 export const EMPTY_PLACEHOLDER = '--';
+
+export const CCFRI_MAX_FEE = 9999;
+export const CCFRI_MIN_FEE = 0;
