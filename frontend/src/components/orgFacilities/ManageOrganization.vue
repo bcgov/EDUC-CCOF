@@ -25,58 +25,58 @@
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization Name:</AppLabel>
+              <p><AppLabel>Organization Name:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.legalName }}
+              <p>{{ organizationModel.legalName }}</p>
             </v-col>
           </v-row>
           <v-row v-if="shouldHaveIncorporationNumber" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Incorporation Number:</AppLabel>
+              <p><AppLabel>Incorporation Number:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.incNumber }}
+              <p>{{ organizationModel.incNumber }}</p>
             </v-col>
           </v-row>
           <v-row v-if="organizationModel.doingBusinessAs" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Doing Business As:</AppLabel>
+              <p><AppLabel>Doing Business As:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.doingBusinessAs }}
+              <p>{{ organizationModel.doingBusinessAs }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization ID:</AppLabel>
+              <p><AppLabel>Organization ID:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.accountNumber }}
+              <p>{{ organizationModel.accountNumber }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization Type:</AppLabel>
+              <p><AppLabel>Organization Type:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.organizationTypeDesc }}
+              <p>{{ organizationModel.organizationTypeDesc }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Email Address:</AppLabel>
+              <p><AppLabel>Email Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.email }}
+              <p>{{ organizationModel.email }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Phone:</AppLabel>
+              <p><AppLabel>Phone:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.phone }}
+              <p>{{ organizationModel.phone }}</p>
             </v-col>
           </v-row>
         </v-card>
@@ -85,77 +85,77 @@
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row dense>
             <v-col>
-              <AppLabel>Mailing Address</AppLabel>
+              <p><AppLabel>Mailing Address</AppLabel></p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address:</AppLabel>
+              <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              {{ organizationModel.address1 }}
+              <p>{{ organizationModel.address1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>City:</AppLabel>
+              <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.city1 }}
+              <p>{{ organizationModel.city1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Province:</AppLabel>
+              <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.province1 }}
+              <p>{{ organizationModel.province1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Postal Code:</AppLabel>
+              <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.postalCode1 }}
+              <p>{{ organizationModel.postalCode1 }}</p>
             </v-col>
           </v-row>
           <br />
           <v-row dense>
             <v-col>
-              <AppLabel>Physical Address</AppLabel>
+              <p><AppLabel>Physical Address</AppLabel></p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address:</AppLabel>
+              <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              {{ organizationModel.address2 }}
+              <p>{{ organizationModel.address2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>City:</AppLabel>
+              <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.city2 }}
+              <p>{{ organizationModel.city2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Province:</AppLabel>
+              <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.province2 }}
+              <p>{{ organizationModel.province2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Postal Code:</AppLabel>
+              <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xxl="8">
-              {{ organizationModel.postalCode2 }}
+              <p>{{ organizationModel.postalCode2 }}</p>
             </v-col>
           </v-row>
         </v-card>
