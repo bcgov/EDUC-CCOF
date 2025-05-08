@@ -41,7 +41,6 @@ export default {
       'city2',
       'province2',
       'postalCode2',
-      'position',
       'phone',
       'email',
     ];
@@ -69,9 +68,9 @@ export default {
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
     return (
-      this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
       (facility.isRenewal ||
-        this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion)) &&
+        (this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
+          this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion))) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
