@@ -16,7 +16,7 @@
           <v-select
             v-model="input.facilityId"
             :rules="rules.required"
-            :disabled="requestType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE"
+            :disabled="isLoading || !isNewClosureRequest"
             :items="facilityList"
             :loading="isLoading"
             item-value="facilityId"
@@ -68,7 +68,7 @@
               <v-radio-group
                 v-model="input.paidClosure"
                 :rules="rules.required"
-                :disabled="requestType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE || isLoading"
+                :disabled="!isNewClosureRequest || isLoading"
                 :loading="true"
               >
                 <v-row justify="start">
@@ -96,7 +96,7 @@
                 <v-radio-group
                   v-model="input.fullClosure"
                   :rules="rules.required"
-                  :disabled="requestType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE || isLoading"
+                  :disabled="!isNewClosureRequest || isLoading"
                   @update:model-value="handleFullFacilityClosureChange"
                 >
                   <v-row justify="start">
@@ -118,7 +118,7 @@
               <v-select
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
-                :disabled="requestType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE"
+                :disabled="isLoading || !isNewClosureRequest"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
@@ -166,7 +166,7 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
-                  :disabled="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
+                  :disabled="isRemoveClosureRequest"
                   :loading="isLoading"
                   :min="fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
@@ -180,9 +180,9 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
-                  :disabled="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
+                  :disabled="isRemoveClosureRequest"
                   :loading="isLoading"
-                  :min="fiscalStartAndEndDates.startDate"
+                  :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
                   :error="fiscalYearError || endDateBeforeStartDateError"
@@ -204,7 +204,7 @@
               <v-col cols="12" lg="9">
                 <v-text-field
                   v-model="input.closureReason"
-                  :disabled="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
+                  :disabled="isRemoveClosureRequest"
                   :loading="isLoading"
                   variant="outlined"
                   :rules="rules.required"
@@ -214,7 +214,7 @@
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
-              :disabled="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
+              :disabled="isRemoveClosureRequest"
               :loading="isLoading"
               variant="outlined"
               label="Detailed description of request"
@@ -222,7 +222,7 @@
             />
             <AppDocumentUpload
               :loading="isLoading"
-              :readonly="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
+              :readonly="isRemoveClosureRequest"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
               :required="false"
@@ -252,10 +252,7 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton
-              v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE"
-              :disabled="disableSubmit"
-              @click="removeClosure"
+            <AppButton v-if="isRemoveClosureRequest" :disabled="disableSubmit" @click="removeClosure"
               >Remove Closure</AppButton
             >
             <AppButton v-else :disabled="disableSubmit" @click="submit">Submit</AppButton>
@@ -343,12 +340,6 @@ export default {
           return '';
       }
     },
-    isDisabledRemoveClosure() {
-      return false;
-    },
-    isDisabledNotNewClosureClosure() {
-      return false;
-    },
     endDateBeforeStartDateError() {
       return this.input.startDate && this.input.endDate && this.input.startDate > this.input.endDate;
     },
@@ -379,6 +370,12 @@ export default {
         (application) => application.ccofProgramYearId === this.programYearId,
       );
       return application?.applicationId;
+    },
+    isRemoveClosureRequest() {
+      return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+    },
+    isNewClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE;
     },
     disableSubmit() {
       return !this.isValidForm || this.isLoading;
