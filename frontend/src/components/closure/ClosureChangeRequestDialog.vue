@@ -69,7 +69,6 @@
                 v-model="input.paidClosure"
                 :rules="rules.required"
                 :disabled="!isNewClosureRequest || isLoading"
-                :loading="true"
               >
                 <v-row justify="start">
                   <v-col cols="6" class="pl-3 pr-0 pt-0">
@@ -82,7 +81,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-container v-if="input.facilityId && input.paidClosure !== undefined" width="100%" class="pa-0">
+          <v-container v-if="input.facilityId && input.paidClosure != null" width="100%" class="pa-0">
             <v-row>
               <v-col cols="12" lg="9">
                 <h3 class="mt-2">
@@ -125,8 +124,6 @@
                 label="Select affected care categories"
                 variant="outlined"
                 class="mt-2"
-                multiple
-                chips
                 :rules="rules.required"
                 clearable
               />
@@ -345,12 +342,6 @@ export default {
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
-    allAgeGroupsSelected() {
-      return this.input.ageGroups?.length === this.ageGroups?.length;
-    },
-    someAgeGroupsSelected() {
-      return this.input.ageGroups?.length > 0;
-    },
     applicationId() {
       const application = this.userInfo.applications?.find(
         (application) => application.ccofProgramYearId === this.programYearId,
@@ -388,7 +379,6 @@ export default {
   created() {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
-    this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
   },
   methods: {
@@ -447,15 +437,6 @@ export default {
     },
     closeDialog() {
       this.$emit('close');
-    },
-    toggleSelectAll() {
-      const ageGroups = [];
-      if (!this.allAgeGroupsSelected) {
-        for (const ageGroup of this.ageGroups) {
-          ageGroups.push(ageGroup.value);
-        }
-      }
-      this.input.ageGroups = ageGroups;
     },
     updateDocuments(documents) {
       this.input.documents = documents;
