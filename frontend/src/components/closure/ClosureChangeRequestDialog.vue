@@ -122,7 +122,6 @@
                 item-title="label"
                 item-value="value"
                 label="Select affected care categories"
-                variant="outlined"
                 class="mt-2"
                 :rules="rules.required"
                 clearable
