@@ -223,7 +223,7 @@ export default {
   methods: {
     addRow(isAddButtonClicked) {
       if (!isAddButtonClicked && !isEmpty(this.updatedClosures)) return;
-      this.updatedClosures.push({});
+      this.updatedClosures.push(this.showApplicationTemplateV1 ? {} : { fullClosure: true });
     },
     //builds an array of dates to keep track of all days of the selected closure period.
     //this array is used to check if a user selects an overlapping date

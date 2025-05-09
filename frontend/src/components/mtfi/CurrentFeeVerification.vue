@@ -641,37 +641,43 @@
 </template>
 
 <script>
+import { isEqual } from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { useApplicationStore } from '@/store/application.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useAppStore } from '@/store/app.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import AppButton from '@/components/guiComponents/AppButton.vue';
 
-import {
-  PATHS,
-  changeUrlGuid,
-  CHANGE_TYPES,
-  ApiRoutes,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-} from '@/utils/constants.js';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
+import ApiService from '@/common/apiService.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
-import NavButton from '@/components/util/NavButton.vue';
+
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+
 import { deepCloneObject, getBCSSALink } from '@/utils/common.js';
-import { isEqual } from 'lodash';
-import ApiService from '@/common/apiService.js';
-import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import {
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
+  CHANGE_TYPES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+  ApiRoutes,
+  changeUrlGuid,
+} from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 let model = {};
 
 export default {
-  name: 'MTFIFees',
-  components: { NavButton, AppButton, AppDialog, FacilityHeader },
+  name: 'CurrentFeeVerification',
+  components: { AppButton, AppDialog, FacilityHeader, NavButton },
   mixins: [alertMixin, globalMixin],
   async beforeRouteLeave(_to, _from, next) {
     next();
@@ -688,12 +694,6 @@ export default {
       isValidForm: false,
       processing: false,
       loading: false,
-      rules: [(v) => !!v || 'Required.'],
-      feeRules: [
-        (v) => !isNaN(parseFloat(v)) || 'Must be a number',
-        (v) => v <= 9999 || 'Max fee is $9999.00',
-        (v) => v >= 0 || 'Input a positve number',
-      ],
     };
   },
   computed: {
@@ -814,7 +814,13 @@ export default {
       deep: true,
     },
   },
-  beforeMount: function () {},
+  created() {
+    this.feeRules = [
+      rules.isNumber,
+      rules.max(CCFRI_MAX_FEE, `Max fee is $${CCFRI_MAX_FEE}.00`),
+      rules.min(CCFRI_MIN_FEE, 'Input a positive number'),
+    ];
+  },
   methods: {
     ...mapActions(useCcfriAppStore, [
       'saveCcfri',

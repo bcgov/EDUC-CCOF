@@ -22,6 +22,8 @@ import {
   ApiRoutes,
   CCFRI_FEE_CORRECT_TYPES,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
   CHANGE_TYPES,
   PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -120,7 +122,11 @@ export default {
     },
   },
   created() {
-    this.feeRules = [rules.isNumber, rules.max(9999, 'Max fee is $9999.00'), rules.min(0, 'Input a positive number')];
+    this.feeRules = [
+      rules.isNumber,
+      rules.max(CCFRI_MAX_FEE, `Max fee is $${CCFRI_MAX_FEE}.00`),
+      rules.min(CCFRI_MIN_FEE, 'Input a positive number'),
+    ];
     this.rules = rules;
     this.CCFRI_FEE_CORRECT_TYPES = CCFRI_FEE_CORRECT_TYPES;
     this.CCFRI_HAS_CLOSURE_FEE_TYPES = CCFRI_HAS_CLOSURE_FEE_TYPES;
