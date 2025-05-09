@@ -115,7 +115,7 @@
                 <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
-              <v-select
+              <!-- <v-select
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
                 :disabled="isLoading || !isNewClosureRequest"
@@ -142,14 +142,29 @@
                   </v-list-item>
                   <v-divider class="mt-2" />
                 </template>
-              </v-select>
+              </v-select> -->
+              <AppMultiSelectInput
+                v-model.lazy="input.ageGroups"
+                :loading="isLoading"
+                :disabled="isLoading || !isNewClosureRequest"
+                :items="ageGroups"
+                item-title="label"
+                item-value="value"
+                label="Select affected care categories"
+                variant="outlined"
+                class="mt-2"
+                multiple
+                chips
+                :rules="rules.required"
+                clearable
+              />
             </div>
             <h3 class="mt-6">Dates:</h3>
             <p class="text-black mt-4">
               Select the estimated end date, if applicable. To report a closure for a previous term, please return to
               the home page, select a different fiscal year, and go to Organization Closures.
             </p>
-            <div v-if="requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE">
+            <div v-if="isEditClosureRequest">
               <h3 class="mt-4">Approved Dates:</h3>
               <v-row>
                 <v-col cols="12" lg="5">
@@ -166,7 +181,7 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
-                  :disabled="isRemoveClosureRequest"
+                  :disabled="isRemoveClosureRequest || isLoading"
                   :loading="isLoading"
                   :min="fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
@@ -180,7 +195,7 @@
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
-                  :disabled="isRemoveClosureRequest"
+                  :disabled="isRemoveClosureRequest || isLoading"
                   :loading="isLoading"
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
@@ -204,7 +219,7 @@
               <v-col cols="12" lg="9">
                 <v-text-field
                   v-model="input.closureReason"
-                  :disabled="isRemoveClosureRequest"
+                  :disabled="isRemoveClosureRequest || isLoading"
                   :loading="isLoading"
                   variant="outlined"
                   :rules="rules.required"
@@ -214,7 +229,7 @@
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
-              :disabled="isRemoveClosureRequest"
+              :disabled="isRemoveClosureRequest || isLoading"
               :loading="isLoading"
               variant="outlined"
               label="Detailed description of request"
@@ -222,7 +237,7 @@
             />
             <AppDocumentUpload
               :loading="isLoading"
-              :readonly="isRemoveClosureRequest"
+              :readonly="isRemoveClosureRequest || isLoading"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
               :required="false"
@@ -231,11 +246,12 @@
               @delete-uploaded-document="deleteUploadedDocument"
             />
           </v-container>
-          <v-container v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE" class="pa-0 pt-4">
+          <v-container v-if="isRemoveClosureRequest" class="pa-0 pt-4">
             <h3>Reason for closure removal:</h3>
             <v-textarea
               v-model="input.reasonForClosureRemoval"
               :loading="isLoading"
+              :disabled="isLoading"
               variant="outlined"
               :rules="rules.required"
               label="Please describe the reason for removal."
@@ -271,6 +287,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
+import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import {
   CHANGE_REQUEST_TYPES,
@@ -289,7 +306,7 @@ import { useAuthStore } from '@/store/auth.js';
 
 export default {
   name: 'ClosureChangeRequestDialog',
-  components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppTooltip },
+  components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppMultiSelectInput, AppTooltip },
   mixins: [alertMixin],
   props: {
     closure: {
@@ -353,9 +370,6 @@ export default {
           this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
     },
-    showDocumentUpload() {
-      return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
-    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
@@ -371,12 +385,16 @@ export default {
       );
       return application?.applicationId;
     },
-    isRemoveClosureRequest() {
-      return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
-    },
     isNewClosureRequest() {
       return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE;
     },
+    isEditClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+    },
+    isRemoveClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+    },
+
     disableSubmit() {
       return !this.isValidForm || this.isLoading;
     },
@@ -388,10 +406,7 @@ export default {
         this.isDisplayed = value;
         if (!value) return;
         await this.clearData();
-        if (
-          this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ||
-          this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE
-        ) {
+        if (!this.isNewClosureRequest) {
           this.input = await this.initInput();
         }
         this.isLoading = false;
@@ -412,9 +427,7 @@ export default {
         input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
         this.uploadedDocuments =
-          changeActionClosure?.documents && this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE
-            ? changeActionClosure.documents
-            : [];
+          changeActionClosure?.documents && this.isRemoveClosureRequest ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
         input.approvedStartDate = this.closure.startDate;
         input.approvedEndDate = this.closure.endDate;
@@ -508,7 +521,7 @@ export default {
         organizationId: this.userInfo?.organizationId,
         facilityId: this.input.facilityId,
         changeType: this.requestType,
-        closureId: this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE ? this.closure?.closureId : null,
+        closureId: this.isEditClosureRequest ? this.closure?.closureId : null,
         paidClosure: this.input.paidClosure,
         fullClosure: this.input.fullClosure,
         ageGroups: this.input.fullClosure ? null : this.input.ageGroups.join(','),
@@ -541,7 +554,7 @@ export default {
     async clearData() {
       this.selectedFacilityWasChanged = true;
       this.facilityId = this.closure?.facilityId;
-      if (this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE) {
+      if (this.isEditClosureRequest) {
         await this.handleFullFacilityClosureChange(this.closure.fullClosure);
       }
       this.ageGroups = [];
