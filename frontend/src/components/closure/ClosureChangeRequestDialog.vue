@@ -115,34 +115,6 @@
                 <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
-              <!-- <v-select
-                v-model.lazy="input.ageGroups"
-                :loading="isLoading"
-                :disabled="isLoading || !isNewClosureRequest"
-                :items="ageGroups"
-                item-title="label"
-                item-value="value"
-                label="Select affected care categories"
-                variant="outlined"
-                class="mt-2"
-                multiple
-                chips
-                :rules="rules.required"
-                clearable
-              >
-                <template #prepend-item>
-                  <v-list-item title="Select All" @click="toggleSelectAll">
-                    <template #prepend>
-                      <v-checkbox-btn
-                        :color="someAgeGroupsSelected ? '#003366' : undefined"
-                        :indeterminate="someAgeGroupsSelected && !allAgeGroupsSelected"
-                        :model-value="someAgeGroupsSelected"
-                      />
-                    </template>
-                  </v-list-item>
-                  <v-divider class="mt-2" />
-                </template>
-              </v-select> -->
               <AppMultiSelectInput
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
