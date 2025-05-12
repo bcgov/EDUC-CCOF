@@ -1,5 +1,4 @@
 <template>
-  {{ isApplicationProcessing }}
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
     <v-container fluid class="mx-lg-16">
       <OrganizationInformationV1 v-if="showApplicationTemplateV1" />

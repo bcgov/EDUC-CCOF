@@ -54,7 +54,7 @@ export default {
     isSoleProprietorship() {
       return this.organizationModel.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
     },
-    partnershipOrganizationLegalName() {
+    partnershipLegalOrganizationName() {
       const partnerNames = [];
       for (let i = 1; i <= this.MAX_NUMBER_OF_PARTNERS; i++) {
         const firstName = this.organizationModel[`partner${i}FirstName`] ?? '';
@@ -169,7 +169,7 @@ export default {
           this.organizationModel.province2 = this.organizationModel.province1;
         }
         this.organizationModel.legalName = this.isPartnership
-          ? this.partnershipOrganizationLegalName
+          ? this.partnershipLegalOrganizationName
           : this.organizationModel.legalName;
         if (!this.isPartnership) {
           for (let i = 1; i <= this.MAX_NUMBER_OF_PARTNERS; i++) {

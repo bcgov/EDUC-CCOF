@@ -72,7 +72,7 @@
               </AppButton>
             </v-row>
             <v-text-field
-              :model-value="partnershipOrganizationLegalName"
+              :model-value="partnershipLegalOrganizationName"
               :disabled="true"
               variant="outlined"
               label="Legal Organization Name"
