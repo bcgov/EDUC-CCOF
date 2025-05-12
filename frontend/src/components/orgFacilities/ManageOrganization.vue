@@ -28,7 +28,7 @@
               <p><AppLabel>Organization Name:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.legalName }}</p>
+              <p>{{ loadedModel.legalName }}</p>
             </v-col>
           </v-row>
           <v-row v-if="shouldHaveIncorporationNumber" dense>
@@ -36,15 +36,15 @@
               <p><AppLabel>Incorporation Number:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.incNumber }}</p>
+              <p>{{ loadedModel.incNumber }}</p>
             </v-col>
           </v-row>
-          <v-row v-if="organizationModel.doingBusinessAs" dense>
+          <v-row v-if="loadedModel.doingBusinessAs" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <p><AppLabel>Doing Business As:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.doingBusinessAs }}</p>
+              <p>{{ loadedModel.doingBusinessAs }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -52,7 +52,7 @@
               <p><AppLabel>Organization ID:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.accountNumber }}</p>
+              <p>{{ loadedModel.accountNumber }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -60,7 +60,7 @@
               <p><AppLabel>Organization Type:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.organizationTypeDesc }}</p>
+              <p>{{ loadedModel.organizationTypeDesc }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -68,7 +68,7 @@
               <p><AppLabel>Email Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.email }}</p>
+              <p>{{ loadedModel.email }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -76,7 +76,7 @@
               <p><AppLabel>Phone:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.phone }}</p>
+              <p>{{ loadedModel.phone }}</p>
             </v-col>
           </v-row>
         </v-card>
@@ -93,7 +93,7 @@
               <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              <p>{{ organizationModel.address1 }}</p>
+              <p>{{ loadedModel.address1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -101,7 +101,7 @@
               <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.city1 }}</p>
+              <p>{{ loadedModel.city1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -109,7 +109,7 @@
               <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.province1 }}</p>
+              <p>{{ loadedModel.province1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -117,7 +117,7 @@
               <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.postalCode1 }}</p>
+              <p>{{ loadedModel.postalCode1 }}</p>
             </v-col>
           </v-row>
           <br />
@@ -131,7 +131,7 @@
               <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              <p>{{ organizationModel.address2 }}</p>
+              <p>{{ loadedModel.address2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -139,7 +139,7 @@
               <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.city2 }}</p>
+              <p>{{ loadedModel.city2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -147,7 +147,7 @@
               <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <p>{{ organizationModel.province2 }}</p>
+              <p>{{ loadedModel.province2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
@@ -155,7 +155,7 @@
               <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xxl="8">
-              <p>{{ organizationModel.postalCode2 }}</p>
+              <p>{{ loadedModel.postalCode2 }}</p>
             </v-col>
           </v-row>
         </v-card>
@@ -183,7 +183,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel']),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel', 'loadedModel']),
     shouldHaveIncorporationNumber() {
       return [ORGANIZATION_TYPES.NON_PROFIT_SOCIETY, ORGANIZATION_TYPES.REGISTERED_COMPANY].includes(
         this.organizationModel.organizationType,
@@ -192,7 +192,7 @@ export default {
   },
   async mounted() {
     try {
-      if (isEmpty(this.organizationModel)) {
+      if (isEmpty(this.loadedModel)) {
         this.orgLoading = true;
         await this.loadOrganization(this.organizationId);
       }

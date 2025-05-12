@@ -63,8 +63,6 @@ export const useOrganizationStore = defineStore('organization', {
       };
       payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
-      this.setLoadedModel({ ...this.organizationModel });
-      navBarStore.forceNavBarRefresh(null);
       if (this.organizationId) {
         // has an orgaization ID, so update the data
         try {
@@ -94,6 +92,9 @@ export const useOrganizationStore = defineStore('organization', {
           throw error;
         }
       }
+
+      this.setLoadedModel({ ...this.organizationModel });
+      navBarStore.forceNavBarRefresh(null);
     },
     async renewApplication() {
       const appStore = useAppStore();
