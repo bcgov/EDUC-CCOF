@@ -24,6 +24,18 @@ const OrganizationMappings = [
   { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
   { back: 'ccof_doingbusinessas', front: 'doingBusinessAs' },
+  { back: 'ccof_partner1firstname', front: 'partner1FirstName' },
+  { back: 'ccof_partner1middlename', front: 'partner1MiddleName' },
+  { back: 'ccof_partner1lastname', front: 'partner1LastName' },
+  { back: 'ccof_partner2firstname', front: 'partner2FirstName' },
+  { back: 'ccof_partner2middlename', front: 'partner2MiddleName' },
+  { back: 'ccof_partner2lastname', front: 'partner2LastName' },
+  { back: 'ccof_partner3firstname', front: 'partner3FirstName' },
+  { back: 'ccof_partner3middlename', front: 'partner3MiddleName' },
+  { back: 'ccof_partner3lastname', front: 'partner3LastName' },
+  { back: 'ccof_partner4firstname', front: 'partner4FirstName' },
+  { back: 'ccof_partner4middlename', front: 'partner4MiddleName' },
+  { back: 'ccof_partner4lastname', front: 'partner4LastName' },
 ];
 
 const FacilityMappings = [

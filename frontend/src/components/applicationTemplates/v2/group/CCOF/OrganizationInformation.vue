@@ -4,7 +4,7 @@
       <v-card-title class="text-center pb-0">
         <h3>Organization Information</h3>
       </v-card-title>
-      <v-container>
+      <v-container fluid>
         <v-card v-if="isSomeChangeRequestActive && isLocked" elevation="4" class="mt-4 mb-8">
           <v-card-title class="rounded-t-lg py-3 noticeAlert">
             <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
@@ -21,6 +21,79 @@
 
         <template v-if="organizationModel.organizationType">
           <v-divider class="my-2 mb-8" />
+          <template v-if="isPartnership">
+            <v-row v-for="index in numberOfPartners" :key="index" no-gutters>
+              <v-col class="py-6" style="max-width: 100px">Partner {{ index }}</v-col>
+              <v-col cols="12" lg="3" class="px-lg-2 py-2">
+                <v-text-field
+                  v-model.trim="organizationModel[`partner${index}FirstName`]"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  :rules="rules.required"
+                  label="First Name"
+                />
+              </v-col>
+              <v-col cols="12" lg="4" class="px-lg-2 py-2">
+                <v-text-field
+                  v-model.trim="organizationModel[`partner${index}MiddleName`]"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  label="Middle Name (if applicable)"
+                />
+              </v-col>
+              <v-col cols="12" lg class="px-lg-2 py-2">
+                <v-text-field
+                  v-model.trim="organizationModel[`partner${index}LastName`]"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  :rules="rules.required"
+                  label="Last Name"
+                />
+              </v-col>
+              <v-col v-if="numberOfPartners > 2" align="right" style="max-width: 50px">
+                <v-btn
+                  v-if="!isLocked && index > 2"
+                  variant="text"
+                  icon="mdi-trash-can-outline"
+                  class="mb-6 my-lg-3"
+                  @click="removePartner(index)"
+                />
+              </v-col>
+            </v-row>
+            <v-row v-if="numberOfPartners < MAX_NUMBER_OF_PARTNERS" class="justify-right">
+              <AppButton
+                id="add-partner-button"
+                :disabled="isLocked"
+                :primary="false"
+                size="medium"
+                @click="numberOfPartners++"
+              >
+                Add Additional Partner
+              </AppButton>
+            </v-row>
+            <v-text-field
+              :model-value="partnershipOrganizationLegalName"
+              :disabled="true"
+              variant="outlined"
+              label="Legal Organization Name"
+              hide-details
+              class="pl-lg-11 mt-8"
+            />
+            <v-row no-gutters class="pt-8">
+              <div class="pt-4">
+                <AppTooltip tooltip-content="If a registered partnership, the registered business name" />
+              </div>
+              <v-text-field
+                v-model="organizationModel.doingBusinessAs"
+                :disabled="isLocked"
+                variant="outlined"
+                :rules="rules.required"
+                label="Doing Business As"
+                class="ml-4"
+              />
+            </v-row>
+          </template>
+
           <v-row v-if="!isPartnership" no-gutters>
             <div class="pt-4">
               <AppTooltip
