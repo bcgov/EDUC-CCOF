@@ -18,7 +18,6 @@ export const useOrganizationStore = defineStore('organization', {
     organizationName: null,
     organizationAccountNumber: null,
     isOrganizationComplete: false,
-    isStarted: false,
     organizationModel: {},
     loadedModel: {},
   }),
@@ -34,9 +33,6 @@ export const useOrganizationStore = defineStore('organization', {
     },
     setOrganizationAccountNumber(organizationAccountNumber) {
       this.organizationAccountNumber = organizationAccountNumber;
-    },
-    setIsStarted(isStarted) {
-      this.isStarted = isStarted;
     },
     setOrganizationModel(model) {
       this.organizationModel = { ...model };
@@ -62,11 +58,12 @@ export const useOrganizationStore = defineStore('organization', {
         applicationTemplateVersion: ApplicationService.getActiveApplicationTemplate(),
       };
       payload.providerType = this.getOrgProviderTypeID;
+      delete payload.organizationTypeDesc;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       this.setLoadedModel({ ...this.organizationModel });
       navBarStore.forceNavBarRefresh(null);
       if (this.organizationId) {
-        // has an orgaization ID, so update the data
+        // has an organization ID, so update the data
         try {
           const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
           return response;
@@ -113,7 +110,6 @@ export const useOrganizationStore = defineStore('organization', {
       };
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
-        this.setIsStarted(false);
         eceweAppStore.setIsStarted(false);
         authStore.setIsUserInfoLoaded(false);
 

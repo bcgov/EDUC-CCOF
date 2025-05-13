@@ -63,11 +63,9 @@ export default {
   methods: {
     ...mapActions(useAuthStore, ['setIsUserInfoLoaded', 'setImpersonateId', 'getUserInfo']),
     async setBCeID() {
-      const organizationStore = useOrganizationStore();
       const eceweAppStore = useEceweAppStore();
       this.processing = true;
       this.setIsUserInfoLoaded(false);
-      organizationStore.setIsStarted(false);
       eceweAppStore.setIsStarted(false);
 
       this.setImpersonateId(this.businessBCeId);

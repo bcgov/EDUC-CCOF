@@ -1,5 +1,11 @@
 <template>
-  <v-form ref="form" v-model="organizationModel.isOrganizationComplete">
+  <v-skeleton-loader
+    v-if="isApplicationProcessing"
+    :loading="isApplicationProcessing"
+    type="table-tbody"
+    class="mb-12"
+  />
+  <v-form v-else ref="form" v-model="organizationModel.isOrganizationComplete">
     <v-card class="cc-top-level-card pa-2">
       <v-card-title class="text-center pb-0">
         <h3>Organization Information</h3>
@@ -260,6 +266,9 @@ export default {
         this.$refs.form?.validate();
       },
     },
+  },
+  async created() {
+    await this.loadData();
   },
 };
 </script>

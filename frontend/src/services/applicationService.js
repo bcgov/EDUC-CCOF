@@ -77,6 +77,7 @@ export default {
   },
 
   getNumberOfPartners(organization) {
+    if (isEmpty(organization)) return 0;
     let maxIndexWithData = 0;
     for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
       const hasData =

@@ -6,7 +6,13 @@
 * Source: Copied from commit 29a3ecd on Nov 8, 2024 with some changes.
 -->
 <template>
-  <v-form ref="form" v-model="organizationModel.isOrganizationComplete">
+  <v-skeleton-loader
+    v-if="isApplicationProcessing"
+    :loading="isApplicationProcessing"
+    type="table-tbody"
+    class="mb-12"
+  />
+  <v-form v-else ref="form" v-model="organizationModel.isOrganizationComplete">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card mx-12" width="100%">

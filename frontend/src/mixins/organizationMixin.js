@@ -16,17 +16,19 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
+const DEFAULT_NUMBER_OF_PARTNERS = 2;
+
 export default {
   components: { AppAddressForm, AppButton, AppTooltip, NavButton },
   mixins: [alertMixin],
   data() {
     return {
-      numberOfPartners: 2,
+      numberOfPartners: DEFAULT_NUMBER_OF_PARTNERS,
     };
   },
   computed: {
     ...mapState(useAppStore, ['organizationTypeList', 'navBarList']),
-    ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel', 'organizationProviderType']),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel', 'organizationProviderType']),
     ...mapState(useFacilityStore, ['facilityList']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useApplicationStore, [
@@ -67,10 +69,9 @@ export default {
       return partnerNames.join('/');
     },
   },
-  async created() {
+  created() {
     this.rules = rules;
     this.MAX_NUMBER_OF_PARTNERS = MAX_NUMBER_OF_PARTNERS;
-    await this.loadData();
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
@@ -78,22 +79,20 @@ export default {
       'loadOrganization',
       'saveOrganization',
       'setIsOrganizationComplete',
-      'setIsStarted',
       'setOrganizationModel',
     ]),
     async loadData() {
-      if (this.isStarted) {
-        this.setIsApplicationProcessing(false);
-        return;
-      }
-      if (!this.organizationId) return;
       try {
-        this.setIsApplicationProcessing(true);
-        await this.loadOrganization(this.organizationId);
-        if (this.isPartnership) {
-          this.numberOfPartners = Math.max(ApplicationService.getNumberOfPartners(this.organizationModel), 2);
+        if (this.organizationId && isEmpty(this.organizationModel)) {
+          this.setIsApplicationProcessing(true);
+          await this.loadOrganization(this.organizationId);
         }
-        this.setIsStarted(true);
+        if (this.isPartnership) {
+          this.numberOfPartners = Math.max(
+            ApplicationService.getNumberOfPartners(this.organizationModel),
+            DEFAULT_NUMBER_OF_PARTNERS,
+          );
+        }
       } catch (error) {
         console.log('Error loading organization.', error);
         this.setFailureAlert('An error occurred while loading organization. Please try again later.');
@@ -161,7 +160,6 @@ export default {
       if (this.isLocked || this.isApplicationProcessing) return;
       try {
         this.setIsApplicationProcessing(true);
-        this.setIsStarted(true);
         if (this.organizationModel.isSameAsMailing) {
           this.organizationModel.address2 = this.organizationModel.address1;
           this.organizationModel.city2 = this.organizationModel.city1;
@@ -183,7 +181,8 @@ export default {
         if (showNotification) {
           this.setSuccessAlert('Success! Organization information has been saved.');
         }
-      } catch {
+      } catch (error) {
+        console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.setIsApplicationProcessing(false);
