@@ -125,7 +125,7 @@ export default {
       this.organizationModel[`partner${max}MiddleName`] = null;
       this.organizationModel[`partner${max}LastName`] = null;
 
-      this.numberOfPartners = Math.max(2, this.numberOfPartners - 1);
+      this.numberOfPartners = Math.max(DEFAULT_NUMBER_OF_PARTNERS, this.numberOfPartners - 1);
     },
     updateMailingAddress(updatedModel) {
       if (isEmpty(updatedModel)) return;

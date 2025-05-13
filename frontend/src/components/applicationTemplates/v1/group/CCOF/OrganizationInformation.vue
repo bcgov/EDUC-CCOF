@@ -259,8 +259,9 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.PROVINCES = PROVINCES;
+    await this.loadData();
     this.organizationModel.province1 =
       this.organizationModel.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
     this.organizationModel.province2 =
