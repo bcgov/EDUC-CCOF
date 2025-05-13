@@ -12,6 +12,7 @@ import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js'
 import {
   CCFRI_MAX_FEE,
   CCFRI_MIN_FEE,
+  DEFAULT_NUMBER_OF_PARTNERS,
   EMPTY_PLACEHOLDER,
   ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
@@ -47,7 +48,10 @@ export default {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     numberOfPartners() {
-      return ApplicationService.getNumberOfPartners(this.summaryModel?.organization);
+      return Math.max(
+        ApplicationService.getNumberOfPartners(this.summaryModel?.organization),
+        DEFAULT_NUMBER_OF_PARTNERS,
+      );
     },
     organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {

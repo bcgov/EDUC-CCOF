@@ -13,10 +13,8 @@ import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
+import { DEFAULT_NUMBER_OF_PARTNERS, MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-
-const DEFAULT_NUMBER_OF_PARTNERS = 2;
 
 export default {
   components: { AppAddressForm, AppButton, AppTooltip, NavButton },
