@@ -25,59 +25,256 @@
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization Name:</AppLabel>
+              <p><AppLabel>Organization Name:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.legalName }}
+              <p>{{ loadedModel.legalName }}</p>
             </v-col>
           </v-row>
           <v-row v-if="shouldHaveIncorporationNumber" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Incorporation Number:</AppLabel>
+              <p><AppLabel>Incorporation Number:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.incNumber }}
+              <p>{{ loadedModel.incNumber }}</p>
             </v-col>
           </v-row>
-          <v-row v-if="organizationModel.doingBusinessAs" dense>
+          <v-row v-if="loadedModel.doingBusinessAs" dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Doing Business As:</AppLabel>
+              <p><AppLabel>Doing Business As:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.doingBusinessAs }}
-            </v-col>
-          </v-row>
-          <v-row dense>
-            <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization ID:</AppLabel>
-            </v-col>
-            <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.accountNumber }}
+              <p>{{ loadedModel.doingBusinessAs }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Organization Type:</AppLabel>
+              <p><AppLabel>Organization ID:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.organizationTypeDesc }}
+              <p>{{ loadedModel.accountNumber }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Email Address:</AppLabel>
+              <p><AppLabel>Organization Type:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.email }}
+              <p>{{ loadedModel.organizationTypeDesc }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Phone:</AppLabel>
+              <p><AppLabel>Email Address:</AppLabel></p>
             </v-col>
-            <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.phone }}
+            <template v-if="editing.email">
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-form v-model="valid.email" @submit.prevent>
+                  <v-row no-gutters justify="space-between">
+                    <v-col>
+                      <v-text-field
+                        v-model="workingFields.email"
+                        class="micro"
+                        density="compact"
+                        variant="underlined"
+                        label="Email Address"
+                        :rules="[...rules.email, ...rules.required]"
+                        :single-line="true"
+                        hide-details="auto"
+                      />
+                    </v-col>
+                    <v-col class="ml-2">
+                      <v-btn
+                        size="x-small"
+                        color="#003366"
+                        variant="flat"
+                        prepend-icon="mdi-content-save"
+                        type="submit"
+                        :disabled="!valid.email"
+                        :loading="isUpdating"
+                        @click="() => saveField('email')"
+                      >
+                        Save
+                      </v-btn>
+                      <v-btn
+                        class="ml-1"
+                        size="x-small"
+                        color="#003366"
+                        variant="outlined"
+                        prepend-icon="mdi-cancel"
+                        :disabled="isUpdating"
+                        @click="editing.email = false"
+                      >
+                        Cancel
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-col>
+            </template>
+            <template v-else>
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-row no-gutters justify="space-between">
+                  <v-col>
+                    <p>{{ loadedModel.email }}</p>
+                  </v-col>
+                  <v-col class="ml-2">
+                    <v-btn
+                      size="x-small"
+                      color="#003366"
+                      variant="outlined"
+                      prepend-icon="mdi-pencil"
+                      :disabled="isUpdating"
+                      @click="editing.email = true"
+                    >
+                      Edit
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </template>
+          </v-row>
+          <v-row dense>
+            <v-col cols="12" sm="5" xl="4" xxl="3">
+              <p><AppLabel>Phone:</AppLabel></p>
             </v-col>
+            <template v-if="editing.phone">
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-form v-model="valid.phone" @submit.prevent>
+                  <v-row no-gutters justify="space-between">
+                    <v-col>
+                      <v-text-field
+                        v-model="workingFields.phone"
+                        class="micro"
+                        density="compact"
+                        variant="underlined"
+                        label="Phone Number"
+                        :rules="[...rules.required, rules.phone]"
+                        :single-line="true"
+                        hide-details="auto"
+                      />
+                    </v-col>
+                    <v-col class="ml-2">
+                      <v-btn
+                        size="x-small"
+                        color="#003366"
+                        variant="flat"
+                        prepend-icon="mdi-content-save"
+                        type="submit"
+                        :disabled="!valid.phone"
+                        :loading="isUpdating"
+                        @click="() => saveField('phone')"
+                      >
+                        Save
+                      </v-btn>
+                      <v-btn
+                        class="ml-1"
+                        size="x-small"
+                        color="#003366"
+                        variant="outlined"
+                        prepend-icon="mdi-cancel"
+                        :disabled="isUpdating"
+                        @click="editing.phone = false"
+                      >
+                        Cancel
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-col>
+            </template>
+            <template v-else>
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-row no-gutters justify="space-between">
+                  <v-col>
+                    <p>{{ loadedModel.phone }}</p>
+                  </v-col>
+                  <v-col class="ml-2">
+                    <v-btn
+                      size="x-small"
+                      color="#003366"
+                      variant="outlined"
+                      prepend-icon="mdi-pencil"
+                      :disabled="isUpdating"
+                      @click="editing.phone = true"
+                    >
+                      Edit
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </template>
+          </v-row>
+          <v-row dense>
+            <v-col cols="12" sm="5" xl="4" xxl="3">
+              <p><AppLabel>Website:</AppLabel></p>
+            </v-col>
+            <template v-if="editing.website">
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-form v-model="valid.website" @submit.prevent>
+                  <v-row no-gutters justify="space-between">
+                    <v-col>
+                      <v-text-field
+                        v-model="workingFields.website"
+                        class="micro"
+                        density="compact"
+                        variant="underlined"
+                        label="Website Address"
+                        :rules="[rules.website]"
+                        :single-line="true"
+                        hide-details="auto"
+                      />
+                    </v-col>
+                    <v-col class="ml-2">
+                      <v-btn
+                        size="x-small"
+                        color="#003366"
+                        variant="flat"
+                        prepend-icon="mdi-content-save"
+                        type="submit"
+                        :disabled="!valid.website"
+                        :loading="isUpdating"
+                        @click="() => saveField('website')"
+                      >
+                        Save
+                      </v-btn>
+                      <v-btn
+                        class="ml-1"
+                        size="x-small"
+                        color="#003366"
+                        variant="outlined"
+                        prepend-icon="mdi-cancel"
+                        :disabled="isUpdating"
+                        @click="editing.website = false"
+                      >
+                        Cancel
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-col>
+            </template>
+            <template v-else>
+              <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-row no-gutters justify="space-between">
+                  <v-col>
+                    <p>{{ loadedModel.website || 'N/A' }}</p>
+                  </v-col>
+                  <v-col class="ml-2">
+                    <v-btn
+                      size="x-small"
+                      color="#003366"
+                      variant="outlined"
+                      prepend-icon="mdi-pencil"
+                      :disabled="isUpdating"
+                      @click="editing.website = true"
+                    >
+                      Edit
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-col>
+            </template>
           </v-row>
         </v-card>
       </v-col>
@@ -85,77 +282,77 @@
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row dense>
             <v-col>
-              <AppLabel>Mailing Address</AppLabel>
+              <p><AppLabel>Mailing Address</AppLabel></p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address:</AppLabel>
+              <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              {{ organizationModel.address1 }}
+              <p>{{ loadedModel.address1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>City:</AppLabel>
+              <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.city1 }}
+              <p>{{ loadedModel.city1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Province:</AppLabel>
+              <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.province1 }}
+              <p>{{ loadedModel.province1 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Postal Code:</AppLabel>
+              <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.postalCode1 }}
+              <p>{{ loadedModel.postalCode1 }}</p>
             </v-col>
           </v-row>
           <br />
           <v-row dense>
             <v-col>
-              <AppLabel>Physical Address</AppLabel>
+              <p><AppLabel>Physical Address</AppLabel></p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Street Address:</AppLabel>
+              <p><AppLabel>Street Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8">
-              {{ organizationModel.address2 }}
+              <p>{{ loadedModel.address2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>City:</AppLabel>
+              <p><AppLabel>City:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.city2 }}
+              <p>{{ loadedModel.city2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Province:</AppLabel>
+              <p><AppLabel>Province:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              {{ organizationModel.province2 }}
+              <p>{{ loadedModel.province2 }}</p>
             </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
-              <AppLabel>Postal Code:</AppLabel>
+              <p><AppLabel>Postal Code:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xxl="8">
-              {{ organizationModel.postalCode2 }}
+              <p>{{ loadedModel.postalCode2 }}</p>
             </v-col>
           </v-row>
         </v-card>
@@ -164,26 +361,47 @@
   </v-container>
 </template>
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
+import rules from '@/utils/rules.js';
 
 import AppLabel from '@/components/util/AppLabel.vue';
+import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
   name: 'ManageOrganization',
   components: {
     AppLabel,
   },
+  mixins: [alertMixin],
   data() {
     return {
       orgLoading: false,
+      editing: {
+        phone: false,
+        email: false,
+        website: false,
+      },
+      workingFields: {
+        email: '',
+        phone: '',
+        website: '',
+      },
+      valid: {
+        email: true,
+        phone: true,
+        website: true,
+      },
+      isUpdating: false,
+      rules,
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel']),
+    ...mapState(useOrganizationStore, ['organizationId']),
+    ...mapWritableState(useOrganizationStore, ['organizationModel', 'loadedModel']),
     shouldHaveIncorporationNumber() {
       return [ORGANIZATION_TYPES.NON_PROFIT_SOCIETY, ORGANIZATION_TYPES.REGISTERED_COMPANY].includes(
         this.organizationModel.organizationType,
@@ -192,18 +410,60 @@ export default {
   },
   async mounted() {
     try {
-      if (isEmpty(this.organizationModel)) {
+      if (isEmpty(this.loadedModel)) {
         this.orgLoading = true;
         await this.loadOrganization(this.organizationId);
       }
     } catch (error) {
+      this.setFailureAlert('There was an error loading the organization.');
       console.error('Error loading organization: ', error);
     } finally {
       this.orgLoading = false;
+
+      const { email, phone, website } = this.loadedModel;
+      this.workingFields = {
+        email,
+        phone,
+        website,
+      };
     }
   },
   methods: {
-    ...mapActions(useOrganizationStore, ['loadOrganization']),
+    ...mapActions(useOrganizationStore, ['loadOrganization', 'saveOrganization']),
+    async saveField(key) {
+      if (this.workingFields[key] === this.loadedModel[key]) {
+        this.editing[key] = false;
+        return;
+      }
+
+      this.organizationModel[key] = this.workingFields[key];
+      this.isUpdating = true;
+      try {
+        const res = await this.saveOrganization();
+        this.loadedModel = {
+          ...this.loadedModel,
+          ...res.data,
+        };
+        this.setSuccessAlert('Update successful');
+      } catch {
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.editing[key] = false;
+        this.isUpdating = false;
+      }
+    },
   },
 };
 </script>
+<style scoped>
+.micro :deep(input) {
+  padding-top: 0;
+  font-size: 0.875rem;
+  min-height: 0;
+}
+
+.micro :deep(label) {
+  font-size: 0.875rem;
+  top: 0 !important;
+}
+</style>

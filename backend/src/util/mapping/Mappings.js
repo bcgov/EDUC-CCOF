@@ -36,6 +36,7 @@ const OrganizationMappings = [
   { back: 'ccof_partner4firstname', front: 'partner4FirstName' },
   { back: 'ccof_partner4middlename', front: 'partner4MiddleName' },
   { back: 'ccof_partner4lastname', front: 'partner4LastName' },
+  { back: 'ccof_organizationwebsiteurl', front: 'website' },
 ];
 
 const FacilityMappings = [

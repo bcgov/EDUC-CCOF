@@ -27,6 +27,13 @@ class MappableObjectForFront extends MappableObject {
 class MappableObjectForBack extends MappableObject {
   constructor(input, mappings) {
     super(input, mappings, 'front', 'back');
+
+    const keys = Object.keys(this.data);
+    for (let key of keys) {
+      if (key.includes('@OData')) {
+        delete this.data[key];
+      }
+    }
   }
 }
 

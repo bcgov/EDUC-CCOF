@@ -5,6 +5,20 @@ import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MA
 import { getFileExtension, humanFileSize } from '@/utils/file';
 import { isEmailValid, isPhoneNumberValid, isPostalCodeValid, isYearValid } from '@/utils/validation';
 
+function isValidFQDN(string) {
+  const labelPattern = '[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?';
+  const fqdnRegexString =
+    '^' +
+    '(https?:\\/\\/)?' +
+    '(?:www\\.)?' +
+    `(?:${labelPattern}\\.)+` +
+    `(${labelPattern}(?:\\.${labelPattern}(?:\\.${labelPattern})?)?)` +
+    '$';
+
+  const fqdnRegex = new RegExp(fqdnRegexString, 'i');
+  return fqdnRegex.test(string);
+}
+
 const rules = {
   email: [(v) => isEmailValid(v) || 'A valid email is required'],
   required: [
@@ -64,6 +78,10 @@ const rules = {
       );
     },
   ],
+  website: (v) => {
+    if (isEmpty(v)) return true;
+    return isValidFQDN(v) || 'Please enter a valid website address';
+  },
 };
 
 export default rules;
