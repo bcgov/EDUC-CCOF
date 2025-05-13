@@ -67,10 +67,13 @@ export const useOrganizationStore = defineStore('organization', {
         // has an orgaization ID, so update the data
         try {
           const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
+          this.setLoadedModel({ ...this.organizationModel });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
           throw error;
+        } finally {
+          navBarStore.forceNavBarRefresh(null);
         }
       } else {
         //we calculate which app to use in lookup - no need to do it again here
@@ -86,15 +89,15 @@ export const useOrganizationStore = defineStore('organization', {
           applicationStore.setApplicationStatus(response.data?.applicationStatus);
           applicationStore.setApplicationType(response.data?.applicationType);
           applicationStore.setCcofApplicationStatus('NEW');
+          this.setLoadedModel({ ...this.organizationModel });
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
           throw error;
+        } finally {
+          navBarStore.forceNavBarRefresh(null);
         }
       }
-
-      this.setLoadedModel({ ...this.organizationModel });
-      navBarStore.forceNavBarRefresh(null);
     },
     async renewApplication() {
       const appStore = useAppStore();
