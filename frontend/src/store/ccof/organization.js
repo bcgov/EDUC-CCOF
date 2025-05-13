@@ -46,8 +46,9 @@ export const useOrganizationStore = defineStore('organization', {
     async saveOrganization() {
       checkSession();
       const appStore = useAppStore();
-      const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
+      const authStore = useAuthStore();
+      const navBarStore = useNavBarStore();
 
       if (isEqual({ ...this.organizationModel, providerType: null }, { ...this.loadedModel, providerType: null })) {
         return;
@@ -58,7 +59,6 @@ export const useOrganizationStore = defineStore('organization', {
         applicationTemplateVersion: ApplicationService.getActiveApplicationTemplate(),
       };
       payload.providerType = this.getOrgProviderTypeID;
-      delete payload.organizationTypeDesc;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       this.setLoadedModel({ ...this.organizationModel });
       navBarStore.forceNavBarRefresh(null);
@@ -66,6 +66,7 @@ export const useOrganizationStore = defineStore('organization', {
         // has an organization ID, so update the data
         try {
           const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
+          authStore.userInfo.organizationName = this.organizationModel.legalName;
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
@@ -85,6 +86,7 @@ export const useOrganizationStore = defineStore('organization', {
           applicationStore.setApplicationStatus(response.data?.applicationStatus);
           applicationStore.setApplicationType(response.data?.applicationType);
           applicationStore.setCcofApplicationStatus('NEW');
+          authStore.userInfo.organizationName = this.organizationModel.legalName;
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);

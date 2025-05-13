@@ -39,45 +39,124 @@
             />
           </v-col>
         </v-row>
-        <v-row v-if="!isPartnership" no-gutters>
-          <v-col cols="12" md="8" class="pr-2">
-            <p class="summary-label">
-              Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
-            </p>
-            <v-text-field
-              placeholder="Required"
-              :model-value="summaryModel?.organization?.legalName"
-              class=""
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col
-            v-if="
-              summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
-              summaryModel?.organization?.organizationType == ORGANIZATION_TYPES.REGISTERED_COMPANY
-            "
-            cols="12"
-            md="4"
-          >
-            <p class="summary-label">Incorporation Number</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.incNumber"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
+        <div>
+          <template v-if="isPartnership">
+            <div v-for="index in numberOfPartners" :key="index">
+              <p class="summary-label pb-2">Partner {{ index }}</p>
+              <v-row no-gutters>
+                <v-col cols="12" md="4">
+                  <p class="summary-label">First Name</p>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="summaryModel?.organization[`partner${index}FirstName`]"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <p class="summary-label">Middle Name (if applicable)</p>
+                  <v-text-field
+                    :model-value="summaryModel?.organization[`partner${index}MiddleName`] ?? EMPTY_PLACEHOLDER"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                  />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <p class="summary-label">Last Name</p>
+                  <v-text-field
+                    placeholder="Required"
+                    :model-value="summaryModel?.organization[`partner${index}LastName`]"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    hide-details
+                    readonly
+                    :rules="rules.required"
+                  />
+                </v-col>
+              </v-row>
+            </div>
+            <v-row no-gutters>
+              <v-col cols="12" md="8" class="pr-2">
+                <p class="summary-label">Legal Organization Name</p>
+                <v-text-field
+                  placeholder="Required"
+                  :model-value="summaryModel?.organization?.legalName"
+                  class="summary-value"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+              <v-col cols="12" md="4">
+                <p class="summary-label">Doing Business As</p>
+                <v-text-field
+                  placeholder="Required"
+                  class="summary-value"
+                  :model-value="summaryModel?.organization?.doingBusinessAs"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                  :rules="rules.required"
+                />
+              </v-col>
+            </v-row>
+          </template>
+          <v-row v-else no-gutters>
+            <v-col cols="12" md="8" class="pr-2">
+              <p class="summary-label">
+                Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
+              </p>
+              <v-text-field
+                placeholder="Required"
+                :model-value="summaryModel?.organization?.legalName"
+                class=""
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+            <v-col
+              v-if="
+                summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
+                summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.REGISTERED_COMPANY
+              "
+              cols="12"
+              md="4"
+            >
+              <p class="summary-label">Incorporation Number</p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.incNumber"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+        </div>
         <div>
           <p class="summary-label">Organization Mailing Address</p>
           <v-text-field

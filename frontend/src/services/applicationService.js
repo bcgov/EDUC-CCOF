@@ -93,16 +93,19 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
+    const areCCFRISectionsComplete =
+      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+      (facility?.ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT ||
+        ((!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
+          (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
+          this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+          (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments))));
     return (
       (facility.isRenewal ||
         (this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
           this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion))) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
-      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
-      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
-      (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
-      this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
-      (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
+      areCCFRISectionsComplete &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
   },
