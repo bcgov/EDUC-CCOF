@@ -433,9 +433,9 @@ export default {
           ...this.loadedModel,
           ...res.data,
         };
-        this.setSuccessAlert('Update successful');
+        this.setSuccessAlert('Organization updated successfully.');
       } catch {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        this.setFailureAlert('An error occurred while updating the organization.');
       } finally {
         this.editing[key] = false;
         this.isProcessing = false;
