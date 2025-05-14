@@ -91,7 +91,7 @@
                         prepend-icon="mdi-content-save"
                         type="submit"
                         :disabled="!valid.email"
-                        :loading="isUpdating"
+                        :loading="isProcessing"
                         @click="() => saveField('email')"
                       >
                         Save
@@ -102,7 +102,7 @@
                         color="#003366"
                         variant="outlined"
                         prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
+                        :disabled="isProcessing"
                         @click="editing.email = false"
                       >
                         Cancel
@@ -124,7 +124,7 @@
                       color="#003366"
                       variant="outlined"
                       prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
+                      :disabled="isProcessing"
                       @click="editing.email = true"
                     >
                       Edit
@@ -162,7 +162,7 @@
                         prepend-icon="mdi-content-save"
                         type="submit"
                         :disabled="!valid.phone"
-                        :loading="isUpdating"
+                        :loading="isProcessing"
                         @click="() => saveField('phone')"
                       >
                         Save
@@ -173,7 +173,7 @@
                         color="#003366"
                         variant="outlined"
                         prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
+                        :disabled="isProcessing"
                         @click="editing.phone = false"
                       >
                         Cancel
@@ -195,7 +195,7 @@
                       color="#003366"
                       variant="outlined"
                       prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
+                      :disabled="isProcessing"
                       @click="editing.phone = true"
                     >
                       Edit
@@ -233,7 +233,7 @@
                         prepend-icon="mdi-content-save"
                         type="submit"
                         :disabled="!valid.website"
-                        :loading="isUpdating"
+                        :loading="isProcessing"
                         @click="() => saveField('website')"
                       >
                         Save
@@ -244,7 +244,7 @@
                         color="#003366"
                         variant="outlined"
                         prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
+                        :disabled="isProcessing"
                         @click="editing.website = false"
                       >
                         Cancel
@@ -266,7 +266,7 @@
                       color="#003366"
                       variant="outlined"
                       prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
+                      :disabled="isProcessing"
                       @click="editing.website = true"
                     >
                       Edit
@@ -395,7 +395,7 @@ export default {
         phone: true,
         website: true,
       },
-      isUpdating: false,
+      isProcessing: false,
       rules,
     };
   },
@@ -437,7 +437,7 @@ export default {
       }
 
       this.organizationModel[key] = this.workingFields[key];
-      this.isUpdating = true;
+      this.isProcessing = true;
       try {
         const res = await this.saveOrganization();
         this.loadedModel = {
@@ -449,7 +449,7 @@ export default {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.editing[key] = false;
-        this.isUpdating = false;
+        this.isProcessing = false;
       }
     },
   },
