@@ -30,7 +30,7 @@ class MappableObjectForBack extends MappableObject {
 
     const keys = Object.keys(this.data);
     for (let key of keys) {
-      if (key.includes('@OData')) {
+      if (key.endsWith('@OData.Community.Display.V1.FormattedValue')) {
         delete this.data[key];
       }
     }
