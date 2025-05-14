@@ -100,7 +100,7 @@
                         :primary="false"
                         :display-block="false"
                         :disabled="isProcessing"
-                        @click="editing.email = false"
+                        @click="() => cancelEditing('email')"
                       >
                         Cancel
                       </AppButton>
@@ -166,7 +166,7 @@
                         :display-block="false"
                         :disabled="isProcessing"
                         :primary="false"
-                        @click="editing.phone = false"
+                        @click="() => cancelEditing('phone')"
                       >
                         Cancel
                       </AppButton>
@@ -233,7 +233,7 @@
                         :primary="false"
                         :display-block="false"
                         :disabled="isProcessing"
-                        @click="editing.website = false"
+                        @click="() => cancelEditing('website')"
                       >
                         Cancel
                       </AppButton>
@@ -440,6 +440,10 @@ export default {
         this.editing[key] = false;
         this.isProcessing = false;
       }
+    },
+    cancelEditing(key) {
+      this.editing[key] = false;
+      this.workingFields[key] = this.loadedModel[key];
     },
   },
 };
