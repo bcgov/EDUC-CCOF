@@ -56,7 +56,7 @@ export default {
     },
     partnershipLegalOrganizationName() {
       const partnerNames = [];
-      for (let i = 1; i <= this.MAX_NUMBER_OF_PARTNERS; i++) {
+      for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
         const firstName = this.organizationModel[`partner${i}FirstName`] ?? '';
         const lastName = this.organizationModel[`partner${i}LastName`] ?? '';
         const fullName = `${firstName} ${lastName}`.trim();
@@ -109,19 +109,17 @@ export default {
       return [];
     },
     removePartner(index) {
-      const max = this.MAX_NUMBER_OF_PARTNERS;
-
       // Shift data for all partners after the removed one
-      for (let i = index; i < max; i++) {
+      for (let i = index; i < MAX_NUMBER_OF_PARTNERS; i++) {
         this.organizationModel[`partner${i}FirstName`] = this.organizationModel[`partner${i + 1}FirstName`] ?? null;
         this.organizationModel[`partner${i}MiddleName`] = this.organizationModel[`partner${i + 1}MiddleName`] ?? null;
         this.organizationModel[`partner${i}LastName`] = this.organizationModel[`partner${i + 1}LastName`] ?? null;
       }
 
       // Clear the last partner's data
-      this.organizationModel[`partner${max}FirstName`] = null;
-      this.organizationModel[`partner${max}MiddleName`] = null;
-      this.organizationModel[`partner${max}LastName`] = null;
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}FirstName`] = null;
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}MiddleName`] = null;
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}LastName`] = null;
 
       this.numberOfPartners = Math.max(DEFAULT_NUMBER_OF_PARTNERS, this.numberOfPartners - 1);
     },
@@ -168,7 +166,7 @@ export default {
           ? this.partnershipLegalOrganizationName
           : this.organizationModel.legalName;
         if (!this.isPartnership) {
-          for (let i = 1; i <= this.MAX_NUMBER_OF_PARTNERS; i++) {
+          for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
             this.organizationModel[`partner${i}FirstName`] = null;
             this.organizationModel[`partner${i}MiddleName`] = null;
             this.organizationModel[`partner${i}LastName`] = null;
