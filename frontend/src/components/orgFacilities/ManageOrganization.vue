@@ -113,7 +113,7 @@
                     <AppButton
                       size="small"
                       :display-block="false"
-                      :disabled="isProcessing"
+                      :disabled="workingFieldInUse || isProcessing"
                       @click="editing.email = true"
                     >
                       Edit
@@ -173,7 +173,7 @@
                     <AppButton
                       size="small"
                       :display-block="false"
-                      :disabled="isProcessing"
+                      :disabled="workingFieldInUse || isProcessing"
                       @click="editing.phone = true"
                     >
                       Edit
@@ -235,7 +235,7 @@
                         size="small"
                         color="#003366"
                         :display-block="false"
-                        :disabled="isProcessing"
+                        :disabled="workingFieldInUse || isProcessing"
                         @click="editing.website = true"
                       >
                         Edit
@@ -378,6 +378,9 @@ export default {
         this.organizationModel.organizationType,
       );
     },
+    workingFieldInUse() {
+      return Object.values(this.editing).some(value => value === true);
+    }
   },
   async mounted() {
     try {
