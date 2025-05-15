@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-0" fluid>
+  <v-container class="pa-0 text-body-1" fluid>
     <v-row no-gutters>
       <v-col>
         <p>View and update your organization information.</p>
@@ -67,156 +67,133 @@
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <p><AppLabel>Email Address:</AppLabel></p>
             </v-col>
-            <template v-if="editing.email">
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-form v-model="valid.email" @submit.prevent>
-                  <v-row no-gutters justify="space-between">
-                    <v-col>
-                      <v-text-field
-                        v-model="workingFields.email"
-                        class="micro"
-                        density="compact"
-                        variant="underlined"
-                        label="Email Address"
-                        :rules="[...rules.email, ...rules.required]"
-                        :single-line="true"
-                        hide-details="auto"
-                      />
-                    </v-col>
-                    <v-col class="ml-2">
-                      <v-btn
-                        size="x-small"
-                        color="#003366"
-                        variant="flat"
-                        prepend-icon="mdi-content-save"
-                        type="submit"
-                        :disabled="!valid.email"
-                        :loading="isUpdating"
-                        @click="() => saveField('email')"
-                      >
-                        Save
-                      </v-btn>
-                      <v-btn
-                        class="ml-1"
-                        size="x-small"
-                        color="#003366"
-                        variant="outlined"
-                        prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
-                        @click="editing.email = false"
-                      >
-                        Cancel
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-form>
-              </v-col>
-            </template>
-            <template v-else>
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-row no-gutters justify="space-between">
-                  <v-col>
+            <v-col cols="12" sm="7" xl="8" xxl="9">
+              <v-form v-model="valid.email">
+                <v-row v-if="editing.email" no-gutters>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="workingFields.email"
+                      class="less-jitter"
+                      density="compact"
+                      variant="underlined"
+                      label="Email Address"
+                      :rules="[...rules.email, ...rules.required]"
+                      :single-line="true"
+                      hide-details="auto"
+                    />
+                  </v-col>
+                  <v-col cols="3" offset-md="1" class="text-no-wrap">
+                    <AppButton
+                      size="small"
+                      type="submit"
+                      :display-block="false"
+                      :disabled="!valid.email"
+                      :loading="isProcessing"
+                      @click="() => saveField('email')"
+                    >
+                      Save
+                    </AppButton>
+                    <AppButton
+                      class="ml-1"
+                      size="small"
+                      :primary="false"
+                      :display-block="false"
+                      :disabled="isProcessing"
+                      @click="() => cancelEditing('email')"
+                    >
+                      Cancel
+                    </AppButton>
+                  </v-col>
+                </v-row>
+                <v-row v-else no-gutters>
+                  <v-col cols="12" md="6">
                     <p>{{ loadedModel.email }}</p>
                   </v-col>
-                  <v-col class="ml-2">
-                    <v-btn
-                      size="x-small"
-                      color="#003366"
-                      variant="outlined"
-                      prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
+                  <v-col cols="3" offset-md="1">
+                    <AppButton
+                      size="small"
+                      :display-block="false"
+                      :disabled="workingFieldInUse || isProcessing"
                       @click="editing.email = true"
                     >
                       Edit
-                    </v-btn>
+                    </AppButton>
                   </v-col>
                 </v-row>
-              </v-col>
-            </template>
+              </v-form>
+            </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <p><AppLabel>Phone:</AppLabel></p>
             </v-col>
-            <template v-if="editing.phone">
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-form v-model="valid.phone" @submit.prevent>
-                  <v-row no-gutters justify="space-between">
-                    <v-col>
-                      <v-text-field
-                        v-model="workingFields.phone"
-                        class="micro"
-                        density="compact"
-                        variant="underlined"
-                        label="Phone Number"
-                        :rules="[...rules.required, rules.phone]"
-                        :single-line="true"
-                        hide-details="auto"
-                      />
-                    </v-col>
-                    <v-col class="ml-2">
-                      <v-btn
-                        size="x-small"
-                        color="#003366"
-                        variant="flat"
-                        prepend-icon="mdi-content-save"
-                        type="submit"
-                        :disabled="!valid.phone"
-                        :loading="isUpdating"
-                        @click="() => saveField('phone')"
-                      >
-                        Save
-                      </v-btn>
-                      <v-btn
-                        class="ml-1"
-                        size="x-small"
-                        color="#003366"
-                        variant="outlined"
-                        prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
-                        @click="editing.phone = false"
-                      >
-                        Cancel
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-form>
-              </v-col>
-            </template>
-            <template v-else>
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-row no-gutters justify="space-between">
-                  <v-col>
+            <v-col cols="12" sm="7" xl="8" xxl="9">
+              <v-form v-model="valid.phone" @submit.prevent>
+                <v-row v-if="editing.phone" no-gutters>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="workingFields.phone"
+                      class="less-jitter"
+                      density="compact"
+                      variant="underlined"
+                      label="Phone Number"
+                      :rules="[...rules.required, rules.phone]"
+                      :single-line="true"
+                      hide-details="auto"
+                    />
+                  </v-col>
+                  <v-col cols="3" offset-md="1" class="text-no-wrap">
+                    <AppButton
+                      size="small"
+                      type="submit"
+                      :display-block="false"
+                      :disabled="!valid.phone"
+                      :loading="isProcessing"
+                      @click="() => saveField('phone')"
+                    >
+                      Save
+                    </AppButton>
+                    <AppButton
+                      class="ml-1"
+                      size="small"
+                      :display-block="false"
+                      :disabled="isProcessing"
+                      :primary="false"
+                      @click="() => cancelEditing('phone')"
+                    >
+                      Cancel
+                    </AppButton>
+                  </v-col>
+                </v-row>
+                <v-row v-else no-gutters>
+                  <v-col cols="12" md="6">
                     <p>{{ loadedModel.phone }}</p>
                   </v-col>
-                  <v-col class="ml-2">
-                    <v-btn
-                      size="x-small"
-                      color="#003366"
-                      variant="outlined"
-                      prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
+                  <v-col cols="3" offset-md="1">
+                    <AppButton
+                      size="small"
+                      :display-block="false"
+                      :disabled="workingFieldInUse || isProcessing"
                       @click="editing.phone = true"
                     >
                       Edit
-                    </v-btn>
+                    </AppButton>
                   </v-col>
                 </v-row>
-              </v-col>
-            </template>
+              </v-form>
+            </v-col>
           </v-row>
           <v-row dense>
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <p><AppLabel>Website:</AppLabel></p>
             </v-col>
-            <template v-if="editing.website">
               <v-col cols="12" sm="7" xl="8" xxl="9">
                 <v-form v-model="valid.website" @submit.prevent>
-                  <v-row no-gutters justify="space-between">
-                    <v-col>
+                  <v-row v-if="editing.website" no-gutters>
+                    <v-col cols="12" md="6">
                       <v-text-field
                         v-model="workingFields.website"
-                        class="micro"
+                        class="less-jitter"
                         density="compact"
                         variant="underlined"
                         label="Website Address"
@@ -225,56 +202,48 @@
                         hide-details="auto"
                       />
                     </v-col>
-                    <v-col class="ml-2">
-                      <v-btn
-                        size="x-small"
+                    <v-col cols="3" offset-md="1" class="text-no-wrap">
+                      <AppButton
+                        size="small"
                         color="#003366"
-                        variant="flat"
-                        prepend-icon="mdi-content-save"
                         type="submit"
+                        :display-block="false"
                         :disabled="!valid.website"
-                        :loading="isUpdating"
+                        :loading="isProcessing"
                         @click="() => saveField('website')"
                       >
                         Save
-                      </v-btn>
-                      <v-btn
+                      </AppButton>
+                      <AppButton
                         class="ml-1"
-                        size="x-small"
-                        color="#003366"
-                        variant="outlined"
-                        prepend-icon="mdi-cancel"
-                        :disabled="isUpdating"
-                        @click="editing.website = false"
+                        size="small"
+                        :primary="false"
+                        :display-block="false"
+                        :disabled="isProcessing"
+                        @click="() => cancelEditing('website')"
                       >
                         Cancel
-                      </v-btn>
+                      </AppButton>
+                    </v-col>
+                  </v-row>
+                  <v-row v-else no-gutters>
+                    <v-col cols="12" md="6">
+                      <p>{{ loadedModel.website || 'N/A' }}</p>
+                    </v-col>
+                    <v-col cols="3" offset-md="1">
+                      <AppButton
+                        size="small"
+                        color="#003366"
+                        :display-block="false"
+                        :disabled="workingFieldInUse || isProcessing"
+                        @click="editing.website = true"
+                      >
+                        Edit
+                      </AppButton>
                     </v-col>
                   </v-row>
                 </v-form>
               </v-col>
-            </template>
-            <template v-else>
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-row no-gutters justify="space-between">
-                  <v-col>
-                    <p>{{ loadedModel.website || 'N/A' }}</p>
-                  </v-col>
-                  <v-col class="ml-2">
-                    <v-btn
-                      size="x-small"
-                      color="#003366"
-                      variant="outlined"
-                      prepend-icon="mdi-pencil"
-                      :disabled="isUpdating"
-                      @click="editing.website = true"
-                    >
-                      Edit
-                    </v-btn>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </template>
           </v-row>
         </v-card>
       </v-col>
@@ -368,12 +337,14 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
-import AppLabel from '@/components/util/AppLabel.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 
 export default {
   name: 'ManageOrganization',
   components: {
+    AppButton,
     AppLabel,
   },
   mixins: [alertMixin],
@@ -395,7 +366,7 @@ export default {
         phone: true,
         website: true,
       },
-      isUpdating: false,
+      isProcessing: false,
       rules,
     };
   },
@@ -407,6 +378,9 @@ export default {
         this.organizationModel.organizationType,
       );
     },
+    workingFieldInUse() {
+      return Object.values(this.editing).some(value => value === true);
+    }
   },
   async mounted() {
     try {
@@ -437,33 +411,41 @@ export default {
       }
 
       this.organizationModel[key] = this.workingFields[key];
-      this.isUpdating = true;
+      this.isProcessing = true;
       try {
         const res = await this.saveOrganization();
         this.loadedModel = {
           ...this.loadedModel,
           ...res.data,
         };
-        this.setSuccessAlert('Update successful');
+        this.setSuccessAlert('Organization updated successfully.');
       } catch {
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+        this.setFailureAlert('An error occurred while updating the organization.');
       } finally {
         this.editing[key] = false;
-        this.isUpdating = false;
+        this.isProcessing = false;
       }
+    },
+    cancelEditing(key) {
+      this.editing[key] = false;
+      this.workingFields[key] = this.loadedModel[key];
     },
   },
 };
 </script>
 <style scoped>
-.micro :deep(input) {
+.less-jitter :deep(input) {
   padding-top: 0;
-  font-size: 0.875rem;
+  font-size: 1rem;
+  letter-spacing: 0.03125em;
   min-height: 0;
 }
 
-.micro :deep(label) {
-  font-size: 0.875rem;
-  top: 0 !important;
+.less-jitter :deep(label.v-label) {
+  top: 0;
+}
+
+.v-row.v-row--dense {
+  min-height: 38px;
 }
 </style>
