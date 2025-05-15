@@ -438,6 +438,10 @@ export default {
   min-height: 0;
 }
 
+.less-jitter :deep(label.v-label) {
+  top: 0;
+}
+
 .v-row.v-row--dense {
   min-height: 38px;
 }
