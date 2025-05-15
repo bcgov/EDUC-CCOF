@@ -37,6 +37,18 @@ export default {
       'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
+    organizationTypes() {
+      if (isEmpty(this.organizationTypeList)) return [];
+      return this.$route.fullPath.includes('family')
+        ? this.organizationTypeList.filter((orgType) =>
+            [
+              ORGANIZATION_TYPES.REGISTERED_COMPANY,
+              ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
+              ORGANIZATION_TYPES.PARTNERSHIP,
+            ].includes(orgType.id),
+          )
+        : this.organizationTypeList;
+    },
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
