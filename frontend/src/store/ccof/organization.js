@@ -63,16 +63,17 @@ export const useOrganizationStore = defineStore('organization', {
       };
       payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
-      this.setLoadedModel({ ...this.organizationModel });
-      navBarStore.forceNavBarRefresh(null);
       if (this.organizationId) {
         // has an orgaization ID, so update the data
         try {
           const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
+          this.setLoadedModel({ ...this.organizationModel });
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
           throw error;
+        } finally {
+          navBarStore.forceNavBarRefresh(null);
         }
       } else {
         //we calculate which app to use in lookup - no need to do it again here
@@ -88,10 +89,13 @@ export const useOrganizationStore = defineStore('organization', {
           applicationStore.setApplicationStatus(response.data?.applicationStatus);
           applicationStore.setApplicationType(response.data?.applicationType);
           applicationStore.setCcofApplicationStatus('NEW');
+          this.setLoadedModel({ ...this.organizationModel });
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
           throw error;
+        } finally {
+          navBarStore.forceNavBarRefresh(null);
         }
       }
     },

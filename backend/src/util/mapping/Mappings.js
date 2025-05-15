@@ -24,6 +24,7 @@ const OrganizationMappings = [
   { back: 'ccof_is_org_street_address_entered_manually', front: 'isOrgStreetAddressEnteredManually' },
   { back: 'ccof_providername', front: 'nameOfCareProvider' },
   { back: 'ccof_doingbusinessas', front: 'doingBusinessAs' },
+  { back: 'ccof_organizationwebsiteurl', front: 'website' },
 ];
 
 const FacilityMappings = [
