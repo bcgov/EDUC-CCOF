@@ -576,7 +576,7 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
   try {
     const operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
       ChangeRequestMappings,
-    )}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    )}&$filter=ccof_change_action_change_request/any(c:(c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.NEW_CLOSURE} and c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE} and c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE})) and (Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 
