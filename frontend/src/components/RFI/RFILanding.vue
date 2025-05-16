@@ -1701,7 +1701,7 @@ export default {
   background-color: lightgray;
 }
 
-.radio-label >>> .v-label {
+.radio-label :deep(.v-label) {
   font-size: 18px;
   color: black;
 }

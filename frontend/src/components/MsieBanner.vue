@@ -13,15 +13,15 @@
   justify-content: center; */
 }
 
-#banner /deep/ .v-icon {
+#banner :deep(.v-icon) {
   color: #81692c;
 }
 
-#banner /deep/ .v-btn {
+#banner :deep(.v-btn) {
   padding-top: 32px;
 }
 
-#banner /deep/ .v-alert__wrapper {
+#banner :deep(.v-alert__wrapper) {
   align-items: flex-start;
   width: 800px;
   margin: 0 auto;
