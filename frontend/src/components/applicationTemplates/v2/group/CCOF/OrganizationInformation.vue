@@ -79,7 +79,8 @@
             </v-row>
             <v-text-field
               :model-value="partnershipLegalOrganizationName"
-              :disabled="true"
+              readonly
+              :disabled="isLocked"
               variant="outlined"
               label="Legal Organization Name"
               hide-details
