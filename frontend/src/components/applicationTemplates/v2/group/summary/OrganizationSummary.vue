@@ -40,51 +40,6 @@
           </v-col>
         </v-row>
 
-        <v-row v-if="isSoleProprietorship" no-gutters>
-          <v-col cols="12" md="4" class="pr-2">
-            <p class="summary-label">Phone Number</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.phone"
-              density="compact"
-              flat
-              variant="solo"
-              :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
-              readonly
-              :rules="[...rules.required, rules.phone]"
-            />
-          </v-col>
-          <v-col cols="12" md="4" class="pr-2">
-            <p class="summary-label">Email Address</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.email"
-              density="compact"
-              flat
-              variant="solo"
-              :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
-              readonly
-              :rules="[...rules.required, ...rules.email]"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Business BCeID</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="userInfo.userName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-
         <template v-if="isPartnership">
           <div v-for="index in numberOfPartners" :key="index">
             <p class="summary-label pb-2">Partner {{ index }}</p>
@@ -175,6 +130,51 @@
               placeholder="Required"
               class="summary-value"
               :model-value="summaryModel?.organization?.incNumber"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row v-if="isSoleProprietorship" no-gutters>
+          <v-col cols="12" md="4" class="pr-2">
+            <p class="summary-label">Phone Number</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.phone"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
+              readonly
+              :rules="[...rules.required, rules.phone]"
+            />
+          </v-col>
+          <v-col cols="12" md="4" class="pr-2">
+            <p class="summary-label">Email Address</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.email"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
+              readonly
+              :rules="[...rules.required, ...rules.email]"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Business BCeID</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="userInfo.userName"
               density="compact"
               flat
               variant="solo"
