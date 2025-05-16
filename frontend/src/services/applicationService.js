@@ -12,6 +12,7 @@ import {
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_SECTOR_TYPES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
+  MAX_NUMBER_OF_PARTNERS,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -31,10 +32,11 @@ export default {
   /*
    **** Summary Declaration validations
    */
-  isOrganizationComplete(organization, isGroup) {
+  isOrganizationComplete(organization, isGroup, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
       'organizationType',
+      'legalName',
       'address1',
       'city1',
       'province1',
@@ -53,8 +55,15 @@ export default {
     ) {
       requiredFields.push('incNumber');
     }
-    if (organization?.organizationType !== ORGANIZATION_TYPES.PARTNERSHIP) {
-      requiredFields.push('legalName');
+    if (
+      !showApplicationTemplateV1(applicationTemplateVersion) &&
+      organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP
+    ) {
+      requiredFields.push('doingBusinessAs');
+      const numberOfPartners = this.getNumberOfPartners(organization);
+      for (let i = 1; i <= numberOfPartners; i++) {
+        requiredFields.push(`partner${i}FirstName`, `partner${i}LastName`);
+      }
     }
     if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP && isGroup) {
       requiredFields.push('contactName', 'position');
@@ -67,18 +76,36 @@ export default {
     return !hasEmptyFields(organization, requiredFields) && areFieldsValid;
   },
 
+  getNumberOfPartners(organization) {
+    if (isEmpty(organization)) return 0;
+    let maxIndexWithData = 0;
+    for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
+      const hasData =
+        !isEmpty(organization[`partner${i}FirstName`]?.trim()) ||
+        !isEmpty(organization[`partner${i}MiddleName`]?.trim()) ||
+        !isEmpty(organization[`partner${i}LastName`]?.trim());
+      if (hasData) {
+        maxIndexWithData = i;
+      }
+    }
+    return maxIndexWithData;
+  },
+
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
+    const areCCFRISectionsComplete =
+      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+      (facility?.ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT ||
+        ((!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
+          (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
+          this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+          (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments))));
     return (
       (facility.isRenewal ||
         (this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
           this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion))) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
-      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
-      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
-      (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
-      this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
-      (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
+      areCCFRISectionsComplete &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
   },

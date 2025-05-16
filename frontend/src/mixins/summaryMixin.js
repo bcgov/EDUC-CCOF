@@ -3,6 +3,7 @@ import { mapState } from 'pinia';
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
@@ -11,6 +12,8 @@ import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js'
 import {
   CCFRI_MAX_FEE,
   CCFRI_MIN_FEE,
+  DEFAULT_NUMBER_OF_PARTNERS,
+  EMPTY_PLACEHOLDER,
   ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
@@ -43,6 +46,12 @@ export default {
     },
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
+    numberOfPartners() {
+      return Math.max(
+        ApplicationService.getNumberOfPartners(this.summaryModel?.organization),
+        DEFAULT_NUMBER_OF_PARTNERS,
+      );
     },
     organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {
@@ -85,6 +94,7 @@ export default {
       rules.min(CCFRI_MIN_FEE, 'Input a positive number'),
     ];
     this.formatTime24to12 = formatTime24to12;
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
     this.OPT_STATUSES = OPT_STATUSES;

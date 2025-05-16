@@ -18,7 +18,6 @@ export const useOrganizationStore = defineStore('organization', {
     organizationName: null,
     organizationAccountNumber: null,
     isOrganizationComplete: false,
-    isStarted: false,
     organizationModel: {},
     loadedModel: {},
   }),
@@ -35,9 +34,6 @@ export const useOrganizationStore = defineStore('organization', {
     setOrganizationAccountNumber(organizationAccountNumber) {
       this.organizationAccountNumber = organizationAccountNumber;
     },
-    setIsStarted(isStarted) {
-      this.isStarted = isStarted;
-    },
     setOrganizationModel(model) {
       this.organizationModel = { ...model };
     },
@@ -50,8 +46,9 @@ export const useOrganizationStore = defineStore('organization', {
     async saveOrganization() {
       checkSession();
       const appStore = useAppStore();
-      const navBarStore = useNavBarStore();
       const applicationStore = useApplicationStore();
+      const authStore = useAuthStore();
+      const navBarStore = useNavBarStore();
 
       if (isEqual({ ...this.organizationModel, providerType: null }, { ...this.loadedModel, providerType: null })) {
         return;
@@ -64,10 +61,11 @@ export const useOrganizationStore = defineStore('organization', {
       payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
       if (this.organizationId) {
-        // has an orgaization ID, so update the data
+        // has an organization ID, so update the data
         try {
           const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
           this.setLoadedModel({ ...this.organizationModel });
+          authStore.userInfo.organizationName = this.organizationModel.legalName;
           return response;
         } catch (error) {
           console.log(`Failed to update existing Organization - ${error}`);
@@ -90,6 +88,7 @@ export const useOrganizationStore = defineStore('organization', {
           applicationStore.setApplicationType(response.data?.applicationType);
           applicationStore.setCcofApplicationStatus('NEW');
           this.setLoadedModel({ ...this.organizationModel });
+          authStore.userInfo.organizationName = this.organizationModel.legalName;
           return response;
         } catch (error) {
           console.log(`Failed to save new Organization - ${error}`);
@@ -117,7 +116,6 @@ export const useOrganizationStore = defineStore('organization', {
       };
       try {
         const response = await ApiService.apiAxios.post(ApiRoutes.APPLICATION_RENEW, payload);
-        this.setIsStarted(false);
         eceweAppStore.setIsStarted(false);
         authStore.setIsUserInfoLoaded(false);
 

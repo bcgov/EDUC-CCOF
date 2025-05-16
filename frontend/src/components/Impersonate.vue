@@ -39,7 +39,6 @@ import { mapState, mapActions } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import { useAuthStore } from '@/store/auth.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
 
 import { PATHS } from '@/utils/constants.js';
@@ -63,11 +62,9 @@ export default {
   methods: {
     ...mapActions(useAuthStore, ['setIsUserInfoLoaded', 'setImpersonateId', 'getUserInfo']),
     async setBCeID() {
-      const organizationStore = useOrganizationStore();
       const eceweAppStore = useEceweAppStore();
       this.processing = true;
       this.setIsUserInfoLoaded(false);
-      organizationStore.setIsStarted(false);
       eceweAppStore.setIsStarted(false);
 
       this.setImpersonateId(this.businessBCeId);

@@ -512,3 +512,6 @@ export const EMPTY_PLACEHOLDER = '--';
 
 export const CCFRI_MAX_FEE = 9999;
 export const CCFRI_MIN_FEE = 0;
+
+export const DEFAULT_NUMBER_OF_PARTNERS = 2;
+export const MAX_NUMBER_OF_PARTNERS = 4;

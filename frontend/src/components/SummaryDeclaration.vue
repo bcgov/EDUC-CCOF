@@ -361,6 +361,7 @@ export default {
       'applicationMap',
       'applicationUploadedDocuments',
       'applicationStatus',
+      'applicationTemplateVersion',
       'formattedProgramYear',
       'isApplicationProcessing',
       'isRenewal',
@@ -482,16 +483,24 @@ export default {
     },
     isApplicationFormComplete() {
       const isChangeNotificationFormComplete =
-        !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
-      return (
-        this.areAllFacilitiesComplete &&
-        (this.isRenewal || ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup)) &&
-        ApplicationService.isECEWEOrganizationComplete(
-          this.summaryModel?.ecewe,
+        !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
+      const isOrganizationComplete =
+        this.isRenewal ||
+        ApplicationService.isOrganizationComplete(
+          this.summaryModel?.organization,
           this.isGroup,
-          this.languageYearLabel,
-        ) &&
-        (!this.isChangeRequest || isChangeNotificationFormComplete)
+          this.applicationTemplateVersion,
+        );
+      const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
+        this.summaryModel?.ecewe,
+        this.isGroup,
+        this.languageYearLabel,
+      );
+      return (
+        isOrganizationComplete &&
+        isECEWEOrganizationComplete &&
+        this.areAllFacilitiesComplete &&
+        isChangeNotificationFormComplete
       );
     },
     isSubmitDisabled() {
