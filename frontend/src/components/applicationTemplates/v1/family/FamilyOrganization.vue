@@ -6,7 +6,13 @@
 * Source: Copied from commit 29a3ecd on Nov 8, 2024 with some changes.
 -->
 <template>
-  <v-form ref="form" v-model="organizationModel.isOrganizationComplete">
+  <v-skeleton-loader
+    v-if="isApplicationProcessing"
+    :loading="isApplicationProcessing"
+    type="table-tbody"
+    class="mb-12"
+  />
+  <v-form v-else ref="form" v-model="organizationModel.isOrganizationComplete">
     <v-container fluid class="pa-0">
       <v-row justify="space-around">
         <v-card class="cc-top-level-card" width="1200">
@@ -203,12 +209,7 @@
                   :rules="rules.required"
                   @update:model-value="$refs.form?.validate"
                 >
-                  <v-radio
-                    v-for="item in filteredOrganizationList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
-                  />
+                  <v-radio v-for="item in organizationTypes" :key="item.id" :label="item.name" :value="item.id" />
                 </v-radio-group>
               </v-col>
             </v-row>
@@ -226,12 +227,6 @@ import { PROVINCES } from '@/utils/constants.js';
 
 export default {
   mixins: [organizationMixin, globalMixin],
-  computed: {
-    // TODO (vietle-cgi) - review this function when working on Family Application changes
-    filteredOrganizationList() {
-      return this.organizationTypeList.filter((fac) => fac.id == 100000002 || fac.id == 100000005);
-    },
-  },
   watch: {
     isApplicationFormValidated: {
       handler() {
@@ -239,8 +234,9 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.PROVINCES = PROVINCES;
+    await this.loadData();
     this.organizationModel.province1 =
       this.organizationModel.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
     this.organizationModel.province2 =

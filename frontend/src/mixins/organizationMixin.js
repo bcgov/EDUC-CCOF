@@ -39,15 +39,15 @@ export default {
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     organizationTypes() {
       if (isEmpty(this.organizationTypeList)) return [];
-      return this.$route.fullPath.includes('family')
-        ? this.organizationTypeList.filter((orgType) =>
-            [
-              ORGANIZATION_TYPES.REGISTERED_COMPANY,
-              ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
-              ORGANIZATION_TYPES.PARTNERSHIP,
-            ].includes(orgType.id),
-          )
-        : this.organizationTypeList;
+      const isFamilyApplication = this.$route.fullPath.includes('family');
+      if (isFamilyApplication) {
+        const applicableOrgTypes = [ORGANIZATION_TYPES.REGISTERED_COMPANY, ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP];
+        if (!this.showApplicationTemplateV1) {
+          applicableOrgTypes.push(ORGANIZATION_TYPES.PARTNERSHIP);
+        }
+        return this.organizationTypeList.filter((orgType) => applicableOrgTypes.includes(orgType.id));
+      }
+      return this.organizationTypeList;
     },
     isLocked() {
       if (this.unlockBaseFunding) {
