@@ -13,6 +13,9 @@ const ccofLightTheme = {
     error: '#d8292f',
     success: '#2e8540',
   },
+  variables: {
+    'disabled-opacity': 0.7,
+  },
 };
 
 export default new createVuetify({
