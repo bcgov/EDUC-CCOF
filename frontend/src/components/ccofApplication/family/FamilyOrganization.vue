@@ -2,7 +2,6 @@
   <div class="pa-4 mx-lg-16">
     <FamilyOrganizationV1 v-if="showApplicationTemplateV1" />
     <OrganizationInformationV2 v-else />
-    <!-- <FamilyOrganizationV2 v-else /> -->
   </div>
   <NavButton
     :is-next-displayed="true"
