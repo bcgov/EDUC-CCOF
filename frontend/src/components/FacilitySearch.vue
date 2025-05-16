@@ -183,21 +183,23 @@
                             ><br /><br />
                           </template>
                           <template #body.append>
-                            <tr v-show="!loading && searchResults.length == 50">
+                            <tr v-show="!loading && searchResults.length === 50">
                               <td colspan="2">
                                 <table>
-                                  <!--//NOSONAR-->
-                                  <tr>
-                                    <td colspan="1" with="10%" style="vertical-align: top">
-                                      <span style="color: #0fc3ed; font-weight: bold; font-size: x-large">*</span>
-                                    </td>
-                                    <td style="padding-top: 2px">
-                                      <span style="font-style: italic; font-size: small">
-                                        Only the first 50 results of your search are viewable. Try narrowing down your
-                                        search by using additional keywords.
-                                      </span>
-                                    </td>
-                                  </tr>
+                                  <tbody>
+                                    <!--//NOSONAR-->
+                                    <tr>
+                                      <td colspan="1" with="10%" style="vertical-align: top">
+                                        <span style="color: #0fc3ed; font-weight: bold; font-size: x-large">*</span>
+                                      </td>
+                                      <td style="padding-top: 2px">
+                                        <span style="font-style: italic; font-size: small">
+                                          Only the first 50 results of your search are viewable. Try narrowing down your
+                                          search by using additional keywords.
+                                        </span>
+                                      </td>
+                                    </tr>
+                                  </tbody>
                                 </table>
                               </td>
                             </tr>

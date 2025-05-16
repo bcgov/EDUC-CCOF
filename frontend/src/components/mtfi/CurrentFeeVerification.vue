@@ -1056,7 +1056,7 @@ export default {
   background-color: #003366 !important;
 }
 
->>> i.v-icon.v-icon {
+:deep(i.v-icon.v-icon) {
   color: #003366 !important;
 }
 </style>
