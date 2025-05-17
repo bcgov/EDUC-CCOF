@@ -93,6 +93,12 @@ export default {
 
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
+    const isFacilityInformationComplete = this.isFacilityInformationComplete(
+      facility.facilityInfo,
+      facility.isGroup,
+      facility.applicationTemplateVersion,
+    );
+    const isCCOFComplete = this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion);
     const areCCFRISectionsComplete =
       this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (facility?.ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT ||
@@ -101,9 +107,7 @@ export default {
           this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
           (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments))));
     return (
-      (facility.isRenewal ||
-        (this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
-          this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion))) &&
+      (facility.isRenewal || (isFacilityInformationComplete && isCCOFComplete)) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
       areCCFRISectionsComplete &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
@@ -111,8 +115,19 @@ export default {
   },
 
   // FACILITY INFORMATION VALIDATIONS
-  isFacilityInformationComplete(facilityInfo, applicationTemplateVersion) {
+  isFacilityInformationComplete(facilityInfo, isGroup, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
+    // TODO (vietle-cgi) - add application template check after finishing Facility Info update for Family Application
+    if (!isGroup) {
+      const requiredFields = [
+        'facilityName',
+        'postalCode',
+        'licenseNumber',
+        'licenseEffectiveDate',
+        'hasReceivedFunding',
+      ];
+      return !hasEmptyFields(facilityInfo, requiredFields) && isPostalCodeValid(facilityInfo.postalCode);
+    }
     const requiredFields = [
       'facilityName',
       'yearBeganOperation',

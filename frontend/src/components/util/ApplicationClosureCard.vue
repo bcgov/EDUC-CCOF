@@ -139,6 +139,7 @@
 </template>
 <script>
 import { cloneDeep, isEmpty } from 'lodash';
+import moment from 'moment';
 import { mapState, mapWritableState } from 'pinia';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
@@ -228,13 +229,13 @@ export default {
     //builds an array of dates to keep track of all days of the selected closure period.
     //this array is used to check if a user selects an overlapping date
     buildDateArray(start, end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
+      if (!start || !end) return [];
       const dates = [];
-      const currentDate = new Date(startDate.getTime());
-      while (currentDate <= endDate) {
-        dates.push(currentDate.toISOString().substring(0, 10));
-        currentDate.setDate(currentDate.getDate() + 1);
+      const endDate = moment.utc(end).startOf('day');
+      let currentDate = moment.utc(start).startOf('day');
+      while (currentDate.isSameOrBefore(endDate)) {
+        dates.push(currentDate.format('YYYY-MM-DD'));
+        currentDate.add(1, 'day');
       }
       return dates;
     },
@@ -245,35 +246,23 @@ export default {
         .reduce((acc, dateObj) => {
           return [...acc, ...this.buildDateArray(dateObj.startDate, dateObj.endDate)];
         }, []);
+      const currentClosureDates = this.buildDateArray(obj.startDate, obj.endDate);
+      const closureStartDate = moment.utc(obj.startDate).startOf('day');
+      const closureEndDate = moment.utc(obj.endDate).startOf('day');
+      const fiscalStartDate = moment(this.fiscalStartAndEndDates.startDate).startOf('day');
+      const fiscalEndDate = moment(this.fiscalStartAndEndDates.endDate).startOf('day');
 
-      const dates = this.buildDateArray(obj.startDate, obj.endDate);
-
-      //datesOverlap flag is true if the selected dates are part of an overlap of other dates.
-      //datesInvalid is true if user breaks any other date rule.
-
-      //We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
-      //Rules are: end date cannot be before start date
-      //start date for either field cannot be before the start of fiscal year
-      //end dates for either field cannot be after end of fiscal year
-
-      if (
-        obj.endDate < obj.startDate ||
-        obj.startDate < this.fiscalStartAndEndDates.startDate ||
-        obj.endDate < this.fiscalStartAndEndDates.startDate ||
-        obj.startDate > this.fiscalStartAndEndDates.endDate ||
-        obj.endDate > this.fiscalStartAndEndDates.endDate
-      ) {
-        obj.datesInvalid = true;
-        return;
-      }
-
-      obj.datesOverlap = false;
-      obj.datesInvalid = false;
-      dates.forEach((date) => {
-        if (otherClosureDates.includes(date)) {
-          obj.datesOverlap = true;
-        }
-      });
+      /* We do not let users save invalid dates of any kind so there is no risk of a mis-calculation in Dynamics
+      - datesOverlap is True if the selected dates are part of an overlap of other dates.
+      - datesInvalid is True if user breaks any date rules:
+          + Closure End Date cannot be before Closure Start Date
+          + Either Closure Start/End Date is outside the fiscal year bounds
+      */
+      obj.datesOverlap = currentClosureDates.some((date) => otherClosureDates.includes(date));
+      obj.datesInvalid =
+        closureEndDate.isBefore(closureStartDate) ||
+        closureStartDate.isBefore(fiscalStartDate) ||
+        closureEndDate.isAfter(fiscalEndDate);
     },
     removeClosure(index) {
       this.updatedClosures.splice(index, 1);

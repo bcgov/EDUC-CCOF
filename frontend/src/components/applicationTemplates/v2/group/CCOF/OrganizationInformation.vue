@@ -20,13 +20,14 @@
             We will complete the assessment of your Program Confirmation Form once your change has been processed.
           </p>
         </v-card>
-        <div class="ma-4 mb-2">Type of Organization</div>
-        <v-radio-group v-model="organizationModel.organizationType" :disabled="isLocked" :rules="rules.required">
-          <v-radio v-for="item in organizationTypeList" :key="item.id" :label="item.name" :value="item.id" />
-        </v-radio-group>
+        <div class="mx-8">
+          <p class="ma-2">Type of Organization</p>
+          <v-radio-group v-model="organizationModel.organizationType" :disabled="isLocked" :rules="rules.required">
+            <v-radio v-for="item in organizationTypes" :key="item.id" :label="item.name" :value="item.id" />
+          </v-radio-group>
+        </div>
 
         <template v-if="organizationModel.organizationType">
-          <v-divider class="my-2 mb-8" />
           <template v-if="isPartnership">
             <v-row v-for="index in numberOfPartners" :key="index" no-gutters>
               <v-col class="py-6" style="max-width: 100px">Partner {{ index }}</v-col>
@@ -81,7 +82,7 @@
               :model-value="partnershipLegalOrganizationName"
               :disabled="true"
               variant="outlined"
-              label="Legal Organization Name"
+              :label="legalNameLabel"
               hide-details
               class="pl-lg-11 mt-8"
             />
@@ -100,7 +101,46 @@
             </v-row>
           </template>
 
-          <v-row v-if="!isPartnership" no-gutters>
+          <template v-if="isSoleProprietorship">
+            <v-text-field
+              v-model="organizationModel.legalName"
+              :disabled="isLocked"
+              variant="outlined"
+              :rules="rules.required"
+              :label="legalNameLabel"
+              class="pl-lg-11 mt-4"
+            />
+            <v-row>
+              <v-col cols="12" md="6" class="pl-lg-14">
+                <v-text-field
+                  v-model="organizationModel.phone"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.phone]"
+                  label="Phone Number"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="userInfo.userName" disabled variant="outlined" label="Business BCeID" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6" class="pl-lg-14 pt-0">
+                <v-text-field
+                  v-model="organizationModel.email"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  required
+                  type="email"
+                  :rules="[...rules.required, ...rules.email]"
+                  label="Email Address"
+                />
+              </v-col>
+            </v-row>
+          </template>
+
+          <v-row v-if="!isPartnership && !isSoleProprietorship" no-gutters class="pt-4">
             <div class="pt-4">
               <AppTooltip
                 tooltip-content="Legal Name as it appears as the licensee on your Community Care & Assisted Living Act Licence"
@@ -111,7 +151,7 @@
               :disabled="isLocked"
               variant="outlined"
               :rules="rules.required"
-              label="Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)"
+              :label="legalNameLabel"
               class="ml-4"
             />
           </v-row>
@@ -176,69 +216,71 @@
             address-label="Street Address"
             @update="updateStreetAddress"
           />
-          <div class="pl-lg-11">
-            <v-divider />
-            <div class="my-4">Organization's Authorized Signing Authority Information</div>
-          </div>
 
-          <v-row v-if="!isSoleProprietorship">
-            <v-col cols="12" md="6">
-              <v-row no-gutters>
-                <div class="pt-4">
-                  <AppTooltip tooltip-content="The full name of the signing authority" />
-                </div>
+          <template v-if="!isSoleProprietorship">
+            <div class="pl-lg-11">
+              <v-divider />
+              <div class="my-4">Organization's Authorized Signing Authority Information</div>
+            </div>
+            <v-row>
+              <v-col cols="12" md="6">
+                <v-row no-gutters>
+                  <div class="pt-4">
+                    <AppTooltip tooltip-content="The full name of the signing authority" />
+                  </div>
+                  <v-text-field
+                    v-model="organizationModel.contactName"
+                    :disabled="isLocked"
+                    variant="outlined"
+                    required
+                    :rules="rules.required"
+                    label="Organization Contact Name"
+                    class="ml-4"
+                  />
+                </v-row>
+              </v-col>
+              <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="organizationModel.contactName"
+                  v-model="organizationModel.position"
                   :disabled="isLocked"
                   variant="outlined"
                   required
                   :rules="rules.required"
-                  label="Organization Contact Name"
-                  class="ml-4"
+                  label="Position"
+                  placeholder="Position (e.g., owner, manager)"
                 />
-              </v-row>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field
-                v-model="organizationModel.position"
-                :disabled="isLocked"
-                variant="outlined"
-                required
-                :rules="rules.required"
-                label="Position"
-                placeholder="Position (e.g., owner, manager)"
-              />
-            </v-col>
-          </v-row>
+              </v-col>
+            </v-row>
 
-          <v-row>
-            <v-col cols="12" md="6" class="pl-lg-14">
-              <v-text-field
-                v-model="organizationModel.phone"
-                :disabled="isLocked"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.phone]"
-                label="Phone Number of the Organization's Authorized Signing Authority"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-text-field v-model="userInfo.userName" disabled variant="outlined" label="Business BCeID" />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6" class="pl-lg-14">
-              <v-text-field
-                v-model="organizationModel.email"
-                :disabled="isLocked"
-                variant="outlined"
-                required
-                type="email"
-                :rules="[...rules.required, ...rules.email]"
-                label="Email Address of the Organization's Authorized Signing Authority"
-              />
-            </v-col>
-          </v-row>
+            <v-row>
+              <v-col cols="12" md="6" class="pl-lg-14">
+                <v-text-field
+                  v-model="organizationModel.phone"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  required
+                  :rules="[...rules.required, rules.phone]"
+                  label="Phone Number of the Organization's Authorized Signing Authority"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field v-model="userInfo.userName" disabled variant="outlined" label="Business BCeID" />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6" class="pl-lg-14">
+                <v-text-field
+                  v-model="organizationModel.email"
+                  :disabled="isLocked"
+                  variant="outlined"
+                  required
+                  type="email"
+                  :rules="[...rules.required, ...rules.email]"
+                  label="Email Address of the Organization's Authorized Signing Authority"
+                />
+              </v-col>
+            </v-row>
+          </template>
         </template>
       </v-container>
     </v-card>

@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { mapState } from 'pinia';
 
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
@@ -106,6 +107,7 @@ export default {
   methods: {
     getOptInOptOut,
     getYesNoValue,
+    isEmpty,
     isNullOrBlank,
   },
 };
