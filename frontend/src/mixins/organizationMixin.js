@@ -49,6 +49,16 @@ export default {
       }
       return this.organizationTypeList;
     },
+    legalNameLabel() {
+      switch (this.organizationModel.organizationType) {
+        case ORGANIZATION_TYPES.PARTNERSHIP:
+          return 'Legal Organization Name';
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
+          return 'Full Legal Name of Sole Proprietor (Licensee)';
+        default:
+          return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
+      }
+    },
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
@@ -109,16 +119,6 @@ export default {
       } finally {
         this.setIsApplicationProcessing(false);
       }
-    },
-    // TODO (vietle-cgi) - review this function when working on Family Application changes
-    validateIncorporationNumber(organizationTypeId, incorporationNumber) {
-      const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
-      if (!incorporationNumber) {
-        if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
-          return rules.required;
-        }
-      }
-      return [];
     },
     removePartner(index) {
       // Shift data for all partners after the removed one

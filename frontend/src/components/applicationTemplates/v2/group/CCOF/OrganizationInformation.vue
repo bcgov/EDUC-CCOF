@@ -82,7 +82,7 @@
               :model-value="partnershipLegalOrganizationName"
               :disabled="true"
               variant="outlined"
-              label="Legal Organization Name"
+              :label="legalNameLabel"
               hide-details
               class="pl-lg-11 mt-8"
             />
@@ -107,7 +107,7 @@
               :disabled="isLocked"
               variant="outlined"
               :rules="rules.required"
-              label="Full Legal Name of Sole Proprietor (Licensee)"
+              :label="legalNameLabel"
               class="pl-lg-11 mt-4"
             />
             <v-row>
@@ -151,7 +151,7 @@
               :disabled="isLocked"
               variant="outlined"
               :rules="rules.required"
-              label="Legal Organization Name (as it appears in BC Registries and Online Services)"
+              :label="legalNameLabel"
               class="ml-4"
             />
           </v-row>
