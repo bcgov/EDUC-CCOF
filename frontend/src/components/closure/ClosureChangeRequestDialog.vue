@@ -16,7 +16,7 @@
           <v-select
             v-model="input.facilityId"
             :rules="rules.required"
-            :disabled="isDisabled"
+            :disabled="isLoading || !isNewClosureRequest"
             :items="facilityList"
             :loading="isLoading"
             item-value="facilityId"
@@ -65,7 +65,11 @@
               <h3 class="mt-2">Will parents pay for this closure?</h3>
             </v-col>
             <v-col cols="12" lg="3" class="pl-0">
-              <v-radio-group v-model="input.paidClosure" :rules="rules.required" :disabled="isDisabled">
+              <v-radio-group
+                v-model="input.paidClosure"
+                :rules="rules.required"
+                :disabled="!isNewClosureRequest || isLoading"
+              >
                 <v-row justify="start">
                   <v-col cols="6" class="pl-3 pr-0 pt-0">
                     <v-radio label="Yes" :value="1" />
@@ -77,7 +81,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-container v-if="input.facilityId && input.paidClosure !== undefined" width="100%" class="pa-0">
+          <v-container v-if="input.facilityId && input.paidClosure != null" width="100%" class="pa-0">
             <v-row>
               <v-col cols="12" lg="9">
                 <h3 class="mt-2">
@@ -91,7 +95,7 @@
                 <v-radio-group
                   v-model="input.fullClosure"
                   :rules="rules.required"
-                  :disabled="isDisabled"
+                  :disabled="!isNewClosureRequest || isLoading"
                   @update:model-value="handleFullFacilityClosureChange"
                 >
                   <v-row justify="start">
@@ -110,58 +114,57 @@
                 <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
               </v-row>
-              <v-select
+              <AppMultiSelectInput
                 v-model.lazy="input.ageGroups"
                 :loading="isLoading"
-                :disabled="isDisabled"
+                :disabled="isLoading || !isNewClosureRequest"
                 :items="ageGroups"
                 item-title="label"
                 item-value="value"
                 label="Select affected care categories"
-                variant="outlined"
                 class="mt-2"
-                multiple
-                chips
                 :rules="rules.required"
                 clearable
-              >
-                <template #prepend-item>
-                  <v-list-item title="Select All" @click="toggleSelectAll">
-                    <template #prepend>
-                      <v-checkbox-btn
-                        :color="someAgeGroupsSelected ? '#003366' : undefined"
-                        :indeterminate="someAgeGroupsSelected && !allAgeGroupsSelected"
-                        :model-value="someAgeGroupsSelected"
-                      />
-                    </template>
-                  </v-list-item>
-                  <v-divider class="mt-2" />
-                </template>
-              </v-select>
+              />
             </div>
             <h3 class="mt-6">Dates:</h3>
-            <p class="text-black mt-4 mb-6">
+            <p class="text-black mt-4">
               Select the estimated end date, if applicable. To report a closure for a previous term, please return to
               the home page, select a different fiscal year, and go to Organization Closures.
             </p>
-            <v-row no-gutters>
+            <div v-if="isEditClosureRequest">
+              <h3 class="mt-4">Approved Dates:</h3>
+              <v-row>
+                <v-col cols="12" lg="5">
+                  <AppDateInput v-model="input.approvedStartDate" label="Start Date" disabled />
+                </v-col>
+                <v-col cols="12" lg="2" align="center" class="mt-md-4">to</v-col>
+                <v-col cols="12" lg="5">
+                  <AppDateInput v-model="input.approvedEndDate" label="End Date" disabled />
+                </v-col>
+              </v-row>
+              <h3>New Dates:</h3>
+            </div>
+            <v-row>
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.startDate"
-                  :disabled="isDisabled"
+                  :disabled="isRemoveClosureRequest || isLoading"
+                  :loading="isLoading"
                   :min="fiscalStartAndEndDates.startDate"
-                  :max="input.endDate ? input.endDate : fiscalStartAndEndDates.endDate"
+                  :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
                   :error="fiscalYearError || endDateBeforeStartDateError"
                   label="Start Date"
                   clearable
                 />
               </v-col>
-              <v-col cols="12" lg="2" align="center" class="mt-4 mb-6">to</v-col>
+              <v-col cols="12" lg="2" align="center" class="mt-md-4">to</v-col>
               <v-col cols="12" lg="5">
                 <AppDateInput
                   v-model="input.endDate"
-                  :disabled="isDisabled"
+                  :disabled="isRemoveClosureRequest || isLoading"
+                  :loading="isLoading"
                   :min="input.startDate ? input.startDate : fiscalStartAndEndDates.startDate"
                   :max="fiscalStartAndEndDates.endDate"
                   :rules="rules.required"
@@ -171,12 +174,12 @@
                 />
               </v-col>
             </v-row>
-            <div class="error-message mb-6">
-              <p v-if="fiscalYearError">
-                {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
-              </p>
-              <p v-else-if="endDateBeforeStartDateError">{{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}</p>
-            </div>
+            <p v-if="fiscalYearError" class="error-message mb-4">
+              {{ ERROR_MESSAGES.CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR }}
+            </p>
+            <p v-else-if="endDateBeforeStartDateError" class="error-message mb-4">
+              {{ ERROR_MESSAGES.START_DATE_AFTER_END_DATE }}
+            </p>
             <v-row>
               <v-col cols="12" lg="3" class="mt-2">
                 <h3>Reason:</h3>
@@ -184,7 +187,8 @@
               <v-col cols="12" lg="9">
                 <v-text-field
                   v-model="input.closureReason"
-                  :disabled="isDisabled"
+                  :disabled="isRemoveClosureRequest || isLoading"
+                  :loading="isLoading"
                   variant="outlined"
                   :rules="rules.required"
                 ></v-text-field>
@@ -193,25 +197,29 @@
             <h3>Request Description:</h3>
             <v-textarea
               v-model="input.description"
-              :disabled="isDisabled"
+              :disabled="isRemoveClosureRequest || isLoading"
+              :loading="isLoading"
               variant="outlined"
               label="Detailed description of request"
               class="text-left mt-3"
             />
             <AppDocumentUpload
               :loading="isLoading"
-              :readonly="isDisabled"
+              :readonly="isRemoveClosureRequest || isLoading"
               :document-type="DOCUMENT_TYPES.CLOSURE_REQUEST"
               title="Supporting Documents"
               :required="false"
               :uploaded-documents="uploadedDocuments"
               @update-documents-to-upload="updateDocuments"
+              @delete-uploaded-document="deleteUploadedDocument"
             />
           </v-container>
-          <v-container v-if="requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE" class="pa-0 pt-4">
+          <v-container v-if="isRemoveClosureRequest" class="pa-0 pt-4">
             <h3>Reason for closure removal:</h3>
             <v-textarea
               v-model="input.reasonForClosureRemoval"
+              :loading="isLoading"
+              :disabled="isLoading"
               variant="outlined"
               :rules="rules.required"
               label="Please describe the reason for removal."
@@ -228,9 +236,10 @@
             <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton :disabled="disableSubmit" @click="submit">{{
-              requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE ? 'Remove Closure' : 'Submit'
-            }}</AppButton>
+            <AppButton v-if="isRemoveClosureRequest" :disabled="disableSubmit" @click="removeClosure"
+              >Remove Closure</AppButton
+            >
+            <AppButton v-else :disabled="disableSubmit" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
       </v-container>
@@ -240,12 +249,13 @@
 
 <script>
 import { mapState } from 'pinia';
-import { cloneDeep, isEmpty } from 'lodash';
+import { cloneDeep } from 'lodash';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppDocumentUpload from '@/components/util/AppDocumentUpload.vue';
+import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import {
   CHANGE_REQUEST_TYPES,
@@ -264,7 +274,7 @@ import { useAuthStore } from '@/store/auth.js';
 
 export default {
   name: 'ClosureChangeRequestDialog',
-  components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppTooltip },
+  components: { AppButton, AppDateInput, AppDocumentUpload, AppDialog, AppMultiSelectInput, AppTooltip },
   mixins: [alertMixin],
   props: {
     closure: {
@@ -293,12 +303,10 @@ export default {
       isValidForm: false,
       isDisplayed: false,
       isLoading: false,
-      input: {
-        documents: [],
-      },
       selectedFacilityWasChanged: true,
       ageGroups: [],
       uploadedDocuments: [],
+      input: { documents: [] },
     };
   },
   computed: {
@@ -309,14 +317,13 @@ export default {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
           return 'New Closure Request';
+        case CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE:
+          return 'Update Closure Request';
         case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
           return 'Remove Closure Request';
         default:
           return '';
       }
-    },
-    isDisabled() {
-      return this.isLoading || this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
     },
     endDateBeforeStartDateError() {
       return this.input.startDate && this.input.endDate && this.input.startDate > this.input.endDate;
@@ -331,17 +338,8 @@ export default {
           this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
     },
-    showDocumentUpload() {
-      return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE || !isEmpty(this.uploadedDocuments);
-    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.programYearId);
-    },
-    allAgeGroupsSelected() {
-      return this.input.ageGroups?.length === this.ageGroups?.length;
-    },
-    someAgeGroupsSelected() {
-      return this.input.ageGroups?.length > 0;
     },
     applicationId() {
       const application = this.userInfo.applications?.find(
@@ -349,6 +347,16 @@ export default {
       );
       return application?.applicationId;
     },
+    isNewClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE;
+    },
+    isEditClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+    },
+    isRemoveClosureRequest() {
+      return this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+    },
+
     disableSubmit() {
       return !this.isValidForm || this.isLoading;
     },
@@ -356,11 +364,11 @@ export default {
   watch: {
     show: {
       async handler(value) {
+        this.isLoading = true;
         this.isDisplayed = value;
         if (!value) return;
-        this.clearData();
-        this.isLoading = true;
-        if (this.requestType === CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
+        await this.clearData();
+        if (!this.isNewClosureRequest) {
           this.input = await this.initInput();
         }
         this.isLoading = false;
@@ -370,18 +378,20 @@ export default {
   created() {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
-    this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
   },
   methods: {
     async initInput() {
-      const input = cloneDeep(this.closure);
       try {
+        const input = cloneDeep(this.closure);
         this.ageGroups = await this.getLicenseCategories(this.closure.facilityId);
         input.ageGroups = this.closure?.ageGroups?.split(',').map((value) => Number(value));
         const changeActionClosure = await ClosureService.getChangeActionClosure(this.closure.changeActionClosureId);
-        this.uploadedDocuments = changeActionClosure?.documents ? changeActionClosure.documents : [];
+        this.uploadedDocuments =
+          changeActionClosure?.documents && this.isRemoveClosureRequest ? changeActionClosure.documents : [];
         input.description = changeActionClosure?.closureDescription ? changeActionClosure.closureDescription : '';
+        input.approvedStartDate = this.closure.startDate;
+        input.approvedEndDate = this.closure.endDate;
         return input;
       } catch (e) {
         console.log(e);
@@ -427,67 +437,23 @@ export default {
     closeDialog() {
       this.$emit('close');
     },
-    toggleSelectAll() {
-      const ageGroups = [];
-      if (!this.allAgeGroupsSelected) {
-        for (const ageGroup of this.ageGroups) {
-          ageGroups.push(ageGroup.value);
-        }
-      }
-      this.input.ageGroups = ageGroups;
-    },
     updateDocuments(documents) {
       this.input.documents = documents;
     },
-    processDocuments(documents) {
-      const processedDocuments = [];
-      for (const document of documents) {
-        const obj = {
-          documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
-          fileSize: document.fileSize,
-          fileName: document.fileName,
-          documentBody: document.documentBody,
-          description: document.description,
-        };
-        processedDocuments.push(obj);
-      }
-      return processedDocuments;
+    deleteUploadedDocument(annotationId) {
+      this.uploadedDocuments = this.uploadedDocuments.filter((document) => document.annotationId !== annotationId);
     },
-    getPayload() {
-      switch (this.requestType) {
-        case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
-          return {
-            applicationId: this.applicationId,
-            programYearId: this.programYearId,
-            organizationId: this.userInfo?.organizationId,
-            facilityId: this.input.facilityId,
-            paidClosure: this.input.paidClosure,
-            fullClosure: this.input.fullClosure,
-            ageGroups: this.input.fullClosure ? null : this.input.ageGroups.join(','),
-            startDate: this.input.startDate,
-            endDate: this.input.endDate,
-            closureReason: this.input.closureReason,
-            closureDescription: this.input.description,
-            documents: this.processDocuments(this.input.documents),
-            changeType: this.requestType,
-          };
-        case CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE:
-          return {
-            applicationId: this.applicationId,
-            programYearId: this.programYearId,
-            facilityId: this.input.facilityId,
-            organizationId: this.userInfo?.organizationId,
-            closureId: this.closure.closureId,
-            changeType: this.requestType,
-            closureReason: this.input.reasonForClosureRemoval,
-          };
-        default:
-          return null;
-      }
-    },
-    async submit() {
+    async removeClosure() {
       this.isLoading = true;
-      const payload = this.getPayload();
+      const payload = {
+        applicationId: this.applicationId,
+        programYearId: this.programYearId,
+        organizationId: this.userInfo?.organizationId,
+        facilityId: this.input.facilityId,
+        changeType: this.requestType,
+        closureId: this.closure?.closureId,
+        closureReason: this.input.reasonForClosureRemoval,
+      };
       try {
         const response = await ClosureService.createClosureChangeRequest(payload);
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
@@ -499,13 +465,53 @@ export default {
         this.isLoading = false;
       }
     },
-    clearData() {
+    async submit() {
+      this.isLoading = true;
+      const payload = {
+        applicationId: this.applicationId,
+        programYearId: this.programYearId,
+        organizationId: this.userInfo?.organizationId,
+        facilityId: this.input.facilityId,
+        changeType: this.requestType,
+        closureId: this.isEditClosureRequest ? this.closure?.closureId : null,
+        paidClosure: this.input.paidClosure,
+        fullClosure: this.input.fullClosure,
+        ageGroups: this.input.fullClosure ? null : this.input.ageGroups.join(','),
+        startDate: this.input.startDate,
+        endDate: this.input.endDate,
+        closureReason: this.input.closureReason,
+        closureDescription: this.input.description,
+        documents: this.input.documents?.map((document) => this.processDocument(document)),
+      };
+      try {
+        const response = await ClosureService.createClosureChangeRequest(payload);
+        payload.changeRequestReferenceId = response.changeRequestReferenceId;
+        this.$emit('submitted', payload);
+      } catch (e) {
+        console.log(e);
+        this.setFailureAlert('Failed to submit new closure request');
+      } finally {
+        this.isLoading = false;
+      }
+    },
+    processDocument(document) {
+      return {
+        documentType: this.DOCUMENT_TYPES.CLOSURE_REQUEST,
+        fileSize: document.fileSize,
+        fileName: document.fileName,
+        documentBody: document.documentBody,
+        description: document.description,
+      };
+    },
+    async clearData() {
       this.selectedFacilityWasChanged = true;
+      this.facilityId = this.closure?.facilityId;
+      if (this.isEditClosureRequest) {
+        await this.handleFullFacilityClosureChange(this.closure.fullClosure);
+      }
       this.ageGroups = [];
       this.uploadedDocuments = [];
-      this.input = {
-        documents: [],
-      };
+      this.input = { documents: [] };
     },
   },
 };

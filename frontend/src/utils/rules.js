@@ -5,6 +5,20 @@ import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MA
 import { getFileExtension, humanFileSize } from '@/utils/file';
 import { isEmailValid, isPhoneNumberValid, isPostalCodeValid, isYearValid } from '@/utils/validation';
 
+function isValidFQDN(string) {
+  const labelPattern = '[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?';
+  const fqdnRegexString =
+    '^' +
+    '(https?:\\/\\/)?' +
+    '(?:www\\.)?' +
+    `(?:${labelPattern}\\.)+` +
+    `(${labelPattern}(?:\\.${labelPattern}(?:\\.${labelPattern})?)?)` +
+    '$';
+
+  const fqdnRegex = new RegExp(fqdnRegexString, 'i');
+  return fqdnRegex.test(string);
+}
+
 const rules = {
   email: [(v) => isEmailValid(v) || 'A valid email is required'],
   required: [
@@ -41,28 +55,33 @@ const rules = {
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';
   },
+  isNumber: (v) => !isNaN(parseFloat(v)) || 'Must be a number',
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [
-    (v) => !!v || 'This is required',
+    (value) => !isEmpty(value) || 'This is required',
     (value) => {
-      return !value?.length || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      return isEmpty(value) || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
     },
     (value) => {
       return (
-        !value?.length ||
+        isEmpty(value) ||
         value[0]?.size < MAX_FILE_SIZE ||
         `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
       );
     },
     (value) => {
       return (
-        !value?.length ||
+        isEmpty(value) ||
         FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value[0]?.name)?.toLowerCase()) ||
         `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`
       );
     },
   ],
+  website: (v) => {
+    if (isEmpty(v)) return true;
+    return isValidFQDN(v) || 'Please enter a valid website address';
+  },
 };
 
 export default rules;

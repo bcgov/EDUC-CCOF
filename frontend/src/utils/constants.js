@@ -67,6 +67,7 @@ export const PAGE_TITLES = Object.freeze({
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
+  CCFRI_CLOSURES: 'Closures',
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
@@ -124,6 +125,7 @@ export const PATHS = {
   CCFRI_HOME: '/ccfri',
   CCFRI_AFS: '/ccfri/afs',
   CCFRI_CURRENT_FEES: '/ccfri/current-fees',
+  CCFRI_CLOSURES: '/ccfri/closures',
   CCFRI_NEW_FEES: '/ccfri/new-fees',
   CCFRI_RFI: '/ccfri/req-info',
   CCFRI_NMF: '/ccfri/req-info/new-facility',
@@ -418,6 +420,8 @@ export const ERROR_MESSAGES = Object.freeze({
   INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
+  FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
+  NO_MONTH_SELECTED: 'You should select at least one month.',
 });
 
 export const ORGANIZATION_TYPES = Object.freeze({
@@ -426,7 +430,8 @@ export const ORGANIZATION_TYPES = Object.freeze({
   REGISTERED_COMPANY: 100000002,
   LOCAL_GOVERNMENT: 100000003,
   FIRST_NATIONS_GOVERNMENT: 100000004,
-  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
+  SOLE_PROPRIETORSHIP: 100000005,
+  PARTNERSHIP: 100000006,
 });
 
 export const CLOSURE_STATUSES = Object.freeze({
@@ -480,6 +485,12 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   Preschool: 100000005,
 });
 
+export const CLOSURE_TYPES = Object.freeze({
+  KNOWN_CLOSURES: 100000000,
+  EMERGENCY_CLOSURES: 100000001,
+  NON_OPERATIONAL_CLOSURES: 100000002,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
@@ -498,3 +509,9 @@ export const APPLICATION_TEMPLATE_VERSIONS = [
 ];
 
 export const EMPTY_PLACEHOLDER = '--';
+
+export const CCFRI_MAX_FEE = 9999;
+export const CCFRI_MIN_FEE = 0;
+
+export const DEFAULT_NUMBER_OF_PARTNERS = 2;
+export const MAX_NUMBER_OF_PARTNERS = 4;

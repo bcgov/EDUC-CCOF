@@ -153,6 +153,7 @@ export default {
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -506,6 +507,25 @@ export default {
                 navBarId: navBarId++,
               });
             }
+            if (!this.showApplicationTemplateV1) {
+              items.push({
+                title: PAGE_TITLES.CCFRI_CLOSURES,
+                subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
+                id: item.facilityId,
+                link: {
+                  name: 'change-request-ccfri-closures-guid',
+                  params: { changeRecGuid: this.$route.params.changeRecGuid, urlGuid: item.ccfriApplicationId },
+                },
+                isAccessible: this.applicationStatus === 'SUBMITTED' || this.isCCFRIOptInComplete(),
+                icon: this.getCheckbox(item.isCCFRIClosuresComplete),
+                isActive:
+                  'change-request-ccfri-closures-guid' === this.$route.name &&
+                  this.$route.params.urlGuid === item.ccfriApplicationId,
+                position: positionIndex++,
+                navBarId: navBarId++,
+              });
+            }
           }
         });
       }
@@ -597,6 +617,21 @@ export default {
                 icon: this.getCheckbox(item.isNmfComplete),
                 isActive:
                   this.$route.params.urlGuid === item.ccfriApplicationId && 'new-facilities' === this.$route.name,
+                position: positionIndex++,
+                navBarId: navBarId++,
+              });
+            }
+            if (!this.showApplicationTemplateV1) {
+              items.push({
+                title: PAGE_TITLES.CCFRI_CLOSURES,
+                subTitle: item.facilityName,
+                subTitle2: item.facilityAccountNumber,
+                id: item.facilityId,
+                link: { name: 'ccfri-closures-guid', params: { urlGuid: item.ccfriApplicationId } },
+                isAccessible: this.applicationStatus === 'SUBMITTED' || this.isCCFRIOptInComplete(),
+                icon: this.getCheckbox(item.isCCFRIClosuresComplete),
+                isActive:
+                  'ccfri-closures-guid' === this.$route.name && this.$route.params.urlGuid === item.ccfriApplicationId,
                 position: positionIndex++,
                 navBarId: navBarId++,
               });
@@ -938,7 +973,7 @@ export default {
     getCCOFNavigation() {
       let items = [];
       items.push({
-        title: 'Organization',
+        title: 'Organization Information',
         link: { name: 'Group Organization Information' },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),

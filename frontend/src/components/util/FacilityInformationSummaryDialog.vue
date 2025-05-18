@@ -59,44 +59,58 @@
             :program-year-id="programYearId"
           />
         </v-expansion-panel>
-        <v-expansion-panel
-          v-if="facility?.rfiApp"
-          :key="`${facility.facilityId}-rfi-summary`"
-          :value="`${facility.facilityId}-rfi-summary`"
-          variant="accordion"
-        >
-          <RFISummary
-            :rfi-app="facility?.rfiApp"
-            :ccfri-id="facility?.ccfri?.ccfriId"
-            :change-rec-guid="facility?.changeRequestId"
-            :program-year-id="programYearId"
-          />
-        </v-expansion-panel>
-        <v-expansion-panel
-          v-if="facility?.nmfApp"
-          :key="`${facility.facilityId}-nmf-summary`"
-          :value="`${facility.facilityId}-nmf-summary`"
-          variant="accordion"
-        >
-          <NMFSummary
-            :nmf-app="facility?.nmfApp"
-            :ccfri-id="facility?.ccfri?.ccfriId"
-            :change-rec-guid="facility?.changeRequestId"
-            :program-year-id="programYearId"
-          />
-        </v-expansion-panel>
-        <v-expansion-panel
-          v-if="facility?.ccfri?.enableAfs"
-          :key="`${facility.facilityId}-afs-summary`"
-          :value="`${facility.facilityId}-afs-summary`"
-          variant="accordion"
-        >
-          <AFSSummary
-            :ccfri-id="facility?.ccfri?.ccfriId"
-            :facility-id="facility?.facilityId"
-            :program-year-id="programYearId"
-          />
-        </v-expansion-panel>
+        <template v-if="facility?.ccfri?.ccfriOptInStatus">
+          <v-expansion-panel
+            v-if="facility?.rfiApp"
+            :key="`${facility.facilityId}-rfi-summary`"
+            :value="`${facility.facilityId}-rfi-summary`"
+            variant="accordion"
+          >
+            <RFISummary
+              :rfi-app="facility?.rfiApp"
+              :ccfri-id="facility?.ccfri?.ccfriId"
+              :change-rec-guid="facility?.changeRequestId"
+              :program-year-id="programYearId"
+            />
+          </v-expansion-panel>
+          <v-expansion-panel
+            v-if="facility?.nmfApp"
+            :key="`${facility.facilityId}-nmf-summary`"
+            :value="`${facility.facilityId}-nmf-summary`"
+            variant="accordion"
+          >
+            <NMFSummary
+              :nmf-app="facility?.nmfApp"
+              :ccfri-id="facility?.ccfri?.ccfriId"
+              :change-rec-guid="facility?.changeRequestId"
+              :program-year-id="programYearId"
+            />
+          </v-expansion-panel>
+          <v-expansion-panel
+            v-if="!showApplicationTemplateV1"
+            :key="`${facility.facilityId}-closures-summary`"
+            :value="`${facility.facilityId}-closures-summary`"
+            variant="accordion"
+          >
+            <ClosuresSummary
+              :ccfri="facility?.ccfri"
+              :change-rec-guid="facility?.changeRequestId"
+              :program-year-id="programYearId"
+            />
+          </v-expansion-panel>
+          <v-expansion-panel
+            v-if="facility?.ccfri?.enableAfs"
+            :key="`${facility.facilityId}-afs-summary`"
+            :value="`${facility.facilityId}-afs-summary`"
+            variant="accordion"
+          >
+            <AFSSummary
+              :ccfri-id="facility?.ccfri?.ccfriId"
+              :facility-id="facility?.facilityId"
+              :program-year-id="programYearId"
+            />
+          </v-expansion-panel>
+        </template>
 
         <v-expansion-panel
           :key="`${facility.facilityId}-ecewe-summary-a`"
@@ -149,13 +163,14 @@ import FacilityInformationSummary from '@/components/summary/group/FacilityInfor
 import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import CCFRISummary from '@/components/summary/group/CCFRISummary.vue';
+import ClosuresSummary from '@/components/summary/group/ClosuresSummary.vue';
 import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
 import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import FacilityInformationSummaryDialogHeader from '@/components/util/FacilityInformationSummaryDialogHeader.vue';
-
+import { useApplicationStore } from '@/store/application.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import alertMixin from '@/mixins/alertMixin';
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -169,6 +184,7 @@ export default {
     CCFRISummary,
     CCOFSummary,
     CCOFSummaryFamily,
+    ClosuresSummary,
     ECEWESummary,
     FacilityInformationSummary,
     FacilityInformationSummaryDialogHeader,
@@ -199,6 +215,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
     ...mapState(useSummaryDeclarationStore, ['facilities']),
     facility() {
       return this.facilities?.find((facility) => facility.facilityId === this.facilityId);

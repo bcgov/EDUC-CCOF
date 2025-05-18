@@ -1,6 +1,7 @@
 {
   "name": "CCOF",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "description": "CCOF UI.",
   "author": "CGI",

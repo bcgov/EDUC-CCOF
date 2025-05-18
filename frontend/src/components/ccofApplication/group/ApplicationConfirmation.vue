@@ -1,59 +1,51 @@
 <template>
-  <v-container>
-    <v-row justify="space-around">
-      <v-card class="cc-top-level-card" width="1200">
-        <v-container>
-          <v-row justify="center"> You have successfully applied for CCOF for the following facilities: </v-row>
+  <v-container fluid class="px-lg-12">
+    <v-card class="pa-8 mb-8">
+      <p class="text-center mb-4">You have successfully applied for CCOF for the following facilities:</p>
+      <ul class="text-center" style="list-style: none">
+        <li v-for="item in navBarList" :key="item.facilityId" style="">
+          <router-link :to="getRoutingPath(item.facilityId)">
+            <span>{{ item.facilityName }}</span>
+          </router-link>
+          <v-btn
+            v-if="!isLocked && navBarList.length > 1"
+            variant="text"
+            icon="mdi-trash-can-outline"
+            class="text-error"
+            @click="
+              confirmDeleteApplication(
+                item.facilityId,
+                item.changeRequestNewFacilityId,
+                item.facilityName,
+                item.ccfriApplicationId,
+                item.eceweApplicationId,
+                item.ccofBaseFundingId,
+              )
+            "
+          >
+          </v-btn>
+        </li>
+      </ul>
+    </v-card>
 
-          <v-row justify="center" style="padding-top: 2em">
-            <ul style="list-style: none">
-              <li v-for="item in navBarList" :key="item.facilityId" style="">
-                <router-link :to="getRoutingPath(item.facilityId)">
-                  <span>{{ item.facilityName }}</span>
-                </router-link>
-                <v-btn
-                  v-if="!isLocked && navBarList.length > 1"
-                  variant="text"
-                  :icon="'mdi-trash-can-outline'"
-                  color="red"
-                  @click="
-                    confirmDeleteApplication(
-                      item.facilityId,
-                      item.changeRequestNewFacilityId,
-                      item.facilityName,
-                      item.ccfriApplicationId,
-                      item.eceweApplicationId,
-                      item.ccofBaseFundingId,
-                    )
-                  "
-                >
-                </v-btn>
-              </li>
-            </ul>
-          </v-row>
-        </v-container>
-      </v-card>
+    <v-card class="pa-8 my-8">
+      <div class="text-center pb-4">
+        <p class="mb-2">Do you want to add another facility to your application?</p>
+        <p>Note: You need to apply for each licence.</p>
+      </div>
 
-      <v-card class="cc-top-level-card" width="1200">
-        <v-container>
-          <v-row justify="center" class="pb-4"> Do you want to add another facility? </v-row>
-
-          <v-row justify="center" class="pb-4">
-            <v-col cols="auto" class="px-3">
-              <AppButton :primary="true" required size="large" :disabled="isLocked" @click="addAnotherFacility()">
-                Yes
-              </AppButton>
-            </v-col>
-            <v-col cols="auto" class="px-3">
-              <AppButton :primary="false" required size="large" @click="next()"> No </AppButton>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-    </v-row>
+      <v-row justify="center" class="pb-4">
+        <v-col cols="auto" class="px-3">
+          <AppButton :primary="true" size="large" :disabled="isLocked" @click="addAnotherFacility()">Yes</AppButton>
+        </v-col>
+        <v-col cols="auto" class="px-3">
+          <AppButton :primary="false" size="large" @click="next()">No</AppButton>
+        </v-col>
+      </v-row>
+    </v-card>
 
     <v-row justify="space-around" class="pb-4">
-      <AppButton :primary="false" required size="x-large" @click="previous()"> Back </AppButton>
+      <AppButton :primary="false" size="x-large" @click="previous()"> Back </AppButton>
     </v-row>
 
     <AppDialog
@@ -65,11 +57,7 @@
       @close="dialog = false"
     >
       <template #content>
-        <v-row>
-          <v-col cols="12" style="text-align: left">
-            <p class="pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
-          </v-col>
-        </v-row>
+        <p class="text-left pt-4">Are you sure you want to delete application for facility {{ deleteFacilityName }}?</p>
       </template>
       <template #button>
         <v-row justify="space-around">
@@ -89,7 +77,6 @@
 import { mapState, mapActions } from 'pinia';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
@@ -123,8 +110,7 @@ export default {
       'isChangeRequest',
     ]),
     ...mapState(useApplicationStore, ['applicationStatus', 'applicationId', 'programYearId']),
-    ...mapState(useOrganizationStore, ['organizationProviderType']),
-    ...mapState(useReportChangesStore, ['isCCOFUnlocked', 'changeRequestStatus']),
+    ...mapState(useReportChangesStore, ['changeRequestStatus']),
     isLocked() {
       if (this.isChangeRequest) {
         return this.changeRequestStatus !== 'INCOMPLETE';

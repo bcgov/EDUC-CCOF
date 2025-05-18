@@ -82,6 +82,7 @@ export const useFacilityStore = defineStore('facility', {
           navBarStore.updateNavBar({
             facilityId: this.facilityId,
             facilityName: this.facilityModel.facilityName,
+            healthAuthority: this.facilityModel.healthAuthority,
             licenseNumber: this.facilityModel.licenseNumber,
           });
           return response;
@@ -164,6 +165,7 @@ export const useFacilityStore = defineStore('facility', {
             facilityId: this.facilityId,
             ccofBaseFundingId: response.data?.ccofBaseFundingId,
             ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            healthAuthority: this.facilityModel.healthAuthority,
             licenseNumber: this.facilityModel.licenseNumber,
             changeRequestId: reportChangesStore.changeRequestId,
             changeActionId: reportChangesStore.changeActionId,
@@ -189,6 +191,7 @@ export const useFacilityStore = defineStore('facility', {
             facilityId: this.facilityId,
             ccofBaseFundingId: response.data?.ccofBaseFundingId,
             ccofBaseFundingStatus: response.data?.ccofBaseFundingStatus,
+            healthAuthority: this.facilityModel.healthAuthority,
             licenseNumber: this.facilityModel.licenseNumber,
             facilityStatus: 'New',
             isCCOFComplete: false, //funding page must be complete to be true

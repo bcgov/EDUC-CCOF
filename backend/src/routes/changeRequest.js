@@ -46,8 +46,8 @@ const closureChangeRequestSchema = {
   changeType: {
     in: ['body'],
     isIn: {
-      options: [[`${CHANGE_REQUEST_TYPES.NEW_CLOSURE}`, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
-      errorMessage: '[changeType] must be NEW_CLOSURE or REMOVE_A_CLOSURE',
+      options: [[CHANGE_REQUEST_TYPES.NEW_CLOSURE, CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE]],
+      errorMessage: '[changeType] must be NEW_CLOSURE, EDIT_EXISTING_CLOSURE, or REMOVE_A_CLOSURE',
     },
   },
   facilityId: {

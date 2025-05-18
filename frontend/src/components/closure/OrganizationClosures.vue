@@ -245,9 +245,9 @@ export default {
       }
       this.closureToView = closure;
     },
-    // JonahCurlCGI - todo: implement the following functions
     updateClosure(closure) {
-      // stub
+      this.closureRequestType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+      this.closureForRequest = closure;
     },
     removeClosure(closure) {
       this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
@@ -336,6 +336,7 @@ export default {
       }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.closureRequestType = null;
+      this.closureForRequest = null;
       this.toggleClosureConfirmationDialog();
     },
   },
