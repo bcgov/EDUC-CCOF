@@ -187,63 +187,63 @@
             <v-col cols="12" sm="5" xl="4" xxl="3">
               <p><AppLabel>Website:</AppLabel></p>
             </v-col>
-              <v-col cols="12" sm="7" xl="8" xxl="9">
-                <v-form v-model="valid.website" @submit.prevent>
-                  <v-row v-if="editing.website" no-gutters>
-                    <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="workingFields.website"
-                        class="less-jitter"
-                        density="compact"
-                        variant="underlined"
-                        label="Website Address"
-                        :rules="[rules.website]"
-                        :single-line="true"
-                        hide-details="auto"
-                      />
-                    </v-col>
-                    <v-col cols="3" offset-md="1" class="text-no-wrap">
-                      <AppButton
-                        size="small"
-                        color="#003366"
-                        type="submit"
-                        :display-block="false"
-                        :disabled="!valid.website"
-                        :loading="isProcessing"
-                        @click="() => saveField('website')"
-                      >
-                        Save
-                      </AppButton>
-                      <AppButton
-                        class="ml-1"
-                        size="small"
-                        :primary="false"
-                        :display-block="false"
-                        :disabled="isProcessing"
-                        @click="() => cancelEditing('website')"
-                      >
-                        Cancel
-                      </AppButton>
-                    </v-col>
-                  </v-row>
-                  <v-row v-else no-gutters>
-                    <v-col cols="12" md="6">
-                      <p>{{ loadedModel.website || 'N/A' }}</p>
-                    </v-col>
-                    <v-col cols="3" offset-md="1">
-                      <AppButton
-                        size="small"
-                        color="#003366"
-                        :display-block="false"
-                        :disabled="workingFieldInUse || isProcessing"
-                        @click="editing.website = true"
-                      >
-                        Edit
-                      </AppButton>
-                    </v-col>
-                  </v-row>
-                </v-form>
-              </v-col>
+            <v-col cols="12" sm="7" xl="8" xxl="9">
+              <v-form v-model="valid.website" @submit.prevent>
+                <v-row v-if="editing.website" no-gutters>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="workingFields.website"
+                      class="less-jitter"
+                      density="compact"
+                      variant="underlined"
+                      label="Website Address"
+                      :rules="[rules.website]"
+                      :single-line="true"
+                      hide-details="auto"
+                    />
+                  </v-col>
+                  <v-col cols="3" offset-md="1" class="text-no-wrap">
+                    <AppButton
+                      size="small"
+                      color="#003366"
+                      type="submit"
+                      :display-block="false"
+                      :disabled="!valid.website"
+                      :loading="isProcessing"
+                      @click="() => saveField('website')"
+                    >
+                      Save
+                    </AppButton>
+                    <AppButton
+                      class="ml-1"
+                      size="small"
+                      :primary="false"
+                      :display-block="false"
+                      :disabled="isProcessing"
+                      @click="() => cancelEditing('website')"
+                    >
+                      Cancel
+                    </AppButton>
+                  </v-col>
+                </v-row>
+                <v-row v-else no-gutters>
+                  <v-col cols="12" md="6">
+                    <p>{{ loadedModel.website || 'N/A' }}</p>
+                  </v-col>
+                  <v-col cols="3" offset-md="1">
+                    <AppButton
+                      size="small"
+                      color="#003366"
+                      :display-block="false"
+                      :disabled="workingFieldInUse || isProcessing"
+                      @click="editing.website = true"
+                    >
+                      Edit
+                    </AppButton>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-col>
           </v-row>
         </v-card>
       </v-col>
@@ -379,8 +379,8 @@ export default {
       );
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some(value => value === true);
-    }
+      return Object.values(this.editing).some((value) => value === true);
+    },
   },
   async mounted() {
     try {
