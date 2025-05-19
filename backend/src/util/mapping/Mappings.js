@@ -332,6 +332,12 @@ const OrganizationFacilityMappings = [
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  { back: 'telephone1', front: 'telephone' },
+  { back: 'emailaddress1', front: 'email' },
+  { back: 'address1_line1', front: 'addressLineOne' },
+  { back: 'address1_line2', front: 'addressLineTwo' },
+  { back: 'address1_stateorprovince', front: 'province' },
+  { back: 'address1_postalcode', front: 'postalCode' },
 ];
 
 const ClosureMappings = [

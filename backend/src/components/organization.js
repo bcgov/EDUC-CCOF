@@ -3,7 +3,7 @@ const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, get
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { OrganizationMappings } = require('../util/mapping/Mappings');
+const { OrganizationMappings, OrganizationFacilityMappings } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
@@ -18,6 +18,26 @@ async function getOrganization(req, res) {
 
     return res.status(HttpStatus.OK).json(organization);
   } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getFacilitiesByOrgId(orgId) {
+  const operation =
+    'accounts?$select=name,address1_city,address1_line1,address1_line2,address1_stateorprovince,address1_postalcode,' +
+    `telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber&$filter=_parentaccountid_value eq ${orgId}`;
+  return getOperation(operation);
+}
+
+async function getOrganizationFacilities(req, res) {
+  try {
+    const facilitiesData = await getFacilitiesByOrgId(req.params.organizationId);
+    const facilities = facilitiesData.value.map((facility) => {
+      return new MappableObjectForFront(facility, OrganizationFacilityMappings);
+    });
+    return res.status(HttpStatus.OK).json(facilities);
+  } catch (e) {
+    log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -95,6 +115,7 @@ async function updateOrganization(req, res) {
 
 module.exports = {
   getOrganization,
+  getOrganizationFacilities,
   createOrganization,
   updateOrganization,
 };

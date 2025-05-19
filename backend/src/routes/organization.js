@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getOrganization, createOrganization, updateOrganization } = require('../components/organization');
+const { getOrganization, createOrganization, updateOrganization, getOrganizationFacilities } = require('../components/organization');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
@@ -99,5 +99,16 @@ router.post('/:organizationId/renew', passport.authenticate('jwt', { session: fa
   validationResult(req).throw();
   return createOrganization(req, res);
 });
+
+router.get(
+  '/:organizationId/facilities',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('organizationId', 'URL Param: [organizationId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getOrganizationFacilities(req, res);
+  },
+);
 
 module.exports = router;
