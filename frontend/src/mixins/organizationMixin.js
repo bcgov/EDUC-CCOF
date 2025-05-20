@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { getOrganizationNameLabel } from '@/utils/common.js';
 import { DEFAULT_NUMBER_OF_PARTNERS, MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -37,6 +38,21 @@ export default {
       'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
+    organizationTypes() {
+      if (isEmpty(this.organizationTypeList)) return [];
+      const isFamilyApplication = this.$route.fullPath.includes('family');
+      if (isFamilyApplication) {
+        const applicableOrgTypes = [ORGANIZATION_TYPES.REGISTERED_COMPANY, ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP];
+        if (!this.showApplicationTemplateV1) {
+          applicableOrgTypes.push(ORGANIZATION_TYPES.PARTNERSHIP);
+        }
+        return this.organizationTypeList.filter((orgType) => applicableOrgTypes.includes(orgType.id));
+      }
+      return this.organizationTypeList;
+    },
+    legalNameLabel() {
+      return getOrganizationNameLabel(this.organizationModel.organizationType);
+    },
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
@@ -97,16 +113,6 @@ export default {
       } finally {
         this.setIsApplicationProcessing(false);
       }
-    },
-    // TODO (vietle-cgi) - review this function when working on Family Application changes
-    validateIncorporationNumber(organizationTypeId, incorporationNumber) {
-      const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
-      if (!incorporationNumber) {
-        if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
-          return rules.required;
-        }
-      }
-      return [];
     },
     removePartner(index) {
       // Shift data for all partners after the removed one

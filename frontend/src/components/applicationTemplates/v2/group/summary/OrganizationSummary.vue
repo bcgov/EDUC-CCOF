@@ -39,59 +39,16 @@
             />
           </v-col>
         </v-row>
-        <div>
-          <template v-if="isPartnership">
-            <div v-for="index in numberOfPartners" :key="index">
-              <p class="summary-label pb-2">Partner {{ index }}</p>
-              <v-row no-gutters>
-                <v-col cols="12" md="4">
-                  <p class="summary-label">First Name</p>
-                  <v-text-field
-                    placeholder="Required"
-                    :model-value="summaryModel?.organization[`partner${index}FirstName`]"
-                    class="summary-value"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-                <v-col cols="12" md="4">
-                  <p class="summary-label">Middle Name (if applicable)</p>
-                  <v-text-field
-                    :model-value="summaryModel?.organization[`partner${index}MiddleName`] ?? EMPTY_PLACEHOLDER"
-                    class="summary-value"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                  />
-                </v-col>
-                <v-col cols="12" md="4">
-                  <p class="summary-label">Last Name</p>
-                  <v-text-field
-                    placeholder="Required"
-                    :model-value="summaryModel?.organization[`partner${index}LastName`]"
-                    class="summary-value"
-                    density="compact"
-                    flat
-                    variant="solo"
-                    hide-details
-                    readonly
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
-            </div>
+
+        <template v-if="isPartnership">
+          <div v-for="index in numberOfPartners" :key="index">
+            <p class="summary-label pb-2">Partner {{ index }}</p>
             <v-row no-gutters>
-              <v-col cols="12" md="8" class="pr-2">
-                <p class="summary-label">Legal Organization Name</p>
+              <v-col cols="12" md="4">
+                <p class="summary-label">First Name</p>
                 <v-text-field
                   placeholder="Required"
-                  :model-value="summaryModel?.organization?.legalName"
+                  :model-value="summaryModel?.organization[`partner${index}FirstName`]"
                   class="summary-value"
                   density="compact"
                   flat
@@ -102,11 +59,23 @@
                 />
               </v-col>
               <v-col cols="12" md="4">
-                <p class="summary-label">Doing Business As</p>
+                <p class="summary-label">Middle Name (if applicable)</p>
+                <v-text-field
+                  :model-value="summaryModel?.organization[`partner${index}MiddleName`] ?? EMPTY_PLACEHOLDER"
+                  class="summary-value"
+                  density="compact"
+                  flat
+                  variant="solo"
+                  hide-details
+                  readonly
+                />
+              </v-col>
+              <v-col cols="12" md="4">
+                <p class="summary-label">Last Name</p>
                 <v-text-field
                   placeholder="Required"
+                  :model-value="summaryModel?.organization[`partner${index}LastName`]"
                   class="summary-value"
-                  :model-value="summaryModel?.organization?.doingBusinessAs"
                   density="compact"
                   flat
                   variant="solo"
@@ -116,47 +85,106 @@
                 />
               </v-col>
             </v-row>
-          </template>
-          <v-row v-else no-gutters>
-            <v-col cols="12" md="8" class="pr-2">
-              <p class="summary-label">
-                Legal Name (first, middle and last) or Organization (as it appears in BC Registries and Online Services)
-              </p>
-              <v-text-field
-                placeholder="Required"
-                :model-value="summaryModel?.organization?.legalName"
-                class=""
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-            <v-col
-              v-if="
-                summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
-                summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.REGISTERED_COMPANY
-              "
-              cols="12"
-              md="4"
-            >
-              <p class="summary-label">Incorporation Number</p>
-              <v-text-field
-                placeholder="Required"
-                class="summary-value"
-                :model-value="summaryModel?.organization?.incNumber"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-          </v-row>
-        </div>
+          </div>
+        </template>
+
+        <v-row no-gutters>
+          <v-col cols="12" md="8" class="pr-2">
+            <p class="summary-label">{{ legalNameLabel }}</p>
+            <v-text-field
+              placeholder="Required"
+              :model-value="summaryModel?.organization?.legalName"
+              class="summary-value"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+          <v-col v-if="isPartnership" cols="12" md="4">
+            <p class="summary-label">Doing Business As</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.doingBusinessAs"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+          <v-col
+            v-if="
+              summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.NON_PROFIT_SOCIETY ||
+              summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.REGISTERED_COMPANY
+            "
+            cols="12"
+            md="4"
+          >
+            <p class="summary-label">Incorporation Number</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.incNumber"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row v-if="isSoleProprietorship" no-gutters>
+          <v-col cols="12" md="4" class="pr-2">
+            <p class="summary-label">Phone Number</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.phone"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
+              readonly
+              :rules="[...rules.required, rules.phone]"
+            />
+          </v-col>
+          <v-col cols="12" md="4" class="pr-2">
+            <p class="summary-label">Email Address</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="summaryModel?.organization?.email"
+              density="compact"
+              flat
+              variant="solo"
+              :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
+              readonly
+              :rules="[...rules.required, ...rules.email]"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <p class="summary-label">Business BCeID</p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="userInfo.userName"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              readonly
+              :rules="rules.required"
+            />
+          </v-col>
+        </v-row>
+
         <div>
           <p class="summary-label">Organization Mailing Address</p>
           <v-text-field
@@ -273,79 +301,81 @@
             />
           </v-col>
         </v-row>
-        <v-row v-if="isGroup && !isSoleProprietorship" no-gutters>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Organization Contact Name</p>
-            <v-text-field
-              placeholder="Required"
-              :model-value="summaryModel?.organization?.contactName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Position</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.position"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <v-col cols="12" md="4" class="pr-2">
-            <p class="summary-label">Phone Number of the Organization's Authorized Signing Authority</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.phone"
-              density="compact"
-              flat
-              variant="solo"
-              :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
-              readonly
-              :rules="[...rules.required, rules.phone]"
-            />
-          </v-col>
-          <v-col cols="12" md="4" class="pr-2">
-            <p class="summary-label">Email Address of the Organization's Authorized Signing Authority</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="summaryModel?.organization?.email"
-              density="compact"
-              flat
-              variant="solo"
-              :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
-              readonly
-              :rules="[...rules.required, ...rules.email]"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Business BCeID</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="userInfo.userName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
-            />
-          </v-col>
-        </v-row>
+        <template v-if="!isSoleProprietorship">
+          <v-row no-gutters>
+            <v-col cols="12" md="4">
+              <p class="summary-label">Organization Contact Name</p>
+              <v-text-field
+                placeholder="Required"
+                :model-value="summaryModel?.organization?.contactName"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <p class="summary-label">Position</p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.position"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col cols="12" md="4" class="pr-2">
+              <p class="summary-label">Phone Number of the Organization's Authorized Signing Authority</p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.phone"
+                density="compact"
+                flat
+                variant="solo"
+                :hide-details="isNullOrBlank(summaryModel?.organization?.phone) || isValidForm"
+                readonly
+                :rules="[...rules.required, rules.phone]"
+              />
+            </v-col>
+            <v-col cols="12" md="4" class="pr-2">
+              <p class="summary-label">Email Address of the Organization's Authorized Signing Authority</p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="summaryModel?.organization?.email"
+                density="compact"
+                flat
+                variant="solo"
+                :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
+                readonly
+                :rules="[...rules.required, ...rules.email]"
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <p class="summary-label">Business BCeID</p>
+              <v-text-field
+                placeholder="Required"
+                class="summary-value"
+                :model-value="userInfo.userName"
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                readonly
+                :rules="rules.required"
+              />
+            </v-col>
+          </v-row>
+        </template>
         <div v-if="!isValidForm" class="mt-4">
           <router-link :to="routingPath">
             <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
@@ -357,6 +387,7 @@
 </template>
 <script>
 import summaryMixin from '@/mixins/summaryMixin.js';
+import { getOrganizationNameLabel } from '@/utils/common.js';
 import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 export default {
@@ -372,6 +403,9 @@ export default {
       return this.isGroup
         ? pcfUrl(PATHS.CCOF_GROUP_ORG, this.summaryModel?.application?.programYearId)
         : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.summaryModel?.application?.programYearId);
+    },
+    legalNameLabel() {
+      return getOrganizationNameLabel(this.summaryModel?.organization?.organizationType);
     },
   },
   mounted() {

@@ -666,7 +666,7 @@ export default {
     getCCOFFamilyNavigation() {
       let items = [];
       items.push({
-        title: 'Family Provider',
+        title: this.showApplicationTemplateV1 ? 'Family Provider' : 'Organization Information',
         link: { name: 'Family Organization Information' },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),
