@@ -191,14 +191,9 @@ export default {
           isChangeRequest: isChangeRequest(this),
           changeRequestId: this.$route.params.changeRecGuid,
         });
-        //this.refreshNavBarList();
         this.forceNavBarRefresh();
         if (isSave) {
-          this.setSuccessAlert(
-            this.isGroup
-              ? 'Success! Facility information has been saved.'
-              : 'Success! Eligibility information has been saved.',
-          );
+          this.setSuccessAlert('Success! Facility information has been saved.');
         }
         if (!this.$route.params.urlGuid && isSave) {
           this.$router.push(
