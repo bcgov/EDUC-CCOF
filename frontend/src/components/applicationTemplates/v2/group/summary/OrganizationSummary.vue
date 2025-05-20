@@ -387,6 +387,7 @@
 </template>
 <script>
 import summaryMixin from '@/mixins/summaryMixin.js';
+import { getOrganizationNameLabel } from '@/utils/common.js';
 import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 export default {
@@ -404,14 +405,7 @@ export default {
         : pcfUrl(PATHS.CCOF_FAMILY_ORG, this.summaryModel?.application?.programYearId);
     },
     legalNameLabel() {
-      switch (this.summaryModel?.organization?.organizationType) {
-        case this.ORGANIZATION_TYPES.PARTNERSHIP:
-          return 'Legal Organization Name';
-        case this.ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
-          return 'Full Legal Name of Sole Proprietor (Licensee)';
-        default:
-          return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
-      }
+      return getOrganizationNameLabel(this.summaryModel?.organization?.organizationType);
     },
   },
   mounted() {

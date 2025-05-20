@@ -232,7 +232,7 @@ export default {
       if (!start || !end) return [];
       const dates = [];
       const endDate = moment.utc(end).startOf('day');
-      let currentDate = moment.utc(start).startOf('day');
+      const currentDate = moment.utc(start).startOf('day');
       while (currentDate.isSameOrBefore(endDate)) {
         dates.push(currentDate.format('YYYY-MM-DD'));
         currentDate.add(1, 'day');

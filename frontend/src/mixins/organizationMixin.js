@@ -13,6 +13,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { getOrganizationNameLabel } from '@/utils/common.js';
 import { DEFAULT_NUMBER_OF_PARTNERS, MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
@@ -50,14 +51,7 @@ export default {
       return this.organizationTypeList;
     },
     legalNameLabel() {
-      switch (this.organizationModel.organizationType) {
-        case ORGANIZATION_TYPES.PARTNERSHIP:
-          return 'Legal Organization Name';
-        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
-          return 'Full Legal Name of Sole Proprietor (Licensee)';
-        default:
-          return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
-      }
+      return getOrganizationNameLabel(this.organizationModel.organizationType);
     },
     isLocked() {
       if (this.unlockBaseFunding) {
