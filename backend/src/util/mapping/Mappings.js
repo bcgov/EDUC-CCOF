@@ -37,6 +37,7 @@ const OrganizationMappings = [
   { back: 'ccof_partner4middlename', front: 'partner4MiddleName' },
   { back: 'ccof_partner4lastname', front: 'partner4LastName' },
   { back: 'ccof_organizationwebsiteurl', front: 'website' },
+  { back: 'ccof_numberoffacilities', front: 'numberOfFacilities' },
 ];
 
 const FacilityMappings = [
@@ -336,6 +337,7 @@ const OrganizationFacilityMappings = [
   { back: 'emailaddress1', front: 'email' },
   { back: 'address1_line1', front: 'addressLineOne' },
   { back: 'address1_line2', front: 'addressLineTwo' },
+  { back: 'address1_city', front: 'city' },
   { back: 'address1_stateorprovince', front: 'province' },
   { back: 'address1_postalcode', front: 'postalCode' },
 ];
