@@ -117,16 +117,13 @@ export default {
   // FACILITY INFORMATION VALIDATIONS
   isFacilityInformationComplete(facilityInfo, isGroup, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
-    // TODO (vietle-cgi) - add application template check after finishing Facility Info update for Family Application
-    if (!isGroup) {
-      const requiredFields = [
-        'facilityName',
-        'postalCode',
-        'licenseNumber',
-        'licenseEffectiveDate',
-        'hasReceivedFunding',
-      ];
-      return !hasEmptyFields(facilityInfo, requiredFields) && isPostalCodeValid(facilityInfo.postalCode);
+    // Family Application - Template Version 1
+    if (!isGroup && showApplicationTemplateV1(applicationTemplateVersion)) {
+      const requiredFields = ['facilityName', 'licenseNumber', 'licenseEffectiveDate', 'hasReceivedFunding'];
+      if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
+        requiredFields.push('fundingFacility');
+      }
+      return !hasEmptyFields(facilityInfo, requiredFields);
     }
     const requiredFields = [
       'facilityName',

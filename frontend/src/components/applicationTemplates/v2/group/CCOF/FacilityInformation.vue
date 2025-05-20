@@ -163,7 +163,7 @@
                 :items="healthAuthorities"
                 item-title="description"
                 item-value="id"
-                label="Select a Health Authority"
+                label="Select Health Authority that Issued Licence"
                 :disabled="isLocked"
                 :hide-details="isLocked"
                 :rules="rules.required"

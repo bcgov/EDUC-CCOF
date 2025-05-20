@@ -374,7 +374,7 @@ export default {
     routingPathFamily() {
       return !this.funding.ccofBaseFundingId
         ? pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId)
-        : pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
+        : pcfUrlGuid(PATHS.CCOF_FAMILY_FACILITY, this.programYearId, this.facilityId);
     },
   },
 };

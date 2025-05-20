@@ -25,7 +25,7 @@ import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLan
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
-import Eligibility from '@/components/ccofApplication/family/Eligibility.vue';
+import FamilyFacilityInformation from '@/components/ccofApplication/family/FacilityInformation.vue';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization.vue';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation.vue';
@@ -160,11 +160,11 @@ const router = createRouter({
     },
 
     {
-      path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
-      name: 'Eligibility',
-      component: Eligibility,
+      path: pcfUrl(PATHS.CCOF_FAMILY_FACILITY),
+      name: 'Family Facility Information',
+      component: FamilyFacilityInformation,
       meta: {
-        pageTitle: 'Information to Determine Eligibility',
+        pageTitle: 'Family Facility Information',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
@@ -172,11 +172,11 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY),
-      name: 'Eligibility GUID',
-      component: Eligibility,
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_FACILITY),
+      name: 'Family Facility Information GUID',
+      component: FamilyFacilityInformation,
       meta: {
-        pageTitle: 'Information to Determine Eligibility',
+        pageTitle: 'Family Facility Information',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,

@@ -29,9 +29,6 @@ export const ApiRoutes = Object.freeze({
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
-  FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
-  FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   MESSAGE: baseRoot + '/messages',
   APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
@@ -119,7 +116,7 @@ export const PATHS = {
   CCOF_GROUP_CONFIRM: '/group/confirmation',
 
   CCOF_FAMILY_ORG: '/family/organization',
-  CCOF_FAMILY_ELIGIBILITY: '/family/eligibility',
+  CCOF_FAMILY_FACILITY: '/family/facility',
   CCOF_FAMILY_FUNDING: '/family/funding',
 
   CCFRI_HOME: '/ccfri',
