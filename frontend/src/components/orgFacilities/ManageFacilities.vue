@@ -81,16 +81,6 @@
                       <p>{{ facility.telephone }}</p>
                     </v-col>
                   </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Young Parent Program Offered:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>Fix Me</p>
-                    </v-col>
-                  </v-row>
                 </v-col>
                 <v-col class="py-0" cols="12" md="6">
                   <v-row dense>
@@ -141,16 +131,6 @@
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
                       <p>{{ facility.email }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Aboriginal Head Start Offered:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>Fix Me</p>
                     </v-col>
                   </v-row>
                 </v-col>
