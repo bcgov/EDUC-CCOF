@@ -90,7 +90,7 @@
                       </p>
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>Fix Me</p>
+                      <p>{{ facility.baseFundingAgreements[0].providerType }}</p>
                     </v-col>
                   </v-row>
                   <v-row dense>

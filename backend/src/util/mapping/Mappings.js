@@ -257,6 +257,8 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },
+
+  { back: 'ccof_providertype@OData.Community.Display.V1.FormattedValue', front: 'providerType' },
 ];
 
 const ECEWEApplicationMappings = [

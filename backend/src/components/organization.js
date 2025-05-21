@@ -3,7 +3,7 @@ const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, get
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { OrganizationMappings, OrganizationFacilityMappings } = require('../util/mapping/Mappings');
+const { OrganizationMappings, OrganizationFacilityMappings, CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
@@ -25,7 +25,8 @@ async function getOrganization(req, res) {
 async function getFacilitiesByOrgId(orgId) {
   const operation =
     'accounts?$select=name,address1_city,address1_line1,address1_line2,address1_stateorprovince,address1_postalcode,' +
-    `telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber&$filter=_parentaccountid_value eq ${orgId}`;
+    `telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber&$filter=_parentaccountid_value eq ${orgId}` +
+    '&$expand=ccof_application_basefunding_Facility($select=ccof_providertype)';
   return getOperation(operation);
 }
 
@@ -33,7 +34,14 @@ async function getOrganizationFacilities(req, res) {
   try {
     const facilitiesData = await getFacilitiesByOrgId(req.params.organizationId);
     const facilities = facilitiesData.value.map((facility) => {
-      return new MappableObjectForFront(facility, OrganizationFacilityMappings);
+      let mappedFacility = new MappableObjectForFront(facility, OrganizationFacilityMappings);
+
+      mappedFacility.data.baseFundingAgreements = facility['ccof_application_basefunding_Facility'].map((fa) => {
+        const baseFunding = new MappableObjectForFront(fa, CCOFApplicationFundingMapping);
+        return baseFunding.data;
+      });
+
+      return mappedFacility;
     });
     return res.status(HttpStatus.OK).json(facilities);
   } catch (e) {
