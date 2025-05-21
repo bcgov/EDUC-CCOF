@@ -143,7 +143,7 @@
           <v-row v-if="!isPartnership && !isSoleProprietorship" no-gutters class="pt-4">
             <div class="pt-4">
               <AppTooltip
-                tooltip-content="Legal Name as it appears as the licensee on your Community Care & Assisted Living Act Licence"
+                tooltip-content="Legal Name as it appears as the licensee on your Community Care and Assisted Living Act Licence"
               />
             </div>
             <v-text-field

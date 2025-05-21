@@ -12,7 +12,7 @@
                 variant="outlined"
                 required
                 :rules="rules.required"
-                label="Facility Name (as it appears on the Community Care Assisted Living Act Licence)"
+                label="Facility Name (as it appears on the Community Care and Assisted Living Act Licence)"
               />
             </v-col>
           </v-row>
