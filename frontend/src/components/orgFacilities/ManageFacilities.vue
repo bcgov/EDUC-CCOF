@@ -25,7 +25,7 @@
       </v-row>
     </template>
     <template v-else>
-      <v-lazy v-for="facility of facilities" :key="facility.facilityId" min-height="200px">
+      <v-lazy v-for="facility of facilities" :key="facility.facilityId" min-height="150px">
         <v-row justify="start" no-gutters>
           <v-col class="mt-2">
             <v-card variant="outlined" class="soft-outline fill-height px-2">
