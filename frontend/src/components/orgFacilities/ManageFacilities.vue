@@ -44,7 +44,7 @@
                   <v-row dense>
                     <v-col cols="12" sm="5" xl="4" xxl="3">
                       <p>
-                        <AppLabel>Community Care Facility License #:</AppLabel>
+                        <AppLabel>Community Care Facility Licence #:</AppLabel>
                       </p>
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
@@ -90,7 +90,7 @@
                       </p>
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.baseFundingAgreements[0].providerType }}</p>
+                      <p>{{ providerType }}</p>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -163,12 +163,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'facilities', 'loadedModel']),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationProviderType', 'facilities', 'loadedModel']),
     skeletons() {
       if (this.loadedModel.numberOfFacilities > 10) {
         return 10;
       }
       return this.loadedModel.numberOfFacilities;
+    },
+    providerType() {
+      return `${this.organizationProviderType[0]}${this.organizationProviderType.slice(1).toLowerCase()}`;
     },
   },
   async mounted() {
