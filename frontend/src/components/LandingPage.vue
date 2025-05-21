@@ -17,7 +17,7 @@
     </AppAlertBanner>
 
     <v-row>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 5 : 3">
+      <v-col cols="12" :lg="isCCOFStatusNew ? 6 : 4">
         <SmallCard>
           <template #content>
             <div class="pb-2 text-h6">
@@ -125,7 +125,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 3">
+      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)">
           <template #content>
             <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
@@ -185,7 +185,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
             <p class="text-h6">Request a change</p>
@@ -211,7 +211,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
@@ -231,7 +231,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 2 : 3">
+      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Organization and Facilities</p>
@@ -240,12 +240,25 @@
           <template #button>
             <v-row no-gutters>
               <v-col class="col-12">
-                <v-btn
-                  :class="buttonColor(!organizationAccountNumber)"
-                  theme="dark"
-                  @click="goToMaintainOrgFacilities"
-                >
+                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" @click="goToMaintainOrgFacilities">
                   Manage Organization and Facilities
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
+        </SmallCard>
+      </v-col>
+      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
+        <SmallCard :disable="!organizationAccountNumber">
+          <template #content>
+            <p class="text-h6">Manage Users</p>
+            <p>Add, edit, or remove users in your organization.</p>
+          </template>
+          <template #button>
+            <v-row no-gutters>
+              <v-col class="col-12">
+                <v-btn :class="buttonColor(!organizationAccountNumber)" theme="dark" @click="goToMaintainUsers">
+                  Manage Users
                 </v-btn>
               </v-col>
             </v-row>
@@ -729,6 +742,9 @@ export default {
     },
     goToMaintainOrgFacilities() {
       this.$router.push(PATHS.ROOT.MANAGE_ORG_FACILITIES);
+    },
+    goToMaintainUsers() {
+      this.$router.push(PATHS.ROOT.MANAGE_USERS);
     },
     viewApplication(type) {
       if (type === 'NEW') {

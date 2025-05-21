@@ -97,6 +97,7 @@ export const PATHS = {
   ROOT: {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities',
+    MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',

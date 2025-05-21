@@ -1,54 +1,3 @@
-import { createRouter, createWebHistory } from 'vue-router';
-
-import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
-import CcfriEstimator from '@/components/CcfriEstimator.vue';
-import ErrorPage from '@/components/ErrorPage.vue';
-import SearchFacility from '@/components/FacilitySearch.vue';
-import Impersonate from '@/components/Impersonate.vue';
-import LandingPage from '@/components/LandingPage.vue';
-import Login from '@/components/Login.vue';
-import LoginError from '@/components/LoginError.vue';
-import Logout from '@/components/Logout.vue';
-import MessagesPage from '@/components/MessagesPage.vue';
-import MinistryLogin from '@/components/MinistryLogin.vue';
-import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage.vue';
-import NMF from '@/components/RFI/NMF.vue';
-import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
-import SessionExpired from '@/components/SessionExpired.vue';
-import SubmissionHistory from '@/components/SubmissionHistory.vue';
-import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
-import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
-import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
-import Closures from '@/components/ccfriApplication/Closures.vue';
-import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
-import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
-import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
-import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
-import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
-import Eligibility from '@/components/ccofApplication/family/Eligibility.vue';
-import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
-import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization.vue';
-import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation.vue';
-import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation.vue';
-import GroupFundAmount from '@/components/ccofApplication/group/FundAmount.vue';
-import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
-import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation.vue';
-import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
-import Unauthorized from '@/components/common/Unauthorized.vue';
-import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
-import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
-import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
-import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
-import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
-import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
-import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
-import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
-import ReportChange from '@/components/requestChanges/ReportChanges.vue';
-import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest.vue';
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useAuthStore } from '@/store/auth.js';
-import { useNavBarStore } from '@/store/navBar.js';
 import {
   CHANGE_TYPES,
   NAV_BAR_GROUPS,
@@ -59,8 +8,60 @@ import {
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
+import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation.vue';
+import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
+import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
+import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
+import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
+import CcfriEstimator from '@/components/CcfriEstimator.vue';
+import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
+import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage.vue';
+import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
+import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
+import Closures from '@/components/ccfriApplication/Closures.vue';
+import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
+import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import Eligibility from '@/components/ccofApplication/family/Eligibility.vue';
+import ErrorPage from '@/components/ErrorPage.vue';
+import FacilityInformation from '@/components/ccofApplication/group/FacilityInformation.vue';
+import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
+import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization.vue';
+import GroupFundAmount from '@/components/ccofApplication/group/FundAmount.vue';
+import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation.vue';
+import Impersonate from '@/components/Impersonate.vue';
+import LandingPage from '@/components/LandingPage.vue';
+import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
+import Login from '@/components/Login.vue';
+import LoginError from '@/components/LoginError.vue';
+import Logout from '@/components/Logout.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
+import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
+import MessagesPage from '@/components/MessagesPage.vue';
+import MinistryLogin from '@/components/MinistryLogin.vue';
+import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
+import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
+import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
+import NMF from '@/components/RFI/NMF.vue';
+import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
+import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
+import ReportChange from '@/components/requestChanges/ReportChanges.vue';
 import { SUBTITLE_BANNERS } from '@/utils/constants/SubTitleBanners.js';
+import SearchFacility from '@/components/FacilitySearch.vue';
+import SessionExpired from '@/components/SessionExpired.vue';
+import SubmissionHistory from '@/components/SubmissionHistory.vue';
+import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
+import SummaryDeclarationChangeRequest from '@/components/requestChanges/SummaryDeclarationChangeRequest.vue';
+import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import Unauthorized from '@/components/common/Unauthorized.vue';
+import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
 import { formatFiscalYearName } from '@/utils/format';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useNavBarStore } from '@/store/navBar.js';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -824,6 +825,14 @@ const router = createRouter({
       path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
       name: 'org-facilities',
       component: ManageOrgFacilities,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_USERS,
+      name: 'manage-users',
+      component: ManageUsers,
       meta: {
         requiresAuth: true,
       },
