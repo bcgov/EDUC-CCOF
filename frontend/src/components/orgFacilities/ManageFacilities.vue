@@ -44,6 +44,16 @@
                   <v-row dense>
                     <v-col cols="12" sm="5" xl="4" xxl="3">
                       <p>
+                        <AppLabel>*Funding Type:</AppLabel>
+                      </p>
+                    </v-col>
+                    <v-col cols="12" sm="7" xl="8" xxl="9">
+                      <p>{{ providerType }}</p>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col cols="12" sm="5" xl="4" xxl="3">
+                      <p>
                         <AppLabel>Community Care Facility Licence #:</AppLabel>
                       </p>
                     </v-col>
@@ -54,21 +64,11 @@
                   <v-row dense>
                     <v-col cols="12" sm="5" xl="4" xxl="3">
                       <p>
-                        <AppLabel>Facility Street Address:</AppLabel>
+                        <AppLabel>Facility ID:</AppLabel>
                       </p>
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.addressLineOne }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Province:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.province }}</p>
+                      <p>{{ facility.facilityAccountNumber }}</p>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -86,21 +86,11 @@
                   <v-row dense>
                     <v-col cols="12" sm="5" xl="4" xxl="3">
                       <p>
-                        <AppLabel>*Funding Type:</AppLabel>
+                        <AppLabel>Facility Street Address:</AppLabel>
                       </p>
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ providerType }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Facility ID:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.facilityAccountNumber }}</p>
+                      <p>{{ facility.addressLineOne }}</p>
                     </v-col>
                   </v-row>
                   <v-row dense>
@@ -111,6 +101,16 @@
                     </v-col>
                     <v-col cols="12" sm="7" xl="8" xxl="9">
                       <p>{{ facility.city }}</p>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col cols="12" sm="5" xl="4" xxl="3">
+                      <p>
+                        <AppLabel>Province:</AppLabel>
+                      </p>
+                    </v-col>
+                    <v-col cols="12" sm="7" xl="8" xxl="9">
+                      <p>{{ facility.province }}</p>
                     </v-col>
                   </v-row>
                   <v-row dense>
