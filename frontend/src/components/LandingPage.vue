@@ -211,7 +211,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
+      <v-col cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
@@ -231,7 +231,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
+      <v-col cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Organization and Facilities</p>
@@ -248,7 +248,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 4 : 4">
+      <v-col cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Users</p>
