@@ -18,6 +18,7 @@ import SessionExpired from '@/components/SessionExpired.vue';
 import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
 import Closures from '@/components/ccfriApplication/Closures.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
@@ -824,6 +825,14 @@ const router = createRouter({
       path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
       name: 'org-facilities',
       component: ManageOrgFacilities,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_USERS,
+      name: 'manage-users',
+      component: ManageUsers,
       meta: {
         requiresAuth: true,
       },
