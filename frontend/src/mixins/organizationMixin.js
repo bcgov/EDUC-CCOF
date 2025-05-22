@@ -1,4 +1,4 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, orderBy } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import AppAddressForm from '@/components/guiComponents/AppAddressForm.vue';
@@ -46,7 +46,10 @@ export default {
         if (!this.showApplicationTemplateV1) {
           applicableOrgTypes.push(ORGANIZATION_TYPES.PARTNERSHIP);
         }
-        return this.organizationTypeList.filter((orgType) => applicableOrgTypes.includes(orgType.id));
+        const filteredOrganizationTypes = this.organizationTypeList.filter((orgType) =>
+          applicableOrgTypes.includes(orgType.id),
+        );
+        return orderBy(filteredOrganizationTypes, ['name'], ['desc']);
       }
       return this.organizationTypeList;
     },

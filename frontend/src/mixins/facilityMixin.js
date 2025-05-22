@@ -105,18 +105,14 @@ export default {
       this.facilityModel.email = null;
     },
     populateFacilityAddress() {
-      if (!this.isGroup) {
-        // FAMILY application
-        // TODO (vietle-cgi) - confirm with the business when the Family application is updated.
-        this.facilityModel.postalCode = this.organizationModel?.postalCode1;
-        this.facilityModel.province = this.organizationModel?.province1;
-      } else if (this.facilityModel.isFacilityAddressSameAsOrgStreetAddress) {
-        // GROUP application
-        this.facilityModel.facilityAddress = this.organizationModel?.address2;
-        this.facilityModel.city = this.organizationModel?.city2;
-        this.facilityModel.province = this.organizationModel?.province2;
-        this.facilityModel.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
+      const isFamilyApplicationTemplateVersion1 = !this.isGroup && this.showApplicationTemplateV1;
+      if (!this.facilityModel.isFacilityAddressSameAsOrgStreetAddress && !isFamilyApplicationTemplateVersion1) {
+        return;
       }
+      this.facilityModel.facilityAddress = this.organizationModel?.address2;
+      this.facilityModel.city = this.organizationModel?.city2;
+      this.facilityModel.province = this.organizationModel?.province2;
+      this.facilityModel.postalCode = this.organizationModel?.postalCode2?.replace(/\s/g, '').toUpperCase();
     },
     populateFacilityContact() {
       if (!this.facilityModel.isFacilityContactSameAsOrgContact) return;
@@ -124,6 +120,22 @@ export default {
       this.facilityModel.position = this.organizationModel?.position;
       this.facilityModel.phone = this.organizationModel?.phone;
       this.facilityModel.email = this.organizationModel?.email;
+    },
+    async loadData() {
+      try {
+        this.setIsApplicationProcessing(true);
+        const facilityId = this.$route.params.urlGuid;
+        if (facilityId) {
+          await this.loadFacility(facilityId);
+        } else {
+          this.newFacility();
+        }
+      } catch (error) {
+        console.error(`Failed to get Facility data with error - ${error}`);
+        this.setFailureAlert('An error occurred while loading facility. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
+      }
     },
     previous() {
       const defaultPath = isChangeRequest(this) ? PATHS.ROOT.CHANGE_LANDING : PATHS.ROOT.HOME;
@@ -179,14 +191,9 @@ export default {
           isChangeRequest: isChangeRequest(this),
           changeRequestId: this.$route.params.changeRecGuid,
         });
-        //this.refreshNavBarList();
         this.forceNavBarRefresh();
         if (isSave) {
-          this.setSuccessAlert(
-            this.isGroup
-              ? 'Success! Facility information has been saved.'
-              : 'Success! Eligibility information has been saved.',
-          );
+          this.setSuccessAlert('Success! Facility information has been saved.');
         }
         if (!this.$route.params.urlGuid && isSave) {
           this.$router.push(
