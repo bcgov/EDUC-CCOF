@@ -11,7 +11,7 @@
                     <AppLabel>*Facility Name:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.facilityName }}</p>
                 </v-col>
               </v-row>
@@ -21,7 +21,7 @@
                     <AppLabel>*Funding Type:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ providerType }}</p>
                 </v-col>
               </v-row>
@@ -31,7 +31,7 @@
                     <AppLabel>Community Care Facility Licence #:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.licenseNumber }}</p>
                 </v-col>
               </v-row>
@@ -41,7 +41,7 @@
                     <AppLabel>Facility ID:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.facilityAccountNumber }}</p>
                 </v-col>
               </v-row>
@@ -51,7 +51,7 @@
                     <AppLabel>*Business Phone:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.telephone }}</p>
                 </v-col>
               </v-row>
@@ -63,7 +63,7 @@
                     <AppLabel>Facility Street Address:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.addressLineOne }}</p>
                 </v-col>
               </v-row>
@@ -73,7 +73,7 @@
                     <AppLabel>City/Town:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.city }}</p>
                 </v-col>
               </v-row>
@@ -83,7 +83,7 @@
                     <AppLabel>Province:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.province }}</p>
                 </v-col>
               </v-row>
@@ -93,7 +93,7 @@
                     <AppLabel>Postal Code:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.postalCode }}</p>
                 </v-col>
               </v-row>
@@ -103,7 +103,7 @@
                     <AppLabel>Facility Email Address:</AppLabel>
                   </p>
                 </v-col>
-                <v-col cols="12" sm="7" xl="8" xxl="9">
+                <v-col class="d-flex align-end" cols="12" sm="7" xl="8" xxl="9">
                   <p>{{ facility.email }}</p>
                 </v-col>
               </v-row>
