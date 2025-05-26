@@ -332,6 +332,7 @@ const UserProfileBaseFundingMappings = [
 const OrganizationFacilityMappings = [
   { back: 'accountid', front: 'facilityId' },
   { back: 'name', front: 'facilityName' },
+  { back: 'statuscode', front: 'statusCode' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
@@ -528,6 +529,7 @@ const PdfDocumentMappings = [
 const fundingAgreementMappings = [
   { back: 'ccof_version', front: 'fundingAgreementOrderNumber' }, // null,
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
+  { back: '_ccof_programyear_value', front: 'programYearId' },
 ];
 
 const DocumentsMappings = [

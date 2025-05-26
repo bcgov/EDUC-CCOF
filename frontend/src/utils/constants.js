@@ -491,6 +491,11 @@ export const CLOSURE_TYPES = Object.freeze({
   NON_OPERATIONAL_CLOSURES: 100000002,
 });
 
+export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
+  ACTIVE: 1,
+  INACTIVE: 2,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,

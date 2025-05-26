@@ -25,120 +25,18 @@
       </v-row>
     </template>
     <template v-else>
-      <v-lazy v-for="facility of facilities" :key="facility.facilityId" min-height="150px">
-        <v-row justify="start" no-gutters>
-          <v-col class="mt-2">
-            <v-card variant="outlined" class="soft-outline fill-height px-2">
-              <v-row>
-                <v-col class="py-0" cols="12" md="6">
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>*Facility Name:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.facilityName }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>*Funding Type:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ providerType }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Community Care Facility Licence #:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.licenseNumber }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Facility ID:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.facilityAccountNumber }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>*Business Phone:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.telephone }}</p>
-                    </v-col>
-                  </v-row>
-                </v-col>
-                <v-col class="py-0" cols="12" md="6">
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Facility Street Address:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.addressLineOne }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>City/Town:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.city }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Province:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.province }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Postal Code:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.postalCode }}</p>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col cols="12" sm="5" xl="4" xxl="3">
-                      <p>
-                        <AppLabel>Facility Email Address:</AppLabel>
-                      </p>
-                    </v-col>
-                    <v-col cols="12" sm="7" xl="8" xxl="9">
-                      <p>{{ facility.email }}</p>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-lazy>
+      <v-row>
+        <v-col>
+          <h3>Active Facilities</h3>
+        </v-col>
+      </v-row>
+      <FacilityList :facilities="activeFacilities" />
+      <v-row v-if="inactiveFacilities">
+        <v-col>
+          <h3>Inactive Facilities</h3>
+        </v-col>
+      </v-row>
+      <FacilityList :facilities="inactiveFacilities" />
     </template>
   </v-container>
 </template>
@@ -146,32 +44,34 @@
 import { mapActions, mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
+import { useApplicationStore } from '@/store/application';
 import { useOrganizationStore } from '@/store/ccof/organization';
+import { ORGANIZATION_FACILITY_STATUS_CODES } from '@/utils/constants.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
-import AppLabel from '@/components/guiComponents/AppLabel.vue';
+import FacilityList from '@/components/orgFacilities/FacilityList.vue';
 
 export default {
   name: 'ManageFacilities',
   components: {
-    AppLabel,
+    FacilityList,
   },
   mixins: [alertMixin],
   data() {
     return {
       facilitiesLoading: false,
+      activeFacilities: [],
+      inactiveFacilities: [],
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'organizationProviderType', 'facilities', 'loadedModel']),
+    ...mapState(useOrganizationStore, ['organizationId', 'facilities', 'loadedModel']),
+    ...mapState(useApplicationStore, ['programYearId']),
     skeletons() {
       if (this.loadedModel.numberOfFacilities > 10) {
         return 10;
       }
       return this.loadedModel.numberOfFacilities;
-    },
-    providerType() {
-      return `${this.organizationProviderType[0]}${this.organizationProviderType.slice(1).toLowerCase()}`;
     },
   },
   async mounted() {
@@ -179,6 +79,8 @@ export default {
       if (isEmpty(this.facilities)) {
         this.facilitiesLoading = true;
         await this.loadFacilities(this.organizationId);
+        this.activeFacilities = this.facilities.filter(this.facilityIsActive);
+        this.inactiveFacilities = this.facilities.filter((facility) => !this.facilityIsActive(facility));
       }
     } catch (error) {
       this.setFailureAlert('There was an error loading the facilities');
@@ -189,6 +91,14 @@ export default {
   },
   methods: {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
+    facilityIsActive(facility) {
+      const includedInProgramYear = facility.fundingAgreements.some((fa) => fa.programYearId === this.programYearId);
+      return (
+        !isEmpty(facility.facilityAccountNumber) &&
+        includedInProgramYear &&
+        facility.statusCode === ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE
+      );
+    },
   },
 };
 </script>

@@ -6,6 +6,7 @@ const { MappableObjectForFront, MappableObjectForBack } = require('../util/mappi
 const { OrganizationMappings, OrganizationFacilityMappings, CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
+const { fundingAgreementMappings } = require('../util/mapping/Mappings');
 
 async function getOrganization(req, res) {
   try {
@@ -25,7 +26,9 @@ async function getOrganization(req, res) {
 async function getFacilitiesByOrgId(orgId) {
   const operation =
     'accounts?$select=name,address1_city,address1_line1,address1_line2,address1_stateorprovince,address1_postalcode,' +
-    `telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber&$filter=_parentaccountid_value eq ${orgId}`;
+    'telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber,statuscode' +
+    `&$filter=_parentaccountid_value eq ${orgId}` +
+    '&$expand=ccof_funding_agreement_facility_account($orderby=createdon desc)';
   return getOperation(operation);
 }
 
@@ -34,6 +37,9 @@ async function getOrganizationFacilities(req, res) {
     const facilitiesData = await getFacilitiesByOrgId(req.params.organizationId);
     const facilities = facilitiesData.value.map((facility) => {
       let mappedFacility = new MappableObjectForFront(facility, OrganizationFacilityMappings);
+      mappedFacility.data.fundingAgreements = facility.ccof_funding_agreement_facility_account.map((fa) => {
+        return new MappableObjectForFront(fa, fundingAgreementMappings).data;
+      });
       return mappedFacility;
     });
     return res.status(HttpStatus.OK).json(facilities);
