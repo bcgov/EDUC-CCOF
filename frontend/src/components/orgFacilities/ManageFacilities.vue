@@ -9,7 +9,7 @@
       <v-col>
         <h2>Facility Details</h2>
         <p class="mt-2">
-          <v-icon>mdi-information</v-icon>
+          <v-icon class="noticeInfoIcon">mdi-information</v-icon>
           Note: The information marked with * will be shared on Child Care Map. Please do not include any personal
           information.
         </p>
