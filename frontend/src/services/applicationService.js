@@ -169,11 +169,11 @@ export default {
       'licenceCategoryNumber',
       'maxDaysPerWeek',
       'maxWeeksPerYear',
-      'hasClosedMonth',
       'hoursFrom',
       'hoursTo',
-      'maxSpaces',
+      'hasClosedMonth',
       'maxLicensesCapacity',
+      'maxSpaces',
       'isExtendedHours',
     ];
     if (funding.isExtendedHours) {
@@ -192,13 +192,14 @@ export default {
   isCCOFCompleteFamilyV2(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
+      'licenceCategoryNumber',
       'maxDaysPerWeek',
       'maxWeeksPerYear',
       'hoursFrom',
       'hoursTo',
-      'maxSpaces',
-      'maxLicensesCapacity',
       'hasClosedMonth',
+      'maxLicensesCapacity',
+      'maxSpaces',
       'isExtendedHours',
     ];
     const areFieldsValid =
