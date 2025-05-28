@@ -44,3 +44,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* This is the default framework behavior that was somehow allowed to be overriden in CcfriEstimator.vue */
+:deep(.v-card) {
+  overflow-wrap: break-word;
+}
+</style>
