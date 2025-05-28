@@ -17,9 +17,12 @@
                 :rules="rules.required"
                 label="Licence type"
               >
-                <v-radio label="Family child care" value="7" />
-                <v-radio label="In-Home Multi-Age Child Care" value="6" />
-                <v-radio label="Multi-Age Care" value="5" />
+                <v-radio label="Family child care" :value="FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE" />
+                <v-radio
+                  label="In-Home Multi-Age Child Care"
+                  :value="FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE"
+                />
+                <v-radio label="Multi-Age Care" :value="FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE" />
               </v-radio-group>
             </v-col>
           </v-row>

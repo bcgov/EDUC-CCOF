@@ -166,7 +166,7 @@ export default {
   isCCOFCompleteFamilyV1(funding) {
     if (isEmpty(funding)) return false;
     const requiredFields = [
-      'familyLicenseType',
+      'licenceCategoryNumber',
       'maxDaysPerWeek',
       'maxWeeksPerYear',
       'hasClosedMonth',
