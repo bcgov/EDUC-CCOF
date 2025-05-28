@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getOrganization, createOrganization, updateOrganization, getOrganizationFacilities } = require('../components/organization');
+const { createOrganization, getOrganization, getOrganizationFacilities, updateOrganization } = require('../components/organization');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
