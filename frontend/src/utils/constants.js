@@ -489,6 +489,12 @@ export const CLOSURE_TYPES = Object.freeze({
   NON_OPERATIONAL_CLOSURES: 100000002,
 });
 
+export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
+  MULTI_AGE_CHILD_CARE: 5,
+  IN_HOME_MULTI_AGE_CHILD_CARE: 6,
+  FAMILY_CHILD_CARE: 7,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,

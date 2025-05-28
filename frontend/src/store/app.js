@@ -181,5 +181,13 @@ export const useAppStore = defineStore('app', {
         return healthAuthorityName?.description;
       };
     },
+    getFamilyLicenceCategoryNumberById: (state) => {
+      return (id) => {
+        const licenceCategory = state.lookupInfo?.familyLicenseCategory?.find(
+          (item) => item.ccof_license_categoryid === id,
+        );
+        return licenceCategory?.ccof_categorynumber;
+      };
+    },
   },
 });

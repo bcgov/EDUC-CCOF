@@ -67,6 +67,12 @@ function mapFacility(facility, isGroup, eceweOrg) {
     (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
   );
 
+  if (!isGroup) {
+    facility.funding.licenceCategoryNumber = appStore.getFamilyLicenceCategoryNumberById(
+      facility.funding.licenceCategoryId,
+    );
+  }
+
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
     const ccofProgramYearId = applicationStore.programYearId;

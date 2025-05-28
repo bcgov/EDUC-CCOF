@@ -12,6 +12,7 @@ import {
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_SECTOR_TYPES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
+  FAMILY_LICENCE_CATEGORIES,
   MAX_NUMBER_OF_PARTNERS,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
@@ -157,11 +158,68 @@ export default {
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
-    // TODO (vietle-cgi) - add Family Application validation
     if (showApplicationTemplateV1(applicationTemplateVersion)) {
-      return isGroup ? this.isCCOFCompleteGroupV1(funding) : true;
+      return isGroup ? this.isCCOFCompleteGroupV1(funding) : this.isCCOFCompleteFamilyV1(funding);
     }
-    return isGroup ? this.isCCOFCompleteGroupV2(funding) : true;
+    return isGroup ? this.isCCOFCompleteGroupV2(funding) : this.isCCOFCompleteFamilyV2(funding);
+  },
+  isCCOFCompleteFamilyV1(funding) {
+    if (isEmpty(funding)) return false;
+    const requiredFields = [
+      'familyLicenseType',
+      'maxDaysPerWeek',
+      'maxWeeksPerYear',
+      'hasClosedMonth',
+      'hoursFrom',
+      'hoursTo',
+      'maxSpaces',
+      'maxLicensesCapacity',
+      'isExtendedHours',
+    ];
+    if (funding.isExtendedHours) {
+      requiredFields.push('maxCapacityExtended', 'maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
+    }
+    const areFieldsValid =
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended));
+    return !hasEmptyFields(funding, requiredFields) && areFieldsValid && isExtendedChildCareValid;
+  },
+  isCCOFCompleteFamilyV2(funding) {
+    if (isEmpty(funding)) return false;
+    const requiredFields = [
+      'maxDaysPerWeek',
+      'maxWeeksPerYear',
+      'hoursFrom',
+      'hoursTo',
+      'maxSpaces',
+      'maxLicensesCapacity',
+      'hasClosedMonth',
+      'isExtendedHours',
+    ];
+    const areFieldsValid =
+      funding.maxLicensesCapacity > 0 &&
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedCCMaximumSpacesValid = this.isFamilyExtendedCCMaximumSpacesValid(
+      funding,
+      funding.licenceCategoryNumber,
+    );
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended) &&
+        isExtendedCCMaximumSpacesValid);
+    const isClosedMonthsValid =
+      !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
+    return (
+      !hasEmptyFields(funding, requiredFields) && areFieldsValid && isClosedMonthsValid && isExtendedChildCareValid
+    );
   },
   isCCOFCompleteGroupV1(funding) {
     if (isEmpty(funding)) return false;
@@ -301,6 +359,68 @@ export default {
   },
   isMultiAgeExtendedChildCareValid(funding) {
     return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
+  },
+  isFamilyExtendedCCMaximumSpacesValid(funding, licenceCategoryNumber) {
+    if (isEmpty(funding) || !licenceCategoryNumber) return false;
+    const maxExtendedCC4OrLess = funding.maxLicensesCapacity * 2;
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return (
+          funding.familyExtendedCC4OrLess <= maxExtendedCC4OrLess &&
+          funding.familyExtendedCC4OrMore <= funding.maxLicensesCapacity &&
+          funding.familyExtendedCC4OrLess + funding.familyExtendedCC4OrMore > 0
+        );
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return (
+          funding.inHomeMultiAgeExtendedCC4OrLess <= maxExtendedCC4OrLess &&
+          funding.inHomeMultiAgeExtendedCC4OrMore <= funding.maxLicensesCapacity &&
+          funding.inHomeMultiAgeExtendedCC4OrLess + funding.inHomeMultiAgeExtendedCC4OrMore > 0
+        );
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return (
+          funding.multiAgeCare4OrLess <= maxExtendedCC4OrLess &&
+          funding.multiAgeCare4more <= funding.maxLicensesCapacity &&
+          funding.multiAgeCare4OrLess + funding.multiAgeCare4more > 0
+        );
+      default:
+        return false;
+    }
+  },
+  getFieldNameOfMaxSpaces4OrLessExtendedCC(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'familyExtendedCC4OrLess';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'inHomeMultiAgeExtendedCC4OrLess';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'multiAgeCare4OrLess';
+      default:
+        return null;
+    }
+  },
+  getFieldNameOfMaxSpaces4OrMoreExtendedCC(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'familyExtendedCC4OrMore';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'inHomeMultiAgeExtendedCC4OrMore';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'multiAgeCare4more';
+      default:
+        return null;
+    }
+  },
+  getFamilyLicenceCategoryNameByNumber(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'Family Child Care';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'In-Home Multi-Age Child Care';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'Multi-Age Child Care';
+      default:
+        return '';
+    }
   },
 
   // LICENCE UPLOAD VALIDATIONS
