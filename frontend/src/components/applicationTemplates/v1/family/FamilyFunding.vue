@@ -78,7 +78,7 @@
 
           <v-row v-show="fundingModel.hasClosedMonth">
             <v-col>
-              <label>If YES, check all the applicable months:</label>
+              <p>If YES, check all the applicable months:</p>
             </v-col>
           </v-row>
 
@@ -244,7 +244,7 @@
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'maxSpaces')"
               />
-              <label>Note: DO NOT include any children living in your home, under the age of 12.</label>
+              <p>Note: DO NOT include any children living in your home, under the age of 12.</p>
             </v-col>
             <v-col cols="12" md="6">
               <v-text-field
@@ -260,7 +260,7 @@
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'maxLicensesCapacity')"
                 @change="$refs.form?.validate()"
               />
-              <label>(as indicated on your Community care and assisted Living Act Licence)</label>
+              <p>(as indicated on your Community care and assisted Living Act Licence)</p>
             </v-col>
           </v-row>
         </v-container>

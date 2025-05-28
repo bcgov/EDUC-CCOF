@@ -212,7 +212,6 @@ export default {
         resetValues(this.fundingModel, FAMILY_CC_FIELDS);
         resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
       }
-      console.log(this.fundingModel);
     },
 
     resetSelectedClosedMonths() {
