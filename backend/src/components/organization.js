@@ -3,10 +3,9 @@ const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, get
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { OrganizationMappings, OrganizationFacilityMappings, CCOFApplicationFundingMapping } = require('../util/mapping/Mappings');
+const { OrganizationMappings, OrganizationFacilityMappings, FundingAgreementMappings } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
-const { fundingAgreementMappings } = require('../util/mapping/Mappings');
 
 async function getOrganization(req, res) {
   try {
@@ -38,7 +37,7 @@ async function getOrganizationFacilities(req, res) {
     const facilities = facilitiesData.value.map((facility) => {
       let mappedFacility = new MappableObjectForFront(facility, OrganizationFacilityMappings);
       mappedFacility.data.fundingAgreements = facility.ccof_funding_agreement_facility_account.map((fa) => {
-        return new MappableObjectForFront(fa, fundingAgreementMappings).data;
+        return new MappableObjectForFront(fa, FundingAgreementMappings).data;
       });
       return mappedFacility;
     });

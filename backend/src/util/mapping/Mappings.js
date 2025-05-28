@@ -526,7 +526,7 @@ const PdfDocumentMappings = [
   { back: 'filesize', front: 'fileSize' },
 ];
 
-const fundingAgreementMappings = [
+const FundingAgreementMappings = [
   { back: 'ccof_version', front: 'fundingAgreementOrderNumber' }, // null,
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
   { back: '_ccof_programyear_value', front: 'programYearId' },
@@ -582,5 +582,5 @@ module.exports = {
   ApplicationSummaryCcfriMappings,
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
-  fundingAgreementMappings,
+  FundingAgreementMappings,
 };
