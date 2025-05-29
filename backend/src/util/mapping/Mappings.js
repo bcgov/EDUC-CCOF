@@ -37,6 +37,7 @@ const OrganizationMappings = [
   { back: 'ccof_partner4middlename', front: 'partner4MiddleName' },
   { back: 'ccof_partner4lastname', front: 'partner4LastName' },
   { back: 'ccof_organizationwebsiteurl', front: 'website' },
+  { back: 'ccof_numberoffacilities', front: 'numberOfFacilities' },
 ];
 
 const FacilityMappings = [
@@ -256,6 +257,8 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_application_basefundingid', front: 'ccofBaseFundingId' },
+
+  { back: 'ccof_providertype@OData.Community.Display.V1.FormattedValue', front: 'providerType' },
 ];
 
 const ECEWEApplicationMappings = [
@@ -329,9 +332,17 @@ const UserProfileBaseFundingMappings = [
 const OrganizationFacilityMappings = [
   { back: 'accountid', front: 'facilityId' },
   { back: 'name', front: 'facilityName' },
+  { back: 'statuscode', front: 'statusCode' },
   { back: 'accountnumber', front: 'facilityAccountNumber' },
   { back: 'ccof_formcomplete', front: 'isFacilityComplete' },
   { back: 'ccof_facilitylicencenumber', front: 'licenseNumber' },
+  { back: 'telephone1', front: 'telephone' },
+  { back: 'emailaddress1', front: 'email' },
+  { back: 'address1_line1', front: 'addressLineOne' },
+  { back: 'address1_line2', front: 'addressLineTwo' },
+  { back: 'address1_city', front: 'city' },
+  { back: 'address1_stateorprovince', front: 'province' },
+  { back: 'address1_postalcode', front: 'postalCode' },
 ];
 
 const ClosureMappings = [
@@ -515,9 +526,10 @@ const PdfDocumentMappings = [
   { back: 'filesize', front: 'fileSize' },
 ];
 
-const fundingAgreementMappings = [
+const FundingAgreementMappings = [
   { back: 'ccof_version', front: 'fundingAgreementOrderNumber' }, // null,
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
+  { back: '_ccof_programyear_value', front: 'programYearId' },
 ];
 
 const DocumentsMappings = [
@@ -570,5 +582,5 @@ module.exports = {
   ApplicationSummaryCcfriMappings,
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
-  fundingAgreementMappings,
+  FundingAgreementMappings,
 };

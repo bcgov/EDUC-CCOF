@@ -125,7 +125,6 @@ export const useOrganizationStore = defineStore('organization', {
         throw error;
       }
     },
-
     async loadOrganization(organizationId) {
       checkSession();
 

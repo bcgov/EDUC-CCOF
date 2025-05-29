@@ -14,8 +14,6 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
-  CHANGE_REQUEST_STATUS_CODES,
-  CHANGE_REQUEST_EXTERNAL_STATUS_CODES,
 } = require('../util/constants');
 const {
   UserProfileFacilityMappings,
@@ -24,8 +22,7 @@ const {
   UserProfileApplicationMappings,
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
-  UserProfileChangeRequestNewFacilityMappings,
-  fundingAgreementMappings,
+  FundingAgreementMappings,
 } = require('../util/mapping/Mappings');
 const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -131,7 +128,7 @@ async function getUserInfo(req, res) {
           fundingAgreementForFront = fundingAgreementObj;
         }
       }
-      fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, fundingAgreementMappings).data;
+      fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, FundingAgreementMappings).data;
       application = { ...application, ...fundingAgreementForFront };
 
       applicationList.push(application);
