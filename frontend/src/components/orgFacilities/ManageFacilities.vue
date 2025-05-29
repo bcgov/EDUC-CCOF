@@ -52,6 +52,8 @@ import OrganizationService from '@/services/organizationService.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import FacilityList from '@/components/orgFacilities/FacilityList.vue';
 
+const MAX_SKELETONS = 10;
+
 export default {
   name: 'ManageFacilities',
   components: {
@@ -62,15 +64,14 @@ export default {
     return {
       facilitiesLoading: false,
       facilities: [],
-      maximumSkeletons: 10,
     };
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId', 'loadedModel']),
     ...mapState(useApplicationStore, ['programYearId']),
     skeletons() {
-      if (this.loadedModel.numberOfFacilities > this.maximumSkeletons) {
-        return this.maximumSkeletons;
+      if (this.loadedModel.numberOfFacilities > MAX_SKELETONS) {
+        return MAX_SKELETONS;
       }
       return this.loadedModel.numberOfFacilities;
     },
