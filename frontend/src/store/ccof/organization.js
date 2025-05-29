@@ -20,7 +20,6 @@ export const useOrganizationStore = defineStore('organization', {
     isOrganizationComplete: false,
     organizationModel: {},
     loadedModel: {},
-    facilities: [],
   }),
   actions: {
     setOrganizationId(organizationId) {
@@ -126,7 +125,6 @@ export const useOrganizationStore = defineStore('organization', {
         throw error;
       }
     },
-
     async loadOrganization(organizationId) {
       checkSession();
 
@@ -137,17 +135,6 @@ export const useOrganizationStore = defineStore('organization', {
         this.setIsOrganizationComplete(response.data?.isOrganizationComplete);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
-        throw error;
-      }
-    },
-    async loadFacilities(organizationId) {
-      checkSession();
-
-      try {
-        const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}/facilities`);
-        this.facilities = response.data;
-      } catch (error) {
-        console.log(`Failed to get facilities - ${error}`);
         throw error;
       }
     },

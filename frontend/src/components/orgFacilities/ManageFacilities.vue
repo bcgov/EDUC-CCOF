@@ -47,6 +47,7 @@ import { isEmpty } from 'lodash';
 import { useApplicationStore } from '@/store/application';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import { ORGANIZATION_FACILITY_STATUS_CODES } from '@/utils/constants.js';
+import OrganizationService from '@/services/organizationService.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import FacilityList from '@/components/orgFacilities/FacilityList.vue';
@@ -60,27 +61,31 @@ export default {
   data() {
     return {
       facilitiesLoading: false,
-      activeFacilities: [],
-      inactiveFacilities: [],
+      facilities: [],
+      maximumSkeletons: 10,
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'facilities', 'loadedModel']),
+    ...mapState(useOrganizationStore, ['organizationId', 'loadedModel']),
     ...mapState(useApplicationStore, ['programYearId']),
     skeletons() {
-      if (this.loadedModel.numberOfFacilities > 10) {
-        return 10;
+      if (this.loadedModel.numberOfFacilities > this.maximumSkeletons) {
+        return this.maximumSkeletons;
       }
       return this.loadedModel.numberOfFacilities;
+    },
+    activeFacilities() {
+      return this.facilities.filter(this.facilityIsActive);
+    },
+    inactiveFacilities() {
+      return this.facilities.filter((facility) => !this.facilityIsActive(facility));
     },
   },
   async mounted() {
     try {
       if (isEmpty(this.facilities)) {
         this.facilitiesLoading = true;
-        await this.loadFacilities(this.organizationId);
-        this.activeFacilities = this.facilities.filter(this.facilityIsActive);
-        this.inactiveFacilities = this.facilities.filter((facility) => !this.facilityIsActive(facility));
+        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
       }
     } catch (error) {
       this.setFailureAlert('There was an error loading the facilities');
