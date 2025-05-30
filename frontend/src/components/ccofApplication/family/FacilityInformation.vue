@@ -28,7 +28,9 @@ export default {
   components: { Eligibility, FacilityInformationV2 },
   mixins: [facilityMixin],
   async beforeRouteLeave(_to, _from, next) {
-    await this.save(false);
+    if (this.$route.params.urlGuid) {
+      await this.save(false);
+    }
     next();
   },
   async created() {

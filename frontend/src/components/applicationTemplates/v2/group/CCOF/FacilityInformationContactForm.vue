@@ -63,7 +63,7 @@
       </v-row>
     </template>
 
-    <template v-else>
+    <template v-else-if="facilityModel.isFacilityContactSameAsOrgContact === false">
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field

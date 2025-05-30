@@ -64,7 +64,7 @@
     </div>
 
     <AppAddressForm
-      v-else
+      v-else-if="facilityModel.isFacilityAddressSameAsOrgStreetAddress === false"
       :disabled="isLocked"
       :manual-entry="facilityModel.isFacilityAddressEnteredManually"
       :address="facilityModel.facilityAddress"
