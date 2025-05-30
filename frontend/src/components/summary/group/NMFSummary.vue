@@ -1,7 +1,11 @@
 <template>
   <v-form ref="nmfSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <SummaryExpansionPanelTitle title="NMF" :loading="isApplicationProcessing" :is-complete="isValidForm" />
+      <SummaryExpansionPanelTitle
+        title="New, New-to-CCFRI, and Modified Facilities (NMF)"
+        :loading="isApplicationProcessing"
+        :is-complete="isValidForm"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <div>
