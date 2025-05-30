@@ -31,7 +31,7 @@
         </v-col>
       </v-row>
       <FacilityList :facilities="activeFacilities" />
-      <v-row v-if="inactiveFacilities">
+      <v-row>
         <v-col>
           <h3>Inactive Facilities</h3>
         </v-col>
@@ -79,7 +79,9 @@ export default {
       return this.facilities.filter(this.facilityIsActive);
     },
     inactiveFacilities() {
-      return this.facilities.filter((facility) => !this.facilityIsActive(facility));
+      return this.facilities.filter(
+        (facility) => !this.facilityIsActive(facility) && !isEmpty(facility.facilityAccountNumber),
+      );
     },
   },
   async mounted() {

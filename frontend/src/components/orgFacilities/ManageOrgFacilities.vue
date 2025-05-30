@@ -1,6 +1,10 @@
 <template>
   <v-container fluid class="pa-12">
-    <h1 class="mb-6">Organization and Facilities</h1>
+    <h1>Organization and Facilities</h1>
+    <p class="mb-6">
+      <b>{{ organizationName }}</b> <br />
+      ID: {{ organizationAccountNumber }}
+    </p>
     <v-row>
       <v-col>
         <v-card>
@@ -27,7 +31,10 @@
   </v-container>
 </template>
 <script>
+import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
+
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
@@ -42,12 +49,18 @@ export default {
       PATHS,
     };
   },
+  computed: {
+    ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
+  },
 };
 </script>
 
 <style scoped>
-/* This is the default framework behavior that was somehow allowed to be overriden in CcfriEstimator.vue */
+/* These are default framework settings that was somehow allowed to be overriden in CcfriEstimator.vue */
 :deep(.v-card) {
   overflow-wrap: break-word;
+}
+:deep(h1) {
+  font-size: 2em;
 }
 </style>

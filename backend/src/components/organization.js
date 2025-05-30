@@ -24,9 +24,8 @@ async function getOrganization(req, res) {
 
 async function getFacilitiesByOrgId(orgId) {
   const operation =
-    'accounts?$select=name,address1_city,address1_line1,address1_line2,address1_stateorprovince,address1_postalcode,' +
-    'telephone1,emailaddress1,ccof_facilitylicencenumber,accountnumber,statuscode' +
-    `&$filter=_parentaccountid_value eq ${orgId}` +
+    'accounts?$select=name,address1_city,address1_line1,ccof_facilitylicencenumber,accountnumber,statuscode' +
+    `&$filter=_parentaccountid_value eq ${orgId} and accountnumber ne null` +
     '&$expand=ccof_funding_agreement_facility_account($orderby=createdon desc)';
   return getOperation(operation);
 }

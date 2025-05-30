@@ -530,6 +530,7 @@ const FundingAgreementMappings = [
   { back: 'ccof_version', front: 'fundingAgreementOrderNumber' }, // null,
   { back: 'ccof_name', front: 'fundingAgreementNumber' }, // null,
   { back: '_ccof_programyear_value', front: 'programYearId' },
+  { back: 'ccof_end_date', front: 'endDate' },
 ];
 
 const DocumentsMappings = [
