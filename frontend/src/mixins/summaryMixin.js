@@ -30,7 +30,7 @@ export default {
   components: { NavButton, SummaryExpansionPanelTitle },
   mixins: [alertMixin],
   computed: {
-    ...mapState(useAppStore, ['getLanguageYearLabel']),
+    ...mapState(useAppStore, ['getFamilyLicenceCategoryNumberById', 'getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationProcessing',

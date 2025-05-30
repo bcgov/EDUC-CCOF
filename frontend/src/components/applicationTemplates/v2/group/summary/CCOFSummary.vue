@@ -570,7 +570,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareUnder36)]"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareUnder36 * 2)]"
                     :hide-details="isValidForm"
                     readonly
                   />
@@ -600,7 +600,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCare36)]"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCare36 * 2)]"
                     :hide-details="isValidForm"
                     readonly
                   />
@@ -632,7 +632,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareSchool)]"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareSchool * 2)]"
                     :hide-details="isValidForm"
                     readonly
                   />
@@ -662,7 +662,7 @@
                     density="compact"
                     flat
                     variant="solo"
-                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareMultiAge)]"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxGroupChildCareMultiAge * 2)]"
                     :hide-details="isValidForm"
                     readonly
                   />
@@ -695,7 +695,7 @@
 import ApplicationService from '@/services/applicationService';
 import summaryMixin from '@/mixins/summaryMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
+import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'CCOFSummary',
@@ -743,25 +743,12 @@ export default {
       );
     },
     routingPath() {
-      if (
-        !this.funding.ccofBaseFundingId &&
-        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
-      ) {
-        return pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else if (
-        this.funding.ccofBaseFundingId &&
-        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
-      ) {
-        pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
-      } else if (this.isChangeRequest) {
+      if (this.isChangeRequest) {
         return changeUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.changeRecGuid, this.funding.ccofBaseFundingId);
-      } else if (
-        this.funding.ccofBaseFundingId &&
-        this.summaryModel.application.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
-      ) {
-        return pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
       }
-      return pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
+      return this.funding.ccofBaseFundingId
+        ? pcfUrlGuid(PATHS.CCOF_GROUP_FUNDING, this.programYearId, this.funding.ccofBaseFundingId)
+        : pcfUrl(PATHS.CCOF_GROUP_FACILITY, this.programYearId);
     },
     showSchoolPropertyQuestion() {
       return this.funding?.maxGroupChildCareSchool > 0;

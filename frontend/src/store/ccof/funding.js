@@ -24,17 +24,16 @@ export const useFundingStore = defineStore('funding', {
       checkSession();
       if (isEqual(this.fundingModel, this.loadedModel)) return;
       this.setLoadedModel(this.fundingModel);
-      const response = await ApiService.apiAxios.put(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`, this.fundingModel);
+      const payload = { ...this.fundingModel };
+      delete payload.licenceCategoryId;
+      const response = await ApiService.apiAxios.put(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`, payload);
       return response;
     },
     async loadFunding(fundingId) {
       try {
         checkSession();
         const model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
-        // TODO (vietle-cgi) - review this function when working on Family Application changes
-        if (model.familyLicenseType) {
-          model.familyLicenseType = String(model.familyLicenseType);
-        }
+        model.familyLicenseType = model.familyLicenseType ? Number(model.familyLicenseType) : null;
         this.setFundingModel(model);
         this.setLoadedModel(model);
       } catch (error) {
