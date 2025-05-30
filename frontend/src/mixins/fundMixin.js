@@ -93,12 +93,6 @@ export default {
     isMultiAgeExtendedChildCareValid() {
       return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
     },
-    isFamilyExtendedCCMaximumSpacesValid() {
-      return ApplicationService.isFamilyExtendedCCMaximumSpacesValid(
-        this.fundingModel,
-        this.fundingModel.familyLicenseType,
-      );
-    },
     isFormComplete() {
       if (this.showApplicationTemplateV1) {
         return this.fundingModel.isCCOFComplete;
@@ -106,11 +100,12 @@ export default {
       const isClosedMonthsValid =
         !this.fundingModel.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
       if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
-        const licenceCategoryNumber = this.getFamilyLicenceCategoryNumberById(this.fundingModel.licenceCategoryId);
-        const isExtendedCCMaximumSpacesValid = ApplicationService.isFamilyExtendedCCMaximumSpacesValid(
-          this.fundingModel,
-          licenceCategoryNumber,
-        );
+        const licenceCategoryNumber = this.fundingModel.familyLicenseType
+          ? this.fundingModel.familyLicenseType
+          : this.getFamilyLicenceCategoryNumberById(this.fundingModel.licenceCategoryId);
+        const isExtendedCCMaximumSpacesValid =
+          this.fundingModel.isExtendedHours === 0 ||
+          ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.fundingModel, licenceCategoryNumber);
         return this.fundingModel.isCCOFComplete && isClosedMonthsValid && isExtendedCCMaximumSpacesValid;
       }
       return (

@@ -347,7 +347,7 @@
                 />
                 <v-row v-if="item.ccof_categorynumber === fundingModel.familyLicenseType">
                   <v-col cols="12" lg="6" class="py-0">
-                    <v-card-subtitle><strong>4 hours or less extended child care</strong></v-card-subtitle>
+                    <p class="pl-4"><strong>4 hours or less extended child care</strong></p>
                     <v-text-field
                       v-model.number="fundingModel[maxSpaces4OrLessExtendedCC]"
                       :disabled="isLocked"
@@ -363,7 +363,7 @@
                     />
                   </v-col>
                   <v-col cols="12" lg="6" class="py-0">
-                    <v-card-subtitle><strong>Over 4 hours extended child care</strong></v-card-subtitle>
+                    <p class="pl-4"><strong>Over 4 hours extended child care</strong></p>
                     <v-text-field
                       v-model.number="fundingModel[maxSpaces4OrMoreExtendedCC]"
                       :disabled="isLocked"
