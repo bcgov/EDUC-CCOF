@@ -25,7 +25,7 @@
             variant="outlined"
             :rules="rules.required"
             label="Facility Street Address"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
       </v-row>
@@ -37,7 +37,7 @@
             variant="outlined"
             :rules="rules.required"
             label="City/Town"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
         <v-col cols="12" sm="6" md="4">
@@ -47,7 +47,7 @@
             readonly
             label="Province"
             variant="outlined"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
         <v-col cols="12" md="4">
@@ -57,7 +57,7 @@
             variant="outlined"
             :rules="[...rules.required, ...rules.postalCode]"
             label="Postal Code"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
       </v-row>
@@ -97,9 +97,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.disabled-field {
-  pointer-events: none;
-}
-</style>

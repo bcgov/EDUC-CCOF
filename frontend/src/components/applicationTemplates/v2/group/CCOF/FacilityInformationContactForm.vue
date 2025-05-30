@@ -23,7 +23,7 @@
             readonly
             variant="outlined"
             label="Facility Contact Name"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
         <v-col cols="12" md="6">
@@ -34,7 +34,7 @@
             variant="outlined"
             label="Position"
             placeholder="Position (e.g., owner, manager)"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
       </v-row>
@@ -47,7 +47,7 @@
             readonly
             variant="outlined"
             label="Facility Phone Number"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
         <v-col cols="12" md="6">
@@ -57,7 +57,7 @@
             readonly
             variant="outlined"
             label="Facility Email Address"
-            class="disabled-field"
+            class="pointer-events-none"
           />
         </v-col>
       </v-row>
@@ -117,9 +117,3 @@ export default {
   mixins: [facilityMixin],
 };
 </script>
-
-<style scoped>
-.disabled-field {
-  pointer-events: none;
-}
-</style>

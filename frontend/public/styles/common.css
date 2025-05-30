@@ -162,6 +162,10 @@ input[type="number"] {
   background-color: #e5e4e4;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .span-label {
   color: #636262;
   font-style: normal;
