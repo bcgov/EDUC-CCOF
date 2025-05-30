@@ -455,16 +455,12 @@ export default {
     hasNoMonthClosed() {
       return ApplicationService.hasNoMonthClosed(this.funding);
     },
-    isFamilyExtendedCCMaximumSpacesValid() {
-      return ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.funding, this.licenceCategoryNumber);
-    },
     isFormComplete() {
       const isClosedMonthsValid = !this.funding?.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
-      return (
-        this.isValidForm &&
-        isClosedMonthsValid &&
-        (this.funding?.isExtendedHours === 0 || this.isFamilyExtendedCCMaximumSpacesValid)
-      );
+      const isExtendedChildCareValid =
+        this.funding?.isExtendedHours === 0 ||
+        ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.funding, this.licenceCategoryNumber);
+      return this.isValidForm && isClosedMonthsValid && isExtendedChildCareValid;
     },
   },
   mounted() {
