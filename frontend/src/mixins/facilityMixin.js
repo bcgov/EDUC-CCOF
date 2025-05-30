@@ -125,6 +125,9 @@ export default {
       try {
         this.setIsApplicationProcessing(true);
         const facilityId = this.$route.params.urlGuid;
+        if (isEmpty(this.organizationModel)) {
+          await this.loadOrganization(this.organizationId);
+        }
         if (facilityId) {
           await this.loadFacility(facilityId);
         } else {
@@ -182,9 +185,6 @@ export default {
       try {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
-        if (isEmpty(this.organizationModel)) {
-          await this.loadOrganization(this.organizationId);
-        }
         this.populateFacilityAddress();
         this.populateFacilityContact();
         await this.saveFacility({
