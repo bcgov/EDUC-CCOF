@@ -28,7 +28,7 @@
             Please enter your Project ID, Funding Program, and Application Date. If you are not sure what your Project
             ID is, call Child Care Capital and Community Services at 1-888-338-6622 (Option 5).
           </p>
-          <p v-if="nmfApp?.supportNeedsComments" class="break-word">{{ nmfApp?.supportNeedsComments }}</p>
+          <p v-if="nmfApp?.supportNeedsComments" class="break-word pt-2">{{ nmfApp?.supportNeedsComments }}</p>
           <v-text-field
             v-else
             placeholder="Required"
@@ -59,7 +59,9 @@
         />
         <template v-if="nmfApp?.lowIncomeFamilies">
           <p class="summary-label">Please describe the service(s) and associated expenses.</p>
-          <p v-if="nmfApp?.lowIncomeFamiliesComments" class="break-word">{{ nmfApp?.lowIncomeFamiliesComments }}</p>
+          <p v-if="nmfApp?.lowIncomeFamiliesComments" class="break-word pt-2">
+            {{ nmfApp?.lowIncomeFamiliesComments }}
+          </p>
           <v-text-field
             v-else
             placeholder="Required"
@@ -90,7 +92,9 @@
         />
         <template v-if="nmfApp?.remoteCommunities">
           <p class="summary-label">Please describe the service(s) and associated expenses.</p>
-          <p v-if="nmfApp?.remoteCommunitiesComments" class="break-word">{{ nmfApp?.remoteCommunitiesComments }}</p>
+          <p v-if="nmfApp?.remoteCommunitiesComments" class="break-word pt-2">
+            {{ nmfApp?.remoteCommunitiesComments }}
+          </p>
           <v-text-field
             v-else
             placeholder="Required"
@@ -110,7 +114,7 @@
           fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
           <a :href="getFundingUrl(programYearId)" target="_blank">Funding Guidelines.</a>
         </p>
-        <p class="break-word">{{ nmfApp?.otherComments ?? EMPTY_PLACEHOLDER }}</p>
+        <p class="break-word pt-2">{{ nmfApp?.otherComments ?? EMPTY_PLACEHOLDER }}</p>
       </div>
       <router-link v-if="!isValidForm" :to="routingPath">
         <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
