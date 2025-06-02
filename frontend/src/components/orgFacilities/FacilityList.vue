@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       sortBy: [{ key: 'facilityName', order: 'asc' }],
-      showFilterInput: true,
+      showFilterInput: false,
       facilityNameFilter: '',
     };
   },
