@@ -72,51 +72,51 @@
         <template v-if="fundingModel.hasClosedMonth">
           <div>If YES, check all the fully closed months:</div>
           <v-row>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn1"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Jan"
+                label="January"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn2"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Feb"
+                label="February"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn3"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Mar"
+                label="March"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn4"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Apr"
+                label="April"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn5"
                 :true-value="1"
@@ -127,13 +127,13 @@
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn6"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Jun"
+                label="June"
                 color="primary"
                 hide-details
               />
@@ -141,68 +141,68 @@
           </v-row>
 
           <v-row>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn7"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Jul"
+                label="July"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn8"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Aug"
+                label="August"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn9"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Sep"
+                label="September"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn10"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Oct"
+                label="October"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn11"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Nov"
+                label="November"
                 color="primary"
                 hide-details
               />
             </v-col>
-            <v-col cols="4" md="2" class="py-0">
+            <v-col cols="6" md="4" xl="2" class="py-0">
               <v-checkbox
                 v-model="fundingModel.closedIn12"
                 :true-value="1"
                 :false-value="0"
                 :disabled="isLocked"
-                label="Dec"
+                label="December"
                 color="primary"
                 hide-details
               />
@@ -561,7 +561,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 type="number"
-                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareUnder36)]"
+                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareUnder36 * 2)]"
                 :error="showErrorMessage && !isUnder36ExtendedChildCareValid"
                 :hide-details="showErrorMessage && !isUnder36ExtendedChildCareValid"
                 label="Maximum Spaces Offered"
@@ -610,7 +610,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 type="number"
-                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCare36)]"
+                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCare36 * 2)]"
                 :error="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
                 :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
                 label="Maximum Spaces Offered"
@@ -663,7 +663,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 type="number"
-                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareSchool)]"
+                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareSchool * 2)]"
                 :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
                 :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
                 label="Maximum Spaces Offered"
@@ -715,7 +715,7 @@
                 :disabled="isLocked"
                 variant="outlined"
                 type="number"
-                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareMultiAge)]"
+                :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareMultiAge * 2)]"
                 :error="showErrorMessage && !isMultiAgeExtendedChildCareValid"
                 :hide-details="showErrorMessage && !isMultiAgeExtendedChildCareValid"
                 label="Maximum Spaces Offered"
@@ -755,25 +755,11 @@
 </template>
 
 <script>
-import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
-
 import fundMixin from '@/mixins/fundMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
-import { ERROR_MESSAGES } from '@/utils/constants.js';
 
 export default {
-  components: { AppTimeInput },
   mixins: [fundMixin, globalMixin],
-  data() {
-    return {
-      isFormValidated: false,
-    };
-  },
-  computed: {
-    showErrorMessage() {
-      return this.isFormValidated && !this.isLocked;
-    },
-  },
   watch: {
     isApplicationFormValidated: {
       handler() {
@@ -781,9 +767,6 @@ export default {
         this.$refs.form?.validate();
       },
     },
-  },
-  created() {
-    this.ERROR_MESSAGES = ERROR_MESSAGES;
   },
 };
 </script>

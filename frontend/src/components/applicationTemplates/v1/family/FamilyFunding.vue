@@ -1,14 +1,35 @@
-<!--
-* NOTE (vietle-cgi):  
-* This file contains **legacy code** from the previous application layout, which was deprecated and replaced as of March 2025.  
-* **DO NOT modify this file** to maintain compatibility with submitted PCF application/change request.
-*  
-* Source: Copied from commit 1146a77 on Dec 19, 2024 with some changes.
--->
 <template>
   <v-form ref="form" v-model="fundingModel.isCCOFComplete">
-    <v-row justify="space-around">
-      <v-card class="cc-top-level-card" width="1200">
+    <v-container fluid>
+      <v-card class="cc-top-level-card pa-2">
+        <v-container>
+          <v-row>
+            <v-col>
+              <div v-show="isApplicationProcessing" style="height: 175px">
+                <v-skeleton-loader class="mx-auto" max-width="300" type="text@3" />
+              </div>
+
+              <v-radio-group
+                v-show="!isApplicationProcessing"
+                v-model="fundingModel.familyLicenseType"
+                :disabled="isLocked"
+                required
+                :rules="rules.required"
+                label="Licence type"
+              >
+                <v-radio label="Family child care" :value="FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE" />
+                <v-radio
+                  label="In-Home Multi-Age Child Care"
+                  :value="FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE"
+                />
+                <v-radio label="Multi-Age Care" :value="FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE" />
+              </v-radio-group>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card>
+
+      <v-card class="cc-top-level-card pa-2">
         <v-container>
           <v-row>
             <v-col cols="12" md="6">
@@ -42,32 +63,13 @@
               />
             </v-col>
           </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
-              <AppTimeInput
-                v-model="fundingModel.hoursFrom"
-                :rules="rules.required"
-                :disabled="isLocked"
-                :hide-details="isLocked"
-                label="Facility hours of operation from"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <AppTimeInput
-                v-model="fundingModel.hoursTo"
-                :rules="[...rules.required, rules.validHourTo(fundingModel.hoursFrom)]"
-                :disabled="isLocked"
-                :hide-details="isLocked"
-                label="Facility hours of operation to"
-              />
-            </v-col>
-          </v-row>
 
           <v-row>
             <v-col>
               <v-radio-group
                 v-model="fundingModel.hasClosedMonth"
                 :disabled="isLocked"
+                :rules="rules.required"
                 inline
                 label="Are there months when ALL of the programs at this facility are closed for the entire month?"
               >
@@ -198,17 +200,56 @@
               </v-col>
             </v-row>
           </template>
+
+          <v-row>
+            <v-col cols="12" md="6">
+              <AppTimeInput
+                v-model="fundingModel.hoursFrom"
+                :rules="rules.required"
+                :disabled="isLocked"
+                :hide-details="isLocked"
+                label="Facility hours of operation from"
+              />
+            </v-col>
+
+            <v-col cols="12" md="6">
+              <AppTimeInput
+                v-model="fundingModel.hoursTo"
+                :rules="[...rules.required, rules.validHourTo(fundingModel.hoursFrom)]"
+                :disabled="isLocked"
+                :hide-details="isLocked"
+                label="Facility hours of operation to"
+              />
+            </v-col>
+          </v-row>
         </v-container>
       </v-card>
 
-      <v-card class="cc-top-level-card" width="1200">
-        <v-card-subtitle class="pt-8">
-          Complete the licence information using your Community Care and Assisted Living Act Licence.
-        </v-card-subtitle>
-
+      <v-card class="cc-top-level-card pa-2">
         <v-container>
           <v-row>
-            <v-col>
+            <v-col cols="12" md="6">
+              <v-text-field
+                v-model.number="fundingModel.maxSpaces"
+                :disabled="isLocked"
+                type="number"
+                min="0"
+                :max="fundingModel.maxLicensesCapacity"
+                variant="outlined"
+                required
+                :rules="[
+                  ...rules.required,
+                  rules.min(0),
+                  rules.wholeNumber,
+                  rules.max(fundingModel.maxLicensesCapacity),
+                ]"
+                label="Maximum number of child care spaces you offer"
+                @wheel="$event.target.blur()"
+                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxSpaces')"
+              />
+              <p>Note: DO NOT include any children living in your home, under the age of 12.</p>
+            </v-col>
+            <v-col cols="12" md="6">
               <v-text-field
                 v-model.number="fundingModel.maxLicensesCapacity"
                 :disabled="isLocked"
@@ -216,234 +257,19 @@
                 min="0"
                 variant="outlined"
                 required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Maximum Licensed Capacity"
+                :rules="[...rules.required, rules.wholeNumber, rules.min(0)]"
+                label="Maximum licensed capacity"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'maxLicensesCapacity')"
+                @change="$refs.form?.validate()"
               />
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxGroupChildCareUnder36"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                variant="outlined"
-                required
-                :rules="[...rules.required, groupValueRuleMaxGroupChildCareUnder36(), rules.wholeNumber]"
-                label="Maximum Number for Group Child Care (under 36 months)"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareUnder36')"
-              />
-            </v-col>
-          </v-row>
-
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxGroupChildCare36"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                variant="outlined"
-                required
-                :rules="[...rules.required, groupValueRuleMaxGroupChildCare36(), rules.wholeNumber]"
-                label="Maximum Number for Group Child Care (30 months to School Age)"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCare36')"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxPreschool"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                variant="outlined"
-                required
-                :rules="[...rules.required, groupValueRuleMaxPreschool(), rules.wholeNumber]"
-                label="Maximum Number for Preschool"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxPreschool')"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxGroupChildCareSchool"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                variant="outlined"
-                required
-                :rules="[...rules.required, groupValueRuleMaxGroupChildCareSchool(), rules.wholeNumber]"
-                label="Maximum Number for Group Child Care (School Age / School Age Care on School Grounds)"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareSchool')"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxGroupChildCareMultiAge"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                variant="outlined"
-                required
-                :rules="[...rules.required, groupValueRuleMaxGroupChildCareMultiAge(), rules.wholeNumber]"
-                label="Maximum Multi-Age Child Care"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareMultiAge')"
-              />
+              <p>(as indicated on your Community care and assisted Living Act Licence)</p>
             </v-col>
           </v-row>
         </v-container>
       </v-card>
 
-      <v-card v-if="fundingModel.maxPreschool > 0" class="cc-top-level-card" width="1200">
-        <v-card-title>Preschool</v-card-title>
-        <v-card-subtitle>Please indicate how many preschool sessions your facility offers per day</v-card-subtitle>
-
-        <v-container>
-          <v-row>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.monday"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Monday"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'monday')"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.tusday"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Tuesday"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'tusday')"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.wednesday"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Wednesday"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'wednesday')"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.thursday"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Thursday"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'thursday')"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.friday"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                required
-                :rules="[...rules.required, rules.wholeNumber]"
-                label="Friday"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'friday')"
-              />
-            </v-col>
-            <v-col>
-              <v-text-field
-                :readonly="!isLocked"
-                :disabled="isLocked"
-                type="number"
-                variant="outlined"
-                :model-value="
-                  (fundingModel.monday || 0) +
-                  (fundingModel.tusday || 0) +
-                  (fundingModel.wednesday || 0) +
-                  (fundingModel.thursday || 0) +
-                  (fundingModel.friday || 0)
-                "
-                label="Total"
-                @wheel="$event.target.blur()"
-              />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-
-      <v-card v-if="fundingModel.maxGroupChildCareSchool > 0" class="cc-top-level-card" width="1200">
-        <v-container>
-          <v-row>
-            <v-col>
-              <v-radio-group
-                v-model="fundingModel.isSchoolProperty"
-                :disabled="isLocked"
-                inline
-                label="Is the facility located on school property?"
-              >
-                <v-radio label="Yes" :value="1" />
-                <v-radio label="No" :value="0" />
-              </v-radio-group>
-            </v-col>
-          </v-row>
-        </v-container>
-
-        <v-card-title v-show="fundingModel.isSchoolProperty">
-          Group Child Care (School Age Care on School Grounds)
-        </v-card-title>
-
-        <v-card-subtitle v-show="fundingModel.isSchoolProperty">
-          Please indicate each service that your facility offers
-        </v-card-subtitle>
-
-        <v-container v-show="fundingModel.isSchoolProperty">
-          <v-row>
-            <v-col>
-              <v-checkbox v-model="fundingModel.beforeSchool" :disabled="isLocked" label="Before School" />
-            </v-col>
-            <v-col>
-              <v-checkbox v-model="fundingModel.afterSchool" :disabled="isLocked" label="After School" />
-            </v-col>
-            <v-col>
-              <v-checkbox v-model="fundingModel.beforeKindergarten" :disabled="isLocked" label="Before Kindergarten" />
-            </v-col>
-            <v-col>
-              <v-checkbox v-model="fundingModel.afterKindergarten" :disabled="isLocked" label="After Kindergarten" />
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-card>
-
-      <v-card class="cc-top-level-card" width="1200">
+      <v-card class="cc-top-level-card pa-2">
         <v-container>
           <v-row>
             <v-col>
@@ -461,51 +287,51 @@
             </v-col>
           </v-row>
 
-          <v-row v-show="fundingModel.isExtendedHours">
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxDaysPerWeekExtended"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                max="7"
-                variant="outlined"
-                required
-                :rules="
-                  fundingModel.isExtendedHours ? [...rules.required, rules.min(0), rules.max(7), rules.wholeNumber] : []
-                "
-                label="Maximum number of days per week you offer extended hours of child care?"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxDaysPerWeekExtended')"
-              />
-            </v-col>
-          </v-row>
+          <template v-if="fundingModel.isExtendedHours">
+            <v-text-field
+              v-model.number="fundingModel.maxCapacityExtended"
+              :disabled="isLocked"
+              type="number"
+              variant="outlined"
+              required
+              :rules="[...rules.required, rules.wholeNumber]"
+              label="Maximum number of spaces you offer extended hours of child care?"
+              @wheel="$event.target.blur()"
+              @update:model-value="convertBlankNumberToNull(fundingModel, 'maxCapacityExtended')"
+            />
 
-          <v-row v-show="fundingModel.isExtendedHours">
-            <v-col>
-              <v-text-field
-                v-model.number="fundingModel.maxWeeksPerYearExtended"
-                :disabled="isLocked"
-                type="number"
-                min="0"
-                max="52"
-                variant="outlined"
-                required
-                :rules="
-                  fundingModel.isExtendedHours
-                    ? [...rules.required, rules.min(0), rules.max(52), rules.wholeNumber]
-                    : []
-                "
-                label="Maximum number of weeks per year you offer extended hours of child care?"
-                @wheel="$event.target.blur()"
-                @update:model-value="convertBlankNumberToNull(fundingModel, 'maxWeeksPerYearExtended')"
-              />
-            </v-col>
-          </v-row>
+            <v-text-field
+              v-model.number="fundingModel.maxDaysPerWeekExtended"
+              :disabled="isLocked"
+              type="number"
+              min="0"
+              max="7"
+              variant="outlined"
+              required
+              :rules="[...rules.required, rules.min(0), rules.max(7), rules.wholeNumber]"
+              label="Maximum number of days per week you offer extended hours of child care?"
+              class="my-4"
+              @wheel="$event.target.blur()"
+              @update:model-value="convertBlankNumberToNull(fundingModel, 'maxDaysPerWeekExtended')"
+            />
+
+            <v-text-field
+              v-model.number="fundingModel.maxWeeksPerYearExtended"
+              :disabled="isLocked"
+              type="number"
+              min="0"
+              max="52"
+              variant="outlined"
+              required
+              :rules="[...rules.required, rules.min(0), rules.max(52), rules.wholeNumber]"
+              label="Maximum number of weeks per year you offer extended hours of child care?"
+              @wheel="$event.target.blur()"
+              @update:model-value="convertBlankNumberToNull(fundingModel, 'maxWeeksPerYearExtended')"
+            />
+          </template>
         </v-container>
       </v-card>
-
-      <v-card class="cc-top-level-card" width="1200">
+      <v-card class="cc-top-level-card pa-2">
         <v-card-subtitle>
           Write the maximum <strong>number of spaces</strong> you offer extended hours of child care for each type of
           service
@@ -521,7 +347,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (under 36 months)"
+                  label="Family Child Care (under 36 months)"
                   @wheel="$event.target.blur()"
                   @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareUnder36Months4OrLess')"
                 />
@@ -533,7 +359,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (30 months to School Age)"
+                  label="Family Child Care (36 months to School Age)"
                   @wheel="$event.target.blur()"
                   @update:model-value="
                     convertBlankNumberToNull(fundingModel, 'extendedChildCare36MonthsToSchoolAge4OrLess')
@@ -547,7 +373,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (School Age / School Age Care on School Grounds)"
+                  label="Family Child Care (School Age / School Age Care on School Grounds)"
                   @wheel="$event.target.blur()"
                   @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareSchoolAge4OrLess')"
                 />
@@ -574,7 +400,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (under 36 months)"
+                  label="Family Child Care (under 36 months)"
                   @wheel="$event.target.blur()"
                   @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareUnder36Months4OrMore')"
                 />
@@ -586,7 +412,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (30 months to School Age)"
+                  label="Family Child Care (36 months to School Age)"
                   @wheel="$event.target.blur()"
                   @update:model-value="
                     convertBlankNumberToNull(fundingModel, 'extendedChildCare36MonthsToSchoolAge4OrMore')
@@ -600,7 +426,7 @@
                   variant="outlined"
                   type="number"
                   :rules="[...rules.notRequired, rules.wholeNumber]"
-                  label="Group Child Care (School Age/ School Age Care on School Grounds)"
+                  label="Family Child Care (School Age/ School Age Care on School Grounds)"
                   @wheel="$event.target.blur()"
                   @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareSchoolAge4OrMore')"
                 />
@@ -621,17 +447,15 @@
           </v-row>
         </v-container>
       </v-card>
-    </v-row>
+    </v-container>
   </v-form>
 </template>
 
 <script>
-import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 import fundMixin from '@/mixins/fundMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
 
 export default {
-  components: { AppTimeInput },
   mixins: [fundMixin, globalMixin],
   watch: {
     isApplicationFormValidated: {
@@ -642,7 +466,6 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .padded-row {
   margin: 10px 0;

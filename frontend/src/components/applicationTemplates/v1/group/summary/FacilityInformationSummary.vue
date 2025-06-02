@@ -18,7 +18,9 @@
       <template v-if="(!isRenewal && isGroup) || isChangeRequest">
         <v-row no-gutters>
           <v-col cols="12" md="8" class="pr-2">
-            <p class="summary-label">Facility Name (as it appears on the Community Care Assisted Living Act Licence)</p>
+            <p class="summary-label">
+              Facility Name (as it appears on the Community Care and Assisted Living Act Licence)
+            </p>
             <v-textarea
               placeholder="Required"
               :model-value="facilityInfo.facilityName"
@@ -236,7 +238,9 @@
       <!-- FAMILY APPLICATION -->
       <template v-else-if="!isRenewal && !isGroup">
         <div>
-          <p class="summary-label">Facility Name (as it appears on the Community Care Assisted Living Act Licence)</p>
+          <p class="summary-label">
+            Facility Name (as it appears on the Community Care and Assisted Living Act Licence)
+          </p>
           <v-text-field
             placeholder="Required"
             :model-value="facilityInfo.facilityName"
@@ -374,7 +378,7 @@ export default {
     routingPathFamily() {
       return !this.funding.ccofBaseFundingId
         ? pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId)
-        : pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY, this.programYearId, this.facilityId);
+        : pcfUrlGuid(PATHS.CCOF_FAMILY_FACILITY, this.programYearId, this.facilityId);
     },
   },
 };

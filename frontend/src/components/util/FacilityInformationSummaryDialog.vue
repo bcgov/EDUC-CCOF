@@ -159,6 +159,7 @@ import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import CCOFSummaryFamily from '@/components/summary/family/CCOFSummaryFamily.vue';
 import FacilityInformationSummary from '@/components/summary/group/FacilityInformationSummary.vue';
 import CCOFSummary from '@/components/summary/group/CCOFSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
@@ -168,7 +169,6 @@ import RFISummary from '@/components/summary/group/RFISummary.vue';
 import NMFSummary from '@/components/summary/group/NMFSummary.vue';
 import AFSSummary from '@/components/summary/group/AFSSummary.vue';
 import UploadedDocumentsSummary from '@/components/summary/group/UploadedDocumentsSummary.vue';
-import CCOFSummaryFamily from '@/components/summary/group/CCOFSummaryFamily.vue';
 import FacilityInformationSummaryDialogHeader from '@/components/util/FacilityInformationSummaryDialogHeader.vue';
 import { useApplicationStore } from '@/store/application.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';

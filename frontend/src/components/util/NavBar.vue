@@ -666,7 +666,7 @@ export default {
     getCCOFFamilyNavigation() {
       let items = [];
       items.push({
-        title: 'Family Provider',
+        title: this.showApplicationTemplateV1 ? 'Family Provider' : 'Organization Information',
         link: { name: 'Family Organization Information' },
         isAccessible: true,
         icon: this.getCheckbox(this.isOrganizationComplete),
@@ -677,15 +677,16 @@ export default {
       if (this.navBarList?.length > 0) {
         items.push(
           {
-            title: 'Eligibility',
+            title: this.showApplicationTemplateV1 ? 'Eligibility' : 'Facility Information',
             subTitle: this.navBarList[0]?.facilityName,
             subTitle2: this.navBarList[0]?.facilityAccountNumber,
             id: this.navBarList[0].facilityId,
-            link: { name: 'Eligibility GUID', params: { urlGuid: this.navBarList[0].facilityId } },
+            link: { name: 'Family Facility Information GUID', params: { urlGuid: this.navBarList[0].facilityId } },
             isAccessible: true,
             icon: this.getCheckbox(this.navBarList[0].isFacilityComplete),
             isActive:
-              'Eligibility GUID' === this.$route.name && this.$route.params.urlGuid === this.navBarList[0].facilityId,
+              'Family Facility Information GUID' === this.$route.name &&
+              this.$route.params.urlGuid === this.navBarList[0].facilityId,
             position: positionIndex++,
             navBarId: navBarId++,
           },
@@ -707,12 +708,12 @@ export default {
         //No new facilities, setup a blank template
         items.push(
           {
-            title: 'Eligibility',
+            title: this.showApplicationTemplateV1 ? 'Eligibility' : 'Facility Information',
             id: null,
-            link: { name: 'Eligibility' },
+            link: { name: 'Family Facility Information' },
             isAccessible: this.isNewFacilityStarted,
             icon: this.getCheckbox(false),
-            isActive: 'Eligibility' === this.$route.name && this.$route.params.urlGuid == null,
+            isActive: 'Family Facility Information' === this.$route.name && this.$route.params.urlGuid == null,
             position: positionIndex++,
             navBarId: navBarId++,
           },

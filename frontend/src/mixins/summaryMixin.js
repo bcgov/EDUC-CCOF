@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { mapState } from 'pinia';
 
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
@@ -29,7 +30,7 @@ export default {
   components: { NavButton, SummaryExpansionPanelTitle },
   mixins: [alertMixin],
   computed: {
-    ...mapState(useAppStore, ['getLanguageYearLabel']),
+    ...mapState(useAppStore, ['getFamilyLicenceCategoryNumberById', 'getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationProcessing',
@@ -106,6 +107,7 @@ export default {
   methods: {
     getOptInOptOut,
     getYesNoValue,
+    isEmpty,
     isNullOrBlank,
   },
 };

@@ -190,6 +190,7 @@ const CCOFApplicationMappings = [
 ];
 
 const CCOFApplicationFundingMapping = [
+  { back: '_ccof_licensetypes_value', front: 'licenceCategoryId' },
   { back: 'ccof_monthwhenfacilityisclosedforentiremonth', front: 'hasClosedMonth' },
 
   { back: 'ccof_closedfacilityinjan', front: 'closedIn1' },
@@ -218,11 +219,14 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_has_multiagechildcare', front: 'hasMultiAge' },
 
   { back: 'ccof_maximumlicensedcapacity', front: 'maxLicensesCapacity' },
+  { back: 'ccof_familychildcaremaxnumber', front: 'maxFamilyChildCare' },
+  { back: 'ccof_inhomemultiageccmaxnumber', front: 'maxInHomeMultiAgeChildCare' },
   { back: 'ccof_multiagechildcaremaxnumber', front: 'maxGroupChildCareMultiAge' },
   { back: 'ccof_groupchildcareunder36months', front: 'maxGroupChildCareUnder36' },
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
+
   { back: 'ccof_preschoolsessionmon', front: 'monday' },
   { back: 'ccof_preschoolsessiontues', front: 'tusday' },
   { back: 'ccof_preschoolsessionwed', front: 'wednesday' },
@@ -247,11 +251,15 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
   { back: 'ccof_schoolageonground4hoursoflessextendedcc', front: 'extendedChildCareSchoolAge4OrLess' },
   { back: 'ccof_multiagechildcare4hoursoflessextendedcc', front: 'multiAgeCare4OrLess' },
+  { back: 'ccof_familychildcare4hoursorlessextendedcc', front: 'familyExtendedCC4OrLess' },
+  { back: 'ccof_inhomemultiagecc4hoursorlessextendedcc', front: 'inHomeMultiAgeExtendedCC4OrLess' },
 
   { back: 'ccof_under36monthsmorethan4hourextendedcc', front: 'extendedChildCareUnder36Months4OrMore' },
   { back: 'ccof_30monthtoschoolagemorethan4hourextended', front: 'extendedChildCare36MonthsToSchoolAge4OrMore' },
   { back: 'ccof_schoolageongroundmorethan4hrextendedcc', front: 'extendedChildCareSchoolAge4OrMore' },
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
+  { back: 'ccof_familychildcaremorethan4hoursextendedcc', front: 'familyExtendedCC4OrMore' },
+  { back: 'ccof_inhomemultiageccmorethan4hoursextendedcc', front: 'inHomeMultiAgeExtendedCC4OrMore' },
 
   { back: 'ccof_regularlyofferextendeddailyhourofchildca', front: 'isExtendedHours' },
   { back: 'ccof_formcomplete', front: 'isCCOFComplete' },

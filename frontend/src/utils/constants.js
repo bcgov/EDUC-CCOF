@@ -29,9 +29,6 @@ export const ApiRoutes = Object.freeze({
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
-  FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
-  FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   MESSAGE: baseRoot + '/messages',
   APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
@@ -98,6 +95,7 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
+    MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
@@ -120,7 +118,7 @@ export const PATHS = {
   CCOF_GROUP_CONFIRM: '/group/confirmation',
 
   CCOF_FAMILY_ORG: '/family/organization',
-  CCOF_FAMILY_ELIGIBILITY: '/family/eligibility',
+  CCOF_FAMILY_FACILITY: '/family/facility',
   CCOF_FAMILY_FUNDING: '/family/funding',
 
   CCFRI_HOME: '/ccfri',
@@ -495,6 +493,12 @@ export const CLOSURE_TYPES = Object.freeze({
 export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
   ACTIVE: 1,
   INACTIVE: 2,
+});
+
+export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
+  MULTI_AGE_CHILD_CARE: 5,
+  IN_HOME_MULTI_AGE_CHILD_CARE: 6,
+  FAMILY_CHILD_CARE: 7,
 });
 
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({

@@ -49,7 +49,7 @@
                   v-model="organizationModel.incNumber"
                   :disabled="isLocked"
                   variant="outlined"
-                  :rules="validateIncorporationNumber(organizationModel.organizationType, organizationModel.incNumber)"
+                  :rules="hasIncorporationNumber ? rules.required : []"
                   label="Incorporation Number (as it appears in BC Corporate Registry)"
                 />
               </v-col>

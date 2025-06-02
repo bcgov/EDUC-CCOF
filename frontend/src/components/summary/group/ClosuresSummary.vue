@@ -96,18 +96,21 @@
           />
         </template>
         <template #[`item.ageGroups`]="{ item }">
-          <v-text-field
-            v-if="!item.fullClosure"
-            :model-value="item.ageGroups"
-            placeholder="Required"
-            readonly
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            :rules="rules.required"
-            class="no-padding-left"
-          />
+          <template v-if="!item.fullClosure">
+            <p v-if="!isEmpty(item.ageGroups)" class="py-2">{{ item.ageGroups }}</p>
+            <v-text-field
+              v-else
+              :model-value="item.ageGroups"
+              placeholder="Required"
+              readonly
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+              class="no-padding-left"
+            />
+          </template>
         </template>
       </v-data-table>
       <div v-if="!isValidForm" class="mt-4">

@@ -10,13 +10,13 @@
             <v-col cols="8" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3"
-                    >Maximum number of <b>days per week</b> you provide child care:
+                  <span class="summary-label pt-3">
+                    Maximum number of <b>days per week</b> you provide child care:
                   </span>
                   <v-text-field
                     placeholder="Required"
                     :model-value="funding?.maxDaysPerWeek"
-                    class="summary-value ma-0 pa-0 px-0"
+                    class="summary-value ma-0 pa-0"
                     density="compact"
                     flat
                     variant="solo"
@@ -27,11 +27,11 @@
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="6" lg="4" class="pb-0 pt-0">
+            <v-col cols="6" lg="4" class="py-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3"
-                    >Maximum number of <b>weeks per year</b> you provide child care:
+                  <span class="summary-label pt-3">
+                    Maximum number of <b>weeks per year</b> you provide child care:
                   </span>
                   <v-text-field
                     placeholder="Required"
@@ -52,8 +52,8 @@
             <v-col cols="8" lg="6" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3"
-                    >Are there months when ALL of the programs at this facility are closed for the entire month?
+                  <span class="summary-label pt-3">
+                    Are there months when ALL of the programs at this facility are closed for the entire month?
                   </span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start">
@@ -74,8 +74,8 @@
             <v-col cols="8" lg="6" class="pb-0 pt-0">
               <v-row v-if="funding?.hasClosedMonth" no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-3"
-                    >Months where ALL of the programs at this facility are closed for the entire month:
+                  <span class="summary-label pt-3">
+                    Months where ALL of the programs at this facility are closed for the entire month:
                   </span>
                 </v-col>
                 <v-col v-if="funding?.closedIn1" cols="4" class="d-flex justify-start">
@@ -226,7 +226,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="4" lg="6" class="pb-0 pt-0">
+            <v-col cols="4" lg="6" class="py-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="4" class="d-flex justify-start flex-nowrap">
                   <span class="summary-label pt-3">Facility hours of operation:</span>
@@ -264,7 +264,7 @@
           </v-row>
 
           <v-row class="d-flex justify-start">
-            <v-col cols="4" lg="4" class="pb-0 pt-0">
+            <v-col cols="4" lg="4" class="py-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start pb-2 pt-7">
                   <span class="summary-label">Maximum number of child care spaces you offer</span>
@@ -311,10 +311,10 @@
             <v-col cols="12" lg="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start pt-2">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label pt-2"
-                    >Do you <b>regularly offer</b> extended daily hours of child care
-                    <b>(before 6am, after 7pm or overnight)</b>?</span
-                  >
+                  <span class="summary-label pt-2">
+                    Do you <b>regularly offer</b> extended daily hours of child care
+                    <b>(before 6am, after 7pm or overnight)</b>?
+                  </span>
                 </v-col>
                 <v-col cols="12" class="d-flex justify-start">
                   <v-text-field
@@ -340,14 +340,14 @@
                     <span class="summary-label">Maximum number of spaces you offer extended hours of child care</span>
                   </v-col>
                   <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                    <span class="summary-label"
-                      >Maximum number of days per week you offer extended hours of child care</span
-                    >
+                    <span class="summary-label">
+                      Maximum number of days per week you offer extended hours of child care
+                    </span>
                   </v-col>
                   <v-col cols="12" class="d-flex justify-start pb-2 pt-2">
-                    <span class="summary-label"
-                      >Maximum number of weeks per year you offer extended hours of child care</span
-                    >
+                    <span class="summary-label">
+                      Maximum number of weeks per year you offer extended hours of child care
+                    </span>
                   </v-col>
                 </v-row>
               </v-col>
@@ -400,10 +400,10 @@
             <v-col cols="12" lg="12" class="pb-0 pt-0">
               <v-row no-gutters class="d-flex justify-start">
                 <v-col cols="12" class="d-flex justify-start">
-                  <span class="summary-label"
-                    >For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended
-                    hours of child care:</span
-                  >
+                  <span class="summary-label">
+                    For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended
+                    hours of child care:
+                  </span>
                 </v-col>
               </v-row>
             </v-col>
@@ -533,7 +533,7 @@
           </v-row>
         </v-row>
         <div v-if="!isValidForm">
-          <router-link :to="getRoutingPath()">
+          <router-link :to="routingPath">
             <u class="text-error"> To add this information, click here. This will bring you to a different page. </u>
           </router-link>
         </div>
@@ -546,7 +546,7 @@ import summaryMixin from '@/mixins/summaryMixin.js';
 import { PATHS, pcfUrlGuid, pcfUrl } from '@/utils/constants.js';
 
 export default {
-  name: 'CCOFSummary',
+  name: 'FamilyFundingSummary',
   mixins: [summaryMixin],
   props: {
     funding: {
@@ -563,14 +563,15 @@ export default {
       isValidForm: false,
     };
   },
-  methods: {
-    getRoutingPath() {
-      if (!this.funding.ccofBaseFundingId) {
-        return pcfUrl(this.PATHS.CCOF_FAMILY_ORG, this.programYearId);
-      } else if (this.funding.ccofBaseFundingId) {
-        return pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId);
-      }
+  computed: {
+    routingPath() {
+      return this.funding.ccofBaseFundingId
+        ? pcfUrlGuid(PATHS.CCOF_FAMILY_FUNDING, this.programYearId, this.funding.ccofBaseFundingId)
+        : pcfUrl(this.PATHS.CCOF_FAMILY_ORG, this.programYearId);
     },
+  },
+  mounted() {
+    this.$refs.ccofSummaryForm.validate();
   },
 };
 </script>
