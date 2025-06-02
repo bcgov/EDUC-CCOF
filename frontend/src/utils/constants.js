@@ -93,7 +93,8 @@ export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
     HOME: '/',
-    MANAGE_ORG_FACILITIES: '/org-facilities',
+    MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
+    MANAGE_FACILITY: '/org-facilities/manage-facility',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -487,6 +488,11 @@ export const CLOSURE_TYPES = Object.freeze({
   KNOWN_CLOSURES: 100000000,
   EMERGENCY_CLOSURES: 100000001,
   NON_OPERATIONAL_CLOSURES: 100000002,
+});
+
+export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
+  ACTIVE: 1,
+  INACTIVE: 2,
 });
 
 export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
