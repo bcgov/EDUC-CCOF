@@ -1,8 +1,28 @@
 <template>
+  <v-row align="center">
+    <v-col cols="12" sm="5" md="5" lg="2" xl="2">
+      <AppButton id="facility-filter-button" variant="text" @click="toggleShowFilter()">
+        Filter by Facility
+        <v-icon right>mdi-filter</v-icon>
+      </AppButton>
+    </v-col>
+    <v-col cols="12" sm="6" md="6" lg="3" xl="3" class="pa-0">
+      <v-text-field
+        v-show="showFilterInput"
+        v-model.trim="facilityNameFilter"
+        placeholder="Filter by Facility Name"
+        variant="underlined"
+        density="compact"
+        hide-details
+      >
+      </v-text-field>
+    </v-col>
+  </v-row>
+  <hr />
   <v-data-table
     v-model:sort-by="sortBy"
     :headers="headers"
-    :items="facilities"
+    :items="filteredFacilities"
     item-key="facilityId"
     :items-per-page="10"
     density="compact"
@@ -19,6 +39,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization';
 
@@ -37,6 +58,8 @@ export default {
   data() {
     return {
       sortBy: [{ key: 'facilityName', order: 'asc' }],
+      showFilterInput: true,
+      facilityNameFilter: '',
     };
   },
   computed: {
@@ -54,6 +77,13 @@ export default {
         { title: 'End Date', key: 'readableEndDate', value: (item) => this.formatEndDate(item) },
       ];
     },
+    filteredFacilities() {
+      return isEmpty(this.facilityNameFilter)
+        ? this.facilities
+        : this.facilities?.filter((facility) =>
+            facility.facilityName?.toLowerCase().includes(this.facilityNameFilter?.toLowerCase()),
+          );
+    },
   },
   methods: {
     formatEndDate(facility) {
@@ -61,6 +91,12 @@ export default {
     },
     navigateToFacility(id) {
       alert(id);
+    },
+    toggleShowFilter() {
+      this.showFilterInput = !this.showFilterInput;
+      if (!this.showFilterInput) {
+        this.facilityNameFilter = '';
+      }
     },
   },
 };
