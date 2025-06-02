@@ -2,17 +2,7 @@
   <v-container class="pa-0 text-body-1" fluid>
     <v-row no-gutters>
       <v-col>
-        <p>View and update your facilities.</p>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <h2>Facility Details</h2>
-        <p class="mt-2">
-          <v-icon class="noticeInfoIcon">mdi-information</v-icon>
-          Note: The information marked with * will be shared on Child Care Map. Please do not include any personal
-          information.
-        </p>
+        <p>View and manage the facilities of your organization.</p>
       </v-col>
     </v-row>
     <template v-if="facilitiesLoading">

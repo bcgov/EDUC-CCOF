@@ -74,7 +74,6 @@ export default {
         { title: 'Facility ID', value: 'facilityAccountNumber' },
         { title: 'License Number', value: 'licenseNumber' },
         { title: 'Action', key: 'action' },
-        { title: 'End Date', key: 'readableEndDate', value: (item) => this.formatEndDate(item) },
       ];
     },
     filteredFacilities() {
