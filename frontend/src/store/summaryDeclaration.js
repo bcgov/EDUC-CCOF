@@ -60,8 +60,8 @@ function mapFacility(facility, isGroup, eceweOrg) {
   facility.isGroup = isGroup;
   facility.applicationTemplateVersion = applicationStore.applicationTemplateVersion;
   const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
-  facility.hasRfi = facilityInNavBar?.hasRfi;
-  facility.hasNmf = facilityInNavBar?.hasNmf;
+  facility.hasRfi = facilityInNavBar?.hasRfi || facility.ccfri?.unlockRfi;
+  facility.hasNmf = facilityInNavBar?.hasNmf || facility.ccfri?.unlockNmf;
   facility.enableAfs = facilityInNavBar?.enableAfs;
   facility.afs = ccfriAppStore.approvableFeeSchedules?.find(
     (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,

@@ -23,21 +23,26 @@
           readonly
           :rules="rules.required"
         />
-        <v-textarea
-          v-if="nmfApp?.supportNeeds"
-          placeholder="Required"
-          :model-value="nmfApp?.supportNeedsComments"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          no-resize
-          rows="3"
-          readonly
-          :rules="rules.required"
-        />
+        <template v-if="nmfApp?.supportNeeds">
+          <p class="summary-label">
+            Please enter your Project ID, Funding Program, and Application Date. If you are not sure what your Project
+            ID is, call Child Care Capital and Community Services at 1-888-338-6622 (Option 5).
+          </p>
+          <p v-if="nmfApp?.supportNeedsComments" class="break-word">{{ nmfApp?.supportNeedsComments }}</p>
+          <v-text-field
+            v-else
+            placeholder="Required"
+            :model-value="nmfApp?.supportNeedsComments"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </template>
       </div>
-      <div>
+      <div class="my-4">
         <p class="summary-label">
           Does your facility provide additional services (such as meals or other wrap-around services), to support
           families experiencing vulnerability and/or underserved populations, such as Indigenous or low-income families?
@@ -50,25 +55,25 @@
           variant="solo"
           hide-details
           readonly
-          no-resize
-          rows="3"
           :rules="rules.required"
         />
-        <v-textarea
-          v-if="nmfApp?.lowIncomeFamilies"
-          placeholder="Required"
-          :model-value="nmfApp?.lowIncomeFamiliesComments"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-          no-resize
-          rows="3"
-          :rules="rules.required"
-        />
+        <template v-if="nmfApp?.lowIncomeFamilies">
+          <p class="summary-label">Please describe the service(s) and associated expenses.</p>
+          <p v-if="nmfApp?.lowIncomeFamiliesComments" class="break-word">{{ nmfApp?.lowIncomeFamiliesComments }}</p>
+          <v-text-field
+            v-else
+            placeholder="Required"
+            :model-value="nmfApp?.lowIncomeFamiliesComments"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </template>
       </div>
-      <div>
+      <div class="my-4">
         <p class="summary-label">
           Do you provide transportation to/from your facility to support families in rural or remote communities who may
           not otherwise be able to access child care?
@@ -81,40 +86,31 @@
           variant="solo"
           hide-details
           readonly
-          no-resize
-          rows="3"
           :rules="rules.required"
         />
-        <v-textarea
-          v-if="nmfApp?.remoteCommunities"
-          placeholder="Required"
-          :model-value="nmfApp?.remoteCommunitiesComments"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          no-resize
-          rows="3"
-          readonly
-          :rules="rules.required"
-        />
+        <template v-if="nmfApp?.remoteCommunities">
+          <p class="summary-label">Please describe the service(s) and associated expenses.</p>
+          <p v-if="nmfApp?.remoteCommunitiesComments" class="break-word">{{ nmfApp?.remoteCommunitiesComments }}</p>
+          <v-text-field
+            v-else
+            placeholder="Required"
+            :model-value="nmfApp?.remoteCommunitiesComments"
+            density="compact"
+            flat
+            variant="solo"
+            hide-details
+            readonly
+            :rules="rules.required"
+          />
+        </template>
       </div>
-      <div>
+      <div class="my-4">
         <p class="summary-label">
           Please tell us anything else you'd like us to know about how your facility's business case supports setting
           fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
           <a :href="getFundingUrl(programYearId)" target="_blank">Funding Guidelines.</a>
         </p>
-        <v-textarea
-          :model-value="nmfApp?.otherComments"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-          no-resize
-          rows="3"
-        />
+        <p class="break-word">{{ nmfApp?.otherComments ?? EMPTY_PLACEHOLDER }}</p>
       </div>
       <router-link v-if="!isValidForm" :to="routingPath">
         <u class="text-error">To add this information, click here. This will bring you to a different page.</u>
@@ -167,5 +163,8 @@ export default {
 }
 :deep(.v-field__input) {
   padding-left: 0px;
+}
+.break-word {
+  word-break: break-word;
 }
 </style>
