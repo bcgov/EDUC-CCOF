@@ -823,12 +823,20 @@ const router = createRouter({
     },
     {
       path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
-      name: 'org-facilities',
+      name: 'manage-org-facilities',
       component: ManageOrgFacilities,
       meta: {
         requiresAuth: true,
       },
     },
+    // {
+    //   path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
+    //   name: 'manage-facility',
+    //   component: ManageFacility,
+    //   meta: {
+    //     requiresAuth: true,
+    //   },
+    // },
     {
       path: PATHS.ROOT.MANAGE_USERS,
       name: 'manage-users',

@@ -3,7 +3,7 @@ const { getOperationWithObjectId, postOperation, patchOperationWithObjectId, get
 const HttpStatus = require('http-status-codes');
 const { ACCOUNT_TYPE, APPLICATION_STATUS_CODES, CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES } = require('../util/constants');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { OrganizationMappings } = require('../util/mapping/Mappings');
+const { OrganizationMappings, OrganizationFacilityMappings, FundingAgreementMappings } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
 
@@ -18,6 +18,31 @@ async function getOrganization(req, res) {
 
     return res.status(HttpStatus.OK).json(organization);
   } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getFacilitiesByOrgId(orgId) {
+  const operation =
+    'accounts?$select=name,address1_city,address1_line1,ccof_facilitylicencenumber,accountnumber,statuscode' +
+    `&$filter=_parentaccountid_value eq ${orgId} and accountnumber ne null` +
+    '&$expand=ccof_funding_agreement_facility_account($orderby=createdon desc)';
+  return getOperation(operation);
+}
+
+async function getOrganizationFacilities(req, res) {
+  try {
+    const facilitiesData = await getFacilitiesByOrgId(req.params.organizationId);
+    const facilities = facilitiesData.value.map((facility) => {
+      let mappedFacility = new MappableObjectForFront(facility, OrganizationFacilityMappings);
+      mappedFacility.data.fundingAgreements = facility.ccof_funding_agreement_facility_account.map((fa) => {
+        return new MappableObjectForFront(fa, FundingAgreementMappings).data;
+      });
+      return mappedFacility;
+    });
+    return res.status(HttpStatus.OK).json(facilities);
+  } catch (e) {
+    log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -95,6 +120,7 @@ async function updateOrganization(req, res) {
 
 module.exports = {
   getOrganization,
+  getOrganizationFacilities,
   createOrganization,
   updateOrganization,
 };
