@@ -32,7 +32,11 @@
             @click="setActive(item)"
           >
             <template #activator="{ props }">
-              <v-list-item v-bind="props" :style="{ '--v-list-item-prepend-max-width': '30px' }">
+              <v-list-item
+                v-bind="props"
+                :disabled="!item.isAccessible"
+                :style="{ '--v-list-item-prepend-max-width': '30px' }"
+              >
                 <template #prepend>
                   <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
                 </template>
@@ -196,8 +200,9 @@ export default {
           return '15%';
       }
     },
-    ccofConfirmationEnabled() {
-      return this.isLicenseUploadComplete != null;
+
+    hasFacilities() {
+      return this.navBarList?.length > 0;
     },
 
     expandedNavBarItems() {
@@ -655,7 +660,7 @@ export default {
       }
       let retval = {
         title: NAV_BAR_GROUPS.CCFRI,
-        isAccessible: true,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
         items: items,
@@ -731,7 +736,7 @@ export default {
       items.push({
         title: 'Licence Upload',
         link: { name: 'Licence Upload' },
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.isLicenseUploadComplete),
         isActive: 'Licence Upload' === this.$route.name,
         position: positionIndex++,
@@ -786,7 +791,7 @@ export default {
         isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Application Confirmation' };
-        isAccessible = this.ccofConfirmationEnabled;
+        isAccessible = this.hasFacilities;
       }
       return {
         title: 'Add Facility',
@@ -809,7 +814,7 @@ export default {
         isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Licence Upload' };
-        isAccessible = this.ccofConfirmationEnabled;
+        isAccessible = this.hasFacilities;
       }
       return {
         title: 'Licence Upload',
@@ -1051,7 +1056,7 @@ export default {
       });
       let retval = {
         title: NAV_BAR_GROUPS.ECEWE,
-        isAccessible: true,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
         items: items,

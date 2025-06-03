@@ -119,14 +119,12 @@ export default {
     },
   },
   async mounted() {
-    this.setCcofConfirmationEnabled(true);
     if (this.isChangeRequest) {
       let index = this.navBarList.findIndex((facility) => facility.changeRequestNewFacilityId);
       if (index === -1) await this.getChangeRequest(this.$route.params.changeRecGuid);
     }
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setCcofConfirmationEnabled']),
     ...mapActions(useFacilityStore, ['deleteFacility']),
     ...mapActions(useReportChangesStore, ['getChangeRequest']),
     previous() {
