@@ -32,7 +32,11 @@
             @click="setActive(item)"
           >
             <template #activator="{ props }">
-              <v-list-item v-bind="props" :style="{ '--v-list-item-prepend-max-width': '30px' }">
+              <v-list-item
+                v-bind="props"
+                :disabled="!item.isAccessible"
+                :style="{ '--v-list-item-prepend-max-width': '30px' }"
+              >
                 <template #prepend>
                   <v-icon v-if="item.icon">{{ item.icon }}</v-icon>
                 </template>
@@ -196,8 +200,9 @@ export default {
           return '15%';
       }
     },
-    ccofConfirmationEnabled() {
-      return this.isLicenseUploadComplete != null;
+
+    hasFacilities() {
+      return !isEmpty(this.navBarList);
     },
 
     expandedNavBarItems() {
@@ -447,7 +452,7 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++,
       });
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         this.navBarList?.forEach((item) => {
           //new facility only needs add new fees
           if (item.ccfriOptInStatus == 1) {
@@ -550,7 +555,7 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++,
       });
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         this.navBarList?.forEach((item) => {
           //application is read only, send nav link to Add New FEE page
           if (item.ccfriOptInStatus == 1) {
@@ -655,7 +660,7 @@ export default {
       }
       let retval = {
         title: NAV_BAR_GROUPS.CCFRI,
-        isAccessible: true,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.CCFRI),
         items: items,
@@ -674,7 +679,7 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++,
       });
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         items.push(
           {
             title: this.showApplicationTemplateV1 ? 'Eligibility' : 'Facility Information',
@@ -731,7 +736,7 @@ export default {
       items.push({
         title: 'Licence Upload',
         link: { name: 'Licence Upload' },
-        isAccessible: this.ccofConfirmationEnabled,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.isLicenseUploadComplete),
         isActive: 'Licence Upload' === this.$route.name,
         position: positionIndex++,
@@ -786,7 +791,7 @@ export default {
         isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Application Confirmation' };
-        isAccessible = this.ccofConfirmationEnabled;
+        isAccessible = this.hasFacilities;
       }
       return {
         title: 'Add Facility',
@@ -809,7 +814,7 @@ export default {
         isAccessible = this.navBarList[0]?.isCCOFComplete;
       } else {
         link = { name: 'Licence Upload' };
-        isAccessible = this.ccofConfirmationEnabled;
+        isAccessible = this.hasFacilities;
       }
       return {
         title: 'Licence Upload',
@@ -825,9 +830,6 @@ export default {
         navBarId: navBarId++,
       };
     },
-    isMTFISelectFacilitiesComplete() {
-      return this.navBarList?.length > 0;
-    },
     getMTFINavigation() {
       let items = [];
       items.push({
@@ -837,13 +839,13 @@ export default {
           params: { changeRecGuid: this.$route.params.changeRecGuid, changeType: CHANGE_TYPES.MTFI },
         },
         isAccessible: this.organizationProviderType !== ORGANIZATION_PROVIDER_TYPES.FAMILY,
-        icon: this.getCheckbox(this.isMTFISelectFacilitiesComplete()),
+        icon: this.getCheckbox(this.hasFacilities),
         isActive: 'Midterm Fee Increase Select Facilities' === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++,
       });
 
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         this.navBarList?.forEach((item) => {
           items.push({
             title: 'Parent Fee Verification',
@@ -916,7 +918,7 @@ export default {
     },
     getAddNewFacilityCCOFNavigation() {
       let items = [];
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         this.navBarList?.forEach((item) => {
           items.push(
             {
@@ -982,7 +984,7 @@ export default {
         position: positionIndex++,
         navBarId: navBarId++,
       });
-      if (this.navBarList?.length > 0) {
+      if (this.hasFacilities) {
         this.navBarList?.forEach((item) => {
           items.push(
             {
@@ -1051,7 +1053,7 @@ export default {
       });
       let retval = {
         title: NAV_BAR_GROUPS.ECEWE,
-        isAccessible: true,
+        isAccessible: this.hasFacilities,
         icon: this.getCheckbox(this.areChildrenComplete(items)),
         expanded: this.isExpanded(NAV_BAR_GROUPS.ECEWE),
         items: items,
@@ -1094,12 +1096,12 @@ export default {
       return title.replace(/\s+/g, '');
     },
     isCCFRIOptInComplete() {
-      return this.navBarList?.length > 0
+      return this.hasFacilities
         ? this.navBarList.every((facility) => facility.ccfriOptInStatus == 1 || facility.ccfriOptInStatus == 0)
         : false;
     },
     isEceweFacilitiesComplete() {
-      return this.navBarList?.length > 0
+      return this.hasFacilities
         ? this.navBarList.every((facility) => facility.eceweOptInStatus == 1 || facility.eceweOptInStatus == 0)
         : false;
     },
