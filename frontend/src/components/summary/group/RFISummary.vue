@@ -1,7 +1,11 @@
 <template>
   <v-form ref="rfiSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
-      <SummaryExpansionPanelTitle title="RFI" :loading="isApplicationProcessing" :is-complete="isValidForm" />
+      <SummaryExpansionPanelTitle
+        title="Request for Information (RFI)"
+        :loading="isApplicationProcessing"
+        :is-complete="isValidForm"
+      />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
       <div>
