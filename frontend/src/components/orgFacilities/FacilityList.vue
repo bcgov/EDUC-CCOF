@@ -72,7 +72,7 @@ export default {
         { title: 'Facility Name', value: 'facilityName' },
         { title: 'Facility Address', key: 'facilityAddress', value: (item) => `${item.addressLineOne}, ${item.city}` },
         { title: 'Facility ID', value: 'facilityAccountNumber' },
-        { title: 'License Number', value: 'licenseNumber' },
+        { title: 'Licence Number', value: 'licenseNumber' },
         { title: 'Action', key: 'action' },
       ];
     },
