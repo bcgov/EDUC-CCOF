@@ -2,7 +2,7 @@
   <v-form ref="nmfSummaryForm" v-model="isValidForm">
     <v-expansion-panel-title>
       <SummaryExpansionPanelTitle
-        title="New, New-to-CCFRI, and Modified Facilities (NMF)"
+        title="Request for Information: New, New-to-CCFRI, and Modified Facilities"
         :loading="isApplicationProcessing"
         :is-complete="isValidForm"
       />
