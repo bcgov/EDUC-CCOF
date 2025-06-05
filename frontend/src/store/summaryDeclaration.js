@@ -86,6 +86,7 @@ function mapFacility(facility, isGroup, eceweOrg) {
     facilityId: facility.facilityId,
     facilityName: facility.facilityInfo?.facilityName,
     facilityAccountNumber: facility.facilityInfo?.facilityAccountNumber,
+    healthAuthority: facility.facilityInfo?.healthAuthority,
     licenseNumber: facility.facilityInfo?.licenseNumber,
     ccfriOptInStatus: facility.ccfri?.ccfriOptInStatus,
     eceweOptInStatus: facility.ecewe?.optInOrOut,

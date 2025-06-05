@@ -1,88 +1,43 @@
 <template>
-  <v-card class="facility-info pa-4 pb-2">
-    <v-row no-gutters>
+  <v-card class="facility-info px-6 py-2">
+    <v-row>
       <v-col cols="12">
-        <div class="summary-label">Facility Name</div>
-        <v-textarea
-          placeholder="Required"
-          :model-value="facilityInfo.facilityName"
-          class="summary-value"
-          auto-grow
-          rows="2"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-        />
-      </v-col>
-      <v-col cols="12" md="3">
-        <div class="summary-label">Facility ID</div>
-        <!-- Facility ID is assigned in dynamics, and may not exist as far as I know, so no required is implemented here -- JB -->
-        <v-text-field
-          :model-value="facilityInfo?.facilityAccountNumber"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-        />
-      </v-col>
-      <v-col cols="12" md="3">
-        <div class="summary-label">Licence Number</div>
-        <v-text-field
-          placeholder="Required"
-          :model-value="facilityInfo?.licenseNumber"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-        />
+        <p class="summary-label">Facility Name</p>
+        <p :class="isEmpty(facilityInfo?.facilityName) ? 'text-error' : ''">
+          {{ isEmpty(facilityInfo?.facilityName) ? 'Required' : facilityInfo?.facilityName }}
+        </p>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row>
+      <v-col cols="12" md="4" sm="6">
+        <p class="summary-label">Facility ID</p>
+        <p>{{ facilityInfo?.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}</p>
+      </v-col>
+      <v-col cols="12" md="4" sm="6">
+        <p class="summary-label">Licence Number</p>
+        <p :class="isEmpty(facilityInfo?.licenseNumber) ? 'text-error' : ''">
+          {{ isEmpty(facilityInfo?.licenseNumber) ? 'Required' : facilityInfo?.licenseNumber }}
+        </p>
+      </v-col>
+      <v-col cols="12" md="4" sm="6">
+        <p class="summary-label">Health Authority</p>
+        <p :class="facilityInfo.healthAuthority ? '' : 'text-error'">
+          {{ getHealthAuthorityNameById(facilityInfo.healthAuthority) ?? 'Required' }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12" md="6">
-        <div class="summary-label">Licence Categories</div>
-        <v-textarea
-          :model-value="licenseCategories"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-          no-resize
-          rows="3"
-        />
+        <p class="summary-label">Licence Categories</p>
+        <p class="pr-4">{{ licenseCategories }}</p>
       </v-col>
-      <v-col cols="12" md="3">
-        <div class="summary-label">CCFRI</div>
-        <v-text-field
-          placeholder="Required"
-          :model-value="getOptInOptOut(ccfriStatus)"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-        />
+      <v-col cols="12" md="3" sm="6">
+        <p class="summary-label">CCFRI</p>
+        <p :class="ccfriStatus != null ? '' : 'text-error'">{{ getOptInOptOut(ccfriStatus) ?? 'Required' }}</p>
       </v-col>
-      <v-col cols="12" md="3">
-        <div class="summary-label">ECE-WE</div>
-        <v-text-field
-          placeholder="Required"
-          :model-value="getOptInOptOut(eceweStatus)"
-          class="summary-value"
-          density="compact"
-          flat
-          variant="solo"
-          hide-details
-          readonly
-        />
+      <v-col cols="12" md="3" sm="6">
+        <p class="summary-label">ECE-WE</p>
+        <p :class="eceweStatus != null ? '' : 'text-error'">{{ getOptInOptOut(eceweStatus) ?? 'Required' }}</p>
       </v-col>
     </v-row>
   </v-card>
@@ -117,12 +72,5 @@ export default {
 <style scoped>
 .facility-info {
   border-top: 5px solid grey !important;
-}
-:deep(::placeholder) {
-  color: #d8292f !important;
-  opacity: 1 !important;
-}
-:deep(.v-field__input) {
-  padding-left: 0px;
 }
 </style>
