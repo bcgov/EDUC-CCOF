@@ -1,28 +1,20 @@
 <template>
   <v-card :class="facility.isComplete ? 'success-card' : 'error-card'" elevation="4" class="pa-4 d-flex flex-column">
-    <v-row no-gutters>
-      <v-col cols="11" class="pa-2 pt-0">
+    <v-row no-gutters class="pb-2">
+      <v-col cols="8" class="px-2">
         <p class="summary-label">Facility Name</p>
         <p :class="facility.facilityName ? '' : 'text-error'" class="summary-value">
           {{ facility.facilityName ?? 'Required' }}
         </p>
       </v-col>
-      <v-col cols="1" class="d-flex justify-end">
-        <v-icon size="small">mdi-open-in-new</v-icon>
-      </v-col>
-    </v-row>
-    <v-row no-gutters>
-      <v-col cols="6" md="4" class="pa-2">
+      <v-col cols="3" class="px-2">
         <p class="summary-label">Facility ID</p>
         <p class="summary-value">
           {{ facility.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}
         </p>
       </v-col>
-      <v-col cols="6" md="4" class="pa-2">
-        <p class="summary-label">Health Authority</p>
-        <p :class="facility.healthAuthority ? '' : 'text-error'" class="summary-value">
-          {{ getHealthAuthorityNameById(facility.healthAuthority) ?? 'Required' }}
-        </p>
+      <v-col cols="1" class="d-flex justify-end">
+        <v-icon size="small">mdi-open-in-new</v-icon>
       </v-col>
     </v-row>
     <v-row no-gutters>
@@ -42,6 +34,14 @@
         <p class="summary-label">ECE-WE</p>
         <p :class="facility.eceweOptInStatus != null ? '' : 'text-error'" class="summary-value">
           {{ getOptInOptOut(facility.eceweOptInStatus) ?? 'Required' }}
+        </p>
+      </v-col>
+    </v-row>
+    <v-row no-gutters>
+      <v-col cols="6" md="4" class="pa-2">
+        <p class="summary-label">Health Authority</p>
+        <p :class="facility.healthAuthority ? '' : 'text-error'" class="summary-value">
+          {{ getHealthAuthorityNameById(facility.healthAuthority) ?? 'Required' }}
         </p>
       </v-col>
     </v-row>
