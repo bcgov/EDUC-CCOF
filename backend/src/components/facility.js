@@ -168,7 +168,7 @@ async function updateFacilityLicenseType(facilityId, data) {
   const categories = await getLicenseCategory();
   const groupLicenseCategory = categories.groupLicenseCategory;
 
-  // Figure out new License categories from data form
+  // Figure out new Licence categories from data form
   const newLicenseCategories = [];
   if (data.familyLicenseType) {
     newLicenseCategories.push(categories.familyLicenseCategory.find((item) => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
@@ -190,9 +190,9 @@ async function updateFacilityLicenseType(facilityId, data) {
     }
   }
 
-  // Find the current License Categories associated with this facility
+  // Find the current Licence Categories associated with this facility
   const toDelete = [];
-  log.verbose('New license categories: ', newLicenseCategories);
+  log.verbose('New licence categories: ', newLicenseCategories);
   try {
     let currentCategoryList = await getOperation(
       `ccof_facility_licenseses?$select=ccof_facility_licensesid,_ccof_licensecategory_value,_ccof_facility_value&$filter=_ccof_facility_value eq '${facilityId}'`,
@@ -226,7 +226,7 @@ async function updateFacilityLicenseType(facilityId, data) {
       });
     });
   } catch (e) {
-    log.error('Error while trying to get list of FacilityLicenses.', e);
+    log.error('Error while trying to get list of FacilityLicences.', e);
     throw e;
   }
 }
