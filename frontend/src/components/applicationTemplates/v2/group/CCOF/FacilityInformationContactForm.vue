@@ -7,6 +7,7 @@
       :rules="rules.required"
       inline
       label="Is the Facility Contact the same as the Organization's Authorized Signing Authority Information?"
+      data-cy="same-contact-org-button"
       class="application-label mt-6"
       @update:model-value="resetFacilityContact"
     >

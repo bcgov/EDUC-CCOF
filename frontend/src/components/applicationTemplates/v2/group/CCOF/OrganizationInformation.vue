@@ -197,6 +197,7 @@
               :rules="rules.required"
               inline
               label="Organization Street Address same as Mailing Address"
+              data-cy="same-mailing-address-button"
               class="application-label mt-6"
               @update:model-value="resetStreetAddress"
             >

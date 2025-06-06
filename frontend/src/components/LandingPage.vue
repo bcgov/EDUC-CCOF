@@ -69,6 +69,7 @@
               <v-btn
                 v-if="isLoadingComplete && isCancelPcfButtonEnabled"
                 class="red-button"
+                data-cy="cancel-application-button"
                 @click="toggleCancelApplicationDialog"
               >
                 Cancel Application

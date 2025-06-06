@@ -228,6 +228,7 @@
           color="primary"
           :disabled="isLocked"
           hide-details
+          data-cy="under-36months-checkbox"
           @update:model-value="fundingModel.maxGroupChildCareUnder36 = null"
         />
         <v-text-field
@@ -238,6 +239,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Group Child Care (Under 36 Months)"
+          data-cy="under-36months-max-number"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareUnder36')"
         />
@@ -249,6 +251,7 @@
           color="primary"
           :disabled="isLocked"
           hide-details
+          data-cy="30months-to-schoolage-checkbox"
           @update:model-value="fundingModel.maxGroupChildCare36 = null"
         />
         <v-text-field
@@ -259,6 +262,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Group Child Care (30 Months to School Age)"
+          data-cy="30months-to-schoolage-max-number"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCare36')"
         />
@@ -339,6 +343,7 @@
             variant="outlined"
             :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
             label="Maximum Licensed Capacity"
+            data-cy="max-licensed-capacity"
             @wheel="$event.target.blur()"
             @update:model-value="convertBlankNumberToNull(fundingModel, 'maxLicensesCapacity')"
           />
@@ -441,6 +446,7 @@
           :rules="rules.required"
           inline
           label="Is the facility located on school property?"
+          data-cy="school-property-button"
           class="application-label"
         >
           <v-radio label="Yes" :value="1" />
@@ -503,6 +509,7 @@
           :disabled="isLocked"
           inline
           label="Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?"
+          data-cy="offer-extended-cc-button"
           class="application-label"
           @update:model-value="resetExtendedHoursFields"
         >

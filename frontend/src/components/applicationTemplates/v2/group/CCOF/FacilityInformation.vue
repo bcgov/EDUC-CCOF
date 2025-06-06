@@ -81,6 +81,7 @@
                 :hide-details="isLocked"
                 :rules="rules.required"
                 variant="outlined"
+                data-cy="health-authority-select"
               />
             </v-col>
           </v-row>

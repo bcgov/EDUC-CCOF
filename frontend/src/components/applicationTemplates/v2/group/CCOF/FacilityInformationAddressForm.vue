@@ -8,6 +8,7 @@
         :rules="rules.required"
         inline
         label="Is the Facility Street Address the same as the Organization Street Address?"
+        data-cy="same-address-org-button"
         class="application-label mt-6"
         @update:model-value="resetFacilityAddress"
       >

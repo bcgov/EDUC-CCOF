@@ -34,6 +34,7 @@
             :loading="deletingApplication"
             size="large"
             width="200px"
+            data-cy="continue-cancel-button"
             @click="deletePcf"
           >
             Continue
