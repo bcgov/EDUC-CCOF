@@ -91,7 +91,9 @@
         <v-row no-gutters>
           <v-col cols="12" md="8" class="pr-2">
             <p class="summary-label">{{ legalNameLabel }}</p>
+            <p v-if="summaryModel?.organization?.legalName" class="py-2">{{ summaryModel?.organization?.legalName }}</p>
             <v-text-field
+              v-else
               placeholder="Required"
               :model-value="summaryModel?.organization?.legalName"
               class="summary-value"

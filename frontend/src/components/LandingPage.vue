@@ -27,7 +27,7 @@
               <p v-else>Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
             </div>
             <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
-              <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
+              <v-container v-for="item in CCOF_NEW_APPLICATION_TEXT" :key="item.infoTitle" class="pa-0" fluid>
                 <ul class="pl-6">
                   <li class="pa-0">
                     {{ item.title }}
@@ -283,7 +283,7 @@
             </h2>
           </div>
         </v-col>
-        <v-col cols="12" md="6" class="my-2 my-md-0 d-flex justify-md-end">
+        <v-col v-if="showOrganizationClosuresButton" cols="12" md="6" class="my-2 my-md-0 d-flex justify-md-end">
           <AppButton size="large" height="50" @click="goToOrganizationClosures">Organization Closures</AppButton>
         </v-col>
       </v-row>
@@ -397,24 +397,7 @@ export default {
   data() {
     return {
       input: '',
-      PATHS: PATHS,
-      results: {},
       showCancelDialog: false,
-      ccofNewApplicationText: [
-        {
-          title: 'CCOF Base Funding',
-          body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
-        },
-        {
-          title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
-          body: 'The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
-        },
-        {
-          title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
-          body: 'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
-        },
-      ],
-      CCOFCardTitle: 'Apply for Child Care Operating Funding (CCOF) including:',
       isLoadingComplete: false,
       selectedProgramYear: undefined,
     };
@@ -471,10 +454,11 @@ export default {
       //should not reach here- perhaps change-
       return this.formattedProgramYear;
     },
+    selectedProgramYearId() {
+      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.programYearId;
+    },
     getFundingAgreementNumberByYear() {
-      if (this.selectedProgramYear)
-        return this.applicationMap?.get(this.selectedProgramYear.programYearId)?.fundingAgreementNumber;
-      return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
+      return this.applicationMap?.get(this.selectedProgramYearId)?.fundingAgreementNumber;
     },
     getActionRequiredApplicationsForCCOFCard() {
       const applicationList = Array.from(this.applicationMap?.values());
@@ -488,9 +472,7 @@ export default {
       });
     },
     facilityListForFacilityCards() {
-      if (this.selectedProgramYear)
-        return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYear?.programYearId);
-      return this.getFacilityListForPCFByProgramYearId(this.programYearId);
+      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     programYearNameForFacilityCards() {
       if (this.selectedProgramYear) return this.selectedProgramYear?.name;
@@ -642,6 +624,13 @@ export default {
         !this.userInfo.organizationBypassGoodStandingCheck
       );
     },
+    showOrganizationClosuresButton() {
+      const application = this.applicationMap?.get(this.selectedProgramYearId);
+      // XXX (vietle-cgi) - Status texts come from CCFRI_STATUS_CODES in parseFacilityData() (user.js backend).
+      return application?.facilityList?.some((facility) =>
+        ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
+      );
+    },
   },
   async created() {
     this.CCOF_STATUS_NEW = 'NEW';
@@ -655,18 +644,46 @@ export default {
     this.RENEW_STATUS_CONTINUE = 'CONTINUE';
     this.RENEW_STATUS_APPROVED = 'APPROVED';
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
+    this.PATHS = PATHS;
 
-    this.isLoadingComplete = false;
-    this.getAllMessagesVuex();
-    this.refreshNavBarList();
-    await this.getChangeRequestList();
-    this.isLoadingComplete = true;
+    this.CCOF_NEW_APPLICATION_TEXT = [
+      {
+        title: 'CCOF Base Funding',
+        body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
+      },
+      {
+        title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
+        body: 'The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
+      },
+      {
+        title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
+        body: 'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
+      },
+    ];
+
+    await this.loadData();
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsRenewal']),
+    ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
+    async loadData() {
+      try {
+        this.isLoadingComplete = false;
+        await Promise.all([
+          this.loadApplicationFromStore(this.latestProgramYearId),
+          this.getAllMessages(this.organizationId),
+          this.getChangeRequestList(),
+        ]);
+        this.refreshNavBarList();
+      } catch (error) {
+        console.error('Failed to load data for Landing Page.', error);
+        this.setFailureAlert('Failed to load data.');
+      } finally {
+        this.isLoadingComplete = true;
+      }
+    },
     toggleCancelApplicationDialog() {
       this.showCancelDialog = !this.showCancelDialog;
     },
@@ -754,19 +771,8 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      const programYearId = this.selectedProgramYear
-        ? this.selectedProgramYear.programYearId
-        : this.latestProgramYearId;
-      this.$router.push(`${PATHS.CLOSURES}/${programYearId}`);
+      this.$router.push(`${PATHS.CLOSURES}/${this.selectedProgramYearId}`);
     },
-    async getAllMessagesVuex() {
-      try {
-        await this.getAllMessages(this.organizationId);
-      } catch (error) {
-        console.info(error);
-      }
-    },
-
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
@@ -786,23 +792,22 @@ export default {
       else if (application?.unlockDeclaration) this.goToSummaryDeclaration(programYearId);
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
-      const programYearId = this.selectedProgramYear?.programYearId
-        ? this.selectedProgramYear?.programYearId
-        : this.programYearId;
-      const application = this.applicationMap?.get(programYearId);
-      if (this.isCCFRIUnlock(ccfriApplicationId, application)) this.goToCCFRI(ccfriApplicationId, application);
-      else if (this.isNMFUnlock(ccfriApplicationId, application)) this.goToNMF(ccfriApplicationId, programYearId);
-      else if (this.isRFIUnlock(ccfriApplicationId, application)) this.goToRFI(ccfriApplicationId, programYearId);
-      else if (this.isAFSUnlock(ccfriApplicationId, application)) this.goToAFS(ccfriApplicationId, programYearId);
+      const application = this.applicationMap?.get(this.selectedProgramYearId);
+      if (this.isCCFRIUnlock(ccfriApplicationId, application)) {
+        this.goToCCFRI(ccfriApplicationId, application);
+      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
+        this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isRFIUnlock(ccfriApplicationId, application)) {
+        this.goToRFI(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isAFSUnlock(ccfriApplicationId, application)) {
+        this.goToAFS(ccfriApplicationId, this.selectedProgramYearId);
+      }
     },
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
     },
     isFacilityCardUnlock(ccfriApplicationId) {
-      const programYearId = this.selectedProgramYear?.programYearId
-        ? this.selectedProgramYear?.programYearId
-        : this.programYearId;
-      let application = this.applicationMap?.get(programYearId);
+      const application = this.applicationMap?.get(this.selectedProgramYearId);
       return (
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
         this.isNMFUnlock(ccfriApplicationId, application) ||
