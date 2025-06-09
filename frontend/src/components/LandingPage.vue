@@ -27,7 +27,7 @@
               <p v-else>Apply for Child Care Operating Funding <strong>(CCOF)</strong> including:</p>
             </div>
             <div v-if="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
-              <v-container v-for="item in ccofNewApplicationText" :key="item.infoTitle" class="pa-0" fluid>
+              <v-container v-for="item in CCOF_NEW_APPLICATION_TEXT" :key="item.infoTitle" class="pa-0" fluid>
                 <ul class="pl-6">
                   <li class="pa-0">
                     {{ item.title }}
@@ -398,20 +398,6 @@ export default {
     return {
       input: '',
       showCancelDialog: false,
-      ccofNewApplicationText: [
-        {
-          title: 'CCOF Base Funding',
-          body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
-        },
-        {
-          title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
-          body: 'The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
-        },
-        {
-          title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
-          body: 'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
-        },
-      ],
       isLoadingComplete: false,
       selectedProgramYear: undefined,
     };
@@ -660,6 +646,21 @@ export default {
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
     this.PATHS = PATHS;
 
+    this.CCOF_NEW_APPLICATION_TEXT = [
+      {
+        title: 'CCOF Base Funding',
+        body: '<p><strong>(CCOF)</strong> Base Funding assists eligible licensed family and group child care providers with the day-to-day costs of running a facility.</p><strong> CCOF Base Funding is a prerequisite to participate in CCFRI and ECE-WE.</strong>',
+      },
+      {
+        title: 'Child Care Fee Reduction Initiative (CCFRI) Funding',
+        body: 'The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize parents’ monthly child care fees.',
+      },
+      {
+        title: 'Early Childhood Educator Wage Enhancement (ECE-WE) Funding',
+        body: 'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood Educators (ECEs) they employ directly.',
+      },
+    ];
+
     await this.loadData();
   },
   methods: {
@@ -792,13 +793,15 @@ export default {
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
       const application = this.applicationMap?.get(this.selectedProgramYearId);
-      if (this.isCCFRIUnlock(ccfriApplicationId, application)) this.goToCCFRI(ccfriApplicationId, application);
-      else if (this.isNMFUnlock(ccfriApplicationId, application))
+      if (this.isCCFRIUnlock(ccfriApplicationId, application)) {
+        this.goToCCFRI(ccfriApplicationId, application);
+      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
         this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
-      else if (this.isRFIUnlock(ccfriApplicationId, application))
+      } else if (this.isRFIUnlock(ccfriApplicationId, application)) {
         this.goToRFI(ccfriApplicationId, this.selectedProgramYearId);
-      else if (this.isAFSUnlock(ccfriApplicationId, application))
+      } else if (this.isAFSUnlock(ccfriApplicationId, application)) {
         this.goToAFS(ccfriApplicationId, this.selectedProgramYearId);
+      }
     },
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
