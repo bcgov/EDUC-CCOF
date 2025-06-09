@@ -30,6 +30,7 @@
                 :disabled="isReadOnly"
                 :rules="rules.required"
                 color="primary"
+                @update:model-value="resetClosures"
               >
                 <v-radio label="Yes" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.YES" />
                 <v-radio label="No" :value="CCFRI_HAS_CLOSURE_FEE_TYPES.NO" />
