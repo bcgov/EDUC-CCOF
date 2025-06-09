@@ -397,8 +397,6 @@ export default {
   data() {
     return {
       input: '',
-      PATHS: PATHS,
-      results: {},
       showCancelDialog: false,
       ccofNewApplicationText: [
         {
@@ -661,18 +659,31 @@ export default {
     this.RENEW_STATUS_CONTINUE = 'CONTINUE';
     this.RENEW_STATUS_APPROVED = 'APPROVED';
     this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
+    this.PATHS = PATHS;
 
-    this.isLoadingComplete = false;
-    this.getAllMessagesVuex();
-    this.refreshNavBarList();
-    await this.getChangeRequestList();
-    this.isLoadingComplete = true;
+    await this.loadData();
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsRenewal']),
+    ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
+    async loadData() {
+      try {
+        this.isLoadingComplete = false;
+        await Promise.all([
+          this.loadApplicationFromStore(this.latestProgramYearId),
+          this.getAllMessages(this.organizationId),
+          this.getChangeRequestList(),
+        ]);
+        this.refreshNavBarList();
+      } catch (error) {
+        console.error('Failed to load data for Landing Page.', error);
+        this.setFailureAlert('Failed to load data.');
+      } finally {
+        this.isLoadingComplete = true;
+      }
+    },
     toggleCancelApplicationDialog() {
       this.showCancelDialog = !this.showCancelDialog;
     },
@@ -762,14 +773,6 @@ export default {
     goToOrganizationClosures() {
       this.$router.push(`${PATHS.CLOSURES}/${this.selectedProgramYearId}`);
     },
-    async getAllMessagesVuex() {
-      try {
-        await this.getAllMessages(this.organizationId);
-      } catch (error) {
-        console.info(error);
-      }
-    },
-
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
