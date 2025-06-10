@@ -13,7 +13,6 @@
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
             <v-tab value="facility-details">Facility Details</v-tab>
             <v-tab value="programs-and-services">Programs and Services</v-tab>
-            <v-tab value="licences-and-service-details">Licences and Service Details</v-tab>
             <v-tab value="closures">Closures</v-tab>
           </v-tabs>
           <v-card-text>
@@ -22,7 +21,6 @@
                 <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
               </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
-              <v-window-item value="licences-and-service-details">Licences and Service Details</v-window-item>
               <v-window-item value="closures">Closures</v-window-item>
             </v-window>
           </v-card-text>
