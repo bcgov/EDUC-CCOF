@@ -42,7 +42,6 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useDocumentStore } from '@/store/document.js';
 import { PATHS, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
-//import { mdyToIso } from '@/utils/formatTime';
 import { formatUTCDateToStandardFormat } from '@/utils/format';
 
 const EMPTY_DATE = '- - - -';
