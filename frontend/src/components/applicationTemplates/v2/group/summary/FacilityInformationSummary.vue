@@ -44,7 +44,9 @@
       </v-row>
       <div>
         <p class="summary-label">Facility Street Address</p>
+        <p v-if="facilityInfo?.facilityAddress" class="py-2">{{ facilityInfo?.facilityAddress }}</p>
         <v-text-field
+          v-else
           placeholder="Required"
           :model-value="facilityInfo?.facilityAddress"
           class="summary-value"
@@ -103,7 +105,9 @@
       <v-row no-gutters>
         <v-col cols="12" md="4">
           <p class="summary-label">Facility Contact Name</p>
+          <p v-if="facilityInfo?.contactName" class="py-2">{{ facilityInfo?.contactName }}</p>
           <v-text-field
+            v-else
             placeholder="Required"
             :model-value="facilityInfo?.contactName"
             class="summary-value"

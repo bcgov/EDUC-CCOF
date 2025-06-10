@@ -8,7 +8,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get facility license categories - ${error}`);
+      console.log(`Failed to get facility licence categories - ${error}`);
       throw error;
     }
   },

@@ -416,7 +416,7 @@ async function populateSummaryDataForFacility(facility) {
     const childCareLicenses = await getLicenseCategoriesByFacilityId(facility.facilityId);
     facility.childCareLicenses = Array.from(childCareLicenses.values());
   } catch (e) {
-    log.warn('populateSummaryDataForFacility unable to find License Categories', e);
+    log.warn('populateSummaryDataForFacility unable to find Licence Categories', e);
   }
 
   // check for opt out - no need for more calls if opt-out

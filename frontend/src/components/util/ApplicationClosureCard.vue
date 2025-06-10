@@ -141,6 +141,7 @@
 import { cloneDeep, isEmpty } from 'lodash';
 import moment from 'moment';
 import { mapState, mapWritableState } from 'pinia';
+import { uuid } from 'vue-uuid';
 
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -224,7 +225,11 @@ export default {
   methods: {
     addRow(isAddButtonClicked) {
       if (!isAddButtonClicked && !isEmpty(this.updatedClosures)) return;
-      this.updatedClosures.push(this.showApplicationTemplateV1 ? {} : { fullClosure: true });
+      const newClosure = { id: uuid.v1() };
+      if (!this.showApplicationTemplateV1) {
+        newClosure.fullClosure = true;
+      }
+      this.updatedClosures.push(newClosure);
     },
     //builds an array of dates to keep track of all days of the selected closure period.
     //this array is used to check if a user selects an overlapping date
@@ -242,7 +247,7 @@ export default {
     validateClosureDates(obj) {
       // Get all closure dates except for the currently edited row
       const otherClosureDates = this.updatedClosures
-        .filter((dateObj) => dateObj.closureId !== obj.closureId)
+        .filter((dateObj) => dateObj.id !== obj.id || dateObj.closureId !== obj.closureId)
         .reduce((acc, dateObj) => {
           return [...acc, ...this.buildDateArray(dateObj.startDate, dateObj.endDate)];
         }, []);
