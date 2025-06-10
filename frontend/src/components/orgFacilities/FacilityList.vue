@@ -41,6 +41,7 @@
 import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
+import { PATHS } from '@/utils/constants';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -89,7 +90,7 @@ export default {
       return new Date(facility?.fundingAgreements[0]?.endDate).toLocaleDateString();
     },
     navigateToFacility(id) {
-      alert(id);
+      this.$router.push(`${PATHS.ROOT.MANAGE_FACILITY}/${id}`);
     },
     toggleShowFilter() {
       this.showFilterInput = !this.showFilterInput;
