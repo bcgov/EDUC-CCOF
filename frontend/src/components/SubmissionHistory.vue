@@ -42,7 +42,8 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useDocumentStore } from '@/store/document.js';
 import { PATHS, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
-import { mdyToIso } from '@/utils/formatTime';
+//import { mdyToIso } from '@/utils/formatTime';
+import { formatUTCDateToStandardFormat } from '@/utils/format';
 
 const EMPTY_DATE = '- - - -';
 
@@ -56,7 +57,7 @@ export default {
         { title: 'Application/Change Request ID', value: 'appId' },
         { title: 'Type', value: 'type' },
         { title: 'Fiscal Year', value: 'fiscalYear' },
-        { title: 'Submission Date', value: 'submissionDateString', key: 'submissionDate' },
+        { title: 'Submission Date', value: 'submissionDateString' },
         { title: 'PDF', value: 'PDF' },
       ],
       sortBy: [{ key: 'submissionDate', order: 'desc' }],
@@ -96,12 +97,7 @@ export default {
     },
     getSubmissionDateString(date) {
       if (date) {
-        // date display format: YYYY/MM/DD
-        return new Date(mdyToIso(date)).toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        });
+        return formatUTCDateToStandardFormat(date);
       }
       return EMPTY_DATE;
     },
