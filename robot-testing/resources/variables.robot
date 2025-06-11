@@ -1,8 +1,8 @@
 *** Variables ***
 ${LOGIN_URL}       https://qa.mychildcareservices.gov.bc.ca/login
 ${BROWSER}         chrome
-${USER_ID}          OFMQA218
-${PASSWORD}         WelcomeQA218
+${USER_ID}
+${PASSWORD}
 ${INCORP_NUMBER_TEXT}          BC9876543
 ${MAILING_ADDRESS_TEXT}        202 UNION STREET
 ${CITY_TOWN_ORG_TEXT}        VANCOUVER

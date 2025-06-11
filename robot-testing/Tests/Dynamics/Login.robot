@@ -13,8 +13,8 @@ ${DYNAMICS_SIGNIN_NXTBTTN}   xpath=//input[@id='idSIButton9']
 ${DYNAMICS_PASSWORDPAGE_TITLE}     xpath=//div[@role='heading']
 ${DYNAMICS_PASSWORD_FIELD}   xpath=//input[@id='i0118']
 ${DYNAMICS_SIGNIN_BUTTON}  xpath=//input[@id='idSIButton9']
-${DYNAMICS_LOGIN_EMAILID}          OFMQASV1@gov.bc.ca
-${DYNAMICS_PASSWORD}         Fun is when you win1!
+${DYNAMICS_LOGIN_EMAILID}
+${DYNAMICS_PASSWORD}
 ${DYNAMICS_SIGNIN_DIALOG_TITLE}   xpath=//*[@id="dialogTitleText_1"]
 
 

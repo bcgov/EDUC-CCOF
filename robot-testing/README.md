@@ -65,7 +65,7 @@ The portal uses Vue.js/Vuetify, requiring custom JS for interacting with hidden/
 
 Many actions (e.g., clicking checkboxes, dropdowns) are handled using Execute JavaScript.
 
-Sensitive data (like credentials) should be managed using .env and loaded via python-dotenv.
+Credentials needs to be added in variables.robot before running the test case
 
 
 **Screenshot Upload**

@@ -84,7 +84,7 @@ Login and Start Application
     Execute Javascript      document.evaluate("//div[contains(@class,'v-input') and .//div[contains(., 'Do you regularly offer extended hours of child care')]]//input[@type='radio' and @value='0']",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null).singleNodeValue?.click();
     Execute JavaScript    window.scrollTo(0, 1000)
     Click Element    ${FACILITY_LICENCE_NEXT_BUTTON}
-    
+
 
     #confirmation page
 
@@ -94,7 +94,7 @@ Login and Start Application
     Element Should Be Visible    ${FACILITY_NAME_VERIFICATION}
     Click Element    ${CONFIRMATION_FACILITY_PAGE_NO_BUTTON}
     Sleep    10s
-    ${file_path}=           Join Path    ${CURDIR}      ..  ..  resources    img.png
+    ${file_path}=           Join Path    ${CURDIR}      ..  ..  resources    img_1.png
     Choose File         ${FILE_UPLOAD_PLACEHOLDER}    ${file_path}
     Click Element       ${LICENCE_UPLOAD_NEXT_BUTTON}
 
