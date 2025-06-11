@@ -37,7 +37,6 @@
 <script>
 import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
-import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
@@ -70,10 +69,8 @@ export default {
     });
 
     try {
-      if (isEmpty(this.facility)) {
-        this.facilityLoading = true;
-        this.facility = await facilityService.getFacilityById(this.facilityId);
-      }
+      this.facilityLoading = true;
+      this.facility = await facilityService.getFacilityById(this.facilityId);
     } catch (error) {
       this.setFailureAlert('There was an error loading the facility details.');
       console.error('Error loading facility: ', error);
