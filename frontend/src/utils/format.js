@@ -51,15 +51,15 @@ export function formatUTCDateToShortDateString(date) {
   return moment.utc(date).format('MMM D, YYYY');
 }
 /**
- * Converts a UTC ISO date string to a standardized date string in YYYY-MM-DD format.
+ * Converts a date string to a standardized date string in YYYY-MM-DD format.
  *
  * Expected Input:
- *   - A valid UTC ISO date string (e.g., "2025-11-27T00:00:00Z").
+ *   - A valid date string (e.g., "06/11/2025 18:12:56").
  *
  * Expected Output:
- *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-11-27").
+ *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
  */
 export function formatUTCDateToStandardFormat(date) {
   if (!date) return null;
-  return moment.utc(date).format('YYYY-MM-DD');
+  return moment(date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD');
 }
