@@ -191,7 +191,7 @@
                 <li>
                   I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do
                   hereby bind the Provider to the terms and conditions of the Funding Agreement if the Province accepts
-                  this Form and enrolls the Provider in any or all of the Child Care Operating Funding Program, the
+                  this Form and enrols the Provider in any or all of the Child Care Operating Funding Program, the
                   CCFRI, or the ECE Wage Enhancement;
                 </li>
                 <li>
@@ -203,7 +203,7 @@
                   all of the Early Learning and Child Care Act, any successor legislation, or the Funding Agreement;
                 </li>
                 <li>
-                  If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the
+                  If I have applied for and been approved by the Province to enrol in the ECE Wage Enhancement, the
                   Provider has taken all actions required under any collective agreement to which it is a party to
                   ensure it is:
                 </li>
