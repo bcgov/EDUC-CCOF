@@ -65,6 +65,10 @@ export default {
     },
   },
   async mounted() {
+    this.$router.isReady().then(() => {
+      this.tab = this.$route.query?.tab || 'facility-details';
+    });
+
     try {
       if (isEmpty(this.facility)) {
         this.facilityLoading = true;

@@ -123,6 +123,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { capitalize } from '@/utils/format';
 
 import { useOrganizationStore } from '@/store/ccof/organization';
 
@@ -145,7 +146,7 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     providerType() {
-      return `${this.organizationProviderType[0]}${this.organizationProviderType.slice(1).toLowerCase()}`;
+      return capitalize(this.organizationProviderType);
     },
   },
 };
