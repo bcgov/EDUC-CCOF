@@ -22,7 +22,7 @@ function mapClosureForBack(data) {
 
 async function getClosures(req, res) {
   try {
-    const response = await getOperation(`ccof_application_ccfri_closures${buildFilterQuery(req.query, ClosureMappings)}`);
+    const response = await getOperation(`ccof_application_ccfri_closures?${buildFilterQuery(req.query, ClosureMappings)}`);
     const closures = [];
     response?.value?.forEach((closure) => closures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON()));
     return res.status(HttpStatus.OK).json(closures);
