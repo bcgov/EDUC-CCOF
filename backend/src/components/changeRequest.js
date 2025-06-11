@@ -249,6 +249,7 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
+  delete changeActionClosureMapp._ccof_closure_value;
   delete changeActionClosureMapp._ccof_facility_value;
   delete changeActionClosureMapp._ccof_program_year_value;
   return changeActionClosureMapp;
