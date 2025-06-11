@@ -66,8 +66,8 @@
             {{ formatUTCDateToShortDateString(item.endDate) }}
           </template>
           <template #[`item.closureStatus`]="{ item }">
-            <span :class="getClosureStatusClass(item.closureStatus)">
-              {{ getClosureStatusText(item.closureStatus) }}
+            <span :class="getClosureStatusClass(item)">
+              {{ getClosureStatusText(item) }}
             </span>
           </template>
           <template #[`item.paymentEligibility`]="{ item }">
@@ -87,7 +87,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="!hasApprovedStatus(item)"
+                :disabled="isClosureReadonly(item)"
                 size="large"
                 class="text-body-2"
                 @click="updateClosure(item)"
@@ -97,7 +97,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="!hasApprovedStatus(item)"
+                :disabled="isClosureReadonly(item)"
                 size="large"
                 class="text-body-2"
                 @click="removeClosure(item)"
@@ -175,6 +175,7 @@ export default {
       isLoading: false,
       showNewClosureRequestDialog: false,
       closures: undefined,
+      pendingClosureRequests: [],
       sortBy: [
         { key: 'facilityName', order: 'asc' },
         { key: 'startDate', order: 'asc' },
@@ -232,11 +233,25 @@ export default {
         this.closures = this.closures?.filter((closure) => {
           return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.MINISTRY_REMOVED;
         });
+        await this.getPendingClosureRequestsForApprovedClosures();
         this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load closures');
       }
+    },
+    async getPendingClosureRequestsForApprovedClosures() {
+      this.pendingClosureRequests = [];
+      const approvedClosures = this.closures?.filter((closure) => this.hasApprovedStatus(closure));
+      await Promise.all(
+        approvedClosures?.map(async (closure) => {
+          const response = await ClosureService.getPendingChangeActionClosures(
+            closure.facilityId,
+            this.$route.params.programYearGuid,
+          );
+          this.pendingClosureRequests.push(...response);
+        }),
+      );
     },
     setClosureToView(closure) {
       if (closure) {
@@ -256,12 +271,21 @@ export default {
     hasApprovedStatus(closure) {
       return closure.closureStatus === CLOSURE_STATUSES.COMPLETE_APPROVED;
     },
+    hasPendingClosureRequest(closure) {
+      return this.pendingClosureRequests.some((closureRequest) => closure.closureId === closureRequest.closureId);
+    },
+    isClosureReadonly(closure) {
+      return !this.hasApprovedStatus(closure) || this.hasPendingClosureRequest(closure);
+    },
     getFacilityAccountNumber(facilityId) {
       const facility = this.getNavByFacilityId(facilityId);
       return facility?.facilityAccountNumber;
     },
-    getClosureStatusText(closureValue) {
-      switch (closureValue) {
+    getClosureStatusText(closure) {
+      if (this.hasApprovedStatus(closure) && this.hasPendingClosureRequest(closure)) {
+        return CLOSURE_STATUS_TEXTS.PENDING;
+      }
+      switch (closure.closureStatus) {
         case CLOSURE_STATUSES.PENDING:
           return CLOSURE_STATUS_TEXTS.PENDING;
         case CLOSURE_STATUSES.COMPLETE_APPROVED:
@@ -304,8 +328,11 @@ export default {
 
       return paymentEligibility;
     },
-    getClosureStatusClass(status) {
-      switch (status) {
+    getClosureStatusClass(closure) {
+      if (this.hasApprovedStatus(closure) && this.hasPendingClosureRequest(closure)) {
+        return 'status-gray';
+      }
+      switch (closure.closureStatus) {
         case CLOSURE_STATUSES.PENDING:
           return 'status-gray';
         case CLOSURE_STATUSES.COMPLETE_APPROVED:
@@ -333,6 +360,8 @@ export default {
         closureChangeRequest.facilityName = facility?.facilityName;
         closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
         this.closures.push(closureChangeRequest);
+      } else {
+        this.pendingClosureRequests.push(closureChangeRequest);
       }
       this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
       this.closureRequestType = null;

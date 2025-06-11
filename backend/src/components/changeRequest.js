@@ -10,10 +10,10 @@ const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
-const { isEmpty } = require('lodash');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
+const { buildFilterQuery } = require('./../components/utils');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -249,7 +249,8 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
-
+  delete changeActionClosureMapp._ccof_facility_value;
+  delete changeActionClosureMapp._ccof_program_year_value;
   return changeActionClosureMapp;
 }
 
@@ -359,6 +360,17 @@ async function getChangeActionClosure(req, res) {
   }
 }
 
+async function getChangeActionClosures(req, res) {
+  try {
+    const response = await getOperation(`ccof_change_action_closures?$select=${getMappingString(ChangeActionClosureMappings)}&${buildFilterQuery(req.query, ChangeActionClosureMappings)}`);
+    const changeActionClosures = response?.value?.map((changeActionClosure) => new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON());
+    return res.status(HttpStatus.OK).json(changeActionClosures);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function saveChangeRequestDocs(req, res) {
   try {
     const documents = req.body;
@@ -423,6 +435,7 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   getChangeActionClosure,
+  getChangeActionClosures,
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,
