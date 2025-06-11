@@ -41,7 +41,7 @@ import NavButton from '@/components/util/NavButton.vue';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useDocumentStore } from '@/store/document.js';
 import { PATHS, ApiRoutes } from '@/utils/constants.js';
-import { formatFiscalYearName, formatUTCDateToStandardFormat } from '@/utils/format';
+import { formatFiscalYearName, formatDateToStandardFormat } from '@/utils/format';
 
 const EMPTY_DATE = '- - - -';
 
@@ -95,7 +95,7 @@ export default {
     },
     getSubmissionDateString(date) {
       if (date) {
-        return formatUTCDateToStandardFormat(date);
+        return formatDateToStandardFormat(date);
       }
       return EMPTY_DATE;
     },

@@ -59,7 +59,7 @@ export function formatUTCDateToShortDateString(date) {
  * Expected Output:
  *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
  */
-export function formatUTCDateToStandardFormat(date) {
+export function formatDateToStandardFormat(date) {
   if (!date) return null;
   return moment(date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD');
 }
