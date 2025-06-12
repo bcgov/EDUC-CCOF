@@ -1,14 +1,21 @@
+import { isEmpty } from 'lodash';
 import { mapState } from 'pinia';
 
 import SummaryExpansionPanelTitle from '@/components/guiComponents/SummaryExpansionPanelTitle.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { getOptInOptOut, getYesNoValue, isNullOrBlank } from '@/utils/common.js';
 import {
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
+  DEFAULT_NUMBER_OF_PARTNERS,
+  EMPTY_PLACEHOLDER,
+  ERROR_MESSAGES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   OPT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -23,7 +30,11 @@ export default {
   components: { NavButton, SummaryExpansionPanelTitle },
   mixins: [alertMixin],
   computed: {
-    ...mapState(useAppStore, ['getLanguageYearLabel']),
+    ...mapState(useAppStore, [
+      'getFamilyLicenceCategoryNumberById',
+      'getHealthAuthorityNameById',
+      'getLanguageYearLabel',
+    ]),
     ...mapState(useApplicationStore, [
       'applicationUploadedDocuments',
       'isApplicationProcessing',
@@ -32,11 +43,20 @@ export default {
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel']),
-    isSoleProprietorshipPartnership() {
-      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
+    isPartnership() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP;
+    },
+    isSoleProprietorship() {
+      return this.summaryModel?.organization?.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
     },
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+    },
+    numberOfPartners() {
+      return Math.max(
+        ApplicationService.getNumberOfPartners(this.summaryModel?.organization),
+        DEFAULT_NUMBER_OF_PARTNERS,
+      );
     },
     organizationType() {
       switch (this.summaryModel?.organization?.organizationType) {
@@ -50,8 +70,10 @@ export default {
           return 'Local Government';
         case ORGANIZATION_TYPES.FIRST_NATIONS_GOVERNMENT:
           return 'First Nations Government';
-        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP:
-          return 'Sole Proprietorship or Partnership';
+        case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
+          return 'Sole Proprietorship';
+        case ORGANIZATION_TYPES.PARTNERSHIP:
+          return 'Partnership';
         default:
           return '';
       }
@@ -71,7 +93,14 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.ccfriFeeRules = [
+      rules.isNumber,
+      rules.max(CCFRI_MAX_FEE, `Max fee is $${CCFRI_MAX_FEE}.00`),
+      rules.min(CCFRI_MIN_FEE, 'Input a positive number'),
+    ];
     this.formatTime24to12 = formatTime24to12;
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FACILITY_HAS_RECEIVE_FUNDING_VALUES = FACILITY_HAS_RECEIVE_FUNDING_VALUES;
     this.OPT_STATUSES = OPT_STATUSES;
     this.ORGANIZATION_PROVIDER_TYPES = ORGANIZATION_PROVIDER_TYPES;
@@ -82,6 +111,7 @@ export default {
   methods: {
     getOptInOptOut,
     getYesNoValue,
+    isEmpty,
     isNullOrBlank,
   },
 };

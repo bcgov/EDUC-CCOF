@@ -60,12 +60,18 @@ function mapFacility(facility, isGroup, eceweOrg) {
   facility.isGroup = isGroup;
   facility.applicationTemplateVersion = applicationStore.applicationTemplateVersion;
   const facilityInNavBar = navBarStore.userProfileList?.find((item) => item.facilityId === facility.facilityId);
-  facility.hasRfi = facilityInNavBar?.hasRfi;
-  facility.hasNmf = facilityInNavBar?.hasNmf;
+  facility.hasRfi = facilityInNavBar?.hasRfi || facility.ccfri?.unlockRfi;
+  facility.hasNmf = facilityInNavBar?.hasNmf || facility.ccfri?.unlockNmf;
   facility.enableAfs = facilityInNavBar?.enableAfs;
   facility.afs = ccfriAppStore.approvableFeeSchedules?.find(
     (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
   );
+
+  if (!isGroup) {
+    facility.funding.licenceCategoryNumber = appStore.getFamilyLicenceCategoryNumberById(
+      facility.funding.licenceCategoryId,
+    );
+  }
 
   // check for opt out - no need for more calls if opt-out
   if (facility.ccfri?.ccfriId && facility.ccfri?.ccfriOptInStatus == 1) {
@@ -80,6 +86,7 @@ function mapFacility(facility, isGroup, eceweOrg) {
     facilityId: facility.facilityId,
     facilityName: facility.facilityInfo?.facilityName,
     facilityAccountNumber: facility.facilityInfo?.facilityAccountNumber,
+    healthAuthority: facility.facilityInfo?.healthAuthority,
     licenseNumber: facility.facilityInfo?.licenseNumber,
     ccfriOptInStatus: facility.ccfri?.ccfriOptInStatus,
     eceweOptInStatus: facility.ecewe?.optInOrOut,

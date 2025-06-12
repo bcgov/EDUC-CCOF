@@ -1,22 +1,12 @@
 'use strict';
 
-const {
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  deleteOperationWithObjectId,
-  sleep,
-  getLabelFromValue,
-  updateChangeRequestNewFacility,
-  postApplicationSummaryDocument,
-  postChangeRequestSummaryDocument,
-  getChangeActionDetails,
-} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue, updateChangeRequestNewFacility, getChangeActionDetails } = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const {
+  ClosureMappings,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
@@ -30,7 +20,7 @@ const {
   CCFRIApprovableFeeSchedulesMappings,
   CCFRIFacilityMappings,
 } = require('../util/mapping/Mappings');
-const { getCCFRIClosureDates, getLicenseCategoriesByFacilityId, getFacilityChildCareTypesByCcfriId, getFacilityByFacilityId } = require('./facility');
+const { getLicenseCategoriesByFacilityId, getFacilityChildCareTypesByCcfriId, getFacilityByFacilityId } = require('./facility');
 const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
@@ -217,61 +207,8 @@ async function upsertParentFees(req, res) {
 
   try {
     await patchOperationWithObjectId('ccof_applicationccfris', body[0].ccfriApplicationGuid, payload);
-
-    //dates array will always exist - even if blank.
-    //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days"
-    await postClosureDates(body[0].facilityClosureDates, body[0].ccfriApplicationGuid, res);
     return res.status(HttpStatus.OK).json();
   } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-function formatTimeForBack(timeString) {
-  if (timeString) {
-    return timeString + 'T12:00:00-07:00';
-  }
-  return timeString;
-}
-
-async function postClosureDates(dates, ccfriApplicationGuid, res) {
-  const retVal = [];
-
-  //delete all the old closure dates from the application - otherwise we will get duplicates when we save
-  const dynamicsClosureDates = await getCCFRIClosureDates(ccfriApplicationGuid);
-
-  //don't bother trying to delete if there are no dates saved
-  if (dynamicsClosureDates.length > 0) {
-    try {
-      await Promise.all(
-        dynamicsClosureDates.map(async (date) => {
-          await deleteOperationWithObjectId('ccof_application_ccfri_closures', date.closureDateId);
-        }),
-      );
-    } catch (e) {
-      log.info(e);
-      //return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data? e.data : e?.status );
-    }
-  }
-
-  try {
-    //if the user selects an end date, create a start and end date. else, use the only date for start and end.
-    await Promise.all(
-      dates.map(async (date) => {
-        const payload = {
-          ccof_startdate: formatTimeForBack(date.formattedStartDate),
-          ccof_paidclosure: date.feesPaidWhileClosed,
-          ccof_enddate: date.formattedEndDate ? formatTimeForBack(date.formattedEndDate) : formatTimeForBack(date.formattedStartDate),
-          ccof_comment: date.closureReason,
-          'ccof_ApplicationCCFRI@odata.bind': `/ccof_applicationccfris(${ccfriApplicationGuid})`,
-        };
-        const response = await postOperation('ccof_application_ccfri_closures', payload);
-        retVal.push(response);
-      }),
-    );
-    return retVal;
-  } catch (e) {
-    log.info(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -387,46 +324,6 @@ async function submitApplication(req, res) {
   }
 }
 
-async function postPdf(req, buffer) {
-  let payload;
-  if (req.params.applicationId) {
-    payload = {
-      ccof_applicationid: req.params.applicationId,
-      filename: `${req.body.summaryDeclarationApplicationName}_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filesize: buffer.byteLength,
-      subject: 'APPLICATION SUMMARY',
-      documentbody: buffer.toString('base64'),
-    };
-
-    await postApplicationSummaryDocument(payload);
-  } else {
-    payload = {
-      ccof_change_requestid: req.params.changeRequestId,
-      filename: `Change_Request_Summary_Declaration_${getCurrentDateForPdfFileName()}.pdf`,
-      filesize: buffer.byteLength,
-      subject: 'CHANGE REQUEST SUMMARY',
-      documentbody: buffer.toString('base64'),
-    };
-
-    await postChangeRequestSummaryDocument(payload);
-  }
-  return payload;
-}
-
-//returns current date in DDMMMYYYY format when saving pdf file name
-function getCurrentDateForPdfFileName() {
-  const date = new Date();
-  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Vancouver',
-    month: 'short',
-  });
-  const month = dateTimeFormatter.format(date).toUpperCase();
-  const day = date.getDate();
-  const year = date.getFullYear();
-
-  return `${day}${month}${year}`;
-}
-
 function getFacilityInMap(map, facilityId) {
   let facility = map.get(facilityId);
   if (!facility) {
@@ -519,7 +416,7 @@ async function populateSummaryDataForFacility(facility) {
     const childCareLicenses = await getLicenseCategoriesByFacilityId(facility.facilityId);
     facility.childCareLicenses = Array.from(childCareLicenses.values());
   } catch (e) {
-    log.warn('populateSummaryDataForFacility unable to find License Categories', e);
+    log.warn('populateSummaryDataForFacility unable to find Licence Categories', e);
   }
 
   // check for opt out - no need for more calls if opt-out
@@ -527,7 +424,6 @@ async function populateSummaryDataForFacility(facility) {
     const { ccfri } = facility;
     const facilityChildcareTypes = await getFacilityChildCareTypesByCcfriId(ccfri.ccfriId);
     facility.ccfri.childCareTypes = facilityChildcareTypes.childCareTypes;
-    facility.ccfri.dates = facilityChildcareTypes.dates;
 
     // load up the previous ccfri app if it exists, so we can check that we are not missing any child care fee
     // categories from the last year.
@@ -535,6 +431,10 @@ async function populateSummaryDataForFacility(facility) {
       const previousCcfriId = await getFacilityChildCareTypesByCcfriId(ccfri.previousCcfriId);
       facility.ccfri.prevYearCcfriApp = previousCcfriId;
     }
+
+    facility.ccfri.closures = [];
+    const closuresResponse = await getOperation(`ccof_application_ccfri_closures?$filter=_ccof_applicationccfri_value eq ${ccfri.ccfriId}`);
+    closuresResponse?.value?.forEach((closure) => facility.ccfri.closures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON()));
 
     if (ccfri?.hasRfi || ccfri?.unlockRfi) {
       const rfiApp = await getRfiApplicationByCcfriId(ccfri.ccfriId);
@@ -676,7 +576,7 @@ async function getChangeRequestsFromApplicationId(applicationIds) {
   try {
     const operation = `ccof_change_requests?$expand=ccof_change_action_change_request&$select=${getMappingString(
       ChangeRequestMappings,
-    )}&$filter=(Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
+    )}&$filter=ccof_change_action_change_request/any(c:(c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.NEW_CLOSURE} and c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE} and c/ccof_changetype ne ${CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE})) and (Microsoft.Dynamics.CRM.In(PropertyName='ccof_application',PropertyValues=${str}))`;
     let changeRequests = await getOperation(operation);
     changeRequests = changeRequests.value;
 

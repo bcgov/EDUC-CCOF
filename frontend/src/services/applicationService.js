@@ -5,11 +5,15 @@ import {
   AFS_STATUSES,
   APPLICATION_TEMPLATE_VERSIONS,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
+  CCFRI_MAX_FEE,
+  CCFRI_MIN_FEE,
   DOCUMENT_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_SECTOR_TYPES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
+  FAMILY_LICENCE_CATEGORIES,
+  MAX_NUMBER_OF_PARTNERS,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
@@ -23,11 +27,13 @@ import {
   isYearValid,
 } from '@/utils/validation';
 
+const showApplicationTemplateV1 = (version) => !version || version === 1;
+
 export default {
   /*
    **** Summary Declaration validations
    */
-  isOrganizationComplete(organization, isGroup) {
+  isOrganizationComplete(organization, isGroup, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
       'organizationType',
@@ -40,7 +46,6 @@ export default {
       'city2',
       'province2',
       'postalCode2',
-      'position',
       'phone',
       'email',
     ];
@@ -51,7 +56,17 @@ export default {
     ) {
       requiredFields.push('incNumber');
     }
-    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP && isGroup) {
+    if (
+      !showApplicationTemplateV1(applicationTemplateVersion) &&
+      organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP
+    ) {
+      requiredFields.push('doingBusinessAs');
+      const numberOfPartners = this.getNumberOfPartners(organization);
+      for (let i = 1; i <= numberOfPartners; i++) {
+        requiredFields.push(`partner${i}FirstName`, `partner${i}LastName`);
+      }
+    }
+    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP && isGroup) {
       requiredFields.push('contactName', 'position');
     }
     const areFieldsValid =
@@ -62,25 +77,55 @@ export default {
     return !hasEmptyFields(organization, requiredFields) && areFieldsValid;
   },
 
+  getNumberOfPartners(organization) {
+    if (isEmpty(organization)) return 0;
+    let maxIndexWithData = 0;
+    for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
+      const hasData =
+        !isEmpty(organization[`partner${i}FirstName`]?.trim()) ||
+        !isEmpty(organization[`partner${i}MiddleName`]?.trim()) ||
+        !isEmpty(organization[`partner${i}LastName`]?.trim());
+      if (hasData) {
+        maxIndexWithData = i;
+      }
+    }
+    return maxIndexWithData;
+  },
+
   isFacilityComplete(facility) {
     if (isEmpty(facility)) return false;
+    const isFacilityInformationComplete = this.isFacilityInformationComplete(
+      facility.facilityInfo,
+      facility.isGroup,
+      facility.applicationTemplateVersion,
+    );
+    const isCCOFComplete = this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion);
+    const areCCFRISectionsComplete =
+      this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+      (facility?.ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT ||
+        ((!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
+          (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
+          this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
+          (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments))));
     return (
-      this.isFacilityInformationComplete(facility.facilityInfo, facility.applicationTemplateVersion) &&
-      (facility.isRenewal ||
-        this.isCCOFComplete(facility.funding, facility.isGroup, facility.applicationTemplateVersion)) &&
+      (facility.isRenewal || (isFacilityInformationComplete && isCCOFComplete)) &&
       this.isLicenceUploadComplete(facility.uploadedDocuments) &&
-      this.isCCFRIComplete(facility.ccfri) &&
-      (!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
-      (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
-      (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments)) &&
+      areCCFRISectionsComplete &&
       this.isECEWEFacilityComplete(facility.ecewe, facility.eceweOrg, facility.languageYearLabel)
     );
   },
 
   // FACILITY INFORMATION VALIDATIONS
-  isFacilityInformationComplete(facilityInfo, applicationTemplateVersion) {
+  isFacilityInformationComplete(facilityInfo, isGroup, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
+    // Family Application - Template Version 1
+    if (!isGroup && showApplicationTemplateV1(applicationTemplateVersion)) {
+      const requiredFields = ['facilityName', 'licenseNumber', 'licenseEffectiveDate', 'hasReceivedFunding'];
+      if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
+        requiredFields.push('fundingFacility');
+      }
+      return !hasEmptyFields(facilityInfo, requiredFields);
+    }
     const requiredFields = [
       'facilityName',
       'yearBeganOperation',
@@ -96,7 +141,7 @@ export default {
       'licenseEffectiveDate',
       'hasReceivedFunding',
     ];
-    if (!showApplicationTemplateV1) {
+    if (!showApplicationTemplateV1(applicationTemplateVersion)) {
       requiredFields.push('healthAuthority');
     }
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
@@ -113,12 +158,69 @@ export default {
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
-    const showApplicationTemplateV1 = !applicationTemplateVersion || applicationTemplateVersion === 1;
-    // TODO (vietle-cgi) - add Family Application validation
-    if (showApplicationTemplateV1) {
-      return isGroup ? this.isCCOFCompleteGroupV1(funding) : true;
+    if (showApplicationTemplateV1(applicationTemplateVersion)) {
+      return isGroup ? this.isCCOFCompleteGroupV1(funding) : this.isCCOFCompleteFamilyV1(funding);
     }
-    return isGroup ? this.isCCOFCompleteGroupV2(funding) : true;
+    return isGroup ? this.isCCOFCompleteGroupV2(funding) : this.isCCOFCompleteFamilyV2(funding);
+  },
+  isCCOFCompleteFamilyV1(funding) {
+    if (isEmpty(funding)) return false;
+    const requiredFields = [
+      'licenceCategoryNumber',
+      'maxDaysPerWeek',
+      'maxWeeksPerYear',
+      'hoursFrom',
+      'hoursTo',
+      'hasClosedMonth',
+      'maxLicensesCapacity',
+      'maxSpaces',
+      'isExtendedHours',
+    ];
+    if (funding.isExtendedHours) {
+      requiredFields.push('maxCapacityExtended', 'maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
+    }
+    const areFieldsValid =
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended));
+    return !hasEmptyFields(funding, requiredFields) && areFieldsValid && isExtendedChildCareValid;
+  },
+  isCCOFCompleteFamilyV2(funding) {
+    if (isEmpty(funding)) return false;
+    const requiredFields = [
+      'licenceCategoryNumber',
+      'maxDaysPerWeek',
+      'maxWeeksPerYear',
+      'hoursFrom',
+      'hoursTo',
+      'hasClosedMonth',
+      'maxLicensesCapacity',
+      'maxSpaces',
+      'isExtendedHours',
+    ];
+    const areFieldsValid =
+      funding.maxLicensesCapacity > 0 &&
+      isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
+      isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
+      validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isExtendedCCMaximumSpacesValid = this.isFamilyExtendedCCMaximumSpacesValid(
+      funding,
+      funding.licenceCategoryNumber,
+    );
+    const isExtendedChildCareValid =
+      funding.isExtendedHours === 0 ||
+      (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
+        isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended) &&
+        isExtendedCCMaximumSpacesValid);
+    const isClosedMonthsValid =
+      !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
+    return (
+      !hasEmptyFields(funding, requiredFields) && areFieldsValid && isClosedMonthsValid && isExtendedChildCareValid
+    );
   },
   isCCOFCompleteGroupV1(funding) {
     if (isEmpty(funding)) return false;
@@ -164,6 +266,7 @@ export default {
       'maxWeeksPerYear',
       'hoursFrom',
       'hoursTo',
+      'hasClosedMonth',
       'isSchoolProperty',
       'isExtendedHours',
     ];
@@ -180,13 +283,32 @@ export default {
         this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
         this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
         this.isMultiAgeExtendedChildCareValid(funding));
+    const isClosedMonthsValid =
+      !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
     return (
       !hasEmptyFields(funding, requiredFields) &&
       areFieldsValid &&
+      isClosedMonthsValid &&
       this.hasValidLicenceCategory(funding) &&
       (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
       isExtendedChildCareValid
     );
+  },
+  hasAllMonthsClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (!funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
+  },
+  hasNoMonthClosed(funding) {
+    for (let i = 1; i <= 12; i++) {
+      if (funding[`closedIn${i}`]) {
+        return false;
+      }
+    }
+    return true;
   },
   hasLicenceCategory(funding) {
     return (
@@ -239,6 +361,68 @@ export default {
   isMultiAgeExtendedChildCareValid(funding) {
     return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
   },
+  isFamilyExtendedCCMaximumSpacesValid(funding, licenceCategoryNumber) {
+    if (isEmpty(funding) || !licenceCategoryNumber) return false;
+    const maxExtendedCC4OrLess = funding.maxLicensesCapacity * 2;
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return (
+          funding.familyExtendedCC4OrLess <= maxExtendedCC4OrLess &&
+          funding.familyExtendedCC4OrMore <= funding.maxLicensesCapacity &&
+          funding.familyExtendedCC4OrLess + funding.familyExtendedCC4OrMore > 0
+        );
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return (
+          funding.inHomeMultiAgeExtendedCC4OrLess <= maxExtendedCC4OrLess &&
+          funding.inHomeMultiAgeExtendedCC4OrMore <= funding.maxLicensesCapacity &&
+          funding.inHomeMultiAgeExtendedCC4OrLess + funding.inHomeMultiAgeExtendedCC4OrMore > 0
+        );
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return (
+          funding.multiAgeCare4OrLess <= maxExtendedCC4OrLess &&
+          funding.multiAgeCare4more <= funding.maxLicensesCapacity &&
+          funding.multiAgeCare4OrLess + funding.multiAgeCare4more > 0
+        );
+      default:
+        return false;
+    }
+  },
+  getFieldNameOfMaxSpaces4OrLessExtendedCC(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'familyExtendedCC4OrLess';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'inHomeMultiAgeExtendedCC4OrLess';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'multiAgeCare4OrLess';
+      default:
+        return null;
+    }
+  },
+  getFieldNameOfMaxSpaces4OrMoreExtendedCC(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'familyExtendedCC4OrMore';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'inHomeMultiAgeExtendedCC4OrMore';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'multiAgeCare4more';
+      default:
+        return null;
+    }
+  },
+  getFamilyLicenceCategoryNameByNumber(licenceCategoryNumber) {
+    switch (licenceCategoryNumber) {
+      case FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE:
+        return 'Family Child Care';
+      case FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE:
+        return 'In-Home Multi-Age Child Care';
+      case FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE:
+        return 'Multi-Age Child Care';
+      default:
+        return '';
+    }
+  },
 
   // LICENCE UPLOAD VALIDATIONS
   isLicenceUploadComplete(uploadedDocuments) {
@@ -249,25 +433,22 @@ export default {
   },
 
   // CCFRI VALIDATIONS
-  isCCFRIComplete(ccfri) {
+  isCCFRIComplete(ccfri, applicationTemplateVersion) {
     if (ccfri?.ccfriOptInStatus == null) return false;
     if (ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT) return true;
-    const requiredFields = ['hasClosureFees'];
     const areAllChildCareTypesComplete = ccfri?.childCareTypes?.every((childCareType) =>
       this.isChildCareTypeComplete(childCareType),
     );
     return (
-      !hasEmptyFields(ccfri, requiredFields) &&
       areAllChildCareTypesComplete &&
-      (ccfri?.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO || this.areClosureDatesComplete(ccfri?.dates))
+      // CCFRI-4636 - Closure-related questions were removed from the CCFRI (Parent Fees) section starting with Application Template Version 2.
+      (!showApplicationTemplateV1(applicationTemplateVersion) ||
+        this.isClosuresComplete(ccfri, applicationTemplateVersion))
     );
   },
 
   isChildCareTypeComplete(childCareType) {
-    const requiredFields = [
-      'programYear',
-      'childCareCategory',
-      'feeFrequency',
+    const feeFields = [
       'approvedFeeApr',
       'approvedFeeMay',
       'approvedFeeJun',
@@ -281,12 +462,33 @@ export default {
       'approvedFeeFeb',
       'approvedFeeMar',
     ];
-    return !hasEmptyFields(childCareType, requiredFields);
+    const requiredFields = ['programYear', 'childCareCategory', 'feeFrequency', ...feeFields];
+    const areFeesValid = feeFields.every(
+      (month) =>
+        !isNaN(parseFloat(childCareType[month])) &&
+        childCareType[month] >= CCFRI_MIN_FEE &&
+        childCareType[month] <= CCFRI_MAX_FEE,
+    );
+    return !hasEmptyFields(childCareType, requiredFields) && areFeesValid;
   },
 
-  areClosureDatesComplete(closureDates) {
-    const requiredFields = ['formattedStartDate', 'formattedEndDate', 'closureReason', 'feesPaidWhileClosed'];
-    return closureDates?.every((date) => !hasEmptyFields(date, requiredFields));
+  // CLOSURES VALIDATIONS
+  isClosuresComplete(ccfri, applicationTemplateVersion) {
+    if (isEmpty(ccfri)) return false;
+    const closureRequiredFields = showApplicationTemplateV1(applicationTemplateVersion)
+      ? ['startDate', 'endDate', 'closureReason', 'paidClosure']
+      : ['startDate', 'endDate', 'closureReason', 'fullClosure'];
+    const areAllClosureItemsComplete =
+      !isEmpty(ccfri.closures) &&
+      ccfri.closures?.every((closure) => {
+        const isAgeGroupsComplete =
+          showApplicationTemplateV1(applicationTemplateVersion) || closure.fullClosure || !isEmpty(closure.ageGroups);
+        return !hasEmptyFields(closure, closureRequiredFields) && isAgeGroupsComplete;
+      });
+    return (
+      ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.NO ||
+      (ccfri.hasClosureFees === CCFRI_HAS_CLOSURE_FEE_TYPES.YES && areAllClosureItemsComplete)
+    );
   },
 
   // RFI VALIDATIONS

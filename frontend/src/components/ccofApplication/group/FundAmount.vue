@@ -44,19 +44,5 @@ export default {
   async created() {
     await this.loadData();
   },
-  methods: {
-    async loadData() {
-      try {
-        if (!this.$route.params.urlGuid) return;
-        this.setIsApplicationProcessing(true);
-        await this.loadFunding(this.$route.params.urlGuid);
-      } catch (error) {
-        console.error(`Failed to get Licence and Service details with error - ${error}`);
-        this.setFailureAlert('An error occurred while loading Licence and Service details. Please try again later.');
-      } finally {
-        this.setIsApplicationProcessing(false);
-      }
-    },
-  },
 };
 </script>

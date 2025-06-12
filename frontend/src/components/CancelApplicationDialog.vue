@@ -1,5 +1,10 @@
 <template>
-  <AppDialog v-model="isDisplayed" title="Cancel Application Warning" :loading="isLoading" @close="closeDialog">
+  <AppDialog
+    v-model="isDisplayed"
+    title="Cancel Application Warning"
+    :loading="deletingApplication"
+    @close="closeDialog"
+  >
     <template #content>
       <div class="text-center pa-4">
         <p class="mb-4">
@@ -14,7 +19,7 @@
         <v-col cols="12" md="6" class="d-flex justify-center">
           <AppButton
             id="back-button"
-            :loading="isLoading"
+            :loading="deletingApplication"
             :primary="false"
             size="large"
             width="200px"
@@ -24,7 +29,13 @@
           </AppButton>
         </v-col>
         <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton id="cancel-application-button" :loading="isLoading" size="large" width="200px" @click="deletePcf">
+          <AppButton
+            id="cancel-application-button"
+            :loading="deletingApplication"
+            size="large"
+            width="200px"
+            @click="deletePcf"
+          >
             Continue
           </AppButton>
         </v-col>
@@ -54,7 +65,7 @@ export default {
   data() {
     return {
       isDisplayed: false,
-      isLoading: false,
+      deletingApplication: false,
     };
   },
   watch: {
@@ -73,7 +84,7 @@ export default {
 
     async deletePcf() {
       try {
-        this.isLoading = true;
+        this.deletingApplication = true;
         await this.deletePcfApplication();
         this.setSuccessAlert('Application cancelled successfully');
         location.reload(true);

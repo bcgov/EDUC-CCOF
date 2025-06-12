@@ -12,20 +12,21 @@ import Logout from '@/components/Logout.vue';
 import MessagesPage from '@/components/MessagesPage.vue';
 import MinistryLogin from '@/components/MinistryLogin.vue';
 import CcofNewApplicationIntermediate from '@/components/NewAppIntermediatePage.vue';
-import OrganizationClosures from '@/components/OrganizationClosures.vue';
 import NMF from '@/components/RFI/NMF.vue';
 import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
 import SessionExpired from '@/components/SessionExpired.vue';
 import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
+import Closures from '@/components/ccfriApplication/Closures.vue';
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
-import Eligibility from '@/components/ccofApplication/family/Eligibility.vue';
+import FamilyFacilityInformation from '@/components/ccofApplication/family/FacilityInformation.vue';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
 import FamilyOrganization from '@/components/ccofApplication/family/FamilyOrganization.vue';
 import ApplicationConfirmation from '@/components/ccofApplication/group/ApplicationConfirmation.vue';
@@ -33,12 +34,15 @@ import FacilityInformation from '@/components/ccofApplication/group/FacilityInfo
 import GroupFundAmount from '@/components/ccofApplication/group/FundAmount.vue';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation.vue';
+import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
+import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -54,7 +58,6 @@ import {
   PATHS,
   changeUrl,
   changeUrlGuid,
-  closureUrl,
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
@@ -159,11 +162,11 @@ const router = createRouter({
     },
 
     {
-      path: pcfUrl(PATHS.CCOF_FAMILY_ELIGIBILITY),
-      name: 'Eligibility',
-      component: Eligibility,
+      path: pcfUrl(PATHS.CCOF_FAMILY_FACILITY),
+      name: 'Family Facility Information',
+      component: FamilyFacilityInformation,
       meta: {
-        pageTitle: 'Information to Determine Eligibility',
+        pageTitle: 'Family Facility Information',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
@@ -171,11 +174,11 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrlGuid(PATHS.CCOF_FAMILY_ELIGIBILITY),
-      name: 'Eligibility GUID',
-      component: Eligibility,
+      path: pcfUrlGuid(PATHS.CCOF_FAMILY_FACILITY),
+      name: 'Family Facility Information GUID',
+      component: FamilyFacilityInformation,
       meta: {
-        pageTitle: 'Information to Determine Eligibility',
+        pageTitle: 'Family Facility Information',
         requiresAuth: true,
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
@@ -432,6 +435,18 @@ const router = createRouter({
       },
     },
     {
+      path: pcfUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'ccfri-closures-guid',
+      component: Closures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+      },
+    },
+    {
       path: pcfUrlGuid(PATHS.CCFRI_AFS),
       name: 'ccfri-afs',
       component: ApprovableFeeSchedule,
@@ -658,6 +673,18 @@ const router = createRouter({
       },
     },
     {
+      path: changeUrlGuid(PATHS.CCFRI_CLOSURES),
+      name: 'change-request-ccfri-closures-guid',
+      component: Closures,
+      meta: {
+        pageTitle: PAGE_TITLES.CCFRI_CLOSURES,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCFRI,
+        requiresAuth: true,
+        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+      },
+    },
+    {
       path: changeUrl(PATHS.ECEWE_ELIGIBILITY),
       name: 'change-request-ECEWE-Eligibility',
       component: EceweEligibility,
@@ -796,20 +823,44 @@ const router = createRouter({
       },
     },
     {
-      path: '/:catchAll(.*)',
-      name: 'notfound',
-      redirect: '/',
+      path: PATHS.ROOT.MANAGE_ORG_FACILITIES,
+      name: 'manage-org-facilities',
+      component: ManageOrgFacilities,
       meta: {
         requiresAuth: true,
       },
     },
     {
-      path: closureUrl(),
+      path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
+      name: 'manage-facility',
+      component: ManageFacility,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_USERS,
+      name: 'manage-users',
+      component: ManageUsers,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: `${PATHS.CLOSURES}/:programYearGuid`,
       name: 'organization-closures',
       component: OrganizationClosures,
       meta: {
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/:catchAll(.*)',
+      name: 'notfound',
+      redirect: '/',
+      meta: {
         requiresAuth: true,
       },
     },

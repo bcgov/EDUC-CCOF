@@ -29,9 +29,6 @@ export const ApiRoutes = Object.freeze({
   CLOSURES: baseRoot + '/closures',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
-  FAMILY_FUND_AMOUNT: baseRoot + '/family/funding',
-  FAMILY_ELIGIBILITY: baseRoot + '/family/eligibility',
-  FAMILY_ORGANIZATION: baseRoot + '/family/organization',
   MESSAGE: baseRoot + '/messages',
   APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
@@ -48,6 +45,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
+  CHANGE_REQUEST_CLOSURE: baseRoot + '/changeRequest/closure',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
   CHANGE_REQUEST: baseRoot + '/changeRequest/',
   PDFS: baseRoot + '/pdf',
@@ -55,6 +53,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT: baseRoot + '/document',
   DOCUMENT_APPLICATION: baseRoot + '/document/application',
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
+  CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
 });
 
@@ -65,6 +64,7 @@ export const PAGE_TITLES = Object.freeze({
   LANDING_PAGE: 'What would you like to do',
   ORGANIZATION_SELECT: 'Organizations',
   CCRFI_APPLICATION: 'CCRFI Application Form',
+  CCFRI_CLOSURES: 'Closures',
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
@@ -93,6 +93,9 @@ export const PATHS = {
   //Root paths don't require a prefix/suffix
   ROOT: {
     HOME: '/',
+    MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
+    MANAGE_FACILITY: '/org-facilities/manage-facility',
+    MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
     MESSAGES: '/messages',
@@ -115,12 +118,13 @@ export const PATHS = {
   CCOF_GROUP_CONFIRM: '/group/confirmation',
 
   CCOF_FAMILY_ORG: '/family/organization',
-  CCOF_FAMILY_ELIGIBILITY: '/family/eligibility',
+  CCOF_FAMILY_FACILITY: '/family/facility',
   CCOF_FAMILY_FUNDING: '/family/funding',
 
   CCFRI_HOME: '/ccfri',
   CCFRI_AFS: '/ccfri/afs',
   CCFRI_CURRENT_FEES: '/ccfri/current-fees',
+  CCFRI_CLOSURES: '/ccfri/closures',
   CCFRI_NEW_FEES: '/ccfri/new-fees',
   CCFRI_RFI: '/ccfri/req-info',
   CCFRI_NMF: '/ccfri/req-info/new-facility',
@@ -168,10 +172,6 @@ export function changeUrlGuid(
   changeType = CHANGE_TYPES.NEW_FACILITY,
 ) {
   return `${PATHS.PREFIX.CHANGE_REQUEST}/${changeType}/${changeRecGuid}${suffix}/${urlGuid}`;
-}
-
-export function closureUrl(programYearGuid = ':programYearGuid') {
-  return `${PATHS.CLOSURES}/${programYearGuid}`; // stub
 }
 
 export const NAV_BAR_GROUPS = {
@@ -277,6 +277,9 @@ export const CHANGE_REQUEST_TYPES = {
   DATE_DIRECT_DEPOSIT_INFO: 100000012,
   PDF_CHANGE: 100000013,
   NEW_CATEGORY: 100000014,
+  NEW_CLOSURE: 100000015,
+  EDIT_EXISTING_CLOSURE: 100000016,
+  REMOVE_A_CLOSURE: 100000017,
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
@@ -368,6 +371,7 @@ export const DOCUMENT_TYPES = Object.freeze({
   APPLICATION_SUPPORTING: 'SUPPORTING',
   CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
   CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
+  CLOSURE_REQUEST: 'Closure Request Documents',
 });
 
 export const MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
@@ -413,6 +417,10 @@ export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
   INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
+  START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
+  FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
+  NO_MONTH_SELECTED: 'You should select at least one month.',
 });
 
 export const ORGANIZATION_TYPES = Object.freeze({
@@ -421,23 +429,31 @@ export const ORGANIZATION_TYPES = Object.freeze({
   REGISTERED_COMPANY: 100000002,
   LOCAL_GOVERNMENT: 100000003,
   FIRST_NATIONS_GOVERNMENT: 100000004,
-  SOLE_PROPRIETORSHIP_PARTNERSHIP: 100000005,
+  SOLE_PROPRIETORSHIP: 100000005,
+  PARTNERSHIP: 100000006,
+});
+
+export const CHANGE_ACTION_CLOSURE_STATUSES = Object.freeze({
+  SUBMITTED: 100000001,
+  CANCELLED: 100000006,
+  COMPLETE: 100000008,
 });
 
 export const CLOSURE_STATUSES = Object.freeze({
-  DRAFT: 100000000,
-  SUBMITTED: 100000001,
-  IN_PROGRESS: 100000002,
-  APPROVED: 100000003,
-  DENIED: 100000004,
-  CANCELLED: 100000005,
+  PENDING: 100000000,
+  COMPLETE_APPROVED: 100000001,
+  COMPLETE_NOT_APPROVED: 100000002,
+  CANCELLED: 100000003,
+  MINISTRY_REMOVED: 100000004,
+  WITHDRAWN: 100000005,
 });
 
 export const CLOSURE_STATUS_TEXTS = Object.freeze({
   PENDING: 'Pending',
   APPROVED: 'Approved',
-  INELIGIBLE: 'Ineligible',
-  REMOVED_BY_PROVIDER: 'Removed by Provider',
+  NOT_APPROVED: 'Not Approved',
+  CANCELLED: 'Cancelled',
+  WITHDRAWN: 'Withdrawn',
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
@@ -465,6 +481,32 @@ export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
   100000005: 'Preschool',
 });
 
+export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
+  '0 to 18 months': 100000000,
+  '18 to 36 months': 100000001,
+  '3 Years to Kindergarten': 100000002,
+  'Out of School Care - Kindergarten': 100000003,
+  'Out of School Care - Grade 1+': 100000004,
+  Preschool: 100000005,
+});
+
+export const CLOSURE_TYPES = Object.freeze({
+  KNOWN_CLOSURES: 100000000,
+  EMERGENCY_CLOSURES: 100000001,
+  NON_OPERATIONAL_CLOSURES: 100000002,
+});
+
+export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
+  ACTIVE: 1,
+  INACTIVE: 2,
+});
+
+export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
+  MULTI_AGE_CHILD_CARE: 5,
+  IN_HOME_MULTI_AGE_CHILD_CARE: 6,
+  FAMILY_CHILD_CARE: 7,
+});
+
 export const ORGANIZATION_GOOD_STANDING_STATUSES = Object.freeze({
   PASS: 1,
   FAIL: 2,
@@ -483,3 +525,9 @@ export const APPLICATION_TEMPLATE_VERSIONS = [
 ];
 
 export const EMPTY_PLACEHOLDER = '--';
+
+export const CCFRI_MAX_FEE = 9999;
+export const CCFRI_MIN_FEE = 0;
+
+export const DEFAULT_NUMBER_OF_PARTNERS = 2;
+export const MAX_NUMBER_OF_PARTNERS = 4;

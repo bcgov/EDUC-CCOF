@@ -3,7 +3,13 @@
 import { isPlainObject, sortBy } from 'lodash';
 import useRfdc from 'rfdc';
 
-import { BCSSA_REGION_LINKS, OPT_STATUSES, PATHS, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import {
+  BCSSA_REGION_LINKS,
+  OPT_STATUSES,
+  ORGANIZATION_TYPES,
+  PATHS,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
+} from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
@@ -177,5 +183,16 @@ export function getYesNoValue(value) {
       return 'Yes';
     default:
       return null;
+  }
+}
+
+export function getOrganizationNameLabel(organizationType) {
+  switch (organizationType) {
+    case ORGANIZATION_TYPES.PARTNERSHIP:
+      return 'Legal Organization Name';
+    case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
+      return 'Full Legal Name of Sole Proprietor (Licensee)';
+    default:
+      return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
   }
 }

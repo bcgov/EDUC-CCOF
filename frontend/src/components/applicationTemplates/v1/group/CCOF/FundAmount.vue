@@ -79,7 +79,7 @@
 
           <v-row v-show="fundingModel.hasClosedMonth">
             <v-col>
-              <label>If YES, check all the applicable months:</label>
+              <p>If YES, check all the applicable months:</p>
             </v-col>
           </v-row>
 

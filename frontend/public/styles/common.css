@@ -54,26 +54,6 @@ input[type="number"] {
   border: 1px solid #313132;
 }
 
-.ccof-skeleton-loader input {
-  width: 100%;
-  display: block;
-  background: linear-gradient(90deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, 0.3), hsla(0, 0%, 100%, 0));
-  background-color: rgba(0, 0, 0, 0.12);
-  background-repeat: repeat-y;
-  background-size: 50px 500px;
-  background-position: 0 0;
-  animation: bone 1.5s infinite;
-  border-radius: 1em;
-  color: transparent !important;
-}
-
-.ccof-skeleton-loader fieldset,
-.ccof-skeleton-loader label,
-.ccof-skeleton-loader .v-card__subtitle,
-.ccof-skeleton-loader .v-input--radio-group {
-  visibility: hidden;
-}
-
 .disabledButton {
   background-color: rgba(0, 0, 0, 0.12) !important;
   color: rgba(0, 0, 0, 0.26) !important;
@@ -162,6 +142,10 @@ input[type="number"] {
   background-color: #e5e4e4;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
 .span-label {
   color: #636262;
   font-style: normal;
@@ -201,13 +185,19 @@ ol.declarationBList {
 }
 
 .status-green {
-  background-color: #c8e6cb;
+  background-color: #dff0d8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
 
 .status-yellow {
-  background-color: #fdfac8;
+  background-color: #f9f1c6;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
+
+.status-red {
+  background-color: #f2dede;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
@@ -221,4 +211,8 @@ ol.declarationBList {
 .summary-value {
   font-size: medium;
   color: black;
+}
+
+.v-card.soft-outline {
+  border: 1px solid #00000040;
 }

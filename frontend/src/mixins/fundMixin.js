@@ -1,23 +1,36 @@
 import { isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ApplicationService from '@/services/applicationService';
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useFundingStore } from '@/store/ccof/funding.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { isNullOrBlank } from '@/utils/common.js';
-import { CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import formatTime from '@/utils/formatTime.js';
+import {
+  CHANGE_TYPES,
+  ERROR_MESSAGES,
+  FAMILY_LICENCE_CATEGORIES,
+  ORGANIZATION_PROVIDER_TYPES,
+} from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton },
+  components: { AppTimeInput, AppTooltip, NavButton },
   mixins: [alertMixin],
+  data() {
+    return {
+      isFormValidated: false,
+    };
+  },
   computed: {
+    ...mapState(useAppStore, ['getFamilyLicenceCategoryNumberById', 'lookupInfo']),
     ...mapState(useFundingStore, ['fundingModel']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useApplicationStore, [
@@ -50,6 +63,15 @@ export default {
       }
       return this.applicationStatus === 'SUBMITTED' && !this.isChangeRequest;
     },
+    showErrorMessage() {
+      return this.isFormValidated && !this.isLocked;
+    },
+    hasAllMonthsClosed() {
+      return ApplicationService.hasAllMonthsClosed(this.fundingModel);
+    },
+    hasNoMonthClosed() {
+      return ApplicationService.hasNoMonthClosed(this.fundingModel);
+    },
     hasLicenceCategory() {
       return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
@@ -72,12 +94,23 @@ export default {
       return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
     },
     isFormComplete() {
-      // TODO (vietle-cgi) - review this logic once the Family application is updated.
-      if (this.showApplicationTemplateV1 || this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
+      if (this.showApplicationTemplateV1) {
         return this.fundingModel.isCCOFComplete;
+      }
+      const isClosedMonthsValid =
+        !this.fundingModel.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
+      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
+        const licenceCategoryNumber = this.fundingModel.familyLicenseType
+          ? this.fundingModel.familyLicenseType
+          : this.getFamilyLicenceCategoryNumberById(this.fundingModel.licenceCategoryId);
+        const isExtendedCCMaximumSpacesValid =
+          this.fundingModel.isExtendedHours === 0 ||
+          ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.fundingModel, licenceCategoryNumber);
+        return this.fundingModel.isCCOFComplete && isClosedMonthsValid && isExtendedCCMaximumSpacesValid;
       }
       return (
         this.fundingModel.isCCOFComplete &&
+        isClosedMonthsValid &&
         this.hasLicenceCategory &&
         (!this.fundingModel.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
         (this.fundingModel.isExtendedHours === 0 ||
@@ -91,19 +124,33 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.ERROR_MESSAGES = ERROR_MESSAGES;
+    this.FAMILY_LICENCE_CATEGORIES = FAMILY_LICENCE_CATEGORIES;
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useFundingStore, ['saveFunding', 'loadFunding', 'fundingId', 'setFundingModel', 'addModelToStore']),
     ...mapActions(useNavBarStore, ['setNavBarFundingComplete']),
-
+    isEmpty,
+    async loadData() {
+      try {
+        if (!this.$route.params.urlGuid) return;
+        this.setIsApplicationProcessing(true);
+        await this.loadFunding(this.$route.params.urlGuid);
+      } catch (error) {
+        console.error(`Failed to get Licence and Service details with error - ${error}`);
+        this.setFailureAlert('An error occurred while loading Licence and Service details. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
+      }
+    },
     previous() {
       this.$router.push(this.previousPath);
     },
     next() {
       this.$router.push(this.nextPath);
     },
-    async save(isSave) {
+    async save(showConfirmation) {
       try {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
@@ -113,6 +160,10 @@ export default {
           complete: this.fundingModel.isCCOFComplete,
         });
 
+        if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
+          this.processFamilyFunding();
+        }
+
         await this.saveFunding(this.$route.params.urlGuid);
 
         if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
@@ -120,8 +171,8 @@ export default {
 
           newFac.baseFunding.isCCOFComplete = this.fundingModel.isCCOFComplete;
         }
-        if (isSave) {
-          this.setSuccessAlert('Success! Funding information has been saved.');
+        if (showConfirmation) {
+          this.setSuccessAlert('Application saved successfully.');
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving. Please try again later.');
@@ -130,7 +181,34 @@ export default {
         this.setIsApplicationProcessing(false);
       }
     },
-    formatTime,
+
+    processFamilyFunding() {
+      if (this.isEmpty(this.fundingModel)) return;
+      const resetValues = function (model, fieldNames) {
+        fieldNames.forEach((field) => (model[field] = null));
+      };
+      const FAMILY_CC_FIELDS = ['maxFamilyChildCare', 'familyExtendedCC4OrLess', 'familyExtendedCC4OrMore'];
+      const IN_HOME_MULTI_AGE_CC_FIELDS = [
+        'maxInHomeMultiAgeChildCare',
+        'inHomeMultiAgeExtendedCC4OrLess',
+        'inHomeMultiAgeExtendedCC4OrMore',
+      ];
+      const MULTI_AGE_CC_FIEDS = ['maxGroupChildCareMultiAge', 'multiAgeCare4OrLess', 'multiAgeCare4more'];
+      if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE) {
+        this.fundingModel.maxFamilyChildCare = this.fundingModel.maxLicensesCapacity;
+        resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
+        resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
+      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE) {
+        this.fundingModel.maxInHomeMultiAgeChildCare = this.fundingModel.maxLicensesCapacity;
+        resetValues(this.fundingModel, FAMILY_CC_FIELDS);
+        resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
+      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE) {
+        this.fundingModel.maxGroupChildCareMultiAge = this.fundingModel.maxLicensesCapacity;
+        resetValues(this.fundingModel, FAMILY_CC_FIELDS);
+        resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
+      }
+    },
+
     resetSelectedClosedMonths() {
       if (isEmpty(this.fundingModel)) return;
       for (let i = 1; i <= 12; i++) {

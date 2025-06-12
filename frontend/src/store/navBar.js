@@ -57,6 +57,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           ccfriApplicationId: el.ccfri?.ccfriApplicationId,
           ccfriFacilityId: el.ccfri?.ccfriFacilityId,
           isCCFRIComplete: el.ccfri?.isCCFRIComplete,
+          isCCFRIClosuresComplete: el.ccfri?.isCCFRIClosuresComplete,
           hasNmf: el.ccfri?.hasNmf,
           hasRfi: el.ccfri?.hasRfi,
           isNmfComplete: el.ccfri?.isNmfComplete,
@@ -254,6 +255,12 @@ export const useNavBarStore = defineStore('navBar', {
         this.refreshNavBar++;
       }
     },
+    setNavBarCCFRIClosuresComplete({ ccfriId, complete }) {
+      const userProfileItem = this.userProfileList.find((item) => item.ccfriApplicationId === ccfriId);
+      if (isEmpty(userProfileItem)) return;
+      userProfileItem.isCCFRIClosuresComplete = complete;
+      this.refreshNavBarList();
+    },
     setNavBarAfsComplete({ ccfriId, complete }) {
       let userProfileItem;
       if (this.changeType === 'mtfi') {
@@ -274,6 +281,7 @@ export const useNavBarStore = defineStore('navBar', {
       const navBarItem = this.userProfileList.find((item) => item.facilityId === payload.facilityId);
       if (navBarItem) {
         navBarItem.facilityName = payload.facilityName;
+        navBarItem.healthAuthority = payload.healthAuthority;
         navBarItem.licenseNumber = payload.licenseNumber;
         this.filterNavBar();
         this.refreshNavBar++;

@@ -13,6 +13,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    displayBlock: {
+      type: Boolean,
+      default: true,
+    },
   },
   computed: {
     buttonClass() {
@@ -25,6 +29,9 @@ export default {
         small: this.$attrs.size === 'small',
         medium: this.$attrs.size === 'medium',
       };
+    },
+    display() {
+      return this.displayBlock ? 'block' : 'inline';
     },
   },
 };
@@ -49,7 +56,7 @@ export default {
   padding: 12px 32px;
   text-align: center;
   text-decoration: none;
-  display: block;
+  display: v-bind('display');
   font-family:
     ‘BCSans’,
     ‘Noto Sans’,
@@ -69,7 +76,7 @@ export default {
   padding: 10px 30px;
   text-align: center;
   text-decoration: none;
-  display: block;
+  display: v-bind('display');
   font-family:
     ‘BCSans’,
     ‘Noto Sans’,

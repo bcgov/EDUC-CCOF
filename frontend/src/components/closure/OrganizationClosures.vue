@@ -8,7 +8,9 @@
       </v-col>
       <v-col cols="12" lg="6" align="right">
         <div>
-          <AppButton :loading="isLoading" size="large">Add New Closure</AppButton>
+          <AppButton :loading="isLoading" size="large" @click="closureRequestType = CHANGE_REQUEST_TYPES.NEW_CLOSURE"
+            >Add New Closure</AppButton
+          >
           <div class="text-h6 font-weight-bold my-4">
             Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
           </div>
@@ -17,8 +19,14 @@
     </v-row>
     <v-card variant="outlined" class="pa-8 pt-4 my-6">
       <v-row>
-        <v-col cols="12" lg="7" class="mt-4 text-grey">
-          View the status of your closure requests, submit a new closure request or make a change.
+        <v-col cols="12" lg="7">
+          <AppAlertBanner type="info">
+            <p class="pb-2">Note: You can only submit closures for the current funding agreement term.</p>
+            <p>
+              To report a closure for a previous term, please return to the home page, select a different fiscal year,
+              and go to Organization Closures.
+            </p>
+          </AppAlertBanner>
         </v-col>
         <v-col cols="12" lg="2" class="mt-4">
           <v-row class="text-primary d-flex justify-lg-end ml-1">
@@ -26,7 +34,7 @@
             <v-icon class="mr-1">mdi-filter</v-icon>
           </v-row>
         </v-col>
-        <v-col cols="12" lg="3" class="d-flex justify-lg-end">
+        <v-col cols="12" lg="3">
           <v-text-field
             v-model="filter"
             label="Filter by Facility Name and Facility ID"
@@ -58,8 +66,8 @@
             {{ formatUTCDateToShortDateString(item.endDate) }}
           </template>
           <template #[`item.closureStatus`]="{ item }">
-            <span :class="getClosureStatusClass(item.closureStatus)">
-              {{ getClosureStatusText(item.closureStatus) }}
+            <span :class="getClosureStatusClass(item)">
+              {{ getClosureStatusText(item) }}
             </span>
           </template>
           <template #[`item.paymentEligibility`]="{ item }">
@@ -79,7 +87,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="isClosureReadonly(item)"
                 size="large"
                 class="text-body-2"
                 @click="updateClosure(item)"
@@ -89,7 +97,7 @@
               <AppButton
                 :loading="isLoading"
                 :primary="false"
-                :disabled="hasPendingStatus(item)"
+                :disabled="isClosureReadonly(item)"
                 size="large"
                 class="text-body-2"
                 @click="removeClosure(item)"
@@ -102,19 +110,37 @@
       </v-skeleton-loader>
     </v-card>
     <NavButton @previous="previous" />
+    <ClosureChangeRequestDialog
+      :closure="closureForRequest"
+      :program-year-id="$route.params.programYearGuid"
+      :request-type="closureRequestType"
+      :show="showClosureChangeRequestDialog"
+      max-width="60%"
+      @submitted="newClosureRequestSubmitted"
+      @close="closureRequestType = null"
+    />
+    <ClosureConfirmationDialog
+      :show="showClosureConfirmationDialog"
+      max-width="60%"
+      :change-request-reference-id="changeRequestReferenceId"
+      @close="toggleClosureConfirmationDialog"
+    />
     <ClosureDetailsDialog
       :show="showClosureDetailsDialog"
       max-width="60%"
       :closure="closureToView"
-      @close="setClosureToView(undefined)"
+      @close="setClosureToView(null)"
     />
   </v-container>
 </template>
 <script>
 import { mapState } from 'pinia';
 
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ClosureDetailsDialog from '@/components/ClosureDetailsDialog.vue';
+import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
+import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
+import ClosureDetailsDialog from '@/components/closure/ClosureDetailsDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -125,21 +151,31 @@ import ClosureService from '@/services/closureService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 
 import {
-  CLOSURE_STATUSES,
-  CLOSURE_STATUS_TEXTS,
+  CHANGE_REQUEST_TYPES,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   CLOSURE_PAYMENT_ELIGIBILITY_TEXTS,
+  CLOSURE_STATUS_TEXTS,
+  CLOSURE_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
 
 export default {
   name: 'OrganizationClosures',
-  components: { NavButton, AppButton, ClosureDetailsDialog },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    ClosureChangeRequestDialog,
+    ClosureConfirmationDialog,
+    ClosureDetailsDialog,
+    NavButton,
+  },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      showNewClosureRequestDialog: false,
       closures: undefined,
+      pendingClosureRequests: [],
       sortBy: [
         { key: 'facilityName', order: 'asc' },
         { key: 'startDate', order: 'asc' },
@@ -154,7 +190,11 @@ export default {
         { title: 'Payment Eligibility', sortable: true, value: 'paymentEligibility' },
         { title: 'Actions', sortable: false, value: 'actions' },
       ],
+      showClosureConfirmationDialog: false,
+      changeRequestReferenceId: undefined,
       closureToView: undefined,
+      closureRequestType: null,
+      closureForRequest: undefined,
     };
   },
   computed: {
@@ -170,11 +210,15 @@ export default {
         );
       });
     },
+    showClosureChangeRequestDialog() {
+      return !!this.closureRequestType;
+    },
     showClosureDetailsDialog() {
       return this.closureToView != null;
     },
   },
   async created() {
+    this.CHANGE_REQUEST_TYPES = CHANGE_REQUEST_TYPES;
     await this.loadData();
   },
   methods: {
@@ -187,13 +231,27 @@ export default {
           this.$route.params.programYearGuid,
         );
         this.closures = this.closures?.filter((closure) => {
-          return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.DRAFT;
+          return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.MINISTRY_REMOVED;
         });
+        await this.getPendingClosureRequestsForApprovedClosures();
         this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load closures');
       }
+    },
+    async getPendingClosureRequestsForApprovedClosures() {
+      this.pendingClosureRequests = [];
+      const approvedClosures = this.closures?.filter((closure) => this.hasApprovedStatus(closure));
+      await Promise.all(
+        approvedClosures?.map(async (closure) => {
+          const response = await ClosureService.getPendingChangeActionClosures(
+            closure.facilityId,
+            this.$route.params.programYearGuid,
+          );
+          this.pendingClosureRequests.push(...response);
+        }),
+      );
     },
     setClosureToView(closure) {
       if (closure) {
@@ -202,31 +260,42 @@ export default {
       }
       this.closureToView = closure;
     },
-    // JonahCurlCGI - todo: implement the following functions
     updateClosure(closure) {
-      // stub
+      this.closureRequestType = CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE;
+      this.closureForRequest = closure;
     },
     removeClosure(closure) {
-      // stub
+      this.closureRequestType = CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE;
+      this.closureForRequest = closure;
     },
-    hasPendingStatus(closure) {
-      return [CLOSURE_STATUSES.SUBMITTED, CLOSURE_STATUSES.IN_PROGRESS].includes(closure.closureStatus);
+    hasApprovedStatus(closure) {
+      return closure.closureStatus === CLOSURE_STATUSES.COMPLETE_APPROVED;
+    },
+    hasPendingClosureRequest(closure) {
+      return this.pendingClosureRequests.some((closureRequest) => closure.closureId === closureRequest.closureId);
+    },
+    isClosureReadonly(closure) {
+      return !this.hasApprovedStatus(closure) || this.hasPendingClosureRequest(closure);
     },
     getFacilityAccountNumber(facilityId) {
       const facility = this.getNavByFacilityId(facilityId);
       return facility?.facilityAccountNumber;
     },
-    getClosureStatusText(closureValue) {
-      switch (closureValue) {
-        case CLOSURE_STATUSES.SUBMITTED:
-        case CLOSURE_STATUSES.IN_PROGRESS:
+    getClosureStatusText(closure) {
+      if (this.hasApprovedStatus(closure) && this.hasPendingClosureRequest(closure)) {
+        return CLOSURE_STATUS_TEXTS.PENDING;
+      }
+      switch (closure.closureStatus) {
+        case CLOSURE_STATUSES.PENDING:
           return CLOSURE_STATUS_TEXTS.PENDING;
-        case CLOSURE_STATUSES.APPROVED:
+        case CLOSURE_STATUSES.COMPLETE_APPROVED:
           return CLOSURE_STATUS_TEXTS.APPROVED;
-        case CLOSURE_STATUSES.DENIED:
-          return CLOSURE_STATUS_TEXTS.INELIGIBLE;
+        case CLOSURE_STATUSES.COMPLETE_NOT_APPROVED:
+          return CLOSURE_STATUS_TEXTS.NOT_APPROVED;
         case CLOSURE_STATUSES.CANCELLED:
-          return CLOSURE_STATUS_TEXTS.REMOVED_BY_PROVIDER;
+          return CLOSURE_STATUS_TEXTS.CANCELLED;
+        case CLOSURE_STATUSES.WITHDRAWN:
+          return CLOSURE_STATUS_TEXTS.WITHDRAWN;
         default:
           return '';
       }
@@ -259,14 +328,19 @@ export default {
 
       return paymentEligibility;
     },
-    getClosureStatusClass(status) {
-      switch (status) {
-        case CLOSURE_STATUSES.SUBMITTED:
-        case CLOSURE_STATUSES.IN_PROGRESS:
+    getClosureStatusClass(closure) {
+      if (this.hasApprovedStatus(closure) && this.hasPendingClosureRequest(closure)) {
+        return 'status-gray';
+      }
+      switch (closure.closureStatus) {
+        case CLOSURE_STATUSES.PENDING:
           return 'status-gray';
-        case CLOSURE_STATUSES.APPROVED:
+        case CLOSURE_STATUSES.COMPLETE_APPROVED:
           return 'status-green';
-        case CLOSURE_STATUSES.DENIED:
+        case CLOSURE_STATUSES.COMPLETE_NOT_APPROVED:
+          return 'status-red';
+        case CLOSURE_STATUSES.CANCELLED:
+        case CLOSURE_STATUSES.WITHDRAWN:
           return 'status-yellow';
         default:
           return '';
@@ -274,6 +348,25 @@ export default {
     },
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
+    },
+    toggleClosureConfirmationDialog() {
+      this.showClosureConfirmationDialog = !this.showClosureConfirmationDialog;
+    },
+    // To prevent issues with CRM delays from sequential Post and Get requests, the closure is manually added
+    // to allow the user to view the closure following the post request.
+    newClosureRequestSubmitted(closureChangeRequest) {
+      if (this.closureRequestType === CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
+        const facility = this.getNavByFacilityId(closureChangeRequest.facilityId);
+        closureChangeRequest.facilityName = facility?.facilityName;
+        closureChangeRequest.closureStatus = CLOSURE_STATUSES.PENDING;
+        this.closures.push(closureChangeRequest);
+      } else {
+        this.pendingClosureRequests.push(closureChangeRequest);
+      }
+      this.changeRequestReferenceId = closureChangeRequest.changeRequestReferenceId;
+      this.closureRequestType = null;
+      this.closureForRequest = null;
+      this.toggleClosureConfirmationDialog();
     },
   },
 };

@@ -1,25 +1,33 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, orderBy } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 
 import AppAddressForm from '@/components/guiComponents/AppAddressForm.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useFacilityStore } from '@/store/ccof/facility.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ORGANIZATION_TYPES } from '@/utils/constants.js';
+import { getOrganizationNameLabel } from '@/utils/common.js';
+import { DEFAULT_NUMBER_OF_PARTNERS, MAX_NUMBER_OF_PARTNERS, ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppAddressForm, AppTooltip, NavButton },
+  components: { AppAddressForm, AppButton, AppTooltip, NavButton },
   mixins: [alertMixin],
+  data() {
+    return {
+      numberOfPartners: DEFAULT_NUMBER_OF_PARTNERS,
+    };
+  },
   computed: {
     ...mapState(useAppStore, ['organizationTypeList', 'navBarList']),
-    ...mapState(useOrganizationStore, ['isStarted', 'organizationId', 'organizationModel', 'organizationProviderType']),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationModel', 'organizationProviderType']),
     ...mapState(useFacilityStore, ['facilityList']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useApplicationStore, [
@@ -30,6 +38,24 @@ export default {
       'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
+    organizationTypes() {
+      if (isEmpty(this.organizationTypeList)) return [];
+      const isFamilyApplication = this.$route.fullPath.includes('family');
+      if (isFamilyApplication) {
+        const applicableOrgTypes = [ORGANIZATION_TYPES.REGISTERED_COMPANY, ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP];
+        if (!this.showApplicationTemplateV1) {
+          applicableOrgTypes.push(ORGANIZATION_TYPES.PARTNERSHIP);
+        }
+        const filteredOrganizationTypes = this.organizationTypeList.filter((orgType) =>
+          applicableOrgTypes.includes(orgType.id),
+        );
+        return orderBy(filteredOrganizationTypes, ['name'], ['desc']);
+      }
+      return this.organizationTypeList;
+    },
+    legalNameLabel() {
+      return getOrganizationNameLabel(this.organizationModel.organizationType);
+    },
     isLocked() {
       if (this.unlockBaseFunding) {
         return false;
@@ -41,49 +67,71 @@ export default {
         this.organizationModel.organizationType,
       );
     },
-    isSoleProprietorshipPartnership() {
-      return this.organizationModel.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP_PARTNERSHIP;
+    isPartnership() {
+      return this.organizationModel.organizationType === ORGANIZATION_TYPES.PARTNERSHIP;
+    },
+    isSoleProprietorship() {
+      return this.organizationModel.organizationType === ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP;
+    },
+    partnershipLegalOrganizationName() {
+      const partnerNames = [];
+      for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
+        const firstName = this.organizationModel[`partner${i}FirstName`] ?? '';
+        const lastName = this.organizationModel[`partner${i}LastName`] ?? '';
+        const fullName = `${firstName} ${lastName}`.trim();
+        if (!isEmpty(fullName)) {
+          partnerNames.push(fullName);
+        }
+      }
+      return partnerNames.join('/');
     },
   },
-  async created() {
+  created() {
     this.rules = rules;
-    if (this.isStarted) {
-      this.setIsApplicationProcessing(false);
-      return;
-    }
-    if (this.organizationId) {
+    this.MAX_NUMBER_OF_PARTNERS = MAX_NUMBER_OF_PARTNERS;
+  },
+  methods: {
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
+    ...mapActions(useOrganizationStore, [
+      'loadOrganization',
+      'saveOrganization',
+      'setIsOrganizationComplete',
+      'setOrganizationModel',
+    ]),
+    async loadData() {
       try {
-        this.setIsApplicationProcessing(true);
-        await this.loadOrganization(this.organizationId);
+        if (this.organizationId && isEmpty(this.organizationModel)) {
+          this.setIsApplicationProcessing(true);
+          await this.loadOrganization(this.organizationId);
+        }
+        if (this.isPartnership) {
+          this.numberOfPartners = Math.max(
+            ApplicationService.getNumberOfPartners(this.organizationModel),
+            DEFAULT_NUMBER_OF_PARTNERS,
+          );
+        }
       } catch (error) {
         console.log('Error loading organization.', error);
         this.setFailureAlert('An error occurred while loading organization. Please try again later.');
       } finally {
         this.setIsApplicationProcessing(false);
       }
-      this.setIsStarted(true);
-    }
-  },
-  methods: {
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
-    ...mapActions(useOrganizationStore, [
-      'saveOrganization',
-      'loadOrganization',
-      'setIsStarted',
-      'setIsOrganizationComplete',
-      'setOrganizationModel',
-    ]),
-    // TODO (vietle-cgi) - review this function when working on Family Application changes
-    validateIncorporationNumber(organizationTypeId, incorporationNumber) {
-      const selectedOrgType = this.organizationTypeList.find((obj) => obj.id === organizationTypeId)?.name;
-      if (!incorporationNumber) {
-        if (selectedOrgType == 'Registered Company' || selectedOrgType == 'Non-Profit Society') {
-          return rules.required;
-        }
-      }
-      return [];
     },
+    removePartner(index) {
+      // Shift data for all partners after the removed one
+      for (let i = index; i < MAX_NUMBER_OF_PARTNERS; i++) {
+        this.organizationModel[`partner${i}FirstName`] = this.organizationModel[`partner${i + 1}FirstName`] ?? null;
+        this.organizationModel[`partner${i}MiddleName`] = this.organizationModel[`partner${i + 1}MiddleName`] ?? null;
+        this.organizationModel[`partner${i}LastName`] = this.organizationModel[`partner${i + 1}LastName`] ?? null;
+      }
 
+      // Clear the last partner's data
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}FirstName`] = null;
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}MiddleName`] = null;
+      this.organizationModel[`partner${MAX_NUMBER_OF_PARTNERS}LastName`] = null;
+
+      this.numberOfPartners = Math.max(DEFAULT_NUMBER_OF_PARTNERS, this.numberOfPartners - 1);
+    },
     updateMailingAddress(updatedModel) {
       if (isEmpty(updatedModel)) return;
       this.organizationModel.isOrgMailingAddressEnteredManually = updatedModel.manualEntry;
@@ -117,19 +165,33 @@ export default {
       if (this.isLocked || this.isApplicationProcessing) return;
       try {
         this.setIsApplicationProcessing(true);
-        this.setIsStarted(true);
         if (this.organizationModel.isSameAsMailing) {
           this.organizationModel.address2 = this.organizationModel.address1;
           this.organizationModel.city2 = this.organizationModel.city1;
           this.organizationModel.postalCode2 = this.organizationModel.postalCode1;
           this.organizationModel.province2 = this.organizationModel.province1;
         }
+        if (this.isSoleProprietorship) {
+          this.organizationModel.contactName = this.organizationModel.legalName;
+          this.organizationModel.position = 'Owner';
+        }
+        this.organizationModel.legalName = this.isPartnership
+          ? this.partnershipLegalOrganizationName
+          : this.organizationModel.legalName;
+        if (!this.isPartnership) {
+          for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
+            this.organizationModel[`partner${i}FirstName`] = null;
+            this.organizationModel[`partner${i}MiddleName`] = null;
+            this.organizationModel[`partner${i}LastName`] = null;
+          }
+        }
         this.setIsOrganizationComplete(this.organizationModel.isOrganizationComplete);
         await this.saveOrganization();
         if (showNotification) {
           this.setSuccessAlert('Success! Organization information has been saved.');
         }
-      } catch {
+      } catch (error) {
+        console.log(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.setIsApplicationProcessing(false);

@@ -1,4 +1,4 @@
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -113,13 +113,14 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
     ccfriMedianStore: {},
     previousFeeStore: {},
     approvableFeeSchedules: null,
+    loadedClosures: [],
+    updatedClosures: [],
+    hasIllegalClosureDates: false,
+    areClosureItemsComplete: false,
   }),
   getters: {
     getCCFRIById: (state) => (ccfriId) => {
       return state.ccfriStore[ccfriId];
-    },
-    getClosureDateLength: (state) => {
-      return state.CCFRIFacilityModel?.dates?.length;
     },
     getCCFRIMedianById: (state) => (ccfriId) => {
       return state.ccfriMedianStore[ccfriId];
@@ -173,19 +174,14 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       });
     },
     async saveCcfri({ isFormComplete: isFormComplete, hasRfi: hasRfi }) {
-      //we should save the empty field to dynamics if user selects "no" on "Do you charge parent fees at this facility for any closures on business days
-      if (this.CCFRIFacilityModel.hasClosureFees == 100000001) {
-        this.CCFRIFacilityModel.dates = [];
-      }
-
       let payload = [];
       let firstObj = {
         ccfriApplicationGuid: this.ccfriId,
-        facilityClosureDates: this.CCFRIFacilityModel.dates,
         ccof_formcomplete: isFormComplete,
         notes: this.CCFRIFacilityModel.ccfriApplicationNotes,
         ccof_has_rfi: hasRfi,
         hasClosureFees: this.CCFRIFacilityModel.hasClosureFees,
+        ccof_closureformcomplete: this.areClosureItemsComplete,
         existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
       };
       if (this.isRenewal) {
@@ -194,13 +190,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
           ccof_has_rfi: hasRfi,
           existingFeesCorrect: this.CCFRIFacilityModel.existingFeesCorrect,
         };
-      }
-
-      //checks if blank - don't save empty rows
-      for (let i = this.CCFRIFacilityModel.dates.length - 1; i >= 0; i--) {
-        if (isEqual(this.CCFRIFacilityModel.dates[i], this.dateObj)) {
-          this.CCFRIFacilityModel.dates.splice(i, 1);
-        }
       }
 
       //for each child care type - prepare an object for the payload

@@ -48,23 +48,5 @@ export default {
   async created() {
     await this.loadData();
   },
-  methods: {
-    async loadData() {
-      try {
-        this.setIsApplicationProcessing(true);
-        const facilityId = this.$route.params.urlGuid;
-        if (facilityId) {
-          await this.loadFacility(facilityId);
-        } else {
-          await this.newFacility();
-        }
-      } catch (error) {
-        console.error(`Failed to get Facility data with error - ${error}`);
-        this.setFailureAlert('An error occurred while loading facility. Please try again later.');
-      } finally {
-        this.setIsApplicationProcessing(false);
-      }
-    },
-  },
 };
 </script>

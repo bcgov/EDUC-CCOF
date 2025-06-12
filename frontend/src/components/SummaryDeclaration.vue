@@ -100,6 +100,7 @@
                 >
                   <FacilityInformationSummaryCard
                     :facility="facility"
+                    height="100%"
                     @click="openFacilitySummary(facility?.facilityId)"
                   />
                 </v-col>
@@ -200,7 +201,7 @@
                 <li>
                   I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do
                   hereby bind the Provider to the terms and conditions of the Funding Agreement if the Province accepts
-                  this Form and enrolls the Provider in any or all of the Child Care Operating Funding Program, the
+                  this Form and enrols the Provider in any or all of the Child Care Operating Funding Program, the
                   CCFRI, or the ECE Wage Enhancement;
                 </li>
                 <li>
@@ -212,7 +213,7 @@
                   all of the Early Learning and Child Care Act, any successor legislation, or the Funding Agreement;
                 </li>
                 <li>
-                  If I have applied for and been approved by the Province to enroll in the ECE Wage Enhancement, the
+                  If I have applied for and been approved by the Province to enrol in the ECE Wage Enhancement, the
                   Provider has taken all actions required under any collective agreement to which it is a party to
                   ensure it is:
                 </li>
@@ -360,6 +361,7 @@ export default {
       'applicationMap',
       'applicationUploadedDocuments',
       'applicationStatus',
+      'applicationTemplateVersion',
       'formattedProgramYear',
       'isApplicationProcessing',
       'isRenewal',
@@ -481,16 +483,24 @@ export default {
     },
     isApplicationFormComplete() {
       const isChangeNotificationFormComplete =
-        !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
-      return (
-        this.areAllFacilitiesComplete &&
-        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.isGroup) &&
-        ApplicationService.isECEWEOrganizationComplete(
-          this.summaryModel?.ecewe,
+        !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
+      const isOrganizationComplete =
+        this.isRenewal ||
+        ApplicationService.isOrganizationComplete(
+          this.summaryModel?.organization,
           this.isGroup,
-          this.languageYearLabel,
-        ) &&
-        (!this.isChangeRequest || isChangeNotificationFormComplete)
+          this.applicationTemplateVersion,
+        );
+      const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
+        this.summaryModel?.ecewe,
+        this.isGroup,
+        this.languageYearLabel,
+      );
+      return (
+        isOrganizationComplete &&
+        isECEWEOrganizationComplete &&
+        this.areAllFacilitiesComplete &&
+        isChangeNotificationFormComplete
       );
     },
     isSubmitDisabled() {

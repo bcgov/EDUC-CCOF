@@ -6,7 +6,13 @@
 * Source: Copied from commit 29a3ecd on Nov 8, 2024 with some changes.
 -->
 <template>
-  <v-form ref="form" v-model="organizationModel.isOrganizationComplete">
+  <v-skeleton-loader
+    v-if="isApplicationProcessing"
+    :loading="isApplicationProcessing"
+    type="table-tbody"
+    class="mb-12"
+  />
+  <v-form v-else ref="form" v-model="organizationModel.isOrganizationComplete">
     <v-container>
       <v-row justify="space-around">
         <v-card class="cc-top-level-card mx-12" width="100%">
@@ -43,7 +49,7 @@
                   v-model="organizationModel.incNumber"
                   :disabled="isLocked"
                   variant="outlined"
-                  :rules="validateIncorporationNumber(organizationModel.organizationType, organizationModel.incNumber)"
+                  :rules="hasIncorporationNumber ? rules.required : []"
                   label="Incorporation Number (as it appears in BC Corporate Registry)"
                 />
               </v-col>
@@ -253,8 +259,9 @@ export default {
       },
     },
   },
-  created() {
+  async created() {
     this.PROVINCES = PROVINCES;
+    await this.loadData();
     this.organizationModel.province1 =
       this.organizationModel.province1 ?? PROVINCES.find((province) => province.value === 'BC')?.value;
     this.organizationModel.province2 =

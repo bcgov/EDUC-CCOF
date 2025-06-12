@@ -44,8 +44,8 @@ export default {
       default: false,
     },
     closure: {
-      type: Object,
-      default: undefined,
+      type: [Object, null],
+      default: null,
     },
   },
   emits: ['close'],

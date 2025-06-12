@@ -294,6 +294,7 @@
                         <v-icon class="pt-1" size="small" color="white"> mdi-help </v-icon>
                       </v-card>
                     </template>
+                    <!-- eslint-disable vue/no-v-html -->
                     <div v-html="getCareScheduleToolTip(child.number)"></div>
                   </v-tooltip>
                 </v-col>
@@ -453,7 +454,7 @@
                     <v-sheet
                       class="flex px-0 py-0 text-center"
                       elevation="0"
-                      max-width="337"
+                      max-width="338"
                       min-width="150"
                       style="float: left"
                     >
@@ -896,7 +897,7 @@
   </v-container>
 </template>
 <script>
-import FacilitySearch from './FacilitySearch.vue';
+import FacilitySearch from '@/components/FacilitySearch.vue';
 
 const CHILDCARE_TYPE_0_TO_18 = '0 - 18 Months';
 const CHILDCARE_TYPE_18_TO_36 = '18 - 36 Months';
@@ -918,7 +919,7 @@ const CARE_TYPES = [{ type: 'No care' }, { type: '4 hours or less' }, { type: 'O
 
 const CARE_TYPES_PRESCHOOL = [{ type: 'No care' }, { type: '4 hours or less' }];
 
-import estimatorImage from '../assets/images/estimator_image.jpg';
+import estimatorImage from '@/assets/images/estimator_image.jpg';
 
 export default {
   components: { FacilitySearch },
@@ -1121,27 +1122,21 @@ export default {
       if (this.isParent) {
         switch (this.children[index - 1].childAgeCategory) {
           case CHILDCARE_TYPE_PRESCHOOL:
-            // eslint-disable-next-line
             return 'Licensed preschool care is only funded for 4 hours or less.';
           case CHILDCARE_TYPE_SCHOOL_CARE_K:
           case CHILDCARE_TYPE_SCHOOL_CARE_1:
-            // eslint-disable-next-line
             return 'Select the amount of time your child has access to a child<br>care space, not the amount of time your child attends the space.<br><br>For example, select "Over 4 hours" if your child<br>attends care for one hour in the morning and two hours in<br>the afternoon, but you are able to use the space for longer<br>than 4 hours.';
           default:
-            // eslint-disable-next-line
             return 'Select your typical care schedule. Maximum funding for<br>CCFRI is based on five days of over 4 hours of care<br>(full time care).';
         }
       } else {
         switch (this.children[index - 1].childAgeCategory) {
           case CHILDCARE_TYPE_PRESCHOOL:
-            // eslint-disable-next-line
             return 'Preschool care is only CCFRI-eligible for 4 hours or less.';
           case CHILDCARE_TYPE_SCHOOL_CARE_K:
           case CHILDCARE_TYPE_SCHOOL_CARE_1:
-            // eslint-disable-next-line
             return 'Select the amount of time the child has access to care, not the amount of<br>time the child is actually in care. For example, if the child has access to 5<br>hours of care but attends care for 3 hours, select "Over 4 hours."';
           default:
-            // eslint-disable-next-line
             return 'For part-time care estimates, select the typical schedule of half days (4 hours<br>or less) and full days (over 4 hours). The maximum benefit rates for<br>CCFRI are based on 5 full days per week (full-time care).';
         }
       }

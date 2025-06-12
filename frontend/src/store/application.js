@@ -29,7 +29,6 @@ export const useApplicationStore = defineStore('application', {
     isEceweComplete: false,
     isLicenseUploadComplete: false,
 
-    ccofConfirmationEnabled: false,
     applicationMap: new Map(),
 
     applicationUploadedDocuments: [],
@@ -65,9 +64,6 @@ export const useApplicationStore = defineStore('application', {
     },
     setFormattedProgramYear(value) {
       this.formattedProgramYear = value;
-    },
-    setCcofConfirmationEnabled(value) {
-      this.ccofConfirmationEnabled = value;
     },
     setUnlockBaseFunding(value) {
       this.unlockBaseFunding = value;

@@ -1,10 +1,8 @@
 <template>
-  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container fluid class="mx-lg-16">
-      <OrganizationInformationV1 v-if="showApplicationTemplateV1" />
-      <OrganizationInformationV2 v-else />
-    </v-container>
-  </v-skeleton-loader>
+  <div class="pa-4 mx-lg-16">
+    <OrganizationInformationV1 v-if="showApplicationTemplateV1" />
+    <OrganizationInformationV2 v-else />
+  </div>
   <NavButton
     :is-next-displayed="true"
     :is-save-displayed="true"
