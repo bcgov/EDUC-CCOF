@@ -19,7 +19,7 @@ function formatWithInspect(val, colors = true) {
   }
 
   const shouldFormat = typeof val !== 'string' && !hasAnsi(val);
-  // const formattedVal = shouldFormat ? inspect(val, { depth: null, colors }) : colors ? val : stripAnsi(val);
+
   let formattedVal;
   if (shouldFormat) {
     formattedVal = inspect(val, { depth: null, colors });
