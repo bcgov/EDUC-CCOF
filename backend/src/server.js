@@ -5,7 +5,11 @@ const http = require('http');
 const log = require('./components/logger');
 const localDateTime = require('@js-joda/core').LocalDateTime;
 //Add timestamp to log
-Object.defineProperty(log, 'heading', { get: () => { return localDateTime.now().toString(); } });
+Object.defineProperty(log, 'heading', {
+  get: () => {
+    return localDateTime.now().toString();
+  },
+});
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -53,20 +57,18 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string' ?
-    'Pipe ' + port :
-    'Port ' + port;
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
-  case 'EACCES':
-    log.error(bind + ' requires elevated privileges');
-    break;
-  case 'EADDRINUSE':
-    log.error(bind + ' is already in use');
-    break;
-  default:
-    throw error;
+    case 'EACCES':
+      log.error(bind + ' requires elevated privileges');
+      break;
+    case 'EADDRINUSE':
+      log.error(bind + ' is already in use');
+      break;
+    default:
+      throw error;
   }
 }
 
@@ -75,13 +77,11 @@ function onError(error) {
  */
 function onListening() {
   const addr = server.address();
-  const bind = typeof addr === 'string' ?
-    'pipe ' + addr :
-    'port ' + addr.port;
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   log.info('Listening on ' + bind);
 }
 
-process.on('SIGINT',() => {
+process.on('SIGINT', () => {
   server.close(() => {
     log.info('process terminated');
   });
@@ -97,5 +97,5 @@ module.exports = {
   normalizePort,
   onError,
   onListening,
-  server
+  server,
 };

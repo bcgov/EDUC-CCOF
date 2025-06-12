@@ -9,7 +9,6 @@ const hasAnsi = require('has-ansi');
 const stripAnsi = require('strip-ansi');
 const safeStringify = require('fast-safe-stringify');
 
-
 function isPrimitive(val) {
   return val === null || (typeof val !== 'object' && typeof val !== 'function');
 }
@@ -20,7 +19,7 @@ function formatWithInspect(val, colors = true) {
   }
 
   const shouldFormat = typeof val !== 'string' && !hasAnsi(val);
-  const formattedVal = shouldFormat ? inspect(val, { depth: null, colors }) : (colors ? val : stripAnsi(val));
+  const formattedVal = shouldFormat ? inspect(val, { depth: null, colors }) : colors ? val : stripAnsi(val);
 
   return isPrimitive(val) ? formattedVal : `\n${formattedVal}`;
 }
@@ -35,7 +34,7 @@ function getDomainWinstonLoggerFormat(colors = true) {
   const colorize = colors ? format.colorize() : null;
   const loggingFormats = [
     format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss.SSS'
+      format: 'YYYY-MM-DD HH:mm:ss.SSS',
     }),
     format.errors({ stack: true }),
     colorize,
@@ -49,7 +48,7 @@ function getDomainWinstonLoggerFormat(colors = true) {
       }
 
       const splatArgs = info[Symbol.for('splat')] || [];
-      const rest = splatArgs.map(data => formatWithInspect(data, colors)).join(' ');
+      const rest = splatArgs.map((data) => formatWithInspect(data, colors)).join(' ');
       const msg = formatWithInspect(info.message, colors);
 
       return `${info.timestamp} - ${info.level}: ${msg} ${rest}${stackTrace}`;
@@ -64,7 +63,7 @@ function getDomainWinstonLoggerFormat(colors = true) {
 function getDomainWinstonLoggerJsonFormat() {
   const loggingFormats = [
     format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss.SSS'
+      format: 'YYYY-MM-DD HH:mm:ss.SSS',
     }),
     format.errors({ stack: true }),
     format.printf((info) => {
@@ -80,15 +79,17 @@ function getDomainWinstonLoggerJsonFormat() {
       }
 
       const splatArgs = info[Symbol.for('splat')] || [];
-      const detail = splatArgs.map(data => typeof data === 'string' ? stripAnsi(data) : data);
+      const detail = splatArgs.map((data) => (typeof data === 'string' ? stripAnsi(data) : data));
 
-      return safeStringify(pickBy({
-        timestamp: info.timestamp,
-        level: info.level,
-        message,
-        detail: detail.length > 0 ? detail : null,
-        stackTrace
-      }));
+      return safeStringify(
+        pickBy({
+          timestamp: info.timestamp,
+          level: info.level,
+          message,
+          detail: detail.length > 0 ? detail : null,
+          stackTrace,
+        }),
+      );
     }),
   ];
   return format.combine(...loggingFormats);
@@ -105,12 +106,14 @@ const logger = createLogger({
       maxSize: '5m',
       maxFiles: 1,
       zippedArchive: true,
-    })
-  ]
+    }),
+  ],
 });
 
-logger.add(new transports.Console({
-  format: getDomainWinstonLoggerFormat(true)
-}));
+logger.add(
+  new transports.Console({
+    format: getDomainWinstonLoggerFormat(true),
+  }),
+);
 
 module.exports = logger;

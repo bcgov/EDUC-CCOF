@@ -2,7 +2,6 @@
 let redisClient;
 let connectionClosed = false;
 const Redis = {
-
   /**
    * This method is called during application start and redis client is obtained.
    * The redis client can be reused rather than creating multiple clients.
@@ -13,10 +12,13 @@ const Redis = {
     const log = require('../../components/logger');
     if (config.get('redis:clustered') == 'true') {
       log.info('using CLUSTERED Redis implementation');
-      redisClient = new IOREDIS.Cluster([{ //TODO implement clustering
-        host: config.get('redis:host'),
-        port: config.get('redis:port'),
-      }]);
+      redisClient = new IOREDIS.Cluster([
+        {
+          //TODO implement clustering
+          host: config.get('redis:host'),
+          port: config.get('redis:port'),
+        },
+      ]);
     } else {
       log.info('using STANDALONE Redis implementation');
       redisClient = new IOREDIS({
@@ -43,6 +45,6 @@ const Redis = {
   },
   getRedisClient() {
     return redisClient;
-  }
+  },
 };
 module.exports = Redis;

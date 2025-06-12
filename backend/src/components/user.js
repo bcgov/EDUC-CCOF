@@ -225,7 +225,7 @@ async function getDynamicsUserByEmail(req) {
     //If for some reason, an email is not associated with the IDIR, just use IDR@gov.bc.ca
     email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
-  // eslint-disable-next-line quotes,
+
   email.includes("'") ? (email = email.replace("'", "''")) : email;
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);

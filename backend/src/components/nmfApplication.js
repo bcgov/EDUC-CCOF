@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 'use strict';
 const { getOperation, postOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');

@@ -164,16 +164,11 @@ router.post(
   '/summary/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [
-    param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(),
-    body('facilities').isArray(),
-    body('facilities.*').isUUID()
-  ],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(), body('facilities').isArray(), body('facilities.*').isUUID()],
   (req, res) => {
     return getApplicationSummary(req, res);
   },
 );
-
 
 router.put(
   '/status/:applicationId',
