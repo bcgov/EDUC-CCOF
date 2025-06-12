@@ -1,5 +1,5 @@
 'use strict';
-const { sleep, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify } = require('./utils');
+const { sleep, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');

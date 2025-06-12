@@ -24,10 +24,7 @@ const {
   UserProfileECEWEMappings,
   FundingAgreementMappings,
 } = require('../util/mapping/Mappings');
-const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
-
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const _ = require('lodash');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -167,6 +164,7 @@ async function getUserProfile(userGuid, userName) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
   for (const changeRequest of changeRequestList) {
     let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter((item) => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);

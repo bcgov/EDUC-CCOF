@@ -39,8 +39,6 @@ const closureRouter = require('./routes/closure');
 const connectRedis = require('connect-redis');
 const { RedisStore } = require('rate-limit-redis');
 const rateLimit = require('express-rate-limit');
-const { getUserProfile } = require('./components/user');
-const { MappableObjectForBack } = require('./util/mapping/MappableObject');
 
 const promMid = require('express-prometheus-middleware');
 

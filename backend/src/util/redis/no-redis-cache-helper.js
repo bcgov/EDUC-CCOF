@@ -8,10 +8,10 @@ const cacheHelper = {
   async getGuidD(guid) {
     return guid;
   },
-  async getFacility(guidd) {
+  async getFacility(_guidd) {
     return null;
   },
-  async setFacility(guidd, facility) {
+  async setFacility(_guidd, _facility) {
     log.warn('Using local cache helper.  this does nothing!');
   },
 };
