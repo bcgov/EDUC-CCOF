@@ -78,6 +78,8 @@ async function getFacility(req, res) {
       }
       for (let y in approvedFeesByChildAgeCategory) {
         if (latestProgramYear == approvedFeesByChildAgeCategory[y]['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue']) {
+          const feeFrequencies = { ['100000000']: 'Monthly', ['100000001']: 'Weekly', ['100000002']: 'Daily' };
+          const feeFrequency = feeFrequencies[approvedFeesByChildAgeCategory[y].ccof_frequency];
           rec = {
             childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(approvedFeesByChildAgeCategory[y]['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
             programYear: approvedFeesByChildAgeCategory[y]['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
@@ -93,14 +95,7 @@ async function getFacility(req, res) {
             approvedFeeNov: approvedFeesByChildAgeCategory[y].ccof_nov,
             approvedFeeOct: approvedFeesByChildAgeCategory[y].ccof_oct,
             approvedFeeSep: approvedFeesByChildAgeCategory[y].ccof_sep,
-            feeFrequency:
-              approvedFeesByChildAgeCategory[y].ccof_frequency == '100000000'
-                ? 'Monthly'
-                : approvedFeesByChildAgeCategory[y].ccof_frequency == '100000001'
-                  ? 'Weekly'
-                  : approvedFeesByChildAgeCategory[y].ccof_frequency == '100000002'
-                    ? 'Daily'
-                    : '',
+            feeFrequency,
           };
           results.approvedFeesByChildAgeCategory.push(rec);
         }

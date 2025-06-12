@@ -14,7 +14,6 @@ const Redis = {
       log.info('using CLUSTERED Redis implementation');
       redisClient = new IOREDIS.Cluster([
         {
-          //TODO implement clustering
           host: config.get('redis:host'),
           port: config.get('redis:port'),
         },
