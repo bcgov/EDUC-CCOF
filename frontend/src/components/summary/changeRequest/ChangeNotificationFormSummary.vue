@@ -14,18 +14,15 @@
           <v-col cols="6" class="summary-label pr-8"> File name </v-col>
           <v-col cols="6" class="summary-label"> Description (optional) </v-col>
         </v-row>
-        <v-row
-          v-if="isChangeNotificationFormComplete"
-          v-for="(item, index) in notificationFormDocuments"
-          :key="index"
-          no-gutters
-        >
-          <v-col cols="6" class="summary-value pr-8">
-            {{ item.filename }}
-          </v-col>
-          <v-col cols="6">
-            {{ item.notetext }}
-          </v-col>
+        <v-row v-if="isChangeNotificationFormComplete" no-gutters>
+          <template v-for="(item, index) in notificationFormDocuments" :key="index">
+            <v-col cols="6" class="summary-value pr-8">
+              {{ item.filename }}
+            </v-col>
+            <v-col cols="6">
+              {{ item.notetext }}
+            </v-col>
+          </template>
         </v-row>
         <p v-else class="text-error">Required</p>
       </div>

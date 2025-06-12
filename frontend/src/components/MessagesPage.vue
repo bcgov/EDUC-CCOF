@@ -47,6 +47,7 @@
             </div>
           </div>
           <v-divider class="my-4" />
+          <!-- eslint-disable-next-line vue/no-v-html -->
           <div v-html="message.messageContent"></div>
         </v-card>
       </v-col>
