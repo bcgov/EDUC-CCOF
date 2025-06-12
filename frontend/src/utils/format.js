@@ -24,6 +24,10 @@ export function formatTime12to24(time12h) {
   return `${hours}:${minutes}`;
 }
 
+export function capitalize(word) {
+  return `${word[0]}${word.slice(1).toLowerCase()}`;
+}
+
 export function formatTime24to12(time24h) {
   if (isEmpty(time24h) || is12hFormat(time24h)) return time24h;
   let hours = Number(time24h?.split(':')[0]);
