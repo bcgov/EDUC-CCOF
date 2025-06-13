@@ -1,6 +1,7 @@
 'use strict';
 
 const log = require('./logger');
+const { getUserGuid } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeActionClosureMappings, ChangeActionRequestMappings, ChangeRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
@@ -244,11 +245,13 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
   }
 }
 
-function mapChangeActionClosureObjectForBack(changeActionClosure) {
+function mapChangeActionClosureObjectForBack(req) {
+  const changeActionClosure = req.body;
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
+  changeActionClosureMapp['ccof_request_raised_by@odata.bind'] = `/contacts(ccof_userid='${getUserGuid(req)}')`;
   delete changeActionClosureMapp._ccof_closure_value;
   delete changeActionClosureMapp._ccof_facility_value;
   delete changeActionClosureMapp._ccof_program_year_value;
@@ -258,12 +261,13 @@ function mapChangeActionClosureObjectForBack(changeActionClosure) {
 async function createClosureChangeRequest(req, res) {
   try {
     const createChangeRequestResponse = await createRawChangeRequest(req);
-    const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
+    const changeActionClosure = mapChangeActionClosureObjectForBack(req);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestResponse.changeActionId})`;
     if (req.body.changeType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestResponse.changeRequestId})?$select=ccof_name`)];
+
     if (req.body.changeType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
       req.body.documents?.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
