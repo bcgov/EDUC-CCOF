@@ -3,7 +3,7 @@
     <h1>Facility Information</h1>
     <v-skeleton-loader v-if="facilityLoading" class="header-skeleton" width="250px" type="paragraph" />
     <p v-else class="mb-6">
-      <b>{{ organizationName }}</b> <br />
+      <b>{{ facility.facilityName }}</b> <br />
       ID: {{ facility.facilityAccountNumber }} <br />
       Licence #: {{ facility.licenseNumber }}
     </p>
