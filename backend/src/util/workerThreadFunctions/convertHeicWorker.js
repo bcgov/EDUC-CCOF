@@ -2,12 +2,12 @@ const workerpool = require('workerpool');
 const convert = require('heic-convert');
 const log = require('../../components/logger');
 
-async function convertHeicWithWorkerPool(heicInt8Array){
+async function convertHeicWithWorkerPool(heicInt8Array) {
   log.verbose('convertHeicWithWorkerPool :: converting HEIC');
   const jpgBuffer = await convert({
     buffer: heicInt8Array,
     format: 'JPEG',
-    quality: 0.5
+    quality: 0.5,
   });
   log.verbose('convertHeicWithWorkerPool :: converted to JPG');
 
@@ -15,9 +15,5 @@ async function convertHeicWithWorkerPool(heicInt8Array){
 }
 
 workerpool.worker({
-  convertHeicWithWorkerPool: convertHeicWithWorkerPool
+  convertHeicWithWorkerPool: convertHeicWithWorkerPool,
 });
-
-
-
-

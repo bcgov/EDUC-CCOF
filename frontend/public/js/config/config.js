@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 var config = {
   VUE_APP_BCEID_REG_URL: 'https://www.test.bceid.ca/os/?7081&SkipTo=Basic#action',
   VUE_APP_META_DATA: [{ name: 'robots', content: 'noindex,nofollow' }],

@@ -49,7 +49,7 @@ async function getUploadedDocuments(req, res) {
     const getAllFiles = req.query.allFiles || false;
     let documentFiles = [];
     if (response?.value?.length > 0) {
-      for (let fileInfo of response?.value) {
+      for (let fileInfo of response.value) {
         if (getAllFiles) {
           documentFiles.push(mapDocument(fileInfo));
         } else {

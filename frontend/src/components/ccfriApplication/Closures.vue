@@ -73,6 +73,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import closureMixin from '@/mixins/closureMixin.js';
 
 export default {
+  name: 'ClosuresView',
   mixins: [alertMixin, closureMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.save(false);

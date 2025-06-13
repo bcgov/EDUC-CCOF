@@ -134,8 +134,8 @@
                     class="ma-5 px-4 bg-dark text-white"
                     theme="dark"
                     color="#003366"
-                    @click="toEstimator"
                     variant="elevated"
+                    @click="toEstimator"
                   >
                     Go to Estimator
                   </v-btn>

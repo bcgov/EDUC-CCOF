@@ -1,17 +1,16 @@
 'use strict';
-const {postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId,updateChangeRequestNewFacility} = require('./utils');
+const { postApplicationDocument, getApplicationDocument, deleteDocument, patchOperationWithObjectId, updateChangeRequestNewFacility } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {getFileExtension, convertHeicDocumentToJpg} = require('../util/uploadFileUtils');
+const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 
 async function saveLicenses(req, res) {
   try {
-
     let licenses = req.body.fileList;
     for (let license of licenses) {
       let licenseClone = license;
 
-      if (getFileExtension(licenseClone.filename) === 'heic' ) {
+      if (getFileExtension(licenseClone.filename) === 'heic') {
         log.verbose(`saveLicenses :: heic detected for file name ${licenseClone.filename} starting conversion`);
         licenseClone = await convertHeicDocumentToJpg(licenseClone);
       }
@@ -19,18 +18,18 @@ async function saveLicenses(req, res) {
       let response = await postApplicationDocument(licenseClone);
 
       //bind the license to the change Request Action object so the Ministry can easily see all files related to the change Action.
-      if (licenseClone.changeRequestNewFacilityId){
-        await updateChangeRequestNewFacility(licenseClone.changeRequestNewFacilityId,
-          {'ccof_Attachments@odata.bind': `/ccof_application_facility_documents(${response.applicationFacilityDocumentId})`}
-        );
+      if (licenseClone.changeRequestNewFacilityId) {
+        await updateChangeRequestNewFacility(licenseClone.changeRequestNewFacilityId, {
+          'ccof_Attachments@odata.bind': `/ccof_application_facility_documents(${response.applicationFacilityDocumentId})`,
+        });
       }
     }
-    const application ={};
+    const application = {};
     application.ccof_licensecomplete = req.body.isLicenseUploadComplete;
     if (req.body.changeRequestId) {
-      await patchOperationWithObjectId('ccof_change_requests',req.body.changeRequestId, application);
+      await patchOperationWithObjectId('ccof_change_requests', req.body.changeRequestId, application);
     } else {
-      await patchOperationWithObjectId('ccof_applications',req.body.applicationId, application);
+      await patchOperationWithObjectId('ccof_applications', req.body.applicationId, application);
     }
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
@@ -43,7 +42,7 @@ async function getLicenseFiles(req, res) {
     let response = await getApplicationDocument(req.params.applicationId);
     let licenseFiles = [];
     if (response?.value?.length > 0) {
-      for (let fileInfo of response?.value) {
+      for (let fileInfo of response.value) {
         if (fileInfo.subject === 'Facility License') {
           const licenseFile = {};
           licenseFile.filename = fileInfo.filename;
@@ -66,18 +65,17 @@ async function deleteLicenseFiles(req, res) {
     for (let license of deletedLicenses) {
       await deleteDocument(license.annotationid);
     }
-    const application ={};
+    const application = {};
     application.ccof_licensecomplete = req.body.isLicenseUploadComplete;
-    await patchOperationWithObjectId('ccof_applications',req.body.applicationId, application);
+    await patchOperationWithObjectId('ccof_applications', req.body.applicationId, application);
     return res.sendStatus(HttpStatus.OK);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
-
 }
 
 module.exports = {
   saveLicenses,
   getLicenseFiles,
-  deleteLicenseFiles
+  deleteLicenseFiles,
 };

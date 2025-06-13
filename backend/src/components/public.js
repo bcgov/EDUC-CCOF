@@ -3,9 +3,8 @@
 const axios = require('axios');
 const log = require('./logger');
 const config = require('../config/index');
-const cacheHelper = config.get('redis:use')? require('../util/redis/cache-helper') : require('../util/redis/no-redis-cache-helper');
+const cacheHelper = config.get('redis:use') ? require('../util/redis/cache-helper') : require('../util/redis/no-redis-cache-helper');
 const { errorResponse, minify, getHttpHeader, getOperation } = require('./utils');
-
 
 //This is the Child age category types used by the estimator
 //It is different from the CHILD_AGE_CATEGORY_TYPES in util/constants
@@ -20,13 +19,12 @@ CHILD_AGE_CATEGORY_TYPES.set('OOSC-K', 'Before & After School (Kindergarten Only
 CHILD_AGE_CATEGORY_TYPES.set('OOSC-G', 'Before & After School (Grade 1+)');
 CHILD_AGE_CATEGORY_TYPES.set('PRE', 'Preschool');
 
-
 // Get facilities which match user search critiera via query param (i.e. facility/city).
 async function getFacilities(req, res) {
   try {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Search';
     const params = {
-      'search': req.query.criteria,
+      search: req.query.criteria,
     };
     log.verbose('search query: ' + JSON.stringify(params));
     const response = await axios.post(url, params, getHttpHeader());
@@ -35,14 +33,16 @@ async function getFacilities(req, res) {
     log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
     let results = [];
     if (response.data?.value) {
-      results = await Promise.all(response.data.value.map(async (item) => {
-        return {
-          facilityId: await cacheHelper.getGuidE(item['@search.objectid']),
-          facilityName: item.name,
-          careType: item.accountnumber?.charAt(0),
-          city: item.address1_city
-        };
-      }));
+      results = await Promise.all(
+        response.data.value.map(async (item) => {
+          return {
+            facilityId: await cacheHelper.getGuidE(item['@search.objectid']),
+            facilityName: item.name,
+            careType: item.accountnumber?.charAt(0),
+            city: item.address1_city,
+          };
+        }),
+      );
     }
     return res.status(200).json(results);
   } catch (e) {
@@ -60,7 +60,7 @@ async function getFacility(req, res) {
     if (!results) {
       results = {};
       const facilityId = await cacheHelper.getGuidD(guidd);
-      const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000001','100000002']) and Microsoft.Dynamics.CRM.In(PropertyName='ccof_frequency',PropertyValues=['100000000','100000002']));$orderby= _ccof_programyear_value desc),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)`
+      const operation = `accounts(${facilityId})?$select=accountid,address1_city,accountnumber,name&$expand=ccof_account_ccof_parent_fees_Facility($select=ccof_parent_feesid,_ccof_facility_value,_ccof_programyear_value,_ccof_childcarecategory_value,ccof_frequency,ccof_availability,ccof_apr,ccof_may,ccof_jun,ccof_jul,ccof_aug,ccof_sep,ccof_oct,ccof_nov,ccof_dec,ccof_jan,ccof_feb,ccof_mar;$filter=(statuscode eq 1 and Microsoft.Dynamics.CRM.In(PropertyName='ccof_availability',PropertyValues=['100000001','100000002']) and Microsoft.Dynamics.CRM.In(PropertyName='ccof_frequency',PropertyValues=['100000000','100000002']));$orderby= _ccof_programyear_value desc),ccof_facility_licenses_Facility_account($select=ccof_facility_licensesid,_ccof_facility_value,_ccof_licensecategory_value)`;
       const payLoad = await getOperation(operation);
 
       results.facilityId = payLoad.accountnumber?.charAt(0);
@@ -78,6 +78,8 @@ async function getFacility(req, res) {
       }
       for (let y in approvedFeesByChildAgeCategory) {
         if (latestProgramYear == approvedFeesByChildAgeCategory[y]['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue']) {
+          const feeFrequencies = { ['100000000']: 'Monthly', ['100000001']: 'Weekly', ['100000002']: 'Daily', [undefined]: '' };
+          const feeFrequency = feeFrequencies[approvedFeesByChildAgeCategory[y].ccof_frequency];
           rec = {
             childCareCategory: CHILD_AGE_CATEGORY_TYPES.get(approvedFeesByChildAgeCategory[y]['_ccof_childcarecategory_value@OData.Community.Display.V1.FormattedValue']),
             programYear: approvedFeesByChildAgeCategory[y]['_ccof_programyear_value@OData.Community.Display.V1.FormattedValue'],
@@ -93,7 +95,7 @@ async function getFacility(req, res) {
             approvedFeeNov: approvedFeesByChildAgeCategory[y].ccof_nov,
             approvedFeeOct: approvedFeesByChildAgeCategory[y].ccof_oct,
             approvedFeeSep: approvedFeesByChildAgeCategory[y].ccof_sep,
-            feeFrequency: (approvedFeesByChildAgeCategory[y].ccof_frequency == '100000000') ? 'Monthly' : ((approvedFeesByChildAgeCategory[y].ccof_frequency == '100000001') ? 'Weekly' : ((approvedFeesByChildAgeCategory[y].ccof_frequency == '100000002') ? 'Daily' : '') )
+            feeFrequency,
           };
           results.approvedFeesByChildAgeCategory.push(rec);
         }

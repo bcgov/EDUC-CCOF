@@ -5,47 +5,37 @@ const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
 const log = require('../components/logger');
-const {v4: uuidv4} = require('uuid');
-const {getUserGuid} = require('../components/utils');
+const { v4: uuidv4 } = require('uuid');
+const { getUserGuid } = require('../components/utils');
 
-const {
-  body,
-  validationResult
-} = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
-
 
 router.get('/', (_req, res) => {
   res.status(200).json({
-    endpoints: [
-      '/callback',
-      '/callback_idir',
-      '/login',
-      '/logout',
-      '/refresh',
-      '/token'
-    ]
+    endpoints: ['/callback', '/callback_idir', '/login', '/logout', '/refresh', '/token'],
   });
 });
 
-router.get('/callback',
+router.get(
+  '/callback',
   passport.authenticate('oidcBceid', {
-    failureRedirect: 'error'
+    failureRedirect: 'error',
   }),
   (_req, res) => {
     res.redirect(config.get('server:frontend'));
-  }
+  },
 );
 
-router.get('/callback_idir',
+router.get(
+  '/callback_idir',
   passport.authenticate('oidcIdir', {
-    failureRedirect: 'error'
+    failureRedirect: 'error',
   }),
   (_req, res) => {
     res.redirect(config.get('server:frontend'));
-  }
+  },
 );
-
 
 //a prettier way to handle errors
 router.get('/error', (_req, res) => {
@@ -53,20 +43,26 @@ router.get('/error', (_req, res) => {
 });
 
 //redirects to the SSO login screen
-router.get('/login', passport.authenticate('oidcBceid', {
-  failureRedirect: 'error'
-}));
+router.get(
+  '/login',
+  passport.authenticate('oidcBceid', {
+    failureRedirect: 'error',
+  }),
+);
 
-router.get('/login-idir', passport.authenticate('oidcIdir', {
-  failureRedirect: 'error'
-}));
+router.get(
+  '/login-idir',
+  passport.authenticate('oidcIdir', {
+    failureRedirect: 'error',
+  }),
+);
 
 //removes tokens and destroys session
 router.get('/logout', async (req, res, next) => {
   const idToken = req.session?.passport?.user?.idToken;
   const isIdir = !!req.session?.passport?.user?._json?.idir_username;
 
-  req.logout(function(err) {
+  req.logout(function (err) {
     if (err) return next(err);
 
     req.session.destroy();
@@ -89,18 +85,16 @@ router.get('/logout', async (req, res, next) => {
 
 const UnauthorizedRsp = {
   error: 'Unauthorized',
-  error_description: 'Not logged in'
+  error_description: 'Not logged in',
 };
 
 //refreshes jwt on refresh if refreshToken is valid
-router.post('/refresh', [
-  body('refreshToken').exists()
-], async (req, res) => {
+router.post('/refresh', [body('refreshToken').exists()], async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(400).json({
-      errors: errors.array()
+      errors: errors.array(),
     });
   }
   if (!req['user'] || !req['user'].refreshToken || !req?.user?.jwt) {
@@ -114,7 +108,7 @@ router.post('/refresh', [
       }
     } else {
       const responseJson = {
-        jwtFrontend: req.user.jwtFrontend
+        jwtFrontend: req.user.jwtFrontend,
       };
       return res.status(200).json(responseJson);
     }
@@ -129,12 +123,12 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       req.session.correlationID = correlationID;
       const correlation = {
         user_guid: getUserGuid(req),
-        correlation_id: correlationID
+        correlation_id: correlationID,
       };
       log.info('created correlation id and stored in session', correlation);
     }
     const responseJson = {
-      jwtFrontend: req.user.jwtFrontend
+      jwtFrontend: req.user.jwtFrontend,
     };
     res.status(200).json(responseJson);
   } else {
@@ -148,14 +142,14 @@ async function generateTokens(req, res) {
     req.user.refreshToken = result.refreshToken;
     req.user.jwtFrontend = auth.generateUiToken();
     const responseJson = {
-      jwtFrontend: req.user.jwtFrontend
+      jwtFrontend: req.user.jwtFrontend,
     };
     res.status(200).json(responseJson);
   } else {
     res.status(401).json(UnauthorizedRsp);
   }
 }
-router.get('/user-session-remaining-time', passport.authenticate('jwt', {session: false}), (req, res) => {
+router.get('/user-session-remaining-time', passport.authenticate('jwt', { session: false }), (req, res) => {
   if (req?.session?.cookie && req?.session?.passport?.user) {
     const remainingTime = req.session.cookie.maxAge;
     log.info(`session remaining time is :: ${remainingTime} for user`, req.session?.passport?.user?.displayName);
