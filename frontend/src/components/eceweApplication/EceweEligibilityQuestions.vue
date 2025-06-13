@@ -423,7 +423,6 @@ export default {
     return {
       rules,
       model: {},
-      ORGANIZATION_PROVIDER_TYPES,
     };
   },
   computed: {
