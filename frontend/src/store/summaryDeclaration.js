@@ -344,6 +344,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           enabledDeclarationB: payload?.enabledDeclarationB,
           declarationAStatus: payload?.declarationAStatus,
           declarationBStatus: payload?.declarationBStatus,
+          latestSubmissionDate: payload?.latestSubmissionDate,
         };
         this.setDeclarationModel(declarationModel);
 

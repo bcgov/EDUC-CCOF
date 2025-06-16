@@ -63,3 +63,11 @@ export function formatDateToStandardFormat(date) {
   if (!date) return null;
   return moment(date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD');
 }
+/**
+ * Converts a date string to a standardized date string in YYYY-MM-DD HH:mm format.
+ *
+ *  */
+export function formatSubmissionTimestamp(date) {
+  if (!date) return null;
+  return moment(date).format('YYYY-MM-DD HH:mm');
+}
