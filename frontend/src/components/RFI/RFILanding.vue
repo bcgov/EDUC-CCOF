@@ -181,7 +181,7 @@
 
             <RFIDocumentUpload
               :current-facility="currentFacility"
-              :r-f-i-type="'RFI-EC'"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_EC"
               :r-f-i-documents="rfiDocumentsEC"
               @add-r-f-i-document="addRFISupportingDocument"
               @delete-r-f-i-document="deleteRFISupportingDocument"
@@ -576,6 +576,7 @@
                   :rules="rules.required"
                   placeholder="Describe here"
                   variant="outlined"
+                  class="mb-2"
                 />
 
                 <label for="wage1"> How many Direct Care staff have left your facility due to wages? </label>
@@ -586,6 +587,7 @@
                   :rules="rules.required"
                   placeholder="Describe here"
                   variant="outlined"
+                  class="mb-2"
                 />
 
                 <label for="wage2"> What have you done to try to recruit staff? </label>
@@ -596,6 +598,7 @@
                   :rules="rules.required"
                   placeholder="Describe here"
                   variant="outlined"
+                  class="mb-2"
                 />
 
                 <label for="wage3">Have you had to adjust your hours/days of operation? </label>
@@ -606,6 +609,7 @@
                   :rules="rules.required"
                   placeholder="Describe here"
                   variant="outlined"
+                  class="mb-2"
                 />
 
                 <label for="wage4"> Is your facility unable to fill spaces due to insufficient staffing? </label>
@@ -616,6 +620,7 @@
                   :rules="rules.required"
                   placeholder="Describe here"
                   variant="outlined"
+                  class="mb-2"
                 />
 
                 <label for="wage5">
@@ -633,7 +638,7 @@
 
               <RFIDocumentUpload
                 :current-facility="currentFacility"
-                :r-f-i-type="'RFI-DCSWI'"
+                :r-f-i-type="DOCUMENT_TYPES.RFI_DCSWI"
                 :r-f-i-documents="rfiDocumentsDCSWI"
                 @add-r-f-i-document="addRFISupportingDocument"
                 @add-r-f-i-row="addNewRowToUploadedDocuments"
@@ -825,7 +830,7 @@
             </div>
             <RFIDocumentUpload
               :current-facility="currentFacility"
-              :r-f-i-type="'RFI-PSE'"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_PSE"
               :r-f-i-documents="rfiDocumentsPSE"
               @add-r-f-i-document="addRFISupportingDocument"
               @delete-r-f-i-document="deleteRFISupportingDocument"
@@ -987,7 +992,7 @@
             </div>
             <RFIDocumentUpload
               :current-facility="currentFacility"
-              :r-f-i-type="'RFI-PSEIC'"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_PSEIC"
               :r-f-i-documents="rfiDocumentsPSEIC"
               @add-r-f-i-document="addRFISupportingDocument"
               @delete-r-f-i-document="deleteRFISupportingDocument"
@@ -1076,7 +1081,7 @@
             </div>
             <RFIDocumentUpload
               :current-facility="currentFacility"
-              :r-f-i-type="'RFI-ACCUP'"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_ACCUP"
               :r-f-i-documents="rfiDocumentsACCUP"
               @add-r-f-i-document="addRFISupportingDocument"
               @add-r-f-i-row="addNewRowToUploadedDocuments"
@@ -1126,7 +1131,7 @@ import globalMixin from '@/mixins/globalMixin.js';
 import { deepCloneObject } from '@/utils/common.js';
 import rules from '@/utils/rules.js';
 
-import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { DOCUMENT_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 
 let model = {
   expansionList: [],
@@ -1296,7 +1301,7 @@ export default {
           this.$refs.form?.resetValidation();
         } catch (error) {
           console.log(error);
-          this.setFailureAlert('An error occured while retrieving data.');
+          this.setFailureAlert('An error occurred while retrieving data.');
         } finally {
           this.loading = false;
         }
@@ -1307,6 +1312,7 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
     this.FREQUENCIES = ['One-time', 'Daily', 'Weekly', 'Monthly'];
   },
@@ -1398,15 +1404,25 @@ export default {
       this.rfiDocumentsPSEIC = [];
       this.rfiDocumentsACCUP = [];
       this.rfiDocumentsEC =
-        this.uploadedDocuments?.filter((x) => x.documentType === 'RFI-EC' && x.ccof_facility === facilityId) || [];
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_EC && x.ccof_facility === facilityId,
+        ) || [];
       this.rfiDocumentsDCSWI =
-        this.uploadedDocuments?.filter((x) => x.documentType === 'RFI-DCSWI' && x.ccof_facility === facilityId) || [];
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_DCSWI && x.ccof_facility === facilityId,
+        ) || [];
       this.rfiDocumentsPSE =
-        this.uploadedDocuments?.filter((x) => x.documentType === 'RFI-PSE' && x.ccof_facility === facilityId) || [];
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_PSE && x.ccof_facility === facilityId,
+        ) || [];
       this.rfiDocumentsPSEIC =
-        this.uploadedDocuments?.filter((x) => x.documentType === 'RFI-PSEIC' && x.ccof_facility === facilityId) || [];
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEIC && x.ccof_facility === facilityId,
+        ) || [];
       this.rfiDocumentsACCUP =
-        this.uploadedDocuments?.filter((x) => x.documentType === 'RFI-ACCUP' && x.ccof_facility === facilityId) || [];
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_ACCUP && x.ccof_facility === facilityId,
+        ) || [];
     },
     addRFISupportingDocument(item) {
       const foundItemIndex = this.uploadedDocuments.findIndex((el) => el.id === item.id);
@@ -1415,8 +1431,6 @@ export default {
       } else {
         this.uploadedDocuments.push(item);
       }
-      console.log('------------- addRFISupportingDocument --------------');
-      console.log(this.uploadedDocuments);
     },
     addRFISupportingDocumentDescription(item) {
       const foundItemIndex = this.uploadedDocuments.findIndex((el) => el.id === item.id);
@@ -1426,25 +1440,23 @@ export default {
     },
     addNewRowToUploadedDocuments(item) {
       switch (item.documentType) {
-        case 'RFI-EC':
+        case DOCUMENT_TYPES.RFI_EC:
           this.rfiDocumentsEC.unshift(item);
           break;
-        case 'RFI-DCSWI':
+        case DOCUMENT_TYPES.RFI_DCSWI:
           this.rfiDocumentsDCSWI.unshift(item);
           break;
-        case 'RFI-PSE':
+        case DOCUMENT_TYPES.RFI_PSE:
           this.rfiDocumentsPSE.unshift(item);
           break;
-        case 'RFI-PSEIC':
+        case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.unshift(item);
           break;
-        case 'RFI-ACCUP':
+        case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.unshift(item);
           break;
       }
       this.uploadedDocuments.unshift(item);
-      console.log('------ addNewRowToUploadedDocuments ------');
-      console.log(this.uploadedDocuments);
     },
     // custom function to find index of an object in an array based on id or annotationid
     findRFIDocIndex(array, item) {
@@ -1470,19 +1482,19 @@ export default {
       this.uploadedDocuments.splice(index, 1);
 
       switch (item.documentType) {
-        case 'RFI-EC':
+        case DOCUMENT_TYPES.RFI_EC:
           this.rfiDocumentsEC.splice(this.findRFIDocIndex(this.rfiDocumentsEC, item), 1);
           break;
-        case 'RFI-DCSWI':
+        case DOCUMENT_TYPES.RFI_DCSWI:
           this.rfiDocumentsDCSWI.splice(this.findRFIDocIndex(this.rfiDocumentsDCSWI, item), 1);
           break;
-        case 'RFI-PSE':
+        case DOCUMENT_TYPES.RFI_PSE:
           this.rfiDocumentsPSE.splice(this.findRFIDocIndex(this.rfiDocumentsPSE, item), 1);
           break;
-        case 'RFI-PSEIC':
+        case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEIC, item), 1);
           break;
-        case 'RFI-ACCUP':
+        case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.splice(this.findRFIDocIndex(this.rfiDocumentsACCUP, item), 1);
           break;
       }

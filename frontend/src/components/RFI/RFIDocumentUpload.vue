@@ -44,7 +44,7 @@
           placeholder="Select your file"
           required
           @click:clear="deleteItem(item)"
-          @click="uploadDocumentClicked($event)"
+          @mousedown:control="uploadDocumentClicked($event)"
           @update:model-value="selectFile"
         />
       </template>
