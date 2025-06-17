@@ -42,6 +42,7 @@ import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
 import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
+import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -829,14 +830,14 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
-    // {
-    //   path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
-    //   name: 'manage-facility',
-    //   component: ManageFacility,
-    //   meta: {
-    //     requiresAuth: true,
-    //   },
-    // },
+    {
+      path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
+      name: 'manage-facility',
+      component: ManageFacility,
+      meta: {
+        requiresAuth: true,
+      },
+    },
     {
       path: PATHS.ROOT.MANAGE_USERS,
       name: 'manage-users',

@@ -24,6 +24,10 @@ export function formatTime12to24(time12h) {
   return `${hours}:${minutes}`;
 }
 
+export function capitalize(word) {
+  return `${word[0]}${word.slice(1).toLowerCase()}`;
+}
+
 export function formatTime24to12(time24h) {
   if (isEmpty(time24h) || is12hFormat(time24h)) return time24h;
   let hours = Number(time24h?.split(':')[0]);
@@ -49,4 +53,17 @@ export function formatFiscalYearName(fiscalYearName) {
 export function formatUTCDateToShortDateString(date) {
   if (!date) return null;
   return moment.utc(date).format('MMM D, YYYY');
+}
+/**
+ * Converts a date string to a standardized date string in YYYY-MM-DD format.
+ *
+ * Expected Input:
+ *   - A valid date string (e.g., "06/11/2025 18:12:56").
+ *
+ * Expected Output:
+ *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
+ */
+export function formatDateToStandardFormat(date) {
+  if (!date) return null;
+  return moment(date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD');
 }

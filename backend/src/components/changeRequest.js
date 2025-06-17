@@ -1,6 +1,7 @@
 'use strict';
 
 const log = require('./logger');
+const { getUserGuid } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeActionClosureMappings, ChangeActionRequestMappings, ChangeRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
@@ -10,10 +11,10 @@ const { mapFacilityObjectForBack } = require('./facility');
 const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EXTERNAL_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 
 const HttpStatus = require('http-status-codes');
-const { isEmpty } = require('lodash');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
 const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
+const { buildFilterQuery } = require('./../components/utils');
 
 function mapChangeRequestForBack(data, changeType) {
   const changeRequestForBack = new MappableObjectForBack(data, ChangeRequestMappings).toJSON();
@@ -244,24 +245,29 @@ async function updateChangeRequestNewFacility(changeRequestNewFacilityId, payloa
   }
 }
 
-function mapChangeActionClosureObjectForBack(changeActionClosure) {
+function mapChangeActionClosureObjectForBack(req) {
+  const changeActionClosure = req.body;
   const changeActionClosureMapp = new MappableObjectForBack(changeActionClosure, ChangeActionClosureMappings).toJSON();
   changeActionClosureMapp['ccof_program_year@odata.bind'] = `/ccof_program_years(${changeActionClosure.programYearId})`;
   changeActionClosureMapp['ccof_facility@odata.bind'] = `/accounts(${changeActionClosure.facilityId})`;
   changeActionClosureMapp['ccof_organization@odata.bind'] = `/accounts(${changeActionClosure.organizationId})`;
-
+  changeActionClosureMapp['ccof_request_raised_by@odata.bind'] = `/contacts(ccof_userid='${getUserGuid(req)}')`;
+  delete changeActionClosureMapp._ccof_closure_value;
+  delete changeActionClosureMapp._ccof_facility_value;
+  delete changeActionClosureMapp._ccof_program_year_value;
   return changeActionClosureMapp;
 }
 
 async function createClosureChangeRequest(req, res) {
   try {
     const createChangeRequestResponse = await createRawChangeRequest(req);
-    const changeActionClosure = mapChangeActionClosureObjectForBack(req.body);
+    const changeActionClosure = mapChangeActionClosureObjectForBack(req);
     changeActionClosure['ccof_change_action@odata.bind'] = `/ccof_change_actions(${createChangeRequestResponse.changeActionId})`;
     if (req.body.changeType !== CHANGE_REQUEST_TYPES.NEW_CLOSURE) {
       changeActionClosure['ccof_closure@odata.bind'] = `/ccof_application_ccfri_closures(${req.body.closureId})`;
     }
     const asyncOperations = [postOperation('ccof_change_action_closures', changeActionClosure), getOperation(`ccof_change_requests(${createChangeRequestResponse.changeRequestId})?$select=ccof_name`)];
+
     if (req.body.changeType !== CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE) {
       req.body.documents?.forEach((document) => {
         const mappedDocument = new MappableObjectForBack(document, DocumentsMappings).toJSON();
@@ -359,6 +365,17 @@ async function getChangeActionClosure(req, res) {
   }
 }
 
+async function getChangeActionClosures(req, res) {
+  try {
+    const response = await getOperation(`ccof_change_action_closures?$select=${getMappingString(ChangeActionClosureMappings)}&${buildFilterQuery(req.query, ChangeActionClosureMappings)}`);
+    const changeActionClosures = response?.value?.map((changeActionClosure) => new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON());
+    return res.status(HttpStatus.OK).json(changeActionClosures);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function saveChangeRequestDocs(req, res) {
   try {
     const documents = req.body;
@@ -423,6 +440,7 @@ module.exports = {
   deleteChangeRequest,
   getChangeRequestDocs,
   getChangeActionClosure,
+  getChangeActionClosures,
   saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,

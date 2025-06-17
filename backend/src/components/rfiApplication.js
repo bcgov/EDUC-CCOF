@@ -1,5 +1,5 @@
 'use strict';
-const { sleep, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, minify } = require('./utils');
+const { sleep, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -133,6 +133,7 @@ async function getRFIApplication(req, res) {
 }
 
 //jb-oct '24 - removing this because it breaks dynamics, but we may need to put back in at some point if we get the 1 day ahead bug again
+// eslint-disable-next-line no-unused-vars
 function formatTimeForBack(timeString) {
   return timeString + 'T12:00:00-07:00';
 }
@@ -289,5 +290,5 @@ module.exports = {
   updateRFIApplication,
   getRFIMedian,
   deleteRfiApplication,
-  getRfiApplicationByCcfriId
+  getRfiApplicationByCcfriId,
 };

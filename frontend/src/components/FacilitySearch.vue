@@ -110,8 +110,8 @@
                           icon
                           style="margin-right: 18px"
                           :disabled="loading"
-                          @click="searchFacilities(searchCriteria)"
                           variant="text"
+                          @click="searchFacilities(searchCriteria)"
                         >
                           <v-card
                             color="#0483AF"

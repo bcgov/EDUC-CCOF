@@ -52,6 +52,10 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
   },
+  async mounted() {
+    await this.$router.isReady();
+    this.tab = this.$route.query?.tab || 'organization-tab';
+  },
 };
 </script>
 

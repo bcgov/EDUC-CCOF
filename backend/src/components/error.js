@@ -14,7 +14,7 @@ class ApiError extends Error {
     this.name = 'ApiError';
     this.status = status;
     this.data = data;
-    if(reason) {
+    if (reason) {
       this.stack += '\nCaused By:\n' + reason.stack;
     }
   }
@@ -27,7 +27,7 @@ class ServiceError extends Error {
     this.name = 'ServiceError';
     this.errorSource = errorSource;
 
-    if(reason) {
+    if (reason) {
       this.stack += '\nCaused By:\n' + reason.stack;
     }
   }
@@ -44,5 +44,5 @@ class ConflictStateError extends Error {
 module.exports = {
   ApiError,
   ServiceError,
-  ConflictStateError
+  ConflictStateError,
 };

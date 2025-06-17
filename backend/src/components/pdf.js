@@ -1,15 +1,9 @@
-/* eslint-disable quotes */
 'use strict';
-const {
-  getSubmissionPDFHistory,
-  getDocument
-} = require('./utils');
+const { getSubmissionPDFHistory, getDocument } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const {MappableObjectForFront} = require('../util/mapping/MappableObject');
-const {
-  PdfDocumentMappings
-} = require('../util/mapping/Mappings');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { PdfDocumentMappings } = require('../util/mapping/Mappings');
 
 async function getPdf(req, res) {
   try {
@@ -34,7 +28,7 @@ async function getPdfs(req, res) {
     log.info('getSubmissionPDFHistory for organization: ' + req.params.organizationId);
     log.info(response);
     let documentList = [];
-    response?.forEach(document => documentList.push(new MappableObjectForFront(document, PdfDocumentMappings)));
+    response?.forEach((document) => documentList.push(new MappableObjectForFront(document, PdfDocumentMappings)));
     return res.status(HttpStatus.OK).json(documentList);
   } catch (e) {
     log.error('error', e);
@@ -44,5 +38,5 @@ async function getPdfs(req, res) {
 
 module.exports = {
   getPdf,
-  getPdfs
+  getPdfs,
 };

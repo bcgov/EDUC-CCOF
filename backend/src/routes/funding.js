@@ -11,7 +11,7 @@ module.exports = router;
 const fundingSchema = {
   maxDaysPerWeek: {
     in: ['body'],
-    exists: { errorMessage: '[maxDaysPerWeek] is required', }
+    exists: { errorMessage: '[maxDaysPerWeek] is required' },
   },
 };
 /**

@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, CHANGE_ACTION_CLOSURE_STATUSES } from '@/utils/constants';
 
 export default {
   async getApplicationClosures(ccfriApplicationId) {
@@ -58,6 +58,19 @@ export default {
       return response?.data;
     } catch (error) {
       console.log(`Failed to get organization closures - ${error}`);
+      throw error;
+    }
+  },
+
+  async getPendingChangeActionClosures(facilityId, programYearId) {
+    try {
+      if (!facilityId || !programYearId) return [];
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.CHANGE_ACTION_CLOSURE}?facilityId=${facilityId}&programYearId=${programYearId}&statusCode=${CHANGE_ACTION_CLOSURE_STATUSES.SUBMITTED}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get Pending Change Action Closures - ${error}`);
       throw error;
     }
   },

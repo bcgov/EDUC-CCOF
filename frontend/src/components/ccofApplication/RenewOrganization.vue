@@ -106,7 +106,8 @@
                   Confirmation Form.<br /><br />
                   Update your banking information by submitting the
                   <a
-                    href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf" target="_blank"
+                    href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
+                    target="_blank"
                   >
                     Direct Deposit Application
                   </a>

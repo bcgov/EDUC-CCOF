@@ -24,10 +24,7 @@ const {
   UserProfileECEWEMappings,
   FundingAgreementMappings,
 } = require('../util/mapping/Mappings');
-const { UserProfileChangeRequestMappings } = require('../util/mapping/ChangeRequestMappings');
-
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const _ = require('lodash');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -167,6 +164,7 @@ async function getUserProfile(userGuid, userName) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
 function updateFacilityWithChangeRequestDetails(changeRequestList, returnValue, facilityId) {
   for (const changeRequest of changeRequestList) {
     let changeActionNewFacilityList = changeRequest?.ccof_change_action_change_request?.filter((item) => item.ccof_changetype === CHANGE_REQUEST_TYPES.NEW_FACILITY);
@@ -227,7 +225,7 @@ async function getDynamicsUserByEmail(req) {
     //If for some reason, an email is not associated with the IDIR, just use IDR@gov.bc.ca
     email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
-  // eslint-disable-next-line quotes,
+
   email.includes("'") ? (email = email.replace("'", "''")) : email;
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
