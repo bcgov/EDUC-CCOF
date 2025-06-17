@@ -253,7 +253,7 @@
               label="Your Organization's Authorized Signing Authority"
             />
           </div>
-          <div v-if="isReadOnly && submissionTimestamp" class="text-body-1 text-grey mt-2">
+          <div v-if="isReadOnly && submissionTimestamp" class="text-grey mt-2">
             Last submitted on: {{ submissionTimestamp }}
           </div>
         </div>
