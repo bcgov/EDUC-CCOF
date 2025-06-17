@@ -253,6 +253,9 @@
               label="Your Organization's Authorized Signing Authority"
             />
           </div>
+          <div v-if="isReadOnly && submissionTimestamp" class="text-grey mt-2">
+            Last submitted on: {{ submissionTimestamp }}
+          </div>
         </div>
       </v-card>
     </div>
@@ -314,6 +317,7 @@ import ChangeNotificationFormSummary from '@/components/summary/changeRequest/Ch
 import { deepCloneObject, isAnyApplicationUnlocked } from '@/utils/common.js';
 import ChangeRequestService from '@/services/changeRequestService';
 import DocumentService from '@/services/documentService';
+import { formatSubmissionTimestamp } from '@/utils/format';
 
 export default {
   components: {
@@ -385,6 +389,9 @@ export default {
     },
     isPageComplete() {
       return this.model.agreeConsentCertify && this.model.orgContactName && this.isSummaryComplete;
+    },
+    submissionTimestamp() {
+      return formatSubmissionTimestamp(this.declarationModel?.latestSubmissionDate);
     },
   },
   async created() {

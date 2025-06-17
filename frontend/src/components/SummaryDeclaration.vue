@@ -271,6 +271,9 @@
                 label="Your Organization's Authorized Signing Authority"
               />
             </div>
+            <div v-if="isReadOnly && submissionTimestamp" class="text-grey mt-2">
+              Last Submitted on: {{ submissionTimestamp }}
+            </div>
           </v-container>
         </v-skeleton-loader>
       </v-card>
@@ -305,7 +308,7 @@
 <script>
 import { cloneDeep, isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
-
+import { formatSubmissionTimestamp } from '@/utils/format';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
@@ -455,6 +458,9 @@ export default {
       return (
         (!this.isRenewal && !this.organizationAccountNumber) || (this.isChangeRequest && !this.isDeclarationBDisplayed)
       );
+    },
+    submissionTimestamp() {
+      return formatSubmissionTimestamp(this.declarationModel?.latestSubmissionDate);
     },
     mappedFacilities() {
       return this.facilities?.map((facility) => facility.facilitySummary);
