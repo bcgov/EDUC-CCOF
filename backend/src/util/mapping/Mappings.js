@@ -436,6 +436,7 @@ const MessageMappings = [
 const DeclarationMappings = [
   { back: 'ccof_consent', front: 'agreeConsentCertify' },
   { back: 'ccof_submittedby', front: 'orgContactName' },
+  { back: 'ccof_latestsubmissiondate', front: 'latestSubmissionDate' },
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
