@@ -247,7 +247,6 @@
                       <v-text-field
                         v-model="fundInfo.fundingProgram"
                         :disabled="isReadOnly"
-                        class=""
                         label="Funding Program"
                         variant="outlined"
                         clearable
@@ -480,7 +479,6 @@
                       v-model.number="obj.staffNumber"
                       :disabled="isReadOnly"
                       type="number"
-                      class=""
                       label="Number of Staff Receiving Wage Increase"
                       variant="outlined"
                       clearable
@@ -493,7 +491,6 @@
                     <v-text-field
                       v-model="obj.staffRole"
                       :disabled="isReadOnly"
-                      class=""
                       label="Direct Care staff Role "
                       variant="outlined"
                       clearable
@@ -925,7 +922,6 @@
                     <v-text-field
                       v-model="indigExpense.description"
                       :disabled="isReadOnly"
-                      class=""
                       label="Description"
                       variant="outlined"
                       clearable
