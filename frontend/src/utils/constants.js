@@ -372,6 +372,11 @@ export const DOCUMENT_TYPES = Object.freeze({
   CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
   CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
   CLOSURE_REQUEST: 'Closure Request Documents',
+  RFI_EC: 'RFI-EC',
+  RFI_DCSWI: 'RFI-DCSWI',
+  RFI_PSE: 'RFI-PSE',
+  RFI_PSEIC: 'RFI-PSEIC',
+  RFI_ACCUP: 'RFI-ACCUP',
 });
 
 export const MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
