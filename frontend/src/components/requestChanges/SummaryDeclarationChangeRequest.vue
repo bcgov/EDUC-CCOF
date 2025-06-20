@@ -274,7 +274,7 @@
       max-width="525px"
       title="Submission Complete"
       :loading="false"
-      @close="dialog = false"
+      @close="goToDashboard"
     >
       <template #content>
         <p class="pt-4">
@@ -282,7 +282,7 @@
           application. We will contact you if more information is required.
         </p>
         <p>
-          <router-link :to="PATHS.ROOT.HOME"> Return to your dashboard </router-link>
+          <v-btn color="primary" class="mt-4" @click="goToDashboard"> Return to your dashboard </v-btn>
         </p>
       </template>
     </AppDialog>
@@ -505,6 +505,9 @@ export default {
         default:
           return false;
       }
+    },
+    goToDashboard() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
   },
 };
