@@ -299,7 +299,7 @@
           application. We will contact you if more information is required.
         </p>
         <p>
-          <v-btn color="primary" class="mt-4" @click="goToDashboard"> Return to your dashboard </v-btn>
+          <AppButton color="primary" class="mt-4" @click="goToDashboard"> Return to your dashboard </AppButton>
         </p>
       </template>
     </AppDialog>
