@@ -9,9 +9,9 @@ objects:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: redis-ha
+      name: redis
       labels:
-        app: redis-ha
+        app: redis
     data:
       fix-ip.sh: |
         #!/bin/sh
@@ -54,9 +54,9 @@ objects:
   - kind: Secret
     apiVersion: v1
     metadata:
-      name: redis-ha
+      name: redis
       labels:
-        app: redis-ha
+        app: redis
       annotations:
         template.openshift.io/expose-password: "{.data['REDIS_PASSWORD']}"
         as-copy-of: template.${NAME}-secret
@@ -65,9 +65,9 @@ objects:
   - apiVersion: v1
     kind: Service
     metadata:
-      name: redis-ha
+      name: redis
       labels:
-        app: redis-ha
+        app: redis
     spec:
       ports:
         - port: 6379
@@ -78,26 +78,26 @@ objects:
           name: gossip
       clusterIP: None
       selector:
-        app: redis-ha
+        app: redis
   - apiVersion: apps/v1
     kind: StatefulSet
     metadata:
-      name: redis-ha
+      name: redis
       labels:
-        app: redis-ha
+        app: redis
     spec:
-      serviceName: redis-ha
+      serviceName: redis
       replicas: ${{REPLICAS}}
       selector:
         matchLabels:
-          app: redis-ha
+          app: redis
       template:
         metadata:
           labels:
-            app: redis-ha
+            app: redis
         spec:
           containers:
-            - name: redis-ha
+            - name: redis
               image: ${{IMAGE}}
               ports:
                 - containerPort: 6379
@@ -137,7 +137,7 @@ objects:
                   readOnly: false
               envFrom:
                 - secretRef:
-                    name: redis-ha
+                    name: redis
               resources:
                 requests:
                   cpu: "50m"
@@ -148,13 +148,13 @@ objects:
           volumes:
             - name: conf
               configMap:
-                name: redis-ha
+                name: redis
                 defaultMode: 0755
       volumeClaimTemplates:
         - metadata:
             name: data
             labels:
-              name: redis-ha
+              name: redis
           spec:
             accessModes: [ "ReadWriteOnce" ]
             resources:

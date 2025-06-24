@@ -71,7 +71,7 @@ jobs:
         id: build-image-redis
         uses: redhat-actions/buildah-build@v2
         with:
-          image: redis-ha
+          image: redis
           tags: ${{ env.REDIS_VERSION }}
           dockerfiles: |
             ./tools/redis/Dockerfile
@@ -102,7 +102,7 @@ jobs:
       - name: cleanup
         run : |
           echo "Cleaning up previous installation (if any)..."
-          oc delete all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis-ha
+          oc delete all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis
       - name: Deploy Redis pods
         run: |
           oc process -f tools/openshift/redis-ha.yaml \
@@ -116,7 +116,7 @@ jobs:
       - name: Create Cluster
         run: |
           echo "Retrieve redis password..."
-          REDIS_PASSWORD=$(oc -o json get secret redis-ha | sed -n 's|.*"REDIS_PASSWORD": "\([^"]*\)".*|\1|p' | base64 --decode)
+          REDIS_PASSWORD=$(oc -o json get secret redis | sed -n 's|.*"REDIS_PASSWORD": "\([^"]*\)".*|\1|p' | base64 --decode)
           echo "Creating Cluster..."
-          oc exec -i redis-ha-0 -- redis-cli --cluster create --cluster-replicas 2 $(oc get pods -l app=redis-ha -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes -a $REDIS_PASSWORD
+          oc exec -i redis-0 -- redis-cli --cluster create --cluster-replicas 2 $(oc get pods -l app=redis -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes -a $REDIS_PASSWORD
           echo "Success!"
