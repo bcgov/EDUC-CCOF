@@ -6,7 +6,6 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
-  TOOLS_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-tools
   REDIS_VERSION: ${{ vars.REDIS_VERSION }}
   REPLICAS: 6
 on:
@@ -91,6 +90,7 @@ jobs:
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: 4
+
       - name: init
         run : |
           echo "Initializing..."
