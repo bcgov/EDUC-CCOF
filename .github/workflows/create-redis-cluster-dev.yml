@@ -6,6 +6,7 @@ env:
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
+  DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   REDIS_VERSION: ${{ vars.REDIS_VERSION }}
   REPLICAS: 6
 on:
@@ -16,7 +17,7 @@ jobs:
     environment: dev
 
     steps:
-      - name: Check for required secrets
+      - name: Check for Required Secrets
         uses: actions/github-script@v4
         with:
           script: |
@@ -44,7 +45,7 @@ jobs:
             });
 
             if (missingSecrets.length > 0) {
-              core.setFailed(`At least one required secret is not set in the repository. \n` +
+              core.setFailed('At least one required secret is not set in the repository. \n' +
                 "You can add it using:\n" +
                 "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
                 "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +
@@ -76,7 +77,7 @@ jobs:
             ./tools/redis/Dockerfile
           build-args: REDIS_VERSION=${{ env.REDIS_VERSION }}
 
-      - name: Push redis to registry
+      - name: Push Redis to Registry
         id: push-image-redis
         uses: redhat-actions/push-to-registry@v2
         with:
@@ -86,37 +87,44 @@ jobs:
           username: ${{ env.IMAGE_REGISTRY_USER }}
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
-      - name: Install oc
+      - name: Install OC
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: 4
 
-      - name: init
+      - name: Init
         run : |
           echo "Initializing..."
           set -eux
           # Login to OpenShift and select project
-          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
+          oc login \
+            --token=${{ env.OPENSHIFT_TOKEN }} \
+            --server=${{ env.OPENSHIFT_SERVER }}
           oc project ${{ env.OPENSHIFT_NAMESPACE }}
 
-      - name: cleanup
+      - name: Cleanup
         run : |
           echo "Cleaning up previous installation (if any)..."
-          oc delete all,rc,svc,dc,route,pvc,secret,configmap,sa,RoleBinding -l app=redis
-      - name: Deploy Redis pods
+          oc delete all,rc,svc,route,pvc,secret,configmap,sa -l app=redis
+
+      - name: Deploy Redis Pods
         run: |
           oc process -f tools/openshift/redis-ha.yaml \
             -p REPLICAS=${{ env.REPLICAS }} \
             -p IMAGE=${{ steps.push-image-redis.outputs.registry-path }} \
             | oc apply -f -
+
       - name: Wait for Readiness
         run: |
           echo "Waiting for pods to be ready..."
-          sleep "$((${{ env.REPLICAS }}*50))"
+          oc rollout status statefulset/redis
+
       - name: Create Cluster
         run: |
-          echo "Retrieve redis password..."
-          REDIS_PASSWORD=$(oc -o json get secret redis | sed -n 's|.*"REDIS_PASSWORD": "\([^"]*\)".*|\1|p' | base64 --decode)
           echo "Creating Cluster..."
-          oc exec -i redis-0 -- redis-cli --cluster create --cluster-replicas 2 $(oc get pods -l app=redis -o jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') --cluster-yes -a $REDIS_PASSWORD
+          oc exec -it redis-0 \
+            -- redis-cli --cluster create --cluster-replicas 1 \
+            $(oc get pods -l app=redis -o \
+              jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') \
+            --cluster-yes
           echo "Success!"
