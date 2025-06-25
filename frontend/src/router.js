@@ -41,8 +41,9 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
-import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
+import ViewFundingAgreement from '@/components/orgFacilities/ViewFundingAgreement.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -834,6 +835,14 @@ const router = createRouter({
       path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
       name: 'manage-facility',
       component: ManageFacility,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: `${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/:id`,
+      name: 'ViewFundingAgreement',
+      component: ViewFundingAgreement,
       meta: {
         requiresAuth: true,
       },

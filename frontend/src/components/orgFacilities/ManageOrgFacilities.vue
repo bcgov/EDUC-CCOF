@@ -16,7 +16,7 @@
           <v-card-text>
             <v-window v-model="tab">
               <v-window-item value="organization-tab"><ManageOrganization /></v-window-item>
-              <v-window-item value="funding-agreement-tab"><h2>Funding Agreement</h2></v-window-item>
+              <v-window-item value="funding-agreement-tab"><ManageFundingAgreement /></v-window-item>
               <v-window-item value="facilities-tab"><ManageFacilities /></v-window-item>
             </v-window>
           </v-card-text>
@@ -39,10 +39,11 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import ManageFundingAgreement from '@/components/orgFacilities/ManageFundingAgreement.vue';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization, ManageFacilities, NavButton },
+  components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreement },
   data() {
     return {
       tab: undefined,

@@ -95,6 +95,7 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
+    VIEW_FUNDING_AGREEMENT: '/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
