@@ -1,5 +1,3 @@
-import { isEmpty } from 'lodash';
-
 import ApiService from '@/common/apiService';
 import { ApiRoutes } from '@/utils/constants';
 

@@ -200,7 +200,6 @@ export default {
     this.FULL_MONTH_NAMES = FULL_MONTH_NAMES;
     await this.loadData();
   },
-  mounted() {},
   methods: {
     formatDateToStandardFormat,
     async loadData() {
