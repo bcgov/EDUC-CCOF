@@ -848,7 +848,7 @@ const router = createRouter({
       },
     },
     {
-      path: `${PATHS.CLOSURES}/:programYearGuid`,
+      path: `${PATHS.ROOT.CLOSURES}/:programYearGuid`,
       name: 'organization-closures',
       component: OrganizationClosures,
       meta: {

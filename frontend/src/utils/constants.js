@@ -104,6 +104,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
+    CLOSURES: '/closures',
     ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {
@@ -151,8 +152,6 @@ export const PATHS = {
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
-
-  CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
