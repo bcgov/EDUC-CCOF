@@ -1,11 +1,11 @@
-name: Create Redis Cluster - DEV
+name: Create Redis Cluster - TEST
 env:
   IMAGE_REGISTRY: ghcr.io/${{ github.repository_owner }}
   IMAGE_REGISTRY_USER: ${{ github.actor }}
   IMAGE_REGISTRY_PASSWORD: ${{ github.token }}
   OPENSHIFT_SERVER: ${{ secrets.OPENSHIFT_SERVER }}
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
-  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-dev
+  OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-test
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
   REDIS_VERSION: ${{ vars.REDIS_VERSION }}
   REPLICAS: 6
@@ -14,7 +14,7 @@ on:
 jobs:
   build-and-deploy-redis:
     runs-on: ubuntu-24.04
-    environment: dev
+    environment: test
 
     steps:
       - name: Check for Required Secrets
@@ -45,7 +45,7 @@ jobs:
             });
 
             if (missingSecrets.length > 0) {
-              core.setFailed('At least one required secret is not set in the repository. \n' +
+              core.setFailed(`At least one required secret is not set in the repository. \n` +
                 "You can add it using:\n" +
                 "GitHub UI: https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository \n" +
                 "GitHub CLI: https://cli.github.com/manual/gh_secret_set \n" +

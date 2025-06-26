@@ -33,11 +33,8 @@ objects:
         cluster-migration-barrier 1
         appendonly yes
         protected-mode no
-        requirepass ${REDIS_PASSWORD}
-        masterauth ${REDIS_PASSWORD}
       redis-readiness.sh: |
         #!/bin/sh
-        export REDISCLI_AUTH=$REDIS_PASSWORD
         response=$(timeout 3 $1 redis-cli -h $HOSTNAME -p 6379 ping)
         if [ "$response" != "PONG" ]; then
           echo "$response"
@@ -45,23 +42,11 @@ objects:
         fi
       redis-liveness.sh: |
         #!/bin/sh
-        export REDISCLI_AUTH=$REDIS_PASSWORD
         response=$(timeout 3 $1 redis-cli -h $HOSTNAME -p 6379 ping)
         if [ "$response" != "PONG" ] && [ "$response" != "LOADING Redis is loading the dataset in memory" ]; then
           echo "$response"
           exit 1
         fi
-  - kind: Secret
-    apiVersion: v1
-    metadata:
-      name: redis
-      labels:
-        app: redis
-      annotations:
-        template.openshift.io/expose-password: "{.data['REDIS_PASSWORD']}"
-        as-copy-of: template.${NAME}-secret
-    stringData:
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
   - apiVersion: v1
     kind: Service
     metadata:
@@ -135,9 +120,6 @@ objects:
                 - name: data
                   mountPath: /data
                   readOnly: false
-              envFrom:
-                - secretRef:
-                    name: redis
               resources:
                 requests:
                   cpu: "50m"
@@ -165,12 +147,6 @@ parameters:
     description: Number of Replicas for the Redis cluster
     required: true
     value: "2"
-  - name: REDIS_PASSWORD
-    displayName: Redis Connection Password
-    description: Password for the Redis connection user.
-    generate: expression
-    from: '[a-zA-Z0-9]{16}'
-    required: true
   - name: IMAGE
     description: The registry path for the image
     required: true
