@@ -59,7 +59,7 @@
         <v-data-table
           :headers="enrolmentReportsHeaders"
           :items="filteredEnrolmentReports"
-          :items-per-page="10"
+          :items-per-page="20"
           :mobile="null"
           mobile-breakpoint="lg"
           class="elevation-2"
@@ -233,11 +233,11 @@ export default {
       }
     },
     sortEnrolmentReports() {
-      // TODO (vietle-cgi) - review/update this sorting order once CMS team add the CCOF status to ER entity and receive confirmation from the business
+      // TODO (vietle-cgi) - review/update this sorting order once CMS team add the CCOF status to ER entity
       this.enrolmentReports?.sort((a, b) => {
-        // Sort by Reporting Month (desc)
+        // Sort by Reporting Month (asc - oldest to newest)
         if (a.reportingMonth !== b.reportingMonth) {
-          return a.reportingMonth > b.reportingMonth ? -1 : 1;
+          return a.reportingMonth < b.reportingMonth ? -1 : 1;
         }
 
         // Sort by Facility ID (facilityAccountNumber) (desc)
@@ -245,7 +245,7 @@ export default {
           return a.facilityAccountNumber > b.facilityAccountNumber ? -1 : 1;
         }
 
-        // Sort by Report Version (desc)
+        // Sort by Report Version (desc - last adjustment to the original report)
         const versionA = a.reportVersion ?? 0;
         const versionB = b.reportVersion ?? 0;
         return versionB - versionA;
