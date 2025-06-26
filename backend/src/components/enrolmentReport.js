@@ -8,6 +8,7 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getEnrolmentReports(req, res) {
   try {
+    // TODO (vietle-cgi) - Add pageSize to the query to ensure all reports are retrieved for organizations with a large number of facilities.
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
     const enrolmentReports = [];
     response?.value?.forEach((report) => enrolmentReports.push(new MappableObjectForFront(report, EnrolmentReportSummaryMappings).toJSON()));
