@@ -55,6 +55,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
   CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
+  ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -72,6 +73,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
+  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -102,6 +104,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
+    ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -536,3 +539,18 @@ export const CCFRI_MIN_FEE = 0;
 
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
+
+export const FULL_MONTH_NAMES = {
+  1: 'January',
+  2: 'February',
+  3: 'March',
+  4: 'April',
+  5: 'May',
+  6: 'June',
+  7: 'July',
+  8: 'August',
+  9: 'September',
+  10: 'October',
+  11: 'November',
+  12: 'December',
+};

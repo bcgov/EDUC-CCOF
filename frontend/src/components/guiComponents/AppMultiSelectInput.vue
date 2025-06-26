@@ -13,12 +13,17 @@
       <v-divider class="mt-2" />
     </template>
     <template #selection="{ item, index }">
-      <v-chip v-if="index < maxDisplayedItems">
-        <span>{{ item.title }}</span>
-      </v-chip>
-      <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
-        >(+{{ items.length - maxDisplayedItems }} others)</span
-      >
+      <template v-if="isAllSelected">
+        <v-chip v-if="index === 0">All</v-chip>
+      </template>
+      <template v-else>
+        <v-chip v-if="index < maxDisplayedItems">
+          <span>{{ item.title }}</span>
+        </v-chip>
+        <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
+          >(+{{ items.length - maxDisplayedItems }} others)</span
+        >
+      </template>
     </template>
   </v-select>
 </template>

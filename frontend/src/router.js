@@ -38,11 +38,12 @@ import OrganizationClosures from '@/components/closure/OrganizationClosures.vue'
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import EnrolmentReportsView from '@/components/enrolmentReports/EnrolmentReportsView.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
-import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
+import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificationForm.vue';
 import ReportChange from '@/components/requestChanges/ReportChanges.vue';
@@ -852,6 +853,16 @@ const router = createRouter({
       component: OrganizationClosures,
       meta: {
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
+        showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.ENROLMENT_REPORTS,
+      name: 'enrolment-reports-view',
+      component: EnrolmentReportsView,
+      meta: {
+        pageTitle: PAGE_TITLES.ENROLMENT_REPORTS_VIEW,
         showNavBar: false,
         requiresAuth: true,
       },

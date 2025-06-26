@@ -222,9 +222,9 @@
           </template>
           <template #button>
             <v-btn
-              href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
               :class="buttonColor(!isCCOFApproved)"
               theme="dark"
+              @click="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
             >
               Submit a report
             </v-btn>

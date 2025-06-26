@@ -196,3 +196,11 @@ export function getOrganizationNameLabel(organizationType) {
       return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
   }
 }
+
+export function padSingleDigit(value) {
+  const num = Number(value);
+  if (!Number.isInteger(num) || num < 0) {
+    throw new Error(`Invalid input for padSingleDigit: ${value}`);
+  }
+  return num < 10 ? `0${num}` : String(num);
+}
