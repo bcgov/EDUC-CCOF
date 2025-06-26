@@ -100,8 +100,8 @@ import moment from 'moment';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
