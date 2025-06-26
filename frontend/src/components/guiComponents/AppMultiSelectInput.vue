@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { isEqual } from 'lodash';
+
 export default {
   name: 'AppMultiSelectInput',
   props: {
@@ -64,6 +66,13 @@ export default {
     },
   },
   watch: {
+    modelValue: {
+      handler(value) {
+        if (!isEqual(value, this.selectedItems)) {
+          this.selectedItems = value;
+        }
+      },
+    },
     selectedItems: {
       handler() {
         this.$emit('update:modelValue', this.selectedItems);
