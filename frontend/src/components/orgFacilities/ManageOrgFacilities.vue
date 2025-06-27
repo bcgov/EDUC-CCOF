@@ -14,11 +14,11 @@
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>
-            <v-window v-model="tab">
-              <v-window-item value="organization-tab"><ManageOrganization /></v-window-item>
-              <v-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-window-item>
-              <v-window-item value="facilities-tab"><ManageFacilities /></v-window-item>
-            </v-window>
+            <v-tabs-window v-model="tab">
+              <v-tabs-window-item value="organization-tab"><ManageOrganization /></v-tabs-window-item>
+              <v-tabs-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-tabs-window-item>
+              <v-tabs-window-item value="facilities-tab"><ManageFacilities /></v-tabs-window-item>
+            </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-col>
