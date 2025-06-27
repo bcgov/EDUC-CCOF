@@ -58,14 +58,14 @@ export function formatUTCDateToShortDateString(date) {
  * Converts a date string to a standardized date string in YYYY-MM-DD format.
  *
  * Expected Input:
- *   - A valid date string (e.g., "06/11/2025 18:12:56").
+ *   - A valid date string.
  *
  * Expected Output:
  *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
  */
 export function formatDateToStandardFormat(date) {
   if (!date) return null;
-  return moment(date, 'MM/DD/YYYY HH:mm:ss').format('YYYY-MM-DD');
+  return moment(date).format('YYYY-MM-DD');
 }
 /**
  * Converts a date string to a standardized date string in YYYY-MM-DD HH:mm format.

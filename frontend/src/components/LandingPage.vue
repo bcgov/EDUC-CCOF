@@ -222,9 +222,9 @@
           </template>
           <template #button>
             <v-btn
-              href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
               :class="buttonColor(!isCCOFApproved)"
               theme="dark"
+              @click="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
             >
               Submit a report
             </v-btn>
@@ -771,7 +771,7 @@ export default {
       }
     },
     goToOrganizationClosures() {
-      this.$router.push(`${PATHS.CLOSURES}/${this.selectedProgramYearId}`);
+      this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.selectedProgramYearId}`);
     },
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
