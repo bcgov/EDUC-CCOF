@@ -35,8 +35,8 @@ import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
+import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
