@@ -1,16 +1,18 @@
 import ApiService from '../common/apiService';
 import { ApiRoutes } from '../utils/constants';
-import { checkSession } from '../utils/session.js';
+import { checkSession } from '../utils/session';
 
 export default {
-  async getFundingAgreements() {
+  async getFundingAgreementsByOrganizationId(organizationId) {
     checkSession();
-
     try {
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.USER}`);
-      return response?.data;
+      if (!organizationId) return [];
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.FUNDING_AGREEMENTS}?organizationId=${organizationId}`,
+      );
+      return response.data;
     } catch (error) {
-      console.log(`Failed to get funding agreements - ${error}`);
+      console.error(`Failed to load funding agreements - ${error}`);
       throw error;
     }
   },

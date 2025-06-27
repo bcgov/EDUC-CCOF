@@ -55,6 +55,7 @@ export const ApiRoutes = Object.freeze({
   DOCUMENT_CHANGE_ACTION: baseRoot + '/document/change-action',
   CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
+  FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -95,7 +96,7 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
-    VIEW_FUNDING_AGREEMENT: '/view-funding-agreement',
+    VIEW_FUNDING_AGREEMENT: '/org-facilities/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -103,6 +104,7 @@ export const PATHS = {
     CHANGE_LANDING: '/change/landing',
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
+    FUNDING_AGREEMENTS: '/funding-agreements',
   },
   PREFIX: {
     PCF: '/pcf',

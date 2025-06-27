@@ -56,13 +56,15 @@
 </template>
 <script>
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
-import fundingAgreementService from '@/services/fundingAgreementService.js';
+import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { formatUTCDateToShortDateString } from '@/utils/format';
 import { PATHS } from '@/utils/constants.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
-  name: 'ViewFundingAgreement',
+  name: 'ViewFundingAgreements',
   components: { AppLabel, NavButton },
   data() {
     return {
@@ -71,6 +73,7 @@ export default {
     };
   },
   created() {
+    this.organizationId = useOrganizationStore().organizationId;
     this.loadFundingAgreement();
   },
   methods: {
@@ -79,11 +82,12 @@ export default {
       try {
         this.isLoading = true;
         const id = this.$route.params.id;
-        const { applications = [] } = await fundingAgreementService.getFundingAgreements();
-        const selected = applications.find((app) => app.fundingAgreementNumber === id);
-
+        const response = await FundingAgreementService.getFundingAgreementsByOrganizationId(this.organizationId);
+        const applications = response || [];
+        const selected = applications.find((app) => app.fundingAgreementId === id);
         if (selected) {
           this.fundingAgreement = {
+            fundingAgreementId: selected.fundingAgreementId,
             fundingAgreementNumber: selected.fundingAgreementNumber,
             fundingAgreementTerm: selected.fundingAgreementTerm,
             fundingAgreementStatus: selected.fundingAgreementStatus,

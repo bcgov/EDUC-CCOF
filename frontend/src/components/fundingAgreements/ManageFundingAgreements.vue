@@ -5,7 +5,6 @@
         <p>View and manage the funding agreements of your organization.</p>
       </v-col>
     </v-row>
-    <div style="height: 12px"></div>
 
     <v-row class="mb-4" align="center">
       <v-col cols="auto">
@@ -35,12 +34,8 @@
 
         <template #[`item.actions`]="{ item }">
           <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-            <AppButton
-              :primary="false"
-              size="small"
-              @click="navigateToViewFundingAgreement(item.fundingAgreementNumber)"
-            >
-              Open
+            <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
+              View Details
             </AppButton>
           </v-row>
         </template>
@@ -49,12 +44,17 @@
   </v-container>
 </template>
 <script>
+import { mapState } from 'pinia';
+
 import { formatUTCDateToShortDateString } from '@/utils/format';
-import fundingAgreementService from '@/services/fundingAgreementService.js';
-import AppButton from '@/components/guiComponents/AppButton.vue';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { PATHS } from '@/utils/constants';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import FundingAgreementService from '@/services/fundingAgreementService.js';
+
 export default {
-  name: 'ManageFundingAgreement',
+  name: 'ManageFundingAgreements',
   components: { AppButton },
   data() {
     return {
@@ -64,22 +64,22 @@ export default {
       fundingAgreements: [],
       sortBy: [{ key: 'fundingAgreementStartDate', sortDesc: false }],
       fundingAgreementTableHeaders: [
-        { title: 'Facility Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
-        { title: 'Facility Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
+        { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
+        { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
         { title: 'Status', sortable: true, value: 'fundingAgreementStatus' },
+        { title: 'Actions', sortable: false, value: 'actions' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
-        { title: 'Actions', sortable: false, value: 'actions' },
       ],
     };
   },
   computed: {
+    ...mapState(useOrganizationStore, ['organizationId']),
     filteredFundingAgreements() {
-      return this.fundingAgreements.filter((item) => {
-        const isAgreement = item.isModification === false;
-        const isModification = item.isModification === true;
-        return (this.showFundingAgreements && isAgreement) || (this.showModifications && isModification);
-      });
+      return this.fundingAgreements.filter(
+        (item) =>
+          (this.showFundingAgreements && !item.isModification) || (this.showModifications && item.isModification),
+      );
     },
   },
   async created() {
@@ -90,9 +90,11 @@ export default {
     async loadData() {
       try {
         this.isLoading = true;
-        const response = await fundingAgreementService.getFundingAgreements();
-        const applications = response.applications || [];
+        const organizationId = this.organizationId;
+        const response = await FundingAgreementService.getFundingAgreementsByOrganizationId(organizationId);
+        const applications = response || [];
         this.fundingAgreements = applications.map((app) => ({
+          fundingAgreementId: app.fundingAgreementId,
           fundingAgreementNumber: app.fundingAgreementNumber,
           fundingAgreementTerm: app.fundingAgreementTerm,
           fundingAgreementStatus: app.fundingAgreementStatus,
@@ -106,8 +108,8 @@ export default {
         this.isLoading = false;
       }
     },
-    navigateToViewFundingAgreement(agreementNumber) {
-      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${agreementNumber}`);
+    navigateToViewFundingAgreement(id) {
+      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
     },
   },
 };
