@@ -38,7 +38,7 @@ import OrganizationClosures from '@/components/closure/OrganizationClosures.vue'
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
-import EnrolmentReportsView from '@/components/enrolmentReports/EnrolmentReportsView.vue';
+import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -860,7 +860,7 @@ const router = createRouter({
     {
       path: PATHS.ROOT.ENROLMENT_REPORTS,
       name: 'enrolment-reports-view',
-      component: EnrolmentReportsView,
+      component: ViewEnrolmentReports,
       meta: {
         pageTitle: PAGE_TITLES.ENROLMENT_REPORTS_VIEW,
         showNavBar: false,

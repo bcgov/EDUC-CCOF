@@ -197,10 +197,16 @@ export function getOrganizationNameLabel(organizationType) {
   }
 }
 
-export function padSingleDigit(value) {
-  const num = Number(value);
-  if (!Number.isInteger(num) || num < 0) {
-    throw new Error(`Invalid input for padSingleDigit: ${value}`);
-  }
-  return num < 10 ? `0${num}` : String(num);
+/**
+ * Pads the given input value on the left with the specified character
+ * until it reaches the desired length.
+ *
+ * @param input - The value to pad (can be a number, string, etc.).
+ * @param length - The total desired length of the resulting string.
+ * @param char - The character to use for padding.
+ * @returns A padded string, or null if input is null or undefined.
+ */
+export function padString(input, length, char) {
+  if (input == null) return null;
+  return String(input).padStart(length, char);
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-12">
+  <v-container fluid class="px-12">
     <p class="text-h4 font-weight-bold">Enrolment Report</p>
     <div class="text-h6 text-primary mt-2 mb-8">
       <p class="font-weight-bold my-2">{{ organizationName }}</p>
@@ -20,7 +20,7 @@
           <v-col cols="12" md="4" lg="2">
             <p class="font-weight-bold pt-6 pr-4">Select reporting month:</p>
           </v-col>
-          <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
+          <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
             <AppMultiSelectInput
               v-model.lazy="selectedReportingMonths"
               :loading="loading"
@@ -39,7 +39,7 @@
           <v-col cols="12" md="4" lg="2">
             <p class="font-weight-bold pt-6 pr-4">Select facility:</p>
           </v-col>
-          <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
+          <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
             <AppMultiSelectInput
               v-model.lazy="selectedFacilities"
               :loading="loading"
@@ -65,9 +65,9 @@
           class="elevation-2"
         >
           <template #item.reportVersion="{ item }">
-            {{ getReportVersionText(item.reportVersion) }}
+            {{ getReportVersionText(item) }}
             <AppTooltip
-              v-if="isAdjustmentReport(item.reportVersion)"
+              v-if="item.isAdjustment"
               tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
             />
           </template>
@@ -112,12 +112,12 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { padSingleDigit } from '@/utils/common.js';
+import { padString } from '@/utils/common.js';
 import { FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat } from '@/utils/format';
 
 export default {
-  name: 'EnrolmentReportsView',
+  name: 'ViewEnrolmentReports',
   components: { AppButton, AppMultiSelectInput, AppTooltip, FiscalYearSlider, NavButton },
   mixins: [alertMixin],
   data() {
@@ -202,6 +202,7 @@ export default {
   },
   methods: {
     formatDateToStandardFormat,
+    padString,
     async loadData() {
       this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedReportingMonths = this.allReportingMonths?.map((report) => report.value);
@@ -219,7 +220,8 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padSingleDigit(report?.month)}`;
+          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`;
+          report.isAdjustment = report?.reportVersion > 1;
           // TODO (vietle-cgi) - review/update these statuses once CMS team added them to ER entity
           report.ccofStatus = facility?.ccofBaseFundingStatus;
           report.ccfriStatus = facility?.ccfriStatus;
@@ -254,16 +256,9 @@ export default {
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
     },
-    isAdjustmentReport(version) {
-      return version > 1;
-    },
-    getReportVersionText(version) {
-      if (version == null) return null;
-      let result = padSingleDigit(version);
-      if (this.isAdjustmentReport(version)) {
-        result += '-Adjustment';
-      }
-      return result;
+    getReportVersionText(report) {
+      const version = padString(report.reportVersion, 2, '0');
+      return report?.isAdjustment ? `${version}-Adjustment` : version;
     },
   },
 };
