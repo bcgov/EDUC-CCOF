@@ -3,7 +3,7 @@ import { ApiRoutes } from '../utils/constants';
 import { checkSession } from '../utils/session';
 
 export default {
-  async getFundingAgreementsByOrganizationId(organizationId) {
+  async getFundingAgreements(organizationId) {
     checkSession();
     try {
       if (!organizationId) return [];

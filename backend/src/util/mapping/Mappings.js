@@ -544,6 +544,7 @@ const FundingAgreementMappings = [
   { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementStatus' },
   { back: 'ccof_start_date', front: 'fundingAgreementStartDate' },
   { back: 'ccof_funding_agreementid', front: 'fundingAgreementId' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
 ];
 
 const DocumentsMappings = [

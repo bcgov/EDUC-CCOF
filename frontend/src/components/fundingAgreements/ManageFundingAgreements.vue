@@ -22,6 +22,8 @@
         :items="filteredFundingAgreements"
         :headers="fundingAgreementTableHeaders"
         :items-per-page="10"
+        :mobile="null"
+        mobile-breakpoint="md"
         class="elevation-2"
       >
         <template #[`item.fundingAgreementStartDate`]="{ item }">
@@ -33,7 +35,7 @@
         </template>
 
         <template #[`item.actions`]="{ item }">
-          <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
+          <v-row class="action-buttons align-center justify-end justify-md-start">
             <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
               View Details
             </AppButton>
@@ -91,17 +93,10 @@ export default {
       try {
         this.isLoading = true;
         const organizationId = this.organizationId;
-        const response = await FundingAgreementService.getFundingAgreementsByOrganizationId(organizationId);
-        const applications = response || [];
-        this.fundingAgreements = applications.map((app) => ({
-          fundingAgreementId: app.fundingAgreementId,
-          fundingAgreementNumber: app.fundingAgreementNumber,
-          fundingAgreementTerm: app.fundingAgreementTerm,
-          fundingAgreementStatus: app.fundingAgreementStatus,
-          fundingAgreementStartDate: app.fundingAgreementStartDate,
-          endDate: app.endDate,
-          isModification: app.fundingAgreementOrderNumber > 0,
-        }));
+        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(organizationId)) || [];
+        this.fundingAgreements.forEach((app) => {
+          app.isModification = app.fundingAgreementOrderNumber > 0;
+        });
       } catch {
         this.setFailureAlert('Failed to load Funding Agreements');
       } finally {

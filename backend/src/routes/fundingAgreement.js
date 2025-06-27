@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFundingAgreements } = require('../components/fundingAgreements');
+const { getFundingAgreements } = require('../components/fundingAgreement');
 const { query, validationResult } = require('express-validator');
 
 /**

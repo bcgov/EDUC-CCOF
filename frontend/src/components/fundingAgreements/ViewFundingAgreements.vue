@@ -82,7 +82,7 @@ export default {
       try {
         this.isLoading = true;
         const id = this.$route.params.id;
-        const response = await FundingAgreementService.getFundingAgreementsByOrganizationId(this.organizationId);
+        const response = await FundingAgreementService.getFundingAgreements(this.organizationId);
         const applications = response || [];
         const selected = applications.find((app) => app.fundingAgreementId === id);
         if (selected) {
