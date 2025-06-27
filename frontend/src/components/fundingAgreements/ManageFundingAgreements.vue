@@ -66,12 +66,12 @@ export default {
       fundingAgreements: [],
       sortBy: [{ key: 'fundingAgreementStartDate', sortDesc: false }],
       fundingAgreementTableHeaders: [
-        { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm', width: '175px' },
-        { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber', width: '175px' },
-        { title: 'Status', sortable: true, value: 'fundingAgreementStatus', width: '175px' },
+        { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
+        { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
+        { title: 'Status', sortable: true, value: 'fundingAgreementStatus' },
         { title: 'Actions', sortable: false, value: 'actions', width: '175px' },
-        { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate', width: '175px' },
-        { title: 'End Date', sortable: true, value: 'endDate', width: '175px' },
+        { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
+        { title: 'End Date', sortable: true, value: 'endDate' },
       ],
     };
   },
