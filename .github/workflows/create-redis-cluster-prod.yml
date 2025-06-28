@@ -71,7 +71,7 @@ jobs:
         id: build-image-redis
         uses: redhat-actions/buildah-build@v2
         with:
-          image: redis
+          image: ccof-redis
           tags: ${{ env.REDIS_VERSION }}
           dockerfiles: |
             ./tools/redis/Dockerfile
