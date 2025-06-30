@@ -38,6 +38,7 @@ import OrganizationClosures from '@/components/closure/OrganizationClosures.vue'
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
 import ViewFundingAgreements from '@/components/fundingAgreements/ViewFundingAgreements.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
@@ -865,11 +866,21 @@ const router = createRouter({
       },
     },
     {
-      path: `${PATHS.CLOSURES}/:programYearGuid`,
+      path: `${PATHS.ROOT.CLOSURES}/:programYearGuid`,
       name: 'organization-closures',
       component: OrganizationClosures,
       meta: {
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
+        showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.ENROLMENT_REPORTS,
+      name: 'enrolment-reports-view',
+      component: ViewEnrolmentReports,
+      meta: {
+        pageTitle: PAGE_TITLES.ENROLMENT_REPORTS_VIEW,
         showNavBar: false,
         requiresAuth: true,
       },

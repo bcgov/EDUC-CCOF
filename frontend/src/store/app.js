@@ -88,7 +88,6 @@ export const useAppStore = defineStore('app', {
       if (localStorage.getItem('jwtToken')) {
         const lookupInfo = await ApiService.getLookupInfo();
         this.setLookupInfo(lookupInfo.data);
-        this.setLookupInfo(lookupInfo.data); // FIXME: 2022 dev: remove this one.  2024 Trev: What??
         this.setProgramYearList(lookupInfo.data?.programYear);
         this.setChildCareCategoryList(lookupInfo.data?.childCareCategory);
         this.setOrganizationTypeList(lookupInfo.data?.organizationType);

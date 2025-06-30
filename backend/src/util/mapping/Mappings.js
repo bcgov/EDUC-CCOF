@@ -562,6 +562,18 @@ const ApplicationDocumentsMappings = [
   { back: 'ApplicationFacilityDocument.ccof_facility@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
 ];
 
+const EnrolmentReportSummaryMappings = [
+  { back: 'ccof_monthlyenrollmentreportid', front: 'enrolmentReportId' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: '_ccof_programyear_value', front: 'programYearId' },
+  { back: 'ccof_month', front: 'month' },
+  { back: 'ccof_year', front: 'year' },
+  { back: 'ccof_submissiondeadline', front: 'submissionDeadline' },
+  { back: 'ccof_reportversion', front: 'reportVersion' },
+  { back: 'statuscode', front: 'statusCode' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DocumentsMappings,
@@ -571,6 +583,7 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  EnrolmentReportSummaryMappings,
   UserProfileFacilityMappings,
   UserProfileBaseFundingMappings,
   UserProfileOrganizationMappings,

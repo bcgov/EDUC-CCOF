@@ -56,6 +56,7 @@ export const ApiRoutes = Object.freeze({
   CHANGE_ACTION_CLOSURE: baseRoot + '/changeRequest/changeActionClosure',
   CANADA_POST: baseRoot + '/canadaPost',
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
+  ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -73,6 +74,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
+  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -105,6 +107,8 @@ export const PATHS = {
     CHANGE_NEW_FACILITY: '/change/nf/group/facility',
     SUBMISSION_HISTORY: '/submission-history',
     FUNDING_AGREEMENTS: '/funding-agreements',
+    CLOSURES: '/closures',
+    ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {
     PCF: '/pcf',
@@ -151,8 +155,6 @@ export const PATHS = {
 
   MTFI_GROUP_FEE_VERIFICATION: '/mtfi-fee-verification',
   MTFI_AFS: '/mtfi-afs',
-
-  CLOSURES: '/closures',
 };
 
 //Some helper classes to build the URL consistently
@@ -375,6 +377,11 @@ export const DOCUMENT_TYPES = Object.freeze({
   CR_NOTIFICATION_FORM: 'NOTIFICATION_FORM',
   CR_NOTIFICATION_FORM_SUPPORTING: 'SUPPORTING_DOC',
   CLOSURE_REQUEST: 'Closure Request Documents',
+  RFI_EC: 'RFI-EC',
+  RFI_DCSWI: 'RFI-DCSWI',
+  RFI_PSE: 'RFI-PSE',
+  RFI_PSEIC: 'RFI-PSEIC',
+  RFI_ACCUP: 'RFI-ACCUP',
 });
 
 export const MAX_FILE_SIZE = 2100000; // 2.18 MB is max size since after base64 encoding it might grow upto 3 MB.
@@ -534,3 +541,18 @@ export const CCFRI_MIN_FEE = 0;
 
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
+
+export const FULL_MONTH_NAMES = {
+  1: 'January',
+  2: 'February',
+  3: 'March',
+  4: 'April',
+  5: 'May',
+  6: 'June',
+  7: 'July',
+  8: 'August',
+  9: 'September',
+  10: 'October',
+  11: 'November',
+  12: 'December',
+};

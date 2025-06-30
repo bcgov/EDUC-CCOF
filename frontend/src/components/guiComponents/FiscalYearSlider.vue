@@ -1,11 +1,12 @@
 <template>
-  <v-item-group v-if="programYearList?.length > 1" v-model="activeIndex" class="text-center" mandatory>
+  <v-item-group v-if="alwaysDisplay || programYearList?.length > 1" v-model="activeIndex" class="text-center" mandatory>
     <v-btn tile variant="outlined" min-width="20px" class="pa-0" :disabled="isPrevDisabled" @click="previous">
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
     <v-item v-for="(programYear, index) in programYearSlidingWindow" :key="index" v-slot="{ isSelected }">
       <v-btn
         tile
+        :readonly="readonly"
         variant="outlined"
         class="px-4 ma-0"
         :class="isSelected ? 'selected' : ''"
@@ -28,6 +29,16 @@ import { useApplicationStore } from '@/store/application.js';
 
 export default {
   name: 'FiscalYearSlider',
+  props: {
+    alwaysDisplay: {
+      type: Boolean,
+      default: false,
+    },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+  },
   emits: ['selectProgramYear'],
   data() {
     return {
@@ -69,10 +80,10 @@ export default {
       return this.programYearList;
     },
     isPrevDisabled() {
-      return this.selectedProgramYearIndex < 1;
+      return this.readonly || this.selectedProgramYearIndex < 1;
     },
     isNextDisabled() {
-      return this.selectedProgramYearIndex >= this.programYearList?.length - 1;
+      return this.readonly || this.selectedProgramYearIndex >= this.programYearList?.length - 1;
     },
   },
   created() {

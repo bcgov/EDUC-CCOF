@@ -274,7 +274,7 @@
       max-width="525px"
       title="Submission Complete"
       :loading="false"
-      @close="dialog = false"
+      @close="goToDashboard"
     >
       <template #content>
         <p class="pt-4">
@@ -282,7 +282,7 @@
           application. We will contact you if more information is required.
         </p>
         <p>
-          <router-link :to="PATHS.ROOT.HOME"> Return to your dashboard </router-link>
+          <AppButton color="primary" class="mt-4" @click="goToDashboard"> Return to your dashboard </AppButton>
         </p>
       </template>
     </AppDialog>
@@ -298,6 +298,7 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import {
   EMPTY_PLACEHOLDER,
@@ -322,6 +323,7 @@ import { formatSubmissionTimestamp } from '@/utils/format';
 export default {
   components: {
     AppDialog,
+    AppButton,
     MTFISummary,
     ChangeNotificationFormSummary,
     RFISummary,
@@ -505,6 +507,9 @@ export default {
         default:
           return false;
       }
+    },
+    goToDashboard() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
   },
 };

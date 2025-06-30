@@ -252,8 +252,8 @@ export default {
           return [...acc, ...this.buildDateArray(dateObj.startDate, dateObj.endDate)];
         }, []);
       const currentClosureDates = this.buildDateArray(obj.startDate, obj.endDate);
-      const closureStartDate = moment.utc(obj.startDate).startOf('day');
-      const closureEndDate = moment.utc(obj.endDate).startOf('day');
+      const closureStartDate = obj.startDate ? moment(obj.startDate).startOf('day') : null;
+      const closureEndDate = obj.endDate ? moment(obj.endDate).startOf('day') : null;
       const fiscalStartDate = moment(this.fiscalStartAndEndDates.startDate).startOf('day');
       const fiscalEndDate = moment(this.fiscalStartAndEndDates.endDate).startOf('day');
 
@@ -265,9 +265,9 @@ export default {
       */
       obj.datesOverlap = currentClosureDates.some((date) => otherClosureDates.includes(date));
       obj.datesInvalid =
-        closureEndDate.isBefore(closureStartDate) ||
-        closureStartDate.isBefore(fiscalStartDate) ||
-        closureEndDate.isAfter(fiscalEndDate);
+        closureEndDate?.isBefore(closureStartDate) ||
+        closureStartDate?.isBefore(fiscalStartDate) ||
+        closureEndDate?.isAfter(fiscalEndDate);
     },
     removeClosure(index) {
       this.updatedClosures.splice(index, 1);
