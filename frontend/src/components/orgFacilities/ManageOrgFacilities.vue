@@ -14,11 +14,11 @@
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>
-            <v-window v-model="tab">
-              <v-window-item value="organization-tab"><ManageOrganization /></v-window-item>
-              <v-window-item value="funding-agreement-tab"><h2>Funding Agreement</h2></v-window-item>
-              <v-window-item value="facilities-tab"><ManageFacilities /></v-window-item>
-            </v-window>
+            <v-tabs-window v-model="tab">
+              <v-tabs-window-item value="organization-tab"><ManageOrganization /></v-tabs-window-item>
+              <v-tabs-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-tabs-window-item>
+              <v-tabs-window-item value="facilities-tab"><ManageFacilities /></v-tabs-window-item>
+            </v-tabs-window>
           </v-card-text>
         </v-card>
       </v-col>
@@ -33,16 +33,16 @@
 <script>
 import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
-
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
+import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
 import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
+import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization, ManageFacilities, NavButton },
+  components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreements },
   data() {
     return {
       tab: undefined,
