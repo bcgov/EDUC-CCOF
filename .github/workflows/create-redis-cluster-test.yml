@@ -128,3 +128,10 @@ jobs:
               jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') \
             --cluster-yes
           echo "Success!"
+
+      - name: Rollout Backend Pods
+        run: |
+          oc rollout restart \
+            deployment/ccof-backend-uat deployment/ccof-backend-efx
+          oc rollout status deployment/ccof-backend-uat
+          oc rollout status deployment/ccof-backend-efx
