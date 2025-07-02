@@ -341,23 +341,13 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 }
 
 function getHttpHeader() {
-  let headers = null;
-  if ('local' === config.get('environment')) {
-    headers = {
+  return {
+    headers: {
       Accept: 'text/plain',
       'Content-Type': 'application/json',
-      auth: {
-        username: config.get('dynamicsApi:devBasicAuthUser'),
-        password: config.get('dynamicsApi:devBasicAuthPass'),
-      },
-    };
-  } else {
-    headers = {
-      Accept: 'text/plain',
-      'Content-Type': 'application/json',
-    };
-  }
-  return headers;
+      [config.get('dynamicsApi:apiKeyHeader')]: config.get('dynamicsApi:apiKeyValue'),
+    },
+  };
 }
 
 function generateJWTToken(jwtid, subject, issuer, algorithm, payload) {
