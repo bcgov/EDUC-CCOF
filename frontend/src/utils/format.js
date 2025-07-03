@@ -79,7 +79,7 @@ export function formatSubmissionTimestamp(date) {
  * Converts a date string to local time and formats it as 'YYYY-MM-DD'.
  *
  *  */
-export function formatDateToLocal(date, inputFormat) {
+export function formatUTCDateToLocal(date, inputFormat = 'YYYY-MM-DDTHH:mm:ssZ') {
   if (!date) return null;
   return moment.utc(date, inputFormat, true).local().format('YYYY-MM-DD');
 }
