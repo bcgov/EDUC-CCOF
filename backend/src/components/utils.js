@@ -343,7 +343,8 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 function getHttpHeader() {
   return {
     headers: {
-      Accept: 'text/plain',
+      // Accept: 'text/plain',
+      Accept: '*/*',
       'Content-Type': 'application/json',
       [config.get('dynamicsApi:apiKeyHeader')]: config.get('dynamicsApi:apiKeyValue'),
     },
