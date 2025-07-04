@@ -343,7 +343,9 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
 function getHttpHeader() {
   return {
     headers: {
-      Accept: 'text/plain',
+      // D365 Controllers are currently inconsistent with their returned Content-Type (application/json and text/plain)
+      // so use a wildcard to avoid integration errors
+      Accept: '*/*',
       'Content-Type': 'application/json',
       [config.get('dynamicsApi:apiKeyHeader')]: config.get('dynamicsApi:apiKeyValue'),
     },
