@@ -3,10 +3,21 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getEnrolmentReports } = require('../components/enrolmentReport');
-const { oneOf, query, validationResult } = require('express-validator');
+const { getEnrolmentReport, getEnrolmentReports } = require('../components/enrolmentReport');
+const { oneOf, param, query, validationResult } = require('express-validator');
 
 module.exports = router;
+
+router.get(
+  '/:enrolmentReportId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('enrolmentReportId', 'URL param: [enrolmentReportId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getEnrolmentReport(req, res);
+  },
+);
 
 router.get(
   '/',

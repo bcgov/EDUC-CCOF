@@ -75,7 +75,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
-  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
+  ENROLMENT_REPORTS: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({

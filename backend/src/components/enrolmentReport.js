@@ -6,6 +6,16 @@ const { EnrolmentReportSummaryMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
+async function getEnrolmentReport(req, res) {
+  try {
+    const response = await getOperation(`ccof_monthlyenrollmentreports(${req.params.enrolmentReportId})`);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, EnrolmentReportSummaryMappings).toJSON());
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function getEnrolmentReports(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
@@ -19,5 +29,6 @@ async function getEnrolmentReports(req, res) {
 }
 
 module.exports = {
+  getEnrolmentReport,
   getEnrolmentReports,
 };
