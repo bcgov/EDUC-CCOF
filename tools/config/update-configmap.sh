@@ -11,8 +11,10 @@ readonly SOAM_IDP_HINT_IDIR=$8
 readonly SPLUNK_TOKEN=$9
 readonly REDIS_PASSWORD=${10}
 readonly D365_API_PREFIX=${11}
-readonly CANADA_POST_API_ENDPOINT=${12}
-readonly CANADA_POST_API_KEY=${13}
+readonly D365_API_KEY_HEADER=${12}
+readonly D365_API_KEY_VALUE=${13}
+readonly CANADA_POST_API_ENDPOINT=${14}
+readonly CANADA_POST_API_KEY=${15}
 readonly SOAM_KC_REALM_ID="childcare-applications"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"
@@ -90,6 +92,8 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   "$APP_NAME-backend-$ENV_VAL-config-map" \
   --from-literal="CLAMAV_HOST=clamav.$COMMON_NAMESPACE-$NAMESPACE_SUFFIX.svc.cluster.local" \
   --from-literal="D365_API_ENDPOINT=$D365_API_ENDPOINT" \
+  --from-literal="D365_API_KEY_HEADER=$D365_API_KEY_HEADER" \
+  --from-literal="D365_API_KEY_VALUE=$D365_API_KEY_VALUE" \
   --from-literal="LOG_LEVEL=$LOG_LEVEL" \
   --from-literal="TZ=$TIMEZONE" \
   --from-literal="NODE_ENV=$NODE_ENV" \

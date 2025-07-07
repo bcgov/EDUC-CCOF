@@ -166,6 +166,8 @@ jobs:
               ${{ secrets.SPLUNK_TOKEN }} \
               ${{ secrets.REDIS_PASSWORD }} \
               ${{ secrets.D365_API_PREFIX }} \
+              ${{ secrets.D365_API_KEY_HEADER }} \
+              ${{ secrets.D365_API_KEY_VALUE }} \
               ${{ secrets.CANADA_POST_API_ENDPOINT }} \
               ${{ secrets.CANADA_POST_API_KEY }} 
 

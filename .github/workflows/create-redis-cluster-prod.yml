@@ -71,7 +71,7 @@ jobs:
         id: build-image-redis
         uses: redhat-actions/buildah-build@v2
         with:
-          image: redis
+          image: ccof-redis
           tags: ${{ env.REDIS_VERSION }}
           dockerfiles: |
             ./tools/redis/Dockerfile
@@ -128,3 +128,8 @@ jobs:
               jsonpath='{range.items[*]}{.status.podIP}:6379 {end}') \
             --cluster-yes
           echo "Success!"
+
+      - name: Rollout Backend Pods
+        run: |
+          oc rollout restart deployment/ccof-backend-prod
+          oc rollout status deployment/ccof-backend-prod

@@ -40,6 +40,8 @@ import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import EnrolmentReport from '@/components/enrolmentReports/EnrolmentReport.vue';
 import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
+import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
+import ViewFundingAgreements from '@/components/fundingAgreements/ViewFundingAgreements.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -836,6 +838,22 @@ const router = createRouter({
       path: `${PATHS.ROOT.MANAGE_FACILITY}/:facilityId`,
       name: 'manage-facility',
       component: ManageFacility,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: `${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/:id`,
+      name: 'ViewFundingAgreement',
+      component: ViewFundingAgreements,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: PATHS.ROOT.FUNDING_AGREEMENTS,
+      name: 'funding-agreements',
+      component: ManageFundingAgreements,
       meta: {
         requiresAuth: true,
       },
