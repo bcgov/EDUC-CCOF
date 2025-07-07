@@ -14,4 +14,15 @@ export default {
       throw error;
     }
   },
+
+  async getEnrolmentReport(enrolmentReportId) {
+    try {
+      if (!enrolmentReportId) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get enrolment report - ${error}`);
+      throw error;
+    }
+  },
 };

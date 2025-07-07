@@ -77,10 +77,23 @@
           </template>
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)"> View </AppButton>
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
-                Adjust
+              <AppButton
+                v-if="true"
+                :loading="loading"
+                :primary="false"
+                size="medium"
+                @click="goToEnrolmentReport(item)"
+              >
+                Edit
               </AppButton>
+              <template v-else>
+                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
+                  View
+                </AppButton>
+                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
+                  Adjust
+                </AppButton>
+              </template>
             </v-row>
           </template>
         </v-data-table>
@@ -259,6 +272,9 @@ export default {
     getReportVersionText(report) {
       const version = padString(report.reportVersion, 2, '0');
       return report?.isAdjustment ? `${version}-Adjustment` : version;
+    },
+    goToEnrolmentReport(report) {
+      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${report.enrolmentReportId}`);
     },
   },
 };
