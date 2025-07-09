@@ -45,11 +45,11 @@
           </template>
 
           <template #[`item.fundingAgreementStartDate`]="{ item }">
-            {{ formatDateToStandardFormat(item.fundingAgreementStartDate) }}
+            {{ formatUTCDate(item.fundingAgreementStartDate) }}
           </template>
 
           <template #[`item.endDate`]="{ item }">
-            {{ formatDateToStandardFormat(item.endDate) }}
+            {{ formatUTCDate(item.endDate) }}
           </template>
 
           <template #[`item.actions`]="{ item }">
@@ -71,7 +71,7 @@
 import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
-import { formatDateToStandardFormat } from '@/utils/format';
+import { formatUTCDate } from '@/utils/format';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
 
@@ -101,25 +101,27 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     filteredFundingAgreements() {
-      const agreements = isEmpty(this.selectedTerms)
+      return isEmpty(this.selectedTerms)
         ? this.fundingAgreements
         : this.fundingAgreements.filter((agreement) => this.selectedTerms.includes(agreement.fundingAgreementTerm));
-      return this.sortFundingAgreements(agreements);
     },
   },
   async created() {
     await this.loadData();
   },
   methods: {
-    formatDateToStandardFormat,
+    formatUTCDate,
     async loadData() {
+      await this.loadFundingAgreements();
+      this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
+        (term) => ({ term, fundingAgreementTerm: term }),
+      );
+    },
+    async loadFundingAgreements() {
       try {
         this.isLoading = true;
-        const organizationId = this.organizationId;
-        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(organizationId)) || [];
-        this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
-          (term) => ({ term, fundingAgreementTerm: term }),
-        );
+        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(this.organizationId)) || [];
+        this.sortFundingAgreements();
       } catch {
         this.setFailureAlert('Failed to load Funding Agreements');
       } finally {
@@ -154,14 +156,16 @@ export default {
           return '';
       }
     },
-    sortFundingAgreements(agreements) {
-      return [...agreements].sort((a, b) => {
+    sortFundingAgreements() {
+      this.fundingAgreements?.sort((a, b) => {
         // 1. Sort by FA Term
         if (a.fundingAgreementTerm !== b.fundingAgreementTerm) {
           return b.fundingAgreementTerm.localeCompare(a.fundingAgreementTerm);
         }
         // 2. Sort by Funding Agreement Number
-        return (b.fundingAgreementOrderNumber || 0) - (a.fundingAgreementOrderNumber || 0);
+        const fundingagreementA = a.fundingAgreementOrderNumber ?? 0;
+        const fundingagreementB = b.fundingAgreementOrderNumber ?? 0;
+        return fundingagreementB - fundingagreementA;
       });
     },
   },

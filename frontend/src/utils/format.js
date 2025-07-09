@@ -83,3 +83,11 @@ export function formatUTCDateToLocal(date, inputFormat = 'YYYY-MM-DDTHH:mm:ssZ')
   if (!date) return null;
   return moment.utc(date, inputFormat, true).local().format('YYYY-MM-DD');
 }
+/**
+ * Formats a UTC ISO date string to a short date string (YYYY-MM-DD) in UTC.
+ *
+ */
+export function formatUTCDate(date) {
+  if (!date) return null;
+  return moment.utc(date).format('YYYY-MM-DD');
+}
