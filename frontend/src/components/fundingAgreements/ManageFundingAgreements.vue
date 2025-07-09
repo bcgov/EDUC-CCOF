@@ -11,16 +11,6 @@
           Funding Agreement.
         </p>
       </v-col>
-      <!--
-      <v-col cols="12" md="3" class="mt-2 mt-md-0 d-flex justify-end align-end">
-        <AppButton color="primary" size="small" @click="goToChangeRequestHistory()">
-          Submit a Change Request
-        </AppButton>
-      </v-col>
-      <v-col cols="12">
-        <p class="mt-4">Submit a change request to notify the Child Care Operating Funding Program.</p>
-      </v-col>
-      -->
     </v-row>
     <div class="my-4"></div>
     <v-card variant="outlined" class="soft-outline fill-height px-2 py-1">
