@@ -11,6 +11,7 @@
           Funding Agreement.
         </p>
       </v-col>
+      <!--
       <v-col cols="12" md="3" class="mt-2 mt-md-0 d-flex justify-end align-end">
         <AppButton color="primary" size="small" @click="goToChangeRequestHistory()">
           Submit a Change Request
@@ -19,6 +20,7 @@
       <v-col cols="12">
         <p class="mt-4">Submit a change request to notify the Child Care Operating Funding Program.</p>
       </v-col>
+      -->
     </v-row>
     <div class="my-4"></div>
     <v-card variant="outlined" class="soft-outline fill-height px-2 py-1">
@@ -39,7 +41,6 @@
       </v-row>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <v-data-table
-          v-model:sort-by="sortBy"
           :items="filteredFundingAgreements"
           :headers="fundingAgreementTableHeaders"
           :items-per-page="10"
@@ -78,6 +79,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 
 import { formatDateToStandardFormat } from '@/utils/format';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -96,12 +98,11 @@ export default {
       fundingAgreements: [],
       fundingAgreementTerms: [],
       selectedTerms: [],
-      sortBy: [{ key: 'fundingAgreementStartDate', sortDesc: false }],
       fundingAgreementTableHeaders: [
         { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
         { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
         { title: 'Status', sortable: true, value: 'fundingAgreementStatus' },
-        { title: 'Actions', sortable: false, value: 'actions', width: '250px' },
+        { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
       ],
@@ -110,9 +111,10 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     filteredFundingAgreements() {
-      return this.fundingAgreements.filter(
-        (agreement) => !this.selectedTerms.length || this.selectedTerms.includes(agreement.fundingAgreementTerm),
-      );
+      const agreements = isEmpty(this.selectedTerms)
+        ? this.fundingAgreements
+        : this.fundingAgreements.filter((agreement) => this.selectedTerms.includes(agreement.fundingAgreementTerm));
+      return this.sortFundingAgreements(agreements);
     },
   },
   async created() {
@@ -161,6 +163,16 @@ export default {
         default:
           return '';
       }
+    },
+    sortFundingAgreements(agreements) {
+      return [...agreements].sort((a, b) => {
+        // 1. Sort by FA Term
+        if (a.fundingAgreementTerm !== b.fundingAgreementTerm) {
+          return b.fundingAgreementTerm.localeCompare(a.fundingAgreementTerm);
+        }
+        // 2. Sort by Funding Agreement Number
+        return (b.fundingAgreementOrderNumber || 0) - (a.fundingAgreementOrderNumber || 0);
+      });
     },
   },
 };
