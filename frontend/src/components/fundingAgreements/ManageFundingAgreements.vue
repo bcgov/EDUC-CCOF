@@ -158,11 +158,24 @@ export default {
     },
     sortFundingAgreements() {
       this.fundingAgreements?.sort((a, b) => {
-        // 1. Sort by FA Term
+        // 1. Prioritize "Drafted – Provider Action Required" and "Drafted - With Ministry"
+        const priorityA =
+          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED ||
+          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+            ? 0
+            : 1;
+        const priorityB =
+          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED ||
+          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+            ? 0
+            : 1;
+        if (priorityA !== priorityB) return priorityA - priorityB;
+
+        // 2. Sort by FA Term
         if (a.fundingAgreementTerm !== b.fundingAgreementTerm) {
           return b.fundingAgreementTerm.localeCompare(a.fundingAgreementTerm);
         }
-        // 2. Sort by Funding Agreement Number
+        // 3. Sort by Funding Agreement Number
         const fundingagreementA = a.fundingAgreementOrderNumber ?? 0;
         const fundingagreementB = b.fundingAgreementOrderNumber ?? 0;
         return fundingagreementB - fundingagreementA;
