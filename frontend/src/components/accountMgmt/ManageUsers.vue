@@ -128,3 +128,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* These are default framework settings that was somehow allowed to be overriden in CcfriEstimator.vue */
+:deep(h1) {
+  font-size: 2em;
+}
+</style>
