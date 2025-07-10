@@ -158,19 +158,14 @@ export default {
     },
     sortFundingAgreements() {
       this.fundingAgreements?.sort((a, b) => {
-        // 1. Prioritize "Drafted – Provider Action Required" and "Drafted - With Ministry"
-        const priorityA =
-          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
-            ? 0
-            : a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
-              ? 1
-              : 2;
-        const priorityB =
-          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
-            ? 0
-            : b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
-              ? 1
-              : 2;
+        // 1. Prioritize "Drafted – Provider Action Required" over "Drafted - With Ministry"
+        const statusPriority = {
+          [FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED]: 0,
+          [FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY]: 1,
+          default: 2,
+        };
+        const priorityA = statusPriority[a.fundingAgreementStatus] ?? statusPriority.default;
+        const priorityB = statusPriority[b.fundingAgreementStatus] ?? statusPriority.default;
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
