@@ -27,7 +27,7 @@
         >
           <template #[`item.edit-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <AppButton :primary="false" size="small" @click="() => alert(item.clientId)">Edit</AppButton>
+              <AppButton :primary="false" size="small" @click="editUser(item.contactId)">Edit</AppButton>
             </v-row>
           </template>
           <template #[`item.access-type`]="{ item }">
@@ -41,7 +41,7 @@
           </template>
           <template #[`item.remove-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end">
-              <AppButton :primary="false" color="#F44336" size="small" @click="() => alert(item.clientId)">
+              <AppButton :primary="false" color="#F44336" size="small" @click="() => deleteUser(item.contactId)">
                 Remove
               </AppButton>
             </v-row>
@@ -124,6 +124,12 @@ export default {
     },
     isPrimaryContact(contact) {
       return contact.contactId === this.loadedModel.primaryContactId;
+    },
+    editUser(id) {
+      alert(`Edit: ${id}`);
+    },
+    deleteUser(id) {
+      alert(`Delete: ${id}`);
     },
   },
 };
