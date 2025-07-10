@@ -160,16 +160,20 @@ export default {
       this.fundingAgreements?.sort((a, b) => {
         // 1. Prioritize "Drafted – Provider Action Required" and "Drafted - With Ministry"
         const priorityA =
-          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED ||
-          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+          a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
             ? 0
-            : 1;
+            : a.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+              ? 1
+              : 2;
         const priorityB =
-          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED ||
-          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+          b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
             ? 0
-            : 1;
-        if (priorityA !== priorityB) return priorityA - priorityB;
+            : b.fundingAgreementStatus === FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY
+              ? 1
+              : 2;
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
 
         // 2. Sort by FA Term
         if (a.fundingAgreementTerm !== b.fundingAgreementTerm) {
