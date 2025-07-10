@@ -161,9 +161,9 @@ export default {
         [FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED]: 0,
         [FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY]: 1,
       };
+      const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
       this.fundingAgreements?.sort((a, b) => {
         // 1. Prioritize "Drafted – Provider Action Required" over "Drafted - With Ministry"
-        const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
         const priorityA = statusPriority[a.fundingAgreementStatus] ?? defaultPriority;
         const priorityB = statusPriority[b.fundingAgreementStatus] ?? defaultPriority;
         if (priorityA !== priorityB) {
