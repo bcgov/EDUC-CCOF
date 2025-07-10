@@ -162,10 +162,11 @@ export default {
         const statusPriority = {
           [FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED]: 0,
           [FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY]: 1,
-          default: 2,
         };
-        const priorityA = statusPriority[a.fundingAgreementStatus] ?? statusPriority.default;
-        const priorityB = statusPriority[b.fundingAgreementStatus] ?? statusPriority.default;
+        const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
+
+        const priorityA = statusPriority[a.fundingAgreementStatus] ?? defaultPriority;
+        const priorityB = statusPriority[b.fundingAgreementStatus] ?? defaultPriority;
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
