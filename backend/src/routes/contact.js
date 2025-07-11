@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getContactsInOrganization } = require('../components/contact');
+const { getActiveContactsInOrganization } = require('../components/contact');
 const { param, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -18,7 +18,7 @@ router.get(
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
-    return getContactsInOrganization(req, res);
+    return getActiveContactsInOrganization(req, res);
   },
 );
 

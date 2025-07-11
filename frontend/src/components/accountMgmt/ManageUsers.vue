@@ -30,18 +30,17 @@
               <AppButton :primary="false" size="small" @click="editUser(item.contactId)">Edit</AppButton>
             </v-row>
           </template>
-          <template #[`item.access-type`]="{ item }">
-            <div v-if="isContactOnly(item)">Contact Only</div>
-            <div v-else class="d-flex justify-end justify-md-start flex-wrap">
-              Portal User
-              <v-chip v-if="isPrimaryContact(item)" class="ml-2" color="success" density="compact" variant="outlined">
+          <template #[`item.accessType`]="{ item }">
+            <div class="d-flex justify-end justify-md-start align-center flex-wrap">
+              {{ item.accessType }}
+              <v-chip v-if="item.isPrimaryContact" class="ml-2 primary-contact border-success" color="success" label>
                 Primary Contact
               </v-chip>
             </div>
           </template>
           <template #[`item.remove-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end">
-              <AppButton :primary="false" color="#F44336" size="small" @click="() => deleteUser(item.contactId)">
+              <AppButton :primary="false" color="#d8292f" size="small" @click="() => deleteUser(item.contactId)">
                 Remove
               </AppButton>
             </v-row>
@@ -76,7 +75,7 @@ export default {
       tab: undefined,
       PATHS,
       contacts: [],
-      sortBy: [{ key: 'firstName', order: 'asc' }],
+      sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
     };
   },
@@ -94,11 +93,7 @@ export default {
         { title: 'Last Name', key: 'lastName' },
         { title: 'Phone Number', key: 'telephone' },
         { title: 'Email', key: 'email' },
-        {
-          title: 'Access Type',
-          key: 'access-type',
-          sortable: false,
-        },
+        { title: 'Access Type', key: 'accessType' },
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
     },
@@ -109,7 +104,8 @@ export default {
       if (isEmpty(this.loadedModel)) {
         await this.loadOrganization(this.organizationId);
       }
-      this.contacts = await contactService.loadContacts(this.organizationId);
+      const contactsData = await contactService.loadContacts(this.organizationId);
+      this.contacts = contactsData.map(this.setAccessTypeField);
     } catch (error) {
       this.setFailureAlert('There was an error loading the users');
       console.error('Error loading users: ', error);
@@ -119,11 +115,12 @@ export default {
   },
   methods: {
     ...mapActions(useOrganizationStore, ['loadOrganization']),
-    isContactOnly(contact) {
-      return isEmpty(contact.bceid);
-    },
-    isPrimaryContact(contact) {
-      return contact.contactId === this.loadedModel.primaryContactId;
+    setAccessTypeField(contact) {
+      return {
+        ...contact,
+        isPrimaryContact: contact.contactId === this.loadedModel.primaryContactId,
+        accessType: contact.isPortalUser ? 'Portal User' : 'Contact Only',
+      };
     },
     editUser(id) {
       alert(`Edit: ${id}`);
@@ -139,5 +136,9 @@ export default {
 /* These are default framework settings that was somehow allowed to be overriden in CcfriEstimator.vue */
 :deep(h1) {
   font-size: 2em;
+}
+
+.primary-contact {
+  border: 2px solid;
 }
 </style>
