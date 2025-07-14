@@ -243,9 +243,8 @@ export default {
     if (funding.maxGroupChildCareSchool > 0) {
       requiredFields.push('isSchoolProperty');
     }
-    if (funding.maxGroupChildCareSchool > 0 && funding.isSchoolProperty) {
-      requiredFields.push('schoolPropertyLabel');
-    }
+    const isSchoolPropertyComplete =
+      !funding.maxGroupChildCareSchool || !funding.isSchoolProperty || this.hasSchoolAgeCareServices(funding);
     if (funding.isExtendedHours) {
       requiredFields.push('maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
     }
@@ -257,7 +256,9 @@ export default {
       funding.isExtendedHours === 0 ||
       (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
         isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended));
-    return !hasEmptyFields(funding, requiredFields) && areFieldsValid && isExtendedChildCareValid;
+    return (
+      !hasEmptyFields(funding, requiredFields) && areFieldsValid && isExtendedChildCareValid && isSchoolPropertyComplete
+    );
   },
   isCCOFCompleteGroupV2(funding) {
     if (isEmpty(funding)) return false;

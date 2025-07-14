@@ -27,6 +27,7 @@ export const ApiRoutes = Object.freeze({
   CCFRI_FEES: baseRoot + '/facility/fees',
   CCFRI_DATES: baseRoot + '/facility/dates',
   CLOSURES: baseRoot + '/closures',
+  CONTACTS: baseRoot + '/contacts',
   LICENSE_UPLOAD: baseRoot + '/licenseUpload',
   GROUP_FUND_AMOUNT: baseRoot + '/group/funding',
   MESSAGE: baseRoot + '/messages',
@@ -556,3 +557,16 @@ export const FULL_MONTH_NAMES = {
   11: 'November',
   12: 'December',
 };
+
+export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
+  ACTIVE: 'Active',
+  APPROVED: 'Approved',
+  DRAFTED: 'Drafted',
+  DRAFTED_PROVIDER_ACTION_REQUIRED: 'Drafted – Provider Action Required',
+  DRAFTED_WITH_MINISTRY: 'Drafted - with Ministry',
+  SUSPENDED: 'Suspended',
+  CANCELLED: 'Cancelled',
+  TERMINATED: 'Terminated',
+  REPLACED: 'Replaced',
+  EXPIRED: 'Expired',
+});
