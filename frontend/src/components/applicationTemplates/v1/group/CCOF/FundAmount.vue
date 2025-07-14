@@ -428,16 +428,40 @@
         <v-container v-show="fundingModel.isSchoolProperty">
           <v-row>
             <v-col>
-              <v-checkbox v-model="fundingModel.beforeSchool" :disabled="isLocked" label="Before School" />
+              <v-checkbox
+                v-model="fundingModel.beforeSchool"
+                :true-value="1"
+                :false-value="0"
+                :disabled="isLocked"
+                label="Before School"
+              />
             </v-col>
             <v-col>
-              <v-checkbox v-model="fundingModel.afterSchool" :disabled="isLocked" label="After School" />
+              <v-checkbox
+                v-model="fundingModel.afterSchool"
+                :true-value="1"
+                :false-value="0"
+                :disabled="isLocked"
+                label="After School"
+              />
             </v-col>
             <v-col>
-              <v-checkbox v-model="fundingModel.beforeKindergarten" :disabled="isLocked" label="Before Kindergarten" />
+              <v-checkbox
+                v-model="fundingModel.beforeKindergarten"
+                :true-value="1"
+                :false-value="0"
+                :disabled="isLocked"
+                label="Before Kindergarten"
+              />
             </v-col>
             <v-col>
-              <v-checkbox v-model="fundingModel.afterKindergarten" :disabled="isLocked" label="After Kindergarten" />
+              <v-checkbox
+                v-model="fundingModel.afterKindergarten"
+                :true-value="1"
+                :false-value="0"
+                :disabled="isLocked"
+                label="After Kindergarten"
+              />
             </v-col>
           </v-row>
         </v-container>

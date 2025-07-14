@@ -475,8 +475,10 @@
         <v-col cols="12" md="6" class="summary-label pt-2">
           Please indicate each service that your facility offers:
         </v-col>
-        <v-col cols="12" md="6" class="summary-label">
+        <v-col cols="12" md="6" class="summary-value">
+          <p v-if="schoolPropertyLabel" class="pl-4">{{ schoolPropertyLabel }}</p>
           <v-text-field
+            v-else
             placeholder="Required"
             :model-value="schoolPropertyLabel"
             class="summary-value"
