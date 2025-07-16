@@ -2,14 +2,14 @@
 const { getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { EnrolmentReportSummaryMappings } = require('../util/mapping/Mappings');
+const { DailyEnrolmentMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getEnrolmentReport(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports(${req.params.enrolmentReportId})`);
-    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, EnrolmentReportSummaryMappings).toJSON());
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, EnrolmentReportMappings).toJSON());
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -28,7 +28,19 @@ async function getEnrolmentReports(req, res) {
   }
 }
 
+async function getDailyEnrolments(req, res) {
+  try {
+    const response = await getOperation(`ccof_dailyenrollments?${buildFilterQuery(req.query, DailyEnrolmentMappings)}`);
+    const dailyEnrolments = response?.value?.map((day) => new MappableObjectForFront(day, DailyEnrolmentMappings).toJSON());
+    return res.status(HttpStatus.OK).json(dailyEnrolments);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
+  getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
 };

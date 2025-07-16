@@ -1,6 +1,7 @@
 'use strict';
 
 import { isPlainObject, sortBy } from 'lodash';
+import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import {
@@ -209,4 +210,10 @@ export function getOrganizationNameLabel(organizationType) {
 export function padString(input, length, char) {
   if (input == null) return null;
   return String(input).padStart(length, char);
+}
+
+export function getDayOfWeek(day, month, year, dateFormat = 'dddd') {
+  // Adjust month to 0-based index
+  const date = moment({ year, month: month - 1, day });
+  return date.format(dateFormat); // e.g., "Monday"
 }

@@ -584,8 +584,38 @@ const EnrolmentReportSummaryMappings = [
   { back: 'statuscode', front: 'statusCode' },
 ];
 
+const EnrolmentReportMappings = [
+  ...EnrolmentReportSummaryMappings,
+  { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
+  { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
+  { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },
+  { back: 'ccof_totalenrolledoosck', front: 'totalEnrolledOOSCK' },
+  { back: 'ccof_totalenrolledooscg', front: 'totalEnrolledOOSCG' },
+  { back: 'ccof_totalenrolledpre', front: 'totalEnrolledPre' },
+];
+
+const DailyEnrolmentMappings = [
+  { back: 'ccof_dailyenrollmentid', front: 'dailyEnrolmentId' },
+  { back: '_ccof_monthlyenrollmentreport_value', front: 'enrolmentReportId' },
+  { back: 'ccof_day', front: 'day' },
+  { back: 'ccof_daytype', front: 'dayType' },
+  { back: 'ccof_daytype@OData.Community.Display.V1.FormattedValue', front: 'dayTypeName' },
+  { back: 'ccof_less0to18', front: 'less0To18' },
+  { back: 'ccof_over0to18', front: 'over0To18' },
+  { back: 'ccof_less18to36', front: 'less18To36' },
+  { back: 'ccof_over18to36', front: 'over18To36' },
+  { back: 'ccof_less3yk', front: 'less3YK' },
+  { back: 'ccof_over3yk', front: 'over3YK' },
+  { back: 'ccof_lessooscg', front: 'lessOOSCG' },
+  { back: 'ccof_overooscg', front: 'overOOSCG' },
+  { back: 'ccof_lessoosck', front: 'lessOOSCK' },
+  { back: 'ccof_overoosck', front: 'overOOSCK' },
+  { back: 'ccof_lesspre', front: 'lessPre' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
+  DailyEnrolmentMappings,
   DocumentsMappings,
   ContactMappings,
   OrganizationMappings,
@@ -594,6 +624,7 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  EnrolmentReportMappings,
   EnrolmentReportSummaryMappings,
   UserProfileFacilityMappings,
   UserProfileBaseFundingMappings,
