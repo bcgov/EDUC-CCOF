@@ -139,7 +139,7 @@ export default {
         case FUNDING_AGREEMENTS_STATUS.DRAFTED:
           return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED:
-          return 'status-peach';
+          return 'status-orange';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY:
           return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.REPLACED:
