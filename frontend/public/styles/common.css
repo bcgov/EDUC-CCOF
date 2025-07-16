@@ -213,6 +213,12 @@ ol.declarationBList {
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
 }
+
+.status-peach {
+  background-color: #ffd180;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+}
 /* SUMMARY DECLARATION */
 .summary-label {
   color: grey;
