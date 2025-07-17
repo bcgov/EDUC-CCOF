@@ -120,10 +120,7 @@ export default {
     async loadFundingAgreements() {
       try {
         this.isLoading = true;
-        this.fundingAgreements =
-          (await FundingAgreementService.getFundingAgreements(this.organizationId))?.filter(
-            (agreement) => agreement.fundingAgreementStatus !== FUNDING_AGREEMENTS_STATUS.DRAFTED,
-          ) || [];
+        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(this.organizationId)) || [];
         this.sortFundingAgreements();
       } catch {
         this.setFailureAlert('Failed to load Funding Agreements');
