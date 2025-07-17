@@ -7,7 +7,7 @@
       <v-col cols="12" md="9">
         <p class="mb-2">
           You must notify the Child Care Operating Funding Program within <strong>two business days</strong> of any
-          change to your Facility License or Child Care Services outlined in Schedule A of your Child Care Operating
+          change to your Facility Licence or Child Care Services outlined in Schedule A of your Child Care Operating
           Funding Agreement.
         </p>
       </v-col>
@@ -137,7 +137,9 @@ export default {
     getStatusClass(status) {
       switch (status) {
         case FUNDING_AGREEMENTS_STATUS.DRAFTED:
+          return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED:
+          return 'status-orange';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY:
           return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.REPLACED:
