@@ -120,7 +120,10 @@ export default {
     async loadFundingAgreements() {
       try {
         this.isLoading = true;
-        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(this.organizationId)) || [];
+        this.fundingAgreements =
+          (await FundingAgreementService.getFundingAgreements(this.organizationId))?.filter(
+            (agreement) => agreement.fundingAgreementStatus !== FUNDING_AGREEMENTS_STATUS.DRAFTED,
+          ) || [];
         this.sortFundingAgreements();
       } catch {
         this.setFailureAlert('Failed to load Funding Agreements');
@@ -136,8 +139,6 @@ export default {
     },
     getStatusClass(status) {
       switch (status) {
-        case FUNDING_AGREEMENTS_STATUS.DRAFTED:
-          return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED:
           return 'status-orange';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY:
