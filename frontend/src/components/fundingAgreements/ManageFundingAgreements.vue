@@ -136,8 +136,6 @@ export default {
     },
     getStatusClass(status) {
       switch (status) {
-        case FUNDING_AGREEMENTS_STATUS.DRAFTED:
-          return 'status-gray';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED:
           return 'status-orange';
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY:
