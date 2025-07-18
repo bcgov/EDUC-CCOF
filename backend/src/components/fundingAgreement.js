@@ -8,7 +8,7 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getFundingAgreements(req, res) {
   try {
-    const query = buildFilterQuery(req.query, FundingAgreementMappings).concat(' and statuscode ne 101510002'); // 101510002 = 'Drafted'
+    const query = `${buildFilterQuery(req.query, FundingAgreementMappings)} and statuscode ne 101510002`; // 101510002 = 'Drafted'
     const response = await getOperation(`ccof_funding_agreements?${query}`);
     const fundingAgreements = response?.value?.map((item) => new MappableObjectForFront(item, FundingAgreementMappings).toJSON());
     return res.status(HttpStatus.OK).json(fundingAgreements);
