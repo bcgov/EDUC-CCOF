@@ -569,3 +569,9 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
 });
+
+export const DAY_TYPES = Object.freeze({
+  WEEKDAY: 100000000,
+  WEEKEND: 100000001,
+  STATUTORY: 100000002,
+});

@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-model="updatedValue" variant="plain" hide-details density="compact" @input="sanitizeInput" />
+  <v-text-field v-model="updatedValue" variant="plain" density="compact" hide-details @input="sanitizeInput" />
 </template>
 <script>
 export default {
@@ -13,14 +13,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    // min: {
-    //   type: Number,
-    //   default: null,
-    // },
-    // max: {
-    //   type: Number,
-    //   default: null,
-    // },
   },
   emits: ['update:modelValue'],
   data() {
@@ -40,26 +32,14 @@ export default {
   },
   methods: {
     sanitizeInput() {
-      console.log(this.decimal);
       if (this.decimal) {
         // Allow only digits and at most one "."
         this.updatedValue = this.updatedValue?.replace(/[^\d.]/g, '').replace(/^([^.]*\.)|\./g, '$1'); // only first dot remains
-        console.log('GO HERE');
-        console.log(this.updatedValue);
       } else {
         // Only digits
         this.updatedValue = this.updatedValue?.replace(/\D/g, '');
       }
       this.updatedValue = Number(this.updatedValue);
-      console.log(this.updatedValue);
-
-      // if (this.min != null && this.updatedValue < this.min) {
-      //   this.updatedValue = this.min;
-      // }
-      // console.log(this.max);
-      // if (this.max != null && this.updatedValue > this.max) {
-      //   this.updatedValue = this.max;
-      // }
     },
   },
 };
