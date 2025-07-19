@@ -38,7 +38,7 @@ import OrganizationClosures from '@/components/closure/OrganizationClosures.vue'
 import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
-import EnrolmentReport from '@/components/enrolmentReports/EnrolmentReport.vue';
+import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
 import ViewFundingAgreements from '@/components/fundingAgreements/ViewFundingAgreements.vue';
@@ -888,8 +888,8 @@ const router = createRouter({
     },
     {
       path: `${PATHS.ROOT.ENROLMENT_REPORTS}/:enrolmentReportId`,
-      name: 'enrolment-report',
-      component: EnrolmentReport,
+      name: 'enrolment-report-form',
+      component: EnrolmentReportForm,
       meta: {
         requiresAuth: true,
       },

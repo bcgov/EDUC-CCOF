@@ -584,8 +584,25 @@ const EnrolmentReportSummaryMappings = [
   { back: 'statuscode', front: 'statusCode' },
 ];
 
+const EnrolmentReportExtensionMappings = [
+  { back: 'ccof_approvedparentfee0to18', front: 'approvedParentFees0To18' },
+  { back: 'ccof_approvedparentfee18to36', front: 'approvedParentFees18To36' },
+  { back: 'ccof_approvedparentfee3yk', front: 'approvedParentFees3YK' },
+  { back: 'ccof_approvedparentfeeoosck', front: 'approvedParentFeesOOSCK' },
+  { back: 'ccof_approvedparentfeeooscg', front: 'approvedParentFeesOOSCG' },
+  { back: 'ccof_approvedparentfeepre', front: 'approvedParentFeesPre' },
+  { back: 'ccof_approvedparentfeefrequency0to18', front: 'approvedParentFeesFrequency0To18' },
+  { back: 'ccof_approvedparentfeefrequency18to36', front: 'approvedParentFeesFrequency18To36' },
+  { back: 'ccof_approvedparentfeefrequency3yk', front: 'approvedParentFeesFrequency3YK' },
+  { back: 'ccof_approvedparentfeefrequencyoosck', front: 'approvedParentFeesFrequencyOOSCK' },
+  { back: 'ccof_approvedparentfeefrequencyooscg', front: 'approvedParentFeesFrequencyOOSCG' },
+  { back: 'ccof_approvedparentfeefrequencypre', front: 'approvedParentFeesFrequencyPre' },
+];
+
 const EnrolmentReportMappings = [
   ...EnrolmentReportSummaryMappings,
+  ...EnrolmentReportExtensionMappings,
+  { back: 'ccof_providertype', front: 'organizationProviderType' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
   { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
   { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },
@@ -624,6 +641,7 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  EnrolmentReportExtensionMappings,
   EnrolmentReportMappings,
   EnrolmentReportSummaryMappings,
   UserProfileFacilityMappings,
