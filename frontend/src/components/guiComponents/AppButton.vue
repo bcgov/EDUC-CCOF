@@ -53,7 +53,7 @@ export default {
 
 .BC-Gov-PrimaryButton,
 .BC-Gov-PrimaryButton-disabled {
-  background-color: v-bind(color);
+  background-color: #003366;
   border: none;
   border-radius: 4px;
   color: white;
