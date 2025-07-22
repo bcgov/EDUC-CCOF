@@ -40,7 +40,7 @@
           </template>
           <template #[`item.remove-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end">
-              <AppButton :primary="false" color="#d8292f" size="small" @click="() => deleteUser(item.contactId)">
+              <AppButton :primary="false" color="#d8292f" size="small" @click="() => confirmDeleteUser(item.contactId)">
                 Remove
               </AppButton>
             </v-row>
@@ -54,7 +54,35 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-row>
+    <v-col>
+      <AppDialog v-model="dialogOpen" title="Remove User" @close="dialogOpen = false">
+        <template #content>
+          Are you sure you want to remove {{ targetUser.firstName }} {{ targetUser.lastName }}? You can't undo this.
+        </template>
+        <template #button>
+          <v-row justify="center">
+            <v-col>
+              <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
+            </v-col>
+            <v-col>
+              <AppButton
+                :primary="true"
+                size="small"
+                :loading="dialogLoading"
+                :disabled="dialogLoading"
+                @click="deleteUser(targetUser.contactId)"
+              >
+                Yes, remove the user
+              </AppButton>
+            </v-col>
+          </v-row>
+        </template>
+      </AppDialog>
+    </v-col>
+  </v-row>
 </template>
+
 <script>
 import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
@@ -65,18 +93,22 @@ import { useOrganizationStore } from '@/store/ccof/organization';
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, NavButton },
+  components: { AppButton, NavButton, AppDialog },
   mixins: [alertMixin],
   data() {
     return {
       tab: undefined,
       PATHS,
       contacts: [],
+      targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
+      dialogOpen: false,
+      dialogLoading: false,
     };
   },
   computed: {
@@ -125,8 +157,27 @@ export default {
     editUser(id) {
       alert(`Edit: ${id}`);
     },
-    deleteUser(id) {
-      alert(`Delete: ${id}`);
+    async confirmDeleteUser(id) {
+      this.targetUser = this.contacts.find((c) => c.contactId == id);
+      if (!this.targetUser.isPrimaryContact) {
+        this.dialogOpen = true;
+      } else {
+        this.setFailureAlert('You may not remove the primary contact');
+      }
+    },
+    async deleteUser() {
+      try {
+        this.dialogLoading = true;
+        await contactService.deleteContact(this.targetUser.contactId);
+        this.contacts = this.contacts.filter((c) => c.contactId !== this.targetUser.contactId);
+        this.setSuccessAlert(`${this.targetUser.firstName} has been removed from the organization`);
+      } catch (error) {
+        this.setFailureAlert('Failed to remove the contact.');
+        console.error('Error removing contact: ', error);
+      } finally {
+        this.dialogLoading = false;
+        this.dialogOpen = false;
+      }
     },
   },
 };

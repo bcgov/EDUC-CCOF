@@ -1,7 +1,7 @@
 'use strict';
 const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
-const { getOperation } = require('./utils');
+const { getOperation, patchOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { ContactMappings } = require('../util/mapping/Mappings');
 const log = require('./logger');
@@ -26,6 +26,17 @@ async function getActiveContactsInOrganization(req, res) {
   }
 }
 
+async function disableContact(req, res) {
+  try {
+    const responseData = await patchOperationWithObjectId('contacts', req.params.contactId, { statecode: 1 });
+    return res.status(HttpStatus.OK).json(responseData);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getActiveContactsInOrganization,
+  disableContact,
 };
