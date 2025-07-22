@@ -57,6 +57,7 @@ export const ApiRoutes = Object.freeze({
   CANADA_POST: baseRoot + '/canadaPost',
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
+  LICENCE_DETAILS: baseRoot + '/licences',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -569,3 +570,34 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
 });
+
+export const DAYS_OF_WEEK = Object.freeze([
+  {
+    title: 'Monday',
+    value: 1,
+  },
+  {
+    title: 'Tuesday',
+    value: 2,
+  },
+  {
+    title: 'Wednesday',
+    value: 3,
+  },
+  {
+    title: 'Thursday',
+    value: 4,
+  },
+  {
+    title: 'Friday',
+    value: 5,
+  },
+  {
+    title: 'Saturday',
+    value: 6,
+  },
+  {
+    title: 'Sunday',
+    value: 7,
+  },
+]);

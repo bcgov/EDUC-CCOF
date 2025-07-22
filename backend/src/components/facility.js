@@ -5,7 +5,7 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings, LicenceMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
@@ -346,6 +346,19 @@ async function getApprovedParentFees(req, res) {
   }
 }
 
+async function getLicences(req, res) {
+  try {
+    const facilityId = req.params.facilityId;
+    const operation = `ccof_licenses?$select=ccof_licenseid,ccof_name,ccof_organization,_ccof_facility_value,statuscode,ccof_start_date,ccof_end_date&$filter=(statecode eq 0 and _ccof_facility_value eq ${facilityId})`;
+    const response = await getOperation(operation);
+    const licences = response?.value?.map((item) => new MappableObjectForFront(item, LicenceMappings).toJSON());
+    return res.status(HttpStatus.OK).json(licences);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getFacility,
   getFacilityChildCareTypes,
@@ -359,4 +372,5 @@ module.exports = {
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
   getFacilityByFacilityId,
+  getLicences,
 };

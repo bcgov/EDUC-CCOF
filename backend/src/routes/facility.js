@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
+const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees, getLicences } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const facilitySchema = {
@@ -89,6 +89,14 @@ router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), 
 router.post('/:facilityId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
+});
+/**
+ * Get Licence for a facility
+ *
+ */
+router.get('/:facilityId/licences', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+  validationResult(req).throw();
+  return getLicences(req, res);
 });
 
 module.exports = router;

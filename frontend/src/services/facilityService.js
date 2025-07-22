@@ -22,4 +22,14 @@ export default {
       throw error;
     }
   },
+  async getLicences(facilityId) {
+    try {
+      if (!facilityId) return [];
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licences`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get the licences by facilityId - ${error}`);
+      throw error;
+    }
+  },
 };

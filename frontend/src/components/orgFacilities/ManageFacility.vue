@@ -12,6 +12,7 @@
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
             <v-tab value="facility-details">Facility Details</v-tab>
+            <v-tab value="licences-details">Licences </v-tab>
             <v-tab value="programs-and-services">Programs and Services</v-tab>
             <v-tab value="closures">Closures</v-tab>
           </v-tabs>
@@ -19,6 +20,9 @@
             <v-window v-model="tab">
               <v-window-item value="facility-details">
                 <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
+              </v-window-item>
+              <v-window-item value="licences-details">
+                <LicenceDetails />
               </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
               <v-window-item value="closures">Closures</v-window-item>
@@ -42,12 +46,13 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
 import alertMixin from '@/mixins/alertMixin.js';
 
+import LicenceDetails from '@/components/licences/LicenceDetails.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { NavButton, ManageFacilityDetails },
+  components: { NavButton, ManageFacilityDetails, LicenceDetails },
   mixins: [alertMixin],
   data() {
     return {
