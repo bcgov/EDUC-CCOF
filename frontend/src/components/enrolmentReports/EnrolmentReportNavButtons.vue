@@ -1,12 +1,14 @@
 <template>
-  <v-row justify="space-around" class="stickyNavButtons">
-    <AppButton :loading="isProcessing" :primary="false" min-width="100px" @click="previous"> Back </AppButton>
+  <v-row no-gutters justify="space-around" class="stickyNavButtons">
+    <AppButton :loading="isProcessing" :primary="false" :size="buttonSize" min-width="100px" @click="previous">
+      Back
+    </AppButton>
     <AppButton
       v-if="isSaveDisplayed"
       :loading="isProcessing"
       :disabled="isSaveDisabled"
       :primary="false"
-      min-width="270px"
+      :size="buttonSize"
       @click="save"
     >
       Save and Calculate
@@ -15,6 +17,7 @@
       v-if="isNextDisplayed"
       :loading="isProcessing"
       :class="isNextDisabled ? 'disabledButton' : ''"
+      :size="buttonSize"
       min-width="100px"
       @click="next"
     >
@@ -65,6 +68,11 @@ export default {
     },
   },
   emits: ['previous', 'next', 'validateForm', 'save', 'submit'],
+  computed: {
+    buttonSize() {
+      return this.$vuetify.display.smAndDown ? 'small' : null;
+    },
+  },
   methods: {
     async previous() {
       this.$emit('previous');

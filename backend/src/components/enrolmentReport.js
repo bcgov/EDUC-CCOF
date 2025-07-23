@@ -1,10 +1,10 @@
 'use strict';
-const { getOperation } = require('./utils');
+const { getOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { DailyEnrolmentMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery } = require('./utils');
-const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getEnrolmentReport(req, res) {
   try {
@@ -41,8 +41,24 @@ async function getDailyEnrolments(req, res) {
   }
 }
 
+async function updateDailyEnrolments(req, res) {
+  try {
+    await Promise.all(
+      req.body?.map(async (item) => {
+        const payload = new MappableObjectForBack(item, DailyEnrolmentMappings).toJSON();
+        await patchOperationWithObjectId('ccof_dailyenrollments', item.dailyEnrolmentId, payload);
+      }),
+    );
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
+  updateDailyEnrolments,
 };
