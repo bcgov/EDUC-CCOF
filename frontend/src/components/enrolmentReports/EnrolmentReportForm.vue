@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="page-scroll-wrapper px-8 px-xl-12 pt-0">
+  <v-container fluid class="page-scroll-wrapper px-8 px-xl-12 pt-0 mb-12">
     <div v-if="loading" align="center">
       <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
     </div>
@@ -35,7 +35,7 @@
           <v-col class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled0To18"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -43,7 +43,7 @@
           <v-col class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled18To36"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -51,7 +51,7 @@
           <v-col class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled3YK"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -59,7 +59,7 @@
           <v-col class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledOOSCK"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -67,7 +67,7 @@
           <v-col class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledOOSCG"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -75,7 +75,7 @@
           <v-col v-if="isGroup" cols="1">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledPre"
-              maxLength="3"
+              maxlength="3"
               :disabled="false"
               :default-value="0"
             />
@@ -147,9 +147,8 @@
           :key="dailyEnrolment.dailyEnrolmentId"
           no-gutters
           :class="{
-            'background-dark-grey': rowIndex > 6 && rowIndex < 10,
-            'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
             'background-light-blue': dailyEnrolment.dayType === DAY_TYPES.STATUTORY,
+            'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
             'border-bottom': rowIndex < dailyEnrolments.length - 1,
           }"
         >
@@ -162,57 +161,57 @@
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less0To18" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less0To18" maxlength="3" :disabled="false" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over0To18" maxLength="3" :disabled="false" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less18To36" maxLength="3" :disabled="false" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over18To36" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over0To18" maxlength="3" :disabled="false" />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less3YK" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less18To36" maxlength="3" :disabled="false" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over3YK" maxLength="3" :disabled="false" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxLength="3" :disabled="false" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over18To36" maxlength="3" :disabled="false" />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less3YK" maxlength="3" :disabled="false" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over3YK" maxlength="3" :disabled="false" />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxlength="3" :disabled="false" />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxlength="3" :disabled="false" />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxlength="3" :disabled="false" />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxlength="3" :disabled="false" />
               </v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1">
             <v-row no-gutters>
               <v-col>
-                <AppNumberInput v-model="dailyEnrolment.lessPre" maxLength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="false" />
               </v-col>
             </v-row>
           </v-col>
@@ -239,14 +238,14 @@
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.currentTotalLessOOSCG ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.currentTotalOverOOSCG ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.currentTotalLessOOSCK ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.currentTotalOverOOSCK ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.currentTotalLessOOSCK ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.currentTotalOverOOSCK ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.currentTotalLessOOSCG ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.currentTotalOverOOSCG ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell text-center">
@@ -309,14 +308,14 @@
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccofBaseAmountLessOOSCG ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccofBaseAmountOverOOSCG ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccofBaseAmountLessOOSCK ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccofBaseAmountOverOOSCK ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccofBaseAmountLessOOSCK ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccofBaseAmountOverOOSCK ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccofBaseAmountLessOOSCG ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccofBaseAmountOverOOSCG ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell text-center">
@@ -379,14 +378,14 @@
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriAmountLessOOSCG ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccfriAmountOverOOSCG ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriAmountLessOOSCK ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccfriAmountOverOOSCK ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriAmountLessOOSCK ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccfriAmountOverOOSCK ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriAmountLessOOSCG ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccfriAmountOverOOSCG ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell text-center">
@@ -449,14 +448,14 @@
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriProviderAmountLessOOSCG ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccfriProviderAmountOverOOSCG ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriProviderAmountLessOOSCK ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccfriProviderAmountOverOOSCK ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col class="border-right text-center">
             <v-row no-gutters>
-              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriProviderAmountLessOOSCK ?? 0 }}</v-col>
-              <v-col class="text-cell">{{ enrolmentReport?.ccfriProviderAmountOverOOSCK ?? 0 }}</v-col>
+              <v-col class="border-right text-cell">{{ enrolmentReport?.ccfriProviderAmountLessOOSCG ?? 0 }}</v-col>
+              <v-col class="text-cell">{{ enrolmentReport?.ccfriProviderAmountOverOOSCG ?? 0 }}</v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell text-center">
@@ -479,6 +478,10 @@
           <v-col class="pl-2 py-1">{{ enrolmentReport?.grandTotalCcfriProvider ?? 0 }}</v-col>
         </v-row>
       </div>
+      <div class="legend">
+        <div class="legend-item"><span class="color-box background-light-blue"></span>Stat holidays</div>
+        <div class="legend-item"><span class="color-box background-light-yellow"></span>Weekends</div>
+      </div>
     </template>
   </v-container>
   <EnrolmentReportNavButtons
@@ -492,7 +495,7 @@
 </template>
 
 <script>
-import { cloneDeep, isEmpty, isEqual } from 'lodash';
+import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
 import { mapState } from 'pinia';
 
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
@@ -505,7 +508,7 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { getDayOfWeek, padString } from '@/utils/common.js';
+import { getDayOfWeek, getUpdatedObjectsByKeys, padString } from '@/utils/common.js';
 import {
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -514,8 +517,7 @@ import {
   PARENT_FEE_FREQUENCIES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatDateToStandardFormat, formatDecimalNumber } from '@/utils/format';
-import rules from '@/utils/rules.js';
+import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'EnrolmentReportForm',
@@ -530,14 +532,16 @@ export default {
       loading: true,
       processing: false,
       enrolmentReport: {},
+      originalEnrolmentReport: {},
       dailyEnrolments: [],
+      originalDailyEnrolments: [],
     };
   },
   computed: {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     isGroup() {
-      return this.enrolmentReport?.organizationProviderType !== ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
     currentFacility() {
       const facilities = this.getFacilityListForPCFByProgramYearId(this.enrolmentReport?.programYearId);
@@ -550,11 +554,9 @@ export default {
     this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.FULL_MONTH_NAMES = FULL_MONTH_NAMES;
     this.PATHS = PATHS;
-    this.rules = rules;
     await this.loadData();
   },
   methods: {
-    formatDateToStandardFormat,
     formatDecimalNumber,
     getDayOfWeek,
     async loadData() {
@@ -573,10 +575,12 @@ export default {
     async loadEnrolmentReport() {
       this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
       this.enrolmentReport.isAdjustment = this.enrolmentReport.reportVersion > 1;
+      this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
     },
 
     async loadDailyEnrolments() {
       this.dailyEnrolments = await EnrolmentReportService.getDailyEnrolments(this.$route.params.enrolmentReportId);
+      this.originalDailyEnrolments = cloneDeep(this.dailyEnrolments);
     },
 
     // TO-DO (vietle-cgi): duplicate function with ViewER
@@ -598,6 +602,7 @@ export default {
       }
     },
 
+    // TODO (vietle-cgi): implement next function once the declaration page is available.
     next() {
       console.log('NEXT');
     },
@@ -605,8 +610,8 @@ export default {
     async save(showMessage) {
       try {
         this.processing = true;
-        // await EnrolmentReportService.updateDailyEnrolments(dailyEnrolmentsToUpdate);
-        await this.loadDailyEnrolments();
+        await this.saveEnrolmentReport();
+        await this.saveDailyEnrolments();
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
         }
@@ -616,6 +621,54 @@ export default {
       } finally {
         this.processing = false;
       }
+    },
+
+    async saveEnrolmentReport() {
+      const keysForBackend = [
+        'totalEnrolled0To18',
+        'totalEnrolled18To36',
+        'totalEnrolled3YK',
+        'totalEnrolledOOSCK',
+        'totalEnrolledOOSCG',
+      ];
+      if (this.isGroup) {
+        keysForBackend.push('totalEnrolledPre');
+      }
+      if (isEqual(pick(this.originalEnrolmentReport, keysForBackend), pick(this.enrolmentReport, keysForBackend))) {
+        return;
+      }
+      const payload = pick(this.enrolmentReport, keysForBackend);
+      await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
+      await this.loadEnrolmentReport();
+    },
+
+    async saveDailyEnrolments() {
+      const keysForBackend = [
+        'dailyEnrolmentId',
+        'less0To18',
+        'over0To18',
+        'less18To36',
+        'over18To36',
+        'less3YK',
+        'over3YK',
+        'lessOOSCK',
+        'overOOSCK',
+        'lessOOSCG',
+        'overOOSCG',
+      ];
+      if (this.isGroup) {
+        keysForBackend.push('lessPre');
+      }
+      const updatedDailyEnrolments = getUpdatedObjectsByKeys(
+        this.originalDailyEnrolments,
+        this.dailyEnrolments,
+        keysForBackend,
+        'dailyEnrolmentId',
+      );
+      if (isEmpty(updatedDailyEnrolments)) return;
+      const payload = updatedDailyEnrolments?.map((item) => pick(item, keysForBackend));
+      await EnrolmentReportService.updateDailyEnrolments(payload);
+      await this.loadDailyEnrolments();
     },
   },
 };
@@ -635,10 +688,6 @@ export default {
     inset 0 0 0 2px #003366,
     0 0 0 2px rgba(0, 51, 102, 0.2);
   background-color: white;
-}
-
-.background-dark-grey {
-  background-color: #bfbfbf !important;
 }
 
 .background-light-blue {
@@ -698,7 +747,6 @@ export default {
 }
 
 .page-scroll-wrapper {
-  max-width: 100vw;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -730,5 +778,24 @@ export default {
 
 .text-cell {
   padding: 4px 0px !important;
+}
+
+.legend {
+  display: flex;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.color-box {
+  min-width: 60px;
+  min-height: 25px;
+  border: 1px solid;
+  border-radius: 2px;
 }
 </style>
