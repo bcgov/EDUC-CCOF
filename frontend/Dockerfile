@@ -1,4 +1,4 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/node:20.18.0-alpine3.20 as build-stage
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:22.17.1-alpine3.22 as build-stage
 
 WORKDIR /frontend
 COPY package*.json ./
