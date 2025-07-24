@@ -40,7 +40,13 @@
           </template>
           <template #[`item.remove-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end">
-              <AppButton :primary="false" color="#d8292f" size="small" @click="() => confirmDeleteUser(item.contactId)">
+              <AppButton
+                v-if="mayRemoveUser(item)"
+                :primary="false"
+                color="#d8292f"
+                size="small"
+                @click="() => confirmDeleteUser(item.contactId)"
+              >
                 Remove
               </AppButton>
             </v-row>
@@ -54,33 +60,29 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-row>
-    <v-col>
-      <AppDialog v-model="dialogOpen" title="Remove User" @close="dialogOpen = false">
-        <template #content>
-          Are you sure you want to remove {{ targetUser.firstName }} {{ targetUser.lastName }}? You can't undo this.
-        </template>
-        <template #button>
-          <v-row justify="center">
-            <v-col>
-              <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
-            </v-col>
-            <v-col>
-              <AppButton
-                :primary="true"
-                size="small"
-                :loading="dialogLoading"
-                :disabled="dialogLoading"
-                @click="deleteUser(targetUser.contactId)"
-              >
-                Yes, remove the user
-              </AppButton>
-            </v-col>
-          </v-row>
-        </template>
-      </AppDialog>
-    </v-col>
-  </v-row>
+  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="dialogOpen = false">
+    <template #content>
+      Are you sure you want to remove {{ userDisplayName(targetUser, 'this user') }}? You can't undo this.
+    </template>
+    <template #button>
+      <v-row justify="center">
+        <v-col>
+          <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
+        </v-col>
+        <v-col>
+          <AppButton
+            :primary="true"
+            size="small"
+            :loading="dialogLoading"
+            :disabled="dialogLoading"
+            @click="deleteUser(targetUser.contactId)"
+          >
+            Yes, remove the user
+          </AppButton>
+        </v-col>
+      </v-row>
+    </template>
+  </AppDialog>
 </template>
 
 <script>
@@ -159,18 +161,35 @@ export default {
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
-      if (!this.targetUser.isPrimaryContact) {
-        this.dialogOpen = true;
+      this.dialogOpen = true;
+    },
+    mayRemoveUser(user) {
+      return !user.isPrimaryContact;
+    },
+    userDisplayName(user, fallback = '') {
+      const { firstName, lastName } = user;
+
+      let userDisplayName;
+      if (firstName && lastName) {
+        userDisplayName = `${firstName} ${lastName}`;
+      } else if (firstName) {
+        userDisplayName = `${firstName}`;
+      } else if (lastName) {
+        userDisplayName = `${lastName}`;
       } else {
-        this.setFailureAlert('You may not remove the primary contact');
+        userDisplayName = fallback;
       }
+
+      return userDisplayName;
     },
     async deleteUser() {
       try {
         this.dialogLoading = true;
         await contactService.deleteContact(this.targetUser.contactId);
         this.contacts = this.contacts.filter((c) => c.contactId !== this.targetUser.contactId);
-        this.setSuccessAlert(`${this.targetUser.firstName} has been removed from the organization`);
+        this.setSuccessAlert(
+          `${this.userDisplayName(this.targetUser, 'The user')} has been removed from the organization`,
+        );
       } catch (error) {
         this.setFailureAlert('Failed to remove the contact.');
         console.error('Error removing contact: ', error);

@@ -26,7 +26,7 @@ async function getActiveContactsInOrganization(req, res) {
   }
 }
 
-async function disableContact(req, res) {
+async function deactivateContact(req, res) {
   try {
     const responseData = await patchOperationWithObjectId('contacts', req.params.contactId, { statecode: 1 });
     return res.status(HttpStatus.OK).json(responseData);
@@ -38,5 +38,5 @@ async function disableContact(req, res) {
 
 module.exports = {
   getActiveContactsInOrganization,
-  disableContact,
+  deactivateContact,
 };
