@@ -1,0 +1,116 @@
+{
+  "orgData": {
+    "typeOfOrganization": [
+      "Non-Profit Society",
+      "Public Institution (college/university)",
+      "Registered Company",
+      "Local Government",
+      "First Nations Government",
+      "Sole Proprietorship",
+      "Partnership"
+    ],
+    "legalOrgName": "Automation Test Organisation",
+    "incorporationNumber": "BC654321",
+    "streetAddress": "506 John Street",
+    "city": "Vancouver",
+    "province": "BC",
+    "postalCode": "V5C6N5",
+    "orgContactName": "Tester",
+    "position": "QA",
+    "phone": "6470000000",
+    "email": "ofmqa01@gmail.com"
+  },
+  "facilityData": {
+    "facilityName": "My Test Facility",
+    "yearFacilityBegan": "2018",
+    "facilityLicence": "FC#123456",
+    "licenceEffectiveDate": "2019-01-01",
+    "healthAuthority": "Fraser Health"
+  },
+  "facilityLicenceDetailsData": {
+    "maxDaysPerWeek": "5",
+    "maxWeeksPerYear": "52",
+    "hoursFrom": "08:00",
+    "hoursTo": "18:00",
+    "closedEntireMonths": "Yes",
+    "closedMonths": [
+      "January",
+      "September",
+      "December"
+    ],
+    "licenceCategories": {
+      "Group Child Care (Under 36 Months)": {
+        "checked": true,
+        "max": "16"
+      },
+      "Group Child Care (30 Months to School Age)": {
+        "checked": true,
+        "max": "24"
+      },
+      "Group Child Care (School Age)": {
+        "checked": true,
+        "max": "20"
+      },
+      "School Age Care on School Grounds": {
+        "checked": true,
+        "max": "16"
+      },
+      "Preschool": {
+        "checked": true,
+        "max": "24"
+      },
+      "Multi-Age Child Care": {
+        "checked": true,
+        "max": "20"
+      }
+    },
+    "MaximumLicensedCapacity": "100",
+    "PreschoolSessions": {
+      "Monday": 1,
+      "Tuesday": 1,
+      "Wednesday": 1,
+      "Thursday": 1,
+      "Friday": 1
+    },
+    "isOnSchoolProperty": "Yes",
+    "schoolAgedCareServiceDetails": [
+      "Before School",
+      "After School",
+      "Before Kindergarten",
+      "After Kindergarten"
+    ],
+    "offerExtendedHoursChildCare": "No",
+    "maxDaysPerWeekExtendedHours": "3",
+    "maxWeeksPerYearExtendedHours": "12",
+    "licenceCategoriesExtendedHours": {
+      "Group Child Care (Under 36 Months)": {
+        "checked": true,
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "Group Child Care (30 Months to School Age)": {
+        "checked": true,
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "Group Child Care (School Age)": {
+        "checked": true,
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "School Age Care on School Grounds": {
+        "checked": true,
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "Multi-Age Child Care": {
+        "checked": true,
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      }
+    },
+    "addFacilityData": {
+      "addAnotherFacility": "No"
+    }
+  }
+}
