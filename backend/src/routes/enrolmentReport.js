@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getDailyEnrolments, getEnrolmentReport, getEnrolmentReports, updateDailyEnrolments } = require('../components/enrolmentReport');
+const { getDailyEnrolments, getEnrolmentReport, getEnrolmentReports, updateDailyEnrolments, updateEnrolmentReport } = require('../components/enrolmentReport');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -34,10 +34,6 @@ router.patch(
         exists: { errorMessage: '[dailyEnrolmentId] is required' },
         isUUID: { errorMessage: '[dailyEnrolmentId] must be a valid UUID' },
       },
-      '*.value': {
-        in: ['body'],
-        exists: { errorMessage: '[value] is required' },
-      },
     }),
   ],
   (req, res) => {
@@ -67,6 +63,17 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getEnrolmentReports(req, res);
+  },
+);
+
+router.patch(
+  '/:enrolmentReportId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('enrolmentReportId', 'URL param: [enrolmentReportId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateEnrolmentReport(req, res);
   },
 );
 

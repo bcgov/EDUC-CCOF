@@ -30,6 +30,17 @@ async function getEnrolmentReports(req, res) {
   }
 }
 
+async function updateEnrolmentReport(req, res) {
+  try {
+    const payload = new MappableObjectForBack(req.body, EnrolmentReportMappings).toJSON();
+    await patchOperationWithObjectId('ccof_monthlyenrollmentreports', req.params.enrolmentReportId, payload);
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function getDailyEnrolments(req, res) {
   try {
     const response = await getOperation(`ccof_dailyenrollments?${buildFilterQuery(req.query, DailyEnrolmentMappings)}`);
@@ -61,4 +72,5 @@ module.exports = {
   getEnrolmentReport,
   getEnrolmentReports,
   updateDailyEnrolments,
+  updateEnrolmentReport,
 };
