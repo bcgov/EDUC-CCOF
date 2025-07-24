@@ -282,7 +282,7 @@
           application. We will contact you if more information is required.
         </p>
         <p>
-          <AppButton color="primary" class="mt-4" @click="goToDashboard"> Return to your dashboard </AppButton>
+          <AppButton class="mt-4" @click="goToDashboard"> Return to your dashboard </AppButton>
         </p>
       </template>
     </AppDialog>
