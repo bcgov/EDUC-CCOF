@@ -249,11 +249,12 @@
 </template>
 
 <script>
-import { mapState } from 'pinia';
-import { useAppStore } from '@/store/app.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
+import { useAppStore } from '@/store/app.js';
 import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
+import { formatDateToStandardFormat } from '@/utils/format';
+import { mapState } from 'pinia';
 
 export default {
   mixins: [summaryMixin],
@@ -297,6 +298,9 @@ export default {
         ? pcfUrl(PATHS.CCOF_FAMILY_ORG, this.programYearId)
         : pcfUrlGuid(PATHS.CCOF_FAMILY_FACILITY, this.programYearId, this.facilityId);
     },
+  },
+  method: {
+    formatDateToStandardFormat,
   },
   mounted() {
     this.$refs.facilitySummaryForm.validate();
