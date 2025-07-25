@@ -15,12 +15,6 @@ describe('Portal Login and Navigation', () => {
     cy.contains('What would you like to do?').should('exist');
   });
 
-  it('should login successfully with valid credentials', () => {
-    // This test focuses only on verifying login
-    // Assertion is already in beforeEach, but we re-check here for clarity
-    cy.contains('What would you like to do?').should('exist');
-  });
-
   it('should navigate and verify pages after login', () => {
     // Now perform navigation steps after login
     cy.contains('button', 'Start Application').click();
