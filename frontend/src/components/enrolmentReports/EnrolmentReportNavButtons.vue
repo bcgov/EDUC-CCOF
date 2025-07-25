@@ -1,11 +1,11 @@
 <template>
   <v-row no-gutters justify="space-around" class="stickyNavButtons">
-    <AppButton :loading="isProcessing" :primary="false" :size="buttonSize" min-width="100px" @click="previous">
+    <AppButton :loading="loading" :primary="false" :size="buttonSize" min-width="100px" @click="previous">
       Back
     </AppButton>
     <AppButton
       v-if="isSaveDisplayed"
-      :loading="isProcessing"
+      :loading="loading"
       :disabled="isSaveDisabled"
       :primary="false"
       :size="buttonSize"
@@ -15,15 +15,15 @@
     </AppButton>
     <AppButton
       v-if="isNextDisplayed"
-      :loading="isProcessing"
-      :class="isNextDisabled ? 'disabledButton' : ''"
+      :loading="loading"
+      :disabled="isNextDisabled"
       :size="buttonSize"
       min-width="100px"
       @click="next"
     >
       Next
     </AppButton>
-    <AppButton v-if="isSubmitDisplayed" :loading="isProcessing" :disabled="isSubmitDisabled" @click="submit">
+    <AppButton v-if="isSubmitDisplayed" :loading="loading" :disabled="isSubmitDisabled" @click="submit">
       Submit
     </AppButton>
   </v-row>
@@ -38,7 +38,7 @@ export default {
     AppButton,
   },
   props: {
-    isProcessing: {
+    loading: {
       type: Boolean,
       default: false,
     },
@@ -67,24 +67,23 @@ export default {
       default: false,
     },
   },
-  emits: ['previous', 'next', 'validateForm', 'save', 'submit'],
+  emits: ['previous', 'next', 'save', 'submit'],
   computed: {
     buttonSize() {
       return this.$vuetify.display.smAndDown ? 'small' : null;
     },
   },
   methods: {
-    async previous() {
+    previous() {
       this.$emit('previous');
     },
-    async next() {
-      if (this.isNextDisabled) this.$emit('validateForm');
-      else this.$emit('next');
+    next() {
+      this.$emit('next');
     },
-    async save() {
+    save() {
       this.$emit('save');
     },
-    async submit() {
+    submit() {
       this.$emit('submit');
     },
   },
