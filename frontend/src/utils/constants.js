@@ -75,7 +75,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
-  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
+  ENROLMENT_REPORTS: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -568,4 +568,10 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   TERMINATED: 'Terminated',
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
+});
+
+export const DAY_TYPES = Object.freeze({
+  WEEKDAY: 100000000,
+  WEEKEND: 100000001,
+  STATUTORY: 100000002,
 });

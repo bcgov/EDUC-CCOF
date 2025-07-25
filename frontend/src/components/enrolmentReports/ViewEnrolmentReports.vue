@@ -65,7 +65,7 @@
           class="elevation-2"
         >
           <template #item.reportVersion="{ item }">
-            {{ getReportVersionText(item) }}
+            {{ item.versionText }}
             <AppTooltip
               v-if="item.isAdjustment"
               tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
@@ -75,12 +75,26 @@
           <template #item.submissionDeadline="{ item }">
             {{ formatDateToStandardFormat(item.submissionDeadline) }}
           </template>
+          <!-- TODO (vietle-cgi) - review v-if logic once the ER status/action ticket is ready -->
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)"> View </AppButton>
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
-                Adjust
+              <AppButton
+                v-if="true"
+                :loading="loading"
+                :primary="false"
+                size="medium"
+                @click="goToEnrolmentReport(item)"
+              >
+                Edit
               </AppButton>
+              <template v-else>
+                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
+                  View
+                </AppButton>
+                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
+                  Adjust
+                </AppButton>
+              </template>
             </v-row>
           </template>
         </v-data-table>
@@ -202,7 +216,6 @@ export default {
   },
   methods: {
     formatDateToStandardFormat,
-    padString,
     async loadData() {
       this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedReportingMonths = this.allReportingMonths?.map((report) => report.value);
@@ -220,8 +233,7 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`;
-          report.isAdjustment = report?.reportVersion > 1;
+          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
           // TODO (vietle-cgi) - review/update these statuses once CMS team added them to ER entity
           report.ccofStatus = facility?.ccofBaseFundingStatus;
           report.ccfriStatus = facility?.ccfriStatus;
@@ -256,9 +268,8 @@ export default {
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
     },
-    getReportVersionText(report) {
-      const version = padString(report.reportVersion, 2, '0');
-      return report?.isAdjustment ? `${version}-Adjustment` : version;
+    goToEnrolmentReport(report) {
+      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${report.enrolmentReportId}`);
     },
   },
 };

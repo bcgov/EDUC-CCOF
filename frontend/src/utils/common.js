@@ -1,6 +1,7 @@
 'use strict';
 
-import { isPlainObject, sortBy } from 'lodash';
+import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
+import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import {
@@ -209,4 +210,30 @@ export function getOrganizationNameLabel(organizationType) {
 export function padString(input, length, char) {
   if (input == null) return null;
   return String(input).padStart(length, char);
+}
+
+export function getDayOfWeek(day, month, year, dateFormat = 'dddd') {
+  // Adjust month to 0-based index
+  const date = moment({ year, month: month - 1, day });
+  return date.format(dateFormat); // e.g., "Monday"
+}
+
+/**
+ * Returns an array of objects from the `updated` array that differ from the `original` array
+ * based on a specified set of keys and a shared identifier.
+ *
+ * @param {Array<Object>} original - The original array of objects.
+ * @param {Array<Object>} updated - The updated array of objects.
+ * @param {Array<string>} keys - The list of keys to compare for detecting changes.
+ * @param {string} idKey - The key used to uniquely identify and match objects (e.g., 'id').
+ * @returns {Array<Object>} An array of objects from `updated` that have changed values for the specified keys.
+ */
+export function getUpdatedObjectsByKeys(original, updated, keys, idKey) {
+  if (isEmpty(original) || isEmpty(updated) || isEmpty(keys) || isEmpty(idKey)) return [];
+  const originalMap = new Map(original.map((obj) => [obj[idKey], obj]));
+  return updated.filter((updatedObj) => {
+    const originalObj = originalMap.get(updatedObj[idKey]);
+    if (!originalObj) return true; // If not found in original, treat as new/changed
+    return !isEqual(pick(updatedObj, keys), pick(originalObj, keys));
+  });
 }
