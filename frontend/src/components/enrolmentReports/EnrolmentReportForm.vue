@@ -12,7 +12,7 @@
       </div>
       <div>
         <p class="py-2">Reporting month: {{ FULL_MONTH_NAMES[enrolmentReport?.month] }} {{ enrolmentReport?.year }}</p>
-        <p>Version number: {{ getReportVersionText(enrolmentReport) }}</p>
+        <p>Version number: {{ enrolmentReport.versionText }}</p>
       </div>
       <v-skeleton-loader v-if="processing" :loading="processing" type="table-tbody" class="mt-4 mb-8" />
       <div v-else class="table-scroll-wrapper my-6">
@@ -485,7 +485,7 @@
     </template>
   </v-container>
   <EnrolmentReportNavButtons
-    :is-processing="loading || processing"
+    :loading="loading || processing"
     :is-save-displayed="true"
     :is-next-displayed="true"
     @previous="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
@@ -506,9 +506,8 @@ import alertMixin from '@/mixins/alertMixin.js';
 
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { getDayOfWeek, getUpdatedObjectsByKeys, padString } from '@/utils/common.js';
+import { getDayOfWeek, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import {
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -539,7 +538,6 @@ export default {
   },
   computed: {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     isGroup() {
       return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
@@ -574,19 +572,12 @@ export default {
 
     async loadEnrolmentReport() {
       this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
-      this.enrolmentReport.isAdjustment = this.enrolmentReport.reportVersion > 1;
       this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
     },
 
     async loadDailyEnrolments() {
       this.dailyEnrolments = await EnrolmentReportService.getDailyEnrolments(this.$route.params.enrolmentReportId);
       this.originalDailyEnrolments = cloneDeep(this.dailyEnrolments);
-    },
-
-    // TO-DO (vietle-cgi): duplicate function with ViewER
-    getReportVersionText(report) {
-      const version = padString(report?.reportVersion, 2, '0');
-      return report?.isAdjustment ? `${version}-Adjustment` : version;
     },
 
     getParentFeesFrequency(frequency) {
