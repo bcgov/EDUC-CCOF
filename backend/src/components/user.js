@@ -134,6 +134,7 @@ async function getUserInfo(req, res) {
   let results = {
     ...resData,
     ...organization,
+    contactid: userResponse.contactid,
     applications: applicationList,
   };
   return res.status(HttpStatus.OK).json(results);
