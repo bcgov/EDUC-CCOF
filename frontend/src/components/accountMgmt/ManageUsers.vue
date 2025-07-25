@@ -90,6 +90,7 @@ import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
+import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -120,6 +121,7 @@ export default {
       'organizationAccountNumber',
       'loadedModel',
     ]),
+    ...mapState(useAuthStore, ['userInfo']),
     headers() {
       return [
         { title: '', key: 'edit-user', sortable: false },
@@ -164,7 +166,7 @@ export default {
       this.dialogOpen = true;
     },
     mayRemoveUser(user) {
-      return !user.isPrimaryContact;
+      return !user.isPrimaryContact && this.userInfo.contactid !== user.contactId;
     },
     userDisplayName(user, fallback = '') {
       const { firstName, lastName } = user;
