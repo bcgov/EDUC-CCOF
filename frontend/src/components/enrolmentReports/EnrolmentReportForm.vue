@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="page-scroll-wrapper px-8 px-xl-12 pt-0 mb-12">
-    <div v-if="loading" align="center">
+    <div v-if="loading" class="text-center">
       <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
     </div>
     <template v-else>
