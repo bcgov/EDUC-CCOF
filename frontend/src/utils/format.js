@@ -91,3 +91,26 @@ export function formatUTCDate(date) {
   if (!date) return null;
   return moment.utc(date).format('YYYY-MM-DD');
 }
+
+/**
+ * Formats a given decimal number with commas as thousands separators
+ * and exactly two digits after the decimal point.
+ * - minimumFractionDigits: 2 (pads with zeroes if needed)
+ * - maximumFractionDigits: 2 (rounds if more than two decimals)
+ *
+ * @param {number|string} input - The numeric value to format. Can be a number or a numeric string.
+ * @returns {string} A formatted string with comma separators and two decimal digits.
+ *
+ * @example
+ * formatNumber(1000);      // "1,000.00"
+ * formatNumber("233.14");  // "233.14"
+ * formatNumber(9876543);   // "9,876,543.00"
+ */
+export function formatDecimalNumber(input) {
+  const number = parseFloat(input);
+  if (isNaN(number)) return null;
+  return number.toLocaleString('en-CA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
