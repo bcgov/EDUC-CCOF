@@ -49,6 +49,7 @@ export function formatFiscalYearName(fiscalYearName) {
  *
  * Expected Output:
  *   - A formatted date string ignoring the time and timezone (e.g., "Nov 26, 2025").
+ * @deprecated
  */
 export function formatUTCDateToShortDateString(date) {
   if (!date) return null;
@@ -63,9 +64,9 @@ export function formatUTCDateToShortDateString(date) {
  * Expected Output:
  *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
  */
-export function formatDateToStandardFormat(date) {
+export function formatDateToStandardFormat(date, inputFormat = 'YYYY-MM-DDTHH:mm:ssZ') {
   if (!date) return null;
-  return moment(date).format('YYYY-MM-DD');
+  return moment(date, inputFormat, true).format('YYYY-MM-DD');
 }
 /**
  * Converts a date string to a standardized date string in YYYY-MM-DD HH:mm format.
