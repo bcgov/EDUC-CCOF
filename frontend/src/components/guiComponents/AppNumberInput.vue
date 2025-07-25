@@ -43,8 +43,9 @@ export default {
         return;
       }
       if (this.decimal) {
-        // Allow only digits and at most one "."
-        this.updatedValue = this.updatedValue?.replace(/[^\d.]/g, '').replace(/^([^.]*\.)|\./g, '$1'); // only first dot remains
+        this.updatedValue = this.updatedValue
+          ?.replace(/[^\d.]/g, '') // Remove all non-digit and non-dot characters
+          .replace(/(^[^.]*\.)|(\.)/g, '$1'); // Keep only the first dot
       } else {
         // Only digits
         this.updatedValue = this.updatedValue?.replace(/\D/g, '');
