@@ -50,7 +50,6 @@ export default {
         // Only digits
         this.updatedValue = this.updatedValue?.replace(/\D/g, '');
       }
-      this.updatedValue = Number(this.updatedValue);
     },
   },
 };
