@@ -5,7 +5,7 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
-const { FacilityMappings, CCFRIFacilityMappings, LicenceMappings } = require('../util/mapping/Mappings');
+const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
 const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
@@ -53,7 +53,7 @@ function mapCCFRIObjectForFront(data) {
 }
 
 async function getFacilityByFacilityId(facilityId) {
-  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority`;
+  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority,_parentaccountid_value`;
   const facility = await getOperation(operation);
 
   if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
@@ -346,19 +346,6 @@ async function getApprovedParentFees(req, res) {
   }
 }
 
-async function getLicences(req, res) {
-  try {
-    const facilityId = req.params.facilityId;
-    const operation = `ccof_licenses?$select=ccof_licenseid,ccof_name,ccof_organization,_ccof_facility_value,statuscode,ccof_start_date,ccof_end_date&$filter=(statecode eq 0 and _ccof_facility_value eq ${facilityId})`;
-    const response = await getOperation(operation);
-    const licences = response?.value?.map((item) => new MappableObjectForFront(item, LicenceMappings).toJSON());
-    return res.status(HttpStatus.OK).json(licences);
-  } catch (e) {
-    log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
 module.exports = {
   getFacility,
   getFacilityChildCareTypes,
@@ -372,5 +359,4 @@ module.exports = {
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
   getFacilityByFacilityId,
-  getLicences,
 };

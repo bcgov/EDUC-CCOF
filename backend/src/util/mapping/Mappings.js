@@ -61,7 +61,7 @@ const FacilityMappings = [
   { back: 'ccof_is_facility_address_entered_manually', front: 'isFacilityAddressEnteredManually' },
   { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
   { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
-  { back: 'ccof_healthauthority@OData.Community.Display.V1.FormattedValue', front: 'healthAuthority' },
+  { back: 'ccof_healthauthority', front: 'healthAuthority' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -578,14 +578,12 @@ const LicenceMappings = [
   { back: 'ccof_licenseid', front: 'licenceId' },
   { back: 'ccof_name', front: 'licenceNumber' },
   { back: 'ccof_organization', front: 'ccofOrganization' },
-  { back: '_ccof_facility_value@OData.Community.Display.V1.FormattedValue', front: 'ccofFacility' },
-  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'statusCode' },
-  { back: 'statecode@OData.Community.Display.V1.FormattedValue', front: 'stateCode' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
 ];
-const LicenceDetailsMappings = [
-  { back: 'ccof_name', front: 'licenceNumber' },
+const ServiceDeliveryMappings = [
   { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
   { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
   { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
@@ -611,8 +609,6 @@ const LicenceDetailsMappings = [
   { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
   { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
   { back: 'ccof_accepts_subsidy', front: 'acceptsSubsidy' },
-  { back: 'statuscode', front: 'statusCode' },
-  { back: 'statecode', front: 'stateCode' },
 ];
 
 module.exports = {
@@ -653,5 +649,5 @@ module.exports = {
   PdfDocumentMappings,
   FundingAgreementMappings,
   LicenceMappings,
-  LicenceDetailsMappings,
+  ServiceDeliveryMappings,
 };

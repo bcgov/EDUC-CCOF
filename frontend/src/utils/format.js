@@ -91,6 +91,7 @@ export function formatUTCDate(date) {
   if (!date) return null;
   return moment.utc(date).format('YYYY-MM-DD');
 }
+
 /**
  * Formats a UTC ISO datetime string to 12-hour local time.
  */
