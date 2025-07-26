@@ -59,7 +59,7 @@
                 <AppLabel><strong>Licence Start Date:</strong></AppLabel>
               </v-col>
               <v-col cols="12" sm="6" class="mt-1">{{
-                licences[0]?.licenceStartDate ? formatUTCDate(licences[0]?.licenceStartDate) : EMPTY_PLACEHOLDER
+                activeLicence?.licenceStartDate ? formatUTCDate(activeLicence?.licenceStartDate) : EMPTY_PLACEHOLDER
               }}</v-col>
             </v-row>
           </v-col>
@@ -70,7 +70,7 @@
                 <AppLabel><strong>Licence End Date:</strong></AppLabel>
               </v-col>
               <v-col cols="12" sm="6" class="mt-1">{{
-                licences[0]?.licenceEndDate ? formatUTCDate(licences[0]?.licenceEndDate) : EMPTY_PLACEHOLDER
+                activeLicence?.licenceEndDate ? formatUTCDate(activeLicence?.licenceEndDate) : EMPTY_PLACEHOLDER
               }}</v-col>
             </v-row>
           </v-col>
@@ -365,9 +365,9 @@ export default {
       try {
         this.facility = await FacilityService.getFacilityById(this.$route.params.facilityId);
         this.licences = (await LicenceService.getLicences(this.$route.params.facilityId)) || [];
-        const activeLicence = this.licences[0] || {};
-        this.serviceDeliveryDetails = activeLicence.serviceDeliveryDetails || [];
-        if (!activeLicence.licenceId) {
+        this.activeLicence = this.licences[0] || {};
+        this.serviceDeliveryDetails = this.activeLicence.serviceDeliveryDetails || [];
+        if (!this.activeLicence.licenceId) {
           this.setFailureAlert('No licences available.');
         }
       } catch (error) {
