@@ -49,7 +49,6 @@ export function formatFiscalYearName(fiscalYearName) {
  *
  * Expected Output:
  *   - A formatted date string ignoring the time and timezone (e.g., "Nov 26, 2025").
- * @deprecated
  */
 export function formatUTCDateToShortDateString(date) {
   if (!date) return null;
@@ -64,9 +63,9 @@ export function formatUTCDateToShortDateString(date) {
  * Expected Output:
  *   - A formatted date string in the format "YYYY-MM-DD" (e.g., "2025-06-11").
  */
-export function formatDateToStandardFormat(date, inputFormat = 'YYYY-MM-DDTHH:mm:ssZ') {
+export function formatDateToStandardFormat(date) {
   if (!date) return null;
-  return moment(date, inputFormat, true).format('YYYY-MM-DD');
+  return moment(date).format('YYYY-MM-DD');
 }
 /**
  * Converts a date string to a standardized date string in YYYY-MM-DD HH:mm format.
@@ -94,24 +93,9 @@ export function formatUTCDate(date) {
 }
 
 /**
- * Formats a given decimal number with commas as thousands separators
- * and exactly two digits after the decimal point.
- * - minimumFractionDigits: 2 (pads with zeroes if needed)
- * - maximumFractionDigits: 2 (rounds if more than two decimals)
- *
- * @param {number|string} input - The numeric value to format. Can be a number or a numeric string.
- * @returns {string} A formatted string with comma separators and two decimal digits.
- *
- * @example
- * formatNumber(1000);      // "1,000.00"
- * formatNumber("233.14");  // "233.14"
- * formatNumber(9876543);   // "9,876,543.00"
+ * Formats a UTC ISO datetime string to 12-hour local time.
  */
-export function formatDecimalNumber(input) {
-  const number = parseFloat(input);
-  if (isNaN(number)) return null;
-  return number.toLocaleString('en-CA', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+export function formatUTCTimeToLocal(time) {
+  if (!time) return null;
+  return moment.utc(time).local().format('h:mm A');
 }
