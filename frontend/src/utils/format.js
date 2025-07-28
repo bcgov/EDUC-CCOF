@@ -114,3 +114,11 @@ export function formatDecimalNumber(input) {
     maximumFractionDigits: 2,
   });
 }
+
+/**
+ * Formats a UTC ISO datetime string to 12-hour local time.
+ */
+export function formatUTCTimeToLocal(time) {
+  if (!time) return null;
+  return moment.utc(time).local().format('h:mm A');
+}

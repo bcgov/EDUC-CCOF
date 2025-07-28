@@ -58,6 +58,7 @@ export const ApiRoutes = Object.freeze({
   CANADA_POST: baseRoot + '/canadaPost',
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
+  LICENCES: baseRoot + '/licences',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -575,3 +576,13 @@ export const DAY_TYPES = Object.freeze({
   WEEKEND: 100000001,
   STATUTORY: 100000002,
 });
+
+export const DAYS_OF_WEEK = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+};
