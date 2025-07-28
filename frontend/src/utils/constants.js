@@ -575,3 +575,13 @@ export const DAY_TYPES = Object.freeze({
   WEEKEND: 100000001,
   STATUTORY: 100000002,
 });
+
+export const ENROLMENT_REPORT_STATUSES = Object.freeze({
+  DRAFT: 1,
+  SUBMITTED: 2,
+  WITH_MINISTRY: 3,
+  REJECTED: 4,
+  APPROVED: 6,
+  PAID: 7,
+  EXPIRED: 8,
+});

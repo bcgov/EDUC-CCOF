@@ -75,6 +75,16 @@
           <template #item.submissionDeadline="{ item }">
             {{ formatDateToStandardFormat(item.submissionDeadline) }}
           </template>
+          <template #item.externalCcofStatusCode="{ item }">
+            <span class="report-status" :class="getStatusClass(item.externalCcofStatusCode)">
+              {{ item.externalCcofStatusText }}
+            </span>
+          </template>
+          <template #item.externalCcfriStatusCode="{ item }">
+            <span class="report-status" :class="getStatusClass(item.externalCcfriStatusCode)">
+              {{ item.externalCcfriStatusText }}
+            </span>
+          </template>
           <!-- TODO (vietle-cgi) - review v-if logic once the ER status/action ticket is ready -->
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
@@ -127,7 +137,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-import { FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
+import { ENROLMENT_REPORT_STATUSES, FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat } from '@/utils/format';
 
 export default {
@@ -147,8 +157,8 @@ export default {
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Reporting Month', key: 'reportingMonth' },
         { title: 'Submission Deadline', key: 'submissionDeadline' },
-        { title: 'CCOF Base Funding Status', key: 'ccofStatus' },
-        { title: 'CCFRI Funding Status', key: 'ccfriStatus' },
+        { title: 'CCOF Base Funding Status', key: 'externalCcofStatusCode' },
+        { title: 'CCFRI Funding Status', key: 'externalCcfriStatusCode' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       enrolmentReports: [],
@@ -234,9 +244,6 @@ export default {
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
           report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
-          // TODO (vietle-cgi) - review/update these statuses once CMS team added them to ER entity
-          report.ccofStatus = facility?.ccofBaseFundingStatus;
-          report.ccfriStatus = facility?.ccfriStatus;
         });
         this.sortEnrolmentReports();
       } catch (error) {
@@ -246,23 +253,24 @@ export default {
         this.loading = false;
       }
     },
+    // CCFRI-5104
     sortEnrolmentReports() {
-      // TODO (vietle-cgi) - review/update this sorting order once CMS team add the CCOF status to ER entity
       this.enrolmentReports?.sort((a, b) => {
-        // Sort by Reporting Month (asc - oldest to newest)
-        if (a.reportingMonth !== b.reportingMonth) {
-          return a.reportingMonth < b.reportingMonth ? -1 : 1;
+        // 1. CCOF Status (DRAFT first)
+        if (a.externalCcofStatusCode !== b.externalCcofStatusCode) {
+          if (a.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.DRAFT) return -1;
+          if (b.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.DRAFT) return 1;
         }
-
-        // Sort by Facility ID (facilityAccountNumber) (desc)
+        // 2. Submission Deadline (asc - string comparison of 'YYYY-MM-DD')
+        if (a.submissionDeadline !== b.submissionDeadline) {
+          return a.submissionDeadline < b.submissionDeadline ? -1 : 1;
+        }
+        // 3. Facility Account Number (desc)
         if (a.facilityAccountNumber !== b.facilityAccountNumber) {
           return a.facilityAccountNumber > b.facilityAccountNumber ? -1 : 1;
         }
-
-        // Sort by Report Version (desc - last adjustment to the original report)
-        const versionA = a.reportVersion ?? 0;
-        const versionB = b.reportVersion ?? 0;
-        return versionB - versionA;
+        // 4. Report Version (desc - last adjustment to the original report)
+        return (b.reportVersion ?? 0) - (a.reportVersion ?? 0);
       });
     },
     selectProgramYear(programYear) {
@@ -271,6 +279,26 @@ export default {
     goToEnrolmentReport(report) {
       this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${report.enrolmentReportId}`);
     },
+    getStatusClass(status) {
+      switch (status) {
+        case ENROLMENT_REPORT_STATUSES.DRAFT:
+          return 'status-yellow';
+        case ENROLMENT_REPORT_STATUSES.SUBMITTED:
+          return 'status-blue';
+        case ENROLMENT_REPORT_STATUSES.PAID:
+          return 'status-green';
+        case ENROLMENT_REPORT_STATUSES.REJECTED:
+          return 'status-red';
+        case ENROLMENT_REPORT_STATUSES.EXPIRED:
+          return 'status-gray';
+        case ENROLMENT_REPORT_STATUSES.WITH_MINISTRY:
+          return 'status-orange';
+        case ENROLMENT_REPORT_STATUSES.APPROVED:
+          return 'status-mint';
+        default:
+          return null;
+      }
+    },
   },
 };
 </script>
@@ -278,5 +306,9 @@ export default {
 .action-buttons {
   gap: 8px;
   padding: 10px;
+}
+
+.report-status {
+  min-width: 112px;
 }
 </style>
