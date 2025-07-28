@@ -345,7 +345,7 @@ export default {
     return {
       facility: {},
       panel: [],
-      activeLicence: {},
+      activeLicence: undefined,
     };
   },
   computed: {
@@ -364,10 +364,6 @@ export default {
         this.facility = await FacilityService.getFacilityById(this.$route.params.facilityId);
         this.licences = (await LicenceService.getLicences(this.$route.params.facilityId)) || [];
         this.activeLicence = this.licences[0];
-        if (!this.activeLicence) {
-          return;
-        }
-        this.serviceDeliveryDetails = this.activeLicence.serviceDeliveryDetails || [];
       } catch (error) {
         this.setFailureAlert('Failed to load licence details.');
         console.error('Error loading licence: ', error);
