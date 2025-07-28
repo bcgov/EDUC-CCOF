@@ -583,6 +583,7 @@ const LicenceMappings = [
   { back: 'ccof_end_date', front: 'licenceEndDate' },
   { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
 ];
+
 const ServiceDeliveryMappings = [
   { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
   { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },

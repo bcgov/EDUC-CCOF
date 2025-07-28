@@ -75,7 +75,7 @@
             </v-row>
           </v-col>
         </v-row>
-        <v-sheet v-if="licences?.length > 0" class="pa-4" elevation="0" rounded>
+        <v-sheet v-if="activeLicence" class="pa-4" elevation="0" rounded>
           <v-col cols="12">
             <div class="mb-2">
               <span class="text-h6 font-weight-bold" style="border-bottom: 2px solid #000"> Type(s) of Service </span>
@@ -338,16 +338,14 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 
 export default {
-  name: 'LicenceDetails',
+  name: 'ManageLicence',
   components: { AppButton, AppLabel },
   mixins: [alertMixin],
   data() {
     return {
       facility: {},
-      serviceDeliveryDetails: [],
       panel: [],
       EMPTY_PLACEHOLDER,
-      licences: [],
       activeLicence: {},
     };
   },
@@ -365,7 +363,7 @@ export default {
       try {
         this.facility = await FacilityService.getFacilityById(this.$route.params.facilityId);
         this.licences = (await LicenceService.getLicences(this.$route.params.facilityId)) || [];
-        this.activeLicence = this.licences[0] || {};
+        this.activeLicence = this.licences[0];
         this.serviceDeliveryDetails = this.activeLicence.serviceDeliveryDetails || [];
         if (!this.activeLicence.licenceId) {
           this.setFailureAlert('No licences available.');

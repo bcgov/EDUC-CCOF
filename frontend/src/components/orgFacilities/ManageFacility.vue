@@ -22,7 +22,7 @@
                 <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
               </v-window-item>
               <v-window-item value="licences-details">
-                <ManageLicenceDetails />
+                <ManageLicence />
               </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
               <v-window-item value="closures">Closures</v-window-item>
@@ -46,13 +46,13 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
 import alertMixin from '@/mixins/alertMixin.js';
 
-import ManageLicenceDetails from '@/components/licences/ManageLicenceDetails.vue';
+import ManageLicence from '@/components/licences/ManageLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { NavButton, ManageFacilityDetails, ManageLicenceDetails },
+  components: { NavButton, ManageFacilityDetails, ManageLicence },
   mixins: [alertMixin],
   data() {
     return {
