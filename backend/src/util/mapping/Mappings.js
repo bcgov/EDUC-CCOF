@@ -584,6 +584,44 @@ const EnrolmentReportSummaryMappings = [
   { back: 'statuscode', front: 'statusCode' },
 ];
 
+const LicenceMappings = [
+  { back: 'ccof_licenseid', front: 'licenceId' },
+  { back: 'ccof_name', front: 'licenceNumber' },
+  { back: 'ccof_organization', front: 'ccofOrganization' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_start_date', front: 'licenceStartDate' },
+  { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
+];
+
+const ServiceDeliveryMappings = [
+  { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
+  { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
+  { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
+  { back: 'ccof_overnight_care', front: 'overnightCare' },
+  { back: 'ccof_care_type@OData.Community.Display.V1.FormattedValue', front: 'capacityByCareType' },
+  { back: 'ccof_extended_hours_offered', front: 'extendedHours' },
+
+  { back: 'ccof_start_date', front: 'licenceStartDate' },
+  { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_max_capacity', front: 'maximumCapacity' },
+  { back: 'ccof_licenced_spaces', front: 'licencedSpaces' },
+  { back: 'ccof_hours_of_operation_start', front: 'facilityHoursFrom' },
+  { back: 'ccof_hours_of_operation_end', front: 'facilityHoursTo' },
+
+  { back: 'ccof_max_4_or_less', front: 'maxfourorLess' },
+  { back: 'ccof_max_over_4', front: 'maxoverFour' },
+
+  { back: 'ccof_number_of_preschool_sessions', front: 'preschoolSessions' },
+  { back: 'ccof_school_age_on_school_grounds', front: 'schoolAgeOnSchoolGrounds' },
+  { back: 'ccof_recreational_care', front: 'recreationalCare' },
+  { back: 'ccof_before_school', front: 'beforeSchoolCare' },
+  { back: 'ccof_after_school', front: 'afterSchoolCare' },
+  { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
+  { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
+  { back: 'ccof_accepts_subsidy', front: 'acceptsSubsidy' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DocumentsMappings,
@@ -622,4 +660,6 @@ module.exports = {
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
   FundingAgreementMappings,
+  LicenceMappings,
+  ServiceDeliveryMappings,
 };
