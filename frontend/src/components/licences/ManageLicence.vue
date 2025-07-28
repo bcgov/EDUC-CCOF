@@ -83,7 +83,7 @@
           </v-col>
           <v-col cols="12">
             <v-expansion-panels v-model="panel" multiple>
-              <v-expansion-panel v-for="(serviceDetail, index) in serviceDeliveryDetails" :key="index">
+              <v-expansion-panel v-for="(serviceDetail, index) in activeLicence.serviceDeliveryDetails" :key="index">
                 <v-expansion-panel-title>
                   <strong>{{ serviceDetail.licenseCategory }} </strong>
                 </v-expansion-panel-title>
@@ -345,7 +345,6 @@ export default {
     return {
       facility: {},
       panel: [],
-      EMPTY_PLACEHOLDER,
       activeLicence: {},
     };
   },
@@ -354,6 +353,7 @@ export default {
     ...mapState(useAuthStore, ['userInfo']),
   },
   async created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     await this.loadData();
   },
   methods: {
@@ -364,10 +364,10 @@ export default {
         this.facility = await FacilityService.getFacilityById(this.$route.params.facilityId);
         this.licences = (await LicenceService.getLicences(this.$route.params.facilityId)) || [];
         this.activeLicence = this.licences[0];
-        this.serviceDeliveryDetails = this.activeLicence.serviceDeliveryDetails || [];
-        if (!this.activeLicence.licenceId) {
-          this.setFailureAlert('No licences available.');
+        if (!this.activeLicence) {
+          return;
         }
+        this.serviceDeliveryDetails = this.activeLicence.serviceDeliveryDetails || [];
       } catch (error) {
         this.setFailureAlert('Failed to load licence details.');
         console.error('Error loading licence: ', error);
