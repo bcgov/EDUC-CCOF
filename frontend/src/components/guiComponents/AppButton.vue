@@ -17,6 +17,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    color: {
+      type: String,
+      default: '#003366',
+    },
   },
   computed: {
     buttonClass() {
@@ -43,7 +47,7 @@ export default {
 }
 
 .text-app-button {
-  color: #003366;
+  color: v-bind(color);
   font-size: 1rem;
 }
 
@@ -70,9 +74,9 @@ export default {
 .BC-Gov-SecondaryButton,
 .BC-Gov-SecondaryButton-disabled {
   background-color: #ffffff;
-  border: 2px solid #003366;
+  border: 2px solid v-bind(color);
   border-radius: 4px;
-  color: #003366;
+  color: v-bind(color);
   padding: 10px 30px;
   text-align: center;
   text-decoration: none;
@@ -106,7 +110,7 @@ export default {
 }
 
 .BC-Gov-SecondaryButton:hover {
-  background-color: #003366;
+  background-color: v-bind(color);
   color: #ffffff;
 }
 

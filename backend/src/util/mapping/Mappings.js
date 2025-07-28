@@ -15,6 +15,7 @@ const OrganizationMappings = [
   { back: 'telephone1', front: 'phone' },
   // { back: 'businessBCeID', front: 'businessId'},
   { back: 'emailaddress1', front: 'email' },
+  { back: '_primarycontactid_value', front: 'primaryContactId' },
   { back: 'ccof_instructionnumber', front: 'incNumber' }, //incorporation number
   { back: 'ccof_typeoforganization', front: 'organizationType' },
   { back: 'ccof_typeoforganization@OData.Community.Display.V1.FormattedValue', front: 'organizationTypeDesc' },
@@ -556,6 +557,15 @@ const DocumentsMappings = [
   { back: 'subject', front: 'documentType' },
 ];
 
+const ContactMappings = [
+  { back: 'contactid', front: 'contactId' },
+  { back: 'ccof_username', front: 'bceid' },
+  { back: 'emailaddress1', front: 'email' },
+  { back: 'firstname', front: 'firstName' },
+  { back: 'lastname', front: 'lastName' },
+  { back: 'telephone1', front: 'telephone' },
+];
+
 const ApplicationDocumentsMappings = [
   ...DocumentsMappings,
   { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' },
@@ -615,6 +625,7 @@ const ServiceDeliveryMappings = [
 module.exports = {
   ApplicationDocumentsMappings,
   DocumentsMappings,
+  ContactMappings,
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,

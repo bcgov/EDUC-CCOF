@@ -456,6 +456,8 @@
                 v-model="fundingModel.beforeSchool"
                 :disabled="isLocked"
                 :true-value="1"
+                :false-value="0"
+                hide-details
                 label="Before School"
                 color="primary"
               />
@@ -465,6 +467,8 @@
                 v-model="fundingModel.afterSchool"
                 :disabled="isLocked"
                 :true-value="1"
+                :false-value="0"
+                hide-details
                 label="After School"
                 color="primary"
               />
@@ -474,6 +478,8 @@
                 v-model="fundingModel.beforeKindergarten"
                 :disabled="isLocked"
                 :true-value="1"
+                :false-value="0"
+                hide-details
                 label="Before Kindergarten"
                 color="primary"
               />
@@ -483,6 +489,8 @@
                 v-model="fundingModel.afterKindergarten"
                 :disabled="isLocked"
                 :true-value="1"
+                :false-value="0"
+                hide-details
                 label="After Kindergarten"
                 color="primary"
               />
