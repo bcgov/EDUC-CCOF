@@ -179,7 +179,7 @@ ol.declarationBList {
 }
 
 .status-gray {
-  background-color: #d5d5d5;
+  background-color: #e0e0e0;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
   display: inline-block;
@@ -188,7 +188,7 @@ ol.declarationBList {
 }
 
 .status-green {
-  background-color: #c8e6c9;
+  background-color: #dff0d8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
   display: inline-block;
@@ -206,7 +206,7 @@ ol.declarationBList {
 }
 
 .status-yellow {
-  background-color: #fff4c8;
+  background-color: #f9f1c6;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
   display: inline-block;
@@ -215,7 +215,7 @@ ol.declarationBList {
 }
 
 .status-red {
-  background-color: #ffdcdb;
+  background-color: #f2dede;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
   display: inline-block;
@@ -224,7 +224,7 @@ ol.declarationBList {
 }
 
 .status-blue {
-  background-color: #bbe1f9;
+  background-color: #bbdefb;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
   display: inline-block;
