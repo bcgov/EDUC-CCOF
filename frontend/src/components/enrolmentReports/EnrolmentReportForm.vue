@@ -134,7 +134,7 @@
             {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyPre) }}
           </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-grey border-top text-center sticky-row row-1">
+        <v-row no-gutters class="background-light-grey border-bottom border-top text-center sticky-row row-1">
           <v-col class="border-right close-column text-cell">Day</v-col>
           <v-col v-for="i in 5" :key="i" class="border-right">
             <v-row no-gutters>
@@ -768,7 +768,6 @@ export default {
 
 .sticky-row.row-1 {
   top: 32px;
-  border-bottom: 1px solid;
 }
 
 .text-cell {
