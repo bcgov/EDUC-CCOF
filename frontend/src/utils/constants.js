@@ -76,7 +76,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
-  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
+  ENROLMENT_REPORTS: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -544,21 +544,6 @@ export const CCFRI_MIN_FEE = 0;
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
-export const FULL_MONTH_NAMES = {
-  1: 'January',
-  2: 'February',
-  3: 'March',
-  4: 'April',
-  5: 'May',
-  6: 'June',
-  7: 'July',
-  8: 'August',
-  9: 'September',
-  10: 'October',
-  11: 'November',
-  12: 'December',
-};
-
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   ACTIVE: 'Active',
   APPROVED: 'Approved',
@@ -569,6 +554,12 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   TERMINATED: 'Terminated',
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
+});
+
+export const DAY_TYPES = Object.freeze({
+  WEEKDAY: 100000000,
+  WEEKEND: 100000001,
+  STATUTORY: 100000002,
 });
 
 export const DAYS_OF_WEEK = {
