@@ -38,9 +38,7 @@ async function getEnrolmentReports(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
     const enrolmentReports = [];
-    response?.value?.forEach((report) => {
-      enrolmentReports.push(mapEnrolmentReportForFront(report));
-    });
+    response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportForFront(report)));
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
     log.error(e);
