@@ -15,14 +15,19 @@ function getReportVersionText(report) {
   return isAdjustmentReport(report) ? `${version}-Adjustment` : version;
 }
 
+function mapEnrolmentReportForFront(report) {
+  const mappedReport = new MappableObjectForFront(report, EnrolmentReportMappings).toJSON();
+  mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
+  mappedReport.versionText = getReportVersionText(mappedReport);
+  return mappedReport;
+}
+
 async function getEnrolmentReport(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports(${req.params.enrolmentReportId})?$expand=ccof_reportextension`);
     const enrolmentReport = { ...response, ...response.ccof_reportextension };
     delete enrolmentReport.ccof_reportextension;
-    const mappedEnrolmentReport = new MappableObjectForFront(enrolmentReport, EnrolmentReportMappings).toJSON();
-    mappedEnrolmentReport.versionText = getReportVersionText(mappedEnrolmentReport);
-    return res.status(HttpStatus.OK).json(mappedEnrolmentReport);
+    return res.status(HttpStatus.OK).json(mapEnrolmentReportForFront(enrolmentReport));
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -34,10 +39,7 @@ async function getEnrolmentReports(req, res) {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
     const enrolmentReports = [];
     response?.value?.forEach((report) => {
-      const mappedEnrolmentReport = new MappableObjectForFront(report, EnrolmentReportSummaryMappings).toJSON();
-      mappedEnrolmentReport.isAdjustment = isAdjustmentReport(mappedEnrolmentReport);
-      mappedEnrolmentReport.versionText = getReportVersionText(mappedEnrolmentReport);
-      enrolmentReports.push(mappedEnrolmentReport);
+      enrolmentReports.push(mapEnrolmentReportForFront(report));
     });
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
@@ -59,7 +61,7 @@ async function updateEnrolmentReport(req, res) {
 
 async function getDailyEnrolments(req, res) {
   try {
-    const response = await getOperation(`ccof_dailyenrollments?${buildFilterQuery(req.query, DailyEnrolmentMappings)}`);
+    const response = await getOperation(`ccof_dailyenrollments?$filter=_ccof_monthlyenrollmentreport_value eq ${req.params.enrolmentReportId}`);
     const dailyEnrolments = response?.value?.map((day) => new MappableObjectForFront(day, DailyEnrolmentMappings).toJSON());
     return res.status(HttpStatus.OK).json(dailyEnrolments);
   } catch (e) {

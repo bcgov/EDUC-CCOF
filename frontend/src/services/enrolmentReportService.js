@@ -7,7 +7,7 @@ export default {
   async getDailyEnrolments(enrolmentReportId) {
     try {
       const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.ENROLMENT_REPORTS}/daily-enrolments?enrolmentReportId=${enrolmentReportId}`,
+        `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}/daily-enrolments`,
       );
       return response?.data;
     } catch (error) {
@@ -16,13 +16,16 @@ export default {
     }
   },
 
-  async updateDailyEnrolments(payload) {
+  async updateDailyEnrolments(enrolmentReportId, payload) {
     try {
       if (isEmpty(payload)) return;
       const chunkSize = 16;
       for (let i = 0; i < payload.length; i += chunkSize) {
         const chunk = payload.slice(i, i + chunkSize);
-        await ApiService.apiAxios.patch(`${ApiRoutes.ENROLMENT_REPORTS}/daily-enrolments/bulk`, chunk);
+        await ApiService.apiAxios.patch(
+          `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}/daily-enrolments/bulk`,
+          chunk,
+        );
       }
     } catch (error) {
       console.log(`Failed to update daily enrolments - ${error}`);
