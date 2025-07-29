@@ -11,7 +11,9 @@
         <p>Licence #: {{ currentFacility?.licenseNumber }}</p>
       </div>
       <div>
-        <p class="py-2">Reporting month: {{ FULL_MONTH_NAMES[enrolmentReport?.month] }} {{ enrolmentReport?.year }}</p>
+        <p class="py-2">
+          Reporting month: {{ formatMonthYearToString(enrolmentReport?.month, enrolmentReport?.year) }}
+        </p>
         <p>Version number: {{ enrolmentReport.versionText }}</p>
       </div>
       <v-skeleton-loader v-if="processing" :loading="processing" type="table-tbody" class="mt-4 mb-8" />
@@ -81,7 +83,7 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-grey border-bottom text-center px-8 py-2">
+        <v-row no-gutters class="background-light-grey border-bottom border-right text-center px-8 py-2">
           <p>
             Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect, click
             <router-link :to="PATHS.ROOT.CHANGE_LANDING">
@@ -93,43 +95,43 @@
         <v-row no-gutters class="background-light-grey border-bottom text-center">
           <v-col class="border-right close-column text-cell">Approved Parent Fees $</v-col>
           <v-col class="border-right text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFees0To18) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFees0To18) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFees18To36) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFees18To36) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFees3YK) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFees3YK) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFeesOOSCK) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFeesOOSCK) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFeesOOSCG) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFeesOOSCG) }}
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell">
-            {{ formatDecimalNumber(enrolmentReport.approvedParentFeesPre) ?? EMPTY_PLACEHOLDER }}
+            {{ getApprovedParentFees(enrolmentReport.approvedParentFeesPre) }}
           </v-col>
         </v-row>
         <v-row no-gutters class="background-light-grey text-center">
           <v-col class="border-right close-column text-cell">Frequency</v-col>
           <v-col class="border-right text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency0To18) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency0To18) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency18To36) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency18To36) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency3YK) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency3YK) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyOOSCK) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyOOSCK) }}
           </v-col>
           <v-col class="border-right text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyOOSCG) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyOOSCG) }}
           </v-col>
           <v-col v-if="isGroup" cols="1" class="text-cell">
-            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyPre) ?? EMPTY_PLACEHOLDER }}
+            {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyPre) }}
           </v-col>
         </v-row>
         <v-row no-gutters class="background-light-grey text-center sticky-row row-1">
@@ -146,11 +148,7 @@
           v-for="(dailyEnrolment, rowIndex) in dailyEnrolments"
           :key="dailyEnrolment.dailyEnrolmentId"
           no-gutters
-          :class="{
-            'background-light-blue': dailyEnrolment.dayType === DAY_TYPES.STATUTORY,
-            'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
-            'border-bottom': rowIndex < dailyEnrolments.length - 1,
-          }"
+          :class="getRowClass(dailyEnrolment, rowIndex)"
         >
           <v-col class="background-light-grey border-right close-column d-flex align-center justify-center">
             <span>{{ dailyEnrolment.day }}</span>
@@ -462,16 +460,16 @@
             {{ enrolmentReport?.ccfriProviderAmountLessPre ?? 0 }}
           </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-green border-top-yellow font-weight-bold py-1">
+        <v-row no-gutters class="background-light-green border-right border-top-yellow font-weight-bold py-1">
           <v-col class="text-center"> Grand Totals </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-green border-top font-weight-bold">
+        <v-row no-gutters class="background-light-green border-right border-top font-weight-bold">
           <v-col cols="1" class="border-right pl-2 py-1"></v-col>
           <v-col class="border-right pl-2 py-1">CCOF Base</v-col>
           <v-col class="border-right pl-2 py-1">CCFRI Payment</v-col>
           <v-col class="pl-2 py-1">CCFRI Provider Payment</v-col>
         </v-row>
-        <v-row no-gutters class="background-light-green border-top">
+        <v-row no-gutters class="background-light-green border-right border-top">
           <v-col cols="1" class="border-right font-weight-bold pl-2 py-1">Current $</v-col>
           <v-col class="border-right pl-2 py-1">{{ enrolmentReport?.grandTotalBase ?? 0 }}</v-col>
           <v-col class="border-right pl-2 py-1">{{ enrolmentReport?.grandTotalCcfri ?? 0 }}</v-col>
@@ -511,12 +509,11 @@ import { getDayOfWeek, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import {
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
-  FULL_MONTH_NAMES,
   ORGANIZATION_PROVIDER_TYPES,
   PARENT_FEE_FREQUENCIES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatDecimalNumber } from '@/utils/format';
+import { formatDecimalNumber, formatMonthYearToString } from '@/utils/format';
 
 export default {
   name: 'EnrolmentReportForm',
@@ -548,15 +545,12 @@ export default {
   },
   async created() {
     window.scrollTo(0, 0);
-    this.DAY_TYPES = DAY_TYPES;
-    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
-    this.FULL_MONTH_NAMES = FULL_MONTH_NAMES;
     this.PATHS = PATHS;
     await this.loadData();
   },
   methods: {
-    formatDecimalNumber,
     getDayOfWeek,
+    formatMonthYearToString,
     async loadData() {
       try {
         this.loading = true;
@@ -580,6 +574,10 @@ export default {
       this.originalDailyEnrolments = cloneDeep(this.dailyEnrolments);
     },
 
+    getApprovedParentFees(fee) {
+      return formatDecimalNumber(fee) ?? EMPTY_PLACEHOLDER;
+    },
+
     getParentFeesFrequency(frequency) {
       switch (frequency) {
         case PARENT_FEE_FREQUENCIES.MONTHLY:
@@ -589,8 +587,16 @@ export default {
         case PARENT_FEE_FREQUENCIES.DAILY:
           return 'Daily';
         default:
-          return null;
+          return EMPTY_PLACEHOLDER;
       }
+    },
+
+    getRowClass(dailyEnrolment, rowIndex) {
+      return {
+        'background-light-blue': dailyEnrolment.dayType === DAY_TYPES.STATUTORY,
+        'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
+        'border-bottom': rowIndex < this.dailyEnrolments.length - 1,
+      };
     },
 
     // TODO (vietle-cgi): implement next function once the declaration page is available.
@@ -658,7 +664,7 @@ export default {
       );
       if (isEmpty(updatedDailyEnrolments)) return;
       const payload = updatedDailyEnrolments?.map((item) => pick(item, keysForBackend));
-      await EnrolmentReportService.updateDailyEnrolments(payload);
+      await EnrolmentReportService.updateDailyEnrolments(this.$route.params.enrolmentReportId, payload);
       await this.loadDailyEnrolments();
     },
   },
