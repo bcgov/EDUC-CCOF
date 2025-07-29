@@ -134,7 +134,7 @@
             {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyPre) }}
           </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-grey text-center sticky-row row-1">
+        <v-row no-gutters class="background-light-grey border-top text-center sticky-row row-1">
           <v-col class="border-right close-column text-cell">Day</v-col>
           <v-col v-for="i in 5" :key="i" class="border-right">
             <v-row no-gutters>
@@ -750,7 +750,6 @@ export default {
 
 .table-scroll-wrapper {
   border: 1px solid;
-  border-top: 0px;
   max-height: 60vh;
   min-width: 1700px;
   overflow-y: auto;
@@ -760,7 +759,6 @@ export default {
 .sticky-row {
   position: sticky;
   z-index: 3;
-  border-top: 1px solid;
 }
 
 .sticky-row.row-0 {
