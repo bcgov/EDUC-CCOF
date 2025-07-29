@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation } = require('./utils');
+const { getOperation, patchOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { LicenceMappings, ServiceDeliveryMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
@@ -25,6 +25,20 @@ async function getLicences(req, res) {
   }
 }
 
+async function updateServiceDeliveryHours(req, res) {
+  try {
+    const payload = {
+      ccof_hours_of_operation_start: req.body.facilityHoursFrom,
+      ccof_hours_of_operation_end: req.body.facilityHoursTo,
+    };
+    const response = await patchOperationWithObjectId('ccof_service_delivery_detailses', req.body.serviceDeliveryId, payload);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ServiceDeliveryMappings));
+  } catch (e) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getLicences,
+  updateServiceDeliveryHours,
 };

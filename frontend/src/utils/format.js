@@ -97,5 +97,13 @@ export function formatUTCDate(date) {
  */
 export function formatUTCTimeToLocal(time) {
   if (!time) return null;
-  return moment.utc(time).local().format('h:mm A');
+  return moment.utc(time).local().format('hh:mm A');
+}
+
+/**
+ * Converts a local date and 12-hour time string into a UTC ISO datetime string.
+ */
+export function formatlocalTimeToUTC(date, time) {
+  if (!date || !time) return null;
+  return moment(`${date} ${time}`, 'YYYY-MM-DD hh:mm A').utc().format();
 }

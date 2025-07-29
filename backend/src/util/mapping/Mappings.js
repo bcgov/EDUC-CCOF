@@ -595,6 +595,7 @@ const LicenceMappings = [
 ];
 
 const ServiceDeliveryMappings = [
+  { back: 'ccof_service_delivery_detailsid', front: 'serviceDeliveryId' },
   { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
   { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
   { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },

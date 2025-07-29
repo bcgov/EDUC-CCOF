@@ -144,10 +144,32 @@
                         <v-col cols="12" sm="6">
                           <AppLabel>Hours:</AppLabel>
                         </v-col>
-                        <v-col cols="12" sm="6"
-                          >{{ formatUTCTimeToLocal(serviceDetail?.facilityHoursFrom) }} -
-                          {{ formatUTCTimeToLocal(serviceDetail?.facilityHoursTo) }}</v-col
-                        >
+                        <v-col cols="12" sm="6" class="d-flex align-center">
+                          <template v-if="serviceDetail.isEditing">
+                            <v-row dense class="d-flex flex-wrap align-center">
+                              <v-col cols="auto" sm="6" class="fixed-width">
+                                <AppTimeInput v-model="serviceDetail.tempFromTime" label="From" />
+                              </v-col>
+                              <v-col cols="auto" sm="auto" class="d-flex align-center ml-2 flex-shrink-0">
+                                <AppButton size="small" @click="saveHours(serviceDetail)"> Save </AppButton>
+                              </v-col>
+                              <v-col cols="auto" sm="6" class="fixed-width">
+                                <AppTimeInput v-model="serviceDetail.tempToTime" label="To" />
+                              </v-col>
+                              <v-col cols="auto" sm="auto" class="d-flex align-center ml-2 flex-shrink-0">
+                                <AppButton size="small" @click="cancelEdit(serviceDetail)"> Cancel </AppButton>
+                              </v-col>
+                              <v-col v-if="serviceDetail.errorMessage" cols="12" class="text-error mt-2">
+                                {{ serviceDetail.errorMessage }}
+                              </v-col>
+                            </v-row>
+                          </template>
+                          <template v-else>
+                            {{ formatUTCTimeToLocal(serviceDetail?.facilityHoursFrom) }} -
+                            {{ formatUTCTimeToLocal(serviceDetail?.facilityHoursTo) }}
+                            <AppButton size="small" class="ml-2" @click="startEdit(serviceDetail)"> Edit </AppButton>
+                          </template>
+                        </v-col>
                       </v-row>
                     </v-col>
                     <v-col cols="12" lg="4">
@@ -325,21 +347,25 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+
 import { useAppStore } from '@/store/app.js';
 import { useAuthStore } from '@/store/auth.js';
+
 import alertMixin from '@/mixins/alertMixin';
+
 import { DAYS_OF_WEEK, PATHS, EMPTY_PLACEHOLDER } from '@/utils/constants';
-import { formatUTCDate, formatUTCTimeToLocal } from '@/utils/format';
+import { formatUTCDate, formatUTCTimeToLocal, formatlocalTimeToUTC, formatUTCDateToLocal } from '@/utils/format';
 
 import FacilityService from '@/services/facilityService';
 import LicenceService from '@/services/licenceService';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 
 export default {
   name: 'ManageLicence',
-  components: { AppButton, AppLabel },
+  components: { AppButton, AppLabel, AppTimeInput },
   mixins: [alertMixin],
   data() {
     return {
@@ -359,11 +385,19 @@ export default {
   methods: {
     formatUTCDate,
     formatUTCTimeToLocal,
+    formatlocalTimeToUTC,
+    formatUTCDateToLocal,
     async loadData() {
       try {
         this.facility = await FacilityService.getFacilityById(this.$route.params.facilityId);
         this.licences = (await LicenceService.getLicences(this.$route.params.facilityId)) || [];
         this.activeLicence = this.licences[0];
+
+        this.activeLicence?.serviceDeliveryDetails?.forEach((detail) => {
+          detail.tempFromTime = this.formatUTCTimeToLocal(detail.facilityHoursFrom);
+          detail.tempToTime = this.formatUTCTimeToLocal(detail.facilityHoursTo);
+          detail.isEditing = false;
+        });
       } catch (error) {
         this.setFailureAlert('Failed to load licence details.');
         console.error('Error loading licence: ', error);
@@ -378,6 +412,63 @@ export default {
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
+    startEdit(detail) {
+      if (!detail.isEditing) {
+        detail.isEditing = true;
+        detail.tempFromTime = this.formatUTCTimeToLocal(detail.facilityHoursFrom);
+        detail.tempToTime = this.formatUTCTimeToLocal(detail.facilityHoursTo);
+      }
+    },
+    cancelEdit(detail) {
+      detail.tempFromTime = this.formatUTCTimeToLocal(detail.facilityHoursFrom);
+      detail.tempToTime = this.formatUTCTimeToLocal(detail.facilityHoursTo);
+      detail.isEditing = false;
+      detail.errorMessage = '';
+    },
+    async saveHours(detail) {
+      try {
+        detail.errorMessage = '';
+        if (!this.validateOperatingHours(detail)) {
+          detail.errorMessage = 'Submit a change request to update your operating hours';
+          return;
+        }
+
+        const localFromDate = formatUTCDateToLocal(detail.facilityHoursFrom);
+        detail.facilityHoursFrom = formatlocalTimeToUTC(localFromDate, detail.tempFromTime);
+        detail.facilityHoursTo = formatlocalTimeToUTC(localFromDate, detail.tempToTime);
+
+        await LicenceService.updateServiceDeliveryHours({
+          serviceDeliveryId: detail.serviceDeliveryId,
+          facilityHoursFrom: detail.facilityHoursFrom,
+          facilityHoursTo: detail.facilityHoursTo,
+        });
+
+        detail.isEditing = false;
+        detail.errorMessage = '';
+        this.setSuccessAlert('Hours of operation saved.');
+      } catch (error) {
+        this.setFailureAlert('Failed to save hours.');
+        console.error(error);
+      }
+    },
+    validateOperatingHours(detail) {
+      const from = new Date(`1970-01-01T${detail.tempFromTime}:00`);
+      const to = new Date(`1970-01-01T${detail.tempToTime}:00`);
+
+      if (detail.extendedHours) {
+        return to > from;
+      }
+      const earliest = new Date('1970-01-01T06:00:00');
+      const latest = new Date('1970-01-01T19:00:00');
+
+      return from >= earliest && to <= latest && to > from;
+    },
   },
 };
 </script>
+<style scoped>
+.fixed-width {
+  min-width: 150px;
+  max-width: 150px;
+}
+</style>
