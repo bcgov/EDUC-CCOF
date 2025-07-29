@@ -571,3 +571,13 @@ export const DAYS_OF_WEEK = {
   6: 'Saturday',
   7: 'Sunday',
 };
+
+export const ENROLMENT_REPORT_STATUSES = Object.freeze({
+  DRAFT: 1,
+  SUBMITTED: 2,
+  WITH_MINISTRY: 3,
+  REJECTED: 4,
+  APPROVED: 6,
+  PAID: 7,
+  EXPIRED: 8,
+});

@@ -182,43 +182,74 @@ ol.declarationBList {
   background-color: #e0e0e0;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-green {
   background-color: #dff0d8;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
+.status-mint {
+  background-color: #b6efd3;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-yellow {
   background-color: #f9f1c6;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-red {
   background-color: #f2dede;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-blue {
   background-color: #bbdefb;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-purple {
   background-color: #ba93d1;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
 
 .status-orange {
   background-color: #ffd180;
   border-radius: 5px;
   padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
 }
+
 /* SUMMARY DECLARATION */
 .summary-label {
   color: grey;

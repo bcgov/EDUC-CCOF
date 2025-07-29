@@ -581,7 +581,10 @@ const EnrolmentReportSummaryMappings = [
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_submissiondeadline', front: 'submissionDeadline' },
   { back: 'ccof_reportversion', front: 'reportVersion' },
-  { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_ccof_external_status', front: 'externalCcofStatusCode' },
+  { back: 'ccof_ccof_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcofStatusText' },
+  { back: 'ccof_ccfri_external_status', front: 'externalCcfriStatusCode' },
+  { back: 'ccof_ccfri_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcfriStatusText' },
 ];
 
 const EnrolmentReportExtensionMappings = [
