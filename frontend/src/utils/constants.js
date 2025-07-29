@@ -58,6 +58,7 @@ export const ApiRoutes = Object.freeze({
   CANADA_POST: baseRoot + '/canadaPost',
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
+  LICENCES: baseRoot + '/licences',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -543,21 +544,6 @@ export const CCFRI_MIN_FEE = 0;
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
-export const FULL_MONTH_NAMES = {
-  1: 'January',
-  2: 'February',
-  3: 'March',
-  4: 'April',
-  5: 'May',
-  6: 'June',
-  7: 'July',
-  8: 'August',
-  9: 'September',
-  10: 'October',
-  11: 'November',
-  12: 'December',
-};
-
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   ACTIVE: 'Active',
   APPROVED: 'Approved',
@@ -575,6 +561,16 @@ export const DAY_TYPES = Object.freeze({
   WEEKEND: 100000001,
   STATUTORY: 100000002,
 });
+
+export const DAYS_OF_WEEK = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+};
 
 export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   DRAFT: 1,

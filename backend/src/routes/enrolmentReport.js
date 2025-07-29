@@ -9,10 +9,10 @@ const { body, checkSchema, oneOf, param, query, validationResult } = require('ex
 module.exports = router;
 
 router.get(
-  '/daily-enrolments',
+  '/:enrolmentReportId/daily-enrolments',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [query('enrolmentReportId', 'URL query: [enrolmentReportId] is required').notEmpty().isUUID()],
+  [param('enrolmentReportId', 'URL param: [enrolmentReportId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getDailyEnrolments(req, res);
@@ -23,10 +23,11 @@ router.get(
  * Update daily enrolments
  */
 router.patch(
-  '/daily-enrolments/bulk',
+  '/:enrolmentReportId/daily-enrolments/bulk',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   [
+    param('enrolmentReportId', 'URL param: [enrolmentReportId] is required').notEmpty().isUUID(),
     body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
     checkSchema({
       '*.dailyEnrolmentId': {

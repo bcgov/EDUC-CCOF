@@ -28,6 +28,18 @@ export function capitalize(word) {
   return `${word[0]}${word.slice(1).toLowerCase()}`;
 }
 
+/**
+ * Returns a formatted string like "December 2024" from a given month and year.
+ *
+ * @param {number} month - The month number (1 = January, 12 = December)
+ * @param {number} year - The full year (e.g., 2025)
+ * @returns {string} - A formatted date string like "December 2025"
+ */
+export function formatMonthYearToString(month, year) {
+  const date = moment({ year, month: month - 1 });
+  return date.isValid() ? date.format('MMMM YYYY') : null;
+}
+
 export function formatTime24to12(time24h) {
   if (isEmpty(time24h) || is12hFormat(time24h)) return time24h;
   let hours = Number(time24h?.split(':')[0]);
@@ -54,6 +66,7 @@ export function formatUTCDateToShortDateString(date) {
   if (!date) return null;
   return moment.utc(date).format('MMM D, YYYY');
 }
+
 /**
  * Converts a date string to a standardized date string in YYYY-MM-DD format.
  *
@@ -90,6 +103,14 @@ export function formatUTCDateToLocal(date, inputFormat = 'YYYY-MM-DDTHH:mm:ssZ')
 export function formatUTCDate(date) {
   if (!date) return null;
   return moment.utc(date).format('YYYY-MM-DD');
+}
+
+/**
+ * Formats a UTC ISO datetime string to 12-hour local time.
+ */
+export function formatUTCTimeToLocal(time) {
+  if (!time) return null;
+  return moment.utc(time).local().format('h:mm A');
 }
 
 /**

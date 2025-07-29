@@ -71,7 +71,7 @@
               tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
             />
           </template>
-          <template #item.reportingMonth="{ item }"> {{ FULL_MONTH_NAMES[item?.month] }} {{ item?.year }} </template>
+          <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
           <template #item.submissionDeadline="{ item }">
             {{ formatDateToStandardFormat(item.submissionDeadline) }}
           </template>
@@ -137,8 +137,8 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-import { ENROLMENT_REPORT_STATUSES, FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat } from '@/utils/format';
+import { ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
 
 export default {
   name: 'ViewEnrolmentReports',
@@ -180,7 +180,7 @@ export default {
       const endYear = moment(programYear?.intakeEnd).year();
       for (let month = 4; month < 13; month++) {
         reportingMonths.push({
-          label: `${FULL_MONTH_NAMES[month]} ${startYear}`,
+          label: `${formatMonthYearToString(month, startYear)}`,
           value: {
             month: month,
             year: startYear,
@@ -189,7 +189,7 @@ export default {
       }
       for (let month = 1; month < 4; month++) {
         reportingMonths.push({
-          label: `${FULL_MONTH_NAMES[month]} ${endYear}`,
+          label: `${formatMonthYearToString(month, endYear)}`,
           value: {
             month: month,
             year: endYear,
@@ -221,11 +221,11 @@ export default {
   },
   async created() {
     this.PATHS = PATHS;
-    this.FULL_MONTH_NAMES = FULL_MONTH_NAMES;
     await this.loadData();
   },
   methods: {
     formatDateToStandardFormat,
+    formatMonthYearToString,
     async loadData() {
       this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedReportingMonths = this.allReportingMonths?.map((report) => report.value);
