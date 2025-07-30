@@ -38,6 +38,10 @@
           mobile-breakpoint="md"
           class="elevation-2"
         >
+          <template #[`item.fundingAgreementTerm`]="{ item }">
+            {{ item.fundingAgreementTerm.slice(0, -3) }}
+          </template>
+
           <template #[`item.fundingAgreementStatus`]="{ item }">
             <span :class="getStatusClass(item.fundingAgreementStatus)">
               {{ item.fundingAgreementStatus }}
@@ -114,7 +118,7 @@ export default {
     async loadData() {
       await this.loadFundingAgreements();
       this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
-        (term) => ({ term, fundingAgreementTerm: term }),
+        (term) => ({ term: term.slice(0, -3), fundingAgreementTerm: term }),
       );
     },
     async loadFundingAgreements() {
