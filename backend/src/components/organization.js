@@ -53,6 +53,7 @@ function mapOrganizationForBack(data) {
   if (organizationForBack.ccof_facilitystartdate) {
     organizationForBack.ccof_facilitystartdate = `${organizationForBack.ccof_facilitystartdate}-01-01`;
   }
+  delete organizationForBack['_primarycontactid_value'];
   return organizationForBack;
 }
 
