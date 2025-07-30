@@ -71,7 +71,7 @@
           </template>
           <template #[`item.date`]="{ item }">
             <v-text-field
-              :model-value="formatDateToStandardFormat(item.date)"
+              :model-value="item.date"
               placeholder="Required"
               readonly
               density="compact"
