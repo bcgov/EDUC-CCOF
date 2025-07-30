@@ -23,7 +23,7 @@
             v-model="selectedTerms"
             :items="fundingAgreementTerms"
             item-value="fundingAgreementTerm"
-            item-title="term"
+            item-title="displayTerm"
             clearable
             hide-details
           />
@@ -118,7 +118,7 @@ export default {
     async loadData() {
       await this.loadFundingAgreements();
       this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
-        (term) => ({ term: term.slice(0, -3), fundingAgreementTerm: term }),
+        (displayTerm) => ({ displayTerm: displayTerm.slice(0, -3), fundingAgreementTerm: displayTerm }),
       );
     },
     async loadFundingAgreements() {
