@@ -68,7 +68,7 @@
               <p><AppLabel>Email Address:</AppLabel></p>
             </v-col>
             <v-col cols="12" sm="7" xl="8" xxl="9">
-              <v-form v-model="valid.email">
+              <v-form v-model="valid.email" @submit.prevent>
                 <v-row v-if="editing.email" no-gutters>
                   <v-col cols="12" md="7">
                     <v-text-field
