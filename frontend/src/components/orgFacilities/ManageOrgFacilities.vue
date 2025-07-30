@@ -9,9 +9,9 @@
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
-            <v-tab value="organization-tab">Organization Information</v-tab>
-            <v-tab value="funding-agreement-tab">Funding Agreement</v-tab>
-            <v-tab value="facilities-tab"> Facilities </v-tab>
+            <v-tab value="organization-tab" class="tab-title">Organization Information</v-tab>
+            <v-tab value="funding-agreement-tab" class="tab-title">Funding Agreement</v-tab>
+            <v-tab value="facilities-tab" class="tab-title"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="tab">
@@ -66,5 +66,9 @@ export default {
 }
 :deep(h1) {
   font-size: 2em;
+}
+.tab-title {
+  font-weight: bold;
+  font-size: 16px;
 }
 </style>
