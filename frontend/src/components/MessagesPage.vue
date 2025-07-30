@@ -28,6 +28,9 @@
             <template #item.programYearValue="{ item }">
               {{ formatFiscalYearName(item.programYearValue) }}
             </template>
+            <template #item.dateReceived="{ item }">
+              {{ formatDateToStandardFormat(item.dateReceived) }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
