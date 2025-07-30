@@ -60,10 +60,10 @@
             {{ getFacilityAccountNumber(item.facilityId) }}
           </template>
           <template #[`item.startDate`]="{ item }">
-            {{ formatUTCDateToShortDateString(item.startDate) }}
+            {{ formatDateToStandardFormat(item.startDate) }}
           </template>
           <template #[`item.endDate`]="{ item }">
-            {{ formatUTCDateToShortDateString(item.endDate) }}
+            {{ formatDateToStandardFormat(item.endDate) }}
           </template>
           <template #[`item.closureStatus`]="{ item }">
             <span :class="getClosureStatusClass(item)">
@@ -136,19 +136,19 @@
 <script>
 import { mapState } from 'pinia';
 
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
-import AppButton from '@/components/guiComponents/AppButton.vue';
 import ClosureChangeRequestDialog from '@/components/closure/ClosureChangeRequestDialog.vue';
 import ClosureConfirmationDialog from '@/components/closure/ClosureConfirmationDialog.vue';
 import ClosureDetailsDialog from '@/components/closure/ClosureDetailsDialog.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
-import { useAppStore } from '@/store/app.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import ClosureService from '@/services/closureService.js';
-import { formatUTCDateToShortDateString } from '@/utils/format';
+import { useAppStore } from '@/store/app.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { formatDateToStandardFormat } from '@/utils/format';
 
 import {
   CHANGE_REQUEST_TYPES,
@@ -222,7 +222,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    formatUTCDateToShortDateString,
+    formatDateToStandardFormat,
     async loadData() {
       try {
         this.isLoading = true;
