@@ -33,9 +33,6 @@ class MappableObjectForBack extends MappableObject {
       if (key.endsWith('@OData.Community.Display.V1.FormattedValue')) {
         delete this.data[key];
       }
-      if (key.startsWith('_') && key.endsWith('_value')) {
-        delete this.data[key];
-      }
     }
   }
 }
