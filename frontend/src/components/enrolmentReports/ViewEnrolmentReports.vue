@@ -137,7 +137,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-import { PATHS } from '@/utils/constants.js';
+import { ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
 
 export default {

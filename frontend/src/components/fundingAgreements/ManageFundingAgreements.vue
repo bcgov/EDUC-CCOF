@@ -23,7 +23,7 @@
             v-model="selectedTerms"
             :items="fundingAgreementTerms"
             item-value="fundingAgreementTerm"
-            item-title="term"
+            item-title="displayTerm"
             clearable
             hide-details
           />
@@ -38,6 +38,10 @@
           mobile-breakpoint="md"
           class="elevation-2"
         >
+          <template #[`item.fundingAgreementTerm`]="{ item }">
+            {{ item.fundingAgreementTerm.slice(0, -3) }}
+          </template>
+
           <template #[`item.fundingAgreementStatus`]="{ item }">
             <span :class="getStatusClass(item.fundingAgreementStatus)">
               {{ item.fundingAgreementStatus }}
@@ -114,7 +118,7 @@ export default {
     async loadData() {
       await this.loadFundingAgreements();
       this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
-        (term) => ({ term, fundingAgreementTerm: term }),
+        (displayTerm) => ({ displayTerm: displayTerm.slice(0, -3), fundingAgreementTerm: displayTerm }),
       );
     },
     async loadFundingAgreements() {
