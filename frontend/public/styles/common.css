@@ -89,6 +89,11 @@ input[type='number'] {
   font-size: 1rem;
 }
 
+.v-tab .v-btn__content {
+  font-weight: bold;
+  font-size: 16px;
+}
+
 .application-label .v-label {
   margin-left: 0 !important;
   white-space: normal !important;
