@@ -42,9 +42,9 @@
             {{ item.fundingAgreementTerm.slice(0, -3) }}
           </template>
 
-          <template #[`item.fundingAgreementExternalStatus`]="{ item }">
-            <span :class="getStatusClass(item.fundingAgreementExternalStatus)">
-              {{ item.fundingAgreementExternalStatus }}
+          <template #[`item.externalStatus`]="{ item }">
+            <span :class="getStatusClass(item.externalStatus)">
+              {{ item.externalStatus }}
             </span>
           </template>
 
@@ -95,7 +95,7 @@ export default {
       fundingAgreementTableHeaders: [
         { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
         { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
-        { title: 'Status', sortable: true, value: 'fundingAgreementExternalStatus' },
+        { title: 'Status', sortable: true, value: 'externalStatus' },
         { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
@@ -168,8 +168,8 @@ export default {
       const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
       this.fundingAgreements?.sort((a, b) => {
         // 1. Prioritize "Drafted – Provider Action Required" over "Drafted - With Ministry"
-        const priorityA = statusPriority[a.fundingAgreementExternalStatus] ?? defaultPriority;
-        const priorityB = statusPriority[b.fundingAgreementExternalStatus] ?? defaultPriority;
+        const priorityA = statusPriority[a.externalStatus] ?? defaultPriority;
+        const priorityB = statusPriority[b.externalStatus] ?? defaultPriority;
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
