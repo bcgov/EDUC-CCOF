@@ -112,8 +112,6 @@ export function formatUTCTimeToLocal(time) {
   if (!time) return null;
   return moment.utc(time).local().format('h:mm A');
 }
-<<<<<<< HEAD
-=======
 
 /**
  * Formats a given decimal number with commas as thousands separators
@@ -137,4 +135,3 @@ export function formatDecimalNumber(input) {
     maximumFractionDigits: 2,
   });
 }
->>>>>>> 8758d566 (ccfri-5047 - code clean up after review)

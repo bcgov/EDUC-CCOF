@@ -137,13 +137,8 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-<<<<<<< HEAD
-import { ENROLMENT_REPORT_STATUSES, FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat } from '@/utils/format';
-=======
 import { PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
->>>>>>> 8758d566 (ccfri-5047 - code clean up after review)
 
 export default {
   name: 'ViewEnrolmentReports',
