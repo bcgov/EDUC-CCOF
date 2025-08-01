@@ -217,22 +217,22 @@
 </template>
 
 <script>
-import _ from 'lodash';
-import { mapState, mapActions } from 'pinia';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import _ from 'lodash';
+import { mapActions, mapState } from 'pinia';
 
-import { PATHS, CHANGE_TYPES, changeUrlGuid, changeUrl, ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import SmallCard from '@/components/guiComponents/SmallCard.vue';
-import NavButton from '@/components/util/NavButton.vue';
-import { isFacilityAvailable } from '@/utils/common.js';
-import { formatFiscalYearName } from '@/utils/format';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { isFacilityAvailable } from '@/utils/common.js';
+import { CHANGE_TYPES, changeUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
+import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
 
 export default {
   name: 'ReportChange',
@@ -395,6 +395,7 @@ export default {
       'setChangeRequestId',
       'setChangeActionId',
     ]),
+
     previous() {
       this.$router.push(PATHS.ROOT.HOME);
     },
@@ -482,11 +483,7 @@ export default {
       }
     },
     getSubmissionDateString(date) {
-      if (date) {
-        // date display format: YYYY/MM/DD
-        return new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
-      }
-      return '- - - -';
+      return date ? formatUTCDateToLocal(date) : '- - - -';
     },
     getChangeRequestStyle(status) {
       return status === 'Action Required' ? 'redText' : '';

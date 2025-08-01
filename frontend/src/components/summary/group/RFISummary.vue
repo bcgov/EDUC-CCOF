@@ -732,10 +732,10 @@
   </v-form>
 </template>
 <script>
-import { mapState } from 'pinia';
-import { useNavBarStore } from '@/store/navBar.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
-import { PATHS, CHANGE_TYPES, changeUrlGuid, pcfUrlGuid } from '@/utils/constants.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { CHANGE_TYPES, changeUrlGuid, PATHS, pcfUrlGuid } from '@/utils/constants.js';
+import { mapState } from 'pinia';
 
 export default {
   name: 'RFISummary',
