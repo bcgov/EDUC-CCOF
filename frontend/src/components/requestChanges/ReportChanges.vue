@@ -232,7 +232,7 @@ import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { CHANGE_TYPES, changeUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
+import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
 
 export default {
   name: 'ReportChange',
@@ -483,7 +483,7 @@ export default {
       }
     },
     getSubmissionDateString(date) {
-      return date ? this.formatDateToStandardFormat(date) : '----';
+      return date ? formatUTCDateToLocal(date) : '- - - -';
     },
     getChangeRequestStyle(status) {
       return status === 'Action Required' ? 'redText' : '';

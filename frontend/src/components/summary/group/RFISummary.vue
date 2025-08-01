@@ -171,7 +171,7 @@
           </template>
           <template #[`item.date`]="{ item }">
             <v-text-field
-              :model-value="formatDateToStandardFormat(item.date)"
+              :model-value="item.date"
               placeholder="Required"
               readonly
               density="compact"
@@ -383,7 +383,7 @@
             </template>
             <template #[`item.wageDate`]="{ item }">
               <v-text-field
-                :model-value="formatDateToStandardFormat(item.wageDate)"
+                :model-value="item.wageDate"
                 placeholder="Required"
                 readonly
                 density="compact"
@@ -514,7 +514,7 @@
           </template>
           <template #[`item.date`]="{ item }">
             <v-text-field
-              :model-value="formatDateToStandardFormat(item.date)"
+              :model-value="item.date"
               placeholder="Required"
               readonly
               density="compact"
@@ -605,7 +605,7 @@
             </template>
             <template #[`item.date`]="{ item }">
               <v-text-field
-                :model-value="formatDateToStandardFormat(item.date)"
+                :model-value="item.date"
                 placeholder="Required"
                 readonly
                 density="compact"
@@ -735,7 +735,6 @@
 import summaryMixin from '@/mixins/summaryMixin.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { CHANGE_TYPES, changeUrlGuid, PATHS, pcfUrlGuid } from '@/utils/constants.js';
-import { formatDateToStandardFormat } from '@/utils/format';
 import { mapState } from 'pinia';
 
 export default {
@@ -803,9 +802,6 @@ export default {
         ? changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI)
         : pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.ccfriId);
     },
-  },
-  method: {
-    formatDateToStandardFormat,
   },
 };
 </script>
