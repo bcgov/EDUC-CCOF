@@ -82,6 +82,11 @@ async function getUserInfo(req, res) {
     const userGuid = getUserGuid(req);
     log.verbose('User Guid is: ', userGuid);
     userResponse = await getUserProfile(userGuid, userName);
+
+    // Block access from deactivated users
+    if (userResponse?.statecode === 1) {
+      return res.status(HttpStatus.UNAUTHORIZED).json();
+    }
   }
 
   if (log.isVerboseEnabled) {

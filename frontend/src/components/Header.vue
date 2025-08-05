@@ -51,7 +51,7 @@
             </v-list>
           </v-menu>
         </div>
-        <div v-else-if="isAuthenticated && !dataReady">
+        <div v-else-if="isAuthenticated && !dataReady && !isUnauthorized">
           <v-skeleton-loader type="chip" width="150" class="bg-transparent mt-2" />
         </div>
       </v-row>
@@ -82,10 +82,8 @@ export default {
     dataReady: function () {
       return this.userInfo;
     },
-  },
-  methods: {
-    hasSeveralMincodes() {
-      return this.userInfo?.userMinCodes?.length > 1;
+    isUnauthorized() {
+      return this.$route.name === 'unauthorized';
     },
   },
 };
