@@ -26,5 +26,4 @@ describe('Portal Login and Navigation', () => {
     cy.contains('div.v-card-title', 'Group Provider').should('exist');
     cy.contains('button', 'Start Application').click();
   });
-
 });
