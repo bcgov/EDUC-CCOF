@@ -60,29 +60,12 @@
       </v-col>
     </v-row>
   </v-container>
-  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="dialogOpen = false">
-    <template #content>
-      Are you sure you want to remove {{ userDisplayName(targetUser, 'this user') }}? You can't undo this.
-    </template>
-    <template #button>
-      <v-row justify="center">
-        <v-col>
-          <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
-        </v-col>
-        <v-col>
-          <AppButton
-            :primary="true"
-            size="small"
-            :loading="dialogLoading"
-            :disabled="dialogLoading"
-            @click="deleteUser(targetUser.contactId)"
-          >
-            Yes, remove the user
-          </AppButton>
-        </v-col>
-      </v-row>
-    </template>
-  </AppDialog>
+  <DisableUserDialog
+    :show="disableUserDialogOpen"
+    :user="targetUser"
+    @contact-deactivated="contactDeactivatedHandler"
+    @close-disable-dialog="disableUserDialogOpen = false"
+  />
 </template>
 
 <script>
@@ -96,11 +79,11 @@ import { useOrganizationStore } from '@/store/ccof/organization';
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import DisableUserDialog from '@/components/accountMgmt/DisableUserDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, NavButton, AppDialog },
+  components: { AppButton, DisableUserDialog, NavButton },
   mixins: [alertMixin],
   data() {
     return {
@@ -110,8 +93,7 @@ export default {
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
-      dialogOpen: false,
-      dialogLoading: false,
+      disableUserDialogOpen: false,
     };
   },
   computed: {
@@ -163,42 +145,13 @@ export default {
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
-      this.dialogOpen = true;
+      this.disableUserDialogOpen = true;
     },
     mayRemoveUser(user) {
       return !user.isPrimaryContact && this.userInfo.contactid !== user.contactId;
     },
-    userDisplayName(user, fallback = '') {
-      const { firstName, lastName } = user;
-
-      let userDisplayName;
-      if (firstName && lastName) {
-        userDisplayName = `${firstName} ${lastName}`;
-      } else if (firstName) {
-        userDisplayName = `${firstName}`;
-      } else if (lastName) {
-        userDisplayName = `${lastName}`;
-      } else {
-        userDisplayName = fallback;
-      }
-
-      return userDisplayName;
-    },
-    async deleteUser() {
-      try {
-        this.dialogLoading = true;
-        await contactService.deleteContact(this.targetUser.contactId);
-        this.contacts = this.contacts.filter((c) => c.contactId !== this.targetUser.contactId);
-        this.setSuccessAlert(
-          `${this.userDisplayName(this.targetUser, 'The user')} has been removed from the organization`,
-        );
-      } catch (error) {
-        this.setFailureAlert('Failed to remove the contact.');
-        console.error('Error removing contact: ', error);
-      } finally {
-        this.dialogLoading = false;
-        this.dialogOpen = false;
-      }
+    contactDeactivatedHandler(id) {
+      this.contacts = this.contacts.filter((c) => c.contactId !== id);
     },
   },
 };
