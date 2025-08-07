@@ -122,8 +122,7 @@
   </v-form>
 </template>
 <script>
-import moment from 'moment';
-
+import summaryMixin from '@/mixins/summaryMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
 import {
   CCFRI_HAS_CLOSURE_FEE_TYPES,
@@ -132,7 +131,7 @@ import {
   changeUrlGuid,
   pcfUrlGuid,
 } from '@/utils/constants.js';
-import summaryMixin from '@/mixins/summaryMixin.js';
+import { formatDateToStandardFormat } from '@/utils/format';
 
 export default {
   mixins: [summaryMixin],
@@ -172,8 +171,8 @@ export default {
     formattedClosures() {
       return this.ccfri?.closures?.map((closure) => {
         return {
-          startDate: closure?.startDate ? moment.utc(closure?.startDate).format('YYYY-MM-DD') : null,
-          endDate: closure?.endDate ? moment.utc(closure?.endDate).format('YYYY-MM-DD') : null,
+          startDate: closure?.startDate ? formatDateToStandardFormat(closure.startDate) : null,
+          endDate: closure?.endDate ? formatDateToStandardFormat(closure.endDate) : null,
           fullClosure: closure?.fullClosure,
           fullClosureType: closure?.fullClosure ? 'Full' : 'Partial',
           closureReason: closure.closureReason,
