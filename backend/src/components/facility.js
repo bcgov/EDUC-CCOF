@@ -6,7 +6,7 @@ const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
-const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER, CHILD_AGE_CATEGORY_TYPES, LICENCE_CATEGORIES } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
 function buildNewFacilityPayload(req) {
@@ -174,19 +174,22 @@ async function updateFacilityLicenseType(facilityId, data) {
     newLicenseCategories.push(categories.familyLicenseCategory.find((item) => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
   } else {
     if (data.maxGroupChildCareUnder36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 1)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCare36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 2)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareMultiAge > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 4)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE)?.ccof_license_categoryid);
     }
     if (data.maxGroupChildCareSchool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE)?.ccof_license_categoryid);
+    }
+    if (data.maxSchoolAgeCareOnSchoolGrounds > 0) {
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS)?.ccof_license_categoryid);
     }
     if (data.maxPreschool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 8)?.ccof_license_categoryid);
+      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.PRESCHOOL)?.ccof_license_categoryid);
     }
   }
 

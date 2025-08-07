@@ -17,6 +17,7 @@ import {
   CHANGE_TYPES,
   ERROR_MESSAGES,
   FAMILY_LICENCE_CATEGORIES,
+  GROUP_LICENCE_CATEGORIES,
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
@@ -75,6 +76,9 @@ export default {
     hasLicenceCategory() {
       return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
+    hasSchoolAgeCareLicenceCategory() {
+      return ApplicationService.hasSchoolAgeCareLicenceCategory(this.fundingModel);
+    },
     hasSchoolAgeCareServices() {
       return ApplicationService.hasSchoolAgeCareServices(this.fundingModel);
     },
@@ -82,16 +86,34 @@ export default {
       return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.fundingModel);
     },
     isUnder36ExtendedChildCareValid() {
-      return ApplicationService.isUnder36ExtendedChildCareValid(this.fundingModel);
+      return ApplicationService.isGroupExtendedChildCareValid(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
+      );
     },
     is30MonthToSchoolAgeExtendedChildCareValid() {
-      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.fundingModel);
+      return ApplicationService.isGroupExtendedChildCareValid(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE,
+      );
+    },
+    isSchoolAgeExtendedChildCareValid() {
+      return ApplicationService.isGroupExtendedChildCareValid(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
+      );
     },
     isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.fundingModel);
+      return ApplicationService.isGroupExtendedChildCareValid(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
+      );
     },
     isMultiAgeExtendedChildCareValid() {
-      return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
+      return ApplicationService.isGroupExtendedChildCareValid(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE,
+      );
     },
     isFormComplete() {
       if (this.showApplicationTemplateV1) {
@@ -108,17 +130,20 @@ export default {
           ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.fundingModel, licenceCategoryNumber);
         return this.fundingModel.isCCOFComplete && isClosedMonthsValid && isExtendedCCMaximumSpacesValid;
       }
+      const isExtendedChildCareValid =
+        this.fundingModel.isExtendedHours === 0 ||
+        (this.hasLicenceCategoryWithExtendedChildCare &&
+          this.isUnder36ExtendedChildCareValid &&
+          this.is30MonthToSchoolAgeExtendedChildCareValid &&
+          this.isSchoolAgeExtendedChildCareValid &&
+          this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
+          this.isMultiAgeExtendedChildCareValid);
       return (
         this.fundingModel.isCCOFComplete &&
         isClosedMonthsValid &&
         this.hasLicenceCategory &&
-        (!this.fundingModel.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
-        (this.fundingModel.isExtendedHours === 0 ||
-          (this.hasLicenceCategoryWithExtendedChildCare &&
-            this.isUnder36ExtendedChildCareValid &&
-            this.is30MonthToSchoolAgeExtendedChildCareValid &&
-            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-            this.isMultiAgeExtendedChildCareValid))
+        (!this.hasSchoolAgeCareLicenceCategory || this.hasSchoolAgeCareServices) &&
+        isExtendedChildCareValid
       );
     },
   },
@@ -218,6 +243,15 @@ export default {
     resetGroupChildCareSchoolAgeRelatedFields() {
       if (isEmpty(this.fundingModel)) return;
       this.fundingModel.maxGroupChildCareSchool = null;
+      this.resetSchoolAgeCareServiceDetails();
+    },
+    resetSchoolAgeCareOnSchoolGroundsRelatedFields() {
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.maxSchoolAgeCareOnSchoolGrounds = null;
+      this.resetSchoolAgeCareServiceDetails();
+    },
+    resetSchoolAgeCareServiceDetails() {
+      if (this.hasSchoolAgeCareLicenceCategory) return;
       this.fundingModel.beforeSchool = null;
       this.fundingModel.beforeKindergarten = null;
       this.fundingModel.afterKindergarten = null;
@@ -240,8 +274,10 @@ export default {
       this.resetUnder36MonthsExtendedCCRelatedFields();
       this.fundingModel.has30MonthToSchoolAgeExtendedCC = null;
       this.reset30MonthsToSchoolAgeExtendedCCRelatedFields();
-      this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.fundingModel.hasSchoolAgeExtendedCC = null;
       this.resetSchoolAgeExtendedCCRelatedFields();
+      this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.resetSchoolAgeCareOnSchoolGroundsExtendedCCRelatedFields();
       this.fundingModel.hasMultiAgeExtendedCC = null;
       this.resetMultiAgeExtendedCCRelatedFields();
     },
@@ -259,6 +295,11 @@ export default {
       if (isEmpty(this.fundingModel)) return;
       this.fundingModel.extendedChildCareSchoolAge4OrLess = null;
       this.fundingModel.extendedChildCareSchoolAge4OrMore = null;
+    },
+    resetSchoolAgeCareOnSchoolGroundsExtendedCCRelatedFields() {
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.extendedSchoolAgeCareOnSchoolGrounds4OrLess = null;
+      this.fundingModel.extendedSchoolAgeCareOnSchoolGrounds4OrMore = null;
     },
     resetMultiAgeExtendedCCRelatedFields() {
       if (isEmpty(this.fundingModel)) return;
