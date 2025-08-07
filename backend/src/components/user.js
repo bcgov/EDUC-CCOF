@@ -83,7 +83,7 @@ async function getUserInfo(req, res) {
     log.verbose('User Guid is: ', userGuid);
     userResponse = await getUserProfile(userGuid, userName);
 
-    // Block access from deactivated users
+    // Block requestes from deactivated BCeID users
     if (userResponse?.statecode === 1) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
