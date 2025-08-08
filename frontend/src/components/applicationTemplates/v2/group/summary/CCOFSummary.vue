@@ -485,7 +485,7 @@
         </v-col>
       </v-row>
 
-      <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGrounds" no-gutters>
+      <v-row v-if="hasSchoolAgeCareLicenceCategory" no-gutters>
         <v-col cols="12" md="6" class="summary-label pt-2">
           Please indicate each service that your facility offers:
         </v-col>
@@ -578,7 +578,7 @@
           <template v-else>
             <v-row v-if="funding?.hasUnder36MonthsExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Group Child Care (Under 36 Months)</v-col>
-              <template v-if="isUnder36ExtendedChildCareValid">
+              <template v-if="isUnder36ExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCareUnder36Months4OrLess"
@@ -608,7 +608,7 @@
             </v-row>
             <v-row v-if="funding?.has30MonthToSchoolAgeExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Group Child Care (30 Months to School Age)</v-col>
-              <template v-if="is30MonthToSchoolAgeExtendedChildCareValid">
+              <template v-if="is30MonthToSchoolAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCare36MonthsToSchoolAge4OrLess"
@@ -638,7 +638,7 @@
             </v-row>
             <v-row v-if="funding?.hasSchoolAgeExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Group Child Care (School Age)</v-col>
-              <template v-if="isSchoolAgeExtendedChildCareValid">
+              <template v-if="isSchoolAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCareSchoolAge4OrLess"
@@ -668,7 +668,7 @@
             </v-row>
             <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">School Age Care on School Grounds</v-col>
-              <template v-if="isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid">
+              <template v-if="isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedSchoolAgeCareOnSchoolGrounds4OrLess"
@@ -698,7 +698,7 @@
             </v-row>
             <v-row v-if="funding?.hasMultiAgeExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Multi-Age Child Care</v-col>
-              <template v-if="isMultiAgeExtendedChildCareValid">
+              <template v-if="isMultiAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.multiAgeCare4OrLess"
@@ -809,47 +809,41 @@ export default {
     hasLicenceCategoryWithExtendedChildCare() {
       return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.funding);
     },
-    isUnder36ExtendedChildCareValid() {
-      return ApplicationService.isGroupExtendedChildCareValid(
+    hasSchoolAgeCareLicenceCategory() {
+      return ApplicationService.hasSchoolAgeCareLicenceCategory(this.funding);
+    },
+    isUnder36ExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
         this.funding,
         GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
       );
     },
-    is30MonthToSchoolAgeExtendedChildCareValid() {
-      return ApplicationService.isGroupExtendedChildCareValid(
+    is30MonthToSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
         this.funding,
         GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE,
       );
     },
-    isSchoolAgeExtendedChildCareValid() {
-      return ApplicationService.isGroupExtendedChildCareValid(
+    isSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
         this.funding,
         GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
       );
     },
-    isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return ApplicationService.isGroupExtendedChildCareValid(
+    isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
         this.funding,
         GROUP_LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
       );
     },
-    isMultiAgeExtendedChildCareValid() {
-      return ApplicationService.isGroupExtendedChildCareValid(
+    isMultiAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
         this.funding,
         GROUP_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE,
       );
     },
     isFormComplete() {
-      const isClosedMonthsValid = !this.funding?.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
-      const isExtendedChildCareValid =
-        this.funding?.isExtendedHours === 0 ||
-        (this.hasLicenceCategoryWithExtendedChildCare &&
-          this.isUnder36ExtendedChildCareValid &&
-          this.is30MonthToSchoolAgeExtendedChildCareValid &&
-          this.isSchoolAgeExtendedChildCareValid &&
-          this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-          this.isMultiAgeExtendedChildCareValid);
-      return this.isValidForm && isClosedMonthsValid && this.hasLicenceCategory && isExtendedChildCareValid;
+      return ApplicationService.isCCOFCompleteGroupV2(this.funding);
     },
   },
   mounted() {

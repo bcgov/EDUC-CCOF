@@ -428,7 +428,7 @@ export const BCSSA_REGION_LINKS = Object.freeze({
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
-  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  EMPTY_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
   FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',

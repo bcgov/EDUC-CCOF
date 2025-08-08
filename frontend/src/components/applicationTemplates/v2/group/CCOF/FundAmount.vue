@@ -591,8 +591,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareUnder36 * 2)]"
-                :error="showErrorMessage && !isUnder36ExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                :error="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -607,8 +607,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareUnder36)]"
-                :error="showErrorMessage && !isUnder36ExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isUnder36ExtendedChildCareValid"
+                :error="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -616,8 +616,8 @@
               />
             </v-col>
           </v-row>
-          <div v-if="showErrorMessage && !isUnder36ExtendedChildCareValid" class="error-message pl-4">
-            {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+          <div v-if="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered" class="error-message pl-4">
+            {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
           </div>
         </template>
 
@@ -640,8 +640,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCare36 * 2)]"
-                :error="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                :error="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -658,8 +658,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCare36)]"
-                :error="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid"
+                :error="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -669,8 +669,8 @@
               />
             </v-col>
           </v-row>
-          <div v-if="showErrorMessage && !is30MonthToSchoolAgeExtendedChildCareValid" class="error-message pl-4">
-            {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+          <div v-if="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered" class="error-message pl-4">
+            {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
           </div>
         </template>
 
@@ -693,8 +693,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareSchool * 2)]"
-                :error="showErrorMessage && !isSchoolAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isSchoolAgeExtendedChildCareValid"
+                :error="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -709,8 +709,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareSchool)]"
-                :error="showErrorMessage && !isSchoolAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isSchoolAgeExtendedChildCareValid"
+                :error="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -718,8 +718,8 @@
               />
             </v-col>
           </v-row>
-          <div v-if="showErrorMessage && !isSchoolAgeExtendedChildCareValid" class="error-message pl-4">
-            {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+          <div v-if="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered" class="error-message pl-4">
+            {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
           </div>
         </template>
 
@@ -742,8 +742,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxSchoolAgeCareOnSchoolGrounds * 2)]"
-                :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -760,8 +760,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxSchoolAgeCareOnSchoolGrounds)]"
-                :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+                :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -772,10 +772,10 @@
             </v-col>
           </v-row>
           <div
-            v-if="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid"
+            v-if="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
             class="error-message pl-4"
           >
-            {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+            {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
           </div>
         </template>
 
@@ -798,8 +798,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareMultiAge * 2)]"
-                :error="showErrorMessage && !isMultiAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                :error="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -814,8 +814,8 @@
                 variant="outlined"
                 type="number"
                 :rules="[rules.wholeNumber, rules.max(fundingModel.maxGroupChildCareMultiAge)]"
-                :error="showErrorMessage && !isMultiAgeExtendedChildCareValid"
-                :hide-details="showErrorMessage && !isMultiAgeExtendedChildCareValid"
+                :error="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
+                :hide-details="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
                 class="my-2"
                 @wheel="$event.target.blur()"
@@ -823,8 +823,8 @@
               />
             </v-col>
           </v-row>
-          <div v-if="showErrorMessage && !isMultiAgeExtendedChildCareValid" class="error-message pl-4">
-            {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+          <div v-if="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered" class="error-message pl-4">
+            {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
           </div>
         </template>
 
