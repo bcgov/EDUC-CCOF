@@ -379,7 +379,7 @@
                     />
                   </v-col>
                   <div v-if="showInvalidMaxSpacesErrorMessage" class="error-message pl-4">
-                    {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                    {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
                   </div>
                 </v-row>
               </div>

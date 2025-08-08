@@ -428,7 +428,7 @@ export const BCSSA_REGION_LINKS = Object.freeze({
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
-  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  EMPTY_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
   FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
@@ -511,6 +511,15 @@ export const CLOSURE_TYPES = Object.freeze({
 export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
   ACTIVE: 1,
   INACTIVE: 2,
+});
+
+export const GROUP_LICENCE_CATEGORIES = Object.freeze({
+  GROUP_CHILD_CARE_UNDER_36_MONTHS: 1,
+  GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE: 2,
+  GROUP_CHILD_CARE_SCHOOL_AGE: 3,
+  MULTI_AGE_CHILD_CARE: 4,
+  PRESCHOOL: 8,
+  SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS: 9,
 });
 
 export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
