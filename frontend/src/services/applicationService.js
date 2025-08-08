@@ -72,7 +72,7 @@ export default {
   /*
    **** Summary Declaration validations
    */
-  isOrganizationComplete(organization, isGroup, applicationTemplateVersion) {
+  isOrganizationComplete(organization, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
       'organizationType',
@@ -104,9 +104,6 @@ export default {
       for (let i = 1; i <= numberOfPartners; i++) {
         requiredFields.push(`partner${i}FirstName`, `partner${i}LastName`);
       }
-    }
-    if (organization?.organizationType !== ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP && isGroup) {
-      requiredFields.push('contactName', 'position');
     }
     const areFieldsValid =
       isEmailValid(organization.email) &&
@@ -172,9 +169,7 @@ export default {
       'city',
       'province',
       'postalCode',
-      'position',
       'email',
-      'contactName',
       'phone',
       'licenseNumber',
       'licenseEffectiveDate',

@@ -171,10 +171,6 @@ export default {
           this.organizationModel.postalCode2 = this.organizationModel.postalCode1;
           this.organizationModel.province2 = this.organizationModel.province1;
         }
-        if (this.isSoleProprietorship) {
-          this.organizationModel.contactName = this.organizationModel.legalName;
-          this.organizationModel.position = 'Owner';
-        }
         this.organizationModel.legalName = this.isPartnership
           ? this.partnershipLegalOrganizationName
           : this.organizationModel.legalName;
