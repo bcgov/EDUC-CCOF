@@ -185,16 +185,6 @@ export default {
       });
     },
     async downloadPDFFundingAgreement(agreement) {
-      const inactiveStatuses = [
-        FUNDING_AGREEMENTS_STATUS.CANCELLED,
-        FUNDING_AGREEMENTS_STATUS.TERMINATED,
-        FUNDING_AGREEMENTS_STATUS.REPLACED,
-        FUNDING_AGREEMENTS_STATUS.EXPIRED,
-      ];
-      if (inactiveStatuses.includes(agreement.externalStatus)) {
-        this.setFailureAlert('Funding Agreement is inactive. PDF download is not available.');
-        return;
-      }
       try {
         const resp = await FundingAgreementService.getFundingAgreementPDF(agreement.fundingAgreementId);
         const filename = `Funding_Agreement_${agreement.fundingAgreementNumber}.pdf`;
