@@ -81,7 +81,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
+import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants';
 import { formatUTCDate } from '@/utils/format';
 
 export default {
