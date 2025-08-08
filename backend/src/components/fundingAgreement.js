@@ -18,6 +18,17 @@ async function getFundingAgreements(req, res) {
   }
 }
 
+async function getFundingAgreementPDF(req, res) {
+  try {
+    const operation = `ccof_funding_agreements(${req.params.fundingAgreementId})/ccof_funding_pdf`;
+    const response = await getOperation(operation);
+    return res.status(HttpStatus.OK).json(response.value);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 module.exports = {
   getFundingAgreements,
+  getFundingAgreementPDF,
 };

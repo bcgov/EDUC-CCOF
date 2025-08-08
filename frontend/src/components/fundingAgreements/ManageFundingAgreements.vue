@@ -61,9 +61,7 @@
               <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
                 View
               </AppButton>
-              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item.fundingAgreementId)">
-                Download
-              </AppButton>
+              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item)"> Download </AppButton>
             </v-row>
           </template>
         </v-data-table>
@@ -76,16 +74,21 @@ import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
 import { formatUTCDate } from '@/utils/format';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
+
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
+import FundingAgreementService from '@/services/fundingAgreementService.js';
+
+import alertMixin from '@/mixins/alertMixin.js';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
-import FundingAgreementService from '@/services/fundingAgreementService.js';
 
 export default {
   name: 'ManageFundingAgreements',
   components: { AppButton, AppMultiSelectInput },
+  mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
@@ -135,9 +138,6 @@ export default {
     navigateToViewFundingAgreement(id) {
       this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
     },
-    goToChangeRequestHistory() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
-    },
     getStatusClass(status) {
       switch (status) {
         case FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED:
@@ -183,6 +183,29 @@ export default {
         const fundingagreementB = b.fundingAgreementOrderNumber ?? 0;
         return fundingagreementB - fundingagreementA;
       });
+    },
+    async downloadPDFFundingAgreement(agreement) {
+      const inactiveStatuses = [
+        FUNDING_AGREEMENTS_STATUS.CANCELLED,
+        FUNDING_AGREEMENTS_STATUS.TERMINATED,
+        FUNDING_AGREEMENTS_STATUS.REPLACED,
+        FUNDING_AGREEMENTS_STATUS.EXPIRED,
+      ];
+      if (inactiveStatuses.includes(agreement.externalStatus)) {
+        this.setFailureAlert('Funding Agreement is inactive. PDF download is not available.');
+        return;
+      }
+      try {
+        const resp = await FundingAgreementService.getFundingAgreementPDF(agreement.fundingAgreementId);
+        const filename = `Funding_Agreement_${agreement.fundingAgreementNumber}.pdf`;
+        Object.assign(document.createElement('a'), {
+          href: `data:application/pdf;base64,${resp}`,
+          download: filename,
+        }).click();
+      } catch (error) {
+        this.setFailureAlert('Failed to download Funding Agreement PDF');
+        console.error(error);
+      }
     },
   },
 };
