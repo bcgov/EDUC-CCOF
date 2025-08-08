@@ -70,20 +70,19 @@
   </v-container>
 </template>
 <script>
-import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
-
-import { formatUTCDate } from '@/utils/format';
-import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
-
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-
-import FundingAgreementService from '@/services/fundingAgreementService.js';
-
-import alertMixin from '@/mixins/alertMixin.js';
+import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+
+import FundingAgreementService from '@/services/fundingAgreementService.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
+import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
+import { formatUTCDate } from '@/utils/format';
 
 export default {
   name: 'ManageFundingAgreements',
