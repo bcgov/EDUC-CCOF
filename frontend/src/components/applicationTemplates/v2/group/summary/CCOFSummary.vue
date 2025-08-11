@@ -8,7 +8,7 @@
       />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
-      <v-row class="d-flex justify-start">
+      <v-row no-gutters class="d-flex justify-start">
         <v-col cols="12" md="6">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
@@ -46,7 +46,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row no-gutters class="pt-2">
         <v-col cols="12" lg="6">
           <span class="summary-label">
             Are there months when ALL of the programs at this facility are closed for the entire month?
@@ -214,15 +214,17 @@
               />
             </v-col>
           </v-row>
-          <div class="text-error pt-2">
-            <p v-if="hasAllMonthsClosed">{{ ERROR_MESSAGES.FACILITY_MUST_OPERATE_ONE_MONTH }}</p>
-            <p v-if="hasNoMonthClosed">{{ ERROR_MESSAGES.NO_MONTH_SELECTED }}</p>
+          <div>
+            <p v-if="hasAllMonthsClosed" class="text-error pt-2">
+              {{ ERROR_MESSAGES.FACILITY_MUST_OPERATE_ONE_MONTH }}
+            </p>
+            <p v-else-if="hasNoMonthClosed" class="text-error pt-2">{{ ERROR_MESSAGES.NO_MONTH_SELECTED }}</p>
           </div>
         </v-col>
       </v-row>
-      <v-row no-gutters class="d-flex justify-start">
+      <v-row no-gutters class="d-flex justify-start pt-2">
         <v-col cols="12" md="4" class="d-flex justify-start flex-nowrap">
-          <span class="summary-label pt-3">Facility hours of operation:</span>
+          <span class="summary-label pt-md-3">Facility hours of operation:</span>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
           <span class="summary-label pt-3">From:</span>
@@ -254,8 +256,8 @@
         </v-col>
       </v-row>
 
-      <div>
-        <v-row class="pt-4" no-gutters>
+      <div class="pt-2">
+        <v-row no-gutters>
           <v-col cols="6" class="summary-value">Type of Service</v-col>
           <v-col cols="6" class="summary-value">Maximum Number</v-col>
         </v-row>
@@ -485,10 +487,8 @@
         </v-col>
       </v-row>
 
-      <v-row v-if="hasSchoolAgeCareLicenceCategory" no-gutters>
-        <v-col cols="12" md="6" class="summary-label pt-2">
-          Please indicate each service that your facility offers:
-        </v-col>
+      <v-row v-if="hasSchoolAgeCareLicenceCategory" no-gutters class="pt-2">
+        <v-col cols="12" md="6" class="summary-label"> Please indicate each service that your facility offers: </v-col>
         <v-col cols="12" md="6" class="summary-value">
           <p v-if="schoolPropertyLabel" class="pl-4">{{ schoolPropertyLabel }}</p>
           <v-text-field
@@ -506,7 +506,7 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters class="pb-2">
+      <v-row no-gutters class="pt-2">
         <v-col cols="12" md="6" class="summary-label pt-2">
           Do you <b>regularly offer</b> extended hours of child care
           <b>(care before 6:00 AM, after 7:00 PM, or overnight service)</b>?
@@ -563,7 +563,7 @@
         </v-row>
 
         <div class="py-2">
-          <div class="summary-label">
+          <div class="summary-label pb-2">
             For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended hours of
             child care:
           </div>
