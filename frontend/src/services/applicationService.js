@@ -13,6 +13,7 @@ import {
   ECEWE_SECTOR_TYPES,
   FACILITY_HAS_RECEIVE_FUNDING_VALUES,
   FAMILY_LICENCE_CATEGORIES,
+  GROUP_LICENCE_CATEGORIES,
   MAX_NUMBER_OF_PARTNERS,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
@@ -28,6 +29,44 @@ import {
 } from '@/utils/validation';
 
 const showApplicationTemplateV1 = (version) => !version || version === 1;
+
+const GROUP_LICENCE_CATEGORY_FIELDS = [
+  {
+    id: GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
+    flag: 'hasUnder36MonthsExtendedCC',
+    maxNumber: 'maxGroupChildCareUnder36',
+    maxSpaces4OrLess: 'extendedChildCareUnder36Months4OrLess',
+    maxSpacesOver4: 'extendedChildCareUnder36Months4OrMore',
+  },
+  {
+    id: GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE,
+    flag: 'has30MonthToSchoolAgeExtendedCC',
+    maxNumber: 'maxGroupChildCare36',
+    maxSpaces4OrLess: 'extendedChildCare36MonthsToSchoolAge4OrLess',
+    maxSpacesOver4: 'extendedChildCare36MonthsToSchoolAge4OrMore',
+  },
+  {
+    id: GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
+    flag: 'hasSchoolAgeExtendedCC',
+    maxNumber: 'maxGroupChildCareSchool',
+    maxSpaces4OrLess: 'extendedChildCareSchoolAge4OrLess',
+    maxSpacesOver4: 'extendedChildCareSchoolAge4OrMore',
+  },
+  {
+    id: GROUP_LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
+    flag: 'hasSchoolAgeCareOnSchoolGroundsExtendedCC',
+    maxNumber: 'maxSchoolAgeCareOnSchoolGrounds',
+    maxSpaces4OrLess: 'extendedSchoolAgeCareOnSchoolGrounds4OrLess',
+    maxSpacesOver4: 'extendedSchoolAgeCareOnSchoolGrounds4OrMore',
+  },
+  {
+    id: GROUP_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE,
+    flag: 'hasMultiAgeExtendedCC',
+    maxNumber: 'maxGroupChildCareMultiAge',
+    maxSpaces4OrLess: 'multiAgeCare4OrLess',
+    maxSpacesOver4: 'multiAgeCare4more',
+  },
+];
 
 export default {
   /*
@@ -275,15 +314,14 @@ export default {
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
+    const isSchoolAgeCareValid =
+      !this.hasSchoolAgeCareLicenceCategory(funding) || this.hasSchoolAgeCareServices(funding);
     const isExtendedChildCareValid =
       funding.isExtendedHours === 0 ||
       (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
         isNumberOfWeeksPerYearValid(funding.maxWeeksPerYearExtended) &&
         this.hasLicenceCategoryWithExtendedChildCare(funding) &&
-        this.isUnder36ExtendedChildCareValid(funding) &&
-        this.is30MonthToSchoolAgeExtendedChildCareValid(funding) &&
-        this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) &&
-        this.isMultiAgeExtendedChildCareValid(funding));
+        this.isGroupExtendedCCMaxSpacesValid(funding));
     const isClosedMonthsValid =
       !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
     return (
@@ -291,7 +329,7 @@ export default {
       areFieldsValid &&
       isClosedMonthsValid &&
       this.hasValidLicenceCategory(funding) &&
-      (!funding?.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices(funding)) &&
+      isSchoolAgeCareValid &&
       isExtendedChildCareValid
     );
   },
@@ -315,6 +353,7 @@ export default {
     return (
       funding?.hasUnder36Months ||
       funding?.has30MonthToSchoolAge ||
+      funding?.hasSchoolAge ||
       funding?.hasSchoolAgeCareOnSchoolGrounds ||
       funding?.hasPreschool ||
       funding?.hasMultiAge
@@ -325,10 +364,14 @@ export default {
       funding?.maxLicensesCapacity > 0 &&
       ((funding?.hasUnder36Months && funding?.maxGroupChildCareUnder36 > 0) ||
         (funding?.has30MonthToSchoolAge && funding?.maxGroupChildCare36 > 0) ||
-        (funding?.hasSchoolAgeCareOnSchoolGrounds && funding?.maxGroupChildCareSchool > 0) ||
+        (funding?.hasSchoolAge && funding?.maxGroupChildCareSchool > 0) ||
+        (funding?.hasSchoolAgeCareOnSchoolGrounds && funding?.maxSchoolAgeCareOnSchoolGrounds > 0) ||
         (funding?.hasPreschool && funding?.maxPreschool > 0) ||
         (funding?.hasMultiAge && funding?.maxGroupChildCareMultiAge > 0))
     );
+  },
+  hasSchoolAgeCareLicenceCategory(funding) {
+    return funding?.hasSchoolAge || funding?.hasSchoolAgeCareOnSchoolGrounds;
   },
   hasSchoolAgeCareServices(funding) {
     return funding?.beforeSchool || funding?.afterSchool || funding?.beforeKindergarten || funding?.afterKindergarten;
@@ -337,30 +380,28 @@ export default {
     return (
       funding?.hasUnder36MonthsExtendedCC ||
       funding?.has30MonthToSchoolAgeExtendedCC ||
+      funding?.hasSchoolAgeExtendedCC ||
       funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
       funding?.hasMultiAgeExtendedCC
     );
   },
-  isUnder36ExtendedChildCareValid(funding) {
-    return (
-      !funding?.hasUnder36MonthsExtendedCC ||
-      funding?.extendedChildCareUnder36Months4OrLess + funding?.extendedChildCareUnder36Months4OrMore > 0
-    );
+  isGroupExtendedCCMaxSpacesEntered(funding, licenceCategoryId) {
+    if (isEmpty(funding) || !licenceCategoryId) return false;
+    const licenceCategory = GROUP_LICENCE_CATEGORY_FIELDS.find((category) => category.id === licenceCategoryId);
+    if (!licenceCategory) return false;
+    const maxSpaces4OrLess = funding[licenceCategory.maxSpaces4OrLess] || 0;
+    const maxSpacesOver4 = funding[licenceCategory.maxSpacesOver4] || 0;
+    return maxSpaces4OrLess + maxSpacesOver4 > 0;
   },
-  is30MonthToSchoolAgeExtendedChildCareValid(funding) {
-    return (
-      !funding?.has30MonthToSchoolAgeExtendedCC ||
-      funding?.extendedChildCare36MonthsToSchoolAge4OrLess + funding?.extendedChildCare36MonthsToSchoolAge4OrMore > 0
-    );
-  },
-  isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(funding) {
-    return (
-      !funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC ||
-      funding?.extendedChildCareSchoolAge4OrLess + funding?.extendedChildCareSchoolAge4OrMore > 0
-    );
-  },
-  isMultiAgeExtendedChildCareValid(funding) {
-    return !funding?.hasMultiAgeExtendedCC || funding?.multiAgeCare4OrLess + funding?.multiAgeCare4more > 0;
+  isGroupExtendedCCMaxSpacesValid(funding) {
+    if (isEmpty(funding)) return false;
+    return GROUP_LICENCE_CATEGORY_FIELDS.every((licenceCategory) => {
+      if (!funding[licenceCategory.flag]) return true;
+      const isEntered = this.isGroupExtendedCCMaxSpacesEntered(funding, licenceCategory.id);
+      const is4OrLessValid = funding[licenceCategory.maxSpaces4OrLess] <= funding[licenceCategory.maxNumber] * 2;
+      const isOver4Valid = funding[licenceCategory.maxSpacesOver4] <= funding[licenceCategory.maxNumber];
+      return isEntered && is4OrLessValid && isOver4Valid;
+    });
   },
   isFamilyExtendedCCMaximumSpacesValid(funding, licenceCategoryNumber) {
     if (isEmpty(funding) || !licenceCategoryNumber) return false;

@@ -8,7 +8,7 @@
       />
     </v-expansion-panel-title>
     <v-expansion-panel-text eager>
-      <v-row class="d-flex justify-start">
+      <v-row no-gutters class="d-flex justify-start">
         <v-col cols="12" md="6">
           <v-row no-gutters class="d-flex justify-start">
             <v-col cols="12" class="d-flex justify-start">
@@ -46,7 +46,7 @@
           </v-row>
         </v-col>
       </v-row>
-      <v-row>
+      <v-row no-gutters class="pt-2">
         <v-col cols="12" lg="6">
           <span class="summary-label">
             Are there months when ALL of the programs at this facility are closed for the entire month?
@@ -214,15 +214,17 @@
               />
             </v-col>
           </v-row>
-          <div class="text-error pt-2">
-            <p v-if="hasAllMonthsClosed">{{ ERROR_MESSAGES.FACILITY_MUST_OPERATE_ONE_MONTH }}</p>
-            <p v-if="hasNoMonthClosed">{{ ERROR_MESSAGES.NO_MONTH_SELECTED }}</p>
+          <div>
+            <p v-if="hasAllMonthsClosed" class="text-error pt-2">
+              {{ ERROR_MESSAGES.FACILITY_MUST_OPERATE_ONE_MONTH }}
+            </p>
+            <p v-else-if="hasNoMonthClosed" class="text-error pt-2">{{ ERROR_MESSAGES.NO_MONTH_SELECTED }}</p>
           </div>
         </v-col>
       </v-row>
-      <v-row no-gutters class="d-flex justify-start">
+      <v-row no-gutters class="d-flex justify-start pt-2">
         <v-col cols="12" md="4" class="d-flex justify-start flex-nowrap">
-          <span class="summary-label pt-3">Facility hours of operation:</span>
+          <span class="summary-label pt-md-3">Facility hours of operation:</span>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="d-flex justify-start">
           <span class="summary-label pt-3">From:</span>
@@ -254,8 +256,8 @@
         </v-col>
       </v-row>
 
-      <div>
-        <v-row class="pt-4" no-gutters>
+      <div class="pt-2">
+        <v-row no-gutters>
           <v-col cols="6" class="summary-value">Type of Service</v-col>
           <v-col cols="6" class="summary-value">Maximum Number</v-col>
         </v-row>
@@ -295,10 +297,8 @@
               />
             </v-col>
           </v-row>
-          <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGrounds" no-gutters>
-            <v-col cols="6" class="summary-label pt-3">
-              Group Child Care (School Age/ School Age Care on School Grounds)
-            </v-col>
+          <v-row v-if="funding?.hasSchoolAge" no-gutters>
+            <v-col cols="6" class="summary-label pt-3">Group Child Care (School Age)</v-col>
             <v-col cols="6" class="summary-value">
               <v-text-field
                 placeholder="Required"
@@ -308,6 +308,22 @@
                 flat
                 variant="solo"
                 :hide-details="isNullOrBlank(funding?.maxGroupChildCareSchool) || isValidForm"
+                readonly
+                :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
+              />
+            </v-col>
+          </v-row>
+          <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGrounds" no-gutters>
+            <v-col cols="6" class="summary-label pt-3">School Age Care on School Grounds</v-col>
+            <v-col cols="6" class="summary-value">
+              <v-text-field
+                placeholder="Required"
+                :model-value="funding?.maxSchoolAgeCareOnSchoolGrounds"
+                class="summary-value"
+                density="compact"
+                flat
+                variant="solo"
+                :hide-details="isNullOrBlank(funding?.maxSchoolAgeCareOnSchoolGrounds) || isValidForm"
                 readonly
                 :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
               />
@@ -471,10 +487,8 @@
         </v-col>
       </v-row>
 
-      <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGrounds" no-gutters>
-        <v-col cols="12" md="6" class="summary-label pt-2">
-          Please indicate each service that your facility offers:
-        </v-col>
+      <v-row v-if="hasSchoolAgeCareLicenceCategory" no-gutters class="pt-2">
+        <v-col cols="12" md="6" class="summary-label"> Please indicate each service that your facility offers: </v-col>
         <v-col cols="12" md="6" class="summary-value">
           <p v-if="schoolPropertyLabel" class="pl-4">{{ schoolPropertyLabel }}</p>
           <v-text-field
@@ -492,7 +506,7 @@
         </v-col>
       </v-row>
 
-      <v-row no-gutters class="pb-2">
+      <v-row no-gutters class="pt-2">
         <v-col cols="12" md="6" class="summary-label pt-2">
           Do you <b>regularly offer</b> extended hours of child care
           <b>(care before 6:00 AM, after 7:00 PM, or overnight service)</b>?
@@ -548,8 +562,8 @@
           </v-col>
         </v-row>
 
-        <div class="pt-2">
-          <div class="summary-label">
+        <div class="py-2">
+          <div class="summary-label pb-2">
             For each type of service, indicate the <b>maximum number of spaces</b> for which you offer extended hours of
             child care:
           </div>
@@ -564,7 +578,7 @@
           <template v-else>
             <v-row v-if="funding?.hasUnder36MonthsExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Group Child Care (Under 36 Months)</v-col>
-              <template v-if="isUnder36ExtendedChildCareValid">
+              <template v-if="isUnder36ExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCareUnder36Months4OrLess"
@@ -594,7 +608,7 @@
             </v-row>
             <v-row v-if="funding?.has30MonthToSchoolAgeExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Group Child Care (30 Months to School Age)</v-col>
-              <template v-if="is30MonthToSchoolAgeExtendedChildCareValid">
+              <template v-if="is30MonthToSchoolAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCare36MonthsToSchoolAge4OrLess"
@@ -622,11 +636,9 @@
               </template>
               <v-col v-else cols="6" class="text-error text-center">Required</v-col>
             </v-row>
-            <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC" no-gutters>
-              <v-col cols="4" class="summary-label pt-3">
-                Group Child Care (School Age/ School Age Care on School Grounds)
-              </v-col>
-              <template v-if="isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid">
+            <v-row v-if="funding?.hasSchoolAgeExtendedCC" no-gutters>
+              <v-col cols="4" class="summary-label pt-3">Group Child Care (School Age)</v-col>
+              <template v-if="isSchoolAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.extendedChildCareSchoolAge4OrLess"
@@ -654,9 +666,39 @@
               </template>
               <v-col v-else cols="6" class="text-error text-center">Required</v-col>
             </v-row>
+            <v-row v-if="funding?.hasSchoolAgeCareOnSchoolGroundsExtendedCC" no-gutters>
+              <v-col cols="4" class="summary-label pt-3">School Age Care on School Grounds</v-col>
+              <template v-if="isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered">
+                <v-col cols="4" class="summary-value">
+                  <v-text-field
+                    :model-value="funding?.extendedSchoolAgeCareOnSchoolGrounds4OrLess"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxSchoolAgeCareOnSchoolGrounds * 2)]"
+                    :hide-details="isValidForm"
+                    readonly
+                  />
+                </v-col>
+                <v-col cols="4" class="summary-value">
+                  <v-text-field
+                    :model-value="funding?.extendedSchoolAgeCareOnSchoolGrounds4OrMore"
+                    class="summary-value"
+                    density="compact"
+                    flat
+                    variant="solo"
+                    :rules="[rules.wholeNumber, rules.max(funding?.maxSchoolAgeCareOnSchoolGrounds)]"
+                    :hide-details="isValidForm"
+                    readonly
+                  />
+                </v-col>
+              </template>
+              <v-col v-else cols="6" class="text-error text-center">Required</v-col>
+            </v-row>
             <v-row v-if="funding?.hasMultiAgeExtendedCC" no-gutters>
               <v-col cols="4" class="summary-label pt-3">Multi-Age Child Care</v-col>
-              <template v-if="isMultiAgeExtendedChildCareValid">
+              <template v-if="isMultiAgeExtendedCCMaxSpacesEntered">
                 <v-col cols="4" class="summary-value">
                   <v-text-field
                     :model-value="funding?.multiAgeCare4OrLess"
@@ -697,7 +739,7 @@
 import ApplicationService from '@/services/applicationService';
 import summaryMixin from '@/mixins/summaryMixin.js';
 import { isChangeRequest } from '@/utils/common.js';
-import { PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
+import { GROUP_LICENCE_CATEGORIES, PATHS, pcfUrlGuid, pcfUrl, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
   name: 'CCOFSummary',
@@ -767,31 +809,41 @@ export default {
     hasLicenceCategoryWithExtendedChildCare() {
       return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.funding);
     },
-    isUnder36ExtendedChildCareValid() {
-      return ApplicationService.isUnder36ExtendedChildCareValid(this.funding);
+    hasSchoolAgeCareLicenceCategory() {
+      return ApplicationService.hasSchoolAgeCareLicenceCategory(this.funding);
     },
-    is30MonthToSchoolAgeExtendedChildCareValid() {
-      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.funding);
+    isUnder36ExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.funding,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
+      );
     },
-    isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.funding);
+    is30MonthToSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.funding,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE,
+      );
     },
-    isMultiAgeExtendedChildCareValid() {
-      return ApplicationService.isMultiAgeExtendedChildCareValid(this.funding);
+    isSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.funding,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
+      );
+    },
+    isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.funding,
+        GROUP_LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
+      );
+    },
+    isMultiAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.funding,
+        GROUP_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE,
+      );
     },
     isFormComplete() {
-      const isClosedMonthsValid = !this.funding?.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
-      return (
-        this.isValidForm &&
-        isClosedMonthsValid &&
-        this.hasLicenceCategory &&
-        (this.funding?.isExtendedHours === 0 ||
-          (this.hasLicenceCategoryWithExtendedChildCare &&
-            this.isUnder36ExtendedChildCareValid &&
-            this.is30MonthToSchoolAgeExtendedChildCareValid &&
-            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-            this.isMultiAgeExtendedChildCareValid))
-      );
+      return ApplicationService.isCCOFCompleteGroupV2(this.funding);
     },
   },
   mounted() {
