@@ -15,45 +15,47 @@
           </v-row>
         </v-row>
         <v-spacer />
-        <div v-if="isAuthenticated && dataReady" class="mt-6">
-          <v-btn
-            id="mail_box_button"
-            color="#003366"
-            rounded
-            theme="dark"
-            class="mr-5 elevation-0"
-            :to="PATHS.ROOT.MESSAGES"
-          >
-            <v-badge color="red" :content="unreadMessageCount" location="bottom end" offset-x="5" offset-y="10">
-              <v-icon aria-hidden="false" size="40" color="white"> mdi-email-outline </v-icon>
-            </v-badge>
-          </v-btn>
+        <template v-if="$route.meta.requiresAuth && isAuthenticated">
+          <div v-if="dataReady" class="mt-6">
+            <v-btn
+              id="mail_box_button"
+              color="#003366"
+              rounded
+              theme="dark"
+              class="mr-5 elevation-0"
+              :to="PATHS.ROOT.MESSAGES"
+            >
+              <v-badge color="red" :content="unreadMessageCount" location="bottom end" offset-x="5" offset-y="10">
+                <v-icon aria-hidden="false" size="40" color="white"> mdi-email-outline </v-icon>
+              </v-badge>
+            </v-btn>
 
-          <v-menu name="user_options">
-            <template #activator="{ props }">
-              <v-chip tabindex="0" pill color="#003366" theme="dark" v-bind="props">
-                <v-avatar start color="info">
-                  {{ userInfo.displayName[0] }}
-                </v-avatar>
-                <span class="display-name text-white">{{ userInfo.displayName }}</span>
-              </v-chip>
-            </template>
-            <v-list bg-color="#003366">
-              <v-list-item id="home_button" style="min-height: 4vh" :to="authRoutes.DASHBOARD">
-                <v-list-item-title>Home</v-list-item-title>
-              </v-list-item>
-              <v-list-item v-if="isMinistryUser" id="impersonate_button" :to="PATHS.ROOT.IMPERSONATE">
-                <v-list-item-title>Impersonate</v-list-item-title>
-              </v-list-item>
-              <v-list-item id="logout_button" style="min-height: 4vh" :href="authRoutes.LOGOUT">
-                <v-list-item-title>Logout</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
-        <div v-else-if="isAuthenticated && !dataReady">
-          <v-skeleton-loader type="chip" width="150" class="bg-transparent mt-2" />
-        </div>
+            <v-menu name="user_options">
+              <template #activator="{ props }">
+                <v-chip tabindex="0" pill color="#003366" theme="dark" v-bind="props">
+                  <v-avatar start color="info">
+                    {{ userInfo.displayName[0] }}
+                  </v-avatar>
+                  <span class="display-name text-white">{{ userInfo.displayName }}</span>
+                </v-chip>
+              </template>
+              <v-list bg-color="#003366">
+                <v-list-item id="home_button" style="min-height: 4vh" :to="authRoutes.DASHBOARD">
+                  <v-list-item-title>Home</v-list-item-title>
+                </v-list-item>
+                <v-list-item v-if="isMinistryUser" id="impersonate_button" :to="PATHS.ROOT.IMPERSONATE">
+                  <v-list-item-title>Impersonate</v-list-item-title>
+                </v-list-item>
+                <v-list-item id="logout_button" style="min-height: 4vh" :href="authRoutes.LOGOUT">
+                  <v-list-item-title>Logout</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+          <div v-else>
+            <v-skeleton-loader type="chip" width="150" class="bg-transparent mt-2" />
+          </div>
+        </template>
       </v-row>
     </v-container>
   </v-app-bar>
@@ -81,11 +83,6 @@ export default {
     ...mapState(useMessageStore, ['unreadMessageCount']),
     dataReady: function () {
       return this.userInfo;
-    },
-  },
-  methods: {
-    hasSeveralMincodes() {
-      return this.userInfo?.userMinCodes?.length > 1;
     },
   },
 };

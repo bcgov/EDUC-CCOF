@@ -18,6 +18,7 @@ import SessionExpired from '@/components/SessionExpired.vue';
 import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
+import UnauthorizedView from '@/components/UnauthorizedView.vue';
 import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
 import Closures from '@/components/ccfriApplication/Closures.vue';
@@ -35,7 +36,6 @@ import GroupFundAmount from '@/components/ccofApplication/group/FundAmount.vue';
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
 import GroupOrganizationInformation from '@/components/ccofApplication/group/OrganizationInformation.vue';
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
-import Unauthorized from '@/components/common/Unauthorized.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
@@ -94,7 +94,7 @@ const router = createRouter({
     {
       path: '/unauthorized',
       name: 'unauthorized',
-      component: Unauthorized,
+      component: UnauthorizedView,
     },
     {
       path: '/session-expired',

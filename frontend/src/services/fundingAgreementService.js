@@ -16,4 +16,15 @@ export default {
       throw error;
     }
   },
+
+  async getFundingAgreementPDF(fundingAgreementId) {
+    try {
+      if (!fundingAgreementId) return;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}/${fundingAgreementId}/pdf`);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to get the funding PDF by funding id - ${error}`);
+      throw error;
+    }
+  },
 };
