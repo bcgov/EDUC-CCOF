@@ -673,7 +673,7 @@
           id="30months-to-schoolage-extendedCC-checkbox"
           v-model="fundingModel.has30MonthToSchoolAgeExtendedCC"
           label="Group Child Care (30 Months to School Age)"
-          data-cy "group-child-care-30-months-to-school-age-checkbox"
+          data-cy="group-child-care-30-months-to-school-age-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
