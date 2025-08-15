@@ -67,10 +67,9 @@
               data-cy="closed-months-radio-group"
               class="application-label"
               @update:model-value="resetSelectedClosedMonths"
-              
             >
-              <v-radio label="Yes" :value="1" data-cy="closed-months-yes"/>
-              <v-radio label="No" :value="0" data-cy="closed-months-no"/>
+              <v-radio label="Yes" :value="1" data-cy="closed-months-yes" />
+              <v-radio label="No" :value="0" data-cy="closed-months-no" />
             </v-radio-group>
           </v-col>
         </v-row>
@@ -502,8 +501,8 @@
           data-cy="is-the-facility-located-on-school-property-group"
           class="application-label"
         >
-          <v-radio label="Yes" :value="1" data-cy="facility-on-school-property-yes"/>
-          <v-radio label="No" :value="0" data-cy="facility-on-school-property-no"/>
+          <v-radio label="Yes" :value="1" data-cy="facility-on-school-property-yes" />
+          <v-radio label="No" :value="0" data-cy="facility-on-school-property-no" />
         </v-radio-group>
 
         <template v-if="hasSchoolAgeCareLicenceCategory">
@@ -657,7 +656,7 @@
                 :error="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
-                data-cy = "group-child-care-under-36-months-over-4hr-max-spaces-input"
+                data-cy="group-child-care-under-36-months-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareUnder36Months4OrMore')"
