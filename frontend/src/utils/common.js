@@ -189,12 +189,13 @@ export function getYesNoValue(value) {
 
 export function getOrganizationNameLabel(organizationType) {
   switch (organizationType) {
-    case ORGANIZATION_TYPES.PARTNERSHIP:
-      return 'Legal Organization Name';
+    case ORGANIZATION_TYPES.NON_PROFIT_SOCIETY:
+    case ORGANIZATION_TYPES.REGISTERED_COMPANY:
+      return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
     case ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP:
       return 'Full Legal Name of Sole Proprietor (Licensee)';
     default:
-      return 'Legal Organization Name (as it appears in BC Registries and Online Services)';
+      return 'Legal Organization Name';
   }
 }
 
