@@ -577,7 +577,7 @@
           class="application-label"
           @update:model-value="resetExtendedHoursFields"
         >
-          <v-radio label="Yes" :value="1" data-cy="extended-hours-child-care-yes"/>
+          <v-radio label="Yes" :value="1" data-cy="extended-hours-child-care-yes" />
           <v-radio label="No" :value="0" data-cy="extended-hours-child-care-no" />
         </v-radio-group>
 
