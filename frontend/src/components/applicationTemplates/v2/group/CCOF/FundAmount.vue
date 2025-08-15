@@ -14,6 +14,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.min(1), rules.max(7), rules.wholeNumber]"
               label="Maximum number of days per week you provide child care"
+              data-cy="maximum-number-of-days-per-week-you-provide-child-care"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'maxDaysPerWeek')"
             />
@@ -26,6 +27,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.min(1), rules.max(52), rules.wholeNumber]"
               label="Maximum number of weeks per year you provide child care"
+              data-cy="maximum-number-of-weeks-per-year-you-provide-child-care"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'maxWeeksPerYear')"
             />
@@ -39,6 +41,7 @@
               :disabled="isLocked"
               :hide-details="isLocked"
               label="Facility hours of operation from"
+              data-cy="facility-hours-of-operation-from"
             />
           </v-col>
           <v-col cols="12" md="6">
@@ -48,6 +51,7 @@
               :disabled="isLocked"
               :hide-details="isLocked"
               label="Facility hours of operation to"
+              data-cy="facility-hours-of-operation-to"
             />
           </v-col>
         </v-row>
@@ -60,11 +64,13 @@
               :rules="rules.required"
               inline
               label="Are there months when ALL of the programs at this facility are closed for the entire month?"
+              data-cy="closed-months-radio-group"
               class="application-label"
               @update:model-value="resetSelectedClosedMonths"
+              
             >
-              <v-radio label="Yes" :value="1" />
-              <v-radio label="No" :value="0" />
+              <v-radio label="Yes" :value="1" data-cy="closed-months-yes"/>
+              <v-radio label="No" :value="0" data-cy="closed-months-no"/>
             </v-radio-group>
           </v-col>
         </v-row>
@@ -80,6 +86,7 @@
                 :disabled="isLocked"
                 label="January"
                 color="primary"
+                data-cy="january"
                 hide-details
               />
             </v-col>
@@ -91,6 +98,7 @@
                 :disabled="isLocked"
                 label="February"
                 color="primary"
+                data-cy="february"
                 hide-details
               />
             </v-col>
@@ -102,6 +110,7 @@
                 :disabled="isLocked"
                 label="March"
                 color="primary"
+                data-cy="march"
                 hide-details
               />
             </v-col>
@@ -113,6 +122,7 @@
                 :disabled="isLocked"
                 label="April"
                 color="primary"
+                data-cy="april"
                 hide-details
               />
             </v-col>
@@ -124,6 +134,7 @@
                 :disabled="isLocked"
                 label="May"
                 color="primary"
+                data-cy="may"
                 hide-details
               />
             </v-col>
@@ -135,6 +146,7 @@
                 :disabled="isLocked"
                 label="June"
                 color="primary"
+                data-cy="june"
                 hide-details
               />
             </v-col>
@@ -149,6 +161,7 @@
                 :disabled="isLocked"
                 label="July"
                 color="primary"
+                data-cy="july"
                 hide-details
               />
             </v-col>
@@ -160,6 +173,7 @@
                 :disabled="isLocked"
                 label="August"
                 color="primary"
+                data-cy="august"
                 hide-details
               />
             </v-col>
@@ -171,6 +185,7 @@
                 :disabled="isLocked"
                 label="September"
                 color="primary"
+                data-cy="september"
                 hide-details
               />
             </v-col>
@@ -182,6 +197,7 @@
                 :disabled="isLocked"
                 label="October"
                 color="primary"
+                data-cy="october"
                 hide-details
               />
             </v-col>
@@ -193,6 +209,7 @@
                 :disabled="isLocked"
                 label="November"
                 color="primary"
+                data-cy="november"
                 hide-details
               />
             </v-col>
@@ -204,6 +221,7 @@
                 :disabled="isLocked"
                 label="December"
                 color="primary"
+                data-cy="december"
                 hide-details
               />
             </v-col>
@@ -225,6 +243,7 @@
           id="under-36months-checkbox"
           v-model="fundingModel.hasUnder36Months"
           label="Group Child Care (Under 36 Months)"
+          data-cy="group-child-care-under-36-months-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -238,6 +257,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Group Child Care (Under 36 Months)"
+          data-cy="max-number-group-child-care-under-36-months-input"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareUnder36')"
         />
@@ -246,6 +266,7 @@
           id="30months-to-schoolage-checkbox"
           v-model="fundingModel.has30MonthToSchoolAge"
           label="Group Child Care (30 Months to School Age)"
+          data-cy="group-child-care-30-months-to-school-age-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -259,6 +280,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Group Child Care (30 Months to School Age)"
+          data-cy="max-number-group-child-care-30-months-to-school-age-input"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCare36')"
         />
@@ -267,6 +289,7 @@
           id="schoolage-care-checkbox"
           v-model="fundingModel.hasSchoolAge"
           label="Group Child Care (School Age)"
+          data-cy="group-child-care-school-age-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -280,6 +303,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Group Child Care (School Age)"
+          data-cy="max-number-group-child-care-school-age"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareSchool')"
         />
@@ -288,6 +312,7 @@
           id="care-on-school-grounds-checkbox"
           v-model="fundingModel.hasSchoolAgeCareOnSchoolGrounds"
           label="School Age Care on School Grounds"
+          data-cy="school-age-care-on-school-grounds"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -301,6 +326,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for School Age Care on School Grounds"
+          data-cy="maximum-number-for-school-age-care-on-school-grounds"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxSchoolAgeCareOnSchoolGrounds')"
         />
@@ -309,6 +335,7 @@
           id="preschool-checkbox"
           v-model="fundingModel.hasPreschool"
           label="Preschool"
+          data-cy="preschool"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -322,6 +349,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Preschool"
+          data-cy="maximum-number-for-preschool"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxPreschool')"
         />
@@ -330,6 +358,7 @@
           id="multi-age-checkbox"
           v-model="fundingModel.hasMultiAge"
           label="Multi-Age Child Care"
+          data-cy="multi-age-child-care"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -343,6 +372,7 @@
           variant="outlined"
           :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
           label="Maximum Number for Multi-Age Child Care"
+          data-cy="maximum-number-for-multi-age-child-care"
           @wheel="$event.target.blur()"
           @update:model-value="convertBlankNumberToNull(fundingModel, 'maxGroupChildCareMultiAge')"
         />
@@ -360,6 +390,7 @@
             variant="outlined"
             :rules="[...rules.required, rules.wholeNumber, rules.min(1)]"
             label="Maximum Licensed Capacity"
+            data-cy="maximum-licensed-capacity"
             @wheel="$event.target.blur()"
             @update:model-value="convertBlankNumberToNull(fundingModel, 'maxLicensesCapacity')"
           />
@@ -381,6 +412,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber]"
               label="Monday"
+              data-cy="monday"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'monday')"
             />
@@ -393,6 +425,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber]"
               label="Tuesday"
+              data-cy="tuesday"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'tusday')"
             />
@@ -405,6 +438,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber]"
               label="Wednesday"
+              data-cy="wednesday"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'wednesday')"
             />
@@ -417,6 +451,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber]"
               label="Thursday"
+              data-cy="thursday"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'thursday')"
             />
@@ -429,6 +464,7 @@
               variant="outlined"
               :rules="[...rules.required, rules.wholeNumber]"
               label="Friday"
+              data-cy="friday"
               @wheel="$event.target.blur()"
               @update:model-value="convertBlankNumberToNull(fundingModel, 'friday')"
             />
@@ -447,6 +483,7 @@
                 (fundingModel.friday || 0)
               "
               label="Total"
+              data-cy="total"
               @wheel="$event.target.blur()"
             />
           </v-col>
@@ -462,10 +499,11 @@
           :rules="rules.required"
           inline
           label="Is the facility located on school property?"
+          data-cy="is-the-facility-located-on-school-property-group"
           class="application-label"
         >
-          <v-radio label="Yes" :value="1" />
-          <v-radio label="No" :value="0" />
+          <v-radio label="Yes" :value="1" data-cy="facility-on-school-property-yes"/>
+          <v-radio label="No" :value="0" data-cy="facility-on-school-property-no"/>
         </v-radio-group>
 
         <template v-if="hasSchoolAgeCareLicenceCategory">
@@ -480,6 +518,7 @@
                 :false-value="0"
                 hide-details
                 label="Before School"
+                data-cy="before-school"
                 color="primary"
               />
             </v-col>
@@ -491,6 +530,7 @@
                 :false-value="0"
                 hide-details
                 label="After School"
+                data-cy="after-school"
                 color="primary"
               />
             </v-col>
@@ -502,6 +542,7 @@
                 :false-value="0"
                 hide-details
                 label="Before Kindergarten"
+                data-cy="before-kindergarten"
                 color="primary"
               />
             </v-col>
@@ -513,6 +554,7 @@
                 :false-value="0"
                 hide-details
                 label="After Kindergarten"
+                data-cy="after-kindergarten"
                 color="primary"
               />
             </v-col>
@@ -532,11 +574,12 @@
           :disabled="isLocked"
           inline
           label="Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?"
+          data-cy="extended-hours-child-care"
           class="application-label"
           @update:model-value="resetExtendedHoursFields"
         >
-          <v-radio label="Yes" :value="1" />
-          <v-radio label="No" :value="0" />
+          <v-radio label="Yes" :value="1" data-cy="extended-hours-child-care-yes"/>
+          <v-radio label="No" :value="0" data-cy="extended-hours-child-care-no" />
         </v-radio-group>
 
         <template v-if="fundingModel.isExtendedHours">
@@ -547,6 +590,7 @@
             variant="outlined"
             :rules="[...rules.required, rules.min(1), rules.max(7), rules.wholeNumber]"
             label="Maximum number of days per week you offer extended hours of child care?"
+            data-cy="maximum-number-of-days-per-week-you-offer-extended-hours-of-child-care"
             @wheel="$event.target.blur()"
             @update:model-value="convertBlankNumberToNull(fundingModel, 'maxDaysPerWeekExtended')"
           />
@@ -557,6 +601,7 @@
             variant="outlined"
             :rules="[...rules.required, rules.min(1), rules.max(52), rules.wholeNumber]"
             label="Maximum number of weeks per year you offer extended hours of child care?"
+            data-cy="maximum-number-of-weeks-per-year-you-offer-extended-hours-of-child-care"
             class="mt-4"
             @wheel="$event.target.blur()"
             @update:model-value="convertBlankNumberToNull(fundingModel, 'maxWeeksPerYearExtended')"
@@ -576,6 +621,7 @@
           id="under-36months-extendedCC-checkbox"
           v-model="fundingModel.hasUnder36MonthsExtendedCC"
           label="Group Child Care (Under 36 Months)"
+          data-cy="group-child-care-under-36-months-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -594,6 +640,7 @@
                 :error="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="group-child-care-under-36-months-4hr-or-less-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareUnder36Months4OrLess')"
@@ -610,6 +657,7 @@
                 :error="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isUnder36ExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy = "group-child-care-under-36-months-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareUnder36Months4OrMore')"
@@ -625,6 +673,7 @@
           id="30months-to-schoolage-extendedCC-checkbox"
           v-model="fundingModel.has30MonthToSchoolAgeExtendedCC"
           label="Group Child Care (30 Months to School Age)"
+          data-cy "group-child-care-30-months-to-school-age-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -643,6 +692,7 @@
                 :error="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="group-child-care-30-months-to-school-age-4hr-or-less-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="
@@ -661,6 +711,7 @@
                 :error="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !is30MonthToSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="group-child-care-30-months-to-school-age-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="
@@ -678,6 +729,7 @@
           id="schoolage-care-extendedCC-checkbox"
           v-model="fundingModel.hasSchoolAgeExtendedCC"
           label="Group Child Care (School Age)"
+          data-cy="group-child-care-school-age-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -696,6 +748,7 @@
                 :error="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="group-child-care-school-age-4hr-or-less-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareSchoolAge4OrLess')"
@@ -712,6 +765,7 @@
                 :error="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isSchoolAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="group-child-care-school-age-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'extendedChildCareSchoolAge4OrMore')"
@@ -727,6 +781,7 @@
           id="care-on-school-grounds-extendedCC-checkbox"
           v-model="fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC"
           label="School Age Care on School Grounds"
+          data-cy="school-age-care-on-school-grounds-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -745,6 +800,7 @@
                 :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="school-age-care-on-school-grounds-4hr-or-less-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="
@@ -763,6 +819,7 @@
                 :error="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="school-age-care-on-school-grounds-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="
@@ -783,6 +840,7 @@
           id="multi-age-extendedCC-checkbox"
           v-model="fundingModel.hasMultiAgeExtendedCC"
           label="Multi-Age Child Care"
+          data-cy="multi-age-child-care-checkbox"
           color="primary"
           :disabled="isLocked"
           hide-details
@@ -801,6 +859,7 @@
                 :error="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="multi-age-child-care-4hr-or-less-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'multiAgeCare4OrLess')"
@@ -817,6 +876,7 @@
                 :error="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 :hide-details="showErrorMessage && !isMultiAgeExtendedCCMaxSpacesEntered"
                 label="Maximum Spaces Offered"
+                data-cy="multi-age-child-care-over-4hr-max-spaces-input"
                 class="my-2"
                 @wheel="$event.target.blur()"
                 @update:model-value="convertBlankNumberToNull(fundingModel, 'multiAgeCare4more')"
