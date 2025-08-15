@@ -1,0 +1,4 @@
+#Mon Jul 28 12:27:08 EDT 2025
+__DEFAULT__=false
+expression=ca.bc.gov.ecc.ofm.selenium.v1.tests.scripting.SmokeTestScript
+org.eclipse.help.ui.localSearch.master=true
