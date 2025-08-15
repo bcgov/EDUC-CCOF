@@ -1,0 +1,28 @@
+{
+  "orgData": {
+    "legalOrgName": "Automation Test Organisation",
+    "incorporationNumber": "BC654321",
+    "streetAddress": "506 John Street",
+    "city": "Vancouver",
+    "province": "BC",
+    "postalCode": "V5C6N5",
+    "orgContactName": "Tester",
+    "position": "QA",
+    "phone": "6470000000",
+    "email": "ofmqa01@gmail.com"
+  },
+  "facilityData": {
+    "facilityName": "My Test Facility",
+    "yearFacilityBegan": "2018",
+    "facilityLicence": "FC#123456",
+    "licenceEffectiveDate": "2019-01-01",
+    "healthAuthority": "Fraser Health" 
+  },
+  "facilityLicenceDetailsData":{
+    "maxDaysPerWeek":"5",
+    "maxWeeksPerYear":"52",
+    "hoursFrom":"08:00",
+    "hoursTo":"06:00",
+    "maxGroupChildCareUnder36Months": "5"
+  }
+}

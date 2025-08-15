@@ -12,11 +12,15 @@ module.exports = defineConfig({
       html: true,
       json: true,
     },
-    baseUrl: 'https://qa.mychildcareservices.gov.bc.ca',  // So you can use relative URLs like '/login'
+    baseUrl: 'https://qa.mychildcareservices.gov.bc.ca/',  // So you can use relative URLs like '/login'
+    
     setupNodeEvents(on, config) {
       // Add Node event listeners here if needed
       return config;
     },
   },
 });
+
+
+
 

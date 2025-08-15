@@ -11,6 +11,7 @@
         color="primary"
         label="Enter address manually"
         class="ml-2"
+        data-cy="Enter address manually"
       />
     </v-row>
     <div :class="hasLeftPadding ? 'pl-lg-11' : ''">
