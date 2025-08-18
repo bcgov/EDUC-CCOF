@@ -456,11 +456,7 @@ export default {
       return ApplicationService.hasNoMonthClosed(this.funding);
     },
     isFormComplete() {
-      const isClosedMonthsValid = !this.funding?.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
-      const isExtendedChildCareValid =
-        this.funding?.isExtendedHours === 0 ||
-        ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.funding, this.licenceCategoryNumber);
-      return this.isValidForm && isClosedMonthsValid && isExtendedChildCareValid;
+      return ApplicationService.isCCOFCompleteFamilyV2(this.funding);
     },
   },
   mounted() {
