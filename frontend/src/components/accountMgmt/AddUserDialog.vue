@@ -34,6 +34,24 @@
                 </div>
               </v-slide-y-transition>
             </v-col>
+            <v-col cols="12">
+              <v-slide-y-transition>
+                <div v-show="newFacAdmin">
+                  <p>Which facilities should this user have access to?</p>
+                  <v-select
+                    v-model="facilitiesSelected"
+                    :items="facilities"
+                    item-title="facilityName"
+                    item-value="facilityId"
+                    label="Facilities"
+                    variant="outlined"
+                    density="compact"
+                    class="mt-4"
+                    multiple
+                  />
+                </div>
+              </v-slide-y-transition>
+            </v-col>
           </v-row>
         </v-window-item>
         <v-window-item :value="2" />
@@ -58,14 +76,21 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
 
+import OrganizationService from '@/services/organizationService.js';
+import { useOrganizationStore } from '@/store/ccof/organization';
+
+import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 export default {
   name: 'AddUserDialog',
   components: { AppButton, AppDialog },
+  mixins: [alertMixin],
   props: {
     show: {
       type: Boolean,
@@ -88,7 +113,7 @@ export default {
           description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
         },
       ],
-      userRole: 8,
+      userRole: OFM_PORTAL_ROLES.READ_ONLY,
       userRoles: [
         {
           description: 'Organization Administrator',
@@ -103,12 +128,34 @@ export default {
           type: OFM_PORTAL_ROLES.READ_ONLY,
         },
       ],
+      facilities: [],
+      facilitiesLoading: false,
+      facilitiesSelected: [],
     };
+  },
+  computed: {
+    ...mapState(useOrganizationStore, ['organizationId']),
+    newFacAdmin() {
+      return this.userRole === OFM_PORTAL_ROLES.FAC_ADMIN;
+    },
   },
   watch: {
     show(val) {
       this.dialog = val;
     },
+  },
+  async mounted() {
+    try {
+      if (isEmpty(this.facilities)) {
+        this.facilitiesLoading = true;
+        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
+      }
+    } catch (error) {
+      this.setFailureAlert('There was an error loading the facilities');
+      console.error('Error loading facilities: ', error);
+    } finally {
+      this.facilitiesLoading = false;
+    }
   },
   methods: {
     closeDialog() {
