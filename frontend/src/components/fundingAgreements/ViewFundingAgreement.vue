@@ -138,7 +138,7 @@ import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
 
 export default {
-  name: 'ViewFundingAgreements',
+  name: 'ViewFundingAgreement',
   components: {
     AppButton,
     AppDialog,
