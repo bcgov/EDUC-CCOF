@@ -1,109 +1,231 @@
 <template>
-  <v-container class="pa-20" fluid>
-    <h1>Funding Agreement Information</h1>
-    <v-row v-if="isLoading" no-gutters>
-      <v-col cols="12">
-        <v-skeleton-loader type="paragraph" />
+  <v-container fluid v-bind="$attrs" class="px-md-16">
+    <h1>{{ (fundingAgreement && fundingAgreement.fundingAgreementNumber) || '' }}</h1>
+    <p>Carefully review your funding agreement.</p>
+
+    <v-row class="mt-6" justify="center">
+      <v-col cols="12" md="10" lg="8">
+        <AppPDFViewer v-if="pdfFile" :pdf-file="pdfFile" />
+        <v-skeleton-loader v-else type="image" height="800px" />
       </v-col>
     </v-row>
 
-    <v-col class="mt-3">
-      <v-card variant="outlined" class="soft-outline">
-        <v-row v-if="fundingAgreement" class="mb-4" dense>
-          <v-col cols="12" sm="6" xl="5" xxl="3">
-            <p><AppLabel>Funding Agreement Term:</AppLabel></p>
-          </v-col>
-          <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-            <p>{{ fundingAgreement.fundingAgreementTerm }}</p>
-          </v-col>
+    <br />
+    <br />
+    <h4 id="declaration" class="lg-px-10">Declaration</h4>
+    <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody"></v-skeleton-loader>
+    <template v-else-if="fundingAgreement">
+      <v-row>
+        <v-col cols="12" class="pt-0">
+          <div class="pa-lg-7 pa-5 overflow-y-auto grey-div-with-border">
+            <template v-if="declarationTemplate === 'DeclarationB'">
+              <p>
+                I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
+                information provided is true and complete to the best of my knowledge and belief.
+              </p>
+              <p>
+                I consent to the Ministry contacting other branches within the Ministry and other Province ministries to
+                validate the accuracy of any information that I have provided.
+              </p>
+              <p>
+                By completing and submitting this Program Confirmation Form (the Form) electronically, I hereby confirm
+                that I have carefully read this Form and the corresponding terms and conditions of the Child Care
+                Operating Funding Agreement (the Funding Agreement) and that I agree to be bound by such terms and
+                conditions. I further confirm that by clicking “I agree” below, I represent and warrant that:
+              </p>
 
-          <v-col cols="12" sm="6" xl="5" xxl="3">
-            <p><AppLabel>Funding Agreement Number:</AppLabel></p>
-          </v-col>
-          <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-            <p>{{ fundingAgreement.fundingAgreementNumber }}</p>
-          </v-col>
+              <ol class="declarationBList" type="a">
+                <li>
+                  I am the authorized representative and signing authority of the Provider as named in the Funding
+                  Agreement (the Provider);
+                </li>
+                <li>
+                  I have authority to submit the Form on behalf of the Provider and that by clicking “I agree”, I do
+                  hereby bind the Provider to the terms and conditions of the Funding Agreement if the Province accepts
+                  this Form and enrols the Provider in any or all of the Child Care Operating Funding Program, the
+                  CCFRI, or the ECE Wage Enhancement;
+                </li>
+                <li>
+                  All information provided in the Form or otherwise in support of the Provider to receive funding under
+                  the Funding Agreement is true and complete to the best of my knowledge and belief. I understand and
+                  acknowledge that providing false or misleading information either on the Form or otherwise to the
+                  Province to obtain any funding under the Funding Agreement or otherwise failing to comply with the
+                  Funding Agreement could result in certain penalties or repayment obligations, or both, under any or
+                  all of the Early Learning and Child Care Act, any successor legislation, or the Funding Agreement;
+                </li>
+                <li>
+                  If I have applied for and been approved by the Province to enrol in the ECE Wage Enhancement, the
+                  Provider has taken all actions required under any collective agreement to which it is a party to
+                  ensure it is:
+                </li>
+              </ol>
+              <v-row style="padding-left: 90px">
+                <v-col cols="12">
+                  i. permitted to apply for the ECE Wage Enhancement for any of its unionized Early Childhood Educators
+                  (ECEs); and</v-col
+                >
+              </v-row>
+              <v-row style="padding-left: 90px">
+                <v-col cols="12">
+                  ii. able to comply with its ECE Wage Enhancement related obligations under the Funding Agreement.
+                </v-col>
+              </v-row>
+              <p style="padding-top: 10px">
+                I understand and acknowledge that until such time as the Province confirms approval or temporary
+                approval of enrolment, in writing, in the CCFRI or the ECE Wage Enhancement, the Provider is not
+                formally enrolled in these initiatives. The Province is not responsible for any pre-payments the
+                Provider may make in anticipation of enrolment in either of these initiatives and any pre-payments made
+                are at the Provider's own risk.
+              </p>
+            </template>
+          </div>
+        </v-col>
 
-          <v-col cols="12" sm="6" xl="5" xxl="3">
-            <p><AppLabel>Status:</AppLabel></p>
-          </v-col>
-          <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-            <p>{{ fundingAgreement.fundingAgreementStatus }}</p>
-          </v-col>
+        <v-checkbox
+          v-model="fundingAgreement.consentCheck"
+          class="ml-3"
+          color="primary"
+          :disabled="isReadOnly || submitted"
+          label="I agree, consent and certify"
+        />
+      </v-row>
 
-          <v-col cols="12" sm="6" xl="5" xxl="3">
-            <p><AppLabel>Effective Date:</AppLabel></p>
-          </v-col>
-          <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-            <p>{{ formatUTCDateToShortDateString(fundingAgreement.fundingAgreementStartDate) }}</p>
-          </v-col>
+      <v-row class="mt-4" align="center" dense>
+        <v-col cols="auto">
+          <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
+        </v-col>
 
-          <v-col cols="12" sm="6" xl="5" xxl="3">
-            <p><AppLabel>End Date:</AppLabel></p>
-          </v-col>
-          <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-            <p>{{ formatUTCDateToShortDateString(fundingAgreement.endDate) }}</p>
-          </v-col>
-        </v-row>
-      </v-card>
-    </v-col>
-    <v-row>
-      <v-col>
-        <NavButton @previous="goBackToManageFundingAgreement" />
-      </v-col>
-    </v-row>
+        <v-col cols="auto" class="ml-4">
+          <AppButton
+            color="primary"
+            :disabled="isReadOnly || submitted || !fundingAgreement.consentCheck"
+            :loading="isLoading"
+            @click="submit"
+          >
+            Submit
+          </AppButton>
+        </v-col>
+      </v-row>
+      <AppDialog
+        v-model="showSubmissionConfirmationDialog"
+        persistent
+        max-width="510px"
+        title="Submission Complete"
+        @close="goBackToManageFundingAgreement"
+      >
+        <template #content>
+          <p>
+            Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates to
+            your agreement.
+          </p>
+          <AppButton class="mt-4" color="primary" @click="goBackToManageFundingAgreement">
+            Return to Funding Agreements
+          </AppButton>
+        </template>
+      </AppDialog>
+    </template>
   </v-container>
 </template>
-<script>
-import AppLabel from '@/components/guiComponents/AppLabel.vue';
-import FundingAgreementService from '@/services/fundingAgreementService.js';
-import { formatUTCDateToShortDateString } from '@/utils/format';
-import { PATHS } from '@/utils/constants.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import NavButton from '@/components/util/NavButton.vue';
+<script>
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+
+import FundingAgreementService from '@/services/fundingAgreementService.js';
+import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
 
 export default {
   name: 'ViewFundingAgreements',
-  components: { AppLabel, NavButton },
+  components: {
+    AppButton,
+    AppDialog,
+    AppPDFViewer,
+  },
+  mixins: [alertMixin],
   data() {
     return {
-      isLoading: false,
       fundingAgreement: null,
+      consentCheck: false,
+      pdfFile: null,
+      isLoading: false,
+      submitted: false,
+      showSubmissionConfirmationDialog: false,
     };
   },
-  created() {
-    this.organizationId = useOrganizationStore().organizationId;
-    this.loadFundingAgreement();
+  computed: {
+    isReadOnly() {
+      const readOnlyStatuses = [
+        FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
+        FUNDING_AGREEMENTS_STATUS.REPLACED,
+        FUNDING_AGREEMENTS_STATUS.ACTIVE,
+        FUNDING_AGREEMENTS_STATUS.APPROVED,
+        FUNDING_AGREEMENTS_STATUS.EXPIRED,
+        FUNDING_AGREEMENTS_STATUS.CANCELLED,
+        FUNDING_AGREEMENTS_STATUS.SUSPENDED,
+        FUNDING_AGREEMENTS_STATUS.TERMINATED,
+      ];
+      return readOnlyStatuses.includes(this.fundingAgreement?.externalStatus);
+    },
+    declarationTemplate() {
+      return 'DeclarationB';
+    },
+  },
+  async created() {
+    await this.loadData();
   },
   methods: {
-    formatUTCDateToShortDateString,
-    async loadFundingAgreement() {
+    async loadData() {
       try {
         this.isLoading = true;
-        const id = this.$route.params.id;
-        const response = await FundingAgreementService.getFundingAgreements(this.organizationId);
-        const applications = response || [];
-        const selected = applications.find((app) => app.fundingAgreementId === id);
-        if (selected) {
-          this.fundingAgreement = {
-            fundingAgreementId: selected.fundingAgreementId,
-            fundingAgreementNumber: selected.fundingAgreementNumber,
-            fundingAgreementTerm: selected.fundingAgreementTerm,
-            fundingAgreementStatus: selected.fundingAgreementStatus,
-            fundingAgreementStartDate: selected.fundingAgreementStartDate,
-            endDate: selected.endDate,
-          };
-        }
+        await this.loadFundingAgreement();
+        await this.loadFundingAgreementPDF();
       } catch (error) {
         console.error('Failed to load Funding Agreement', error);
       } finally {
         this.isLoading = false;
       }
     },
+
+    async loadFundingAgreement() {
+      this.fundingAgreement = await FundingAgreementService.getFundingAgreement(this.$route.params.fundingAgreementId);
+    },
+
+    async loadFundingAgreementPDF() {
+      try {
+        const pdf_file = await FundingAgreementService.getFundingAgreementPDF(this.$route.params.fundingAgreementId);
+        this.pdfFile = `data:application/pdf;base64,${pdf_file}`;
+      } catch (error) {
+        console.error('Failed to load PDF', error);
+      }
+    },
+
     goBackToManageFundingAgreement() {
       this.$router.push(`${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=funding-agreement-tab`);
+    },
+
+    async submit() {
+      try {
+        const payload = {
+          consentCheck: this.fundingAgreement.consentCheck,
+          signedOn: new Date().toISOString(),
+        };
+
+        await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
+        this.submitted = true;
+        this.showSubmissionConfirmationDialog = true;
+      } catch (error) {
+        this.setFailureAlert('Failed to update Funding Agreement');
+        console.error(error);
+      }
     },
   },
 };
 </script>
+<style scoped>
+li {
+  padding-bottom: 12px;
+}
+</style>
