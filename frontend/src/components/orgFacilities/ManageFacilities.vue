@@ -34,9 +34,9 @@
 import { mapActions, mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
-import { useApplicationStore } from '@/store/application';
-import { useOrganizationStore } from '@/store/ccof/organization';
-import { ORGANIZATION_FACILITY_STATUS_CODES } from '@/utils/constants.js';
+import { useAppStore } from '@/store/app.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { ORGANIZATION_FACILITY_STATUS_CODES, PROGRAM_YEAR_STATUSES } from '@/utils/constants.js';
 import OrganizationService from '@/services/organizationService.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -58,7 +58,10 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId', 'loadedModel']),
-    ...mapState(useApplicationStore, ['programYearId']),
+    ...mapState(useAppStore, ['programYearList']),
+    currentProgramYear() {
+      return this.programYearList.list.find((py) => py.status === PROGRAM_YEAR_STATUSES.CURRENT);
+    },
     skeletons() {
       if (this.loadedModel.numberOfFacilities > MAX_SKELETONS) {
         return MAX_SKELETONS;
@@ -90,7 +93,9 @@ export default {
   methods: {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
-      const includedInProgramYear = facility.fundingAgreements.some((fa) => fa.programYearId === this.programYearId);
+      const includedInProgramYear = facility.fundingAgreements.some(
+        (fa) => fa.programYearId === this.currentProgramYear.programYearId,
+      );
       return (
         !isEmpty(facility.facilityAccountNumber) &&
         includedInProgramYear &&
