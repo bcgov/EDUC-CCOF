@@ -54,7 +54,25 @@
             </v-col>
           </v-row>
         </v-window-item>
-        <v-window-item :value="2" />
+        <v-window-item :value="2">
+          <v-row no-gutters class="pt-2">
+            <v-col cols="12">
+              <v-text-field v-model="userFields.firstName" label="First Name" density="compact" variant="outlined" />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field v-model="userFields.lastName" label="Last Name" density="compact" variant="outlined" />
+            </v-col>
+            <v-col v-if="userType === 'portal'" cols="12">
+              <v-text-field v-model="userFields.bceid" label="Business BCeID" density="compact" variant="outlined" />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field v-model="userFields.telephone" label="Phone Number" density="compact" variant="outlined" />
+            </v-col>
+            <v-col cols="12">
+              <v-text-field v-model="userFields.email" label="Email Address" density="compact" variant="outlined" />
+            </v-col>
+          </v-row>
+        </v-window-item>
         <v-window-item :value="3" />
       </v-window>
     </template>
@@ -131,6 +149,13 @@ export default {
       facilities: [],
       facilitiesLoading: false,
       facilitiesSelected: [],
+      userFields: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        telephone: '',
+        bceid: '',
+      },
     };
   },
   computed: {
