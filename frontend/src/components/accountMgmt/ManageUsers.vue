@@ -5,6 +5,13 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
+    <v-row>
+      <v-col class="d-flex justify-end">
+        <AppButton size="small" prepend-icon="mdi-plus" display="inline-grid" @click="addUserDialogOpen = true">
+          Add User
+        </AppButton>
+      </v-col>
+    </v-row>
     <v-row v-if="contactsLoading" no-gutters>
       <v-col cols="12">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
@@ -66,6 +73,7 @@
     @contact-deactivated="contactDeactivatedHandler"
     @close-disable-dialog="disableUserDialogOpen = false"
   />
+  <AddUserDialog :show="addUserDialogOpen" @close-add-dialog="addUserDialogOpen = false" />
 </template>
 
 <script>
@@ -80,10 +88,11 @@ import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import DisableUserDialog from '@/components/accountMgmt/DisableUserDialog.vue';
+import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, DisableUserDialog, NavButton },
+  components: { AppButton, DisableUserDialog, NavButton, AddUserDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -94,6 +103,7 @@ export default {
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
       disableUserDialogOpen: false,
+      addUserDialogOpen: false,
     };
   },
   computed: {
