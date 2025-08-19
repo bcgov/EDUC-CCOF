@@ -482,11 +482,12 @@
       </div>
     </template>
   </v-container>
+  <BackConfirmationDialog :show="showBackConfirmationDialog" @close="showBackConfirmationDialog = false" />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="true"
     :is-next-displayed="true"
-    @previous="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
+    @previous="showBackConfirmationDialog = true"
     @next="next"
     @save="save(true)"
   />
@@ -498,6 +499,7 @@ import { mapState } from 'pinia';
 
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
+import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
 import EnrolmentReportNavButtons from '@/components/enrolmentReports/EnrolmentReportNavButtons.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -520,6 +522,7 @@ export default {
   components: {
     AppNumberInput,
     AppTooltip,
+    BackConfirmationDialog,
     EnrolmentReportNavButtons,
   },
   mixins: [alertMixin],
@@ -531,6 +534,7 @@ export default {
       originalEnrolmentReport: {},
       dailyEnrolments: [],
       originalDailyEnrolments: [],
+      showBackConfirmationDialog: false,
     };
   },
   computed: {
