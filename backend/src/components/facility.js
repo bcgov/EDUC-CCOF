@@ -195,8 +195,9 @@ async function updateFacilityLicenseType(facilityId, data) {
 
   // Figure out new Licence categories from data form
   let newLicenseCategories = [];
-  if (data.familyLicenseType) {
-    newLicenseCategories.push(categories?.familyLicenseCategory.find((item) => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
+  if (data.licenceCategoryNumber) {
+    // Family Provider
+    newLicenseCategories.push(categories?.familyLicenseCategory.find((item) => item.ccof_categorynumber === data.licenceCategoryNumber).ccof_license_categoryid);
   } else {
     newLicenseCategories = getGroupLicenceCategories(data, categories?.groupLicenseCategory);
   }
