@@ -297,6 +297,22 @@
               />
             </v-col>
           </v-row>
+          <v-row no-gutters>
+            <v-col cols="6" class="summary-label pt-3">Maximum Number of Child Care Spaces</v-col>
+            <v-col cols="6" class="summary-value">
+              <v-text-field
+                placeholder="Required"
+                :model-value="funding?.maxSpaces"
+                class="summary-value"
+                density="compact"
+                flat
+                variant="solo"
+                :hide-details="isNullOrBlank(funding?.maxSpaces) || isValidForm"
+                readonly
+                :rules="[...rules.required, rules.min(0), rules.wholeNumber, rules.max(funding.maxLicensesCapacity)]"
+              />
+            </v-col>
+          </v-row>
         </template>
       </div>
 
