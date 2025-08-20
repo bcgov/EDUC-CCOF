@@ -36,7 +36,7 @@ import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useApplicationStore } from '@/store/application.js';
-import { ORGANIZATION_FACILITY_STATUS_CODES } from '@/utils/constants.js';
+import { ORGANIZATION_FACILITY_STATUS_CODES, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants.js';
 import OrganizationService from '@/services/organizationService.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -57,7 +57,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'loadedModel']),
+    ...mapState(useOrganizationStore, ['organizationId', 'loadedModel']),
     ...mapState(useApplicationStore, ['applicationMap', 'programYearId']),
     manageFacilitiesLoading() {
       return this.facilitiesLoading || this.fundingAgreementsLoading;
@@ -93,8 +93,9 @@ export default {
   methods: {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
+      const application = this.applicationMap?.get(this.programYearId);
       const orgHasFundingAgreementThisYear = !!(
-        this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber
+        application?.fundingAgreementNumber && application?.internalStatus === FUNDING_AGREEMENTS_STATUS.ACTIVE
       );
 
       return (
