@@ -13,7 +13,7 @@
     <br />
     <br />
     <h4 id="declaration" class="lg-px-10">Declaration</h4>
-    <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody"></v-skeleton-loader>
+    <v-skeleton-loader v-if="loadingState" :loading="loadingState" type="table-tbody"></v-skeleton-loader>
     <template v-else-if="fundingAgreement">
       <v-row>
         <v-col cols="12" class="pt-0">
@@ -99,7 +99,7 @@
           <AppButton
             color="primary"
             :disabled="isReadOnly || submitted || !fundingAgreement.consentCheck"
-            :loading="isLoading"
+            :loading="loadingState"
             @click="submit"
           >
             Submit
@@ -118,9 +118,14 @@
             Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates to
             your agreement.
           </p>
-          <AppButton class="mt-4" color="primary" @click="goBackToManageFundingAgreement">
-            Return to Funding Agreements
-          </AppButton>
+        </template>
+
+        <template #button>
+          <div class="center-button">
+            <AppButton color="primary" @click="goBackToManageFundingAgreement">
+              Return to Funding Agreements
+            </AppButton>
+          </div>
         </template>
       </AppDialog>
     </template>
@@ -150,7 +155,7 @@ export default {
       fundingAgreement: null,
       consentCheck: false,
       pdfFile: null,
-      isLoading: false,
+      loadingState: false,
       submitted: false,
       showSubmissionConfirmationDialog: false,
     };
@@ -179,13 +184,13 @@ export default {
   methods: {
     async loadData() {
       try {
-        this.isLoading = true;
+        this.loadingState = true;
         await this.loadFundingAgreement();
         await this.loadFundingAgreementPDF();
       } catch (error) {
         console.error('Failed to load Funding Agreement', error);
       } finally {
-        this.isLoading = false;
+        this.loadingState = false;
       }
     },
 
@@ -227,5 +232,10 @@ export default {
 <style scoped>
 li {
   padding-bottom: 12px;
+}
+.center-button {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
 </style>
