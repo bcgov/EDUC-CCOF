@@ -1,5 +1,5 @@
 <template>
-  <AppDialog v-model="isDisplayed" title="Confirmation" persistent max-width="80%" @close="closeDialog">
+  <AppDialog v-model="isDisplayed" persistent max-width="80%" @close="closeDialog">
     <template #content>
       <div class="text-center">
         <p class="pt-4 font-weight-bold text-h6">Go back to the dashboard?</p>
@@ -10,7 +10,7 @@
       </div>
     </template>
     <template #button>
-      <v-row justify="space-between" no-gutters class="px-8 px-xl-0">
+      <v-row no-gutters class="px-8 px-xl-0">
         <v-col cols="12" md="6" class="py-2 d-flex justify-center">
           <AppButton id="stay-on-page" :primary="false" @click="closeDialog">Stay on this page</AppButton>
         </v-col>

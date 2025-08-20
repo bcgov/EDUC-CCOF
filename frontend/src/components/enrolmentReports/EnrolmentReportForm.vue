@@ -4,18 +4,7 @@
       <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
     </div>
     <template v-else>
-      <p class="text-h4 font-weight-bold">Enrolment Report</p>
-      <div class="text-h6 text-primary">
-        <p class="font-weight-bold mt-2">{{ currentFacility?.facilityName }}</p>
-        <p>{{ currentFacility?.facilityAccountNumber }}</p>
-        <p>Licence #: {{ currentFacility?.licenseNumber }}</p>
-      </div>
-      <div>
-        <p class="py-2">
-          Reporting month: {{ formatMonthYearToString(enrolmentReport?.month, enrolmentReport?.year) }}
-        </p>
-        <p>Version number: {{ enrolmentReport.versionText }}</p>
-      </div>
+      <EnrolmentReportHeader :enrolment-report="enrolmentReport" />
       <v-skeleton-loader v-if="processing" :loading="processing" type="table-tbody" class="mt-4 mb-8" />
       <div v-else class="table-scroll-wrapper my-6">
         <v-row no-gutters class="background-light-grey border-bottom font-weight-bold text-center sticky-row row-0">
@@ -38,7 +27,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled0To18"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -46,7 +35,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled18To36"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -54,7 +43,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolled3YK"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -62,7 +51,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledOOSCK"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -70,7 +59,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledOOSCG"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -78,7 +67,7 @@
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledPre"
               maxlength="3"
-              :disabled="false"
+              :disabled="readonly"
               :default-value="0"
             />
           </v-col>
@@ -159,57 +148,57 @@
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less0To18" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less0To18" maxlength="3" :disabled="readonly" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over0To18" maxlength="3" :disabled="false" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less18To36" maxlength="3" :disabled="false" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over18To36" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over0To18" maxlength="3" :disabled="readonly" />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less3YK" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less18To36" maxlength="3" :disabled="readonly" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over3YK" maxlength="3" :disabled="false" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxlength="3" :disabled="false" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over18To36" maxlength="3" :disabled="readonly" />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.less3YK" maxlength="3" :disabled="readonly" />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.over3YK" maxlength="3" :disabled="readonly" />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxlength="3" :disabled="readonly" />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxlength="3" :disabled="readonly" />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxlength="3" :disabled="readonly" />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxlength="3" :disabled="readonly" />
               </v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1">
             <v-row no-gutters>
               <v-col>
-                <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="false" />
+                <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="readonly" />
               </v-col>
             </v-row>
           </v-col>
@@ -486,6 +475,7 @@
   <EnrolmentReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="true"
+    :is-save-disabled="readonly"
     :is-next-displayed="true"
     @previous="showBackConfirmationDialog = true"
     @next="next"
@@ -495,17 +485,12 @@
 
 <script>
 import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
-import { mapState } from 'pinia';
 
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
-import EnrolmentReportNavButtons from '@/components/enrolmentReports/EnrolmentReportNavButtons.vue';
-
-import alertMixin from '@/mixins/alertMixin.js';
-
+import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
-import { useApplicationStore } from '@/store/application.js';
 
 import { getDayOfWeek, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import {
@@ -515,7 +500,7 @@ import {
   PARENT_FEE_FREQUENCIES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatDecimalNumber, formatMonthYearToString } from '@/utils/format';
+import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'EnrolmentReportForm',
@@ -523,14 +508,10 @@ export default {
     AppNumberInput,
     AppTooltip,
     BackConfirmationDialog,
-    EnrolmentReportNavButtons,
   },
-  mixins: [alertMixin],
+  mixins: [enrolmentReportMixin],
   data() {
     return {
-      loading: true,
-      processing: false,
-      enrolmentReport: {},
       originalEnrolmentReport: {},
       dailyEnrolments: [],
       originalDailyEnrolments: [],
@@ -538,23 +519,16 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
     isGroup() {
       return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
-    },
-    currentFacility() {
-      const facilities = this.getFacilityListForPCFByProgramYearId(this.enrolmentReport?.programYearId);
-      return facilities?.find((item) => item.facilityId === this.enrolmentReport?.facilityId);
     },
   },
   async created() {
     window.scrollTo(0, 0);
-    this.PATHS = PATHS;
     await this.loadData();
   },
   methods: {
     getDayOfWeek,
-    formatMonthYearToString,
     async loadData() {
       try {
         this.loading = true;
@@ -603,12 +577,14 @@ export default {
       };
     },
 
-    // TODO (vietle-cgi): implement next function once the declaration page is available.
-    next() {
-      console.log('NEXT');
+    async next() {
+      await this.save(false);
+      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${this.$route.params.enrolmentReportId}/declaration`);
     },
 
+    // TODO (vietle-cgi): implement calculate function once the CMS finish Calculate flow.
     async save(showMessage) {
+      if (this.readonly) return;
       try {
         this.processing = true;
         await this.saveEnrolmentReport();
