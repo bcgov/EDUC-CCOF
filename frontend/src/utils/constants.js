@@ -304,12 +304,6 @@ export const PROGRAM_YEAR_LANGUAGE_TYPES = {
   FY2025_26: 'FY2025_26',
 };
 
-export const PROGRAM_YEAR_STATUSES = {
-  FAR_FUTURE: 'FAR FUTURE',
-  CURRENT: 'CURRENT',
-  HISTORICAL: 'HISTORICAL',
-};
-
 export const PROVINCES = Object.freeze([
   {
     title: 'AB',

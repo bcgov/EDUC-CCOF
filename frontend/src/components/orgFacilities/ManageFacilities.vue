@@ -5,7 +5,7 @@
         <p>View and manage the facilities of your organization.</p>
       </v-col>
     </v-row>
-    <template v-if="manageFacilitiesLoading">
+    <template v-if="facilitiesLoading">
       <v-row v-for="n in skeletons" :key="n" no-gutters>
         <v-col class="mt-2">
           <v-card variant="outlined" class="soft-outline fill-height px-2">
@@ -34,11 +34,10 @@
 import { mapActions, mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
-import { useAppStore } from '@/store/app.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { ORGANIZATION_FACILITY_STATUS_CODES, PROGRAM_YEAR_STATUSES } from '@/utils/constants.js';
+import { useApplicationStore } from '@/store/application.js';
+import { ORGANIZATION_FACILITY_STATUS_CODES } from '@/utils/constants.js';
 import OrganizationService from '@/services/organizationService.js';
-import FundingAgreementService from '@/services/fundingAgreementService.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import FacilityList from '@/components/orgFacilities/FacilityList.vue';
@@ -54,19 +53,14 @@ export default {
   data() {
     return {
       facilitiesLoading: false,
-      fundingAgreementsLoading: false,
-      fundingAgreements: [],
       facilities: [],
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId', 'loadedModel']),
-    ...mapState(useAppStore, ['programYearList']),
+    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'loadedModel']),
+    ...mapState(useApplicationStore, ['applicationMap', 'programYearId']),
     manageFacilitiesLoading() {
       return this.facilitiesLoading || this.fundingAgreementsLoading;
-    },
-    currentProgramYear() {
-      return this.programYearList.list.find((py) => py.status === PROGRAM_YEAR_STATUSES.CURRENT);
     },
     skeletons() {
       if (this.loadedModel.numberOfFacilities > MAX_SKELETONS) {
@@ -89,23 +83,18 @@ export default {
         this.facilitiesLoading = true;
         this.facilities = await OrganizationService.loadFacilities(this.organizationId);
       }
-      if (isEmpty(this.fundingAgreements)) {
-        this.fundingAgreementsLoading = true;
-        this.fundingAgreements = await FundingAgreementService.getFundingAgreements(this.organizationId);
-      }
     } catch (error) {
       this.setFailureAlert('There was an error loading the facilities');
       console.error('Error loading facilities: ', error);
     } finally {
       this.facilitiesLoading = false;
-      this.fundingAgreementsLoading = false;
     }
   },
   methods: {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
-      const orgHasFundingAgreementThisYear = this.fundingAgreements.some(
-        (fa) => fa.programYearId === this.currentProgramYear.programYearId,
+      const orgHasFundingAgreementThisYear = !!(
+        this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber
       );
 
       return (
