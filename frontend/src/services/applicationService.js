@@ -220,6 +220,7 @@ export default {
       requiredFields.push('maxCapacityExtended', 'maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
     }
     const areFieldsValid =
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
@@ -231,8 +232,8 @@ export default {
   },
   isCCOFCompleteFamilyV2(funding) {
     if (isEmpty(funding)) return false;
-    const licenceCategoryNumber = funding.familyLicenseType || funding.licenceCategoryNumber;
     const requiredFields = [
+      'licenceCategoryNumber',
       'maxDaysPerWeek',
       'maxWeeksPerYear',
       'hoursFrom',
@@ -244,10 +245,14 @@ export default {
     ];
     const areFieldsValid =
       funding.maxLicensesCapacity > 0 &&
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
-    const isExtendedCCMaximumSpacesValid = this.isFamilyExtendedCCMaximumSpacesValid(funding, licenceCategoryNumber);
+    const isExtendedCCMaximumSpacesValid = this.isFamilyExtendedCCMaximumSpacesValid(
+      funding,
+      funding.licenceCategoryNumber,
+    );
     const isExtendedChildCareValid =
       funding.isExtendedHours === 0 ||
       (isNumberOfDaysPerWeekValid(funding.maxDaysPerWeekExtended) &&
@@ -256,11 +261,7 @@ export default {
     const isClosedMonthsValid =
       !funding.hasClosedMonth || (!this.hasAllMonthsClosed(funding) && !this.hasNoMonthClosed(funding));
     return (
-      licenceCategoryNumber &&
-      !hasEmptyFields(funding, requiredFields) &&
-      areFieldsValid &&
-      isClosedMonthsValid &&
-      isExtendedChildCareValid
+      !hasEmptyFields(funding, requiredFields) && areFieldsValid && isClosedMonthsValid && isExtendedChildCareValid
     );
   },
   isCCOFCompleteGroupV1(funding) {
