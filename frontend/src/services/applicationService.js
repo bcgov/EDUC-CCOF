@@ -220,6 +220,7 @@ export default {
       requiredFields.push('maxCapacityExtended', 'maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
     }
     const areFieldsValid =
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
@@ -244,6 +245,7 @@ export default {
     ];
     const areFieldsValid =
       funding.maxLicensesCapacity > 0 &&
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
