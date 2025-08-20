@@ -1,80 +1,107 @@
 <template>
   <AppDialog v-model="dialog" title="Add New User" max-width="800px" text-alignment="left" @close="closeDialog">
     <template #content>
-      <v-window v-model="step">
-        <v-window-item :value="1">
-          <v-row no-gutters>
-            <v-col cols="12">
-              <p>What type of user are you adding?</p>
-              <v-select
-                v-model="userType"
-                :items="userTypes"
-                item-title="description"
-                item-value="type"
-                label="User Type"
-                variant="outlined"
-                density="compact"
-                class="mt-4"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-slide-y-transition>
-                <div v-show="userType === 'portal'">
-                  <p>What level of portal access should this user have?</p>
-                  <v-select
-                    v-model="userRole"
-                    :items="userRoles"
-                    item-title="description"
-                    item-value="type"
-                    label="User Role"
-                    variant="outlined"
-                    density="compact"
-                    class="mt-4"
-                  />
-                </div>
-              </v-slide-y-transition>
-            </v-col>
-            <v-col cols="12">
-              <v-slide-y-transition>
-                <div v-show="newFacAdmin">
-                  <p>Which facilities should this user have access to?</p>
-                  <v-select
-                    v-model="facilitiesSelected"
-                    :items="facilities"
-                    item-title="facilityName"
-                    item-value="facilityId"
-                    label="Facilities"
-                    variant="outlined"
-                    density="compact"
-                    class="mt-4"
-                    multiple
-                  />
-                </div>
-              </v-slide-y-transition>
-            </v-col>
-          </v-row>
-        </v-window-item>
-        <v-window-item :value="2">
-          <v-row no-gutters class="pt-2">
-            <v-col cols="12">
-              <v-text-field v-model="userFields.firstName" label="First Name" density="compact" variant="outlined" />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field v-model="userFields.lastName" label="Last Name" density="compact" variant="outlined" />
-            </v-col>
-            <v-col v-if="userType === 'portal'" cols="12">
-              <v-text-field v-model="userFields.bceid" label="Business BCeID" density="compact" variant="outlined" />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field v-model="userFields.telephone" label="Phone Number" density="compact" variant="outlined" />
-            </v-col>
-            <v-col cols="12">
-              <v-text-field v-model="userFields.email" label="Email Address" density="compact" variant="outlined" />
-            </v-col>
-          </v-row>
-        </v-window-item>
-        <v-window-item :value="3" />
-      </v-window>
+      <v-form ref="form" v-model="formValid" @submit.prevent="addUser">
+        <v-window v-model="step">
+          <v-window-item :value="1">
+            <v-row no-gutters>
+              <v-col cols="12">
+                <p>What type of user are you adding?</p>
+                <v-select
+                  v-model="userType"
+                  :items="userTypes"
+                  item-title="description"
+                  item-value="type"
+                  label="User Type"
+                  variant="outlined"
+                  density="compact"
+                  class="mt-4"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-slide-y-transition>
+                  <div v-show="userType === 'portal'">
+                    <p>What level of portal access should this user have?</p>
+                    <v-select
+                      v-model="userRole"
+                      :items="userRoles"
+                      item-title="description"
+                      item-value="type"
+                      label="User Role"
+                      variant="outlined"
+                      density="compact"
+                      class="mt-4"
+                    />
+                  </div>
+                </v-slide-y-transition>
+              </v-col>
+              <v-col cols="12">
+                <v-slide-y-transition>
+                  <div v-show="newFacAdmin">
+                    <p>Which facilities should this user have access to?</p>
+                    <v-select
+                      v-model="facilitiesSelected"
+                      :items="facilities"
+                      :rules="rulesForFacilities"
+                      item-title="facilityName"
+                      item-value="facilityId"
+                      label="Facilities"
+                      variant="outlined"
+                      density="compact"
+                      class="mt-4"
+                      multiple
+                    />
+                  </div>
+                </v-slide-y-transition>
+              </v-col>
+            </v-row>
+          </v-window-item>
+          <v-window-item :value="2">
+            <v-row no-gutters class="pt-2">
+              <v-col cols="12">
+                <v-text-field v-model="userFields.firstName" label="First Name" density="compact" variant="outlined" />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="userFields.lastName"
+                  label="Last Name"
+                  density="compact"
+                  variant="outlined"
+                  :rules="rules.required"
+                />
+              </v-col>
+              <v-col v-if="userType === 'portal'" cols="12">
+                <v-text-field
+                  v-model="userFields.bceid"
+                  label="Business BCeID"
+                  density="compact"
+                  variant="outlined"
+                  :rules="rules.required"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="userFields.telephone"
+                  label="Phone Number"
+                  density="compact"
+                  variant="outlined"
+                  :rules="[...rules.required, rules.phone]"
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="userFields.email"
+                  label="Email Address"
+                  density="compact"
+                  variant="outlined"
+                  :rules="[...rules.required, ...rules.email]"
+                />
+              </v-col>
+            </v-row>
+          </v-window-item>
+          <v-window-item :value="3" />
+        </v-window>
+      </v-form>
     </template>
     <template #button>
       <v-row class="text-center" justify="center">
@@ -85,8 +112,18 @@
           <AppButton v-if="step > 1" display="inline" :primary="false" size="small" @click="step--">Back</AppButton>
         </v-col>
         <v-col>
-          <AppButton v-if="step < 3" display="inline" size="small" class="ml-2" @click="step++">Next</AppButton>
-          <AppButton v-if="step === 3" display="inline" size="small" class="ml-2" @click="addUser">Add</AppButton>
+          <AppButton v-if="step < 2" display="inline" size="small" class="ml-2" @click="advanceForm">Next</AppButton>
+          <AppButton
+            v-if="step === 2"
+            display="inline"
+            size="small"
+            class="ml-2"
+            type="submit"
+            :disabled="!formValid"
+            @click.prevent="addUser"
+          >
+            Add
+          </AppButton>
         </v-col>
       </v-row>
     </template>
@@ -97,6 +134,7 @@
 import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
+import { rules, allRulesAreValid } from '@/utils/rules';
 
 import OrganizationService from '@/services/organizationService.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
@@ -118,7 +156,9 @@ export default {
   emits: ['close-add-dialog'],
   data() {
     return {
+      rules,
       dialog: false,
+      formValid: true,
       step: 1,
       userType: 'portal',
       userTypes: [
@@ -163,6 +203,18 @@ export default {
     newFacAdmin() {
       return this.userRole === OFM_PORTAL_ROLES.FAC_ADMIN;
     },
+    rulesForFacilities() {
+      return [
+        (v) => {
+          if (this.newFacAdmin) {
+            console.log('evaluating new fac admin', typeof v);
+            return this.rules.required[0](v);
+          } else {
+            return true;
+          }
+        },
+      ];
+    },
   },
   watch: {
     show(val) {
@@ -187,9 +239,35 @@ export default {
       this.$emit('close-add-dialog');
       setTimeout(() => (this.step = 1), 350);
     },
+    advanceForm() {
+      if (
+        this.step === 1 &&
+        this.userType === 'portal' &&
+        this.userRole === OFM_PORTAL_ROLES.FAC_ADMIN &&
+        !allRulesAreValid(this.rulesForFacilities, this.facilitiesSelected)
+      ) {
+        return this.$refs.form?.validate();
+      }
+      this.step++;
+    },
+    clearFields() {
+      this.step = 1;
+      this.userType = 'portal';
+      this.userRole = OFM_PORTAL_ROLES.READ_ONLY;
+      this.facilitiesSelected = [];
+
+      for (const k in this.userFields) {
+        this.userFields[k] = '';
+      }
+    },
     addUser() {
       // For now, just close the dialog
-      this.closeDialog();
+      this.$refs.form?.validate();
+      if (this.formValid) {
+        alert('Adding User');
+        this.closeDialog();
+        setTimeout(this.clearFields, 350);
+      }
     },
   },
 };

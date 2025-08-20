@@ -19,7 +19,11 @@ function isValidFQDN(string) {
   return fqdnRegex.test(string);
 }
 
-const rules = {
+export function allRulesAreValid(rulesArray, value) {
+  return rulesArray.map((r) => r(value)).every((ruleCheckResult) => ruleCheckResult === true);
+}
+
+export const rules = {
   email: [(v) => isEmailValid(v) || 'A valid email is required'],
   required: [
     function (v) {
