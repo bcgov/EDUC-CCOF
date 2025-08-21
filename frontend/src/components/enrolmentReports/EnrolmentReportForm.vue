@@ -477,7 +477,7 @@
     :is-save-displayed="true"
     :is-save-disabled="readonly"
     :is-next-displayed="true"
-    @previous="showBackConfirmationDialog = true"
+    @previous="previous"
     @next="next"
     @save="save(true)"
   />
@@ -575,6 +575,14 @@ export default {
         'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
         'border-bottom': rowIndex < this.dailyEnrolments.length - 1,
       };
+    },
+
+    previous() {
+      if (this.isSubmitted) {
+        this.$router.push(PATHS.ROOT.ENROLMENT_REPORTS);
+      } else {
+        this.showBackConfirmationDialog = true;
+      }
     },
 
     async next() {
