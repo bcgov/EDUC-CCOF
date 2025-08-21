@@ -3,7 +3,7 @@ const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
 const { getOperation, patchOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { ContactMappings } = require('../util/mapping/Mappings');
+const { ContactMappings, ContactRoleMappings } = require('../util/mapping/Mappings');
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
@@ -36,7 +36,19 @@ async function deactivateContact(req, res) {
   }
 }
 
+async function getRoles(req, res) {
+  try {
+    const operation = "ofm_portal_roles?$select=ofm_name,ofm_portal_role_number&$expand=owningbusinessunit($select=name)&$filter=owningbusinessunit/name eq 'CCOF'";
+    const roleData = await getOperation(operation);
+    const roles = roleData.value.map((role) => new MappableObjectForFront(role, ContactRoleMappings));
+    return res.status(HttpStatus.OK).json(roles);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 module.exports = {
   getActiveContactsInOrganization,
+  getRoles,
   deactivateContact,
 };

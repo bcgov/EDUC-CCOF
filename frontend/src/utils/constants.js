@@ -545,9 +545,9 @@ export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
 export const OFM_PORTAL_ROLES = Object.freeze({
-  ORG_ADMIN: 10,
-  FAC_ADMIN: 11,
-  READ_ONLY: 8,
+  ORG_ADMIN: '10',
+  FAC_ADMIN: '11',
+  READ_ONLY: '12',
 });
 
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({

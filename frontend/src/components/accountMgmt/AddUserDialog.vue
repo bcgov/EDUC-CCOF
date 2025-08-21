@@ -25,8 +25,8 @@
                     <v-select
                       v-model="userRole"
                       :items="userRoles"
-                      item-title="description"
-                      item-value="type"
+                      item-title="name"
+                      item-value="roleNumber"
                       label="User Role"
                       variant="outlined"
                       density="compact"
@@ -152,6 +152,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    userRoles: {
+      type: Array,
+      required: true,
+    },
   },
   emits: ['close-add-dialog'],
   data() {
@@ -172,20 +176,6 @@ export default {
         },
       ],
       userRole: OFM_PORTAL_ROLES.READ_ONLY,
-      userRoles: [
-        {
-          description: 'Organization Administrator',
-          type: OFM_PORTAL_ROLES.ORG_ADMIN,
-        },
-        {
-          description: 'Facility Administrator',
-          type: OFM_PORTAL_ROLES.FAC_ADMIN,
-        },
-        {
-          description: 'Read Only',
-          type: OFM_PORTAL_ROLES.READ_ONLY,
-        },
-      ],
       facilities: [],
       facilitiesLoading: false,
       facilitiesSelected: [],

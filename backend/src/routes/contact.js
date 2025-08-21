@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { deactivateContact, getActiveContactsInOrganization } = require('../components/contact');
 const { param, validationResult } = require('express-validator');
+const { createContact, deactivateContact, getActiveContactsInOrganization, getRoles } = require('../components/contact');
 
 module.exports = router;
 
@@ -21,6 +21,13 @@ router.get(
     return getActiveContactsInOrganization(req, res);
   },
 );
+
+/**
+ * Get CCOF contact roles.
+ */
+router.get('/roles', passport.authenticate('jwt', { session: false }), isValidBackendToken, (req, res) => {
+  return getRoles(req, res);
+});
 
 /**
  * Soft delete (deactivate) a contact.

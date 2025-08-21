@@ -7,7 +7,13 @@
     </p>
     <v-row>
       <v-col class="d-flex justify-end">
-        <AppButton size="small" prepend-icon="mdi-plus" display="inline-grid" @click="addUserDialogOpen = true">
+        <AppButton
+          size="small"
+          prepend-icon="mdi-plus"
+          display="inline-grid"
+          :disabled="addUserDisabled"
+          @click="addUserDialogOpen = true"
+        >
           Add User
         </AppButton>
       </v-col>
@@ -73,7 +79,7 @@
     @contact-deactivated="contactDeactivatedHandler"
     @close-disable-dialog="disableUserDialogOpen = false"
   />
-  <AddUserDialog :show="addUserDialogOpen" @close-add-dialog="addUserDialogOpen = false" />
+  <AddUserDialog :show="addUserDialogOpen" :user-roles="userRoles" @close-add-dialog="addUserDialogOpen = false" />
 </template>
 
 <script>
@@ -83,6 +89,7 @@ import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
+import { OFM_PORTAL_ROLES } from '@/utils/constants';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -101,6 +108,7 @@ export default {
       contacts: [],
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
+      userRoles: [],
       contactsLoading: false,
       disableUserDialogOpen: false,
       addUserDialogOpen: false,
@@ -125,12 +133,19 @@ export default {
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
     },
+    orgAdminRole() {
+      return this.userRoles.find((userRole) => userRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
+    },
+    addUserDisabled() {
+      return isEmpty(this.userRoles) || this.userInfo?.roleId !== this.orgAdminRole?.roleId;
+    },
   },
   async mounted() {
     try {
       this.contactsLoading = true;
       if (isEmpty(this.loadedModel)) {
         await this.loadOrganization(this.organizationId);
+        this.userRoles = await contactService.getRoles();
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
       this.contacts = contactsData.map(this.setAccessTypeField);
