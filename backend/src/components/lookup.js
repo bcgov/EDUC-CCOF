@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const _ = require('lodash');
 const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
-const { ProgramYearMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
+const { PermissionMappings, ProgramYearMappings, RoleMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const log = require('./logger');
 
@@ -143,7 +143,7 @@ async function getLookupInfo(req, res) {
         return _.pick(item, ['ccof_childcarecategorynumber', 'ccof_name', 'ccof_description', 'ccof_childcare_categoryid']);
       });
 
-    const [licenseCategory, healthAuthorities] = await Promise.all([getLicenseCategory(), getGlobalOptionsData('ccof_healthauthority')]);
+    const [licenseCategory, healthAuthorities, roles] = await Promise.all([getLicenseCategory(), getGlobalOptionsData('ccof_healthauthority'), getRoles()]);
     resData = {
       programYear: programYears,
       childCareCategory: childCareCategory,
@@ -153,6 +153,7 @@ async function getLookupInfo(req, res) {
       familyLicenseCategory: licenseCategory.familyLicenseCategory,
       'changeRequestTypes:': CHANGE_REQUEST_TYPES,
       healthAuthorities: healthAuthorities,
+      roles: roles,
     };
     lookupCache.put('lookups', resData, ONE_HOUR_MS);
   }
@@ -183,6 +184,24 @@ async function getGlobalOptionsData(operationName) {
   } catch (error) {
     log.error(`Error getting global options data for ${operationName}:`, error);
   }
+}
+
+async function getRoles() {
+  let roles = lookupCache.get('roles');
+  if (!roles) {
+    roles = [];
+    const response = await getOperation(
+      "ofm_portal_roles?$select=ofm_name,ofm_portal_role_number&$expand=owningbusinessunit($select=name),ofm_portal_role_permission($select=ofm_portal_permissionid,_ofm_portal_privilege_value;$expand=ofm_portal_privilege($select=ofm_category,ofm_name,ofm_portal_privilege_number);$filter=(statecode eq 0))&$filter=(statecode eq 0) and (owningbusinessunit/name eq 'CCOF')",
+    );
+    response?.value?.forEach((item) => {
+      const role = new MappableObjectForFront(item, RoleMappings);
+      role.data.permissions = item.ofm_portal_role_permission.map((p) => new MappableObjectForFront(p.ofm_portal_privilege, PermissionMappings).toJSON());
+      roles.push(role);
+    });
+    roles.sort((a, b) => a.data.roleName?.localeCompare(b.data.roleName));
+    lookupCache.put('roles', roles, ONE_HOUR_MS);
+  }
+  return roles;
 }
 
 module.exports = {

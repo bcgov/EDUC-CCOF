@@ -298,6 +298,8 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
+const UserProfileMappings = [{ back: 'portalrole_id', front: 'role' }];
+
 const UserProfileOrganizationMappings = [
   { back: 'organization_name', front: 'organizationName' },
   { back: 'organization_accountid', front: 'organizationId' },
@@ -724,6 +726,17 @@ const ServiceDeliveryMappings = [
   { back: 'ccof_accepts_subsidy', front: 'acceptsSubsidy' },
 ];
 
+const RoleMappings = [
+  { back: 'ofm_name', front: 'roleName' },
+  { back: 'ofm_portal_role_number', front: 'roleNumber' },
+  { back: 'ofm_portal_roleid', front: 'roleId' },
+];
+
+const PermissionMappings = [
+  { back: 'ofm_name', front: 'permissionName' },
+  { back: 'ofm_portal_privilege_number', front: 'permissionNumber' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -767,4 +780,7 @@ module.exports = {
   FundingAgreementMappings,
   LicenceMappings,
   ServiceDeliveryMappings,
+  RoleMappings,
+  PermissionMappings,
+  UserProfileMappings,
 };

@@ -16,6 +16,7 @@ const {
   PROGRAM_YEAR_STATUS_CODES,
 } = require('../util/constants');
 const {
+  UserProfileMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileBaseFundingMappings,
@@ -94,15 +95,17 @@ async function getUserInfo(req, res) {
   }
 
   if (userResponse === null) {
-    creatUser(req);
+    createUser(req);
+    // TODO Add a role for new users
     return res.status(HttpStatus.OK).json(resData);
   }
   if (userResponse == {}) {
     // If no data back, then no associated Organization/Facilities, return empty orgination data
     return res.status(HttpStatus.OK).json(resData);
   }
-  let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
-  let applicationList = [];
+  const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
+  const organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
+  const applicationList = [];
 
   if (userResponse.application && userResponse.application.length > 0) {
     //call the funding agreement table and load that to the application
@@ -138,10 +141,12 @@ async function getUserInfo(req, res) {
   }
   let results = {
     ...resData,
+    ...user,
     ...organization,
     contactid: userResponse.contactid,
     applications: applicationList,
   };
+  log.info('results:', minify(results));
   return res.status(HttpStatus.OK).json(results);
 }
 
@@ -242,7 +247,7 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function creatUser(req) {
+async function createUser(req) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
@@ -278,4 +283,5 @@ async function creatUser(req) {
 
 module.exports = {
   getUserInfo,
+  getUserProfile,
 };

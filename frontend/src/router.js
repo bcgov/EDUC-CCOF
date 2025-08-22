@@ -924,6 +924,25 @@ router.beforeEach((to, _from, next) => {
           authStore
             .getUserInfo(to)
             .then(async () => {
+              if (!authStore.isMinistryUser) {
+                // Validate Provider roles
+                if (!authStore.userInfo?.role) {
+                  return next('unauthorized');
+                }
+                // TODO: Validate Facilities for Facility Admin
+                // if (!authStore.hasFacilities) {
+                //   return next('unauthorized');
+                // }
+                // Validate specific permission
+                if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
+                  return next('unauthorized');
+                }
+                // Block access to Impersonate
+                if (to.name === 'impersonate') {
+                  return next('unauthorized');
+                }
+              }
+
               const navBarStore = useNavBarStore();
               await navBarStore.setUrlDetails(to);
               if (authStore.isMinistryUser && !authStore.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {
