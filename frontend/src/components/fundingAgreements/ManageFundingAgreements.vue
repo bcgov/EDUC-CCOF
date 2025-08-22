@@ -58,9 +58,7 @@
 
           <template #[`item.actions`]="{ item }">
             <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
-              <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
-                View
-              </AppButton>
+              <AppButton :primary="false" size="small" @click="goToViewFundingAgreement(item)"> View </AppButton>
               <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item)"> Download </AppButton>
             </v-row>
           </template>
@@ -134,8 +132,8 @@ export default {
         this.isLoading = false;
       }
     },
-    navigateToViewFundingAgreement(id) {
-      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
+    goToViewFundingAgreement(agreement) {
+      this.$router.push(`${PATHS.ROOT.FUNDING_AGREEMENTS}/${agreement.fundingAgreementId}`);
     },
     getStatusClass(status) {
       switch (status) {
