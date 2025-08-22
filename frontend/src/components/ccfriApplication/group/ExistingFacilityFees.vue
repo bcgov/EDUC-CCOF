@@ -1,14 +1,9 @@
 <template>
   <v-container>
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">
-        Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-      </span>
-    </div>
-    <br />
-    <div class="row pt-4 justify-center">
-      <span class="text-h5">Child Care Fee Reduction Initiative (CCFRI)</span>
-    </div>
+    <ApplicationPCFHeader
+      page-title="Child Care Fee Reduction Initiative (CCFRI)"
+      :program-year="formattedProgramYear"
+    />
     <v-form ref="isValidForm" v-model="isValidForm">
       <v-skeleton-loader v-if="loading" max-height="475px" :loading="loading" type="image, image, image" />
       <br />
@@ -16,17 +11,7 @@
         <br /><br />
       </v-skeleton-loader>
 
-      <v-card
-        v-else
-        elevation="6"
-        class="pa-4 mx-auto my-10 rounded-lg col-12"
-        min-height="230"
-        rounded
-        tiled
-        exact
-        tile
-        :ripple="false"
-      >
+      <v-card v-else elevation="6" class="pa-4 mx-auto rounded-lg" min-height="230">
         <v-card-text>
           <FacilityHeader
             :facility-account-number="currentFacility?.facilityAccountNumber"
@@ -71,17 +56,7 @@
         </v-card-text>
       </v-card>
 
-      <v-card
-        v-if="!loading && feeList.length > 0"
-        elevation="6"
-        class="pa-4 mx-auto my-10 rounded-lg col-12"
-        min-height="230"
-        rounded
-        tiled
-        exact
-        tile
-        :ripple="false"
-      >
+      <v-card v-if="!loading && feeList.length > 0" elevation="6" class="pa-4 mx-auto my-10 rounded-lg">
         <v-card-text>
           <p class="text-h6 text--primary">Are these fees listed above correct for this facility?</p>
           <br />
@@ -105,21 +80,21 @@
 
 <script>
 import { mapState, mapActions } from 'pinia';
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useCcfriAppStore } from '@/store/ccfriApp.js';
-
-import { PATHS, pcfUrlGuid, CCFRI_FEE_CORRECT_TYPES, ApiRoutes } from '@/utils/constants.js';
-import { deepCloneObject } from '@/utils/common.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import NavButton from '@/components/util/NavButton.vue';
 import ApiService from '@/common/apiService.js';
 import FacilityHeader from '@/components/guiComponents/FacilityHeader.vue';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useCcfriAppStore } from '@/store/ccfriApp.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { deepCloneObject } from '@/utils/common.js';
+import { PATHS, pcfUrlGuid, CCFRI_FEE_CORRECT_TYPES, ApiRoutes } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton, FacilityHeader },
+  components: { ApplicationPCFHeader, FacilityHeader, NavButton },
   mixins: [alertMixin],
   data() {
     return {

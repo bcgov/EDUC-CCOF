@@ -85,26 +85,37 @@
               {{ item.externalCcfriStatusText }}
             </span>
           </template>
-          <!-- TODO (vietle-cgi) - review v-if logic once the ER status/action ticket is ready -->
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
-                v-if="true"
+                v-if="showEditButton(item)"
                 :loading="loading"
+                :disabled="isSubmissionDeadlinePassed(item)"
                 :primary="false"
                 size="medium"
                 @click="goToEnrolmentReport(item)"
               >
                 Edit
               </AppButton>
-              <template v-else>
-                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
-                  View
-                </AppButton>
-                <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
-                  Adjust
-                </AppButton>
-              </template>
+              <AppButton
+                v-if="showViewButton(item)"
+                :loading="loading"
+                :primary="false"
+                size="medium"
+                @click="goToEnrolmentReport(item)"
+              >
+                View
+              </AppButton>
+              <AppButton
+                v-if="showAdjustButton(item)"
+                :loading="loading"
+                :disabled="isSubmissionDeadlinePassed(item)"
+                :primary="false"
+                size="medium"
+                @click="console.log(item)"
+              >
+                Adjust
+              </AppButton>
             </v-row>
           </template>
         </v-data-table>
@@ -298,6 +309,30 @@ export default {
         default:
           return null;
       }
+    },
+    isSubmissionDeadlinePassed(enrolmentReport) {
+      return new Date() > new Date(enrolmentReport.submissionDeadline);
+    },
+    showAdjustButton(enrolmentReport) {
+      return [
+        ENROLMENT_REPORT_STATUSES.APPROVED,
+        ENROLMENT_REPORT_STATUSES.PAID,
+        ENROLMENT_REPORT_STATUSES.REJECTED,
+      ].includes(enrolmentReport.externalCcofStatusCode);
+    },
+    showEditButton(enrolmentReport) {
+      return [ENROLMENT_REPORT_STATUSES.DRAFT, ENROLMENT_REPORT_STATUSES.SUBMITTED].includes(
+        enrolmentReport.externalCcofStatusCode,
+      );
+    },
+    showViewButton(enrolmentReport) {
+      return [
+        ENROLMENT_REPORT_STATUSES.APPROVED,
+        ENROLMENT_REPORT_STATUSES.EXPIRED,
+        ENROLMENT_REPORT_STATUSES.PAID,
+        ENROLMENT_REPORT_STATUSES.REJECTED,
+        ENROLMENT_REPORT_STATUSES.WITH_MINISTRY,
+      ].includes(enrolmentReport.externalCcofStatusCode);
     },
   },
 };

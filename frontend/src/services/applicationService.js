@@ -18,6 +18,7 @@ import {
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  YES_NO_VALUES,
 } from '@/utils/constants.js';
 import {
   isEmailValid,
@@ -219,6 +220,7 @@ export default {
       requiredFields.push('maxCapacityExtended', 'maxDaysPerWeekExtended', 'maxWeeksPerYearExtended');
     }
     const areFieldsValid =
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
@@ -243,6 +245,7 @@ export default {
     ];
     const areFieldsValid =
       funding.maxLicensesCapacity > 0 &&
+      funding.maxSpaces <= funding.maxLicensesCapacity &&
       isNumberOfDaysPerWeekValid(funding.maxDaysPerWeek) &&
       isNumberOfWeeksPerYearValid(funding.maxWeeksPerYear) &&
       validateHourDifference(funding.hoursFrom, funding.hoursTo, 1);
@@ -547,8 +550,8 @@ export default {
   },
 
   isExceptionalCircumstancesComplete(rfi) {
-    if (!rfi.exceptionalCircumstances) return rfi.exceptionalCircumstances === 0;
-    if (!rfi.circumstanceOccurWithin6Month) return rfi.circumstanceOccurWithin6Month === 0;
+    if (!rfi.exceptionalCircumstances) return rfi.exceptionalCircumstances === YES_NO_VALUES.NO;
+    if (!rfi.circumstanceOccurWithin6Month) return rfi.circumstanceOccurWithin6Month === YES_NO_VALUES.NO;
     const requiredFields = ['expenseInformationNote'];
 
     const expenseRequiredFields = ['description', 'date', 'frequency', 'expense'];
@@ -556,10 +559,13 @@ export default {
       !isEmpty(rfi.expenseList) && rfi.expenseList?.every((expense) => !hasEmptyFields(expense, expenseRequiredFields));
 
     const fundingRequiredFields = ['fundingProgram', 'date', 'status', 'amount', 'expenses'];
-    const isOtherSourcesOfMinistryFunding =
-      !isEmpty(rfi.fundingList) && rfi.fundingList?.every((fund) => !hasEmptyFields(fund, fundingRequiredFields));
+    const isOtherSourcesOfMinistryFundingComplete =
+      rfi.q3 === YES_NO_VALUES.NO ||
+      (!isEmpty(rfi.fundingList) && rfi.fundingList?.every((fund) => !hasEmptyFields(fund, fundingRequiredFields)));
 
-    return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete && isOtherSourcesOfMinistryFunding;
+    return (
+      !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete && isOtherSourcesOfMinistryFundingComplete
+    );
   },
 
   isDirectCareStaffWagesIncreasesComplete(rfi, languageYearLabel) {
