@@ -23,8 +23,8 @@
                   <div v-show="userType === 'portal'">
                     <p>What level of portal access should this user have?</p>
                     <v-select
-                      v-model="userRole"
-                      :items="userRoles"
+                      v-model="portalRole"
+                      :items="portalRoles"
                       item-title="name"
                       item-value="roleNumber"
                       label="User Role"
@@ -135,6 +135,7 @@ import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
 import { rules, allRulesAreValid } from '@/utils/rules';
+import contactService from '@/services/contactService.js';
 
 import OrganizationService from '@/services/organizationService.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
@@ -152,7 +153,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    userRoles: {
+    portalRoles: {
       type: Array,
       required: true,
     },
@@ -175,7 +176,7 @@ export default {
           description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
         },
       ],
-      userRole: OFM_PORTAL_ROLES.READ_ONLY,
+      portalRole: OFM_PORTAL_ROLES.READ_ONLY,
       facilities: [],
       facilitiesLoading: false,
       facilitiesSelected: [],
@@ -191,7 +192,7 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     newFacAdmin() {
-      return this.userRole === OFM_PORTAL_ROLES.FAC_ADMIN;
+      return this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN;
     },
     rulesForFacilities() {
       return [
@@ -233,7 +234,7 @@ export default {
       if (
         this.step === 1 &&
         this.userType === 'portal' &&
-        this.userRole === OFM_PORTAL_ROLES.FAC_ADMIN &&
+        this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN &&
         !allRulesAreValid(this.rulesForFacilities, this.facilitiesSelected)
       ) {
         return this.$refs.form?.validate();
@@ -243,20 +244,27 @@ export default {
     clearFields() {
       this.step = 1;
       this.userType = 'portal';
-      this.userRole = OFM_PORTAL_ROLES.READ_ONLY;
+      this.portalRole = OFM_PORTAL_ROLES.READ_ONLY;
       this.facilitiesSelected = [];
 
       for (const k in this.userFields) {
         this.userFields[k] = '';
       }
     },
-    addUser() {
+    async addUser() {
       // For now, just close the dialog
       this.$refs.form?.validate();
       if (this.formValid) {
-        alert('Adding User');
-        this.closeDialog();
-        setTimeout(this.clearFields, 350);
+        try {
+          const response = await contactService.addContact({
+            ...this.userFields,
+            portalRole: this.portalRole,
+            facilities: this.facilitiesSelected,
+          });
+          console.log(response);
+        } catch (e) {
+          console.error(e);
+        }
       }
     },
   },

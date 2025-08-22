@@ -79,7 +79,7 @@
     @contact-deactivated="contactDeactivatedHandler"
     @close-disable-dialog="disableUserDialogOpen = false"
   />
-  <AddUserDialog :show="addUserDialogOpen" :user-roles="userRoles" @close-add-dialog="addUserDialogOpen = false" />
+  <AddUserDialog :show="addUserDialogOpen" :portal-roles="portalRoles" @close-add-dialog="addUserDialogOpen = false" />
 </template>
 
 <script>
@@ -108,7 +108,7 @@ export default {
       contacts: [],
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
-      userRoles: [],
+      portalRoles: [],
       contactsLoading: false,
       disableUserDialogOpen: false,
       addUserDialogOpen: false,
@@ -134,10 +134,10 @@ export default {
       ];
     },
     orgAdminRole() {
-      return this.userRoles.find((userRole) => userRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
+      return this.portalRoles.find((portalRole) => portalRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
     },
     addUserDisabled() {
-      return isEmpty(this.userRoles) || this.userInfo?.roleId !== this.orgAdminRole?.roleId;
+      return isEmpty(this.portalRoles) || this.userInfo?.roleId !== this.orgAdminRole?.roleId;
     },
   },
   async mounted() {
@@ -145,7 +145,7 @@ export default {
       this.contactsLoading = true;
       if (isEmpty(this.loadedModel)) {
         await this.loadOrganization(this.organizationId);
-        this.userRoles = await contactService.getRoles();
+        this.portalRoles = await contactService.getRoles();
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
       this.contacts = contactsData.map(this.setAccessTypeField);
