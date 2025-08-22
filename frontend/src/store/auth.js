@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
-import { useAppStore } from '@/store/app.js';
+// import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -86,7 +86,7 @@ export const useAuthStore = defineStore('auth', {
         this.setUserInfo(userInfoRes.data);
 
         // Lookup the permissions
-        let role;
+        //let role;
         // const appStore = useAppStore();
         // if (this.isImpersonating) {
         //   // When impersonating always use 'Impersonate', not the impersonated user's role
