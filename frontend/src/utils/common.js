@@ -1,5 +1,6 @@
 'use strict';
 
+import Decimal from 'decimal.js';
 import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
@@ -251,8 +252,9 @@ export function getUpdatedObjectsByKeys(original, updated, keys, idKey) {
  * @returns {number} The rounded sum as a Number.
  */
 export function addDecimal(a, b, decimals = 4) {
-  const factor = Math.pow(10, decimals);
-  return Math.round((a + b + Number.EPSILON) * factor) / factor;
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).plus(safeB).toDecimalPlaces(decimals).toNumber();
 }
 
 /**
@@ -268,6 +270,7 @@ export function addDecimal(a, b, decimals = 4) {
  * @returns {number} The rounded result as a Number.
  */
 export function multiplyDecimal(a, b, decimals = 4) {
-  const factor = Math.pow(10, decimals);
-  return Math.round((a * b + Number.EPSILON) * factor) / factor;
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
 }

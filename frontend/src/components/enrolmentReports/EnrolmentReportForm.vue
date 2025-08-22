@@ -608,6 +608,7 @@ export default {
 
     async loadEnrolmentReport() {
       this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
+      this.normalizeRates();
       this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
     },
 
@@ -644,6 +645,16 @@ export default {
     buildCalculationFieldName(prefix, category) {
       const updatedCategory = category.charAt(0).toUpperCase() + category.slice(1);
       return prefix + updatedCategory;
+    },
+
+    normalizeRates() {
+      this.CATEGORY_FIELDS.forEach((category) => {
+        const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
+        this.enrolmentReport[ccfriRateField] = this.enrolmentReport[ccfriRateField] || 0;
+        this.enrolmentReport.baseFundingRates[category] = this.enrolmentReport.baseFundingRates[category] || 0;
+        this.enrolmentReport.ccfriProviderPaymentRates[category] =
+          this.enrolmentReport.ccfriProviderPaymentRates[category] || 0;
+      });
     },
 
     calculateCurrentTotals() {
@@ -710,9 +721,9 @@ export default {
           this.enrolmentReport[ccfriProviderAmountField],
         );
       });
-      this.enrolmentReport.grandTotalBase = grantTotals.ccofBaseAmount;
-      this.enrolmentReport.grandTotalCcfri = grantTotals.ccfriAmount;
-      this.enrolmentReport.grandTotalCcfriProvider = grantTotals.ccfriProviderAmount;
+      this.enrolmentReport.grandTotalBase = grantTotals.ccofBaseAmount || 0;
+      this.enrolmentReport.grandTotalCcfri = grantTotals.ccfriAmount || 0;
+      this.enrolmentReport.grandTotalCcfriProvider = grantTotals.ccfriProviderAmount || 0;
     },
 
     calculate() {
