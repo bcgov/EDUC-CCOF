@@ -46,7 +46,7 @@ async function updateFundingAgreement(req, res) {
     const payload = {
       ccof_declaration: req.body.consentCheck,
       'ccof_sp_primary_contact_name@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
-      ccof_date_signed_ministry: req.body.signedOn,
+      ccof_date_signed_sp: req.body.signedOn,
     };
     const response = await patchOperationWithObjectId('ccof_funding_agreements', req.params.fundingAgreementId, payload);
     return res.status(HttpStatus.OK).json(response);

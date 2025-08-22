@@ -1,6 +1,6 @@
 <template>
   <v-container fluid v-bind="$attrs" class="px-md-16">
-    <h1>{{ (fundingAgreement && fundingAgreement.fundingAgreementNumber) || '' }}</h1>
+    <h1>{{ fundingAgreementNumber }}</h1>
     <p>Carefully review your funding agreement.</p>
 
     <v-row class="mt-6" justify="center">
@@ -13,12 +13,11 @@
     <br />
     <br />
     <h4 id="declaration" class="lg-px-10">Declaration</h4>
-    <v-skeleton-loader v-if="loadingState" :loading="loadingState" type="table-tbody"></v-skeleton-loader>
-    <template v-else-if="fundingAgreement">
-      <v-row>
+    <v-skeleton-loader :loading="isLoading" type="table-tbody">
+      <div>
         <v-col cols="12" class="pt-0">
           <div class="pa-lg-7 pa-5 overflow-y-auto grey-div-with-border">
-            <template v-if="declarationTemplate === 'DeclarationB'">
+            <template v-if="isDeclarationB">
               <p>
                 I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the
                 information provided is true and complete to the best of my knowledge and belief.
@@ -85,50 +84,49 @@
           v-model="fundingAgreement.consentCheck"
           class="ml-3"
           color="primary"
-          :disabled="isReadOnly || submitted"
+          :disabled="isReadOnly"
           label="I agree, consent and certify"
         />
-      </v-row>
 
-      <v-row class="mt-4" align="center" dense>
-        <v-col cols="auto">
-          <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
-        </v-col>
+        <v-row class="mt-4" align="center" dense>
+          <v-col cols="auto">
+            <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
+          </v-col>
 
-        <v-col cols="auto" class="ml-4">
-          <AppButton
-            color="primary"
-            :disabled="isReadOnly || submitted || !fundingAgreement.consentCheck"
-            :loading="loadingState"
-            @click="submit"
-          >
-            Submit
-          </AppButton>
-        </v-col>
-      </v-row>
-      <AppDialog
-        v-model="showSubmissionConfirmationDialog"
-        persistent
-        max-width="510px"
-        title="Submission Complete"
-        @close="goBackToManageFundingAgreement"
-      >
-        <template #content>
-          <p>
-            Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates to
-            your agreement.
-          </p>
-        </template>
-
-        <template #button>
-          <div class="center-button">
-            <AppButton color="primary" @click="goBackToManageFundingAgreement">
-              Return to Funding Agreements
+          <v-col cols="auto" class="ml-4">
+            <AppButton
+              color="primary"
+              :disabled="isReadOnly || processing || !fundingAgreement.consentCheck"
+              @click="submit"
+            >
+              Submit
             </AppButton>
-          </div>
-        </template>
-      </AppDialog>
-    </template>
+          </v-col>
+        </v-row>
+        <AppDialog
+          v-model="showSubmissionConfirmationDialog"
+          persistent
+          max-width="510px"
+          title="Submission Complete"
+          @close="goBackToManageFundingAgreement"
+        >
+          <template #content>
+            <p>
+              Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates
+              to your agreement.
+            </p>
+          </template>
+
+          <template #button>
+            <div class="center-button">
+              <AppButton color="primary" @click="goBackToManageFundingAgreement">
+                Return to Funding Agreements
+              </AppButton>
+            </div>
+          </template>
+        </AppDialog>
+      </div>
+    </v-skeleton-loader>
   </v-container>
 </template>
 
@@ -142,6 +140,16 @@ import alertMixin from '@/mixins/alertMixin.js';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
 
+const READ_ONLY_STATUSES = [
+  FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
+  FUNDING_AGREEMENTS_STATUS.REPLACED,
+  FUNDING_AGREEMENTS_STATUS.ACTIVE,
+  FUNDING_AGREEMENTS_STATUS.APPROVED,
+  FUNDING_AGREEMENTS_STATUS.EXPIRED,
+  FUNDING_AGREEMENTS_STATUS.CANCELLED,
+  FUNDING_AGREEMENTS_STATUS.TERMINATED,
+];
+
 export default {
   name: 'ViewFundingAgreement',
   components: {
@@ -153,29 +161,21 @@ export default {
   data() {
     return {
       fundingAgreement: null,
-      consentCheck: false,
       pdfFile: null,
-      loadingState: false,
-      submitted: false,
+      isLoading: false,
+      processing: false,
       showSubmissionConfirmationDialog: false,
     };
   },
   computed: {
     isReadOnly() {
-      const readOnlyStatuses = [
-        FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
-        FUNDING_AGREEMENTS_STATUS.REPLACED,
-        FUNDING_AGREEMENTS_STATUS.ACTIVE,
-        FUNDING_AGREEMENTS_STATUS.APPROVED,
-        FUNDING_AGREEMENTS_STATUS.EXPIRED,
-        FUNDING_AGREEMENTS_STATUS.CANCELLED,
-        FUNDING_AGREEMENTS_STATUS.SUSPENDED,
-        FUNDING_AGREEMENTS_STATUS.TERMINATED,
-      ];
-      return readOnlyStatuses.includes(this.fundingAgreement?.externalStatus);
+      return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatus);
     },
-    declarationTemplate() {
-      return 'DeclarationB';
+    fundingAgreementNumber() {
+      return this.fundingAgreement?.fundingAgreementNumber;
+    },
+    isDeclarationB() {
+      return this.fundingAgreement?.fundingAgreementOrderNumber >= 0;
     },
   },
   async created() {
@@ -184,13 +184,13 @@ export default {
   methods: {
     async loadData() {
       try {
-        this.loadingState = true;
+        this.isLoading = true;
         await this.loadFundingAgreement();
         await this.loadFundingAgreementPDF();
       } catch (error) {
         console.error('Failed to load Funding Agreement', error);
       } finally {
-        this.loadingState = false;
+        this.isLoading = false;
       }
     },
 
@@ -200,8 +200,8 @@ export default {
 
     async loadFundingAgreementPDF() {
       try {
-        const pdf_file = await FundingAgreementService.getFundingAgreementPDF(this.$route.params.fundingAgreementId);
-        this.pdfFile = `data:application/pdf;base64,${pdf_file}`;
+        const pdfFile = await FundingAgreementService.getFundingAgreementPDF(this.$route.params.fundingAgreementId);
+        this.pdfFile = `data:application/pdf;base64,${pdfFile}`;
       } catch (error) {
         console.error('Failed to load PDF', error);
       }
@@ -213,17 +213,18 @@ export default {
 
     async submit() {
       try {
+        this.processing = true;
         const payload = {
           consentCheck: this.fundingAgreement.consentCheck,
           signedOn: new Date().toISOString(),
         };
-
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
-        this.submitted = true;
         this.showSubmissionConfirmationDialog = true;
       } catch (error) {
         this.setFailureAlert('Failed to update Funding Agreement');
         console.error(error);
+      } finally {
+        this.processing = false;
       }
     },
   },
