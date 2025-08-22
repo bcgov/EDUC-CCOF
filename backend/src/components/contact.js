@@ -8,7 +8,7 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { ContactMappings, ContactRoleMappings } = require('../util/mapping/Mappings');
 const log = require('./logger');
 
-const rolesCache  = new cache.Cache();
+const rolesCache = new cache.Cache();
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 async function getActiveContactsByOrgID(orgId) {
@@ -84,7 +84,7 @@ async function createContact(req, res) {
       return res.status(HttpStatus.UNAUTHORIZED).json('Not authorized');
     }
 
-    // TODO: Work out the rest of the forking logic for create contact
+    // TODO: Work out the rest of the forking logic for create contactp
 
     return res.status(HttpStatus.OK).json(userRole);
   } catch (e) {
