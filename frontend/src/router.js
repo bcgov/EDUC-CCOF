@@ -41,8 +41,7 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import EnrolmentReportDeclaration from '@/components/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
-import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
-import ViewFundingAgreements from '@/components/fundingAgreements/ViewFundingAgreements.vue';
+import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -844,17 +843,9 @@ const router = createRouter({
       },
     },
     {
-      path: `${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/:id`,
-      name: 'ViewFundingAgreement',
-      component: ViewFundingAgreements,
-      meta: {
-        requiresAuth: true,
-      },
-    },
-    {
-      path: PATHS.ROOT.FUNDING_AGREEMENTS,
-      name: 'funding-agreements',
-      component: ManageFundingAgreements,
+      path: `${PATHS.ROOT.FUNDING_AGREEMENTS}/:fundingAgreementId`,
+      name: 'view-funding-agreement',
+      component: ViewFundingAgreement,
       meta: {
         requiresAuth: true,
       },

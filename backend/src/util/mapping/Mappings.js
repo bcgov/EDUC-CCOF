@@ -552,6 +552,8 @@ const FundingAgreementMappings = [
   { back: 'ccof_start_date', front: 'fundingAgreementStartDate' },
   { back: 'ccof_funding_agreementid', front: 'fundingAgreementId' },
   { back: '_ccof_organization_value', front: 'organizationId' },
+  { back: 'ccof_declaration', front: 'consentCheck' },
+  { back: 'ccof_date_signed_sp', front: 'signedOn' },
 ];
 
 const DocumentsMappings = [
@@ -606,6 +608,31 @@ const EnrolmentReportExtensionMappings = [
   { back: 'ccof_approvedparentfeefrequencyoosck', front: 'approvedParentFeesFrequencyOOSCK' },
   { back: 'ccof_approvedparentfeefrequencyooscg', front: 'approvedParentFeesFrequencyOOSCG' },
   { back: 'ccof_approvedparentfeefrequencypre', front: 'approvedParentFeesFrequencyPre' },
+  { back: 'ccof_dailyccfrirateless0to18', front: 'dailyCcfriRateLess0To18' },
+  { back: 'ccof_dailyccfrirateover0to18', front: 'dailyCcfriRateOver0To18' },
+  { back: 'ccof_dailyccfrirateless18to36', front: 'dailyCcfriRateLess18To36' },
+  { back: 'ccof_dailyccfrirateover18to36', front: 'dailyCcfriRateOver18To36' },
+  { back: 'ccof_dailyccfrirateless3yk', front: 'dailyCcfriRateLess3YK' },
+  { back: 'ccof_dailyccfrirateover3yk', front: 'dailyCcfriRateOver3YK' },
+  { back: 'ccof_dailccfriratelessoosck', front: 'dailyCcfriRateLessOOSCK' },
+  { back: 'ccof_dailyccfrirateoveroosck', front: 'dailyCcfriRateOverOOSCK' },
+  { back: 'ccof_dailyccfriratelessooscg', front: 'dailyCcfriRateLessOOSCG' },
+  { back: 'ccof_dailyccfrirateoverooscg', front: 'dailyCcfriRateOverOOSCG' },
+  { back: 'ccof_dailyccfriratelesspre', front: 'dailyCcfriRateLessPre' },
+];
+
+const RateMappings = [
+  { back: 'ccof_over18to36', front: 'less0To18' },
+  { back: 'ccof_over0to18', front: 'over0To18' },
+  { back: 'ccof_less18to36', front: 'less18To36' },
+  { back: 'ccof_over18to36', front: 'over18To36' },
+  { back: 'ccof_less3yk', front: 'less3YK' },
+  { back: 'ccof_over3yk', front: 'over3YK' },
+  { back: 'ccof_lessooscg', front: 'lessOOSCG' },
+  { back: 'ccof_overooscg', front: 'overOOSCG' },
+  { back: 'ccof_lessoosck', front: 'lessOOSCK' },
+  { back: 'ccof_overoosck', front: 'overOOSCK' },
+  { back: 'ccof_lesspre', front: 'lessPre' },
 ];
 
 const EnrolmentReportMappings = [
@@ -751,6 +778,7 @@ module.exports = {
   CCFRIFacilityMappings,
   OrganizationFacilityMappings,
   ClosureMappings,
+  RateMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,

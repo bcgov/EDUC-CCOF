@@ -2,7 +2,7 @@
 const { getOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { DailyEnrolmentMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings } = require('../util/mapping/Mappings');
+const { DailyEnrolmentMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery, padString } = require('./utils');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
@@ -15,8 +15,11 @@ function getReportVersionText(report) {
   return isAdjustmentReport(report) ? `${version}-Adjustment` : version;
 }
 
-function mapEnrolmentReportForFront(report) {
+function mapEnrolmentReportForFront(response) {
+  const report = { ...response, ...response.ccof_reportextension };
   const mappedReport = new MappableObjectForFront(report, EnrolmentReportMappings).toJSON();
+  mappedReport.baseFundingRates = new MappableObjectForFront(report.ccof_ccofbaserate, RateMappings).toJSON();
+  mappedReport.ccfriProviderPaymentRates = new MappableObjectForFront(report.ccof_ccfriproviderpaymentrate, RateMappings).toJSON();
   mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
   mappedReport.versionText = getReportVersionText(mappedReport);
   return mappedReport;
@@ -24,10 +27,8 @@ function mapEnrolmentReportForFront(report) {
 
 async function getEnrolmentReport(req, res) {
   try {
-    const response = await getOperation(`ccof_monthlyenrollmentreports(${req.params.enrolmentReportId})?$expand=ccof_reportextension`);
-    const enrolmentReport = { ...response, ...response.ccof_reportextension };
-    delete enrolmentReport.ccof_reportextension;
-    return res.status(HttpStatus.OK).json(mapEnrolmentReportForFront(enrolmentReport));
+    const response = await getOperation(`ccof_monthlyenrollmentreports(${req.params.enrolmentReportId})?$expand=ccof_reportextension,ccof_ccofbaserate,ccof_ccfriproviderpaymentrate`);
+    return res.status(HttpStatus.OK).json(mapEnrolmentReportForFront(response));
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
