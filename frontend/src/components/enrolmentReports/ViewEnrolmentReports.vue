@@ -311,7 +311,7 @@ export default {
       }
     },
     isSubmissionDeadlinePassed(enrolmentReport) {
-      return new Date() > new Date(enrolmentReport.submissionDeadline);
+      return EnrolmentReportService.isSubmissionDeadlinePassed(enrolmentReport);
     },
     showAdjustButton(enrolmentReport) {
       return [

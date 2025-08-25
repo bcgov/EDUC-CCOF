@@ -24,7 +24,7 @@
       Next
     </AppButton>
     <AppButton v-if="isSubmitDisplayed" :loading="loading" :disabled="isSubmitDisabled" @click="submit">
-      Submit
+      Accept and Submit
     </AppButton>
   </v-row>
 </template>
