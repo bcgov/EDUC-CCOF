@@ -10,7 +10,7 @@ async function getLicences(req, res) {
     const operation =
       'ccof_licenses?$select=ccof_end_date,_ccof_facility_value,ccof_licenseid,ccof_name,ccof_organization,ccof_start_date' +
       '&$expand=ccof_service_delivery_details_license_ccof_license($select=ccof_accepts_subsidy,ccof_after_school,ccof_afternoon_kindercare,ccof_before_school,ccof_care_type,ccof_end_date,ccof_extended_hours_offered,ccof_hours_of_operation_end,ccof_hours_of_operation_start,ccof_name,' +
-      'ccof_licenced_spaces,ccof_license_categories,ccof_max_4_or_less,ccof_max_capacity,ccof_max_days_per_week,ccof_max_over_4,ccof_max_weeks_per_year,ccof_morning_kindercare,ccof_number_of_preschool_sessions,ccof_overnight_care,ccof_recreational_care,ccof_school_age_on_school_grounds,ccof_start_date)' +
+      'ccof_licenced_spaces,_ccof_license_categories_lookup_value,ccof_max_4_or_less,ccof_max_capacity,ccof_max_days_per_week,ccof_max_over_4,ccof_max_weeks_per_year,ccof_morning_kindercare,ccof_number_of_preschool_sessions,ccof_overnight_care,ccof_recreational_care,ccof_school_age_on_school_grounds,ccof_start_date)' +
       `&$filter=(_ccof_facility_value eq ${req.query.facilityId})`;
 
     const response = await getOperation(operation);
