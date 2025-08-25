@@ -724,7 +724,7 @@ const LicenceMappings = [
 ];
 
 const ServiceDeliveryMappings = [
-  { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
+  { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
   { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
   { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
   { back: 'ccof_overnight_care', front: 'overnightCare' },
