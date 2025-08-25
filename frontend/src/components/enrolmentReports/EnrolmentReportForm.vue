@@ -713,7 +713,7 @@ export default {
     },
 
     previous() {
-      if (this.isSubmitted) {
+      if (this.readonly) {
         this.$router.push(PATHS.ROOT.ENROLMENT_REPORTS);
       } else {
         this.showBackConfirmationDialog = true;
