@@ -12,6 +12,42 @@ const {
   IndigenousExpenseMappings,
 } = require('../util/mapping/Mappings');
 
+function fixDateInconsistencyForPST(input, key) {
+  const TZ = 'America/Vancouver';
+
+  const toISO = (s) => {
+    if (!s) return null;
+    const [y, m, d] = String(s).replaceAll('/', '-').split('-').map(Number);
+
+    // Noon on that calendar date (treat components as "local" numbers)
+    const localNoonUTC = Date.UTC(y, m - 1, d, 12, 0, 0);
+
+    // Get Vancouver's offset for that date (e.g., UTC-07:00 in summer, -08:00 in winter)
+    const offStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ,
+      timeZoneName: 'shortOffset',
+    })
+      .formatToParts(new Date(localNoonUTC))
+      .find((p) => p.type === 'timeZoneName').value; // "UTC-07:00" / "GMT-8"
+
+    const [, sign, hh, mm = '00'] = offStr.match(/^[A-Z]+([+-])(\d{1,2})(?::?(\d{2}))?$/);
+    const offsetMinutes = (sign === '+' ? 1 : -1) * (hh * 60 + +mm);
+
+    // Convert "noon in Vancouver" -> absolute UTC instant
+    return new Date(localNoonUTC - offsetMinutes * 60000).toISOString();
+  };
+
+  if (typeof input === 'string') return toISO(input);
+
+  if (key && input && typeof input === 'object') {
+    if (Array.isArray(input)) input.forEach((o) => o?.[key] && (o[key] = toISO(o[key])));
+    else if (input[key]) input[key] = toISO(input[key]);
+    return input;
+  }
+
+  return input;
+}
+
 async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) {
   if (!filterName) {
     filterName = '_ccof_rfiparentfeeincrease_value';
@@ -203,6 +239,8 @@ async function updateRFIApplication(req, res) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiexpenseinfos', 'ccof_rfipfiexpenseinfoid', '_ccof_rfipfi_value');
       const expenseListPayload = req.body.expenseList?.map((el) => new MappableObjectForBack(el, ExpenseInformationMappings).data);
 
+      fixDateInconsistencyForPST(expenseListPayload, 'ccof_dateofexpense');
+
       expenseListPayload?.forEach(async (payload) => {
         // payload.ccof_dateofexpense = formatTimeForBack(
         //   payload.ccof_dateofexpense
@@ -266,6 +304,7 @@ async function createRFIApplication(req, res) {
     //   (item) =>
     //     (item.ccof_dateofexpense = formatTimeForBack(item.ccof_dateofexpense))
     // );
+    fixDateInconsistencyForPST(friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'], 'ccof_dateofexpense');
     friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService'] = req.body.indigenousExpenseList?.map((el) => new MappableObjectForBack(el, IndigenousExpenseMappings).data);
     // friApplication["ccof_rfipfi_ccof_rfipfi_IndegenousService"]?.forEach(
     //   (item) => (item.ccof_date = formatTimeForBack(item.ccof_date))
