@@ -1,6 +1,7 @@
 import EnrolmentReportHeader from '@/components/enrolmentReports/EnrolmentReportHeader.vue';
 import EnrolmentReportNavButtons from '@/components/enrolmentReports/EnrolmentReportNavButtons.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 
 export default {
@@ -18,12 +19,11 @@ export default {
   },
   computed: {
     readonly() {
-      return this.loading || this.processing || this.isSubmitted;
-    },
-    isSubmitted() {
       return (
+        this.loading ||
+        this.processing ||
         this.enrolmentReport?.externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT ||
-        this.enrolmentReport?.externalCcfriStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT
+        EnrolmentReportService.isSubmissionDeadlinePassed(this.enrolmentReport)
       );
     },
   },

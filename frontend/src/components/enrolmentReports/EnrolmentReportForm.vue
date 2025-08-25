@@ -725,7 +725,6 @@ export default {
       this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${this.$route.params.enrolmentReportId}/declaration`);
     },
 
-    // TODO (vietle-cgi): implement calculate function once the CMS finish Calculate flow.
     async save(showMessage) {
       if (this.readonly) return;
       try {

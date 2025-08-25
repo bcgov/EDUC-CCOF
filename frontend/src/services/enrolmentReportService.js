@@ -66,4 +66,8 @@ export default {
       throw error;
     }
   },
+
+  isSubmissionDeadlinePassed(enrolmentReport) {
+    return new Date() > new Date(enrolmentReport.submissionDeadline);
+  },
 };
