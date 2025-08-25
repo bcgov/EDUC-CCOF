@@ -12,45 +12,40 @@ const {
   IndigenousExpenseMappings,
 } = require('../util/mapping/Mappings');
 
-// One function to rule them all:
-// - If you pass a string: returns ISO for **noon Pacific** on that date.
-// - If you pass an array + key: mutates each item[key] to ISO (in place) and returns the array.
-// - If you pass an object + key: mutates obj[key] and returns the object.
-function normalizeToPacificNoonISO(input, key) {
-  const fmt = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Vancouver',
-    hour12: false,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+function fixDateInconsistencyForPST(input, key) {
+  const TZ = 'America/Vancouver';
 
   const toISO = (s) => {
     if (!s) return null;
     const [y, m, d] = String(s).replaceAll('/', '-').split('-').map(Number);
-    const probe = new Date(y, m - 1, d, 12, 0, 0); // noon (avoids day roll)
-    const parts = Object.fromEntries(fmt.formatToParts(probe).map((p) => [p.type, p.value]));
-    return new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, +parts.second)).toISOString();
+
+    // Noon on that calendar date (treat components as "local" numbers)
+    const localNoonUTC = Date.UTC(y, m - 1, d, 12, 0, 0);
+
+    // Get Vancouver's offset for that date (e.g., UTC-07:00 in summer, -08:00 in winter)
+    const offStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ,
+      timeZoneName: 'shortOffset',
+    })
+      .formatToParts(new Date(localNoonUTC))
+      .find((p) => p.type === 'timeZoneName').value; // "UTC-07:00" / "GMT-8"
+
+    const [, sign, hh, mm = '00'] = offStr.match(/^[A-Z]+([+-])(\d{1,2})(?::?(\d{2}))?$/);
+    const offsetMinutes = (sign === '+' ? 1 : -1) * (hh * 60 + +mm);
+
+    // Convert "noon in Vancouver" -> absolute UTC instant
+    return new Date(localNoonUTC - offsetMinutes * 60000).toISOString();
   };
 
   if (typeof input === 'string') return toISO(input);
 
-  if (Array.isArray(input) && key) {
-    input.forEach((o) => {
-      if (o && o[key]) o[key] = toISO(o[key]);
-    });
+  if (key && input && typeof input === 'object') {
+    if (Array.isArray(input)) input.forEach((o) => o?.[key] && (o[key] = toISO(o[key])));
+    else if (input[key]) input[key] = toISO(input[key]);
     return input;
   }
 
-  if (input && typeof input === 'object' && key) {
-    if (input[key]) input[key] = toISO(input[key]);
-    return input;
-  }
-
-  return input; // nothing to do
+  return input;
 }
 
 async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) {
@@ -244,7 +239,7 @@ async function updateRFIApplication(req, res) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiexpenseinfos', 'ccof_rfipfiexpenseinfoid', '_ccof_rfipfi_value');
       const expenseListPayload = req.body.expenseList?.map((el) => new MappableObjectForBack(el, ExpenseInformationMappings).data);
 
-      normalizeToPacificNoonISO(expenseListPayload, 'ccof_dateofexpense');
+      fixDateInconsistencyForPST(expenseListPayload, 'ccof_dateofexpense');
 
       expenseListPayload?.forEach(async (payload) => {
         // payload.ccof_dateofexpense = formatTimeForBack(
@@ -309,7 +304,7 @@ async function createRFIApplication(req, res) {
     //   (item) =>
     //     (item.ccof_dateofexpense = formatTimeForBack(item.ccof_dateofexpense))
     // );
-    normalizeToPacificNoonISO(friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'], 'ccof_dateofexpense');
+    fixDateInconsistencyForPST(friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'], 'ccof_dateofexpense');
     friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService'] = req.body.indigenousExpenseList?.map((el) => new MappableObjectForBack(el, IndigenousExpenseMappings).data);
     // friApplication["ccof_rfipfi_ccof_rfipfi_IndegenousService"]?.forEach(
     //   (item) => (item.ccof_date = formatTimeForBack(item.ccof_date))
