@@ -4,21 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cypress:run": "cypress run",
+    "clean-reports": "powershell -Command \"if (Test-Path 'cypress/reports') { Remove-Item -Recurse -Force 'cypress/reports' }\"",
+    "merge-reports": "npx mochawesome-merge \"cypress/reports/mocha/*.json\" > cypress/reports/mocha/report.json",
+    "generate-report": "npx marge cypress/reports/mocha/report.json --reportDir cypress/reports/html",
+    "report": "npm run merge-reports && npm run generate-report",
+    "test:report": "npm run clean-reports && npm run cypress:run && npm run report"
   },
   "author": "Neha",
   "license": "ISC",
   "devDependencies": {
     "cypress": "^14.5.2",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-mochawesome-reporter": "^4.0.0",
     "mochawesome": "^7.1.3",
     "mochawesome-merge": "^5.0.0",
     "mochawesome-report-generator": "^6.2.0",
     "uuid": "^10.0.0"
-  },
- "scripts": {
-  "cypress:run": "cypress run",
-  "merge-reports": "npx mochawesome-merge cypress/reports/*.json > cypress/reports/report.json",
-  "generate-report": "npx marge cypress/reports/report.json --reportDir cypress/reports/html"
-}
-
+  }
 }

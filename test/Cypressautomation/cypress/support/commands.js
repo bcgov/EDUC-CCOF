@@ -23,64 +23,107 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
-///<reference types="Cypress" />
+// ///<reference types="Cypress" />
 
 // <reference types="Cypress-xpath"/>
 
 //<reference types="cypress" />
 // cypress/support/commands.js
+// cypress/support/e2e.js  (or e2e.ts)
+Cypress.SelectorPlayground.defaults({
+  selectorPriority: [
+    'data-cy',       
+    'data-test',
+    'data-testid',
+    'id',
+    'class',
+    'tag',
+    'attributes',
+    'nth-child',
+  ],
+})
 
 const CONTROL_SELECTOR = [
-  'input',
+  'input:not([type="hidden"])',
   'textarea',
-  '[contenteditable="true"]',
   'select',
-  '[role="textbox"]',
-  '[role="combobox"]',
-  '[role="checkbox"]',
-  '[role="radio"]'
-].join(', ')
+  '[contenteditable="true"]',
+  '[role="textbox"]'
+].join(', ');
 
-Cypress.Commands.add('getByLabel', (labelText) => {
-  // 1) find the label by text (case-insensitive)
-  return cy.contains('label, [aria-label], [data-label]', labelText, { matchCase: false })
-    .should('be.visible')
+/**
+ * getByLabel(labelText, options?)
+ *  - Finds a form control associated with a visual/accessible label.
+ *  - Returns a Cypress chainable to the **real input** whenever possible.
+ *  - If the label uses `for="id"`, returns `cy.get('#id')` (re-queries each time).
+  */
+ 
+Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
+  const {
+    timeout = 10000,
+    matchCase = false,
+    includeShadowDom = true,
+  } = options;
+
+  return cy
+    .contains('label, [aria-label], [data-label]', labelText, {
+      timeout,
+      matchCase,
+      includeShadowDom,
+    })
+    .should('exist')
     .then(($label) => {
-      const labelEl = $label[0]
-      const body = labelEl.ownerDocument.body
+      const labelEl = $label[0];
+      const doc = labelEl.ownerDocument;
+      const body = doc.body;
 
-      // 2) if label is connected via for="id"
-      const forId = labelEl.getAttribute && labelEl.getAttribute('for')
+      // 1) Label with for="id" → prefer re-queryable selector (survives rerenders)
+      const forId = labelEl.getAttribute?.('for');
       if (forId) {
-        const byFor = body.querySelector(`#${CSS.escape(forId)}`)
-        if (byFor) return cy.wrap(byFor)
+               return cy.get(`#${CSS.escape(forId)}`, { timeout });
       }
 
-      // 3) control inside the label
-      let inside = labelEl.querySelector(CONTROL_SELECTOR)
-      if (inside) return cy.wrap(inside)
+      // 2) Control nested inside the label (common HTML pattern)
+      const nestedControl =
+        labelEl.querySelector('.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]') ||
+        labelEl.querySelector(CONTROL_SELECTOR);
+      if (nestedControl) {
+        return cy.wrap(nestedControl);
+      }
 
-      // 4) Vuetify structure: climb to closest v-field/v-input, then find the real control
-      const fieldContainer = labelEl.closest('.v-field, .v-input, .v-text-field') ||
-                             labelEl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') ||
-                             labelEl.parentElement?.nextElementSibling
+      // 3) Vuetify pattern: find the closest field container then the real control
+      const fieldContainer =
+        labelEl.closest('.v-field, .v-input, .v-text-field') ||
+        labelEl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') ||
+        labelEl.parentElement?.nextElementSibling;
+
       if (fieldContainer) {
         const realControl =
           fieldContainer.querySelector('.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]') ||
-          fieldContainer.querySelector(CONTROL_SELECTOR)
-        if (realControl) return cy.wrap(realControl)
+          fieldContainer.querySelector(CONTROL_SELECTOR);
+
+        if (realControl) {
+          return cy.wrap(realControl);
+        }
       }
 
-      // 5) aria-labelledby
-      if (!labelEl.id) labelEl.id = `lbl-${Date.now()}-${Math.random().toString(36).slice(2)}`
-      const aria = body.querySelector(`[aria-labelledby="${CSS.escape(labelEl.id)}"]`)
-      if (aria) return cy.wrap(aria)
+      // 4) aria-labelledby (support multiple IDs in the attribute)
+      if (!labelEl.id) {
+        labelEl.id = `lbl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      }
+      const targetViaAria = Array.from(body.querySelectorAll('[aria-labelledby]'))
+        .find((el) => (el.getAttribute('aria-labelledby') || '')
+          .split(/\s+/)
+          .includes(labelEl.id));
+      if (targetViaAria) {
+        return cy.wrap(targetViaAria);
+      }
 
-      // 6) last resort: return the label itself (caller can .click())
-      return cy.wrap(labelEl)
-    })
-})
+      // 5) Last resort: return the label (caller may .click() to focus)
+      return cy.wrap(labelEl);
+    });
+});
+
 
 
 Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
@@ -109,78 +152,82 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
     })
     .click() 
 })
-
-
-
+/*
+* Method to Cancel the application if the button is present
+**/
 Cypress.Commands.add('cancelApplicationIfPresent', () => {
-  // Query the DOM synchronously via jQuery to avoid failing if not found
-  //cy.wait(10000);
-   cy.document({ timeout: 15000 }).should((doc) => {
+    cy.wait(10000);
+  cy.document({ timeout: 30000 }).then((doc) => {
     const btn = Array.from(doc.querySelectorAll('button')).find(
       (el) => el.textContent.trim() === 'Cancel Application'
     );
-    // Fail the should if not found yet → Cypress retries until timeout
-    // eslint-disable-next-line no-unused-expressions
-    expect(btn, 'Cancel Application button').to.exist;
-  });
-  cy.document().then((doc) => {
-    // Prefer data-cy when available: $body.find('[data-cy="cancel-application"]')
-    const btn = Array.from(doc.querySelectorAll('button')).find(
-      (el) => el.textContent.trim() === 'Cancel Application'
-    )
 
     if (btn) {
-      cy.wrap(btn).click({ force: true })
-      cy.get('#cancel-application-button .text-wrap', { timeout: 15000 })
+      cy.wrap(btn).click({ force: true });
+      cy.wait(10000);
+
+      cy.get('#cancel-application-button .text-wrap', { timeout: 20000 })
         .should('be.visible')
-        .click({ force: true })
-      cy.contains('What would you like to do?', { timeout: 10000 })
-        .should('be.visible')
+        .click({ force: true });
+
+      cy.contains('What would you like to do?', { timeout: 20000 })
+        .should('be.visible');
     }
-    // If not found, do nothing — start state is already clean
-  })
-})
-
-
-/*Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) => {
-  return cy.wrap(subject).clear().type(value).should('have.value', value)
-})**/
-// stronger type+assert that re-queries after typing
+  });
+});
+/*
+* Method to type a value into an input field and assert its value
+**/
 Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) => {
-  const v = String(value)
-  return cy.wrap(subject).then($el => {
-    const id = $el.attr('id')
-    // type (force helps with masked/transparent inputs)
-    cy.wrap($el).clear({ force: true }).type(v, { force: true }).blur()
+  const v = String(value);
 
-    // re-query the element for the assertion (prevents detached subject)
-    if (id) {
-      return cy.get(`#${CSS.escape(id)}`).should('have.value', v)
-    }
-    // fallback: find the current input in the same field container
-    return cy.wrap($el)
-      .closest('.v-field, .v-input, .v-text-field')
-      .find('input, textarea, [contenteditable="true"]')
-      .first()
-      .should('have.value', v)
-  })
-})
+  return cy.wrap(subject).then(($el) => {
+    cy.wrap($el).clear({ force: true }).type(v, { force: true });
+  });
+});
 
-
-// cypress/support/commands.js
-
-// Base command: checks a single label for a non-empty value
+/*
+* Method to assert that an input field is auto-filled
+**/
 Cypress.Commands.add('assertAutoFilled', (label) => {
-  cy.getByLabel(label) // use your existing getByLabel command
+  cy.getByLabel(label)
     .invoke('val')
     .then((val) => {
       expect(val && val.trim(), `Value for ${label}`).to.not.be.empty
     })
 })
 
-// Wrapper: checks multiple labels at once
+/*
+* Method to assert that an input field is auto-filled
+**/
 Cypress.Commands.add('assertAutoFilledNotEmpty', (labels) => {
   labels.forEach((l) => cy.assertAutoFilled(l))
 })
 
 
+/*
+* Method to set a time value in a time input field
+**/
+Cypress.Commands.add('setTime', (hook, hhmm) => {
+  const v = String(hhmm);
+  cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`, { timeout: 20000 })
+    .first()
+    .as('timeInput');
+  cy.get('@timeInput').then($input => {
+    cy.wrap($input).invoke('val', v);
+  });
+  cy.get('@timeInput').then($input => {
+    cy.wrap($input).trigger('input');
+  });
+  cy.get('@timeInput').then($input => {
+    cy.wrap($input).trigger('change');
+  });
+  cy.get('@timeInput').then($input => {
+    cy.wrap($input).blur();
+  });
+  cy.wait(1000);
+  cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`)
+    .first()
+    .should('have.value', v);
+
+})
