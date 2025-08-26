@@ -84,7 +84,6 @@
               variant="outlined"
               :label="legalNameLabel"
               hide-details
-              data-cy="Legal Name"
               class="pl-lg-11 mt-8"
             />
             <v-row no-gutters class="pt-8">
@@ -109,7 +108,6 @@
               variant="outlined"
               :rules="rules.required"
               :label="legalNameLabel"
-               data-cy="Legal Name"
               class="pl-lg-11 mt-4"
             />
             <v-row>
@@ -154,7 +152,6 @@
               variant="outlined"
               :rules="rules.required"
               :label="legalNameLabel"
-               data-cy="Legal Name"
               class="ml-4"
             />
           </v-row>
@@ -172,7 +169,6 @@
               :rules="rules.required"
               label="Incorporation Number (as it appears in BC Registries and Online Services)"
               class="ml-4"
-              data-cy="Incorporation Number"
             />
           </v-row>
 
