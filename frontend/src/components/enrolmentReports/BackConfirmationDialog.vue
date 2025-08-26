@@ -1,5 +1,5 @@
 <template>
-  <AppDialog v-model="isDisplayed" persistent max-width="80%" @close="closeDialog">
+  <AppDialog v-model="isDisplayed" persistent max-width="60%" @close="closeDialog">
     <template #content>
       <div class="text-center">
         <p class="pt-4 font-weight-bold text-h6">Go back to the dashboard?</p>
