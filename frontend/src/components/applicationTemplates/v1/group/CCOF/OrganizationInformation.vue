@@ -51,6 +51,7 @@
                   variant="outlined"
                   :rules="hasIncorporationNumber ? rules.required : []"
                   label="Incorporation Number (as it appears in BC Corporate Registry)"
+                  data-cy="Incorporation Number "
                 />
               </v-col>
             </v-row>
