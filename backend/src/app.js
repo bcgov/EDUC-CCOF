@@ -165,7 +165,7 @@ async function populateUserInfo(profile) {
     profile.role = user?.portalRole;
     profile.statecode = user?.statecode;
 
-    // TODO (weskubo-cgi) Add facilities when available in D365
+    // TODO (weskubo-cgi) If we add facility validation in the backend then we need to add facilities here
   } else if (username.idp === config.get('oidc:idpHintIdir')) {
     // TODO (weskubo-cgi) Add role logic for IDIR users
   }
