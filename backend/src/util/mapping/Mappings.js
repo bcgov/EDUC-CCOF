@@ -298,7 +298,12 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
-const UserProfileMappings = [{ back: 'portalRole', front: 'role' }];
+const UserProfileMappings = [
+  { back: 'contactid', front: 'contactId' },
+  { back: 'portalRole', front: 'role' },
+];
+
+const ContactFacilityMappings = [{ back: '_ccof_facility_value', front: 'facilityId' }];
 
 const UserProfileOrganizationMappings = [
   { back: 'organization_name', front: 'organizationName' },
@@ -783,4 +788,5 @@ module.exports = {
   RoleMappings,
   PermissionMappings,
   UserProfileMappings,
+  ContactFacilityMappings,
 };

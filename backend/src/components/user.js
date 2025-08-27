@@ -28,6 +28,7 @@ const {
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { getRoles } = require('../components/lookup');
+const { getRawContactFacilities } = require('./contact');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -114,6 +115,13 @@ async function getUserInfo(req, res) {
     return res.status(HttpStatus.OK).json(resData);
   }
   const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
+
+  // Get facilities for Facility Admin users
+  if (user.role?.ofm_portal_role_number === ROLES.FACILITY_ADMINISTRATOR) {
+    const facilities = await getRawContactFacilities(user.contactId);
+    user.facilities = facilities;
+  }
+
   const organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
   const applicationList = [];
 
@@ -121,7 +129,6 @@ async function getUserInfo(req, res) {
     //call the funding agreement table and load that to the application
     let operation = `ccof_funding_agreements?$filter=_ccof_organization_value eq '${organization.organizationId}'`;
     let fundingAgreementDetails = (await getOperation(operation)).value;
-    //log.info(fundingAgreementDetails);
 
     userResponse.application.forEach((ap) => {
       let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
@@ -153,7 +160,6 @@ async function getUserInfo(req, res) {
     ...resData,
     ...user,
     ...organization,
-    contactid: userResponse.contactid,
     applications: applicationList,
   };
   log.info('results:', minify(results));

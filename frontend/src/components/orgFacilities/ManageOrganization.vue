@@ -344,7 +344,6 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
-import { PERMISSIONS } from '../../utils/constants/permissions';
 
 export default {
   name: 'ManageOrganization',
