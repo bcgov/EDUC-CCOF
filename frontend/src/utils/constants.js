@@ -592,9 +592,8 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
 });
 
 // Roles are just buckets for permissions and shouldn't have
-// any inherit logic surrounding them. However, there are
-// a couple special cases so define them here
+// any inherit logic surrounding them. However, the facility roles
+// have special logic so define them here
 export const ROLES = Object.freeze({
-  FACILITY_ADMINISTRATOR: 'Facility Administrator',
-  IMPERSONATE: 'Impersonate',
+  FACILITY_ADMINISTRATOR: 11,
 });

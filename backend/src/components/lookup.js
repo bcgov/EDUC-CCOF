@@ -207,5 +207,6 @@ async function getRoles() {
 module.exports = {
   getLookupInfo,
   getLicenseCategory,
+  getRoles,
   getSystemMessages,
 };

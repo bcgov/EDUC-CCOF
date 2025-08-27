@@ -14,6 +14,7 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
+  ROLES,
 } = require('../util/constants');
 const {
   UserProfileMappings,
@@ -26,6 +27,7 @@ const {
   FundingAgreementMappings,
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { getRoles } = require('../components/lookup');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -96,8 +98,16 @@ async function getUserInfo(req, res) {
 
   if (userResponse === null) {
     createUser(req);
-    // TODO Add a role for new users
-    return res.status(HttpStatus.OK).json(resData);
+
+    // Add the Organization Admin role for new users so they can create an Application/Organization
+    const orgAdminRole = getRoles().find((role) => role.portal_role_id === ROLES.ORG_ADMINISTRATOR);
+
+    const result = {
+      ...resData,
+      role: orgAdminRole,
+    };
+
+    return res.status(HttpStatus.OK).json(result);
   }
   if (userResponse == {}) {
     // If no data back, then no associated Organization/Facilities, return empty orgination data
@@ -139,7 +149,7 @@ async function getUserInfo(req, res) {
       applicationList.push(application);
     });
   }
-  let results = {
+  const results = {
     ...resData,
     ...user,
     ...organization,

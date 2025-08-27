@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
-// import { useAppStore } from '@/store/app.js';
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -27,6 +27,15 @@ export const useAuthStore = defineStore('auth', {
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
   }),
+  getters: {
+    hasPermission: (state) => {
+      return (permission) => {
+        if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
+        console.log('Checking permission', permission, state.permissions);
+        return state.permissions.includes(permission);
+      };
+    },
+  },
   actions: {
     //sets Json web token and determines whether user is authenticated
     setJwtToken(token = null) {
@@ -86,15 +95,16 @@ export const useAuthStore = defineStore('auth', {
         this.setUserInfo(userInfoRes.data);
 
         // Lookup the permissions
-        //let role;
-        // const appStore = useAppStore();
-        // if (this.isImpersonating) {
-        //   // When impersonating always use 'Impersonate', not the impersonated user's role
-        //   role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
-        // } else {
-        //   role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.ofm_portal_roleid);
-        // }
-        // this.permissions = role?.permissions.map((p) => p.permissionName);
+        let role;
+        const appStore = useAppStore();
+        if (this.isImpersonating) {
+          // TODO (weskubo-cgi) How are we handling impersonation?
+          // When impersonating always use 'Impersonate', not the impersonated user's role
+          //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
+        } else {
+          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.ofm_portal_roleid);
+        }
+        this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
         await applicationStore.loadApplicationFromStore(applicationStore.latestProgramYearId);

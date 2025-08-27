@@ -66,6 +66,7 @@ import {
   pcfUrlGuid,
 } from '@/utils/constants.js';
 import { SUBTITLE_BANNERS } from '@/utils/constants/SubTitleBanners.js';
+import { PERMISSIONS } from '@/utils/constants/permissions.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 const router = createRouter({
@@ -832,6 +833,7 @@ const router = createRouter({
       component: ManageOrgFacilities,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ORG_INFORMATION,
       },
     },
     {

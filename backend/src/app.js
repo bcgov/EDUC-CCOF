@@ -162,7 +162,7 @@ async function populateUserInfo(profile) {
 
     profile.contactId = user?.contactid;
     profile.organizationId = user?.organization_accountid;
-    profile.role = user?.portalrole_id;
+    profile.role = user?.portalRole;
     profile.statecode = user?.statecode;
 
     // TODO (weskubo-cgi) Add facilities when available in D365
