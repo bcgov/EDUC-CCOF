@@ -13,9 +13,9 @@ export default {
       type: Boolean,
       default: true,
     },
-    displayBlock: {
-      type: Boolean,
-      default: true,
+    display: {
+      type: String,
+      default: 'block',
     },
     color: {
       type: String,
@@ -33,9 +33,6 @@ export default {
         small: this.$attrs.size === 'small',
         medium: this.$attrs.size === 'medium',
       };
-    },
-    display() {
-      return this.displayBlock ? 'block' : 'inline';
     },
   },
 };

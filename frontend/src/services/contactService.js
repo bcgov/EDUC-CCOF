@@ -23,4 +23,21 @@ export default {
       throw error;
     }
   },
+  async addContact(contact) {
+    try {
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.CONTACTS}`, contact);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to create contact - ${error}`);
+      throw error;
+    }
+  },
+  async getRoles() {
+    try {
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.CONTACTS}/roles`);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to get contact roles = ${error}`);
+    }
+  },
 };

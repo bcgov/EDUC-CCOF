@@ -5,6 +5,19 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
+    <v-row>
+      <v-col class="d-flex justify-end">
+        <AppButton
+          size="small"
+          prepend-icon="mdi-plus"
+          display="inline-grid"
+          :disabled="addUserDisabled"
+          @click="addUserDialogOpen = true"
+        >
+          Add User
+        </AppButton>
+      </v-col>
+    </v-row>
     <v-row v-if="contactsLoading" no-gutters>
       <v-col cols="12">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
@@ -60,29 +73,13 @@
       </v-col>
     </v-row>
   </v-container>
-  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="dialogOpen = false">
-    <template #content>
-      Are you sure you want to remove {{ userDisplayName(targetUser, 'this user') }}? You can't undo this.
-    </template>
-    <template #button>
-      <v-row justify="center">
-        <v-col>
-          <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
-        </v-col>
-        <v-col>
-          <AppButton
-            :primary="true"
-            size="small"
-            :loading="dialogLoading"
-            :disabled="dialogLoading"
-            @click="deleteUser(targetUser.contactId)"
-          >
-            Yes, remove the user
-          </AppButton>
-        </v-col>
-      </v-row>
-    </template>
-  </AppDialog>
+  <DisableUserDialog
+    :show="disableUserDialogOpen"
+    :user="targetUser"
+    @contact-deactivated="contactDeactivatedHandler"
+    @close-disable-dialog="disableUserDialogOpen = false"
+  />
+  <AddUserDialog :show="addUserDialogOpen" :portal-roles="portalRoles" @close-add-dialog="addUserDialogOpen = false" />
 </template>
 
 <script>
@@ -92,15 +89,17 @@ import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
+import { OFM_PORTAL_ROLES } from '@/utils/constants';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import DisableUserDialog from '@/components/accountMgmt/DisableUserDialog.vue';
+import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, NavButton, AppDialog },
+  components: { AppButton, DisableUserDialog, NavButton, AddUserDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -109,9 +108,10 @@ export default {
       contacts: [],
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
+      portalRoles: [],
       contactsLoading: false,
-      dialogOpen: false,
-      dialogLoading: false,
+      disableUserDialogOpen: false,
+      addUserDialogOpen: false,
     };
   },
   computed: {
@@ -133,12 +133,19 @@ export default {
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
     },
+    orgAdminRole() {
+      return this.portalRoles.find((portalRole) => portalRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
+    },
+    addUserDisabled() {
+      return isEmpty(this.portalRoles) || this.userInfo?.roleId !== this.orgAdminRole?.roleId;
+    },
   },
   async mounted() {
     try {
       this.contactsLoading = true;
       if (isEmpty(this.loadedModel)) {
         await this.loadOrganization(this.organizationId);
+        this.portalRoles = await contactService.getRoles();
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
       this.contacts = contactsData.map(this.setAccessTypeField);
@@ -163,42 +170,13 @@ export default {
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
-      this.dialogOpen = true;
+      this.disableUserDialogOpen = true;
     },
     mayRemoveUser(user) {
       return !user.isPrimaryContact && this.userInfo.contactid !== user.contactId;
     },
-    userDisplayName(user, fallback = '') {
-      const { firstName, lastName } = user;
-
-      let userDisplayName;
-      if (firstName && lastName) {
-        userDisplayName = `${firstName} ${lastName}`;
-      } else if (firstName) {
-        userDisplayName = `${firstName}`;
-      } else if (lastName) {
-        userDisplayName = `${lastName}`;
-      } else {
-        userDisplayName = fallback;
-      }
-
-      return userDisplayName;
-    },
-    async deleteUser() {
-      try {
-        this.dialogLoading = true;
-        await contactService.deleteContact(this.targetUser.contactId);
-        this.contacts = this.contacts.filter((c) => c.contactId !== this.targetUser.contactId);
-        this.setSuccessAlert(
-          `${this.userDisplayName(this.targetUser, 'The user')} has been removed from the organization`,
-        );
-      } catch (error) {
-        this.setFailureAlert('Failed to remove the contact.');
-        console.error('Error removing contact: ', error);
-      } finally {
-        this.dialogLoading = false;
-        this.dialogOpen = false;
-      }
+    contactDeactivatedHandler(id) {
+      this.contacts = this.contacts.filter((c) => c.contactId !== id);
     },
   },
 };

@@ -306,6 +306,7 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
   { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
   { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
+  { back: 'portalrole_id', front: 'roleId' },
 ];
 
 const UserProfileApplicationMappings = [
@@ -574,6 +575,12 @@ const ContactMappings = [
   { back: 'telephone1', front: 'telephone' },
 ];
 
+const ContactRoleMappings = [
+  { back: 'ofm_name', front: 'name' },
+  { back: 'ofm_portal_role_number', front: 'roleNumber' },
+  { back: 'ofm_portal_roleid', front: 'roleId' },
+];
+
 const ApplicationDocumentsMappings = [
   ...DocumentsMappings,
   { back: 'ApplicationFacilityDocument.ccof_facility', front: 'facilityId' },
@@ -756,6 +763,7 @@ module.exports = {
   DailyEnrolmentMappings,
   DocumentsMappings,
   ContactMappings,
+  ContactRoleMappings,
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,
