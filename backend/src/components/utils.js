@@ -425,6 +425,7 @@ const utils = {
   getSubmissionPDFHistory,
   getChangeActionDetails,
   padString,
+  splitUsername,
 };
 
 module.exports = utils;

@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const utils = require('./components/utils');
 const auth = require('./components/auth');
+const { getUserProfile } = require('./components/user');
 const bodyParser = require('body-parser');
 dotenv.config();
 
@@ -141,10 +142,33 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
         profile._json = parseJwt(accessToken);
         profile.refreshToken = refreshToken;
         profile.idToken = idToken;
+
+        await populateUserInfo(profile);
         return verified(null, profile);
       },
     ),
   );
+}
+
+async function populateUserInfo(profile) {
+  const username = utils.splitUsername(profile.username);
+
+  // Get UserProfile for BCeID users
+  if (username.idp === config.get('oidc:idpHintBceid')) {
+    // If the userGuid cannot be found in Dynamics, then Dynamics will check if the userName exists,
+    // If userName exists but has a null userGuid, the system will update the user record with the GUID and return that user profile.
+    // In CCOF this would only happen for new users added through the portal
+    const user = await getUserProfile(username.guid, profile._json.bceid_username);
+
+    profile.contactId = user?.contactid;
+    profile.organizationId = user?.organization_accountid;
+    profile.role = user?.portalRole;
+    profile.statecode = user?.statecode;
+
+    // TODO (weskubo-cgi) If we add facility validation in the backend then we need to add facilities here
+  } else if (username.idp === config.get('oidc:idpHintIdir')) {
+    // TODO (weskubo-cgi) Add role logic for IDIR users
+  }
 }
 
 const parseJwt = (token) => {

@@ -173,7 +173,7 @@ export default {
       this.disableUserDialogOpen = true;
     },
     mayRemoveUser(user) {
-      return !user.isPrimaryContact && this.userInfo.contactid !== user.contactId;
+      return !user.isPrimaryContact && this.userInfo.contactId !== user.contactId;
     },
     contactDeactivatedHandler(id) {
       this.contacts = this.contacts.filter((c) => c.contactId !== id);

@@ -149,10 +149,14 @@ const CHANGE_REQUEST_TYPES = Object.freeze({
   REMOVE_A_CLOSURE: 100000017,
 });
 
-const OFM_PORTAL_ROLES = Object.freeze({
-  ORG_ADMIN: '10',
-  FAC_ADMIN: '11',
-  READ_ONLY: '12',
+const ROLES = Object.freeze({
+  FACILITY_ADMINISTRATOR: '11',
+  ORG_ADMINISTRATOR: '10',
+});
+
+const PERMISSIONS = Object.freeze({
+  CHANGE_ORG_INFORMATION: '25',
+  VIEW_ORG_INFORMATION: '26',
 });
 
 module.exports = {
@@ -172,5 +176,6 @@ module.exports = {
   OPTIN_STATUS_CODES,
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
-  OFM_PORTAL_ROLES,
+  PERMISSIONS,
+  ROLES,
 };
