@@ -137,7 +137,7 @@ export default {
       return this.portalRoles.find((portalRole) => portalRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
     },
     addUserDisabled() {
-      return isEmpty(this.portalRoles) || this.userInfo?.roleId !== this.orgAdminRole?.roleId;
+      return false;
     },
   },
   async mounted() {

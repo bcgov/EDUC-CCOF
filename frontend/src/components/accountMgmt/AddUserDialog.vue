@@ -128,6 +128,28 @@
       </v-row>
     </template>
   </AppDialog>
+  <AppDialog
+    v-model="showSuccessDialog"
+    title="User Added"
+    max-width="500px"
+    text-alignment="left"
+    @close="goToManageUsers"
+  >
+    <template #content>
+      <div class="text-center">
+        <p><strong>User Added Successfully</strong></p>
+        <p class="mt-4">The new user has been added with the selected role and access.</p>
+      </div>
+    </template>
+
+    <template #button>
+      <v-row justify="center">
+        <v-col cols="auto">
+          <AppButton size="small" @click="goToManageUsers"> Return to Manage Users </AppButton>
+        </v-col>
+      </v-row>
+    </template>
+  </AppDialog>
 </template>
 
 <script>
@@ -158,7 +180,7 @@ export default {
       required: true,
     },
   },
-  emits: ['close-add-dialog'],
+  emits: ['close-add-dialog', 'return-to-manage-users'],
   data() {
     return {
       rules,
@@ -187,6 +209,7 @@ export default {
         telephone: '',
         bceid: '',
       },
+      showSuccessDialog: false,
     };
   },
   computed: {
@@ -252,20 +275,36 @@ export default {
       }
     },
     async addUser() {
-      // For now, just close the dialog
       this.$refs.form?.validate();
       if (this.formValid) {
         try {
-          const response = await contactService.addContact({
-            ...this.userFields,
-            portalRole: this.portalRole,
-            facilities: this.facilitiesSelected,
-          });
+          const payload = {
+            firstName: this.userFields.firstName,
+            lastName: this.userFields.lastName,
+            email: this.userFields.email,
+            telephone: this.userFields.telephone,
+            organizationId: this.organizationId,
+          };
+
+          if (this.userType === 'portal') {
+            payload.portalRole = this.portalRole;
+            payload.bceid = this.userFields.bceid;
+            payload.facilities = this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.facilitiesSelected : [];
+          } else {
+            payload.facilities = [];
+          }
+          const response = await contactService.addContact(payload);
+          this.dialog = false;
+          this.showSuccessDialog = true;
           console.log(response);
         } catch (e) {
           console.error(e);
         }
       }
+    },
+    goToManageUsers() {
+      this.showSuccessDialog = false;
+      this.$emit('return-to-manage-users');
     },
   },
 };

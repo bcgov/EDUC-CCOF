@@ -2,9 +2,8 @@
 const cache = require('memory-cache');
 const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
-const { getOperation, patchOperationWithObjectId, getUserGuid } = require('./utils');
-const { OFM_PORTAL_ROLES } = require('../util/constants');
-const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
+const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ContactMappings, ContactRoleMappings } = require('../util/mapping/Mappings');
 const log = require('./logger');
 
@@ -49,18 +48,12 @@ async function getCCOFRoles() {
     return cachedRoles;
   }
 
-  const operation = "ofm_portal_roles?$select=ofm_name,ofm_portal_role_number&$expand=owningbusinessunit($select=name)&$filter=owningbusinessunit/name eq 'CCOF'";
+  const operation = "ofm_portal_roles?$select=ofm_name,ofm_portal_role_number,ofm_portal_roleid&$expand=owningbusinessunit($select=name)&$filter=owningbusinessunit/name eq 'CCOF'";
   const roleData = await getOperation(operation);
   const portalRoles = roleData.value.map((role) => new MappableObjectForFront(role, ContactRoleMappings).data);
   rolesCache.put('portalRoles', portalRoles, ONE_DAY_MS);
 
   return portalRoles;
-}
-
-async function getRoleByGuid(guid) {
-  const operation = `contacts?$select=_ofm_portal_role_id_value&$filter=ccof_userid eq '${guid}'`;
-  const data = await getOperation(operation);
-  return data.value[0]['_ofm_portal_role_id_value'];
 }
 
 async function getRoles(_req, res) {
@@ -76,17 +69,18 @@ async function getRoles(_req, res) {
 async function createContact(req, res) {
   try {
     const ccofRoles = await getCCOFRoles();
-    const userRoleId = await getRoleByGuid(getUserGuid(req));
-    const userRole = ccofRoles.find((role) => role.roleId === userRoleId);
-    const adminRole = ccofRoles.find((role) => role.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
-
-    if (userRoleId !== adminRole.roleId) {
-      return res.status(HttpStatus.UNAUTHORIZED).json('Not authorized');
+    const contactPayload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
+    if (req.body.organizationId) {
+      contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
-
-    // TODO: Work out the rest of the forking logic for create contactp
-
-    return res.status(HttpStatus.OK).json(userRole);
+    if (req.body.portalRole) {
+      const userRole = ccofRoles.find((role) => role.roleNumber === req.body.portalRole);
+      if (userRole) {
+        contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${userRole.roleId})`;
+      }
+    }
+    const createdContact = await postOperation('contacts', contactPayload);
+    return res.status(HttpStatus.OK).json(createdContact);
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
