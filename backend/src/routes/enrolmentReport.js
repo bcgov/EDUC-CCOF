@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getDailyEnrolments, getEnrolmentReport, getEnrolmentReports, updateDailyEnrolments, updateEnrolmentReport } = require('../components/enrolmentReport');
+const { createAdjustmentEnrolmentReport, getDailyEnrolments, getEnrolmentReport, getEnrolmentReports, updateDailyEnrolments, updateEnrolmentReport } = require('../components/enrolmentReport');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -77,5 +77,9 @@ router.patch(
     return updateEnrolmentReport(req, res);
   },
 );
+
+router.post('/adjustment', passport.authenticate('jwt', { session: false }), isValidBackendToken, [body('enrolmentReportId', '[enrolmentReportId] is required').notEmpty().isUUID()], (req, res) => {
+  return createAdjustmentEnrolmentReport(req, res);
+});
 
 module.exports = router;

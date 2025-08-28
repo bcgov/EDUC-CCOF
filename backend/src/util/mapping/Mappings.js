@@ -639,6 +639,7 @@ const EnrolmentReportMappings = [
   ...EnrolmentReportSummaryMappings,
   ...EnrolmentReportExtensionMappings,
   { back: 'ccof_providertype', front: 'organizationProviderType' },
+  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
   { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
   { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },
