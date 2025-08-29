@@ -3,7 +3,7 @@
  * Turn 'YYYY-MM-DD' or 'YYYY/MM/DD' into a proper UTC ISO string that
  * represents **noon in America/Vancouver** on that date (DST-safe).
  */
-function formatTimeForBack(dateStr) {
+function formatDateForBack(dateStr) {
   if (!dateStr) return null;
   const s = String(dateStr).trim();
   if (s.includes('T')) return s; // assume already an instant (ISO-ish)
@@ -30,4 +30,4 @@ function formatTimeForBack(dateStr) {
   return new Date(Date.UTC(+parts.year, +parts.month - 1, +parts.day, +parts.hour, +parts.minute, +parts.second)).toISOString();
 }
 
-module.exports = { formatTimeForBack };
+module.exports = { formatDateForBack };
