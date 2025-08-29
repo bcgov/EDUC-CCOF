@@ -11,42 +11,7 @@ const {
   OtherFundingProgramMappings,
   IndigenousExpenseMappings,
 } = require('../util/mapping/Mappings');
-
-function fixDateInconsistencyForPST(input, key) {
-  const TZ = 'America/Vancouver';
-
-  const toISO = (s) => {
-    if (!s) return null;
-    const [y, m, d] = String(s).replaceAll('/', '-').split('-').map(Number);
-
-    // Noon on that calendar date (treat components as "local" numbers)
-    const localNoonUTC = Date.UTC(y, m - 1, d, 12, 0, 0);
-
-    // Get Vancouver's offset for that date (e.g., UTC-07:00 in summer, -08:00 in winter)
-    const offStr = new Intl.DateTimeFormat('en-US', {
-      timeZone: TZ,
-      timeZoneName: 'shortOffset',
-    })
-      .formatToParts(new Date(localNoonUTC))
-      .find((p) => p.type === 'timeZoneName').value; // "UTC-07:00" / "GMT-8"
-
-    const [, sign, hh, mm = '00'] = offStr.match(/^[A-Z]+([+-])(\d{1,2})(?::?(\d{2}))?$/);
-    const offsetMinutes = (sign === '+' ? 1 : -1) * (hh * 60 + +mm);
-
-    // Convert "noon in Vancouver" -> absolute UTC instant
-    return new Date(localNoonUTC - offsetMinutes * 60000).toISOString();
-  };
-
-  if (typeof input === 'string') return toISO(input);
-
-  if (key && input && typeof input === 'object') {
-    if (Array.isArray(input)) input.forEach((o) => o?.[key] && (o[key] = toISO(o[key])));
-    else if (input[key]) input[key] = toISO(input[key]);
-    return input;
-  }
-
-  return input;
-}
+const { formatTimeForBack } = require('../util/common');
 
 async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) {
   if (!filterName) {
@@ -168,12 +133,6 @@ async function getRFIApplication(req, res) {
   }
 }
 
-//jb-oct '24 - removing this because it breaks dynamics, but we may need to put back in at some point if we get the 1 day ahead bug again
-// eslint-disable-next-line no-unused-vars
-function formatTimeForBack(timeString) {
-  return timeString + 'T12:00:00-07:00';
-}
-
 async function updateRFIApplication(req, res) {
   try {
     const friApplication = new MappableObjectForBack(req.body, RFIApplicationMappings).toJSON();
@@ -199,7 +158,7 @@ async function updateRFIApplication(req, res) {
       const fundingListPayload = req.body.fundingList?.map((el) => new MappableObjectForBack(el, OtherFundingProgramMappings).data);
 
       fundingListPayload?.forEach(async (payload) => {
-        // payload.ccof_applicationdate = formatTimeForBack(payload.ccof_applicationdate);
+        payload.ccof_applicationdate = formatTimeForBack(payload.ccof_applicationdate);
         payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfi_pfi_other_fundings', payload);
         await sleep(100);
@@ -212,7 +171,7 @@ async function updateRFIApplication(req, res) {
       const wageListPayload = req.body.wageList?.map((el) => new MappableObjectForBack(el, DCSWageIncreaseMappings).data);
 
       wageListPayload?.forEach(async (payload) => {
-        //payload.ccof_wageincreasedate = formatTimeForBack(payload.ccof_wageincreasedate);
+        payload.ccof_wageincreasedate = formatTimeForBack(payload.ccof_wageincreasedate);
         payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfi_pfi_dcs_wi_details', payload);
         await sleep(100);
@@ -225,9 +184,7 @@ async function updateRFIApplication(req, res) {
       const expansionListPayload = req.body.expansionList?.map((el) => new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data);
 
       expansionListPayload?.forEach(async (payload) => {
-        // payload.ccof_dateofchange = formatTimeForBack(
-        //   payload.ccof_dateofchange
-        // );
+        payload.ccof_dateofchange = formatTimeForBack(payload.ccof_dateofchange);
         payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansiondetails', payload);
         await sleep(100);
@@ -239,12 +196,8 @@ async function updateRFIApplication(req, res) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiexpenseinfos', 'ccof_rfipfiexpenseinfoid', '_ccof_rfipfi_value');
       const expenseListPayload = req.body.expenseList?.map((el) => new MappableObjectForBack(el, ExpenseInformationMappings).data);
 
-      fixDateInconsistencyForPST(expenseListPayload, 'ccof_dateofexpense');
-
       expenseListPayload?.forEach(async (payload) => {
-        // payload.ccof_dateofexpense = formatTimeForBack(
-        //   payload.ccof_dateofexpense
-        // );
+        payload.ccof_dateofexpense = formatTimeForBack(payload.ccof_dateofexpense);
 
         payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiexpenseinfos', payload);
@@ -258,7 +211,7 @@ async function updateRFIApplication(req, res) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiserviceexpansionindigenouscommunities', 'ccof_rfipfiserviceexpansionindigenouscommunityid', '_ccof_rfipfi_indegenousserviceexpansion_value');
       const indigenousExpensePayload = req.body.indigenousExpenseList?.map((el) => new MappableObjectForBack(el, IndigenousExpenseMappings).data);
       indigenousExpensePayload?.forEach(async (payload) => {
-        // payload.ccof_date = formatTimeForBack(payload.ccof_date);
+        payload.ccof_date = formatTimeForBack(payload.ccof_date);
         payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
         await sleep(100);
@@ -279,36 +232,15 @@ async function createRFIApplication(req, res) {
     delete friApplication.ccof_rfipfiid;
 
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi'] = req.body.expansionList?.map((el) => new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data);
-    // friApplication[
-    //   "ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi"
-    // ]?.forEach(
-    //   (item) =>
-    //     (item.ccof_dateofchange = formatTimeForBack(item.ccof_dateofchange))
-    // );
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi']?.forEach((item) => (item.ccof_dateofchange = formatTimeForBack(item.ccof_dateofchange)));
     friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail'] = req.body.wageList?.map((el) => new MappableObjectForBack(el, DCSWageIncreaseMappings).data);
-    // friApplication["ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail"]?.forEach(
-    //   (item) =>
-    //     (item.ccof_wageincreasedate = formatTimeForBack(
-    //       item.ccof_wageincreasedate
-    //     ))
-    // );
+    friApplication['ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail']?.forEach((item) => (item.ccof_wageincreasedate = formatTimeForBack(item.ccof_wageincreasedate)));
     friApplication['ccof_rfi_pfi_other_funding_RFI_PFI'] = req.body.fundingList?.map((el) => new MappableObjectForBack(el, OtherFundingProgramMappings).data);
-    // friApplication["ccof_rfi_pfi_other_funding_RFI_PFI"]?.forEach(
-    //   (item) =>
-    //     (item.ccof_applicationdate = formatTimeForBack(
-    //       item.ccof_applicationdate
-    //     ))
-    // );
+    friApplication['ccof_rfi_pfi_other_funding_RFI_PFI']?.forEach((item) => (item.ccof_applicationdate = formatTimeForBack(item.ccof_applicationdate)));
     friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'] = req.body.expenseList?.map((el) => new MappableObjectForBack(el, ExpenseInformationMappings).data);
-    // friApplication["ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi"]?.forEach(
-    //   (item) =>
-    //     (item.ccof_dateofexpense = formatTimeForBack(item.ccof_dateofexpense))
-    // );
-    fixDateInconsistencyForPST(friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi'], 'ccof_dateofexpense');
+    friApplication['ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi']?.forEach((item) => (item.ccof_dateofexpense = formatTimeForBack(item.ccof_dateofexpense)));
     friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService'] = req.body.indigenousExpenseList?.map((el) => new MappableObjectForBack(el, IndigenousExpenseMappings).data);
-    // friApplication["ccof_rfipfi_ccof_rfipfi_IndegenousService"]?.forEach(
-    //   (item) => (item.ccof_date = formatTimeForBack(item.ccof_date))
-    // );
+    friApplication['ccof_rfipfi_ccof_rfipfi_IndegenousService']?.forEach((item) => (item.ccof_date = formatTimeForBack(item.ccof_date)));
 
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
 
