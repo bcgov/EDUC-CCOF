@@ -347,7 +347,7 @@ export default {
         this.goToEnrolmentReport(response.data);
       } catch (error) {
         console.log(error);
-        this.setFailureAlert('Failed to create adjustment enrolment reports.');
+        this.setFailureAlert('Failed to create adjustment enrolment report.');
       } finally {
         this.loading = false;
       }
