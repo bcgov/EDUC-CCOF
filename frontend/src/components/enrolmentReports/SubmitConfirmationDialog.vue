@@ -1,5 +1,5 @@
 <template>
-  <AppDialog v-model="isDisplayed" persistent max-width="50%" @close="goToEnrolmentReportDashboard">
+  <AppDialog :model-value="show" persistent max-width="50%" @close="goToEnrolmentReportDashboard">
     <template #content>
       <div class="text-center">
         <p class="pt-4 font-weight-bold text-h6">Submission Successful</p>
@@ -31,18 +31,6 @@ export default {
     show: {
       type: Boolean,
       default: false,
-    },
-  },
-  data() {
-    return {
-      isDisplayed: false,
-    };
-  },
-  watch: {
-    show: {
-      handler(value) {
-        this.isDisplayed = value;
-      },
     },
   },
   methods: {
