@@ -55,7 +55,7 @@
 import SubmitConfirmationDialog from '@/components/enrolmentReports/SubmitConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
-import { ENROLMENT_REPORT_INTERNAL_STATUSES } from '@/utils/constants.js';
+import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES } from '@/utils/constants.js';
 
 export default {
   name: 'EnrolmentReportDeclaration',
@@ -90,6 +90,8 @@ export default {
       try {
         this.processing = true;
         const payload = {
+          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
+          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
           internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
           internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
         };
