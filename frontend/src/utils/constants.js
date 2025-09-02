@@ -595,5 +595,5 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
 // any inherit logic surrounding them. However, the facility roles
 // have special logic so define them here
 export const ROLES = Object.freeze({
-  FACILITY_ADMINISTRATOR: 11,
+  FACILITY_ADMINISTRATOR: '11',
 });

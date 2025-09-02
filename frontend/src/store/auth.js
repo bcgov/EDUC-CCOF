@@ -31,7 +31,6 @@ export const useAuthStore = defineStore('auth', {
     hasPermission: (state) => {
       return (permission) => {
         if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
-        console.log('Checking permission', permission, state.permissions);
         return state.permissions.includes(permission);
       };
     },

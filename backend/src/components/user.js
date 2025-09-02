@@ -98,11 +98,11 @@ async function getUserInfo(req, res) {
   }
 
   if (userResponse === null) {
-    createUser(req);
-
-    // Add the Organization Admin role for new users so they can create an Application/Organization
     const orgAdminRole = getRoles().find((role) => role.portal_role_id === ROLES.ORG_ADMINISTRATOR);
 
+    createUser(req, orgAdminRole);
+
+    // Add the Organization Admin role for new users so they can create an Application/Organization
     const result = {
       ...resData,
       role: orgAdminRole,
@@ -263,12 +263,12 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function createUser(req) {
+async function createUser(req, orgAdminRole) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
-  let firstname = undefined;
-  let lastname = undefined;
+  let firstname;
+  let lastname;
   try {
     if (!family_name && given_name && given_name.split(' ').length > 1) {
       //If for some reason we don't have a last name from SSO, see if firstname has 2 words
@@ -289,6 +289,8 @@ async function createUser(req) {
       lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
+      // Add the Organization Admin role for new users
+      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${orgAdminRole.roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {
