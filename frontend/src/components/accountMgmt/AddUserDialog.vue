@@ -133,7 +133,7 @@
     title="User Added"
     max-width="500px"
     text-alignment="left"
-    @close="goToManageUsers"
+    @click="closeDialog"
   >
     <template #content>
       <div class="text-center">
@@ -180,7 +180,7 @@ export default {
       required: true,
     },
   },
-  emits: ['close-add-dialog', 'return-to-manage-users'],
+  emits: ['close-add-dialog', 'contact-created'],
   data() {
     return {
       rules,
@@ -250,6 +250,7 @@ export default {
   },
   methods: {
     closeDialog() {
+      this.clearFields();
       this.$emit('close-add-dialog');
       setTimeout(() => (this.step = 1), 350);
     },
@@ -296,15 +297,19 @@ export default {
           const response = await contactService.addContact(payload);
           this.dialog = false;
           this.showSuccessDialog = true;
-          console.log(response);
+          this.$emit('contact-created', response);
         } catch (e) {
+          if (e.response?.status === 412) {
+            this.setFailureAlert('This BCeID already exists in the system');
+            return;
+          }
           console.error(e);
         }
       }
     },
     goToManageUsers() {
       this.showSuccessDialog = false;
-      this.$emit('return-to-manage-users');
+      this.$emit('close-add-dialog');
     },
   },
 };

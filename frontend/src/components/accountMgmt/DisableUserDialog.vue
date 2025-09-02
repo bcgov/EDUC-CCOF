@@ -86,6 +86,7 @@ export default {
       } finally {
         this.disableBusy = false;
         this.dialogOpen = false;
+        this.$emit('close-disable-dialog');
       }
     },
   },

@@ -580,12 +580,7 @@ const ContactMappings = [
   { back: 'firstname', front: 'firstName' },
   { back: 'lastname', front: 'lastName' },
   { back: 'telephone1', front: 'telephone' },
-];
-
-const ContactRoleMappings = [
-  { back: 'ofm_name', front: 'name' },
-  { back: 'ofm_portal_role_number', front: 'roleNumber' },
-  { back: 'ofm_portal_roleid', front: 'roleId' },
+  { back: '_ofm_portal_role_id_value', front: 'portalRoleId' },
 ];
 
 const ApplicationDocumentsMappings = [
@@ -781,7 +776,6 @@ module.exports = {
   DailyEnrolmentMappings,
   DocumentsMappings,
   ContactMappings,
-  ContactRoleMappings,
   OrganizationMappings,
   FacilityMappings,
   CCOFApplicationMappings,

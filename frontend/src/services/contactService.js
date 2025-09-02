@@ -32,12 +32,4 @@ export default {
       throw error;
     }
   },
-  async getRoles() {
-    try {
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.CONTACTS}/roles`);
-      return response.data;
-    } catch (error) {
-      console.log(`Failed to get contact roles = ${error}`);
-    }
-  },
 };

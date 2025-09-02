@@ -7,13 +7,7 @@
     </p>
     <v-row>
       <v-col class="d-flex justify-end">
-        <AppButton
-          size="small"
-          prepend-icon="mdi-plus"
-          display="inline-grid"
-          :disabled="addUserDisabled"
-          @click="addUserDialogOpen = true"
-        >
+        <AppButton size="small" prepend-icon="mdi-plus" display="inline-grid" @click="addUserDialogOpen = true">
           Add User
         </AppButton>
       </v-col>
@@ -79,7 +73,12 @@
     @contact-deactivated="contactDeactivatedHandler"
     @close-disable-dialog="disableUserDialogOpen = false"
   />
-  <AddUserDialog :show="addUserDialogOpen" :portal-roles="portalRoles" @close-add-dialog="addUserDialogOpen = false" />
+  <AddUserDialog
+    :show="addUserDialogOpen"
+    :portal-roles="portalRoles"
+    @contact-created="contactCreatedHandler"
+    @close-add-dialog="addUserDialogOpen = false"
+  />
 </template>
 
 <script>
@@ -87,6 +86,7 @@ import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
+import { useAppStore } from '@/store/app.js';
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
@@ -108,7 +108,6 @@ export default {
       contacts: [],
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
-      portalRoles: [],
       contactsLoading: false,
       disableUserDialogOpen: false,
       addUserDialogOpen: false,
@@ -122,6 +121,7 @@ export default {
       'loadedModel',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useAppStore, ['lookupInfo']),
     headers() {
       return [
         { title: '', key: 'edit-user', sortable: false },
@@ -133,11 +133,11 @@ export default {
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
     },
-    orgAdminRole() {
-      return this.portalRoles.find((portalRole) => portalRole.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN);
-    },
-    addUserDisabled() {
-      return false;
+    portalRoles() {
+      return (this.lookupInfo?.roles || []).map((role) => ({
+        name: role.roleName,
+        roleNumber: role.roleNumber,
+      }));
     },
   },
   async mounted() {
@@ -145,10 +145,9 @@ export default {
       this.contactsLoading = true;
       if (isEmpty(this.loadedModel)) {
         await this.loadOrganization(this.organizationId);
-        this.portalRoles = await contactService.getRoles();
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
-      this.contacts = contactsData.map(this.setAccessTypeField);
+      this.contacts = this.sortUsers(contactsData.map(this.setAccessTypeField));
     } catch (error) {
       this.setFailureAlert('There was an error loading the users');
       console.error('Error loading users: ', error);
@@ -177,6 +176,36 @@ export default {
     },
     contactDeactivatedHandler(id) {
       this.contacts = this.contacts.filter((c) => c.contactId !== id);
+    },
+    async contactCreatedHandler() {
+      this.contacts = this.sortUsers(
+        (await contactService.loadContacts(this.organizationId)).map(this.setAccessTypeField),
+      );
+    },
+    sortUsers(contacts) {
+      const rolePriority = {
+        [OFM_PORTAL_ROLES.ORG_ADMIN]: 1,
+        [OFM_PORTAL_ROLES.FAC_ADMIN]: 2,
+        [OFM_PORTAL_ROLES.READ_ONLY]: 3,
+      };
+      const defaultPriority = 100;
+      // 1. Primary contact first
+      return contacts.sort((a, b) => {
+        if (a.isPrimaryContact !== b.isPrimaryContact) {
+          return a.isPrimaryContact ? -1 : 1;
+        }
+
+        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN, 3.READONLY, 4.Contacts Only)
+        const priorityA = rolePriority[a.roleNumber] ?? defaultPriority;
+        const priorityB = rolePriority[b.roleNumber] ?? defaultPriority;
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+
+        // 3. Sort by last name (A-Z)
+        return a.lastName.localeCompare(b.lastName);
+      });
     },
   },
 };
