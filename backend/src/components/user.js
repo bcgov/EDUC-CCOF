@@ -98,7 +98,8 @@ async function getUserInfo(req, res) {
   }
 
   if (userResponse === null) {
-    const orgAdminRole = getRoles().find((role) => role.portal_role_id === ROLES.ORG_ADMINISTRATOR);
+    const roles = await getRoles();
+    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMINISTRATOR);
 
     createUser(req, orgAdminRole);
 
@@ -290,7 +291,7 @@ async function createUser(req, orgAdminRole) {
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
       // Add the Organization Admin role for new users
-      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${orgAdminRole.roleId})`,
+      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${orgAdminRole.data.roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {
