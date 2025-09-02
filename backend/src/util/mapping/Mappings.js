@@ -639,6 +639,7 @@ const EnrolmentReportMappings = [
   ...EnrolmentReportSummaryMappings,
   ...EnrolmentReportExtensionMappings,
   { back: 'ccof_providertype', front: 'organizationProviderType' },
+  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
   { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
   { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },

@@ -1,5 +1,5 @@
 'use strict';
-const { getOperation, patchOperationWithObjectId } = require('./utils');
+const { getOperation, patchOperationWithObjectId, postAdjustmentERGeneration } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { DailyEnrolmentMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
@@ -84,7 +84,18 @@ async function updateDailyEnrolments(req, res) {
   }
 }
 
+async function createAdjustmentEnrolmentReport(req, res) {
+  try {
+    const response = await postAdjustmentERGeneration(req.body.enrolmentReportId);
+    return res.status(HttpStatus.CREATED).json(response.data.ccof_monthlyenrollmentreportid);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
+  createAdjustmentEnrolmentReport,
   getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
