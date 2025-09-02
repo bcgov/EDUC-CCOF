@@ -143,6 +143,7 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
         profile.refreshToken = refreshToken;
         profile.idToken = idToken;
 
+        // Store additional information on the profile to enable role/permission/statecode validation
         await populateUserInfo(profile);
         return verified(null, profile);
       },

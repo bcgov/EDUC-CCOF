@@ -9,7 +9,7 @@ const { getRoles } = require('../components/lookup');
  */
 module.exports = function (...requiredPermissions) {
   return async function (req, res, next) {
-    log.verbose(`validating permission ${requiredPermissions}`);
+    log.verbose(`validating permissions ${requiredPermissions}`);
 
     // Reject deactivated users
     if (req.session?.passport?.user?.statecode === 1) {
