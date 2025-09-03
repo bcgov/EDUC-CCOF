@@ -298,10 +298,7 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
-const UserProfileMappings = [
-  { back: 'contactid', front: 'contactId' },
-  { back: 'portalRole', front: 'role' },
-];
+const UserProfileMappings = [{ back: 'contactid', front: 'contactId' }];
 
 const ContactFacilityMappings = [{ back: '_ccof_facility_value', front: 'facilityId' }];
 

@@ -5,6 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
+const { isEmpty } = require('lodash');
 const {
   APPLICATION_STATUS_CODES,
   CCFRI_STATUS_CODES,
@@ -25,6 +26,7 @@ const {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   FundingAgreementMappings,
+  RoleMappings,
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { getRoles } = require('../components/lookup');
@@ -87,7 +89,7 @@ async function getUserInfo(req, res) {
     log.verbose('User Guid is: ', userGuid);
     userResponse = await getUserProfile(userGuid, userName);
 
-    // Block requestes from deactivated BCeID users
+    // Block requests from deactivated BCeID users
     if (userResponse?.statecode === 1) {
       return res.status(HttpStatus.UNAUTHORIZED).json();
     }
@@ -97,25 +99,35 @@ async function getUserInfo(req, res) {
     log.verbose('getUserProfile response:', minify(userResponse));
   }
 
-  if (userResponse === null) {
+  log.info('getUserProfile response:', minify(userResponse));
+
+  // There are two scenarios under which the userResponse is empty
+  // 1. A null response means no user found, so create a new BCeID user with a default Organization Admin role
+  // 2. An empty ({}) userResponse means no Organization and/or Applications
+  if (isEmpty(userResponse)) {
     const roles = await getRoles();
     const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMINISTRATOR);
+    const {
+      data: { roleId, roleNumber },
+    } = orgAdminRole;
 
-    createUser(req, orgAdminRole);
+    if (userResponse === null) {
+      createUser(req, roleId);
+    }
 
-    // Add the Organization Admin role for new users so they can create an Application/Organization
+    // Add the default role to the response so the user can create Organization and Applications
+    const role = { roleId, roleNumber };
     const result = {
       ...resData,
-      role: orgAdminRole,
+      role,
     };
 
     return res.status(HttpStatus.OK).json(result);
   }
-  if (userResponse == {}) {
-    // If no data back, then no associated Organization/Facilities, return empty orgination data
-    return res.status(HttpStatus.OK).json(resData);
-  }
+
+  // 3. Non-empty response means the user has an Organization and Applications
   const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
+  user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
 
   // Get facilities for Facility Admin users
   if (user.role?.ofm_portal_role_number === ROLES.FACILITY_ADMINISTRATOR) {
@@ -264,7 +276,7 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function createUser(req, orgAdminRole) {
+async function createUser(req, roleId) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
@@ -290,8 +302,8 @@ async function createUser(req, orgAdminRole) {
       lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
-      // Add the Organization Admin role for new users
-      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${orgAdminRole.data.roleId})`,
+      // Add a role for new users
+      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {

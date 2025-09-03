@@ -103,7 +103,7 @@ export const useAuthStore = defineStore('auth', {
           // When impersonating always use 'Impersonate', not the impersonated user's role
           //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
         } else {
-          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.ofm_portal_roleid);
+          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
         }
         this.permissions = role?.permissions.map((p) => p.permissionNumber);
 

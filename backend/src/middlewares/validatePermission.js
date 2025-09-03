@@ -24,7 +24,7 @@ module.exports = function (...requiredPermissions) {
     }
 
     const roles = await getRoles();
-    const matchingRole = roles.find((role) => role.data.roleId === userRole.ofm_portal_roleid);
+    const matchingRole = roles.find((role) => role.data.roleNumber === userRole.roleNumber);
 
     const permissions = matchingRole ? matchingRole.data.permissions?.map((p) => p.permissionNumber) : [];
 
