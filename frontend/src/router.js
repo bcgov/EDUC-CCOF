@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
@@ -928,7 +929,7 @@ router.beforeEach((to, _from, next) => {
             .then(async () => {
               if (!authStore.isMinistryUser) {
                 // Validate Provider roles
-                if (!authStore.userInfo?.role) {
+                if (isEmpty(authStore.userInfo?.role)) {
                   return next('unauthorized');
                 }
                 // TODO: Validate Facilities for Facility Admin
