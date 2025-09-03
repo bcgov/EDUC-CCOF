@@ -127,7 +127,9 @@ async function getUserInfo(req, res) {
 
   // 3. Non-empty response means the user has an Organization and Applications
   const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
-  user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
+  if (userResponse.portalRole) {
+    user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
+  }
 
   // Get facilities for Facility Admin users
   if (user.role?.ofm_portal_role_number === ROLES.FACILITY_ADMINISTRATOR) {
