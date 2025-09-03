@@ -298,10 +298,7 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
 
-const UserProfileMappings = [
-  { back: 'contactid', front: 'contactId' },
-  { back: 'portalRole', front: 'role' },
-];
+const UserProfileMappings = [{ back: 'contactid', front: 'contactId' }];
 
 const ContactFacilityMappings = [{ back: '_ccof_facility_value', front: 'facilityId' }];
 
@@ -648,6 +645,9 @@ const EnrolmentReportMappings = [
   ...EnrolmentReportSummaryMappings,
   ...EnrolmentReportExtensionMappings,
   { back: 'ccof_providertype', front: 'organizationProviderType' },
+  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
+  { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
+  { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
   { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
   { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },
@@ -733,7 +733,7 @@ const LicenceMappings = [
 ];
 
 const ServiceDeliveryMappings = [
-  { back: 'ccof_license_categories@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
+  { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
   { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
   { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
   { back: 'ccof_overnight_care', front: 'overnightCare' },

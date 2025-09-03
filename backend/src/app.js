@@ -13,6 +13,10 @@ const cors = require('cors');
 const utils = require('./components/utils');
 const auth = require('./components/auth');
 const { getUserProfile } = require('./components/user');
+const { ROLES } = require('./util/constants');
+const { MappableObjectForFront } = require('./util/mapping/MappableObject');
+const { RoleMappings } = require('./util/mapping/Mappings');
+
 const bodyParser = require('body-parser');
 dotenv.config();
 
@@ -47,6 +51,7 @@ const { RedisStore } = require('rate-limit-redis');
 const rateLimit = require('express-rate-limit');
 
 const promMid = require('express-prometheus-middleware');
+const { isEmpty } = require('lodash');
 
 //initialize app
 const app = express();
@@ -143,6 +148,7 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
         profile.refreshToken = refreshToken;
         profile.idToken = idToken;
 
+        // Store additional information on the profile to enable role/permission/statecode validation
         await populateUserInfo(profile);
         return verified(null, profile);
       },
@@ -160,12 +166,21 @@ async function populateUserInfo(profile) {
     // In CCOF this would only happen for new users added through the portal
     const user = await getUserProfile(username.guid, profile._json.bceid_username);
 
-    profile.contactId = user?.contactid;
-    profile.organizationId = user?.organization_accountid;
-    profile.role = user?.portalRole;
-    profile.statecode = user?.statecode;
+    if (!isEmpty(user)) {
+      profile.contactId = user.contactid;
+      profile.organizationId = user.organization_accountid;
+      if (user.portalRole) {
+        profile.role = new MappableObjectForFront(user.portalRole, RoleMappings).data;
+      }
+      profile.statecode = user.statecode;
 
-    // TODO (weskubo-cgi) If we add facility validation in the backend then we need to add facilities here
+      // TODO (weskubo-cgi) If we add facility validation in the backend then we need to add facilities here
+    } else {
+      // If the user is not found in Dynamics at all, assign the default Organization Admin role
+      profile.role = {
+        roleNumber: ROLES.ORG_ADMINISTRATOR,
+      };
+    }
   } else if (username.idp === config.get('oidc:idpHintIdir')) {
     // TODO (weskubo-cgi) Add role logic for IDIR users
   }

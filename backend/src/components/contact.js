@@ -1,10 +1,16 @@
 'use strict';
 const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
+<<<<<<< HEAD
 const { getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ContactMappings, ContactFacilityMappings } = require('../util/mapping/Mappings');
 const { getRoles } = require('../components/lookup');
+=======
+const { getOperation, patchOperationWithObjectId } = require('./utils');
+const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { ContactMappings, ContactFacilityMappings } = require('../util/mapping/Mappings');
+>>>>>>> origin/main
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
@@ -66,60 +72,8 @@ async function getRawContactFacilities(contactId) {
   }
 }
 
-async function createContact(req, res) {
-  try {
-    const ccofRoles = (await getRoles()).map((role) => role.data);
-
-    if (req.body.bceid) {
-      const existingContact = (await getOperation(`contacts?$filter=ccof_username eq '${req.body.bceid}' and statecode eq 0`))?.value?.[0];
-
-      if (existingContact) {
-        return res.status(HttpStatus.PRECONDITION_FAILED).json({
-          message: 'A contact with this BCeID already exists.',
-          contactId: existingContact.contactid,
-        });
-      }
-    }
-    const contactPayload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
-    if (req.body.organizationId) {
-      contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
-    }
-    if (req.body.portalRole) {
-      const userRole = ccofRoles.find((role) => role.roleNumber === req.body.portalRole);
-      if (userRole) {
-        contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${userRole.roleId})`;
-      }
-    }
-
-    const createdContact = await postOperation('contacts', contactPayload);
-    if (req.body.facilities && req.body.facilities.length > 0) {
-      await createRawContactFacilities(createdContact, req.body.facilities);
-    }
-    return res.status(HttpStatus.CREATED).json(createdContact);
-  } catch (e) {
-    log.error('failed with error', e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function createRawContactFacilities(contactId, facilityIds) {
-  try {
-    for (const id of facilityIds) {
-      const records = {
-        'ccof_facility@odata.bind': `/accounts(${id})`,
-        'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
-      };
-      await postOperation('ccof_bceid_organizations', records);
-    }
-  } catch (e) {
-    log.error(e);
-  }
-}
-
 module.exports = {
   getActiveContactsInOrganization,
   deactivateContact,
   getRawContactFacilities,
-  createContact,
-  createRawContactFacilities,
 };

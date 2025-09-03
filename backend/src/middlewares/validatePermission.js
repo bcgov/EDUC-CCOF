@@ -9,7 +9,7 @@ const { getRoles } = require('../components/lookup');
  */
 module.exports = function (...requiredPermissions) {
   return async function (req, res, next) {
-    log.verbose(`validating permission ${requiredPermissions}`);
+    log.verbose(`validating permissions ${requiredPermissions}`);
 
     // Reject deactivated users
     if (req.session?.passport?.user?.statecode === 1) {
@@ -24,7 +24,7 @@ module.exports = function (...requiredPermissions) {
     }
 
     const roles = await getRoles();
-    const matchingRole = roles.find((role) => role.data.roleId === userRole.ofm_portal_roleid);
+    const matchingRole = roles.find((role) => role.data.roleNumber === userRole.roleNumber);
 
     const permissions = matchingRole ? matchingRole.data.permissions?.map((p) => p.permissionNumber) : [];
 

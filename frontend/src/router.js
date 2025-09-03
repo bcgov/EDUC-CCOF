@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
@@ -38,6 +39,7 @@ import GroupOrganizationInformation from '@/components/ccofApplication/group/Org
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import EnrolmentReportDeclaration from '@/components/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
@@ -888,6 +890,14 @@ const router = createRouter({
       },
     },
     {
+      path: `${PATHS.ROOT.ENROLMENT_REPORTS}/:enrolmentReportId/declaration`,
+      name: 'enrolment-report-declaration',
+      component: EnrolmentReportDeclaration,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/:catchAll(.*)',
       name: 'notfound',
       redirect: '/',
@@ -919,7 +929,7 @@ router.beforeEach((to, _from, next) => {
             .then(async () => {
               if (!authStore.isMinistryUser) {
                 // Validate Provider roles
-                if (!authStore.userInfo?.role) {
+                if (isEmpty(authStore.userInfo?.role)) {
                   return next('unauthorized');
                 }
                 // TODO: Validate Facilities for Facility Admin

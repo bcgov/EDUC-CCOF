@@ -88,23 +88,23 @@
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
+                v-if="showViewButton(item)"
+                :loading="loading"
+                :primary="false"
+                size="medium"
+                @click="goToEnrolmentReport(item.enrolmentReportId)"
+              >
+                View
+              </AppButton>
+              <AppButton
                 v-if="showEditButton(item)"
                 :loading="loading"
                 :disabled="isSubmissionDeadlinePassed(item)"
                 :primary="false"
                 size="medium"
-                @click="goToEnrolmentReport(item)"
+                @click="goToEnrolmentReport(item.enrolmentReportId)"
               >
                 Edit
-              </AppButton>
-              <AppButton
-                v-if="showViewButton(item)"
-                :loading="loading"
-                :primary="false"
-                size="medium"
-                @click="goToEnrolmentReport(item)"
-              >
-                View
               </AppButton>
               <AppButton
                 v-if="showAdjustButton(item)"
@@ -112,7 +112,7 @@
                 :disabled="isSubmissionDeadlinePassed(item)"
                 :primary="false"
                 size="medium"
-                @click="console.log(item)"
+                @click="createAdjustmentReport(item)"
               >
                 Adjust
               </AppButton>
@@ -287,8 +287,8 @@ export default {
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
     },
-    goToEnrolmentReport(report) {
-      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${report.enrolmentReportId}`);
+    goToEnrolmentReport(enrolmentReportId) {
+      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`);
     },
     getStatusClass(status) {
       switch (status) {
@@ -311,19 +311,22 @@ export default {
       }
     },
     isSubmissionDeadlinePassed(enrolmentReport) {
-      return new Date() > new Date(enrolmentReport.submissionDeadline);
+      return EnrolmentReportService.isSubmissionDeadlinePassed(enrolmentReport);
     },
     showAdjustButton(enrolmentReport) {
-      return [
-        ENROLMENT_REPORT_STATUSES.APPROVED,
-        ENROLMENT_REPORT_STATUSES.PAID,
-        ENROLMENT_REPORT_STATUSES.REJECTED,
-      ].includes(enrolmentReport.externalCcofStatusCode);
+      return (
+        !enrolmentReport.hasNextReportCreated &&
+        [ENROLMENT_REPORT_STATUSES.APPROVED, ENROLMENT_REPORT_STATUSES.PAID].includes(
+          enrolmentReport.externalCcofStatusCode,
+        )
+      );
     },
     showEditButton(enrolmentReport) {
-      return [ENROLMENT_REPORT_STATUSES.DRAFT, ENROLMENT_REPORT_STATUSES.SUBMITTED].includes(
-        enrolmentReport.externalCcofStatusCode,
-      );
+      return [
+        ENROLMENT_REPORT_STATUSES.DRAFT,
+        ENROLMENT_REPORT_STATUSES.SUBMITTED,
+        ENROLMENT_REPORT_STATUSES.REJECTED,
+      ].includes(enrolmentReport.externalCcofStatusCode);
     },
     showViewButton(enrolmentReport) {
       return [
@@ -333,6 +336,21 @@ export default {
         ENROLMENT_REPORT_STATUSES.REJECTED,
         ENROLMENT_REPORT_STATUSES.WITH_MINISTRY,
       ].includes(enrolmentReport.externalCcofStatusCode);
+    },
+    async createAdjustmentReport(item) {
+      try {
+        if (this.isSubmissionDeadlinePassed(item)) return;
+        this.loading = true;
+        await EnrolmentReportService.updateEnrolmentReport(item.enrolmentReportId, { hasNextReportCreated: true });
+        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(item.enrolmentReportId);
+        this.setSuccessAlert('Adjustment report created successfully.');
+        this.goToEnrolmentReport(response.data);
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Failed to create adjustment enrolment report.');
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };

@@ -23,6 +23,7 @@ export const useAuthStore = defineStore('auth', {
     error: false,
     isMinistryUser: false,
     impersonateId: null,
+    isImpersonating: false,
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
@@ -31,7 +32,6 @@ export const useAuthStore = defineStore('auth', {
     hasPermission: (state) => {
       return (permission) => {
         if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
-        console.log('Checking permission', permission, state.permissions);
         return state.permissions.includes(permission);
       };
     },
@@ -86,9 +86,10 @@ export const useAuthStore = defineStore('auth', {
         const navBarStore = useNavBarStore();
         const organizationStore = useOrganizationStore();
 
-        let userInfoRes = undefined;
+        let userInfoRes;
         if (this.impersonateId && this.isMinistryUser) {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
+          this.isImpersonating = true;
         } else {
           userInfoRes = await ApiService.getUserInfo();
         }
@@ -102,7 +103,7 @@ export const useAuthStore = defineStore('auth', {
           // When impersonating always use 'Impersonate', not the impersonated user's role
           //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
         } else {
-          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.ofm_portal_roleid);
+          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
         }
         this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
