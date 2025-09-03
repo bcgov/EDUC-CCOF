@@ -177,7 +177,6 @@ async function getUserInfo(req, res) {
     ...organization,
     applications: applicationList,
   };
-  log.info('results:', minify(results));
   return res.status(HttpStatus.OK).json(results);
 }
 
