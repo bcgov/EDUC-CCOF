@@ -80,7 +80,7 @@ router.put(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.CHANGE_ORG_INFORMATION),
-  [(param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(), checkSchema(organizationSchema))],
+  [(param('organizationId', 'URL param: [organizationId] is required').not().isEmpty().isUUID(), checkSchema(organizationSchema))],
   (req, res) => {
     validationResult(req).throw();
     return updateOrganization(req, res);
