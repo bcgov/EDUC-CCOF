@@ -196,15 +196,15 @@ export default {
         'inHomeMultiAgeExtendedCC4OrMore',
       ];
       const MULTI_AGE_CC_FIEDS = ['maxGroupChildCareMultiAge', 'multiAgeCare4OrLess', 'multiAgeCare4more'];
-      if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE) {
+      if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE) {
         this.fundingModel.maxFamilyChildCare = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
         resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
-      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE) {
+      } else if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE) {
         this.fundingModel.maxInHomeMultiAgeChildCare = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, FAMILY_CC_FIELDS);
         resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
-      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE) {
+      } else if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE) {
         this.fundingModel.maxGroupChildCareMultiAge = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, FAMILY_CC_FIELDS);
         resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);

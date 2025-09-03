@@ -100,7 +100,6 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
-    VIEW_FUNDING_AGREEMENT: '/org-facilities/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -591,9 +590,13 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   EXPIRED: 8,
 });
 
-// Roles are just buckets for permissions and shouldn't have
-// any inherit logic surrounding them. However, the facility roles
-// have special logic so define them here
+// Roles are just buckets for permissions and shouldn't have any inherit logic surrounding them.
+// However, some roles have special logic so define them here
 export const ROLES = Object.freeze({
   FACILITY_ADMINISTRATOR: '11',
+  READ_ONLY: '12',
+});
+
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  SUBMITTED: 3,
 });

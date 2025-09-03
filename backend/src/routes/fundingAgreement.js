@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFundingAgreements, getFundingAgreementPDF } = require('../components/fundingAgreement');
+const { getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
 const { param, query, validationResult } = require('express-validator');
 
 /**
@@ -21,6 +21,20 @@ router.get(
 );
 
 /**
+ * Get the Funding Agreement using fundingAgreementId
+ */
+router.get(
+  '/:fundingAgreementId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFundingAgreement(req, res);
+  },
+);
+
+/**
  * Retrieve the PDF for a funding agreement using fundingAgreementId
  */
 router.get(
@@ -31,6 +45,20 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getFundingAgreementPDF(req, res);
+  },
+);
+
+/**
+ * Update an existing Funding Agreement using fundingAgreementId
+ */
+router.patch(
+  '/:fundingAgreementId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateFundingAgreement(req, res);
   },
 );
 module.exports = router;
