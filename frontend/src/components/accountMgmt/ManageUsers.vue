@@ -166,7 +166,7 @@ export default {
       this.dialogOpen = true;
     },
     mayRemoveUser(user) {
-      return !user.isPrimaryContact && this.userInfo.contactid !== user.contactId;
+      return !user.isPrimaryContact && this.userInfo.contactId !== user.contactId;
     },
     userDisplayName(user, fallback = '') {
       const { firstName, lastName } = user;

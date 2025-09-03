@@ -441,6 +441,7 @@ const utils = {
   getChangeActionDetails,
   postAdjustmentERGeneration,
   padString,
+  splitUsername,
 };
 
 module.exports = utils;

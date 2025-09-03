@@ -3,7 +3,7 @@ const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
 const { getOperation, patchOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { ContactMappings } = require('../util/mapping/Mappings');
+const { ContactMappings, ContactFacilityMappings } = require('../util/mapping/Mappings');
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
@@ -36,7 +36,31 @@ async function deactivateContact(req, res) {
   }
 }
 
+async function getRawContactFacilities(contactId) {
+  const facilities = [];
+
+  if (!contactId) {
+    return facilities;
+  }
+
+  try {
+    const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId})`;
+    const response = await getOperation(operation);
+
+    response?.value?.forEach((item) => {
+      const facility = new MappableObjectForFront(item, ContactFacilityMappings);
+      facilities.push(facility);
+    });
+
+    return facilities;
+  } catch (e) {
+    log.error(e);
+    return facilities;
+  }
+}
+
 module.exports = {
   getActiveContactsInOrganization,
   deactivateContact,
+  getRawContactFacilities,
 };
