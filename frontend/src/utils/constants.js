@@ -589,3 +589,7 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   PAID: 7,
   EXPIRED: 8,
 });
+
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  SUBMITTED: 3,
+});

@@ -41,6 +41,7 @@
       </v-card>
     </template>
   </v-container>
+  <SubmitConfirmationDialog :show="showSubmitConfirmationDialog" />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
     :is-submit-displayed="true"
@@ -51,12 +52,22 @@
 </template>
 
 <script>
+import SubmitConfirmationDialog from '@/components/enrolmentReports/SubmitConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
+import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES } from '@/utils/constants.js';
 
 export default {
   name: 'EnrolmentReportDeclaration',
+  components: {
+    SubmitConfirmationDialog,
+  },
   mixins: [enrolmentReportMixin],
+  data() {
+    return {
+      showSubmitConfirmationDialog: false,
+    };
+  },
   async created() {
     window.scrollTo(0, 0);
     await this.loadData();
@@ -74,12 +85,18 @@ export default {
       }
     },
 
-    // TODO (vietle-cgi): implement submit functionality
     async submit() {
       if (this.readonly) return;
       try {
         this.processing = true;
-        this.setSuccessAlert('Report submitted successfully.');
+        const payload = {
+          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
+          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
+          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
+          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
+        };
+        await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
+        this.showSubmitConfirmationDialog = true;
       } catch (error) {
         console.log(error);
         this.setFailureAlert('An error occurred while submitting.');
