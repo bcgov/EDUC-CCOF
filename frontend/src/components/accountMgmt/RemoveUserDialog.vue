@@ -32,7 +32,7 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 export default {
-  name: 'DisableUserDialog',
+  name: 'RemoveUserDialog',
   components: { AppButton, AppDialog },
   mixins: [alertMixin],
   props: {

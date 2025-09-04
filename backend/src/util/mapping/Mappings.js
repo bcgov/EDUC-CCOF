@@ -310,7 +310,6 @@ const UserProfileOrganizationMappings = [
   { back: 'organization_ccof_fundingagreementnumber', front: 'fundingAgreementNumber' },
   { back: 'organization_ccof_bypass_goodstanding_check', front: 'organizationBypassGoodStandingCheck' },
   { back: 'organization_ccof_good_standing_status', front: 'organizationGoodStandingStatus' },
-  { back: 'portalrole_id', front: 'roleId' },
 ];
 
 const UserProfileApplicationMappings = [
@@ -577,7 +576,7 @@ const ContactMappings = [
   { back: 'firstname', front: 'firstName' },
   { back: 'lastname', front: 'lastName' },
   { back: 'telephone1', front: 'telephone' },
-  { back: '_ofm_portal_role_id_value', front: 'portalRoleId' },
+  { back: '_ofm_portal_role_id_value', front: 'roleId' },
 ];
 
 const ApplicationDocumentsMappings = [

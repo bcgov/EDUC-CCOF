@@ -67,7 +67,7 @@
       </v-col>
     </v-row>
   </v-container>
-  <DisableUserDialog
+  <RemoveUserDialog
     :show="disableUserDialogOpen"
     :user="targetUser"
     @contact-deactivated="contactDeactivatedHandler"
@@ -75,7 +75,6 @@
   />
   <AddUserDialog
     :show="addUserDialogOpen"
-    :portal-roles="portalRoles"
     @contact-created="contactCreatedHandler"
     @close-add-dialog="addUserDialogOpen = false"
   />
@@ -86,7 +85,7 @@ import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
-import { useAppStore } from '@/store/app.js';
+
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
@@ -94,12 +93,12 @@ import { OFM_PORTAL_ROLES } from '@/utils/constants';
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import DisableUserDialog from '@/components/accountMgmt/DisableUserDialog.vue';
+import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
 import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, DisableUserDialog, NavButton, AddUserDialog },
+  components: { AppButton, RemoveUserDialog, NavButton, AddUserDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -121,7 +120,6 @@ export default {
       'loadedModel',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useAppStore, ['lookupInfo']),
     headers() {
       return [
         { title: '', key: 'edit-user', sortable: false },
@@ -132,12 +130,6 @@ export default {
         { title: 'Access Type', key: 'accessType' },
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
-    },
-    portalRoles() {
-      return (this.lookupInfo?.roles || []).map((role) => ({
-        name: role.roleName,
-        roleNumber: role.roleNumber,
-      }));
     },
   },
   async mounted() {
@@ -196,8 +188,8 @@ export default {
         }
 
         // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN, 3.READONLY, 4.Contacts Only)
-        const priorityA = rolePriority[a.roleNumber] ?? defaultPriority;
-        const priorityB = rolePriority[b.roleNumber] ?? defaultPriority;
+        const priorityA = rolePriority[a.role.roleNumber] ?? defaultPriority;
+        const priorityB = rolePriority[b.role.roleNumber] ?? defaultPriority;
 
         if (priorityA !== priorityB) {
           return priorityA - priorityB;

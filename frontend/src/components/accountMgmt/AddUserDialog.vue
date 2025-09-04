@@ -20,7 +20,7 @@
               </v-col>
               <v-col cols="12">
                 <v-slide-y-transition>
-                  <div v-show="userType === 'portal'">
+                  <div v-show="userType === USER_TYPE.PORTAL">
                     <p>What level of portal access should this user have?</p>
                     <v-select
                       v-model="portalRole"
@@ -37,10 +37,10 @@
               </v-col>
               <v-col cols="12">
                 <v-slide-y-transition>
-                  <div v-show="newFacAdmin">
+                  <div v-show="isFacilityAdmin">
                     <p>Which facilities should this user have access to?</p>
                     <v-select
-                      v-model="facilitiesSelected"
+                      v-model="selectedFacilities"
                       :items="facilities"
                       :rules="rulesForFacilities"
                       item-title="facilityName"
@@ -70,7 +70,7 @@
                   :rules="rules.required"
                 />
               </v-col>
-              <v-col v-if="userType === 'portal'" cols="12">
+              <v-col v-if="userType === USER_TYPE.PORTAL" cols="12">
                 <v-text-field
                   v-model="userFields.bceid"
                   label="Business BCeID"
@@ -133,7 +133,7 @@
     title="User Added"
     max-width="500px"
     text-alignment="left"
-    @click="closeDialog"
+    @close="goToManageUsers"
   >
     <template #content>
       <div class="text-center">
@@ -154,17 +154,22 @@
 
 <script>
 import { mapState } from 'pinia';
-import { isEmpty } from 'lodash';
+import { useAppStore } from '@/store/app.js';
 import { OFM_PORTAL_ROLES } from '@/utils/constants';
 import { rules, allRulesAreValid } from '@/utils/rules';
-import contactService from '@/services/contactService.js';
 
+import contactService from '@/services/contactService.js';
 import OrganizationService from '@/services/organizationService.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+
+const USER_TYPE = {
+  PORTAL: 'portal',
+  CONTACT: 'contact',
+};
 
 export default {
   name: 'AddUserDialog',
@@ -175,10 +180,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    portalRoles: {
-      type: Array,
-      required: true,
-    },
   },
   emits: ['close-add-dialog', 'contact-created'],
   data() {
@@ -187,21 +188,11 @@ export default {
       dialog: false,
       formValid: true,
       step: 1,
-      userType: 'portal',
-      userTypes: [
-        {
-          type: 'portal',
-          description: 'Portal User - can log in to the portal (Business BCeID required)',
-        },
-        {
-          type: 'contact',
-          description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
-        },
-      ],
+      USER_TYPE,
+      userType: USER_TYPE.PORTAL,
       portalRole: OFM_PORTAL_ROLES.READ_ONLY,
       facilities: [],
-      facilitiesLoading: false,
-      facilitiesSelected: [],
+      selectedFacilities: [],
       userFields: {
         firstName: '',
         lastName: '',
@@ -214,18 +205,36 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
-    newFacAdmin() {
+    ...mapState(useAppStore, ['lookupInfo']),
+    portalRoles() {
+      return (this.lookupInfo?.roles || []).map((role) => ({
+        name: role.roleName,
+        roleNumber: role.roleNumber,
+        roleId: role.roleId,
+      }));
+    },
+    isFacilityAdmin() {
       return this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN;
     },
     rulesForFacilities() {
       return [
         (v) => {
-          if (this.newFacAdmin) {
-            console.log('evaluating new fac admin', typeof v);
+          if (this.isFacilityAdmin) {
             return this.rules.required[0](v);
-          } else {
-            return true;
           }
+          return true;
+        },
+      ];
+    },
+    userTypes() {
+      return [
+        {
+          type: 'portal',
+          description: 'Portal User - can log in to the portal (Business BCeID required)',
+        },
+        {
+          type: 'contact',
+          description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
         },
       ];
     },
@@ -235,17 +244,12 @@ export default {
       this.dialog = val;
     },
   },
-  async mounted() {
+  async created() {
     try {
-      if (isEmpty(this.facilities)) {
-        this.facilitiesLoading = true;
-        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
-      }
+      this.facilities = await OrganizationService.loadFacilities(this.organizationId);
     } catch (error) {
       this.setFailureAlert('There was an error loading the facilities');
       console.error('Error loading facilities: ', error);
-    } finally {
-      this.facilitiesLoading = false;
     }
   },
   methods: {
@@ -257,9 +261,9 @@ export default {
     advanceForm() {
       if (
         this.step === 1 &&
-        this.userType === 'portal' &&
+        this.userType === USER_TYPE.PORTAL &&
         this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN &&
-        !allRulesAreValid(this.rulesForFacilities, this.facilitiesSelected)
+        !allRulesAreValid(this.rulesForFacilities, this.selectedFacilities)
       ) {
         return this.$refs.form?.validate();
       }
@@ -267,9 +271,9 @@ export default {
     },
     clearFields() {
       this.step = 1;
-      this.userType = 'portal';
+      this.userType = USER_TYPE.PORTAL;
       this.portalRole = OFM_PORTAL_ROLES.READ_ONLY;
-      this.facilitiesSelected = [];
+      this.selectedFacilities = [];
 
       for (const k in this.userFields) {
         this.userFields[k] = '';
@@ -287,14 +291,21 @@ export default {
             organizationId: this.organizationId,
           };
 
-          if (this.userType === 'portal') {
-            payload.portalRole = this.portalRole;
+          if (this.userType === USER_TYPE.PORTAL) {
+            const selectedRole = this.portalRoles.find((role) => role.roleNumber === this.portalRole);
+            payload.role = selectedRole
+              ? {
+                  roleId: selectedRole.roleId,
+                  roleNumber: selectedRole.roleNumber,
+                }
+              : null;
             payload.bceid = this.userFields.bceid;
-            payload.facilities = this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.facilitiesSelected : [];
+            payload.facilities = this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.selectedFacilities : [];
           } else {
             payload.facilities = [];
           }
           const response = await contactService.addContact(payload);
+          this.clearFields();
           this.dialog = false;
           this.showSuccessDialog = true;
           this.$emit('contact-created', response);

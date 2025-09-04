@@ -22,9 +22,12 @@ async function getActiveContactsInOrganization(req, res) {
     const contactsRaw = contactsData.value.map((contact) => new MappableObjectForFront(contact, ContactMappings)).map(setContactType);
 
     const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, data.roleNumber]));
-    const contacts = contactsRaw.map((contact) => ({
-      ...contact,
-      roleNumber: roleMap.get(contact.portalRoleId) ?? null,
+    const contacts = contactsRaw.map(({ roleId, ...rest }) => ({
+      ...rest,
+      role: {
+        roleId,
+        roleNumber: roleMap.get(roleId) ?? null,
+      },
     }));
     return res.status(HttpStatus.OK).json(contacts);
   } catch (e) {
@@ -68,8 +71,6 @@ async function getRawContactFacilities(contactId) {
 
 async function createContact(req, res) {
   try {
-    const ccofRoles = (await getRoles()).map((role) => role.data);
-
     if (req.body.bceid) {
       const existingContact = (await getOperation(`contacts?$filter=ccof_username eq '${req.body.bceid}' and statecode eq 0`))?.value?.[0];
 
@@ -84,11 +85,8 @@ async function createContact(req, res) {
     if (req.body.organizationId) {
       contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
-    if (req.body.portalRole) {
-      const userRole = ccofRoles.find((role) => role.roleNumber === req.body.portalRole);
-      if (userRole) {
-        contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${userRole.roleId})`;
-      }
+    if (req.body.role && req.body.role.roleId) {
+      contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
 
     const createdContact = await postOperation('contacts', contactPayload);
