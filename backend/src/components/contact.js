@@ -85,7 +85,7 @@ async function createContact(req, res) {
     if (req.body.organizationId) {
       contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
-    if (req.body.role && req.body.role.roleId) {
+    if (req.body.role?.roleId) {
       contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
 
