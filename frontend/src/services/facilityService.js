@@ -22,4 +22,13 @@ export default {
       throw error;
     }
   },
+  async updateFacility(facilityId, payload) {
+    try {
+      const response = await ApiService.apiAxios.put(`${ApiRoutes.FACILITY}/${facilityId}`, payload);
+      return response;
+    } catch (error) {
+      console.log(`Failed to update existing Facility - ${error}`);
+      throw error;
+    }
+  },
 };
