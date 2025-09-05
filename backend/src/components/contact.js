@@ -72,7 +72,7 @@ async function getRawContactFacilities(contactId) {
 async function createContact(req, res) {
   try {
     if (req.body.bceid) {
-      const existingContact = (await getOperation(`contacts?$filter=ccof_username eq '${req.body.bceid}' and statecode eq 0`))?.value?.[0];
+      const existingContact = (await getOperation(`contacts?$filter=ccof_username eq '${req.body.bceid}'`))?.value?.[0];
 
       if (existingContact) {
         return res.status(HttpStatus.PRECONDITION_FAILED).json({
