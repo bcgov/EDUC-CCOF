@@ -5,6 +5,13 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
+    <v-row>
+      <v-col class="d-flex justify-end">
+        <AppButton size="small" prepend-icon="mdi-plus" display="inline-grid" @click="addUserDialogOpen = true">
+          Add User
+        </AppButton>
+      </v-col>
+    </v-row>
     <v-row v-if="contactsLoading" no-gutters>
       <v-col cols="12">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
@@ -60,29 +67,17 @@
       </v-col>
     </v-row>
   </v-container>
-  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="dialogOpen = false">
-    <template #content>
-      Are you sure you want to remove {{ userDisplayName(targetUser, 'this user') }}? You can't undo this.
-    </template>
-    <template #button>
-      <v-row justify="center">
-        <v-col>
-          <AppButton :primary="false" size="small" @click="dialogOpen = false">Cancel</AppButton>
-        </v-col>
-        <v-col>
-          <AppButton
-            :primary="true"
-            size="small"
-            :loading="dialogLoading"
-            :disabled="dialogLoading"
-            @click="deleteUser(targetUser.contactId)"
-          >
-            Yes, remove the user
-          </AppButton>
-        </v-col>
-      </v-row>
-    </template>
-  </AppDialog>
+  <RemoveUserDialog
+    :show="removeUserDialogOpen"
+    :user="targetUser"
+    @contact-deactivated="contactDeactivatedHandler"
+    @close-remove-dialog="removeUserDialogOpen = false"
+  />
+  <AddUserDialog
+    :show="addUserDialogOpen"
+    @contact-created="contactCreatedHandler"
+    @close-add-dialog="addUserDialogOpen = false"
+  />
 </template>
 
 <script>
@@ -90,17 +85,20 @@ import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 import contactService from '@/services/contactService.js';
+
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
+import { OFM_PORTAL_ROLES } from '@/utils/constants';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
+import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, NavButton, AppDialog },
+  components: { AppButton, RemoveUserDialog, NavButton, AddUserDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -110,8 +108,8 @@ export default {
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
-      dialogOpen: false,
-      dialogLoading: false,
+      removeUserDialogOpen: false,
+      addUserDialogOpen: false,
     };
   },
   computed: {
@@ -141,7 +139,7 @@ export default {
         await this.loadOrganization(this.organizationId);
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
-      this.contacts = contactsData.map(this.setAccessTypeField);
+      this.contacts = this.sortUsers(contactsData.map(this.setAccessTypeField));
     } catch (error) {
       this.setFailureAlert('There was an error loading the users');
       console.error('Error loading users: ', error);
@@ -163,42 +161,43 @@ export default {
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
-      this.dialogOpen = true;
+      this.removeUserDialogOpen = true;
     },
     mayRemoveUser(user) {
       return !user.isPrimaryContact && this.userInfo.contactId !== user.contactId;
     },
-    userDisplayName(user, fallback = '') {
-      const { firstName, lastName } = user;
-
-      let userDisplayName;
-      if (firstName && lastName) {
-        userDisplayName = `${firstName} ${lastName}`;
-      } else if (firstName) {
-        userDisplayName = `${firstName}`;
-      } else if (lastName) {
-        userDisplayName = `${lastName}`;
-      } else {
-        userDisplayName = fallback;
-      }
-
-      return userDisplayName;
+    contactDeactivatedHandler(id) {
+      this.contacts = this.contacts.filter((c) => c.contactId !== id);
     },
-    async deleteUser() {
-      try {
-        this.dialogLoading = true;
-        await contactService.deleteContact(this.targetUser.contactId);
-        this.contacts = this.contacts.filter((c) => c.contactId !== this.targetUser.contactId);
-        this.setSuccessAlert(
-          `${this.userDisplayName(this.targetUser, 'The user')} has been removed from the organization`,
-        );
-      } catch (error) {
-        this.setFailureAlert('Failed to remove the contact.');
-        console.error('Error removing contact: ', error);
-      } finally {
-        this.dialogLoading = false;
-        this.dialogOpen = false;
-      }
+    async contactCreatedHandler() {
+      this.contacts = this.sortUsers(
+        (await contactService.loadContacts(this.organizationId)).map(this.setAccessTypeField),
+      );
+    },
+    sortUsers(contacts) {
+      const rolePriority = {
+        [OFM_PORTAL_ROLES.ORG_ADMIN]: 1,
+        [OFM_PORTAL_ROLES.FAC_ADMIN]: 2,
+        [OFM_PORTAL_ROLES.READ_ONLY]: 3,
+      };
+      const defaultPriority = 100;
+      // 1. Primary contact first
+      return contacts.sort((a, b) => {
+        if (a.isPrimaryContact !== b.isPrimaryContact) {
+          return a.isPrimaryContact ? -1 : 1;
+        }
+
+        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN, 3.READONLY, 4.Contacts Only)
+        const priorityA = rolePriority[a.role.roleNumber] ?? defaultPriority;
+        const priorityB = rolePriority[b.role.roleNumber] ?? defaultPriority;
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+
+        // 3. Sort by last name (A-Z)
+        return a.lastName.localeCompare(b.lastName);
+      });
     },
   },
 };

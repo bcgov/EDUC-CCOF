@@ -86,7 +86,7 @@
                     <AppButton
                       size="small"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.email"
                       :loading="isProcessing"
                       @click="() => saveField('email')"
@@ -97,7 +97,7 @@
                       class="ml-1"
                       size="small"
                       :primary="false"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       @click="() => cancelEditing('email')"
                     >
@@ -113,7 +113,7 @@
                     <AppButton
                       v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.email = true"
                     >
@@ -147,7 +147,7 @@
                     <AppButton
                       size="small"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.phone"
                       :loading="isProcessing"
                       @click="() => saveField('phone')"
@@ -157,7 +157,7 @@
                     <AppButton
                       class="ml-1"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       :primary="false"
                       @click="() => cancelEditing('phone')"
@@ -174,7 +174,7 @@
                     <AppButton
                       v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.phone = true"
                     >
@@ -209,7 +209,7 @@
                       size="small"
                       color="#003366"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.website"
                       :loading="isProcessing"
                       @click="() => saveField('website')"
@@ -220,7 +220,7 @@
                       class="ml-1"
                       size="small"
                       :primary="false"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       @click="() => cancelEditing('website')"
                     >
@@ -237,7 +237,7 @@
                       v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
                       color="#003366"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.website = true"
                     >
