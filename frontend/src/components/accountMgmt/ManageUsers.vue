@@ -68,10 +68,10 @@
     </v-row>
   </v-container>
   <RemoveUserDialog
-    :show="disableUserDialogOpen"
+    :show="removeUserDialogOpen"
     :user="targetUser"
     @contact-deactivated="contactDeactivatedHandler"
-    @close-disable-dialog="disableUserDialogOpen = false"
+    @close-remove-dialog="removeUserDialogOpen = false"
   />
   <AddUserDialog
     :show="addUserDialogOpen"
@@ -108,7 +108,7 @@ export default {
       targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
-      disableUserDialogOpen: false,
+      removeUserDialogOpen: false,
       addUserDialogOpen: false,
     };
   },
@@ -161,7 +161,7 @@ export default {
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
-      this.disableUserDialogOpen = true;
+      this.removeUserDialogOpen = true;
     },
     mayRemoveUser(user) {
       return !user.isPrimaryContact && this.userInfo.contactId !== user.contactId;

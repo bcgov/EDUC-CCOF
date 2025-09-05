@@ -1,19 +1,19 @@
 <template>
-  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="$emit('close-disable-dialog')">
+  <AppDialog v-model="dialogOpen" title="Remove User" max-width="800px" @close="$emit('close-remove-dialog')">
     <template #content>
       Are you sure you want to remove {{ userDisplayName(user, 'this user') }}? You can't undo this.
     </template>
     <template #button>
       <v-row justify="center">
         <v-col>
-          <AppButton :primary="false" size="small" @click="$emit('close-disable-dialog')">Cancel</AppButton>
+          <AppButton :primary="false" size="small" @click="$emit('close-remove-dialog')">Cancel</AppButton>
         </v-col>
         <v-col>
           <AppButton
             :primary="true"
             size="small"
-            :loading="disableBusy"
-            :disabled="disableBusy"
+            :loading="removeBusy"
+            :disabled="removeBusy"
             @click="deleteUser(user.contactId)"
           >
             Yes, remove the user
@@ -45,11 +45,11 @@ export default {
       required: true,
     },
   },
-  emits: ['close-disable-dialog', 'contact-deactivated'],
+  emits: ['close-remove-dialog', 'contact-deactivated'],
   data() {
     return {
       dialogOpen: false,
-      disableBusy: false,
+      removeBusy: false,
     };
   },
   watch: {
@@ -76,7 +76,7 @@ export default {
     },
     async deleteUser() {
       try {
-        this.disableBusy = true;
+        this.removeBusy = true;
         await contactService.deleteContact(this.user.contactId);
         this.$emit('contact-deactivated', this.user.contactId);
         this.setSuccessAlert(`${this.userDisplayName(this.user, 'The user')} has been removed from the organization`);
@@ -84,9 +84,9 @@ export default {
         this.setFailureAlert('Failed to remove the contact.');
         console.error('Error removing contact: ', error);
       } finally {
-        this.disableBusy = false;
+        this.removeBusy = false;
         this.dialogOpen = false;
-        this.$emit('close-disable-dialog');
+        this.$emit('close-remove-dialog');
       }
     },
   },

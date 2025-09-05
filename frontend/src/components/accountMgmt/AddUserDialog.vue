@@ -9,7 +9,7 @@
                 <p>What type of user are you adding?</p>
                 <v-select
                   v-model="userType"
-                  :items="userTypes"
+                  :items="USER_ROLES"
                   item-title="description"
                   item-value="type"
                   label="User Type"
@@ -25,7 +25,7 @@
                     <v-select
                       v-model="portalRole"
                       :items="portalRoles"
-                      item-title="name"
+                      item-title="roleName"
                       item-value="roleNumber"
                       label="User Role"
                       variant="outlined"
@@ -171,6 +171,17 @@ const USER_TYPE = {
   CONTACT: 'contact',
 };
 
+const USER_ROLES = [
+  {
+    type: USER_TYPE.PORTAL,
+    description: 'Portal User - can log in to the portal (Business BCeID required)',
+  },
+  {
+    type: USER_TYPE.CONTACT,
+    description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
+  },
+];
+
 export default {
   name: 'AddUserDialog',
   components: { AppButton, AppDialog },
@@ -188,7 +199,6 @@ export default {
       dialog: false,
       formValid: true,
       step: 1,
-      USER_TYPE,
       userType: USER_TYPE.PORTAL,
       portalRole: OFM_PORTAL_ROLES.READ_ONLY,
       facilities: [],
@@ -207,11 +217,7 @@ export default {
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useAppStore, ['lookupInfo']),
     portalRoles() {
-      return (this.lookupInfo?.roles || []).map((role) => ({
-        name: role.roleName,
-        roleNumber: role.roleNumber,
-        roleId: role.roleId,
-      }));
+      return this.lookupInfo?.roles ?? [];
     },
     isFacilityAdmin() {
       return this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN;
@@ -226,18 +232,6 @@ export default {
         },
       ];
     },
-    userTypes() {
-      return [
-        {
-          type: 'portal',
-          description: 'Portal User - can log in to the portal (Business BCeID required)',
-        },
-        {
-          type: 'contact',
-          description: 'Contact Only - cannot log in to the portal (Business BCeID not required)',
-        },
-      ];
-    },
   },
   watch: {
     show(val) {
@@ -245,14 +239,19 @@ export default {
     },
   },
   async created() {
-    try {
-      this.facilities = await OrganizationService.loadFacilities(this.organizationId);
-    } catch (error) {
-      this.setFailureAlert('There was an error loading the facilities');
-      console.error('Error loading facilities: ', error);
-    }
+    this.USER_TYPE = USER_TYPE;
+    this.USER_ROLES = USER_ROLES;
+    await this.loadData();
   },
   methods: {
+    async loadData() {
+      try {
+        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
+      } catch (error) {
+        this.setFailureAlert('There was an error loading the facilities');
+        console.error('Error loading facilities: ', error);
+      }
+    },
     closeDialog() {
       this.clearFields();
       this.$emit('close-add-dialog');
@@ -292,13 +291,7 @@ export default {
           };
 
           if (this.userType === USER_TYPE.PORTAL) {
-            const selectedRole = this.portalRoles.find((role) => role.roleNumber === this.portalRole);
-            payload.role = selectedRole
-              ? {
-                  roleId: selectedRole.roleId,
-                  roleNumber: selectedRole.roleNumber,
-                }
-              : null;
+            payload.role = this.portalRoles.find((role) => role.roleNumber === this.portalRole) || null;
             payload.bceid = this.userFields.bceid;
             payload.facilities = this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.selectedFacilities : [];
           } else {
