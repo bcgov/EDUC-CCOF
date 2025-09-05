@@ -226,7 +226,8 @@
 <script>
 import { mapState } from 'pinia';
 import { capitalize } from '@/utils/format';
-import rules from '@/utils/rules.js';
+import rules from '@/utils/rules';
+import FacilityService from '@/services/facilityService';
 
 import { useOrganizationStore } from '@/store/ccof/organization';
 
@@ -250,6 +251,7 @@ export default {
       default: true,
     },
   },
+  emits: ['facility-updated'],
   data() {
     return {
       editing: {
@@ -295,7 +297,9 @@ export default {
       this.facilityCopy[key] = this.workingFields[key];
       this.isProcessing = true;
       try {
-        // TODO: Callout to save a single facility.
+        console.log(this.facility.facilityId);
+        await FacilityService.updateFacility(this.facility.facilityId, this.facilityCopy);
+        this.$emit('facility-updated', this.facilityCopy);
         this.setSuccessAlert('Facility updated successfully.');
       } catch {
         this.setFailureAlert('An error occurred while updating the facility.');
