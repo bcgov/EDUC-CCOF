@@ -11,7 +11,7 @@
       <v-col class="mt-2">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
           <v-row>
-            <v-col class="py-0" cols="12" md="6">
+            <v-col class="py-0" cols="12" lg="6">
               <v-row dense>
                 <v-col cols="12" sm="6" xl="5" xxl="3">
                   <p>
@@ -54,16 +54,67 @@
               </v-row>
               <v-row dense>
                 <v-col cols="12" sm="6" xl="5" xxl="3">
-                  <p>
-                    <AppLabel>*Business Phone:</AppLabel>
-                  </p>
+                  <p><AppLabel>*Business Phone:</AppLabel></p>
                 </v-col>
-                <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-                  <p>{{ facility.phone }}</p>
+                <v-col cols="12" sm="6" xl="7" xxl="9">
+                  <v-form v-model="valid.phone" @submit.prevent>
+                    <v-row v-if="editing.phone" no-gutters>
+                      <v-col cols="12" md="7">
+                        <v-text-field
+                          v-model="workingFields.phone"
+                          class="less-jitter"
+                          density="compact"
+                          variant="underlined"
+                          label="Phone Number"
+                          :rules="[...rules.required, rules.phone]"
+                          :single-line="true"
+                          hide-details="auto"
+                        />
+                      </v-col>
+                      <v-col cols="3" class="text-no-wrap">
+                        <AppButton
+                          size="small"
+                          type="submit"
+                          :display-block="false"
+                          :disabled="!valid.phone"
+                          :loading="isProcessing"
+                          @click="() => saveField('phone')"
+                        >
+                          Save
+                        </AppButton>
+                        <AppButton
+                          class="ml-1"
+                          size="small"
+                          :primary="false"
+                          :display-block="false"
+                          :disabled="isProcessing"
+                          @click="() => cancelEditing('phone')"
+                        >
+                          Cancel
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else no-gutters>
+                      <v-col cols="12" md="9">
+                        <p>{{ facility.phone }}</p>
+                      </v-col>
+                      <v-col cols="3">
+                        <AppButton
+                          v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
+                          size="small"
+                          :display-block="false"
+                          :disabled="workingFieldInUse || isProcessing"
+                          @click="editing.phone = true"
+                        >
+                          Edit
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                  </v-form>
                 </v-col>
               </v-row>
             </v-col>
-            <v-col class="py-0" cols="12" md="6">
+            <v-col class="py-0" cols="12" lg="6">
               <v-row dense>
                 <v-col cols="12" sm="6" xl="5" xxl="3">
                   <p>
@@ -106,12 +157,63 @@
               </v-row>
               <v-row dense>
                 <v-col cols="12" sm="6" xl="5" xxl="3">
-                  <p>
-                    <AppLabel>Facility Email Address:</AppLabel>
-                  </p>
+                  <p><AppLabel>Facility Email Address:</AppLabel></p>
                 </v-col>
-                <v-col class="d-flex align-end" cols="12" sm="6" xl="7" xxl="9">
-                  <p>{{ facility.email }}</p>
+                <v-col cols="12" sm="6" xl="7" xxl="9">
+                  <v-form v-model="valid.email" @submit.prevent>
+                    <v-row v-if="editing.email" no-gutters>
+                      <v-col cols="12" md="7">
+                        <v-text-field
+                          v-model="workingFields.email"
+                          class="less-jitter"
+                          density="compact"
+                          variant="underlined"
+                          label="Email Address"
+                          :rules="[...rules.email, ...rules.required]"
+                          :single-line="true"
+                          hide-details="auto"
+                        />
+                      </v-col>
+                      <v-col cols="3" class="text-no-wrap">
+                        <AppButton
+                          size="small"
+                          type="submit"
+                          :display-block="false"
+                          :disabled="!valid.email"
+                          :loading="isProcessing"
+                          @click="() => saveField('email')"
+                        >
+                          Save
+                        </AppButton>
+                        <AppButton
+                          class="ml-1"
+                          size="small"
+                          :primary="false"
+                          :display-block="false"
+                          :disabled="isProcessing"
+                          @click="() => cancelEditing('email')"
+                        >
+                          Cancel
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else no-gutters>
+                      <v-col cols="12" md="9">
+                        <p>{{ facility.email }}</p>
+                      </v-col>
+                      <v-col cols="3">
+                        <AppButton
+                          v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
+                          size="small"
+                          :display-block="false"
+                          :disabled="workingFieldInUse || isProcessing"
+                          @click="editing.email = true"
+                        >
+                          Edit
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                  </v-form>
                 </v-col>
               </v-row>
             </v-col>
@@ -124,14 +226,19 @@
 <script>
 import { mapState } from 'pinia';
 import { capitalize } from '@/utils/format';
+import rules from '@/utils/rules.js';
 
 import { useOrganizationStore } from '@/store/ccof/organization';
 
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageFacilityDetails',
-  components: { AppLabel },
+  components: { AppButton, AppLabel },
+  mixins: [alertMixin, permissionsMixin],
   props: {
     facility: {
       type: Object,
@@ -143,11 +250,81 @@ export default {
       default: true,
     },
   },
+  data() {
+    return {
+      editing: {
+        phone: false,
+        email: false,
+      },
+      workingFields: {
+        email: '',
+        phone: '',
+      },
+      valid: {
+        email: true,
+        phone: true,
+      },
+      facilityCopy: {
+        phone: '',
+        email: '',
+      },
+      isProcessing: false,
+      rules,
+    };
+  },
   computed: {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     providerType() {
       return capitalize(this.organizationProviderType);
     },
+    workingFieldInUse() {
+      return Object.values(this.editing).some((value) => value === true);
+    },
+  },
+  mounted() {
+    const { phone, email } = this.facility;
+    this.facilityCopy = { phone, email };
+  },
+  methods: {
+    async saveField(key) {
+      if (this.workingFields[key] === this.facility[key]) {
+        this.editing[key] = false;
+        return;
+      }
+
+      this.facilityCopy[key] = this.workingFields[key];
+      this.isProcessing = true;
+      try {
+        // TODO: Callout to save a single facility.
+        this.setSuccessAlert('Facility updated successfully.');
+      } catch {
+        this.setFailureAlert('An error occurred while updating the facility.');
+      } finally {
+        this.editing[key] = false;
+        this.isProcessing = false;
+      }
+    },
+    cancelEditing(key) {
+      this.editing[key] = false;
+      this.workingFields[key] = this.facilities[key];
+    },
   },
 };
 </script>
+
+<style scoped>
+.less-jitter :deep(input) {
+  padding-top: 0;
+  font-size: 1rem;
+  letter-spacing: 0.03125em;
+  min-height: 0;
+}
+
+.less-jitter :deep(label.v-label) {
+  top: 0;
+}
+
+.v-row.v-row--dense {
+  min-height: 38px;
+}
+</style>
