@@ -9,7 +9,7 @@
                 <p>What type of user are you adding?</p>
                 <v-select
                   v-model="userType"
-                  :items="USER_ROLES"
+                  :items="USER_TYPE_ITEMS"
                   item-title="description"
                   item-value="type"
                   label="User Type"
@@ -171,7 +171,7 @@ const USER_TYPE = {
   CONTACT: 'contact',
 };
 
-const USER_ROLES = [
+const USER_TYPE_ITEMS = [
   {
     type: USER_TYPE.PORTAL,
     description: 'Portal User - can log in to the portal (Business BCeID required)',
@@ -217,7 +217,9 @@ export default {
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useAppStore, ['lookupInfo']),
     portalRoles() {
-      return this.lookupInfo?.roles ?? [];
+      return (this.lookupInfo?.roles || []).map(({ roleId, roleName, roleNumber }) => {
+        return { roleId, roleName, roleNumber };
+      });
     },
     isFacilityAdmin() {
       return this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN;
@@ -240,7 +242,7 @@ export default {
   },
   async created() {
     this.USER_TYPE = USER_TYPE;
-    this.USER_ROLES = USER_ROLES;
+    this.USER_TYPE_ITEMS = USER_TYPE_ITEMS;
     await this.loadData();
   },
   methods: {
