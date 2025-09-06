@@ -14,7 +14,7 @@
           <v-col class="border-right text-cell">3 Years to Kinder</v-col>
           <v-col class="border-right text-cell">Kinder Before & After</v-col>
           <v-col class="border-right text-cell">Grade 1 - 12 Years</v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell">Preschool</v-col>
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell">Preschool</v-col>
         </v-row>
         <v-row no-gutters class="border-bottom text-center">
           <v-col class="close-column border-right background-light-grey d-flex align-center justify-center">
@@ -63,7 +63,7 @@
               :default-value="0"
             />
           </v-col>
-          <v-col v-if="isGroup" cols="1">
+          <v-col v-if="isGroup" cols="1" class="border-right">
             <AppNumberInput
               v-model="enrolmentReport.totalEnrolledPre"
               maxlength="3"
@@ -72,7 +72,7 @@
             />
           </v-col>
         </v-row>
-        <v-row no-gutters class="background-light-grey border-bottom border-right text-center px-8 py-2">
+        <v-row no-gutters class="background-light-grey border-bottom border-right px-8 py-2">
           <p>
             Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect, click
             <router-link :to="PATHS.ROOT.CHANGE_LANDING">
@@ -98,7 +98,7 @@
           <v-col class="border-right text-cell">
             {{ getApprovedParentFees(enrolmentReport.approvedParentFeesOOSCG) }}
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell">
             {{ getApprovedParentFees(enrolmentReport.approvedParentFeesPre) }}
           </v-col>
         </v-row>
@@ -119,7 +119,7 @@
           <v-col class="border-right text-cell">
             {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyOOSCG) }}
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell">
             {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequencyPre) }}
           </v-col>
         </v-row>
@@ -131,7 +131,7 @@
               <v-col class="text-cell">Over 4 Hours</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell" />
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell" />
         </v-row>
         <v-row
           v-for="(dailyEnrolment, rowIndex) in dailyEnrolments"
@@ -197,7 +197,7 @@
           </v-col>
           <v-col v-if="isGroup" cols="1">
             <v-row no-gutters>
-              <v-col>
+              <v-col class="border-right">
                 <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="readonly" />
               </v-col>
             </v-row>
@@ -235,7 +235,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.currentTotalOverOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.currentTotalLessPre }}
           </v-col>
         </v-row>
@@ -271,7 +271,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.baseFundingRates.overOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.baseFundingRates.lessPre }}
           </v-col>
         </v-row>
@@ -307,7 +307,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.ccofBaseAmountOverOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.ccofBaseAmountLessPre }}
           </v-col>
         </v-row>
@@ -343,7 +343,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.dailyCcfriRateOverOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.dailyCcfriRateLessPre }}
           </v-col>
         </v-row>
@@ -379,7 +379,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.ccfriAmountOverOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.ccfriAmountLessPre }}
           </v-col>
         </v-row>
@@ -435,7 +435,7 @@
               </v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.ccfriProviderPaymentRates.lessPre }}
           </v-col>
         </v-row>
@@ -471,7 +471,7 @@
               <v-col class="text-cell">{{ enrolmentReport?.ccfriProviderAmountOverOOSCG }}</v-col>
             </v-row>
           </v-col>
-          <v-col v-if="isGroup" cols="1" class="text-cell text-center">
+          <v-col v-if="isGroup" cols="1" class="border-right text-cell text-center">
             {{ enrolmentReport?.ccfriProviderAmountLessPre }}
           </v-col>
         </v-row>
@@ -522,7 +522,7 @@ import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal } fr
 import {
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
-  ORGANIZATION_PROVIDER_TYPES,
+  ORGANIZATION_PROVIDER_TYPES_IDS,
   PARENT_FEE_FREQUENCIES,
   PATHS,
 } from '@/utils/constants.js';
@@ -546,7 +546,7 @@ export default {
   },
   computed: {
     isGroup() {
-      return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
+      return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES_IDS.GROUP;
     },
   },
   async created() {
