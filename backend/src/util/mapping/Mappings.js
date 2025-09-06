@@ -576,6 +576,7 @@ const ContactMappings = [
   { back: 'firstname', front: 'firstName' },
   { back: 'lastname', front: 'lastName' },
   { back: 'telephone1', front: 'telephone' },
+  { back: '_ofm_portal_role_id_value', front: 'roleId' },
 ];
 
 const ApplicationDocumentsMappings = [

@@ -23,4 +23,13 @@ export default {
       throw error;
     }
   },
+  async addContact(contact) {
+    try {
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.CONTACTS}`, contact);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to create contact - ${error}`);
+      throw error;
+    }
+  },
 };
