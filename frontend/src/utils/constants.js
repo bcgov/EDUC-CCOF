@@ -590,13 +590,16 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   EXPIRED: 8,
 });
 
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  CREATED: 1,
+  INCOMPLETE: 2,
+  SUBMITTED: 3,
+  REJECTED: 5,
+});
+
 // Roles are just buckets for permissions and shouldn't have any inherit logic surrounding them.
 // However, some roles have special logic so define them here
 export const ROLES = Object.freeze({
   FACILITY_ADMINISTRATOR: '11',
   READ_ONLY: '12',
-});
-
-export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
-  SUBMITTED: 3,
 });
