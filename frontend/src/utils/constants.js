@@ -597,5 +597,8 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
 });
 
 export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  CREATED: 1,
+  INCOMPLETE: 2,
   SUBMITTED: 3,
+  REJECTED: 5,
 });
