@@ -6,11 +6,9 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12"><h2>Organization Info</h2></v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <AppButton @click="goToChangeRequest"> Request a Change </AppButton>
+      <v-col cols="8"><h2>Organization Info</h2></v-col>
+      <v-col cols="4" class="d-flex justify-end">
+        <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
       </v-col>
     </v-row>
     <v-row v-if="orgLoading" no-gutters>
