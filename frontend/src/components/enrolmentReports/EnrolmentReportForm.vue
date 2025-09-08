@@ -563,9 +563,6 @@ export default {
       'lessOOSCG',
       'overOOSCG',
     ];
-    if (this.isGroup) {
-      this.CATEGORY_FIELDS.push('lessPre');
-    }
     await this.loadData();
     this.calculate();
   },
@@ -586,6 +583,9 @@ export default {
 
     async loadEnrolmentReport() {
       this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
+      if (this.isGroup) {
+        this.CATEGORY_FIELDS.push('lessPre');
+      }
       this.normalizeRates();
       this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
     },

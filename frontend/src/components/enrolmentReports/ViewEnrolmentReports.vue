@@ -360,8 +360,7 @@ export default {
           internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
           internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
         };
-      }
-      if (
+      } else if (
         status === ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED ||
         status === ENROLMENT_REPORT_INTERNAL_STATUSES.REJECTED
       ) {
@@ -371,8 +370,9 @@ export default {
           externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
           externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
         };
+      } else {
+        return;
       }
-      if (!payload) return;
       await EnrolmentReportService.updateEnrolmentReport(report.enrolmentReportId, payload);
     },
     async editEnrolmentReport(report) {
