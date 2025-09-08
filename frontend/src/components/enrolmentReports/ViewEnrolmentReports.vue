@@ -102,7 +102,7 @@
                 :disabled="isSubmissionDeadlinePassed(item)"
                 :primary="false"
                 size="medium"
-                @click="goToEnrolmentReport(item.enrolmentReportId)"
+                @click="editEnrolmentReport(item)"
               >
                 Edit
               </AppButton>
@@ -148,7 +148,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-import { ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
 
 export default {
@@ -348,6 +348,41 @@ export default {
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to create adjustment enrolment report.');
+      } finally {
+        this.loading = false;
+      }
+    },
+    async prepareEnrolmentReportForEditing(report) {
+      const status = report.internalCcofStatusCode;
+      let payload;
+      if (status === ENROLMENT_REPORT_INTERNAL_STATUSES.CREATED) {
+        payload = {
+          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+        };
+      } else if (
+        status === ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED ||
+        status === ENROLMENT_REPORT_INTERNAL_STATUSES.REJECTED
+      ) {
+        payload = {
+          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+        };
+      } else {
+        return;
+      }
+      await EnrolmentReportService.updateEnrolmentReport(report.enrolmentReportId, payload);
+    },
+    async editEnrolmentReport(report) {
+      try {
+        this.loading = true;
+        await this.prepareEnrolmentReportForEditing(report);
+        this.goToEnrolmentReport(report.enrolmentReportId);
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Failed to edit enrolment report.');
       } finally {
         this.loading = false;
       }
