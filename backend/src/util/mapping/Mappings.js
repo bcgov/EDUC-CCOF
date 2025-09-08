@@ -63,6 +63,7 @@ const FacilityMappings = [
   { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
   { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
   { back: 'ccof_healthauthority', front: 'healthAuthority' },
+  { back: 'statuscode', front: 'statusCode' },
 ];
 
 const CCFRIFacilityMappings = [
