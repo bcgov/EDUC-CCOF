@@ -281,8 +281,9 @@ export default {
     },
   },
   mounted() {
-    this.workingFields = { ...this.facility };
-    this.facilityCopy = { ...this.facility };
+    const { email, phone } = this.facility;
+    this.workingFields = { email, phone };
+    this.facilityCopy = { email, phone };
   },
   methods: {
     async saveField(key) {
