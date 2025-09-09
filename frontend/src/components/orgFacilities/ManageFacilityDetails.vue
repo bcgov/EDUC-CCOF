@@ -100,7 +100,6 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
-                          v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                           size="small"
                           :display-block="false"
                           :disabled="workingFieldInUse || isProcessing"
@@ -203,7 +202,6 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
-                          v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                           size="small"
                           :display-block="false"
                           :disabled="workingFieldInUse || isProcessing"
@@ -234,12 +232,11 @@ import { useOrganizationStore } from '@/store/ccof/organization';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageFacilityDetails',
   components: { AppButton, AppLabel },
-  mixins: [alertMixin, permissionsMixin],
+  mixins: [alertMixin],
   props: {
     facility: {
       type: Object,
@@ -280,7 +277,7 @@ export default {
       return capitalize(this.organizationProviderType);
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some((value) => value === true);
+      return Object.values(this.editing).some((value) => value);
     },
   },
   mounted() {
@@ -316,17 +313,6 @@ export default {
 </script>
 
 <style scoped>
-.less-jitter :deep(input) {
-  padding-top: 0;
-  font-size: 1rem;
-  letter-spacing: 0.03125em;
-  min-height: 0;
-}
-
-.less-jitter :deep(label.v-label) {
-  top: 0;
-}
-
 .v-row.v-row--dense {
   min-height: 38px;
 }

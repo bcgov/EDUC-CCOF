@@ -383,7 +383,7 @@ export default {
       );
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some((value) => value === true);
+      return Object.values(this.editing).some((value) => value);
     },
   },
   async mounted() {
