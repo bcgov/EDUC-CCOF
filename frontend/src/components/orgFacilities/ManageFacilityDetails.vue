@@ -283,9 +283,17 @@ export default {
       return Object.values(this.editing).some((value) => value === true);
     },
   },
-  mounted() {
-    const { phone, email } = this.facility;
-    this.facilityCopy = { phone, email };
+  watch: {
+    facility(newData) {
+      for (let key in newData) {
+        if (this.workingFields[key] !== newData[key]) {
+          this.workingFields[key] = newData[key];
+        }
+        if (this.facilityCopy[key] !== newData[key]) {
+          this.facilityCopy[key] = newData[key];
+        }
+      }
+    },
   },
   methods: {
     async saveField(key) {
@@ -297,7 +305,6 @@ export default {
       this.facilityCopy[key] = this.workingFields[key];
       this.isProcessing = true;
       try {
-        console.log(this.facility.facilityId);
         await FacilityService.updateFacility(this.facility.facilityId, this.facilityCopy);
         this.$emit('facility-updated', this.facilityCopy);
         this.setSuccessAlert('Facility updated successfully.');
