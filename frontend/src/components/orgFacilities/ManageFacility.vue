@@ -20,6 +20,7 @@
             <v-window v-model="tab">
               <v-window-item value="facility-details">
                 <ManageFacilityDetails
+                  v-if="facilityDataReady"
                   :facility="facility"
                   :facility-loading="facilityLoading"
                   @facility-updated="updateFacility"
@@ -44,6 +45,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -70,6 +72,9 @@ export default {
     ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
     facilityId() {
       return this.$route.params.facilityId;
+    },
+    facilityDataReady() {
+      return !isEmpty(this.facility);
     },
   },
   async mounted() {

@@ -283,17 +283,9 @@ export default {
       return Object.values(this.editing).some((value) => value === true);
     },
   },
-  watch: {
-    facility(newData) {
-      for (let key in newData) {
-        if (this.workingFields[key] !== newData[key]) {
-          this.workingFields[key] = newData[key];
-        }
-        if (this.facilityCopy[key] !== newData[key]) {
-          this.facilityCopy[key] = newData[key];
-        }
-      }
-    },
+  mounted() {
+    this.workingFields = { ...this.facility };
+    this.facilityCopy = { ...this.facility };
   },
   methods: {
     async saveField(key) {
