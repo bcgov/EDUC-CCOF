@@ -310,7 +310,7 @@ export default {
     },
     cancelEditing(key) {
       this.editing[key] = false;
-      this.workingFields[key] = this.facilities[key];
+      this.workingFields[key] = this.facility[key];
     },
   },
 };
