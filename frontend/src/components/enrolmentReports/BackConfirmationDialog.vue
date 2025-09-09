@@ -2,11 +2,9 @@
   <AppDialog v-model="isDisplayed" persistent max-width="60%" @close="closeDialog">
     <template #content>
       <div class="text-center">
-        <p class="pt-4 font-weight-bold text-h6">Go back to the dashboard?</p>
+        <p class="pt-4 font-weight-bold text-h5">Leave this page?</p>
         <p class="pt-4 text-h6">You may have unsaved changes.</p>
-        <p class="pt-4 text-h6">
-          Make sure you've saved your work before going back to the Enrolment Report Dashboard.
-        </p>
+        <p class="pt-4 text-h6">Make sure to save your work before returning to the Enrolment Report Dashboard.</p>
       </div>
     </template>
     <template #button>
@@ -16,7 +14,7 @@
         </v-col>
         <v-col cols="12" md="6" class="py-2 d-flex justify-center">
           <AppButton id="go-to-enrolment-report-dashboard" @click="goToEnrolmentReportDashboard">
-            Go back to the Enrolment Report Dashboard
+            Go back to Dashboard
           </AppButton>
         </v-col>
       </v-row>

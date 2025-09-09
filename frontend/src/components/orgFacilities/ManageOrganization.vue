@@ -386,7 +386,7 @@ export default {
       );
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some((value) => value === true);
+      return Object.values(this.editing).some((value) => value);
     },
   },
   async mounted() {
@@ -444,17 +444,6 @@ export default {
 };
 </script>
 <style scoped>
-.less-jitter :deep(input) {
-  padding-top: 0;
-  font-size: 1rem;
-  letter-spacing: 0.03125em;
-  min-height: 0;
-}
-
-.less-jitter :deep(label.v-label) {
-  top: 0;
-}
-
 .v-row.v-row--dense {
   min-height: 38px;
 }

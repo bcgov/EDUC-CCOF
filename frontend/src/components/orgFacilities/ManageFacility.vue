@@ -26,7 +26,12 @@
           <v-card-text>
             <v-window v-model="tab">
               <v-window-item value="facility-details">
-                <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
+                <ManageFacilityDetails
+                  v-if="facilityDataReady"
+                  :facility="facility"
+                  :facility-loading="facilityLoading"
+                  @facility-updated="updateFacility"
+                />
               </v-window-item>
               <v-window-item value="licences-details">
                 <ManageLicence />
@@ -47,6 +52,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 
 import { useApplicationStore } from '@/store/application.js';
@@ -82,6 +88,9 @@ export default {
       const application = this.applicationMap?.get(this.programYearId);
       return isFacilityActive(this.facility, application);
     },
+    facilityDataReady() {
+      return !isEmpty(this.facility);
+    },
   },
   async mounted() {
     this.$router.isReady().then(() => {
@@ -90,7 +99,10 @@ export default {
 
     try {
       this.facilityLoading = true;
-      this.facility = await facilityService.getFacilityById(this.facilityId);
+      this.facility = {
+        ...(await facilityService.getFacilityById(this.facilityId)),
+        facilityId: this.facilityId,
+      };
     } catch (error) {
       this.setFailureAlert('There was an error loading the facility details.');
       console.error('Error loading facility: ', error);
@@ -104,6 +116,12 @@ export default {
     },
     goToChangeRequest() {
       this.$router.push({ name: 'Report Change' });
+    },
+    updateFacility(payload) {
+      this.facility = {
+        ...this.facility,
+        ...payload,
+      };
     },
   },
 };
