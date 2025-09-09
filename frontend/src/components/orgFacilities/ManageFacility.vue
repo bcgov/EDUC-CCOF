@@ -19,7 +19,12 @@
           <v-card-text>
             <v-window v-model="tab">
               <v-window-item value="facility-details">
-                <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
+                <ManageFacilityDetails
+                  v-if="facilityDataReady"
+                  :facility="facility"
+                  :facility-loading="facilityLoading"
+                  @facility-updated="updateFacility"
+                />
               </v-window-item>
               <v-window-item value="licences-details">
                 <ManageLicence />
@@ -40,6 +45,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -67,6 +73,9 @@ export default {
     facilityId() {
       return this.$route.params.facilityId;
     },
+    facilityDataReady() {
+      return !isEmpty(this.facility);
+    },
   },
   async mounted() {
     this.$router.isReady().then(() => {
@@ -75,7 +84,10 @@ export default {
 
     try {
       this.facilityLoading = true;
-      this.facility = await facilityService.getFacilityById(this.facilityId);
+      this.facility = {
+        ...(await facilityService.getFacilityById(this.facilityId)),
+        facilityId: this.facilityId,
+      };
     } catch (error) {
       this.setFailureAlert('There was an error loading the facility details.');
       console.error('Error loading facility: ', error);
@@ -86,6 +98,12 @@ export default {
   methods: {
     goBackToManageFacilities() {
       this.$router.push(`${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
+    },
+    updateFacility(payload) {
+      this.facility = {
+        ...this.facility,
+        ...payload,
+      };
     },
   },
 };
