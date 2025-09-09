@@ -49,6 +49,7 @@
 import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
 
+import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -73,11 +74,13 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
+    ...mapState(useApplicationStore, ['applicationMap', 'programYearId']),
     facilityId() {
       return this.$route.params.facilityId;
     },
     facilityIsActive() {
-      return isFacilityActive(this.facility);
+      const application = this.applicationMap?.get(this.programYearId);
+      return isFacilityActive(this.facility, application);
     },
   },
   async mounted() {

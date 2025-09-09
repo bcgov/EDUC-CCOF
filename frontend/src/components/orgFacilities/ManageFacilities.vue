@@ -93,7 +93,8 @@ export default {
   methods: {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
-      return isFacilityActive(facility);
+      const application = this.applicationMap?.get(this.programYearId);
+      return isFacilityActive(facility, application);
     },
   },
 };
