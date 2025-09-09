@@ -13,12 +13,12 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
-import './commands'
+import './commands';
 
-import { mount } from 'cypress/vue'
+import '@mdi/font/css/materialdesignicons.css';
+import '@fortawesome/fontawesome-free/css/all.css';
+import 'vuetify/styles';
 
-Cypress.Commands.add('mount', mount)
+import { mount } from 'cypress/vue';
 
-// Example use:
-// cy.mount(MyComponent)
+Cypress.Commands.add('mount', mount);

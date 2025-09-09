@@ -52,6 +52,7 @@
     "vuex-map-fields": "^1.4.1"
   },
   "devDependencies": {
+    "@pinia/testing": "^0.1.7",
     "@vitejs/plugin-vue": "^5.2.1",
     "csv-writer": "^1.6.0",
     "cypress": "^14.5.4",
