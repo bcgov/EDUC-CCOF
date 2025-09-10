@@ -8,38 +8,25 @@ describe('<Login />', () => {
   const pinia = createTestingPinia({ createSpy: cy.spy, stubActions: true });
   const plugins = [pinia, router, vuetify];
 
-  it('should render the header image', () => {
+  beforeEach(() => {
     cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, { statusCode: 200, body: [] });
 
     cy.mount(Login, {
       global: { plugins },
     });
+  });
 
+  it('should render the header image', () => {
     cy.get('img').should('have.attr', 'src').and('include', 'login-header-img-resized.jpg');
   });
 
   it('should display the legal notice paragraph', () => {
-    cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, { statusCode: 200, body: [] });
-
-    cy.mount(Login, {
-      global: { plugins },
-    });
-
     cy.get('p')
       .contains('The information collected through My ChildCareBC Services is collected under the authority of the')
       .should('exist');
   });
 
   it('should not render system message cards if systemMessages is empty', () => {
-    cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.mount(Login, {
-      global: { plugins },
-    });
-
     cy.get('.noticeInfo').should('not.exist');
   });
 
@@ -66,17 +53,6 @@ describe('<Login />', () => {
   });
 
   it('each major card should have a button with correct text', () => {
-    cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.mount(Login, {
-      global: {
-        plugins,
-      },
-    });
-
     cy.contains('h4', 'Log in to My ChildCareBC Services')
       .closest('.v-card')
       .find('.v-btn')
@@ -99,18 +75,6 @@ describe('<Login />', () => {
 
   it('should navigate to estimator path', () => {
     cy.spy(router, 'push').as('routerPush');
-
-    cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.mount(Login, {
-      global: {
-        plugins,
-      },
-    });
-
     cy.contains('button', 'Go to Estimator').click();
     cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ESTIMATOR);
   });
