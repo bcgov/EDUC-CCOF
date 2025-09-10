@@ -75,7 +75,7 @@
                         <AppButton
                           size="small"
                           type="submit"
-                          :display-block="false"
+                          display="inline"
                           :disabled="!valid.phone"
                           :loading="isProcessing"
                           @click="() => saveField('phone')"
@@ -85,8 +85,8 @@
                         <AppButton
                           class="ml-1"
                           size="small"
+                          display="inline"
                           :primary="false"
-                          :display-block="false"
                           :disabled="isProcessing"
                           @click="() => cancelEditing('phone')"
                         >
@@ -101,7 +101,7 @@
                       <v-col cols="3">
                         <AppButton
                           size="small"
-                          :display-block="false"
+                          display="inline"
                           :disabled="workingFieldInUse || isProcessing"
                           @click="editing.phone = true"
                         >
@@ -177,7 +177,7 @@
                         <AppButton
                           size="small"
                           type="submit"
-                          :display-block="false"
+                          display="inline"
                           :disabled="!valid.email"
                           :loading="isProcessing"
                           @click="() => saveField('email')"
@@ -187,8 +187,8 @@
                         <AppButton
                           class="ml-1"
                           size="small"
+                          display="inline"
                           :primary="false"
-                          :display-block="false"
                           :disabled="isProcessing"
                           @click="() => cancelEditing('email')"
                         >
@@ -203,7 +203,7 @@
                       <v-col cols="3">
                         <AppButton
                           size="small"
-                          :display-block="false"
+                          display="inline"
                           :disabled="workingFieldInUse || isProcessing"
                           @click="editing.email = true"
                         >
