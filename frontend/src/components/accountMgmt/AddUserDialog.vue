@@ -283,14 +283,10 @@ export default {
       this.step++;
     },
     clearFields() {
+      this.$refs.form?.reset();
       this.step = 1;
       this.userType = USER_TYPE.PORTAL;
       this.portalRole = OFM_PORTAL_ROLES.READ_ONLY;
-      this.selectedFacilities = [];
-
-      for (const k in this.userFields) {
-        this.userFields[k] = '';
-      }
     },
     async addUser() {
       this.$refs.form?.validate();
