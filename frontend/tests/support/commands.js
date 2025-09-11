@@ -23,3 +23,28 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import { createTestingPinia } from '@pinia/testing';
+import { setActivePinia } from 'pinia';
+
+/**
+ * Sets up a Pinia testing instance with customizable options.
+ *
+ * @param {Object} [options] - Configuration options for the Pinia testing instance.
+ * @param {Object} [options.initialState={}] - Initial state to preload into the Pinia stores.
+ * @param {Function|null} [options.createSpy=cy.spy] - Function to spy on store actions/getters.
+ *   Defaults to `cy.spy`
+ * @param {boolean|null} [options.stubActions=false] - Whether to replace store actions with no-op stubs.
+ *   When `true`, actions are stubbed and spied on instead of running their real implementations.
+ *   Pass `null` to omit this option
+ *   Defaults to `false`
+ * @returns {Pinia} - The created and activated Pinia testing instance.
+ */
+export function setupPinia({ initialState = {}, createSpy = cy.spy, stubActions = false } = {}) {
+  const options = { initialState };
+  if (createSpy !== null) options.createSpy = createSpy;
+  if (stubActions !== null) options.stubActions = stubActions;
+
+  const pinia = createTestingPinia(options);
+  setActivePinia(pinia);
+  return pinia;
+}

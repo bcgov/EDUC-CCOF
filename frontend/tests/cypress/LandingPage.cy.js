@@ -1,14 +1,11 @@
 import LandingPage from '@/components/LandingPage.vue';
 import { ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants.js';
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
+import { setupPinia } from '../support/commands';
 import vuetify from '@/plugins/vuetify';
 
 describe('<LandingPage />', () => {
   it('should display organization id and name', () => {
-    const pinia = createTestingPinia({
-      createSpy: cy.spy,
-      stubActions: false,
+    const pinia = setupPinia({
       initialState: {
         organization: {
           organizationAccountNumber: 'ORG-12345',
@@ -16,8 +13,6 @@ describe('<LandingPage />', () => {
         },
       },
     });
-
-    setActivePinia(pinia);
 
     cy.mount(LandingPage, {
       global: {
@@ -29,10 +24,8 @@ describe('<LandingPage />', () => {
     cy.contains('Organization Name: Test Organization').should('exist');
   });
 
-  it('does not render the div if both values are missing', () => {
-    const pinia = createTestingPinia({
-      createSpy: cy.spy,
-      stubActions: false,
+  it('should not render the div if both values are missing', () => {
+    const pinia = setupPinia({
       initialState: {
         organization: {
           organizationAccountNumber: '',
@@ -40,8 +33,6 @@ describe('<LandingPage />', () => {
         },
       },
     });
-
-    setActivePinia(pinia);
 
     cy.mount(LandingPage, {
       global: {
@@ -54,9 +45,7 @@ describe('<LandingPage />', () => {
   });
 
   it('should not display app alert if good standing', () => {
-    const pinia = createTestingPinia({
-      createSpy: cy.spy,
-      stubActions: false,
+    const pinia = setupPinia({
       initialState: {
         auth: {
           userInfo: {
@@ -67,22 +56,19 @@ describe('<LandingPage />', () => {
       },
     });
 
-    setActivePinia(pinia);
-
     cy.mount(LandingPage, {
       global: {
         plugins: [pinia, vuetify],
       },
     });
+
     cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should(
       'not.exist',
     );
   });
 
   it('should display app alert if not good standing', () => {
-    const pinia = createTestingPinia({
-      createSpy: cy.spy,
-      stubActions: false,
+    const pinia = setupPinia({
       initialState: {
         auth: {
           userInfo: {
