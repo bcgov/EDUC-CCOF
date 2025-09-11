@@ -3,7 +3,7 @@ import viteConfig from './vite.config.js';
 
 export default defineConfig({
   component: {
-    specPattern: 'tests/component/**/*.{js,jsx,ts,tsx,vue}',
+    specPattern: 'tests/cypress/**/*.{js,jsx,ts,tsx,vue}',
     supportFile: 'tests/support/component.js',
     fixturesFolder: 'tests/fixtures',
     indexHtmlFile: 'tests/support/component-index.html',
