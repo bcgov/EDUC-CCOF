@@ -1,6 +1,6 @@
 import LandingPage from '@/components/LandingPage.vue';
-import { ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants.js';
 import vuetify from '@/plugins/vuetify';
+import { ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants.js';
 
 describe('<LandingPage />', () => {
   function mountWithPinia(initialState = {}) {

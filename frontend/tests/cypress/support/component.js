@@ -13,11 +13,11 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands';
-
 import '@mdi/font/css/materialdesignicons.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'vuetify/styles';
+
+import './commands';
 
 import { mount } from 'cypress/vue';
 

@@ -1,8 +1,7 @@
-import { ApiRoutes, AuthRoutes, PATHS } from '@/utils/constants.js';
-
 import Login from '@/components/Login.vue';
-import router from '@/router';
 import vuetify from '@/plugins/vuetify';
+import router from '@/router';
+import { ApiRoutes, AuthRoutes, PATHS } from '@/utils/constants.js';
 
 describe('<Login />', () => {
   let plugins;
