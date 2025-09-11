@@ -1,12 +1,12 @@
 import { ApiRoutes, AuthRoutes, PATHS } from '@/utils/constants.js';
 
 import Login from '@/components/Login.vue';
-import { createTestingPinia } from '@pinia/testing';
 import router from '@/router';
+import { setupPinia } from '../support/commands';
 import vuetify from '@/plugins/vuetify';
 
 describe('<Login />', () => {
-  const pinia = createTestingPinia({ createSpy: cy.spy, stubActions: true });
+  const pinia = setupPinia({ createSpy: cy.spy, stubActions: true });
   const plugins = [pinia, router, vuetify];
 
   beforeEach(() => {
