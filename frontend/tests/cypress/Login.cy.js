@@ -2,18 +2,20 @@ import { ApiRoutes, AuthRoutes, PATHS } from '@/utils/constants.js';
 
 import Login from '@/components/Login.vue';
 import router from '@/router';
-import { setupPinia } from '../support/commands';
 import vuetify from '@/plugins/vuetify';
 
 describe('<Login />', () => {
-  const pinia = setupPinia({ createSpy: cy.spy, stubActions: true });
-  const plugins = [pinia, router, vuetify];
+  let plugins;
 
   beforeEach(() => {
-    cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, { statusCode: 200, body: [] });
+    cy.setupPinia({ stubActions: true }).then((pinia) => {
+      plugins = [pinia, router, vuetify];
 
-    cy.mount(Login, {
-      global: { plugins },
+      cy.intercept('GET', ApiRoutes.SYSTEM_MESSAGES, { statusCode: 200, body: [] });
+
+      cy.mount(Login, {
+        global: { plugins },
+      });
     });
   });
 
@@ -41,10 +43,12 @@ describe('<Login />', () => {
       ],
     }).as('getSystemMessages');
 
-    cy.mount(Login, {
-      global: {
-        plugins,
-      },
+    cy.setupPinia({ stubActions: true }).then((pinia) => {
+      cy.mount(Login, {
+        global: {
+          plugins: [pinia, router, vuetify],
+        },
+      });
     });
 
     cy.wait('@getSystemMessages');

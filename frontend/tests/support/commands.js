@@ -37,14 +37,14 @@ import { setActivePinia } from 'pinia';
  *   When `true`, actions are stubbed and spied on instead of running their real implementations.
  *   Pass `null` to omit this option
  *   Defaults to `false`
- * @returns {Pinia} - The created and activated Pinia testing instance.
+ * @returns {Cypress.Chainable<Pinia>} - Chainable Cypress wrapper around the Pinia instance.
  */
-export function setupPinia({ initialState = {}, createSpy = cy.spy, stubActions = false } = {}) {
+Cypress.Commands.add('setupPinia', ({ initialState = {}, createSpy = cy.spy, stubActions = false } = {}) => {
   const options = { initialState };
   if (createSpy !== null) options.createSpy = createSpy;
   if (stubActions !== null) options.stubActions = stubActions;
 
   const pinia = createTestingPinia(options);
   setActivePinia(pinia);
-  return pinia;
-}
+  return cy.wrap(pinia);
+});

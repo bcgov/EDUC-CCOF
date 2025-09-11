@@ -1,15 +1,15 @@
 import LandingPage from '@/components/LandingPage.vue';
 import { ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants.js';
-import { setupPinia } from '../support/commands';
 import vuetify from '@/plugins/vuetify';
 
 describe('<LandingPage />', () => {
   function mountWithPinia(initialState = {}) {
-    const pinia = setupPinia({ initialState });
-    cy.mount(LandingPage, {
-      global: {
-        plugins: [pinia, vuetify],
-      },
+    cy.setupPinia({ initialState }).then((pinia) => {
+      cy.mount(LandingPage, {
+        global: {
+          plugins: [pinia, vuetify],
+        },
+      });
     });
   }
 
@@ -26,18 +26,10 @@ describe('<LandingPage />', () => {
   });
 
   it('should not render the div if both values are missing', () => {
-    const pinia = setupPinia({
-      initialState: {
-        organization: {
-          organizationAccountNumber: '',
-          organizationName: '',
-        },
-      },
-    });
-
-    cy.mount(LandingPage, {
-      global: {
-        plugins: [pinia, vuetify],
+    mountWithPinia({
+      organization: {
+        organizationAccountNumber: '',
+        organizationName: '',
       },
     });
 
@@ -70,6 +62,6 @@ describe('<LandingPage />', () => {
       },
     });
 
-    cy.contains('Your organization is not in good standing with BC Registries and Online Services.');
+    cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should('exist');
   });
 });
