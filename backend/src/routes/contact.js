@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createContact, deactivateContact, getActiveContactsInOrganization } = require('../components/contact');
+const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
 const { body, param, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -39,12 +39,21 @@ const contactValidators = [
   body('telephone').trim(),
   body('portalRole').optional().trim(),
 ];
+
 /**
  * Add a contact.
  */
 router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
+});
+
+/**
+ * Update an existing Contact using contactId
+ */
+router.patch('/:contactId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()], (req, res) => {
+  validationResult(req).throw();
+  return updateContact(req, res);
 });
 
 module.exports = router;

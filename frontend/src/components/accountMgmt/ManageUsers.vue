@@ -34,7 +34,9 @@
         >
           <template #[`item.edit-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <AppButton :primary="false" size="small" @click="editUser(item.contactId)">Edit</AppButton>
+              <AppButton v-if="item.isPortalUser" :primary="false" size="small" @click="editUser(item.contactId)">
+                Edit
+              </AppButton>
             </v-row>
           </template>
           <template #[`item.accessType`]="{ item }">
@@ -75,30 +77,39 @@
   />
   <AddUserDialog
     :show="addUserDialogOpen"
-    @contact-created="contactCreatedHandler"
+    @contact-created="reloadContacts"
     @close-add-dialog="addUserDialogOpen = false"
+  />
+  <EditUserDialog
+    :show="editUserDialogOpen"
+    :user="targetUser"
+    @contact-updated="reloadContacts"
+    @close-edit-dialog="editUserDialogOpen = false"
   />
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
-import { PATHS } from '@/utils/constants.js';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
+import EditUserDialog from '@/components/accountMgmt/EditUserDialog.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+
 import contactService from '@/services/contactService.js';
 
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
-import { OFM_PORTAL_ROLES } from '@/utils/constants';
 
-import alertMixin from '@/mixins/alertMixin.js';
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import NavButton from '@/components/util/NavButton.vue';
-import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
-import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
+import { OFM_PORTAL_ROLES, PATHS } from '@/utils/constants.js';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, RemoveUserDialog, NavButton, AddUserDialog },
+  components: { AppButton, AddUserDialog, NavButton, RemoveUserDialog, EditUserDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -110,6 +121,7 @@ export default {
       contactsLoading: false,
       removeUserDialogOpen: false,
       addUserDialogOpen: false,
+      editUserDialogOpen: false,
     };
   },
   computed: {
@@ -157,7 +169,8 @@ export default {
       };
     },
     editUser(id) {
-      alert(`Edit: ${id}`);
+      this.targetUser = this.contacts.find((c) => c.contactId == id);
+      this.editUserDialogOpen = true;
     },
     async confirmDeleteUser(id) {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
@@ -169,7 +182,7 @@ export default {
     contactDeactivatedHandler(id) {
       this.contacts = this.contacts.filter((c) => c.contactId !== id);
     },
-    async contactCreatedHandler() {
+    async reloadContacts() {
       this.contacts = this.sortUsers(
         (await contactService.loadContacts(this.organizationId)).map(this.setAccessTypeField),
       );

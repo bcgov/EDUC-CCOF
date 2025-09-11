@@ -114,10 +114,28 @@ async function createRawContactFacilities(contactId, facilityIds) {
   }
 }
 
+async function updateContact(req, res) {
+  try {
+    const payload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
+    if (req.body.role?.roleId) {
+      payload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
+    }
+    await patchOperationWithObjectId('contacts', req.params.contactId, payload);
+    if (req.body.facilities && req.body.facilities.length > 0) {
+      await createRawContactFacilities(req.params.contactId, req.body.facilities);
+    }
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
   getActiveContactsInOrganization,
   deactivateContact,
   getRawContactFacilities,
   createContact,
   createRawContactFacilities,
+  updateContact,
 };

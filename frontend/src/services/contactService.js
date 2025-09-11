@@ -32,4 +32,15 @@ export default {
       throw error;
     }
   },
+
+  async updateContact(contactId, payload) {
+    try {
+      if (!contactId) return;
+      const response = await ApiService.apiAxios.patch(`${ApiRoutes.CONTACTS}/${contactId}`, payload);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to update the contact - ${error}`);
+      throw error;
+    }
+  },
 };
