@@ -4,19 +4,20 @@ import { setupPinia } from '../support/commands';
 import vuetify from '@/plugins/vuetify';
 
 describe('<LandingPage />', () => {
-  it('should display organization id and name', () => {
-    const pinia = setupPinia({
-      initialState: {
-        organization: {
-          organizationAccountNumber: 'ORG-12345',
-          organizationName: 'Test Organization',
-        },
-      },
-    });
-
+  function mountWithPinia(initialState = {}) {
+    const pinia = setupPinia({ initialState });
     cy.mount(LandingPage, {
       global: {
         plugins: [pinia, vuetify],
+      },
+    });
+  }
+
+  it('should display organization id and name', () => {
+    mountWithPinia({
+      organization: {
+        organizationAccountNumber: 'ORG-12345',
+        organizationName: 'Test Organization',
       },
     });
 
@@ -45,20 +46,12 @@ describe('<LandingPage />', () => {
   });
 
   it('should not display app alert if good standing', () => {
-    const pinia = setupPinia({
-      initialState: {
-        auth: {
-          userInfo: {
-            organizationGoodStandingStatus: '',
-            organizationBypassGoodStandingCheck: true,
-          },
+    mountWithPinia({
+      auth: {
+        userInfo: {
+          organizationGoodStandingStatus: '',
+          organizationBypassGoodStandingCheck: true,
         },
-      },
-    });
-
-    cy.mount(LandingPage, {
-      global: {
-        plugins: [pinia, vuetify],
       },
     });
 
@@ -68,20 +61,12 @@ describe('<LandingPage />', () => {
   });
 
   it('should display app alert if not good standing', () => {
-    const pinia = setupPinia({
-      initialState: {
-        auth: {
-          userInfo: {
-            organizationGoodStandingStatus: ORGANIZATION_GOOD_STANDING_STATUSES.FAIL,
-            organizationBypassGoodStandingCheck: false,
-          },
+    mountWithPinia({
+      auth: {
+        userInfo: {
+          organizationGoodStandingStatus: ORGANIZATION_GOOD_STANDING_STATUSES.FAIL,
+          organizationBypassGoodStandingCheck: false,
         },
-      },
-    });
-
-    cy.mount(LandingPage, {
-      global: {
-        plugins: [pinia, vuetify],
       },
     });
 
