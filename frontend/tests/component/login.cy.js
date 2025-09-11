@@ -1,7 +1,8 @@
-import { createTestingPinia } from '@pinia/testing';
-import Login from '@/components/Login.vue';
 import { ApiRoutes, AuthRoutes, PATHS } from '@/utils/constants.js';
-import router from '../../src/router';
+
+import Login from '@/components/Login.vue';
+import { createTestingPinia } from '@pinia/testing';
+import router from '@/router';
 import vuetify from '@/plugins/vuetify';
 
 describe('<Login />', () => {

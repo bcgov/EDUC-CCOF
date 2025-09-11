@@ -1,6 +1,8 @@
-import LandingPage from '@/Components/LandingPage.vue';
+import LandingPage from '@/components/LandingPage.vue';
+import { ORGANIZATION_GOOD_STANDING_STATUSES } from '@/utils/constants.js';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
+import vuetify from '@/plugins/vuetify';
 
 describe('<LandingPage />', () => {
   it('should display organization id and name', () => {
@@ -19,7 +21,7 @@ describe('<LandingPage />', () => {
 
     cy.mount(LandingPage, {
       global: {
-        plugins: [pinia],
+        plugins: [pinia, vuetify],
       },
     });
 
@@ -43,7 +45,7 @@ describe('<LandingPage />', () => {
 
     cy.mount(LandingPage, {
       global: {
-        plugins: [pinia],
+        plugins: [pinia, vuetify],
       },
     });
 
@@ -52,15 +54,24 @@ describe('<LandingPage />', () => {
   });
 
   it('should not display app alert if good standing', () => {
-    cy.mount({
-      extends: LandingPage,
-      computed: {
-        showNotGoodStandingWarning() {
-          return false;
+    const pinia = createTestingPinia({
+      createSpy: cy.spy,
+      stubActions: false,
+      initialState: {
+        auth: {
+          userInfo: {
+            organizationGoodStandingStatus: '',
+            organizationBypassGoodStandingCheck: true,
+          },
         },
       },
+    });
+
+    setActivePinia(pinia);
+
+    cy.mount(LandingPage, {
       global: {
-        plugins: [createTestingPinia({ createSpy: cy.spy })],
+        plugins: [pinia, vuetify],
       },
     });
     cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should(
@@ -69,15 +80,22 @@ describe('<LandingPage />', () => {
   });
 
   it('should display app alert if not good standing', () => {
-    cy.mount({
-      extends: LandingPage,
-      computed: {
-        showNotGoodStandingWarning() {
-          return true;
+    const pinia = createTestingPinia({
+      createSpy: cy.spy,
+      stubActions: false,
+      initialState: {
+        auth: {
+          userInfo: {
+            organizationGoodStandingStatus: ORGANIZATION_GOOD_STANDING_STATUSES.FAIL,
+            organizationBypassGoodStandingCheck: false,
+          },
         },
       },
+    });
+
+    cy.mount(LandingPage, {
       global: {
-        plugins: [createTestingPinia({ createSpy: cy.spy })],
+        plugins: [pinia, vuetify],
       },
     });
 
