@@ -7,7 +7,13 @@
     </p>
     <v-row>
       <v-col class="d-flex justify-end">
-        <AppButton size="small" prepend-icon="mdi-plus" display="inline-grid" @click="addUserDialogOpen = true">
+        <AppButton
+          v-if="hasPermission(PERMISSIONS.MANAGE_USERS_ALL)"
+          size="small"
+          prepend-icon="mdi-plus"
+          display="inline-grid"
+          @click="addUserDialogOpen = true"
+        >
           Add User
         </AppButton>
       </v-col>
@@ -34,7 +40,7 @@
         >
           <template #[`item.edit-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <AppButton v-if="item.isPortalUser" :primary="false" size="small" @click="editUser(item.contactId)">
+              <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
                 Edit
               </AppButton>
             </v-row>
@@ -99,6 +105,7 @@ import NavButton from '@/components/util/NavButton.vue';
 import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import contactService from '@/services/contactService.js';
 
@@ -106,11 +113,12 @@ import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
 import { OFM_PORTAL_ROLES, PATHS } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 export default {
   name: 'ManageUsers',
   components: { AppButton, AddUserDialog, NavButton, RemoveUserDialog, EditUserDialog },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       tab: undefined,
@@ -176,8 +184,17 @@ export default {
       this.targetUser = this.contacts.find((c) => c.contactId == id);
       this.removeUserDialogOpen = true;
     },
+    mayEditUser(user) {
+      if (this.isSelf(user)) {
+        return this.hasPermission(PERMISSIONS.MANAGE_SELF);
+      }
+      return this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL);
+    },
     mayRemoveUser(user) {
-      return !user.isPrimaryContact && this.userInfo.contactId !== user.contactId;
+      return this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL) && !user.isPrimaryContact && !this.isSelf(user);
+    },
+    isSelf(user) {
+      return this.userInfo.contactId === user.contactId;
     },
     contactDeactivatedHandler(id) {
       this.contacts = this.contacts.filter((c) => c.contactId !== id);
