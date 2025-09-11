@@ -185,6 +185,9 @@ export default {
       this.removeUserDialogOpen = true;
     },
     mayEditUser(user) {
+      if (!user.isPortalUser) {
+        return false;
+      }
       if (this.isSelf(user)) {
         return this.hasPermission(PERMISSIONS.MANAGE_SELF);
       }
