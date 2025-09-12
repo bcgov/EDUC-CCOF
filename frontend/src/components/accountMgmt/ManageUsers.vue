@@ -89,6 +89,7 @@
   <EditUserDialog
     :show="editUserDialogOpen"
     :user="targetUser"
+    :logged-in-user="userInfo"
     @contact-updated="reloadContacts"
     @close-edit-dialog="editUserDialogOpen = false"
   />

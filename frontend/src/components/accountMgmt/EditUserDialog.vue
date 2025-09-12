@@ -50,7 +50,7 @@
               :rules="[...rules.required, ...rules.email]"
             />
           </v-col>
-          <v-col v-if="isOrgAdmin" cols="12">
+          <v-col v-if="isOrgAdmin && !isSelf" cols="12">
             <v-select
               v-model="selectedRole"
               :items="portalRoles"
@@ -126,6 +126,7 @@ export default {
   props: {
     show: { type: Boolean, default: false },
     user: { type: Object, required: true },
+    loggedInUser: { type: Object, required: true },
   },
   emits: ['close-edit-dialog', 'contact-updated'],
   data() {
@@ -153,6 +154,9 @@ export default {
     },
     isFacilityAdminSelected() {
       return this.isOrgAdmin && this.selectedRole === OFM_PORTAL_ROLES.FAC_ADMIN;
+    },
+    isSelf() {
+      return this.user.contactId === this.loggedInUser.contactId;
     },
   },
   watch: {
