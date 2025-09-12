@@ -248,7 +248,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" lg="4">
+      <v-col v-if="hasPermission(PERMISSIONS.MANAGE_SELF)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Users</p>
