@@ -10,6 +10,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test:unit": "vue-cli-service test:unit",
+    "test:component": "cypress open",
+    "test:component:headless": "cypress run --component",
     "local:e2e": "testcafe chrome ./tests/e2e/testCases",
     "local:e2e:headless": "testcafe chrome:headless ./tests/e2e/testCases",
     "local:e2e:mobile": "testcafe chrome:emulation:device=iphone 11 ./tests/e2e/testCases",
@@ -52,8 +54,10 @@
     "vuex-map-fields": "^1.4.1"
   },
   "devDependencies": {
+    "@pinia/testing": "^0.1.7",
     "@vitejs/plugin-vue": "^5.2.1",
     "csv-writer": "^1.6.0",
+    "cypress": "^14.5.4",
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-formatter-unix": "^8.40.0",
