@@ -10,26 +10,26 @@
         <div class="declaration-content px-md-4 px-xl-12 pb-2">
           <p>By submitting this Enrolment Report, I confirm that:</p>
           <ul class="ml-8">
-            <li>The information provided in this report is true, accurate and complete to the best of my knowledge.</li>
-            <li>I am authorized to submit enrolment reports for these facilities.</li>
+            <li>The information provided in this report is true, accurate and complete to the best of my knowledge;</li>
+            <li>I am authorized to submit enrolment reports for these facilities;</li>
             <li>
-              I understand that the Ministry will be relying on the content of these Reports for its decision to
-              disburse funds to this Organization.
+              I understand that the Ministry will be relying on the content of these reports for its decision to
+              disburse funds to this organization;
             </li>
             <li>
               These facilities have not accepted registered or drop-in children in numbers which would violate the
-              Community Care and Assisted Living Act and Child Care Licensing Regulation.
+              Community Care and Assisted Living Act and Child Care Licensing Regulation;
             </li>
             <li>
-              These facilities have not claimed a contribution from the province for a drop-in child who was temporarily
+              These facilities have not claimed a contribution from the Province for a drop-in child who was temporarily
               occupying a space that was made available due to the absence of an enrolled child;
             </li>
             <li>
               These facilities are maintaining records that support the enrolment numbers reported and will provide them
-              upon request to parties authorized by the Ministry for review or audit purposes;
+              upon request to parties authorized by the Ministry for review or audit purposes; and
             </li>
             <li>
-              These facilities have not claimed a contribution from the province with respect to any children living in
+              These facilities have not claimed a contribution from the Province with respect to any children living in
               the licensee's own home (Family Providers Only).
             </li>
           </ul>
