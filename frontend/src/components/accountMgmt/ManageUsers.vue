@@ -211,8 +211,9 @@ export default {
     sortUsers(contacts) {
       const rolePriority = {
         [ROLES.ORG_ADMIN]: 1,
-        [ROLES.FAC_ADMIN]: 2,
-        [ROLES.READ_ONLY]: 3,
+        [ROLES.FAC_ADMIN_ADVANCED]: 2,
+        [ROLES.FAC_ADMIN_BASIC]: 3,
+        [ROLES.READ_ONLY]: 4,
       };
       const defaultPriority = 100;
       // 1. Primary contact first
@@ -221,7 +222,7 @@ export default {
           return a.isPrimaryContact ? -1 : 1;
         }
 
-        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN, 3.READONLY, 4.Contacts Only)
+        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN_ADVANCED, 3.FAC_ADMIN_BASIC, 4.READONLY, 5.Concats Only)
         const priorityA = rolePriority[a.role.roleNumber] ?? defaultPriority;
         const priorityB = rolePriority[b.role.roleNumber] ?? defaultPriority;
 

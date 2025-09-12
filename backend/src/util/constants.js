@@ -157,6 +157,8 @@ const ROLES = Object.freeze({
 const PERMISSIONS = Object.freeze({
   CHANGE_ORG_INFORMATION: '25',
   VIEW_ORG_INFORMATION: '26',
+  MANAGE_USERS_ALL: '34',
+  MANAGE_SELF: '35',
 });
 
 module.exports = {

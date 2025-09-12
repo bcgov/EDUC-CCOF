@@ -2,8 +2,10 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
-const isValidBackendToken = auth.isValidBackendToken();
 const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
+const validatePermission = require('../middlewares/validatePermission');
+const isValidBackendToken = auth.isValidBackendToken();
+const { PERMISSIONS } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -15,6 +17,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.MANAGE_SELF),
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -25,10 +28,17 @@ router.get(
 /**
  * Soft delete (deactivate) a contact.
  */
-router.delete('/:contactId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('contactId', 'URL param: [contactId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return deactivateContact(req, res);
-});
+router.delete(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.MANAGE_USERS_ALL),
+  [param('contactId', 'URL param: [contactId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return deactivateContact(req, res);
+  },
+);
 
 const contactValidators = [
   body('firstName').optional().trim(),
@@ -43,7 +53,7 @@ const contactValidators = [
 /**
  * Add a contact.
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, contactValidators, (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.MANAGE_USERS_ALL), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
 });
@@ -51,9 +61,17 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
 /**
  * Update an existing Contact using contactId
  */
-router.patch('/:contactId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return updateContact(req, res);
-});
+router.patch(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  // TODO (weskubo-cgi) Add conditional permissions based on if updating self or others. See CCFRI-5999
+  validatePermission(PERMISSIONS.MANAGE_SELF),
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateContact(req, res);
+  },
+);
 
 module.exports = router;

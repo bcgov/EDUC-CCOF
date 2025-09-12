@@ -234,7 +234,7 @@ export default {
       });
     },
     isFacilityAdmin() {
-      return this.portalRole === ROLES.FAC_ADMIN;
+      return this.portalRole === ROLES.FAC_ADMIN_ADVANCED || this.portalRole === ROLES.FAC_ADMIN_BASIC;
     },
     rulesForFacilities() {
       return [
@@ -275,7 +275,7 @@ export default {
       if (
         this.step === 1 &&
         this.userType === USER_TYPE.PORTAL &&
-        this.portalRole === ROLES.FAC_ADMIN &&
+        this.isFacilityAdmin &&
         !allRulesAreValid(this.rulesForFacilities, this.selectedFacilities)
       ) {
         return this.$refs.form?.validate();
@@ -304,7 +304,7 @@ export default {
           if (this.userType === USER_TYPE.PORTAL) {
             payload.role = this.portalRoles.find((role) => role.roleNumber === this.portalRole) || null;
             payload.bceid = this.userFields.bceid;
-            payload.facilities = this.portalRole === ROLES.FAC_ADMIN ? this.selectedFacilities : [];
+            payload.facilities = this.isFacilityAdmin ? this.selectedFacilities : [];
           } else {
             payload.facilities = [];
           }
