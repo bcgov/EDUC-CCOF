@@ -25,22 +25,23 @@ describe('Group Application-CCFRI', () => {
 
 
     it('Continue Group Application - CCFRI', () => {
-    cy.clickByText('Update')
-    cy.getByLabel('Opt-In').check()
-    cy.clickByText('Save')
-    cy.clickByText('Next')
-    cy.contains('p', 'Enter the fees you would charge a new parent for full-time care at this facility for the months below.', { timeout: 10000 }).should('be.visible')
-    
-    // cy.getByLabel(parentFees.frequency).click()
-    const parentFeeFrequency = parentFees.frequency;
-    if (parentFeeFrequency == "monthly")
-        cy.get('p')
-        Object.entries(parentFees.parentFeeDates).forEach(([category, value]) => {
-            cy.get('p').should('contain', `${category}`).selectByLabel(parentFeeFrequency)
-            Object.entries(value).forEach(([month, fee]) => {
-                cy.log(`current month is: ${month}`)
-                cy.getByLabel(month).typeAndAssert(fee, {force: true})
+        cy.clickByText('Update')
+        cy.getByLabel('Opt-In').check()
+        cy.clickByText('Save')
+        cy.clickByText('Next')
+        cy.get('p').should('contain', 'Enter the fees you would charge a new parent for full-time care at this facility for the months below.', { timeout: 10000 }).should('be.visible')
+        
+        cy.get('.v-card').each((card, index, $list) => {
+            const category = parentFees.parentFeeCategories[index]
+            cy.wrap(card).should('contain', `${category}`).contains('label', 'Monthly').click()
+            
+            cy.log(`on this category: ${category}`)
+            Object.entries(parentFees.months).forEach(([month, fee]) => {
+                cy.wrap(card).within(() => {
+                    cy.getByLabel(`${month}`).type(fee, {force: true, delay: 0});
+                });
             });
-        });
+
+        })
     })
 })
