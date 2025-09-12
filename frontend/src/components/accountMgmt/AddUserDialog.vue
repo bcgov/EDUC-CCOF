@@ -106,10 +106,20 @@
     <template #button>
       <v-row class="text-center" justify="center">
         <v-col>
-          <AppButton display="inline" :primary="false" size="small" @click="closeDialog">Cancel</AppButton>
+          <AppButton display="inline" :primary="false" size="small" :disabled="isProcessing" @click="closeDialog">
+            Cancel
+          </AppButton>
         </v-col>
         <v-col>
-          <AppButton v-if="step > 1" display="inline" :primary="false" size="small" @click="step--">Back</AppButton>
+          <AppButton
+            v-if="step > 1"
+            display="inline"
+            :primary="false"
+            size="small"
+            :disabled="isProcessing"
+            @click="step--"
+            >Back</AppButton
+          >
         </v-col>
         <v-col>
           <AppButton v-if="step < 2" display="inline" size="small" class="ml-2" @click="advanceForm">Next</AppButton>
@@ -119,7 +129,8 @@
             size="small"
             class="ml-2"
             type="submit"
-            :disabled="!formValid"
+            :loading="isProcessing"
+            :disabled="!formValid || isProcessing"
             @click.prevent="addUser"
           >
             Add
@@ -210,6 +221,7 @@ export default {
         telephone: '',
         bceid: '',
       },
+      isProcessing: false,
       showSuccessDialog: false,
     };
   },
@@ -271,19 +283,16 @@ export default {
       this.step++;
     },
     clearFields() {
+      this.$refs.form?.reset();
       this.step = 1;
       this.userType = USER_TYPE.PORTAL;
       this.portalRole = OFM_PORTAL_ROLES.READ_ONLY;
-      this.selectedFacilities = [];
-
-      for (const k in this.userFields) {
-        this.userFields[k] = '';
-      }
     },
     async addUser() {
       this.$refs.form?.validate();
       if (this.formValid) {
         try {
+          this.isProcessing = true;
           const payload = {
             firstName: this.userFields.firstName,
             lastName: this.userFields.lastName,
@@ -310,6 +319,8 @@ export default {
             return;
           }
           console.error(e);
+        } finally {
+          this.isProcessing = false;
         }
       }
     },

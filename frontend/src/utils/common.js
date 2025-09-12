@@ -55,6 +55,9 @@ export function isNullOrBlank(value) {
  *                     otherwise returns `false`.
  */
 export function validateHourDifference(from, to, difference) {
+  if (isNullOrBlank(from) || isNullOrBlank(to) || isNullOrBlank(difference)) {
+    return false;
+  }
   // Extract and convert the time to minutes from "HH:mm" format
   const minutesFrom =
     parseInt(formatTime12to24(from).split(':')[0], 10) * 60 + parseInt(formatTime12to24(from).split(':')[1], 10);

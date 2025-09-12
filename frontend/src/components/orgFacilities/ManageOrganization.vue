@@ -6,7 +6,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12"><h2>Organization Info</h2></v-col>
+      <v-col cols="8" sm="7"><h2>Organization Info</h2></v-col>
+      <v-col cols="4" sm="5" class="d-flex justify-end">
+        <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
+      </v-col>
     </v-row>
     <v-row v-if="orgLoading" no-gutters>
       <v-col cols="12" lg="6">
@@ -383,7 +386,7 @@ export default {
       );
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some((value) => value === true);
+      return Object.values(this.editing).some((value) => value);
     },
   },
   async mounted() {
@@ -434,21 +437,13 @@ export default {
       this.editing[key] = false;
       this.workingFields[key] = this.loadedModel[key];
     },
+    goToChangeRequest() {
+      this.$router.push({ name: 'Report Change' });
+    },
   },
 };
 </script>
 <style scoped>
-.less-jitter :deep(input) {
-  padding-top: 0;
-  font-size: 1rem;
-  letter-spacing: 0.03125em;
-  min-height: 0;
-}
-
-.less-jitter :deep(label.v-label) {
-  top: 0;
-}
-
 .v-row.v-row--dense {
   min-height: 38px;
 }

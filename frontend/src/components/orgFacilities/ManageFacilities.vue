@@ -36,8 +36,8 @@ import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useApplicationStore } from '@/store/application.js';
-import { ORGANIZATION_FACILITY_STATUS_CODES, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants.js';
 import OrganizationService from '@/services/organizationService.js';
+import { isFacilityActive } from '@/utils/facility.js';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import FacilityList from '@/components/orgFacilities/FacilityList.vue';
@@ -94,15 +94,7 @@ export default {
     ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
       const application = this.applicationMap?.get(this.programYearId);
-      const orgHasFundingAgreementThisYear = !!(
-        application?.fundingAgreementNumber && application?.internalStatus === FUNDING_AGREEMENTS_STATUS.ACTIVE
-      );
-
-      return (
-        orgHasFundingAgreementThisYear &&
-        !isEmpty(facility.facilityAccountNumber) &&
-        facility.statusCode === ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE
-      );
+      return isFacilityActive(facility, application);
     },
   },
 };
