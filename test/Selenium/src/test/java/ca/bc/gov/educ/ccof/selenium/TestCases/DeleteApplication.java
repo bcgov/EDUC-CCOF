@@ -23,8 +23,11 @@ public class DeleteApplication extends BaseTest {
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
+		Thread.sleep(2000);
 		objCRMSignInCredentialPage.clickSignIn();
+		Thread.sleep(2000);
 		objCRMSignInCredentialPage.clickYes();
+		Thread.sleep(2000);
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(8000);
 		objCRMSignInCredentialPage.clickOrgFacilities();
