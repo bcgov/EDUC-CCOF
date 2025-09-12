@@ -166,7 +166,7 @@
 <script>
 import { mapState } from 'pinia';
 import { useAppStore } from '@/store/app.js';
-import { OFM_PORTAL_ROLES } from '@/utils/constants';
+import { ROLES } from '@/utils/constants';
 import { rules, allRulesAreValid } from '@/utils/rules';
 
 import contactService from '@/services/contactService.js';
@@ -211,7 +211,7 @@ export default {
       formValid: true,
       step: 1,
       userType: USER_TYPE.PORTAL,
-      portalRole: OFM_PORTAL_ROLES.READ_ONLY,
+      portalRole: ROLES.READ_ONLY,
       facilities: [],
       selectedFacilities: [],
       userFields: {
@@ -234,7 +234,7 @@ export default {
       });
     },
     isFacilityAdmin() {
-      return this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN;
+      return this.portalRole === ROLES.FAC_ADMIN;
     },
     rulesForFacilities() {
       return [
@@ -275,7 +275,7 @@ export default {
       if (
         this.step === 1 &&
         this.userType === USER_TYPE.PORTAL &&
-        this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN &&
+        this.portalRole === ROLES.FAC_ADMIN &&
         !allRulesAreValid(this.rulesForFacilities, this.selectedFacilities)
       ) {
         return this.$refs.form?.validate();
@@ -286,7 +286,7 @@ export default {
       this.$refs.form?.reset();
       this.step = 1;
       this.userType = USER_TYPE.PORTAL;
-      this.portalRole = OFM_PORTAL_ROLES.READ_ONLY;
+      this.portalRole = ROLES.READ_ONLY;
     },
     async addUser() {
       this.$refs.form?.validate();
@@ -304,7 +304,7 @@ export default {
           if (this.userType === USER_TYPE.PORTAL) {
             payload.role = this.portalRoles.find((role) => role.roleNumber === this.portalRole) || null;
             payload.bceid = this.userFields.bceid;
-            payload.facilities = this.portalRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.selectedFacilities : [];
+            payload.facilities = this.portalRole === ROLES.FAC_ADMIN ? this.selectedFacilities : [];
           } else {
             payload.facilities = [];
           }

@@ -116,7 +116,7 @@ import OrganizationService from '@/services/organizationService.js';
 import { useAppStore } from '@/store/app';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
-import { OFM_PORTAL_ROLES } from '@/utils/constants';
+import { ROLES } from '@/utils/constants';
 import { rules } from '@/utils/rules';
 
 export default {
@@ -150,10 +150,10 @@ export default {
       });
     },
     isOrgAdmin() {
-      return this.user?.role?.roleNumber === OFM_PORTAL_ROLES.ORG_ADMIN;
+      return this.user?.role?.roleNumber === ROLES.ORG_ADMIN;
     },
     isFacilityAdminSelected() {
-      return this.isOrgAdmin && this.selectedRole === OFM_PORTAL_ROLES.FAC_ADMIN;
+      return this.isOrgAdmin && this.selectedRole === ROLES.FAC_ADMIN;
     },
     isSelf() {
       return this.user.contactId === this.loggedInUser.contactId;
@@ -167,7 +167,7 @@ export default {
       }
     },
     selectedRole(newRole) {
-      if (this.isOrgAdmin && newRole === OFM_PORTAL_ROLES.FAC_ADMIN) {
+      if (this.isOrgAdmin && newRole === ROLES.FAC_ADMIN) {
         this.loadFacilities();
       }
     },
@@ -203,7 +203,7 @@ export default {
 
         if (this.isOrgAdmin) {
           payload.role = this.portalRoles.find((role) => role.roleNumber === this.selectedRole) || null;
-          payload.facilities = this.selectedRole === OFM_PORTAL_ROLES.FAC_ADMIN ? this.selectedFacilities : [];
+          payload.facilities = this.selectedRole === ROLES.FAC_ADMIN ? this.selectedFacilities : [];
         } else {
           payload.facilities = [];
         }

@@ -113,7 +113,7 @@ import contactService from '@/services/contactService.js';
 import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
-import { OFM_PORTAL_ROLES, PATHS } from '@/utils/constants.js';
+import { ROLES, PATHS } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
 export default {
@@ -210,9 +210,9 @@ export default {
     },
     sortUsers(contacts) {
       const rolePriority = {
-        [OFM_PORTAL_ROLES.ORG_ADMIN]: 1,
-        [OFM_PORTAL_ROLES.FAC_ADMIN]: 2,
-        [OFM_PORTAL_ROLES.READ_ONLY]: 3,
+        [ROLES.ORG_ADMIN]: 1,
+        [ROLES.FAC_ADMIN]: 2,
+        [ROLES.READ_ONLY]: 3,
       };
       const defaultPriority = 100;
       // 1. Primary contact first

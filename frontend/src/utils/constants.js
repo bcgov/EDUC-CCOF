@@ -552,9 +552,11 @@ export const CCFRI_MIN_FEE = 0;
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
-export const OFM_PORTAL_ROLES = Object.freeze({
+export const ROLES = Object.freeze({
   ORG_ADMIN: '10',
-  FAC_ADMIN: '11',
+  FAC_ADMIN: '11', // TODO (weskubo-cgi) Remove this role. Use FAC_ADMIN_ADVANCED instead
+  FAC_ADMIN_ADVANCED: '11',
+  FAC_ADMIN_BASIC: '13',
   READ_ONLY: '12',
 });
 
