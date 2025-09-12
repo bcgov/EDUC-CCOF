@@ -2,13 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>com.selenium</groupId>
+<artifactId>selenium-automation</artifactId>
+<version>0.0.1-SNAPSHOT</version>
 
-  <groupId>CCOFCRMTesting_Selenium</groupId>
-  <artifactId>CCOFCRMTesting_Selenium</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-
-  <name>CCOFCRMTesting_Selenium</name>
-  <!-- FIXME change it to the project's website -->
+<name>Selenium Automation Framework</name>
   <url>http://www.example.com</url>
 
   <properties>
