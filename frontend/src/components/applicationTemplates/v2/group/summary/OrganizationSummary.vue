@@ -144,7 +144,7 @@
 
         <v-row v-if="isSoleProprietorship" no-gutters>
           <v-col cols="12" md="4" class="pr-2">
-            <p class="summary-label">Phone Number</p>
+            <p class="summary-label">Business Phone</p>
             <v-text-field
               placeholder="Required"
               class="summary-value"
@@ -157,7 +157,7 @@
               :rules="[...rules.required, rules.phone]"
             />
           </v-col>
-          <v-col cols="12" md="4" class="pr-2">
+          <v-col cols="12" md="4">
             <p class="summary-label">Email Address</p>
             <v-text-field
               placeholder="Required"
@@ -169,20 +169,6 @@
               :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
               readonly
               :rules="[...rules.required, ...rules.email]"
-            />
-          </v-col>
-          <v-col cols="12" md="4">
-            <p class="summary-label">Business BCeID</p>
-            <v-text-field
-              placeholder="Required"
-              class="summary-value"
-              :model-value="userInfo.userName"
-              density="compact"
-              flat
-              variant="solo"
-              hide-details
-              readonly
-              :rules="rules.required"
             />
           </v-col>
         </v-row>
@@ -305,37 +291,8 @@
         </v-row>
         <template v-if="!isSoleProprietorship">
           <v-row no-gutters>
-            <v-col cols="12" md="4">
-              <p class="summary-label">Organization Contact Name</p>
-              <v-text-field
-                placeholder="Required"
-                :model-value="summaryModel?.organization?.contactName"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-            <v-col cols="12" md="4">
-              <p class="summary-label">Position</p>
-              <v-text-field
-                placeholder="Required"
-                class="summary-value"
-                :model-value="summaryModel?.organization?.position"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
-              />
-            </v-col>
-          </v-row>
-          <v-row no-gutters>
             <v-col cols="12" md="4" class="pr-2">
-              <p class="summary-label">Phone Number of the Organization's Authorized Signing Authority</p>
+              <p class="summary-label">Business Phone</p>
               <v-text-field
                 placeholder="Required"
                 class="summary-value"
@@ -349,7 +306,7 @@
               />
             </v-col>
             <v-col cols="12" md="4" class="pr-2">
-              <p class="summary-label">Email Address of the Organization's Authorized Signing Authority</p>
+              <p class="summary-label">Email Address</p>
               <v-text-field
                 placeholder="Required"
                 class="summary-value"
@@ -360,20 +317,6 @@
                 :hide-details="isNullOrBlank(summaryModel?.organization?.email) || isValidForm"
                 readonly
                 :rules="[...rules.required, ...rules.email]"
-              />
-            </v-col>
-            <v-col cols="12" md="4">
-              <p class="summary-label">Business BCeID</p>
-              <v-text-field
-                placeholder="Required"
-                class="summary-value"
-                :model-value="userInfo.userName"
-                density="compact"
-                flat
-                variant="solo"
-                hide-details
-                readonly
-                :rules="rules.required"
               />
             </v-col>
           </v-row>
