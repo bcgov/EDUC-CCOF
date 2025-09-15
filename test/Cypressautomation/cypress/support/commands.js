@@ -229,5 +229,21 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
   cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`)
     .first()
     .should('have.value', v);
-
 })
+
+/*
+* Method to Continue the application if the button is present
+**/
+Cypress.Commands.add('continueApplicationIfPresent', () => {
+    cy.wait(10000);
+  cy.document({ timeout: 30000 }).then((doc) => {
+    const btn = Array.from(doc.querySelectorAll('button')).find(
+      (el) => el.textContent.trim() === 'Continue Application'
+    );
+
+    if (btn) {
+      cy.wrap(btn).click({ force: true });
+      cy.wait(15000);
+    }
+  });
+});

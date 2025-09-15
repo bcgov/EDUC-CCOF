@@ -29,5 +29,10 @@
             "Feb": "1",
             "Mar": "1"
         }
+    },
+    "closures": {
+        "startDate": "2025-12-01",
+        "endDate": "2025-12-06",
+        "closureReason": "renovations"
     }
 }
