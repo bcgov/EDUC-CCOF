@@ -10,6 +10,6 @@ config.properties
 /test-output/
 
 # Ignore IDE specific files
-.classpath
-.project
-.settings/
+**/.classpath
+**/.project
+**/.settings/
