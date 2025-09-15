@@ -22,13 +22,21 @@ async function getActiveContactsInOrganization(req, res) {
     const contactsRaw = contactsData.value.map((contact) => new MappableObjectForFront(contact, ContactMappings)).map(setContactType);
 
     const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, data.roleNumber]));
-    const contacts = contactsRaw.map(({ roleId, ...rest }) => ({
-      ...rest,
-      role: {
-        roleId,
-        roleNumber: roleMap.get(roleId) ?? null,
-      },
-    }));
+    const contacts = await Promise.all(
+      contactsRaw.map(async ({ roleId, contactId, ...rest }) => {
+        const facilities = await getRawContactFacilities(contactId);
+        return {
+          ...rest,
+          contactId,
+          role: {
+            roleId,
+            roleNumber: roleMap.get(roleId) ?? null,
+          },
+          facilities,
+        };
+      }),
+    );
+
     return res.status(HttpStatus.OK).json(contacts);
   } catch (e) {
     log.error('failed with error', e);
@@ -54,7 +62,7 @@ async function getRawContactFacilities(contactId) {
   }
 
   try {
-    const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId})`;
+    const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId}) and statecode eq 0`;
     const response = await getOperation(operation);
 
     response?.value?.forEach((item) => {
@@ -114,6 +122,17 @@ async function createRawContactFacilities(contactId, facilityIds) {
   }
 }
 
+async function deactivateRawContactFacilities(contactId) {
+  try {
+    const response = await getOperation(`ccof_bceid_organizations?$filter=_ccof_businessbceid_value eq ${contactId}`);
+    for (const record of response?.value ?? []) {
+      await patchOperationWithObjectId('ccof_bceid_organizations', record.ccof_bceid_organizationid, { statecode: 1 });
+    }
+  } catch (e) {
+    log.error(e);
+  }
+}
+
 async function updateContact(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
@@ -122,6 +141,7 @@ async function updateContact(req, res) {
     }
     await patchOperationWithObjectId('contacts', req.params.contactId, payload);
     if (req.body.facilities && req.body.facilities.length > 0) {
+      await deactivateRawContactFacilities(req.params.contactId);
       await createRawContactFacilities(req.params.contactId, req.body.facilities);
     }
     return res.status(HttpStatus.OK).json();
@@ -138,4 +158,5 @@ module.exports = {
   createContact,
   createRawContactFacilities,
   updateContact,
+  deactivateRawContactFacilities,
 };

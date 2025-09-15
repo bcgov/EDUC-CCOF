@@ -50,7 +50,7 @@
               :rules="[...rules.required, ...rules.email]"
             />
           </v-col>
-          <v-col v-if="isOrgAdmin && !isSelf" cols="12">
+          <v-col v-if="hasPermission(PERMISSIONS.MANAGE_USERS_ALL)" cols="12">
             <v-select
               v-model="selectedRole"
               :items="portalRoles"
@@ -60,6 +60,7 @@
               variant="outlined"
               density="compact"
               class="mb-4"
+              :disabled="isSelf"
             />
           </v-col>
           <v-col v-if="isFacilityAdminSelected" cols="12">
@@ -109,24 +110,26 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import contactService from '@/services/contactService.js';
 import OrganizationService from '@/services/organizationService.js';
 
 import { useAppStore } from '@/store/app';
+import { useAuthStore } from '@/store/auth';
 import { useOrganizationStore } from '@/store/ccof/organization';
 
 import { ROLES } from '@/utils/constants';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 import { rules } from '@/utils/rules';
 
 export default {
   name: 'EditUserDialog',
   components: { AppDialog, AppButton },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   props: {
     show: { type: Boolean, default: false },
     user: { type: Object, required: true },
-    loggedInUser: { type: Object, required: true },
   },
   emits: ['close-edit-dialog', 'contact-updated'],
   data() {
@@ -144,19 +147,20 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useAppStore, ['lookupInfo']),
+    ...mapState(useAuthStore, ['userInfo']),
     portalRoles() {
       return (this.lookupInfo?.roles || []).map(({ roleId, roleName, roleNumber }) => {
         return { roleId, roleName, roleNumber };
       });
     },
-    isOrgAdmin() {
-      return this.user?.role?.roleNumber === ROLES.ORG_ADMIN;
-    },
     isFacilityAdminSelected() {
-      return this.isOrgAdmin && this.selectedRole === ROLES.FAC_ADMIN;
+      return (
+        this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL) &&
+        (this.selectedRole === ROLES.FAC_ADMIN_ADVANCED || this.selectedRole === ROLES.FAC_ADMIN_BASIC)
+      );
     },
     isSelf() {
-      return this.user.contactId === this.loggedInUser.contactId;
+      return this.user.contactId === this.userInfo?.contactId;
     },
   },
   watch: {
@@ -167,7 +171,7 @@ export default {
       }
     },
     selectedRole(newRole) {
-      if (this.isOrgAdmin && newRole === ROLES.FAC_ADMIN) {
+      if (newRole === ROLES.FAC_ADMIN_ADVANCED || newRole === ROLES.FAC_ADMIN_BASIC) {
         this.loadFacilities();
       }
     },
@@ -201,11 +205,9 @@ export default {
           telephone: this.editedUser.telephone,
         };
 
-        if (this.isOrgAdmin) {
+        if (this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL)) {
           payload.role = this.portalRoles.find((role) => role.roleNumber === this.selectedRole) || null;
-          payload.facilities = this.selectedRole === ROLES.FAC_ADMIN ? this.selectedFacilities : [];
-        } else {
-          payload.facilities = [];
+          payload.facilities = this.isFacilityAdminSelected ? this.selectedFacilities : [];
         }
 
         await contactService.updateContact(this.editedUser.contactId, payload);
