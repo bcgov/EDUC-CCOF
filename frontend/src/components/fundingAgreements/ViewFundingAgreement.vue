@@ -120,7 +120,7 @@
 
           <template #button>
             <div class="center-button">
-              <AppButton color="primary" @click="goBackToManageFundingAgreement">
+              <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement">
                 Return to Funding Agreements
               </AppButton>
             </div>
