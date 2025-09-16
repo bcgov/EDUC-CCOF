@@ -133,13 +133,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, [
       'organizationId',
       'organizationName',
       'organizationAccountNumber',
       'loadedModel',
     ]),
-    ...mapState(useAuthStore, ['userInfo']),
     headers() {
       return [
         { title: '', key: 'edit-user', sortable: false },
@@ -170,10 +170,15 @@ export default {
   methods: {
     ...mapActions(useOrganizationStore, ['loadOrganization']),
     setAccessTypeField(contact) {
+      let accessType = 'Contact Only';
+      if (contact.isPortalUser) {
+        accessType = contact.role?.roleName || 'No Role Assigned';
+      }
+
       return {
         ...contact,
         isPrimaryContact: contact.contactId === this.loadedModel.primaryContactId,
-        accessType: contact.isPortalUser ? 'Portal User' : 'Contact Only',
+        accessType,
       };
     },
     editUser(id) {
