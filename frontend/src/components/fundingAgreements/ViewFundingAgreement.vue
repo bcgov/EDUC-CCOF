@@ -95,7 +95,7 @@
         />
         <v-row class="mt-4" align="center" dense>
           <v-col cols="auto">
-            <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
+            <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement"> Back </AppButton>
           </v-col>
 
           <v-col cols="auto" class="ml-4">
@@ -120,7 +120,7 @@
 
           <template #button>
             <div class="center-button">
-              <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement">
+              <AppButton color="primary" @click="goBackToManageFundingAgreement">
                 Return to Funding Agreements
               </AppButton>
             </div>
