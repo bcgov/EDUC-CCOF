@@ -84,13 +84,13 @@
           v-model="fundingAgreement.consentCheck"
           class="ml-3"
           color="primary"
-          :disabled="isReadOnly"
+          :disabled="isReadOnly || processing"
           label="I agree, consent and certify"
         />
         <v-text-field
           v-model="fundingAgreement.signedBy"
           variant="outlined"
-          :disabled="isReadOnly"
+          :disabled="isReadOnly || processing"
           label="Your Organization's Authorized Signing Authority"
         />
         <v-row class="mt-4" align="center" dense>
@@ -99,11 +99,7 @@
           </v-col>
 
           <v-col cols="auto" class="ml-4">
-            <AppButton
-              color="primary"
-              :disabled="isReadOnly || processing || !fundingAgreement.consentCheck || !fundingAgreement.signedBy"
-              @click="submit"
-            >
+            <AppButton color="primary" :disabled="isSubmitDisabled" :loading="processing" @click="submit">
               Submit
             </AppButton>
           </v-col>
@@ -182,6 +178,10 @@ export default {
     },
     isDeclarationB() {
       return this.fundingAgreement?.fundingAgreementOrderNumber >= 0;
+    },
+    isSubmitDisabled() {
+      const hasSignedBy = this.fundingAgreement?.signedBy?.trim().length > 0;
+      return this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !hasSignedBy;
     },
   },
   async created() {
