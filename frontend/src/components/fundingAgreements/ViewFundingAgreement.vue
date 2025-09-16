@@ -87,7 +87,12 @@
           :disabled="isReadOnly"
           label="I agree, consent and certify"
         />
-
+        <v-text-field
+          v-model="fundingAgreement.signedBy"
+          variant="outlined"
+          :disabled="isReadOnly"
+          label="Your Organization's Authorized Signing Authority"
+        />
         <v-row class="mt-4" align="center" dense>
           <v-col cols="auto">
             <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
@@ -96,7 +101,7 @@
           <v-col cols="auto" class="ml-4">
             <AppButton
               color="primary"
-              :disabled="isReadOnly || processing || !fundingAgreement.consentCheck"
+              :disabled="isReadOnly || processing || !fundingAgreement.consentCheck || !fundingAgreement.signedBy"
               @click="submit"
             >
               Submit
@@ -165,6 +170,7 @@ export default {
       isLoading: false,
       processing: false,
       showSubmissionConfirmationDialog: false,
+      signedBy: '',
     };
   },
   computed: {
@@ -217,6 +223,7 @@ export default {
         const payload = {
           consentCheck: this.fundingAgreement.consentCheck,
           signedOn: new Date().toISOString(),
+          signedBy: this.fundingAgreement.signedBy,
         };
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
         this.showSubmissionConfirmationDialog = true;
