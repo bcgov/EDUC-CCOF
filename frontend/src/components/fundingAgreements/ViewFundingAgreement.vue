@@ -88,7 +88,7 @@
           label="I agree, consent and certify"
         />
         <v-text-field
-          v-model="fundingAgreement.signedBy"
+          v-model.trim="fundingAgreement.signedBy"
           variant="outlined"
           :disabled="isReadOnly || processing"
           label="Your Organization's Authorized Signing Authority"
@@ -180,8 +180,9 @@ export default {
       return this.fundingAgreement?.fundingAgreementOrderNumber >= 0;
     },
     isSubmitDisabled() {
-      const hasSignedBy = this.fundingAgreement?.signedBy?.trim().length > 0;
-      return this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !hasSignedBy;
+      return (
+        this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !this.fundingAgreement?.signedBy
+      );
     },
   },
   async created() {
