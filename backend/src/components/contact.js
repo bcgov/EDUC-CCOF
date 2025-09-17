@@ -108,13 +108,14 @@ async function createContact(req, res) {
 
 async function createRawContactFacilities(contactId, facilityIds) {
   try {
-    for (const id of facilityIds) {
+    const pendingUpdates = facilityIds.map((id) => {
       const records = {
         'ccof_facility@odata.bind': `/accounts(${id})`,
         'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
       };
-      await postOperation('ccof_bceid_organizations', records);
-    }
+      return postOperation('ccof_bceid_organizations', records);
+    });
+    await Promise.all(pendingUpdates);
   } catch (e) {
     log.error(e);
   }
