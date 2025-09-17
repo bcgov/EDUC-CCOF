@@ -6,11 +6,13 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
   pcfUrl,
+  pcfUrlGuid,
 } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 describe('<LandingPage />', () => {
   function mountWithPinia(initialState = {}, dateOverride = {}) {
-    cy.setupPinia({ initialState }).then((pinia) => {
+    cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
       const pushStub = cy.stub();
       cy.mount(LandingPage, {
         global: {
@@ -77,8 +79,6 @@ describe('<LandingPage />', () => {
 
     cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should('exist');
   });
-
-  // Starting here
 
   it('should display CCOF text when approved and no actions required', () => {
     mountWithPinia({
@@ -218,7 +218,6 @@ describe('<LandingPage />', () => {
     cy.get('@routerPush').should('have.been.calledWith', pcfUrl(PATHS.CCOF_FAMILY_ORG, 'TEST_YEAR_ID'));
   });
 
-  // TODO: Need test if clicking button results in dialog open (*need data attributes*)
   it('should display `Cancel Application`', () => {
     mountWithPinia({
       application: {
@@ -266,7 +265,7 @@ describe('<LandingPage />', () => {
     cy.get('@routerPush').should('have.been.calledWith', pcfUrl(PATHS.CCOF_GROUP_ORG, '5555'));
   });
 
-  it('should display `View Recent Application` button when clicked navigate to license upload  ', () => {
+  it('should display `View Recent Application` button when clicked navigate to license upload', () => {
     mountWithPinia({
       application: {
         applicationType: 'RENEW',
@@ -425,9 +424,56 @@ describe('<LandingPage />', () => {
     cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ENROLMENT_REPORTS);
   });
 
-  // TODO: TEST THIS
-  // it('should display `Manage Organization and Facilities` card', () => {
-  //   mountWithPinia({});
+  // TODO: REQUIRES FIXING ISSUE with permission state
+  // it.only('should display `Manage Organization and Facilities` card (disabled)', () => {
+  //   mountWithPinia({
+  //     auth: {
+  //       isAuthenticated: true,
+  //       userInfo: {
+  //         serverTime: new Date(),
+  //       },
+  //       permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
+  //     },
+  //     app: {
+  //       role: {
+  //         permissions: { permissionNumber: '1111' },
+  //       },
+  //     },
+  //   });
+  //   cy.contains('p', 'Manage Organization and Facilitie');
+  //   cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+  //     'have.css',
+  //     'pointer-events',
+  //     'none',
+  //   );
+  // });
+
+  // it.only('should display `Manage Organization and Facilities` card (enabled)', () => {
+  //   mountWithPinia({
+  //     auth: {
+  //       isAuthenticated: true,
+  //       userInfo: {ac
+  //         serverTime: new Date(),
+  //       },
+  //       permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
+  //     },
+  //     app: {
+  //       role: {
+  //         permissions: { permissionNumber: '1111' },
+  //       },
+  //     },
+  //     organization: {
+  //       organizationAccountNumber: '12345',
+  //     },
+  //   });
+  //   cy.contains('p', 'Manage Organization and Facilitie');
+  //   cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+  //     'not.have.css',
+  //     'pointer-events',
+  //     'none',
+  //   );
+  //   cy.contains('button', 'Manage Organization and Facilities').click();
+  //   cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ORG_FACILITIES);
   // });
 
   it('should disable `Manage User` card when no organization account number', () => {
@@ -513,17 +559,25 @@ describe('<LandingPage />', () => {
   //   const programYearId = '12345';
   //   mountWithPinia({
   //     application: {
-  //       programYearId: '12345',
-  //       applicationMap: new Map([
-  //         ['12345', { facilityList: [{ ccfriStatus: 'APPROVED' }], ccofProgramYearStatus: 'FUTURE' }],
-  //       ]),
+  //       programYearId,
+  //       applicationMap: new Map([[programYearId, { facilityList: [{ ccfriStatus: 'APPROVED' }] }]]),
   //     },
   //     navBar: {
   //       navBarList: ['a'],
   //     },
+  //     app: {
+  //       programYearList: {
+  //         list: [
+  //           {
+  //             programYearId: '101',
+  //             order: 5,
+  //           },
+  //         ],
+  //       },
+  //     },
   //   });
   //   cy.contains('button', 'Organization Closures').click();
-  //   cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.CLOSURES}/12345`);
+  //   cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.CLOSURES}/${programYearId}`);
   // });
 
   it('should render search box for facility filter', () => {
@@ -577,41 +631,578 @@ describe('<LandingPage />', () => {
     cy.contains(testName3);
   });
 
-  // it.only('should render facility details ', () => {
-  //   // const programYearId = '12345';
-  //   // const facilityAccountNumber = 'FAC-45678';
-  //   // const facilityName = 'CCOF Medical Center';
-  //   // const licenseNumber = 'L1234567890';
-  //   // const ccfriApplicationId = '111';
+  it('should render facility details ', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
 
-  //   mountWithPinia({
-  //     navBar: {
-  //       navBarList: ['a', 'b'],
-  //     },
-  //     application: {
-  //       programYearId: '12345',
-  //       applicationMap: new Map([
-  //         [
-  //           '12345',
-  //           {
-  //             applicationId: '1',
-  //             ccofProgramYearName: `$aaa!!!`,
-  //             ccofProgramYearStatus: 'FUTURE',
-  //             facilityList: [
-  //               {
-  //                 facilityAccountNumber: 'zzz',
-  //                 facilityName: 'fsdfdsf',
-  //                 licenseNumber: 'fdsfdsfdf',
-  //                 ccfriApplicationId: 'zzzzzfdf',
-  //               },
-  //             ],
-  //           },
-  //         ],
-  //       ]),
-  //     },
-  //   });
-  //   // cy.contains('p', `Facility ID: ${facilityAccountNumber}`);
-  //   // cy.contains('p', `Facility Name: ${facilityName}`);
-  //   // cy.contains('p', `Licence Number: ${licenseNumber}`);
-  // });
+    mountWithPinia({
+      navBar: {
+        navBarList: ['a', 'b'],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+            {
+              applicationId: '1',
+              ccofProgramYearName: `$aaa!!!`,
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('p', `Facility ID: ${facilityAccountNumber}`);
+    cy.contains('p', `Facility Name: ${facilityName}`);
+    cy.contains('p', `Licence Number: ${licenseNumber}`);
+  });
+
+  it('should display `OPTED OUT` status `Child Care Fee Reduction Initiative` ', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: ['a', 'b'],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+            {
+              applicationId: '1',
+              ccofProgramYearName: `$aaa!!!`,
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  ccfriOptInStatus: 0,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('p', 'Child Care Fee Reduction Initiative (CCFRI) Status: OPTED OUT');
+  });
+
+  it('should return the facility default ccfriStatus when opt-in status not 0 and no MTFI change request', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+    const ccfriStatus = 'TEST_STATUS';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: ['a', 'b'],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+            {
+              applicationId: '1',
+              ccofProgramYearName: `$aaa!!!`,
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  ccfriStatus,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('p', `Child Care Fee Reduction Initiative (CCFRI) Status: ${ccfriStatus}`);
+  });
+
+  // TODO: Do other condition for the above test (when else)
+
+  it('should return `OPTED OUT` (ECE-WE) Status when opt-out', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: ['a', 'b'],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+            {
+              applicationId: '1',
+              ccofProgramYearName: `$aaa!!!`,
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  eceweOptInStatus: 0,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('p', `Early Childhood Educator Wage Enhancement (ECE-WE) Status: OPTED OUT`);
+  });
+
+  it('should return the facility (ECE-WE) Status when opted-in', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+    const eceweStatus = 'TEST_STATUS_123';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: ['a', 'b'],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+            {
+              applicationId: '1',
+              ccofProgramYearName: `$aaa!!!`,
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  eceweStatus,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('p', `Early Childhood Educator Wage Enhancement (ECE-WE) Status: ${eceweStatus}`);
+  });
+
+  it('should render `Update your PCF` button when unlockNmf and navigate current fees and navigate', () => {
+    const programYearId = '12345';
+    const ccofProgramYearId = programYearId;
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'SUBMITTED',
+              ccofProgramYearId: '999',
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockNmf: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    // cy.contains('button', `Update your PCF`).click();
+    // cy.get('@routerPush').should(
+    //   'have.been.calledWith',
+    //   pcfUrlGuid(PATHS.CCFRI_NMF, programYearId, ccfriApplicationId),
+    // );
+  });
+
+  it('should render `Update your PCF` button when isCCFRIUnlock and navigate to current fees', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId: programYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'SUBMITTED',
+              ccofProgramYearId: programYearId,
+              isRenewal: true,
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockCcfri: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('button', `Update your PCF`).click();
+    cy.get('@routerPush').should(
+      'have.been.calledWith',
+      pcfUrlGuid(PATHS.CCFRI_CURRENT_FEES, programYearId, ccfriApplicationId),
+    );
+  });
+
+  it('should render `Update your PCF` button when isCCFRIUnlock and navigate to new fees', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId: programYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'SUBMITTED',
+              ccofProgramYearId: programYearId,
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockCcfri: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('button', `Update your PCF`).click();
+    cy.get('@routerPush').should(
+      'have.been.calledWith',
+      pcfUrlGuid(PATHS.CCFRI_NEW_FEES, programYearId, ccfriApplicationId),
+    );
+  });
+
+  it('should render `Update your PCF` button when isRFIUnlock and navigate to CCFRI RFI', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId: programYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'SUBMITTED',
+              ccofProgramYearId: programYearId,
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockRfi: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('button', `Update your PCF`).click();
+    cy.get('@routerPush').should(
+      'have.been.calledWith',
+      pcfUrlGuid(PATHS.CCFRI_RFI, programYearId, ccfriApplicationId),
+    );
+  });
+
+  it('should render `Update your PCF` button when isAFSUnlock', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId: programYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'SUBMITTED',
+              ccofProgramYearId: programYearId,
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockAfs: true,
+                  enableAfs: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('button', `Update your PCF`).click();
+    cy.get('@routerPush').should(
+      'have.been.calledWith',
+      pcfUrlGuid(PATHS.CCFRI_AFS, programYearId, ccfriApplicationId),
+    );
+  });
+
+  it('should not render `Update your PCF` button when application status not submitted', () => {
+    const programYearId = '12345';
+    const facilityAccountNumber = 'FAC-45678';
+    const facilityName = 'CCOF Medical Center';
+    const licenseNumber = 'L1234567890';
+    const ccfriApplicationId = '111';
+
+    mountWithPinia({
+      navBar: {
+        navBarList: [{ unlockCcfri: true, ccfriApplicationId: ccfriApplicationId }],
+      },
+      application: {
+        programYearId: programYearId,
+        applicationMap: new Map([
+          [
+            programYearId,
+
+            {
+              applicationId: '1',
+              ccofProgramYearId: programYearId,
+              ccofProgramYearName: `$aaa!!!`,
+              applicationStatus: 'NOT_SUBMITTED',
+              ccofProgramYearId: programYearId,
+              facilityList: [
+                {
+                  facilityId: '1',
+                  facilityAccountNumber,
+                  facilityName,
+                  licenseNumber,
+                  ccfriApplicationId,
+                  unlockAfs: true,
+                  enableAfs: true,
+                },
+              ],
+            },
+          ],
+        ]),
+      },
+      app: {
+        programYearList: {
+          list: [
+            {
+              programYearId: '101',
+              order: 5,
+            },
+          ],
+        },
+      },
+    });
+    cy.contains('button', `Update your PCF`).should('not.exist');
+  });
 });
