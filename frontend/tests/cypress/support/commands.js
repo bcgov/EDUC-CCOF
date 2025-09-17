@@ -1,3 +1,7 @@
+import { setActivePinia } from 'pinia';
+
+import { createTestingPinia } from '@pinia/testing';
+
 // ***********************************************
 // This example commands.js shows you how to
 // create various custom commands and overwrite
@@ -23,8 +27,6 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia } from 'pinia';
 
 /**
  * Sets up a Pinia testing instance with customizable options.
