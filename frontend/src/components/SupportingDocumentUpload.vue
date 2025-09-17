@@ -413,9 +413,13 @@ export default {
       }
       try {
         await this.saveUploadedDocuments(payload);
-      } catch (error) {
-        console.error(error);
-        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } catch (e) {
+        console.error(e);
+        if (e.response.data.status === 422) { // Most likely found a virus
+          this.setFailureAlert(e.response.data.message);
+        } else {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
       }
     },
     async processDocumentFileDelete() {
