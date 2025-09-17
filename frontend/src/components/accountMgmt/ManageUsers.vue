@@ -8,7 +8,7 @@
     <v-row>
       <v-col class="d-flex justify-end">
         <AppButton
-          v-if="hasPermission(PERMISSIONS.MANAGE_USERS_ALL)"
+          v-if="hasPermission(PERMISSIONS.ADD_USERS)"
           size="small"
           prepend-icon="mdi-plus"
           display="inline-grid"
@@ -194,12 +194,12 @@ export default {
         return false;
       }
       if (this.isSelf(user)) {
-        return this.hasPermission(PERMISSIONS.MANAGE_SELF);
+        return this.hasPermission(PERMISSIONS.UPDATE_SELF);
       }
-      return this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL);
+      return this.hasPermission(PERMISSIONS.EDIT_USERS);
     },
     mayRemoveUser(user) {
-      return this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL) && !user.isPrimaryContact && !this.isSelf(user);
+      return this.hasPermission(PERMISSIONS.DELETE_USERS) && !user.isPrimaryContact && !this.isSelf(user);
     },
     isSelf(user) {
       return this.userInfo.contactId === user.contactId;

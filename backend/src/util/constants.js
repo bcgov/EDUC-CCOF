@@ -155,10 +155,12 @@ const ROLES = Object.freeze({
 });
 
 const PERMISSIONS = Object.freeze({
-  CHANGE_ORG_INFORMATION: '25',
-  VIEW_ORG_INFORMATION: '26',
-  MANAGE_USERS_ALL: '34',
-  MANAGE_SELF: '35',
+  VIEW_ORG_INFORMATION: '47',
+  CHANGE_ORG_INFORMATION: '48',
+  UPDATE_SELF: '43',
+  ADD_USERS: '44',
+  EDIT_USERS: '45',
+  DELETE_USERS: '46',
 });
 
 module.exports = {

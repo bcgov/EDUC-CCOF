@@ -8,7 +8,7 @@ const { getRoles } = require('../components/lookup');
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
-  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ofm_portal_role_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
+  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ccof_ccof_portal_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
   return getOperation(operation);
 }
 
@@ -21,14 +21,20 @@ async function getActiveContactsInOrganization(req, res) {
     const contactsData = await getActiveContactsByOrgID(req.params.organizationId);
     const contactsRaw = contactsData.value.map((contact) => new MappableObjectForFront(contact, ContactMappings)).map(setContactType);
     const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, { roleNumber: data.roleNumber, roleName: data.roleName }]));
-    const contacts = contactsRaw.map(({ roleId, ...rest }) => ({
-      ...rest,
-      role: {
-        roleId,
-        roleNumber: roleMap.get(roleId)?.roleNumber ?? null,
-        roleName: roleMap.get(roleId)?.roleName ?? null,
-      },
-    }));
+    const contacts = [];
+    for (const { roleId, contactId, ...rest } of contactsRaw) {
+      const facilities = await getRawContactFacilities(contactId);
+      contacts.push({
+        ...rest,
+        contactId,
+        role: {
+          roleId,
+          roleNumber: roleMap.get(roleId)?.roleNumber ?? null,
+          roleName: roleMap.get(roleId)?.roleName ?? null,
+        },
+        facilities,
+      });
+    }
     return res.status(HttpStatus.OK).json(contacts);
   } catch (e) {
     log.error('failed with error', e);
@@ -86,7 +92,7 @@ async function createContact(req, res) {
       contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
     if (req.body.role?.roleId) {
-      contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
+      contactPayload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
 
     const createdContact = await postOperation('contacts', contactPayload);
@@ -129,12 +135,15 @@ async function updateContact(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
     if (req.body.role?.roleId) {
-      payload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
+      payload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
     await patchOperationWithObjectId('contacts', req.params.contactId, payload);
-    if (req.body.facilities && req.body.facilities.length > 0) {
+
+    if (req.body.facilities) {
       await deactivateRawContactFacilities(req.params.contactId);
-      await createRawContactFacilities(req.params.contactId, req.body.facilities);
+      if (req.body.facilities.length > 0) {
+        await createRawContactFacilities(req.params.contactId, req.body.facilities);
+      }
     }
     return res.status(HttpStatus.OK).json();
   } catch (e) {

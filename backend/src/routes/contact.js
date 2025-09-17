@@ -17,7 +17,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.MANAGE_SELF),
+  validatePermission(PERMISSIONS.UPDATE_SELF),
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -32,7 +32,7 @@ router.delete(
   '/:contactId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.MANAGE_USERS_ALL),
+  validatePermission(PERMISSIONS.DELETE_USERS),
   [param('contactId', 'URL param: [contactId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -53,7 +53,7 @@ const contactValidators = [
 /**
  * Add a contact.
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.MANAGE_USERS_ALL), contactValidators, (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
 });
@@ -65,8 +65,7 @@ router.patch(
   '/:contactId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO (weskubo-cgi) Add conditional permissions based on if updating self or others. See CCFRI-5999
-  validatePermission(PERMISSIONS.MANAGE_SELF),
+  validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
   [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();

@@ -50,7 +50,7 @@
               :rules="[...rules.required, ...rules.email]"
             />
           </v-col>
-          <v-col v-if="hasPermission(PERMISSIONS.MANAGE_USERS_ALL)" cols="12">
+          <v-col v-if="hasPermission(PERMISSIONS.EDIT_USERS)" cols="12">
             <v-select
               v-model="selectedRole"
               :items="portalRoles"
@@ -155,7 +155,7 @@ export default {
     },
     isFacilityAdminSelected() {
       return (
-        this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL) &&
+        this.hasPermission(PERMISSIONS.EDIT_USERS) &&
         (this.selectedRole === ROLES.FAC_ADMIN_ADVANCED || this.selectedRole === ROLES.FAC_ADMIN_BASIC)
       );
     },
@@ -205,7 +205,7 @@ export default {
           telephone: this.editedUser.telephone,
         };
 
-        if (this.hasPermission(PERMISSIONS.MANAGE_USERS_ALL)) {
+        if (this.hasPermission(PERMISSIONS.EDIT_USERS)) {
           payload.role = this.portalRoles.find((role) => role.roleNumber === this.selectedRole) || null;
           payload.facilities = this.isFacilityAdminSelected ? this.selectedFacilities : [];
         }
