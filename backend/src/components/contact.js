@@ -8,7 +8,7 @@ const { getRoles } = require('../components/lookup');
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
-  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ofm_portal_role_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
+  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ccof_ccof_portal_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
   return getOperation(operation);
 }
 
@@ -86,7 +86,7 @@ async function createContact(req, res) {
       contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
     if (req.body.role?.roleId) {
-      contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
+      contactPayload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
 
     const createdContact = await postOperation('contacts', contactPayload);
