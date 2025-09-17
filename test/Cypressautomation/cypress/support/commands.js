@@ -30,7 +30,23 @@
 //<reference types="cypress" />
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
-Cypress.SelectorPlayground.defaults({
+
+// SELECTORPLAYGROUND FOR OLD CYPRESS VERSION
+// Cypress.SelectorPlayground.defaults({
+//   selectorPriority: [
+//     'data-cy',       
+//     'data-test',
+//     'data-testid',
+//     'id',
+//     'class',
+//     'tag',
+//     'attributes',
+//     'nth-child',
+//   ],
+// })
+
+// Updated with new Cypress Version
+Cypress.ElementSelector.defaults({
   selectorPriority: [
     'data-cy',       
     'data-test',
@@ -235,15 +251,16 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
 * Method to Continue the application if the button is present
 **/
 Cypress.Commands.add('continueApplicationIfPresent', () => {
-    cy.wait(10000);
+  cy.wait(10000);
   cy.document({ timeout: 30000 }).then((doc) => {
+    cy.get('.pb-12.text-h4.text-center').contains('What would you like to do?', {timeout: 10000}).should('be.visible')
     const btn = Array.from(doc.querySelectorAll('button')).find(
       (el) => el.textContent.trim() === 'Continue Application'
     );
 
     if (btn) {
       cy.wrap(btn).click({ force: true });
-      cy.wait(15000);
+      cy.wait(10000)
     }
   });
 });

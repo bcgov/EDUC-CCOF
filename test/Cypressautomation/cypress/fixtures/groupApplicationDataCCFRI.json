@@ -1,6 +1,13 @@
 {
+    "optInOrOut": {
+        "optIn": "Opt-In",
+        "optOut": "Opt-Out"
+    },
     "parentFees": {
-        "frequency": "Monthly",
+        "frequency": {
+            "monthly": "Monthly",
+            "daily": "Daily"
+        },
         "parentFeeCategories": [
             " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
             " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
@@ -31,6 +38,22 @@
         }
     },
     "closures": {
+        "closureCharges": {
+            "chargeForClosures": "Yes",
+            "noChargeForClosures": "No"
+        },
+        "fullFacilityClosureStatus" : {
+            "fullFacilityClosure": "Yes",
+            "notFullFacilityClosure": "No"
+        },
+        "careCategoriesAffected": [
+            "0 to 18 months",
+            "18 to 36 months",
+            "3 Years to Kindergarten",
+            "Kindergarten",
+            "Grade 1 to Age 12",
+            "Preschool"
+        ],
         "startDate": "2025-12-01",
         "endDate": "2025-12-06",
         "closureReason": "renovations"
