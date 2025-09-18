@@ -13,7 +13,6 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
-const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 const { buildFilterQuery } = require('./../components/utils');
 
 function mapChangeRequestForBack(data, changeType) {

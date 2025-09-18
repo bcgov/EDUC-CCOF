@@ -274,7 +274,8 @@ export default {
         }
       } catch (e) {
         console.error(e);
-        if (e.response.data.status === 422) { // Most likely found a virus
+        if (e.response.data.status === 422) {
+          // Most likely found a virus
           this.setFailureAlert(e.response.data.message);
         } else {
           this.setFailureAlert('An error occurred while saving. Please try again later.');
@@ -309,7 +310,8 @@ export default {
         await this.saveLicenseFiles(payload);
       } catch (e) {
         console.error(e);
-        if (e.response.data.status === 422) { // Most likely found a virus
+        if (e.response.data.status === 422) {
+          // Most likely found a virus
           this.setFailureAlert(e.response.data.message);
         } else {
           this.setFailureAlert('An error occurred while saving. Please try again later.');

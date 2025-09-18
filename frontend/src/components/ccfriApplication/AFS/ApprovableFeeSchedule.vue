@@ -322,7 +322,8 @@ export default {
         try {
           await DocumentService.createApplicationDocuments(payload);
         } catch (e) {
-          if (e.response.data.status === 422) { // Most likely found a virus
+          if (e.response.data.status === 422) {
+            // Most likely found a virus
             this.setFailureAlert(e.response.data.message);
           } else {
             this.setFailureAlert('An error occurred while saving the documents. Please try again later.');

@@ -489,7 +489,8 @@ export default {
         this.$emit('submitted', payload);
       } catch (e) {
         console.error(e);
-        if (e.response.data.status === 422) { // Most likely found a virus in payload.documents
+        if (e.response.data.status === 422) {
+          // Most likely found a virus in payload.documents
           this.setFailureAlert(e.response.data.message);
         } else {
           this.setFailureAlert('Failed to submit new closure request');
