@@ -29,6 +29,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolled0To18')"
             />
           </v-col>
           <v-col class="border-right">
@@ -37,6 +38,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolled18To36')"
             />
           </v-col>
           <v-col class="border-right">
@@ -45,6 +47,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolled3YK')"
             />
           </v-col>
           <v-col class="border-right">
@@ -53,6 +56,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolledOOSCK')"
             />
           </v-col>
           <v-col class="border-right">
@@ -61,6 +65,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolledOOSCG')"
             />
           </v-col>
           <v-col v-if="isGroup" cols="1" class="border-right">
@@ -69,6 +74,7 @@
               maxlength="3"
               :disabled="readonly"
               :default-value="0"
+              :class="getTotalEnrolledClass('totalEnrolledPre')"
             />
           </v-col>
         </v-row>
@@ -148,57 +154,112 @@
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less0To18" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.less0To18"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over0To18" maxlength="3" :disabled="readonly" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less18To36" maxlength="3" :disabled="readonly" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over18To36" maxlength="3" :disabled="readonly" />
-              </v-col>
-            </v-row>
-          </v-col>
-          <v-col>
-            <v-row no-gutters>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.less3YK" maxlength="3" :disabled="readonly" />
-              </v-col>
-              <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.over3YK" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.over0To18"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'over0To18')"
+                />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.less18To36"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.over18To36"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'over18To36')"
+                />
               </v-col>
             </v-row>
           </v-col>
           <v-col>
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.less3YK"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.over3YK"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'over3YK')"
+                />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput
+                  v-model="dailyEnrolment.lessOOSCK"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')"
+                />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput
+                  v-model="dailyEnrolment.overOOSCK"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCK')"
+                />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col>
+            <v-row no-gutters>
+              <v-col class="border-right">
+                <AppNumberInput
+                  v-model="dailyEnrolment.lessOOSCG"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')"
+                />
+              </v-col>
+              <v-col class="border-right">
+                <AppNumberInput
+                  v-model="dailyEnrolment.overOOSCG"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCG')"
+                />
               </v-col>
             </v-row>
           </v-col>
           <v-col v-if="isGroup" cols="1">
             <v-row no-gutters>
               <v-col class="border-right">
-                <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="readonly" />
+                <AppNumberInput
+                  v-model="dailyEnrolment.lessPre"
+                  maxlength="3"
+                  :disabled="readonly"
+                  :class="getDailyEnrolmentClass(dailyEnrolment, 'lessPre')"
+                />
               </v-col>
             </v-row>
           </v-col>
@@ -946,16 +1007,22 @@ export default {
   mixins: [enrolmentReportMixin],
   data() {
     return {
-      previousEnrolmentReport: {},
       originalEnrolmentReport: {},
+      previousEnrolmentReport: {},
       dailyEnrolments: [],
       originalDailyEnrolments: [],
+      previousDailyEnrolments: [],
       showBackConfirmationDialog: false,
     };
   },
   computed: {
     isGroup() {
       return this.enrolmentReport?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES_IDS.GROUP;
+    },
+    previousDailyEnrolmentsMap() {
+      return new Map(
+        (this.previousDailyEnrolments || []).map((dailyEnrolment) => [dailyEnrolment.day, dailyEnrolment]),
+      );
     },
   },
   async created() {
@@ -982,6 +1049,9 @@ export default {
         this.loading = true;
         await this.loadEnrolmentReport();
         await this.loadDailyEnrolments();
+        if (this.enrolmentReport?.isAdjustment) {
+          await this.loadPreviousEnrolmentReport();
+        }
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load enrolment report');
@@ -997,14 +1067,20 @@ export default {
       }
       this.normalizeRates();
       this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
-      this.previousEnrolmentReport = await EnrolmentReportService.getEnrolmentReport(
-        this.enrolmentReport?.prevEnrolmentReportId,
-      );
     },
 
     async loadDailyEnrolments() {
       this.dailyEnrolments = await EnrolmentReportService.getDailyEnrolments(this.$route.params.enrolmentReportId);
       this.originalDailyEnrolments = cloneDeep(this.dailyEnrolments);
+    },
+
+    async loadPreviousEnrolmentReport() {
+      this.previousEnrolmentReport = await EnrolmentReportService.getEnrolmentReport(
+        this.enrolmentReport?.prevEnrolmentReportId,
+      );
+      this.previousDailyEnrolments = await EnrolmentReportService.getDailyEnrolments(
+        this.previousEnrolmentReport.enrolmentReportId,
+      );
     },
 
     getApprovedParentFees(fee) {
@@ -1030,6 +1106,15 @@ export default {
         'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
         'border-bottom': rowIndex < this.dailyEnrolments.length - 1,
       };
+    },
+
+    getTotalEnrolledClass(field) {
+      return { 'background-green': this.enrolmentReport?.[field] !== this.previousEnrolmentReport?.[field] };
+    },
+
+    getDailyEnrolmentClass(dailyEnrolment, category) {
+      const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
+      return { 'background-green': dailyEnrolment?.[category] !== previousDailyEnrolment?.[category] };
     },
 
     buildCalculationFieldName(prefix, category) {
@@ -1287,6 +1372,10 @@ export default {
 
 .background-light-green {
   background-color: #d4f7c5;
+}
+
+.background-green {
+  background-color: #7fcf6c;
 }
 
 .background-light-grey {
