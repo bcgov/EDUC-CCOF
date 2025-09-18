@@ -63,7 +63,7 @@
               :disabled="isSelf"
             />
           </v-col>
-          <v-col v-if="isFacilityAdminSelected" cols="12">
+          <v-col v-if="showFacilities" cols="12">
             <v-select
               v-model="selectedFacilities"
               :items="facilities"
@@ -103,7 +103,6 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -137,6 +136,7 @@ export default {
       dialogOpen: false,
       formValid: false,
       isProcessing: false,
+      isLoadingFacilities: false,
       editedUser: {},
       selectedRole: null,
       selectedFacilities: [],
@@ -162,6 +162,9 @@ export default {
     isSelf() {
       return this.user.contactId === this.userInfo?.contactId;
     },
+    showFacilities() {
+      return this.isFacilityAdminSelected && !this.isLoadingFacilities;
+    },
   },
   watch: {
     show(newVal) {
@@ -178,7 +181,7 @@ export default {
   },
   methods: {
     async loadEditUserData() {
-      this.editedUser = cloneDeep(this.user);
+      this.editedUser = { ...this.user };
       this.selectedRole = this.user.role?.roleNumber ?? null;
       this.selectedFacilities = this.user.facilities?.map((f) => f.facilityId) || [];
       if (this.isFacilityAdminSelected) {
@@ -186,11 +189,14 @@ export default {
       }
     },
     async loadFacilities() {
+      this.isLoadingFacilities = true;
       try {
         this.facilities = await OrganizationService.loadFacilities(this.organizationId);
       } catch (error) {
         console.error('Failed to load facilities', error);
         this.setFailureAlert('Error loading facilities.');
+      } finally {
+        this.isLoadingFacilities = false;
       }
     },
     async updateUser() {
@@ -198,12 +204,8 @@ export default {
       if (!isValid) return;
       try {
         this.isProcessing = true;
-        const payload = {
-          firstName: this.editedUser.firstName,
-          lastName: this.editedUser.lastName,
-          email: this.editedUser.email,
-          telephone: this.editedUser.telephone,
-        };
+        const { firstName, lastName, email, telephone } = this.editedUser;
+        const payload = { firstName, lastName, email, telephone };
 
         if (this.hasPermission(PERMISSIONS.EDIT_USERS)) {
           payload.role = this.portalRoles.find((role) => role.roleNumber === this.selectedRole) || null;
