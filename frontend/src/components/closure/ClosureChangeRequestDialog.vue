@@ -488,8 +488,12 @@ export default {
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
         this.$emit('submitted', payload);
       } catch (e) {
-        console.log(e);
-        this.setFailureAlert('Failed to submit new closure request');
+        console.error(e);
+        if (e.response.data.status === 422) { // Most likely found a virus in payload.documents
+          this.setFailureAlert(e.response.data.message);
+        } else {
+          this.setFailureAlert('Failed to submit new closure request');
+        }
       } finally {
         this.isLoading = false;
       }

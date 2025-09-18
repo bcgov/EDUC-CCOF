@@ -11,6 +11,8 @@ async function scanFilePayload(req, res, next) {
     documents = [...req.body];
   } else if (Array.isArray(req.body?.fileList)) {
     documents = [...req.body.fileList];
+  } else if (Array.isArray(req.body?.documents)) {
+    documents = [...req.body.documents];
   }
 
   let scanResults = await Promise.all(

@@ -304,7 +304,17 @@ export default {
         applicationId: this.applicationId,
         changeRequestId: this.isChangeRequest ? this.changeRequestId : undefined,
       };
-      await this.saveLicenseFiles(payload);
+
+      try {
+        await this.saveLicenseFiles(payload);
+      } catch (e) {
+        console.error(e);
+        if (e.response.data.status === 422) { // Most likely found a virus
+          this.setFailureAlert(e.response.data.message);
+        } else {
+          this.setFailureAlert('An error occurred while saving. Please try again later.');
+        }
+      }
     },
     async processLicenseFileDelete() {
       const deletedFiles = this.licenseUploadData
