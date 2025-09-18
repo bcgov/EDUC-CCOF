@@ -84,21 +84,22 @@
           v-model="fundingAgreement.consentCheck"
           class="ml-3"
           color="primary"
-          :disabled="isReadOnly"
+          :disabled="isReadOnly || processing"
           label="I agree, consent and certify"
         />
-
+        <v-text-field
+          v-model.trim="fundingAgreement.signedBy"
+          variant="outlined"
+          :disabled="isReadOnly || processing"
+          label="Your Organization's Authorized Signing Authority"
+        />
         <v-row class="mt-4" align="center" dense>
           <v-col cols="auto">
-            <AppButton color="primary" @click="goBackToManageFundingAgreement"> Back </AppButton>
+            <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement"> Back </AppButton>
           </v-col>
 
           <v-col cols="auto" class="ml-4">
-            <AppButton
-              color="primary"
-              :disabled="isReadOnly || processing || !fundingAgreement.consentCheck"
-              @click="submit"
-            >
+            <AppButton color="primary" :disabled="isSubmitDisabled" :loading="processing" @click="submit">
               Submit
             </AppButton>
           </v-col>
@@ -165,6 +166,7 @@ export default {
       isLoading: false,
       processing: false,
       showSubmissionConfirmationDialog: false,
+      signedBy: '',
     };
   },
   computed: {
@@ -176,6 +178,11 @@ export default {
     },
     isDeclarationB() {
       return this.fundingAgreement?.fundingAgreementOrderNumber >= 0;
+    },
+    isSubmitDisabled() {
+      return (
+        this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !this.fundingAgreement?.signedBy
+      );
     },
   },
   async created() {
@@ -217,6 +224,7 @@ export default {
         const payload = {
           consentCheck: this.fundingAgreement.consentCheck,
           signedOn: new Date().toISOString(),
+          signedBy: this.fundingAgreement.signedBy,
         };
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
         this.showSubmissionConfirmationDialog = true;
