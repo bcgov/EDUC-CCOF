@@ -14,7 +14,6 @@ const {
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,
-  saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
 } = require('../components/changeRequest');
@@ -188,14 +187,6 @@ router.get(
 router.post('/documents', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(documentChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
   return createChangeRequest(req, res);
-});
-
-/**
- * Save uploaded document
- */
-router.post('/documentUpload', passport.authenticate('jwt', { session: false }), isValidBackendToken, (req, res) => {
-  //validationResult(req).throw();
-  return saveChangeRequestDocs(req, res);
 });
 
 router.post(
