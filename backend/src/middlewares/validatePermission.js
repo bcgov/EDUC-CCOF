@@ -22,7 +22,7 @@ module.exports = {
       const userRole = req.session?.passport?.user?.role;
 
       if (!userRole) {
-        return res.sendStatus(403);
+        return res.sendStatus(HttpStatus.FORBIDDEN);
       }
 
       const roles = await getRoles();
@@ -32,7 +32,7 @@ module.exports = {
 
       const valid = requiredPermissions?.some((p) => permissions.includes(p));
 
-      valid ? next() : res.sendStatus(403);
+      valid ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
     };
   },
   async validateUserCanEditOther(req, res, next) {
@@ -52,6 +52,6 @@ module.exports = {
     if (canUpdateSelf && currentUser.contactId === targetContactId) {
       return next();
     }
-    return res.sendStatus(403);
+    return res.sendStatus(HttpStatus.FORBIDDEN);
   },
 };
