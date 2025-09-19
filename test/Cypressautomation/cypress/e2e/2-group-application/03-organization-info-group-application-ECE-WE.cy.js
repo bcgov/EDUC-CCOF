@@ -3,12 +3,23 @@ import { loginPage } from '../../support/pages/LoginPage'
 describe('Group Application-ECE-WE', () => {
     let cssea
     let publicSectorEmployer
+    let optInOrOut
+    let facility
+
+    let csseaSelection
+    let facilityOptInOrOut
+    let fundingType
+    let unionStatus
+    let facilityUnionStatus
+    
     
     beforeEach(() => {
         // Load fixture data for this test
         cy.fixture('groupApplicationDataECE-WE').then((data)=> {
             cssea = data.cssea
             publicSectorEmployer = data.publicSectorEmployer
+            optInOrOut = data.optInOrOut
+            facility = data.facility
         })
 
         // Login & Continue application
@@ -26,32 +37,61 @@ describe('Group Application-ECE-WE', () => {
     });
 
     it('Continue Group Application - ECE-WE', () => {
-        // CCFRI - Parent Fees
+        optInOrOut = optInOrOut.optIn
+        publicSectorEmployer = publicSectorEmployer.isEmployer
+        csseaSelection = cssea.csseaMember.status
+        fundingType = cssea.csseaMember.fundingModel.provinciallyFunded
+        unionStatus = cssea.csseaNonMember.response.someOrAllUnionized
+        facilityOptInOrOut = facility.facilityOptInOrOut.optIn
+        facilityUnionStatus = facility.facilityUnionStatus.unionized
+
+        // ECE-WE Eligibility
         cy.get('.text-h5.my-6').should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE)')
-        cy.get('.v-card').should('contain', 'For the 2025-26 funding term, would you like to opt-in to ECE-WE for any facility in your organization?').getByLabel('Yes').click()
-        cy.log('Can find opt-in into ECE-WE')
+
+        // Opt-in Status
+        cy.get('.v-card').should('contain', 'For the 2025-26 funding term, would you like to opt-in to ECE-WE for any facility in your organization?').getByLabel(`${optInOrOut}`).click({force:true})
+
+        // Public Sector Employer
         cy.contains('.v-card', 'Are you a public sector employer, as defined in the Public Sector Employers Act?').within(() => {
-            cy.log('able to find publicSector Employer card')
-            cy.getByLabel(publicSectorEmployer.isEmployer).click()
+            cy.getByLabel(publicSectorEmployer).click({force:true})
         })
 
-        cy.log('Works up to Public Sector Employee')
+        // CSSEA Type
         cy.contains('.v-card', 'Which of the following describes your organization?')
-        const csseaSelection = cssea.csseaMember.status
-        cy.log(csseaSelection)
-        cy.getByLabel(csseaSelection).click()
-        cy.contains('.v-card', 'Select your funding model:')
-        if (csseaSelection == cssea.csseaMember.status) {
-            cy.getByLabel(cssea.csseaMember.fundingModel.provinciallyFunded).click()
-            cy.getByLabel(cssea.confirmation).click()
+        cy.getByLabel(csseaSelection).click({force:true})
+        // Non-Member
+        if (csseaSelection == cssea.csseaNonMember.status) {
+            cy.getByLabel(unionStatus).click({force:true})
+            // Non-Member + Union
+            if (unionStatus == cssea.csseaNonMember.someOrAllUnionizedUnionized) {
+                cy.clickByText(cssea.confirmation) 
+            } 
         } else {
-            const unionStatus = cssea.response.someOrAllUnionized
-            cy.getByLabel(unionStatus).click()
-            if (unionStatus == cssea.csseaNonMember.someOrAllUnionized) {
-                cy.getByLabel(cssea.confirmation).click()
+            // Member
+            cy.getByLabel(fundingType).click({force:true})
+            cy.getByLabel(cssea.confirmation).click({force:true})
+        }
+        cy.clickByText('Save')
+        cy.clickByText('Next')
+
+        if (facilityOptInOrOut == "Opt-In All Facilities") {
+            cy.clickByText(facilityOptInOrOut)
+            if (unionStatus == "Some or all of our facilities are unionized." || csseaSelection == cssea.csseaMember) {
+                cy.get('.v-card').each((card, index, $list) => {
+                    cy.wrap(card).within(()=>{
+                        cy.getByLabel(facilityUnionStatus).click({force: true})
+                    })
+                })
+            }
+        }
+
+        if (unionStatus == "Some or all of our facilities are unionized." || csseaSelection == cssea.csseaMember) {
+            if (facilityOptInOrOut == "Opt-In All Facilities") {
+                
             }
         }
         cy.clickByText('Save')
+        cy.clickByText('Next')
         cy.clickByText('Next')
     })
 })

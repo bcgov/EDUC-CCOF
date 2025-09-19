@@ -76,7 +76,7 @@ const CONTROL_SELECTOR = [
  
 Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
   const {
-    timeout = 10000,
+    timeout = 20000,
     matchCase = false,
     includeShadowDom = true,
   } = options;
@@ -87,7 +87,7 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
       matchCase,
       includeShadowDom,
     })
-    .should('exist')
+    .should('exist', {timeout: 10000})
     .then(($label) => {
       const labelEl = $label[0];
       const doc = labelEl.ownerDocument;
@@ -153,8 +153,8 @@ Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
 
 
 Cypress.Commands.add('clickByText', (text, selector = 'button') => {
-  cy.contains(selector, text, { matchCase: false })
-    .should('be.visible')
+  cy.contains(selector, text, { matchCase: false }, {timeout: 10000})
+    .should('be.visible', {timeout: 20000})
     
     .should(($btn) => {
       const el = $btn[0]
@@ -180,13 +180,12 @@ Cypress.Commands.add('cancelApplicationIfPresent', () => {
 
     if (btn) {
       cy.wrap(btn).click({ force: true });
-      cy.wait(10000);
 
       cy.get('#cancel-application-button .text-wrap', { timeout: 20000 })
         .should('be.visible')
         .click({ force: true });
 
-      cy.contains('What would you like to do?', { timeout: 20000 })
+      cy.contains('What would you like to do?', { timeout: 50000 })
         .should('be.visible');
     }
   });

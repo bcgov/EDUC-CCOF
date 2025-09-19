@@ -29,9 +29,8 @@ describe('Group Application-CCFRI', () => {
         Cypress.env('USERNAME'),
         Cypress.env('PASSWORD'))
 
-        cy.wait(10000)
         cy.continueApplicationIfPresent()
-        cy.url().should('include', '/group/organization')
+            .url().should('include', '/group/organization', {timeout: 10000})
         cy.url().then((url) => {
             const targetUrl = url.replace('/group/organization', '/ccfri');
             cy.visit(targetUrl);
@@ -52,8 +51,9 @@ describe('Group Application-CCFRI', () => {
 
         // CCFRI - Parent Fees 
         //Opt-Out Path
+        cy.wait(5000)
         if (optInOrOut == 'Opt-Out') {
-            cy.get('.text-h5.my-6').should('contain', 'Child Care Fee Reduction Initiative (CCFRI)', {timmeout: 8000}).clickByText('Update')
+            cy.get('.text-h5.my-6').should('contain', 'Child Care Fee Reduction Initiative (CCFRI)', {timeout: 8000}).clickByText('Update')
             cy.getByLabel(optInOrOut).click()
         } else {
         //Opt-In Path
@@ -65,15 +65,16 @@ describe('Group Application-CCFRI', () => {
                 const category = parentFeeCategories[index]
                 cy.wrap(card).should('contain', `${category}`).contains('label', `${paymentFrequency}`).click()
 
-                // Object.entries(parentFees.months).forEach(([month, fee]) => {
-                //     cy.wrap(card).within(() => {
-                //         // cy.getByLabel(`${month}`).clear().type(fee, {force: true, delay: 0});
-                //         cy.getByLabel(`${month}`).invoke('val', fee).trigger('input')
-                //     });
-                // });
-
+                Object.entries(parentFees.months).forEach(([month, fee]) => {
+                    cy.wrap(card).within(() => {
+                        // cy.getByLabel(`${month}`).clear().type(fee, {force: true, delay: 0});
+                        cy.getByLabel(`${month}`).invoke('val', fee).trigger('input')
+                    });
+                });
             })
+
             cy.clickByText('Save')
+            cy.wait(5000)
             cy.clickByText('Next')
 
             // CCFRI - Closures 
@@ -104,8 +105,7 @@ describe('Group Application-CCFRI', () => {
                         
                         //BUG - CAN'T FIND DROPDOWN
                         cy.getByLabel('Care Categories').click({force: true})
-                        cy.get('.v-list.v-list--one-line').scrollTo('bottom', {ensureScrollable: false})
-                        cy.selectByLabel(`${category}`, {force: true})
+                        cy.get('.v-overlay-container', {timeout: 5000}).getByLabel(`${category}`).click({force: true})
                     })
 
                 }
