@@ -4,7 +4,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { buildFilterQuery } = require('./utils');
 const { FundingAgreementMappings } = require('../util/mapping/Mappings');
-const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 
 async function getFundingAgreements(req, res) {
   try {
@@ -43,12 +43,9 @@ async function getFundingAgreementPDF(req, res) {
 
 async function updateFundingAgreement(req, res) {
   try {
-    const payload = {
-      ccof_declaration: req.body.consentCheck,
-      'ccof_sp_primary_contact_name@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
-      ccof_date_signed_sp: req.body.signedOn,
-    };
-    const response = await patchOperationWithObjectId('ccof_funding_agreements', req.params.fundingAgreementId, payload);
+    const fundingAgreementPayload = new MappableObjectForBack(req.body, FundingAgreementMappings).toJSON();
+    fundingAgreementPayload['ccof_sp_primary_contact_name@odata.bind'] = `/contacts(ccof_userid='${getUserGuid(req)}')`;
+    const response = await patchOperationWithObjectId('ccof_funding_agreements', req.params.fundingAgreementId, fundingAgreementPayload);
     return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

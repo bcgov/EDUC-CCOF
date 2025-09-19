@@ -559,6 +559,7 @@ const FundingAgreementMappings = [
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: 'ccof_declaration', front: 'consentCheck' },
   { back: 'ccof_date_signed_sp', front: 'signedOn' },
+  { back: 'ccof_fa_signed_by', front: 'signedBy' },
 ];
 
 const DocumentsMappings = [
