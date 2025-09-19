@@ -18,7 +18,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validateUserHasPermissions(PERMISSIONS.UPDATE_SELF),
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getActiveContactsInOrganization(req, res);
@@ -33,7 +33,7 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validateUserHasPermissions(PERMISSIONS.DELETE_USERS),
-  [param('contactId', 'URL param: [contactId] is required').not().isEmpty()],
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return deactivateContact(req, res);
