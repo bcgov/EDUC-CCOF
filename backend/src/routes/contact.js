@@ -4,7 +4,6 @@ const router = express.Router();
 const auth = require('../components/auth');
 const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
 const { validateUserHasPermissions, validateUserCanEditOther } = require('../middlewares/validatePermission');
-const validateUser = require('../middlewares/validateUser');
 const isValidBackendToken = auth.isValidBackendToken();
 const { PERMISSIONS } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
