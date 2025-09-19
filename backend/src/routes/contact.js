@@ -4,6 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
 const validatePermission = require('../middlewares/validatePermission');
+const validateUser = require('../middlewares/validateUser');
 const isValidBackendToken = auth.isValidBackendToken();
 const { PERMISSIONS } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
@@ -66,6 +67,7 @@ router.patch(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
+  validateUser(),
   [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();

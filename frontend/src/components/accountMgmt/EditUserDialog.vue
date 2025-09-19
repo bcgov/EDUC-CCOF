@@ -181,7 +181,15 @@ export default {
   },
   methods: {
     async loadEditUserData() {
-      this.editedUser = { ...this.user };
+      const { contactId, firstName, lastName, bceid, email, telephone } = this.user;
+      this.editedUser = {
+        contactId,
+        firstName,
+        lastName,
+        bceid,
+        email,
+        telephone,
+      };
       this.selectedRole = this.user.role?.roleNumber ?? null;
       this.selectedFacilities = this.user.facilities?.map((f) => f.facilityId) || [];
       if (this.isFacilityAdminSelected) {

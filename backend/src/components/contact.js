@@ -135,18 +135,18 @@ async function deactivateRawContactFacilities(contactId) {
 
 async function updateContact(req, res) {
   try {
-    const isSelfEdit = req.user.contactId === req.params.contactId;
     const payload = new MappableObjectForBack(req.body, ContactMappings).toJSON();
-    if (!isSelfEdit && req.body.role?.roleId) {
+    if (req.body.role?.roleId) {
       payload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
     await patchOperationWithObjectId('contacts', req.params.contactId, payload);
 
-    if (!isSelfEdit && 'facilities' in req.body) {
-      await deactivateRawContactFacilities(req.params.contactId);
+    if (req.body.facilities) {
+      const pendingUpdates = [deactivateRawContactFacilities(req.params.contactId)];
       if (req.body.facilities.length > 0) {
-        await createRawContactFacilities(req.params.contactId, req.body.facilities);
+        pendingUpdates.push(createRawContactFacilities(req.params.contactId, req.body.facilities));
       }
+      await Promise.all(pendingUpdates);
     }
     return res.status(HttpStatus.OK).json();
   } catch (e) {
