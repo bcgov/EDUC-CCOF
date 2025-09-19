@@ -150,8 +150,10 @@ const CHANGE_REQUEST_TYPES = Object.freeze({
 });
 
 const ROLES = Object.freeze({
-  FACILITY_ADMINISTRATOR: '11',
-  ORG_ADMINISTRATOR: '10',
+  ORG_ADMIN: '10',
+  FAC_ADMIN_ADVANCED: '11',
+  FAC_ADMIN_BASIC: '13',
+  READ_ONLY: '12',
 });
 
 const PERMISSIONS = Object.freeze({
