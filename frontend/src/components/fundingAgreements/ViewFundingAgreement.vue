@@ -79,26 +79,27 @@
             </template>
           </div>
         </v-col>
-
-        <v-checkbox
-          v-model="fundingAgreement.consentCheck"
-          class="ml-3"
-          color="primary"
-          :disabled="isReadOnly || processing"
-          label="I agree, consent and certify"
-        />
-        <v-text-field
-          v-model.trim="fundingAgreement.signedBy"
-          variant="outlined"
-          :disabled="isReadOnly || processing"
-          label="Your Organization's Authorized Signing Authority"
-        />
+        <template v-if="shouldShowInputs">
+          <v-checkbox
+            v-model="fundingAgreement.consentCheck"
+            class="ml-3"
+            color="primary"
+            :disabled="isReadOnly || processing"
+            label="I agree, consent and certify"
+          />
+          <v-text-field
+            v-model.trim="fundingAgreement.signedBy"
+            variant="outlined"
+            :disabled="isReadOnly || processing"
+            label="Your Organization's Authorized Signing Authority"
+          />
+        </template>
         <v-row class="mt-4" align="center" dense>
           <v-col cols="auto">
             <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement"> Back </AppButton>
           </v-col>
 
-          <v-col cols="auto" class="ml-4">
+          <v-col v-if="shouldShowInputs" cols="auto" class="ml-4">
             <AppButton color="primary" :disabled="isSubmitDisabled" :loading="processing" @click="submit">
               Submit
             </AppButton>
@@ -137,9 +138,11 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const READ_ONLY_STATUSES = [
   FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
@@ -158,7 +161,7 @@ export default {
     AppDialog,
     AppPDFViewer,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       fundingAgreement: null,
@@ -183,6 +186,11 @@ export default {
       return (
         this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !this.fundingAgreement?.signedBy
       );
+    },
+    shouldShowInputs() {
+      const status = this.fundingAgreement?.externalStatus;
+      const hasPerm = this.hasPermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT);
+      return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
   },
   async created() {
