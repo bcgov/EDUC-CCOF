@@ -122,12 +122,38 @@ async function createRawContactFacilities(contactId, facilityIds) {
   }
 }
 
-async function deactivateRawContactFacilities(contactId) {
+async function syncContactFacilities(contactId, incomingFacilityIds = []) {
   try {
-    const response = await getOperation(`ccof_bceid_organizations?$filter=_ccof_businessbceid_value eq ${contactId}`);
-    for (const record of response?.value ?? []) {
-      await patchOperationWithObjectId('ccof_bceid_organizations', record.ccof_bceid_organizationid, { statecode: 1 });
+    const response = await getOperation(`ccof_bceid_organizations?$select=ccof_bceid_organizationid,_ccof_facility_value,statecode&$filter=_ccof_businessbceid_value eq ${contactId}`);
+
+    const existingLinks = response?.value ?? [];
+    const existingFacilityMap = new Map(existingLinks.map((item) => [item._ccof_facility_value, { id: item.ccof_bceid_organizationid, statecode: item.statecode }]));
+
+    const toActivate = [];
+    const toDeactivate = [];
+    const toCreate = [];
+
+    for (const facilityId of incomingFacilityIds) {
+      const existing = existingFacilityMap.get(facilityId);
+      if (existing) {
+        if (existing.statecode === 1) toActivate.push(existing.id);
+      } else {
+        toCreate.push(facilityId);
+      }
     }
+    for (const [facilityId, { id }] of existingFacilityMap.entries()) {
+      if (!incomingFacilityIds.includes(facilityId)) {
+        toDeactivate.push(id);
+      }
+    }
+    const updates = [
+      ...toDeactivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 1 })),
+      ...toActivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 0 })),
+    ];
+    if (toCreate.length > 0) {
+      updates.push(createRawContactFacilities(contactId, toCreate));
+    }
+    await Promise.all(updates);
   } catch (e) {
     log.error(e);
   }
@@ -142,11 +168,7 @@ async function updateContact(req, res) {
     await patchOperationWithObjectId('contacts', req.params.contactId, payload);
 
     if (req.body.facilities) {
-      const pendingUpdates = [deactivateRawContactFacilities(req.params.contactId)];
-      if (req.body.facilities.length > 0) {
-        pendingUpdates.push(createRawContactFacilities(req.params.contactId, req.body.facilities));
-      }
-      await Promise.all(pendingUpdates);
+      await syncContactFacilities(req.params.contactId, req.body.facilities);
     }
     return res.status(HttpStatus.OK).json();
   } catch (e) {
@@ -162,5 +184,4 @@ module.exports = {
   createContact,
   createRawContactFacilities,
   updateContact,
-  deactivateRawContactFacilities,
 };
