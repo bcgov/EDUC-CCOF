@@ -98,7 +98,7 @@ async function createContact(req, res) {
 
     const createdContact = await postOperation('contacts', contactPayload);
     if (req.body.facilities && req.body.facilities.length > 0) {
-      await createRawContactFacilities(createdContact, req.body.facilities);
+      await createRawContactFacility(createdContact, req.body.facilities);
     }
     return res.status(HttpStatus.CREATED).json(createdContact);
   } catch (e) {
@@ -107,16 +107,13 @@ async function createContact(req, res) {
   }
 }
 
-async function createRawContactFacilities(contactId, facilityIds) {
+async function createRawContactFacility(contactId, facilityId) {
   try {
-    const pendingUpdates = facilityIds.map((id) => {
-      const records = {
-        'ccof_facility@odata.bind': `/accounts(${id})`,
-        'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
-      };
-      return postOperation('ccof_bceid_organizations', records);
-    });
-    await Promise.all(pendingUpdates);
+    const records = {
+      'ccof_facility@odata.bind': `/accounts(${facilityId})`,
+      'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
+    };
+    return postOperation('ccof_bceid_organizations', records);
   } catch (e) {
     log.error(e);
   }
@@ -125,7 +122,6 @@ async function createRawContactFacilities(contactId, facilityIds) {
 async function syncContactFacilities(contactId, incomingFacilityIds = []) {
   try {
     const response = await getOperation(`ccof_bceid_organizations?$select=ccof_bceid_organizationid,_ccof_facility_value,statecode&$filter=_ccof_businessbceid_value eq ${contactId}`);
-
     const existingLinks = response?.value ?? [];
     const existingFacilityMap = new Map(existingLinks.map((item) => [item._ccof_facility_value, { id: item.ccof_bceid_organizationid, statecode: item.statecode }]));
 
@@ -149,10 +145,9 @@ async function syncContactFacilities(contactId, incomingFacilityIds = []) {
     const updates = [
       ...toDeactivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 1 })),
       ...toActivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 0 })),
+      ...toCreate.map((id) => createRawContactFacility(contactId, id)),
     ];
-    if (toCreate.length > 0) {
-      updates.push(createRawContactFacilities(contactId, toCreate));
-    }
+
     await Promise.all(updates);
   } catch (e) {
     log.error(e);
@@ -182,6 +177,6 @@ module.exports = {
   deactivateContact,
   getRawContactFacilities,
   createContact,
-  createRawContactFacilities,
+  createRawContactFacility,
   updateContact,
 };
