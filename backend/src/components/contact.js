@@ -97,7 +97,7 @@ async function createContact(req, res) {
     }
 
     const createdContact = await postOperation('contacts', contactPayload);
-    if (req.body.facilities && req.body.facilities.length > 0) {
+    if (!isEmpty(req.body.facilities)) {
       await createRawContactFacility(createdContact, req.body.facilities);
     }
     return res.status(HttpStatus.CREATED).json(createdContact);
@@ -108,15 +108,11 @@ async function createContact(req, res) {
 }
 
 async function createRawContactFacility(contactId, facilityId) {
-  try {
-    const records = {
-      'ccof_facility@odata.bind': `/accounts(${facilityId})`,
-      'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
-    };
-    return postOperation('ccof_bceid_organizations', records);
-  } catch (e) {
-    log.error(e);
-  }
+  const records = {
+    'ccof_facility@odata.bind': `/accounts(${facilityId})`,
+    'ccof_BusinessBCeID@odata.bind': `/contacts(${contactId})`,
+  };
+  return postOperation('ccof_bceid_organizations', records);
 }
 
 async function syncContactFacilities(contactId, incomingFacilityIds = []) {
