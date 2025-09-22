@@ -1109,12 +1109,18 @@ export default {
     },
 
     getTotalEnrolledClass(field) {
-      return { 'background-green': this.enrolmentReport?.[field] !== this.previousEnrolmentReport?.[field] };
+      return {
+        'background-green':
+          this.enrolmentReport?.isAdjustment && this.enrolmentReport?.[field] !== this.previousEnrolmentReport?.[field],
+      };
     },
 
     getDailyEnrolmentClass(dailyEnrolment, category) {
       const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
-      return { 'background-green': dailyEnrolment?.[category] !== previousDailyEnrolment?.[category] };
+      return {
+        'background-green':
+          this.enrolmentReport?.isAdjustment && dailyEnrolment?.[category] !== previousDailyEnrolment?.[category],
+      };
     },
 
     buildCalculationFieldName(prefix, category) {
