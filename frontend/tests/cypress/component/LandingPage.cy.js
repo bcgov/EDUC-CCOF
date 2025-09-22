@@ -8,7 +8,6 @@ import {
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
-import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const organizationAccountNumber = 'ORG-1234';
 const facilityAccountNumber = 'FAC-45678';
@@ -308,8 +307,6 @@ describe('<LandingPage />', () => {
     cy.contains('View submission history');
   });
 
-  // TODO: Add tests for `Renew my Funding Agreement` here
-
   it('should disable `Requst a change` card ', () => {
     mountWithPinia({
       application: {
@@ -403,58 +400,6 @@ describe('<LandingPage />', () => {
     checkButtonAndNavigate('Submit a report', PATHS.ROOT.ENROLMENT_REPORTS);
   });
 
-  // TODO: REQUIRES FIXING ISSUE with permission state
-  // it.only('should display `Manage Organization and Facilities` card (disabled)', () => {
-  // mountWithPinia({
-  //   auth: {
-  //     isAuthenticated: true,
-  //     userInfo: {
-  //       serverTime: new Date(),
-  //     },
-  //     permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
-  //   },
-  //     app: {
-  //       role: {
-  //         permissions: { permissionNumber: '1111' },
-  //       },
-  //     },
-  //   });
-  //   cy.contains('p', 'Manage Organization and Facilitie');
-  //   cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
-  //     'have.css',
-  //     'pointer-events',
-  //     'none',
-  //   );
-  // });
-
-  // it.only('should display `Manage Organization and Facilities` card (enabled)', () => {
-  //   mountWithPinia({
-  //     auth: {
-  //       isAuthenticated: true,
-  //       userInfo: {ac
-  //         serverTime: new Date(),
-  //       },
-  //       permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
-  //     },
-  //     app: {
-  //       role: {
-  //         permissions: { permissionNumber: '1111' },
-  //       },
-  //     },
-  //     organization: {
-  //       organizationAccountNumber: '12345',
-  //     },
-  //   });
-  //   cy.contains('p', 'Manage Organization and Facilitie');
-  //   cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
-  //     'not.have.css',
-  //     'pointer-events',
-  //     'none',
-  //   );
-  //   cy.contains('button', 'Manage Organization and Facilities').click();
-  //   cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ORG_FACILITIES);
-  // });
-
   it('should disable `Manage User` card when no organization account number', () => {
     mountWithPinia({
       organization: {
@@ -524,31 +469,6 @@ describe('<LandingPage />', () => {
     cy.contains('button', 'Organization Closures').should('not.exist');
   });
 
-  // it('should render `Organization Closures` button', () => {
-  //   const programYearId = '12345';
-  //   mountWithPinia({
-  //     application: {
-  //       programYearId,
-  //       applicationMap: new Map([[programYearId, { facilityList: [{ ccfriStatus: 'APPROVED' }] }]]),
-  //     },
-  //     navBar: {
-  //       navBarList: ['a'],
-  //     },
-  //     app: {
-  //       programYearList: {
-  //         list: [
-  //           {
-  //             programYearId: '101',
-  //             order: 5,
-  //           },
-  //         ],
-  //       },
-  //     },
-  //   });
-  //   cy.contains('button', 'Organization Closures').click();
-  //   cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.CLOSURES}/${programYearId}`);
-  // });
-
   it('should render search box for facility filter', () => {
     mountWithPinia({
       navBar,
@@ -560,19 +480,6 @@ describe('<LandingPage />', () => {
 
     cy.contains('label', 'Filter by Facility Name').should('not.exist');
   });
-
-  // TODO: Test the search box rendering
-  // it.only('should render search box for facility filter', () => {
-  //   mountWithPinia({
-  //     navBar: {
-  //       navBarList: ['a'],
-  //     },
-  //     application: {
-  //       programYearId: '12345',
-  //       applicationMap: new Map([[programYearId, { facilityList: [{ ccfriStatus: 'APPROVED' }] }]]),
-  //     },
-  //   });
-  // });
 
   it('should render slider and display program year name sliced within slider', () => {
     const testName1 = '2022/2023 CCOF Program';
@@ -675,8 +582,6 @@ describe('<LandingPage />', () => {
       cy.contains('p', `Child Care Fee Reduction Initiative (CCFRI) Status: ${ccfriStatus}`);
     });
 
-    // TODO: Do other condition for the above test (when else)
-
     it('should return `OPTED OUT` (ECE-WE) Status when opt-out', () => {
       mountWithPinia({
         navBar,
@@ -727,36 +632,12 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: new Map([
-            [
-              programYearId,
-
-              {
-                applicationId: '1',
-                ccofProgramYearName: `$aaa!!!`,
-                ccofProgramYearId: programYearId,
-                applicationStatus: 'SUBMITTED',
-                facilityList: [
-                  {
-                    facilityId: '1',
-                    facilityAccountNumber,
-                    facilityName,
-                    licenseNumber,
-                    ccfriApplicationId,
-                    unlockNmf: true,
-                  },
-                ],
-              },
-            ],
-          ]),
+          applicationMap: createApplicationMap({ unlockNmf: true }, { applicationStatus: 'SUBMITTED' }),
         },
         ...createAppStore(),
       });
-      // cy.contains('button', `Update your PCF`).click();
-      // cy.get('@routerPush').should(
-      //   'have.been.calledWith',
-      //   pcfUrlGuid(PATHS.CCFRI_NMF, programYearId, ccfriApplicationId),
-      // );
+
+      checkButtonAndNavigate(`Update your PCF`, pcfUrlGuid(PATHS.CCFRI_NMF, programYearId, ccfriApplicationId));
     });
 
     it('should render `Update your PCF` button when isCCFRIUnlock and navigate to current fees', () => {
