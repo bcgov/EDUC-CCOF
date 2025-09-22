@@ -29,7 +29,7 @@ const createAuthStore = (userInfo = {}, authExtras = {}) => ({
   },
 });
 
-function mountWithPinia(initialState = {}, dateOverride = {}) {
+function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
     cy.mount(LandingPage, {
