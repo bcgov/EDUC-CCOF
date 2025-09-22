@@ -1,5 +1,6 @@
 import LandingPage from '@/components/LandingPage.vue';
 import vuetify from '@/plugins/vuetify';
+import { useAuthStore } from '@/store/auth';
 import {
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
@@ -8,6 +9,7 @@ import {
   pcfUrl,
   pcfUrlGuid,
 } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const organizationAccountNumber = 'ORG-1234';
 const facilityAccountNumber = 'FAC-45678';
@@ -307,6 +309,69 @@ describe('<LandingPage />', () => {
     cy.contains('View submission history');
   });
 
+  context('Renew my Funding Agreement Card', () => {
+    it('should disable `Renew my Funding Agreement` card', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'DRAFT',
+        },
+      });
+      cy.contains('p', 'Renew my Funding Agreement').should('have.css', 'pointer-events', 'none');
+      cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
+        .should('exist')
+        .should('have.css', 'pointer-events', 'none');
+    });
+
+    it('should enable `Renew my Funding Agreement` card', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: 'DRAFT',
+        },
+      });
+      cy.contains('p', 'Renew my Funding Agreement').should('not.have.css', 'pointer-events', 'none');
+      cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
+        .should('exist')
+        .should('not.have.css', 'pointer-events', 'none');
+    });
+
+    it('should render `We will contact you` message', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: '',
+        },
+        ...createAuthStore(),
+      });
+      cy.contains('span', 'We will contact you if we require further information.');
+    });
+
+    it('should render `Continue Renewal` button', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: 'DRAFT',
+          programYearId,
+        },
+      });
+
+      checkButtonAndNavigate('Continue Renewal', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
+    });
+
+    it('should render `Update Your PCF` button', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: 'SUBMITTED',
+          unlockDeclaration: true,
+        },
+        ...createAuthStore(),
+      });
+      cy.contains('button', 'Update your PCF');
+    });
+  });
+
   it('should disable `Requst a change` card', () => {
     mountWithPinia({
       application: {
@@ -398,6 +463,65 @@ describe('<LandingPage />', () => {
     );
 
     checkButtonAndNavigate('Submit a report', PATHS.ROOT.ENROLMENT_REPORTS);
+  });
+
+  it('should display `Manage Organization and Facilities` card (disabled)', () => {
+    mountWithPinia({
+      auth: {
+        isAuthenticated: true,
+        userInfo: {
+          serverTime: new Date(),
+        },
+      },
+      app: {
+        role: {
+          permissions: { permissionNumber: '1111' },
+        },
+      },
+    });
+
+    cy.then(() => {
+      const authStore = useAuthStore();
+      authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+    });
+    cy.contains('p', 'Manage Organization and Facilitie');
+    cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+      'have.css',
+      'pointer-events',
+      'none',
+    );
+  });
+
+  it('should display `Manage Organization and Facilities` card (enabled)', () => {
+    mountWithPinia({
+      auth: {
+        isAuthenticated: true,
+        userInfo: {
+          serverTime: new Date(),
+        },
+      },
+      app: {
+        role: {
+          permissions: { permissionNumber: '1111' },
+        },
+      },
+      organization: {
+        organizationAccountNumber: '12345',
+      },
+    });
+
+    cy.then(() => {
+      const authStore = useAuthStore();
+      authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+    });
+    cy.contains('p', 'Manage Organization and Facilitie');
+    cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+      'not.have.css',
+      'pointer-events',
+      'none',
+    );
+    cy.contains('button', 'Manage Organization and Facilities').click();
+    cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ORG_FACILITIES);
   });
 
   it('should disable `Manage User` card when no organization account number', () => {
@@ -504,7 +628,7 @@ describe('<LandingPage />', () => {
     cy.contains(testName3);
   });
 
-  context('facility tests', () => {
+  context('Facility tests', () => {
     const createAppStore = () => ({
       app: {
         programYearList: {
@@ -587,26 +711,7 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: new Map([
-            [
-              programYearId,
-              {
-                applicationId: '1',
-                ccofProgramYearName: `$aaa!!!`,
-                ccofProgramYearId: programYearId,
-                facilityList: [
-                  {
-                    facilityId: '1',
-                    facilityAccountNumber,
-                    facilityName,
-                    licenseNumber,
-                    ccfriApplicationId,
-                    eceweOptInStatus: 0,
-                  },
-                ],
-              },
-            ],
-          ]),
+          applicationMap: createApplicationMap({ eceweOptInStatus: 0 }),
         },
         ...createAppStore(),
       });
