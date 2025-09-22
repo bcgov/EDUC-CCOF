@@ -1,6 +1,8 @@
 import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
 import vuetify from '@/plugins/vuetify';
+import { useAuthStore } from '@/store/auth';
 import { ApiRoutes, PATHS } from '@/utils/constants';
+import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
 const organizationId = '1234';
 const userId = '123';
@@ -184,7 +186,20 @@ describe('<ManageUsers />', () => {
 
   context('User Interaction Tests', () => {
     it('should render `Add User` button and open add user dialog on click', () => {
-      mountWithPinia({ organization: { organizationId } });
+      mountWithPinia({
+        organization: { organizationId },
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+        },
+      });
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.ADD_USERS];
+      });
+
       cy.contains('button', 'Add User').click();
       cy.contains('p', 'What type of user are you adding?');
     });
@@ -205,7 +220,12 @@ describe('<ManageUsers />', () => {
 
       mountWithPinia({
         organization: { organizationId, loadedModel: { primaryContactId: '2' } },
-        auth: { userInfo: { contactId: userId } },
+        auth: { isAuthenticated: true, userInfo: { contactId: userId } },
+      });
+
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.DELETE_USERS];
       });
 
       cy.wait('@getContacts');
