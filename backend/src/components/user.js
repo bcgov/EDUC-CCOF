@@ -106,7 +106,7 @@ async function getUserInfo(req, res) {
   // 2. An empty ({}) userResponse means no Organization and/or Applications
   if (isEmpty(userResponse)) {
     const roles = await getRoles();
-    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMINISTRATOR);
+    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMIN);
     const {
       data: { roleId, roleNumber },
     } = orgAdminRole;
@@ -132,7 +132,7 @@ async function getUserInfo(req, res) {
   }
 
   // Get facilities for Facility Admin users
-  if (user.role?.ofm_portal_role_number === ROLES.FACILITY_ADMINISTRATOR) {
+  if (user.role?.ofm_portal_role_number === ROLES.FAC_ADMIN_ADVANCED) {
     const facilities = await getRawContactFacilities(user.contactId);
     user.facilities = facilities;
   }
