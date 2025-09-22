@@ -233,13 +233,24 @@
       <v-container width="80%">
         <v-row>
           <v-col md="6">
-            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
+            <AppButton
+              :primary="false"
+              :loading="isLoading"
+              :disabled="isLoading || !isNewClosureRequest"
+              @click="closeDialog"
+            >
+              Cancel
+            </AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton v-if="isRemoveClosureRequest" :disabled="disableSubmit" @click="removeClosure"
+            <AppButton
+              v-if="isRemoveClosureRequest"
+              :loading="isLoading"
+              :disabled="disableSubmit"
+              @click="removeClosure"
               >Remove Closure</AppButton
             >
-            <AppButton v-else :disabled="disableSubmit" @click="submit">Submit</AppButton>
+            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
       </v-container>
