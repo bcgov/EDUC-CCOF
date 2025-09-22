@@ -226,7 +226,7 @@ export default {
           return a.isPrimaryContact ? -1 : 1;
         }
 
-        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN_ADVANCED, 3.FAC_ADMIN_BASIC, 4.READONLY, 5.Concats Only)
+        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN_ADVANCED, 3.FAC_ADMIN_BASIC, 4.READONLY, 5.Contact Only/No Role Assigned)
         const priorityA = rolePriority[a.role.roleNumber] ?? defaultPriority;
         const priorityB = rolePriority[b.role.roleNumber] ?? defaultPriority;
 

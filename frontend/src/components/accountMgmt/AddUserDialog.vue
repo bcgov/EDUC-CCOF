@@ -318,6 +318,7 @@ export default {
             this.setFailureAlert('This BCeID already exists in the system');
             return;
           }
+          this.setFailureAlert('Failed to Add User');
           console.error(e);
         } finally {
           this.isProcessing = false;
