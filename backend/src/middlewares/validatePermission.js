@@ -20,16 +20,15 @@ module.exports = function (...requiredPermissions) {
     const userRole = req.session?.passport?.user?.role;
 
     if (!userRole) {
-      return res.sendStatus(403);
+      return res.sendStatus(HttpStatus.FORBIDDEN);
     }
 
     const roles = await getRoles();
     const matchingRole = roles.find((role) => role.data.roleNumber === userRole.roleNumber);
-
     const permissions = matchingRole ? matchingRole.data.permissions?.map((p) => p.permissionNumber) : [];
 
     const valid = requiredPermissions?.some((p) => permissions.includes(p));
 
-    valid ? next() : res.sendStatus(403);
+    valid ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
   };
 };

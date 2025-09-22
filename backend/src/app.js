@@ -178,7 +178,7 @@ async function populateUserInfo(profile) {
     } else {
       // If the user is not found in Dynamics at all, assign the default Organization Admin role
       profile.role = {
-        roleNumber: ROLES.ORG_ADMINISTRATOR,
+        roleNumber: ROLES.ORG_ADMIN,
       };
     }
   } else if (username.idp === config.get('oidc:idpHintIdir')) {
