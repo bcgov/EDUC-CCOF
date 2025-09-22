@@ -534,6 +534,17 @@ describe('<LandingPage />', () => {
         organization: {
           organizationAccountNumber: null,
         },
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+        },
+      });
+
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS];
       });
 
       cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
@@ -544,8 +555,18 @@ describe('<LandingPage />', () => {
         organization: {
           organizationAccountNumber,
         },
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+        },
       });
 
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS];
+      });
       checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
     });
   });
