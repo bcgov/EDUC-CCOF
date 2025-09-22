@@ -3,7 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
-const { validateUserHasPermissions, validateUserCanEditOther } = require('../middlewares/validatePermission');
+const validatePermission = require('../middlewares/validatePermission');
+const validateUpdateContact = require('../middlewares/validateUpdateContact');
 const isValidBackendToken = auth.isValidBackendToken();
 const { PERMISSIONS } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
@@ -17,7 +18,8 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validateUserHasPermissions(PERMISSIONS.UPDATE_SELF),
+  // TODO (weskubo-cgi) This would be better as a custom permission PERMISSIONS.VIEW_USERS
+  validatePermission(PERMISSIONS.UPDATE_SELF),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
@@ -32,7 +34,7 @@ router.delete(
   '/:contactId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validateUserHasPermissions(PERMISSIONS.DELETE_USERS),
+  validatePermission(PERMISSIONS.DELETE_USERS),
   [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
@@ -53,7 +55,7 @@ const contactValidators = [
 /**
  * Add a contact.
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validateUserHasPermissions(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS + 's'), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
 });
@@ -65,8 +67,8 @@ router.patch(
   '/:contactId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validateUserHasPermissions(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
-  validateUserCanEditOther,
+  validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
+  validateUpdateContact(),
   [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
