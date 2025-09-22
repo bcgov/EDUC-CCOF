@@ -8,7 +8,7 @@ const { getRoles } = require('../components/lookup');
 const log = require('./logger');
 
 async function getActiveContactsByOrgID(orgId) {
-  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ofm_portal_role_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
+  const operation = `contacts?$select=contactid,ccof_username,firstname,lastname,telephone1,emailaddress1,_ccof_ccof_portal_id_value&$filter=(_parentcustomerid_value eq ${orgId} and statecode eq 0)`;
   return getOperation(operation);
 }
 
@@ -20,13 +20,13 @@ async function getActiveContactsInOrganization(req, res) {
   try {
     const contactsData = await getActiveContactsByOrgID(req.params.organizationId);
     const contactsRaw = contactsData.value.map((contact) => new MappableObjectForFront(contact, ContactMappings)).map(setContactType);
-
-    const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, data.roleNumber]));
+    const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, { roleNumber: data.roleNumber, roleName: data.roleName }]));
     const contacts = contactsRaw.map(({ roleId, ...rest }) => ({
       ...rest,
       role: {
         roleId,
-        roleNumber: roleMap.get(roleId) ?? null,
+        roleNumber: roleMap.get(roleId)?.roleNumber ?? null,
+        roleName: roleMap.get(roleId)?.roleName ?? null,
       },
     }));
     return res.status(HttpStatus.OK).json(contacts);
@@ -86,7 +86,7 @@ async function createContact(req, res) {
       contactPayload['parentcustomerid_account@odata.bind'] = `/accounts(${req.body.organizationId})`;
     }
     if (req.body.role?.roleId) {
-      contactPayload['ofm_portal_role_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
+      contactPayload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${req.body.role.roleId})`;
     }
 
     const createdContact = await postOperation('contacts', contactPayload);

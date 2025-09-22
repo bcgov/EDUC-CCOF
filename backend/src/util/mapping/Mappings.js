@@ -63,6 +63,7 @@ const FacilityMappings = [
   { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
   { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
   { back: 'ccof_healthauthority', front: 'healthAuthority' },
+  { back: 'statuscode', front: 'statusCode' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -558,6 +559,7 @@ const FundingAgreementMappings = [
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: 'ccof_declaration', front: 'consentCheck' },
   { back: 'ccof_date_signed_sp', front: 'signedOn' },
+  { back: 'ccof_fa_signed_by', front: 'signedBy' },
 ];
 
 const DocumentsMappings = [
@@ -576,7 +578,7 @@ const ContactMappings = [
   { back: 'firstname', front: 'firstName' },
   { back: 'lastname', front: 'lastName' },
   { back: 'telephone1', front: 'telephone' },
-  { back: '_ofm_portal_role_id_value', front: 'roleId' },
+  { back: '_ccof_ccof_portal_id_value', front: 'roleId' },
 ];
 
 const ApplicationDocumentsMappings = [

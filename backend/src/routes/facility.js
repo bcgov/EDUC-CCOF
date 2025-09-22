@@ -67,16 +67,10 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
 /**
  * Update an existing Facility
  */
-router.put(
-  '/:facilityId',
-  passport.authenticate('jwt', { session: false }),
-  isValidBackendToken,
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty(), checkSchema(facilitySchema)],
-  (req, res) => {
-    validationResult(req).throw();
-    return updateFacility(req, res);
-  },
-);
+router.put('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
+  validationResult(req).throw();
+  return updateFacility(req, res);
+});
 
 router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
