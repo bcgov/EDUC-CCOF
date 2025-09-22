@@ -372,64 +372,66 @@ describe('<LandingPage />', () => {
     });
   });
 
-  it('should disable `Requst a change` card', () => {
-    mountWithPinia({
-      application: {
-        applicationType: '',
-      },
-      reportChanges: {
-        changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
-      },
-      ...createAuthStore(),
+  context('Request a Change Card', () => {
+    it('should disable `Requst a change` card', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+        },
+        reportChanges: {
+          changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
+        },
+        ...createAuthStore(),
+      });
+
+      cy.contains('p', 'Request a change').should('exist').should('have.css', 'pointer-events', 'none');
     });
 
-    cy.contains('p', 'Request a change').should('exist').should('have.css', 'pointer-events', 'none');
-  });
-
-  it('should enable `Requst a change` card when application type is renew and organizationAccountNumber exists', () => {
-    mountWithPinia({
-      application: {
-        applicationType: 'RENEW',
-      },
-      organization: {
-        organizationAccountNumber,
-      },
-      ...createAuthStore(),
-    });
-    cy.contains('p', 'Request a change').should('not.have.css', 'pointer-events', 'none');
-  });
-
-  it('should enable `Request a change` button and navigate to request history on click', () => {
-    const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
-    mountWithPinia({
-      application: {
-        applicationType: 'RENEW',
-      },
-      organization: {
-        organizationAccountNumber,
-      },
-      ...createAuthStore(),
+    it('should enable `Requst a change` card when application type is renew and organizationAccountNumber exists', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+        },
+        organization: {
+          organizationAccountNumber,
+        },
+        ...createAuthStore(),
+      });
+      cy.contains('p', 'Request a change').should('not.have.css', 'pointer-events', 'none');
     });
 
-    checkButtonAndNavigate('Request a change', expectedPath);
-  });
+    it('should enable `Request a change` button and navigate to request history on click', () => {
+      const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+        },
+        organization: {
+          organizationAccountNumber,
+        },
+        ...createAuthStore(),
+      });
 
-  it('should enable `Update change request` button and navigate to request history on click', () => {
-    const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
-    mountWithPinia({
-      application: {
-        applicationType: 'RENEW',
-      },
-      organization: {
-        organizationAccountNumber,
-      },
-      reportChanges: {
-        changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
-      },
-      ...createAuthStore(),
+      checkButtonAndNavigate('Request a change', expectedPath);
     });
 
-    checkButtonAndNavigate('Update change request', expectedPath);
+    it('should enable `Update change request` button and navigate to request history on click', () => {
+      const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+        },
+        organization: {
+          organizationAccountNumber,
+        },
+        reportChanges: {
+          changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
+        },
+        ...createAuthStore(),
+      });
+
+      checkButtonAndNavigate('Update change request', expectedPath);
+    });
   });
 
   it('should disable `Submit Enrolment Reports or monthly ECE reports` card', () => {
@@ -465,83 +467,87 @@ describe('<LandingPage />', () => {
     checkButtonAndNavigate('Submit a report', PATHS.ROOT.ENROLMENT_REPORTS);
   });
 
-  it('should display `Manage Organization and Facilities` card (disabled)', () => {
-    mountWithPinia({
-      auth: {
-        isAuthenticated: true,
-        userInfo: {
-          serverTime: new Date(),
+  context('Manage Organization and Facilities card', () => {
+    it('should display `Manage Organization and Facilities` card (disabled)', () => {
+      mountWithPinia({
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
         },
-      },
-      app: {
-        role: {
-          permissions: { permissionNumber: '1111' },
+        app: {
+          role: {
+            permissions: { permissionNumber: '1111' },
+          },
         },
-      },
+      });
+
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+      });
+      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
     });
 
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+    it('should display `Manage Organization and Facilities` card (enabled)', () => {
+      mountWithPinia({
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+        },
+        app: {
+          role: {
+            permissions: { permissionNumber: '1111' },
+          },
+        },
+        organization: {
+          organizationAccountNumber: '12345',
+        },
+      });
+
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+      });
+      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+        'not.have.css',
+        'pointer-events',
+        'none',
+      );
+      cy.contains('button', 'Manage Organization and Facilities').click();
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ORG_FACILITIES);
     });
-    cy.contains('p', 'Manage Organization and Facilitie');
-    cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
-      'have.css',
-      'pointer-events',
-      'none',
-    );
   });
 
-  it('should display `Manage Organization and Facilities` card (enabled)', () => {
-    mountWithPinia({
-      auth: {
-        isAuthenticated: true,
-        userInfo: {
-          serverTime: new Date(),
+  context('Manage Users Card', () => {
+    it('should disable `Manage User` card when no organization account number', () => {
+      mountWithPinia({
+        organization: {
+          organizationAccountNumber: null,
         },
-      },
-      app: {
-        role: {
-          permissions: { permissionNumber: '1111' },
+      });
+
+      cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
+    });
+
+    it('should redirect when clicking `Manage User` button to maintain users page', () => {
+      mountWithPinia({
+        organization: {
+          organizationAccountNumber,
         },
-      },
-      organization: {
-        organizationAccountNumber: '12345',
-      },
+      });
+
+      checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
     });
-
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
-    });
-    cy.contains('p', 'Manage Organization and Facilitie');
-    cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
-      'not.have.css',
-      'pointer-events',
-      'none',
-    );
-    cy.contains('button', 'Manage Organization and Facilities').click();
-    cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ORG_FACILITIES);
-  });
-
-  it('should disable `Manage User` card when no organization account number', () => {
-    mountWithPinia({
-      organization: {
-        organizationAccountNumber: null,
-      },
-    });
-
-    cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
-  });
-
-  it('should redirect when clicking `Manage User` button to maintain users page', () => {
-    mountWithPinia({
-      organization: {
-        organizationAccountNumber,
-      },
-    });
-
-    checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
   });
 
   it('should display program year name for facility cards funding agreement`', () => {
@@ -593,7 +599,7 @@ describe('<LandingPage />', () => {
     cy.contains('button', 'Organization Closures').should('not.exist');
   });
 
-  it('should render search box for facility filter', () => {
+  it('should not render search box for facility filter', () => {
     mountWithPinia({
       navBar,
       application: {
@@ -603,6 +609,20 @@ describe('<LandingPage />', () => {
     });
 
     cy.contains('label', 'Filter by Facility Name').should('not.exist');
+  });
+
+  it('should render search box for facility filter', () => {
+    mountWithPinia({
+      navBar,
+      application: {
+        programYearId,
+        applicationMap: new Map([
+          [programYearId, { ccofProgramYearId: programYearId, facilityList: [{ a: 'a' }, { b: 'b' }, { c: 'c' }] }],
+        ]),
+      },
+    });
+
+    cy.contains('label', 'Filter by Facility Name');
   });
 
   it('should render slider and display program year name sliced within slider', () => {
@@ -628,7 +648,7 @@ describe('<LandingPage />', () => {
     cy.contains(testName3);
   });
 
-  context('Facility tests', () => {
+  context('Facility Card', () => {
     const createAppStore = () => ({
       app: {
         programYearList: {
