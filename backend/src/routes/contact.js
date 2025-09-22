@@ -2,8 +2,11 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
+const validatePermission = require('../middlewares/validatePermission');
+const validateUpdateContact = require('../middlewares/validateUpdateContact');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createContact, deactivateContact, getActiveContactsInOrganization } = require('../components/contact');
+const { PERMISSIONS } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -15,7 +18,9 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  // TODO (weskubo-cgi) This would be better as a custom permission PERMISSIONS.VIEW_USERS
+  validatePermission(PERMISSIONS.UPDATE_SELF),
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getActiveContactsInOrganization(req, res);
@@ -25,10 +30,17 @@ router.get(
 /**
  * Soft delete (deactivate) a contact.
  */
-router.delete('/:contactId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('contactId', 'URL param: [contactId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return deactivateContact(req, res);
-});
+router.delete(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.DELETE_USERS),
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return deactivateContact(req, res);
+  },
+);
 
 const contactValidators = [
   body('firstName').optional().trim(),
@@ -39,12 +51,29 @@ const contactValidators = [
   body('telephone').trim(),
   body('portalRole').optional().trim(),
 ];
+
 /**
  * Add a contact.
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, contactValidators, (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
 });
+
+/**
+ * Update an existing Contact using contactId
+ */
+router.patch(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
+  validateUpdateContact(),
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateContact(req, res);
+  },
+);
 
 module.exports = router;
