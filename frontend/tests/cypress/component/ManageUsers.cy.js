@@ -42,20 +42,23 @@ function mockApiResponses(overrides = {}) {
     },
   };
 
-  Object.keys(defaultResponses).forEach((key) => {
-    const { method, url, response } = { ...defaultResponses[key], ...overrides[key] };
+  for (const key of Object.keys(defaultResponses)) {
+    const { method, url, response } = {
+      ...defaultResponses[key],
+      ...overrides[key],
+    };
     cy.intercept(method, url, { statusCode: 200, body: response }).as(key);
-  });
+  }
 }
 
 describe('<ManageUsers />', () => {
   beforeEach(() => {
-    window.localStorage.setItem('jwtToken', 'mocked-jwt-token');
+    globalThis.localStorage.setItem('jwtToken', 'mocked-jwt-token');
     mockApiResponses();
   });
 
   afterEach(() => {
-    window.localStorage.removeItem('jwtToken');
+    globalThis.localStorage.removeItem('jwtToken');
   });
 
   context('Component Rendering Tests', () => {
