@@ -55,7 +55,7 @@ const contactValidators = [
 /**
  * Add a contact.
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS + 's'), contactValidators, (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
 });
