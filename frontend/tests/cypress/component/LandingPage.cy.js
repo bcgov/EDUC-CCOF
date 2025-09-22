@@ -29,29 +29,29 @@ const createAuthStore = (userInfo = {}, authExtras = {}) => ({
   },
 });
 
-describe('<LandingPage />', () => {
-  function mountWithPinia(initialState = {}, dateOverride = {}) {
-    cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-      const pushStub = cy.stub();
-      cy.mount(LandingPage, {
-        global: {
-          plugins: [pinia, vuetify],
-          mocks: {
-            $router: {
-              push: pushStub,
-            },
+function mountWithPinia(initialState = {}, dateOverride = {}) {
+  cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
+    const pushStub = cy.stub();
+    cy.mount(LandingPage, {
+      global: {
+        plugins: [pinia, vuetify],
+        mocks: {
+          $router: {
+            push: pushStub,
           },
         },
-      });
-      cy.wrap(pushStub).as('routerPush');
+      },
     });
-  }
+    cy.wrap(pushStub).as('routerPush');
+  });
+}
 
-  function checkButtonAndNavigate(buttonText, expectedPath) {
-    cy.contains('button', buttonText).click();
-    cy.get('@routerPush').should('have.been.calledWith', expectedPath);
-  }
+function checkButtonAndNavigate(buttonText, expectedPath) {
+  cy.contains('button', buttonText).click();
+  cy.get('@routerPush').should('have.been.calledWith', expectedPath);
+}
 
+describe('<LandingPage />', () => {
   it('should display organization id and name', () => {
     mountWithPinia({
       organization: {
