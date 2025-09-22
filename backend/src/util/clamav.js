@@ -17,7 +17,7 @@ async function scanFilePayload(req, res, next) {
 
   const scanResults = await Promise.all(
     documents.map((file) => {
-      const buffer = Buffer.from(file.documentbody, 'base64');
+      const buffer = Buffer.from(file.documentbody || file.documentBody, 'base64');
       log.info(`scanning file ${file.filename}`);
       return scanFile(buffer);
     }),
