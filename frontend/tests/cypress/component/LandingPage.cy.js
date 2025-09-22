@@ -259,7 +259,7 @@ describe('<LandingPage />', () => {
     cy.contains('Status: Submitted');
   });
 
-  it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]  ', () => {
+  it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]', () => {
     mountWithPinia({
       application: {
         applicationType: 'NEW',
@@ -307,7 +307,7 @@ describe('<LandingPage />', () => {
     cy.contains('View submission history');
   });
 
-  it('should disable `Requst a change` card ', () => {
+  it('should disable `Requst a change` card', () => {
     mountWithPinia({
       application: {
         applicationType: '',
@@ -542,7 +542,7 @@ describe('<LandingPage />', () => {
       ]);
     };
 
-    it('should render facility details ', () => {
+    it('should render facility details', () => {
       mountWithPinia({
         navBar,
         application: {
