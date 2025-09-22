@@ -1,0 +1,15 @@
+/target/
+# Ignore properties file
+config.properties
+
+# Ignore Extent Reports folder
+/extent-reports/
+
+# Ignore Logs folder
+/logs/
+/test-output/
+
+# Ignore IDE specific files
+**/.classpath
+**/.project
+**/.settings/
