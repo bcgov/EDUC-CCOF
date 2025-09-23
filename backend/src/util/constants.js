@@ -172,6 +172,8 @@ const PERMISSIONS = Object.freeze({
   CHANGE_ORG_INFORMATION: '48',
   VIEW_USERS: '55',
 });
+
+module.exports = {
   ACCOUNT_TYPE,
   APPLICATION_STATUS_CODES,
   CCFRI_STATUS_CODES,
