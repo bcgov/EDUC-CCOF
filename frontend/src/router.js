@@ -851,6 +851,7 @@ const router = createRouter({
       component: ViewFundingAgreement,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_FUNDING_AGREEMENT,
       },
     },
     {

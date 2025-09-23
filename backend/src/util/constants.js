@@ -22,6 +22,10 @@ const ACCOUNT_TYPE = Object.freeze({
   ORGANIZATION: 100000000,
 });
 
+const SCAN_RESULTS = Object.freeze({
+  VIRUS_FOUND: 'FOUND',
+});
+
 const CCOF_APPLICATION_TYPES = Object.freeze({
   NEW: 100000000,
   FACILITY: 100000001,
@@ -157,6 +161,9 @@ const ROLES = Object.freeze({
 });
 
 const PERMISSIONS = Object.freeze({
+  SIGN_FUNDING_AGREEMENT: '36',
+  VIEW_FUNDING_AGREEMENT: '37',
+  DOWNLOAD_FUNDING_AGREEMENT: '38',
   UPDATE_SELF: '43',
   ADD_USERS: '44',
   EDIT_USERS: '45',
@@ -165,8 +172,6 @@ const PERMISSIONS = Object.freeze({
   CHANGE_ORG_INFORMATION: '48',
   VIEW_USERS: '55',
 });
-
-module.exports = {
   ACCOUNT_TYPE,
   APPLICATION_STATUS_CODES,
   CCFRI_STATUS_CODES,
@@ -184,5 +189,6 @@ module.exports = {
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
   PERMISSIONS,
+  SCAN_RESULTS,
   ROLES,
 };

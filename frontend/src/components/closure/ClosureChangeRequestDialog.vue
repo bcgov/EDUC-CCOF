@@ -233,13 +233,19 @@
       <v-container width="80%">
         <v-row>
           <v-col md="6">
-            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
+            <AppButton :primary="false" :loading="isLoading" :disabled="isLoading" @click="closeDialog">
+              Cancel
+            </AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton v-if="isRemoveClosureRequest" :disabled="disableSubmit" @click="removeClosure"
+            <AppButton
+              v-if="isRemoveClosureRequest"
+              :loading="isLoading"
+              :disabled="disableSubmit"
+              @click="removeClosure"
               >Remove Closure</AppButton
             >
-            <AppButton v-else :disabled="disableSubmit" @click="submit">Submit</AppButton>
+            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
       </v-container>
@@ -488,8 +494,13 @@ export default {
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
         this.$emit('submitted', payload);
       } catch (e) {
-        console.log(e);
-        this.setFailureAlert('Failed to submit new closure request');
+        console.error(e);
+        if (e.response.data.status === 422) {
+          // Most likely found a virus in payload.documents
+          this.setFailureAlert(e.response.data.message);
+        } else {
+          this.setFailureAlert('Failed to submit new closure request');
+        }
       } finally {
         this.isLoading = false;
       }
