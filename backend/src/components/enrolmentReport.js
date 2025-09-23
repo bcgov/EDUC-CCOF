@@ -1,6 +1,7 @@
 'use strict';
 const { getOperation, patchOperationWithObjectId, postAdjustmentERGeneration } = require('./utils');
 const HttpStatus = require('http-status-codes');
+const { isEmpty } = require('lodash');
 const log = require('./logger');
 const { DailyEnrolmentMappings, EnrolmentReportDifferenceMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery, padString } = require('./utils');
@@ -54,7 +55,7 @@ async function updateEnrolmentReport(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, EnrolmentReportMappings).toJSON();
     await patchOperationWithObjectId('ccof_monthlyenrollmentreports', req.params.enrolmentReportId, payload);
-    if (req?.body?.differences) {
+    if (!isEmpty(req?.body?.differences)) {
       const diffPayload = new MappableObjectForBack(req.body.differences, EnrolmentReportDifferenceMappings).toJSON();
       await patchOperationWithObjectId('ccof_monthlyenrolmentreportextensions', req.body.differences.enrolmentReportExtensionId, diffPayload);
     }
