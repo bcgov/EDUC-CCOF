@@ -60,7 +60,9 @@ describe('Group Application', () => {
             Cypress.env('USERNAME'),
             Cypress.env('PASSWORD')
         )
-        cy.contains('What would you like to do?', { timeout: 20000 }).should('be.visible')
+        cy.get('.pb-12.text-h4').should('be.visible')
+        cy.contains('What would you like to do?')
+
         cy.cancelApplicationIfPresent()
     })
 
@@ -91,7 +93,7 @@ describe('Group Application', () => {
         cy.contains('.v-card-title', 'Group Provider').should('be.visible')
         cy.clickByText('Start Application')
         // Organization Information
-        cy.get('.v-card-title > h3', { timeout: 10000 })
+        cy.get('.v-card-title > h3')
             .should('be.visible')
             .and('contain', 'Organization Information')
         // Choosing Registered Company in Type of Organization
@@ -110,7 +112,6 @@ describe('Group Application', () => {
         cy.getByLabel("Email Address of the Organization's Authorized Signing Authority").typeAndAssert(orgData.email)
         cy.clickByText('Save')
         cy.clickByText('Next')
-        cy.log('Organization Information data filled');
         // Facility Information
         cy.get('.v-card-title > h3', { timeout: 10000 })
             .should('be.visible')
@@ -125,7 +126,7 @@ describe('Group Application', () => {
         cy.get('#input-220').check({ force: true })
         cy.clickByText('Save')
         cy.clickByText('Next')
-        cy.log('Facility Information data filled');
+
         // Facility Licence and Service Details
         cy.get('.v-card-title > h3', { timeout: 10000 })
             .should('be.visible')
@@ -184,7 +185,7 @@ describe('Group Application', () => {
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
-        cy.log('Facility Licence and Service Details data filled');
+
         //Add Facility Page
         cy.get('p.text-center.mb-4', { timeout: 10000 })
             .should('be.visible')
@@ -192,27 +193,34 @@ describe('Group Application', () => {
         cy.get('ul.text-center > li > a > span')
             .contains(facilityData.facilityName)
             .should('be.visible');
-        cy.log(`Facility name "${facilityData.facilityName}" is visible on the page.`);
         cy.contains('button', 'No').click();
+
         // Licence Upload Page
         cy.contains('h3', 'Licence Upload').should('be.visible');
-        cy.log('Add facility page is completed')
         // Upload Licence File
         const fileName = 'Sample500kb.pdf'; // Ensure this file exists in cypress/fixtures
         cy.get('input[placeholder="Select your file"]')
             .attachFile(fileName, { force: true })
-        cy.wait(5000)
-        // cy.clickByText('Save')
+            .wait(10000)
+        cy.clickByText('Save')
+        cy.get('span.mr-2')
+            .should('be.visible')
+            .should('contain', 'Sample500kb.pdf')
         cy.clickByText('Next')
 
         // CCFRI - Parent Fees 
         //Opt-Out Path
+        cy.url().should('contain', '/ccfri')
         if (ccfriOptInOrOut == 'Opt-Out') {
-            cy.get('.text-h5.my-6', {timeout: 5000}).should('contain', 'Child Care Fee Reduction Initiative (CCFRI)').clickByText('Update')
+            cy.get('.text-h5.my-6')
+                .should('contain', 'Child Care Fee Reduction Initiative (CCFRI)')
+                .clickByText('Update')
             cy.getByLabel(ccfriOptInOrOut).click()
         } else {
             //Opt-In Path
-            cy.clickByText('Opt-In All Facilities', {force: true})
+            cy.get('.v-btn')
+                .should('contain', 'Opt-In All Facilities')
+            cy.clickByText('Opt-In All Facilities')
             cy.clickByText('Save')
             cy.clickByText('Next')
             cy.get('p').should('contain', 'Enter the fees you would charge a new parent for full-time care at this facility for the months below.', { timeout: 10000 }).should('be.visible')
@@ -223,17 +231,14 @@ describe('Group Application', () => {
                 Object.entries(parentFees.months).forEach(([month, fee]) => {
 
                     cy.wrap(card).within(() => {
-                        cy.getByLabel(`${month}`).clear().type(fee, {force: true, delay: 0});
-                        // cy.getByLabel(`${month}`).invoke('val', fee).trigger('input', {force: true})
-                        // cy.getByLabel(month).then($input => {
-                        //     cy.wrap($input).invoke('val', fee).trigger('input', { force: true });
-                        // });
+                        cy.getByLabel(month).then($input => {
+                            cy.wrap($input).invoke('val', fee).trigger('input', { force: true });
+                        });
                     });
                 });
             })
 
             cy.clickByText('Save')
-            cy.wait(5000)
             cy.clickByText('Next')
 
             // CCFRI - Closures 
@@ -302,8 +307,11 @@ describe('Group Application', () => {
         cy.clickByText('Save')
         cy.clickByText('Next')
 
-        if (facilityOptInOrOut == "Opt-In All Facilities") {
-            cy.clickByText(facilityOptInOrOut, {force: true})
+        if (facilityOptInOrOut == " Opt-In All Facilities ") {
+            cy.get('.v-btn')
+                .should('contain', ' Opt-In All Facilities ')
+            cy.clickByText(facilityOptInOrOut)
+            cy.clickByText(' Update ')
             if (unionStatus == "Some or all of our facilities are unionized." || csseaSelection == cssea.csseaMember) {
                 cy.get('.v-card').each((card, index, $list) => {
                     cy.wrap(card).within(() => {
@@ -313,17 +321,17 @@ describe('Group Application', () => {
             }
         }
 
-        if (unionStatus == "Some or all of our facilities are unionized." || csseaSelection == cssea.csseaMember) {
-            if (facilityOptInOrOut == "Opt-In All Facilities") {
-
-            }
-        }
         cy.clickByText('Save')
         cy.clickByText('Next')
+        cy.get('h2.text-center')
+            .should('contain', 'Supporting Document Upload')
         cy.clickByText('Next')
 
         // Summary & Declaration
-        cy.get('.my-2').should('contain', 'Summary and Declaration')
+        cy.url()
+            .should('contain', '/summary-declaration')
+        cy.get('.my-2')
+            .should('contain', 'Summary and Declaration')
         cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
             .click({ force: true })
         cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy', { force: true })

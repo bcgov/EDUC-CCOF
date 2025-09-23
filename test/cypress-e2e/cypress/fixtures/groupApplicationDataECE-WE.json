@@ -27,7 +27,7 @@
     },
     "facility": {
         "facilityOptInOrOut": {
-        "optIn": "Opt-In All Facilities",
+        "optIn": " Opt-In All Facilities ",
         "optOut": "Opt-Out"
         },
         "facilityUnionStatus": {

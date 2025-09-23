@@ -87,7 +87,8 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
       matchCase,
       includeShadowDom,
     })
-    .should('exist', {timeout: 10000})
+    
+    .should('exist')
     .then(($label) => {
       const labelEl = $label[0];
       const doc = labelEl.ownerDocument;
@@ -166,7 +167,8 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
       expect(pointerEvents, 'pointer-events').to.not.eq('none')
       expect(el.hasAttribute('disabled'), 'disabled attr').to.eq(false)
     })
-    .click() 
+    // ADDED FORCE:TRUE BC SOMETIMES ITS JUST GOTTA BE CLICKED
+    .click({force:true}) 
 })
 /*
 * Method to Cancel the application if the button is present

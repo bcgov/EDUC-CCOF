@@ -22,3 +22,5 @@ local*.json*
 *.ntvs*
 *.njsproj
 *.sln
+
+/Cypressautomation/cypress.env.json
