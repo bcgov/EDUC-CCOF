@@ -1,4 +1,3 @@
-<!-- eslint-disable prettier/prettier -->
 <template>
   <v-container fluid class="pa-12">
     <h1>Organization and Facilities</h1>
