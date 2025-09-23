@@ -19,9 +19,7 @@
           <v-card-text>
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="organization-tab"><ManageOrganization /></v-tabs-window-item>
-              <v-tabs-window-item v-if="hasPermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT)" value="funding-agreement-tab"
-                ><ManageFundingAgreements
-              /></v-tabs-window-item>
+              <v-tabs-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-tabs-window-item>
               <v-tabs-window-item value="facilities-tab"><ManageFacilities /></v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
