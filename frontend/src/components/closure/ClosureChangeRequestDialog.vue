@@ -236,7 +236,7 @@
             <AppButton
               :primary="false"
               :loading="isLoading"
-              :disabled="isLoading || !isNewClosureRequest"
+              :disabled="isLoading"
               @click="closeDialog"
             >
               Cancel
