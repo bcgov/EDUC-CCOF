@@ -8,4 +8,5 @@ export const PERMISSIONS = Object.freeze({
   DELETE_USERS: '46',
   VIEW_ORG_INFORMATION: '47',
   CHANGE_ORG_INFORMATION: '48',
+  VIEW_USERS: '55',
 });

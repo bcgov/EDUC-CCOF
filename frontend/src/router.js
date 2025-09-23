@@ -860,6 +860,7 @@ const router = createRouter({
       component: ManageUsers,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_USERS,
       },
     },
     {
