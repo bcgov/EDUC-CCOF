@@ -142,7 +142,6 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
-import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const READ_ONLY_STATUSES = [
   FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
@@ -189,7 +188,7 @@ export default {
     },
     displaySignFundingAgreementSection() {
       const status = this.fundingAgreement?.externalStatus;
-      const hasPerm = this.hasPermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT);
+      const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
   },
