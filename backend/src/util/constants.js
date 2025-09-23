@@ -163,6 +163,7 @@ const PERMISSIONS = Object.freeze({
   ADD_USERS: '44',
   EDIT_USERS: '45',
   DELETE_USERS: '46',
+  VIEW_USERS: '49',
 });
 
 module.exports = {
