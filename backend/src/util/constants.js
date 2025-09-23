@@ -163,6 +163,8 @@ const PERMISSIONS = Object.freeze({
   ADD_USERS: '44',
   EDIT_USERS: '45',
   DELETE_USERS: '46',
+  SIGN_FUNDING_AGREEMENT: '36',
+  VIEW_FUNDING_AGREEMENT: '37',
 });
 
 module.exports = {

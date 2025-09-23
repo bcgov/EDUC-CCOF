@@ -231,11 +231,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col
-        v-if="hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION, PERMISSIONS.VIEW_FUNDING_AGREEMENT)"
-        cols="12"
-        lg="4"
-      >
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Organization and Facilities</p>
