@@ -22,6 +22,10 @@ const ACCOUNT_TYPE = Object.freeze({
   ORGANIZATION: 100000000,
 });
 
+const SCAN_RESULTS = Object.freeze({
+  VIRUS_FOUND: 'FOUND',
+});
+
 const CCOF_APPLICATION_TYPES = Object.freeze({
   NEW: 100000000,
   FACILITY: 100000001,
@@ -183,5 +187,6 @@ module.exports = {
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
   PERMISSIONS,
+  SCAN_RESULTS,
   ROLES,
 };
