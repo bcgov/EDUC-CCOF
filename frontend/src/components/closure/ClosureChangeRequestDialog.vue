@@ -233,12 +233,7 @@
       <v-container width="80%">
         <v-row>
           <v-col md="6">
-            <AppButton
-              :primary="false"
-              :loading="isLoading"
-              :disabled="isLoading"
-              @click="closeDialog"
-            >
+            <AppButton :primary="false" :loading="isLoading" :disabled="isLoading" @click="closeDialog">
               Cancel
             </AppButton>
           </v-col>
