@@ -79,7 +79,7 @@
             </template>
           </div>
         </v-col>
-        <template v-if="canSignFundingAgreement">
+        <template v-if="displaySignFundingAgreementSection">
           <v-checkbox
             v-model="fundingAgreement.consentCheck"
             class="ml-3"
@@ -99,7 +99,7 @@
             <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement"> Back </AppButton>
           </v-col>
 
-          <v-col v-if="canSignFundingAgreement" cols="auto" class="ml-4">
+          <v-col v-if="displaySignFundingAgreementSection" cols="auto" class="ml-4">
             <AppButton color="primary" :disabled="isSubmitDisabled" :loading="processing" @click="submit">
               Submit
             </AppButton>
@@ -187,7 +187,7 @@ export default {
         this.isReadOnly || this.processing || !this.fundingAgreement?.consentCheck || !this.fundingAgreement?.signedBy
       );
     },
-    canSignFundingAgreement() {
+    displaySignFundingAgreementSection() {
       const status = this.fundingAgreement?.externalStatus;
       const hasPerm = this.hasPermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT);
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;

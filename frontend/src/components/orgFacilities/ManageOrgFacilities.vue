@@ -1,3 +1,4 @@
+<!-- eslint-disable prettier/prettier -->
 <template>
   <v-container fluid class="pa-12">
     <h1>Organization and Facilities</h1>
@@ -10,9 +11,9 @@
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
             <v-tab value="organization-tab">Organization Information</v-tab>
-            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT)" value="funding-agreement-tab"
-              >Funding Agreement</v-tab
-            >
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT)" value="funding-agreement-tab">
+              Funding Agreement
+            </v-tab>
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>

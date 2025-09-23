@@ -44,7 +44,7 @@ router.get(
   '/:fundingAgreementId/pdf',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT),
+  validatePermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT),
   [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
