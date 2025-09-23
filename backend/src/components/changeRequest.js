@@ -13,7 +13,6 @@ const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CHANGE_REQUEST_EX
 const HttpStatus = require('http-status-codes');
 
 const { getLabelFromValue, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, getChangeActionDocument, postChangeActionDocument } = require('./utils');
-const { getFileExtension, convertHeicDocumentToJpg } = require('../util/uploadFileUtils');
 const { buildFilterQuery } = require('./../components/utils');
 
 function mapChangeRequestForBack(data, changeType) {
@@ -376,24 +375,6 @@ async function getChangeActionClosures(req, res) {
   }
 }
 
-async function saveChangeRequestDocs(req, res) {
-  try {
-    const documents = req.body;
-    for (const document of documents) {
-      let documentClone = document;
-      if (getFileExtension(documentClone.filename) === 'heic') {
-        log.verbose(`saveChangeRequestDocs :: heic detected for file name ${documentClone.filename} starting conversion`);
-        documentClone = await convertHeicDocumentToJpg(documentClone);
-      }
-
-      await postChangeActionDocument(documentClone);
-    }
-    return res.status(HttpStatus.CREATED).json();
-  } catch (e) {
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
 async function getChangeRequestMTFIByCcfriId(req, res) {
   try {
     const operation = `ccof_applicationccfris(${req.params.ccfriId})?$expand=ccof_change_request_mtfi_application_ccfri`;
@@ -441,7 +422,6 @@ module.exports = {
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,
-  saveChangeRequestDocs,
   updateChangeRequest,
   createChangeAction,
   updateChangeRequestMTFI,
