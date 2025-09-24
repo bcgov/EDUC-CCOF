@@ -9,9 +9,6 @@ function mountWithPinia(initialState = {}, dataOverride = {}) {
       global: {
         plugins: [pinia, vuetify],
       },
-      on: {
-        'close-add-dialog': cy.spy().as('yourEventSpy'),
-      },
       data() {
         return {
           ...dataOverride,
