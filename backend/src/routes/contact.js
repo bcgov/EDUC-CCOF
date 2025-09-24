@@ -18,8 +18,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO (weskubo-cgi) This would be better as a custom permission PERMISSIONS.VIEW_USERS
-  validatePermission(PERMISSIONS.UPDATE_SELF),
+  validatePermission(PERMISSIONS.VIEW_USERS),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
