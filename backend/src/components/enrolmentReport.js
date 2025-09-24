@@ -16,6 +16,13 @@ function getReportVersionText(report) {
   return isAdjustmentReport(report) ? `${version}-Adjustment` : version;
 }
 
+function mapEnrolmentReportSummaryForFront(report) {
+  const mappedReport = new MappableObjectForFront(report, EnrolmentReportSummaryMappings).toJSON();
+  mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
+  mappedReport.versionText = getReportVersionText(mappedReport);
+  return mappedReport;
+}
+
 function mapEnrolmentReportForFront(response) {
   const report = { ...response, ...response.ccof_reportextension };
   const mappedReport = new MappableObjectForFront(report, EnrolmentReportMappings).toJSON();
@@ -43,7 +50,7 @@ async function getEnrolmentReports(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
     const enrolmentReports = [];
-    response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportForFront(report)));
+    response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
     log.error(e);
