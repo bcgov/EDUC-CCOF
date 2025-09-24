@@ -545,7 +545,7 @@ describe('<LandingPage />', () => {
 
       cy.then(() => {
         const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS];
+        authStore.permissions = [PERMISSIONS.VIEW_USERS];
       });
 
       cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
@@ -566,7 +566,7 @@ describe('<LandingPage />', () => {
 
       cy.then(() => {
         const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS];
+        authStore.permissions = [PERMISSIONS.VIEW_USERS];
       });
       checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
     });
