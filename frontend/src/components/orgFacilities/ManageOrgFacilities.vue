@@ -10,7 +10,9 @@
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
             <v-tab value="organization-tab">Organization Information</v-tab>
-            <v-tab value="funding-agreement-tab">Funding Agreement</v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT)" value="funding-agreement-tab">
+              Funding Agreement
+            </v-tab>
             <v-tab value="facilities-tab"> Facilities </v-tab>
           </v-tabs>
           <v-card-text>
@@ -40,9 +42,12 @@ import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
+import permissionsMixin from '@/mixins/permissionsMixin.js';
+
 export default {
   name: 'AccountManagement',
   components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreements },
+  mixins: [permissionsMixin],
   data() {
     return {
       tab: undefined,

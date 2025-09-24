@@ -14,13 +14,13 @@ const {
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,
-  saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
 } = require('../components/changeRequest');
 const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { checkSchema, param, query, validationResult } = require('express-validator');
 const { CHANGE_REQUEST_TYPES } = require('../util/constants');
+const { scanFilePayload } = require('../util/clamav');
 
 module.exports = router;
 
@@ -163,7 +163,7 @@ router.post(
 /**
  * Create the closure change request
  */
-router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
+router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], scanFilePayload, (req, res) => {
   validationResult(req).throw();
   return createClosureChangeRequest(req, res);
 });
@@ -188,14 +188,6 @@ router.get(
 router.post('/documents', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(documentChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
   return createChangeRequest(req, res);
-});
-
-/**
- * Save uploaded document
- */
-router.post('/documentUpload', passport.authenticate('jwt', { session: false }), isValidBackendToken, (req, res) => {
-  //validationResult(req).throw();
-  return saveChangeRequestDocs(req, res);
 });
 
 router.post(

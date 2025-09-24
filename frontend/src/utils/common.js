@@ -261,6 +261,24 @@ export function addDecimal(a, b, decimals = 4) {
 }
 
 /**
+ * Subtracts two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   0.3 - 0.1 === 0.19999999999999998
+ *
+ * @param {number} a - Number to subtract from.
+ * @param {number} b - Number to subtract.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded difference as a Number.
+ */
+export function subtractDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).minus(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
  * Multiplies two decimal numbers and rounds the result to a fixed number of decimal places,
  * returning it as a Number.
  *
