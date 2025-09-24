@@ -12,6 +12,7 @@ import {
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const organizationAccountNumber = 'ORG-1234';
+const organizationName = 'Test Organization';
 const facilityAccountNumber = 'FAC-45678';
 const ccfriApplicationId = '111';
 const facilityName = 'CCOF Medical Center';
@@ -58,7 +59,7 @@ describe('<LandingPage />', () => {
     mountWithPinia({
       organization: {
         organizationAccountNumber,
-        organizationName: 'Test Organization',
+        organizationName,
       },
     });
 
@@ -373,7 +374,7 @@ describe('<LandingPage />', () => {
   });
 
   context('Request a Change Card', () => {
-    it('should disable `Requst a change` card', () => {
+    it('should disable `Request a change` card', () => {
       mountWithPinia({
         application: {
           applicationType: '',
@@ -387,7 +388,7 @@ describe('<LandingPage />', () => {
       cy.contains('p', 'Request a change').should('exist').should('have.css', 'pointer-events', 'none');
     });
 
-    it('should enable `Requst a change` card when application type is renew and organizationAccountNumber exists', () => {
+    it('should enable `Request a change` card when application type is renew and organizationAccountNumber exists', () => {
       mountWithPinia({
         application: {
           applicationType: 'RENEW',
@@ -401,7 +402,7 @@ describe('<LandingPage />', () => {
     });
 
     it('should enable `Request a change` button and navigate to request history on click', () => {
-      const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
+      const expectedPath = `${PATHS.ROOT.CHANGE_LANDING}#change-request-history`;
       mountWithPinia({
         application: {
           applicationType: 'RENEW',
@@ -416,7 +417,7 @@ describe('<LandingPage />', () => {
     });
 
     it('should enable `Update change request` button and navigate to request history on click', () => {
-      const expectedPath = PATHS.ROOT.CHANGE_LANDING + '#change-request-history';
+      const expectedPath = `${PATHS.ROOT.CHANGE_LANDING}#change-request-history`;
       mountWithPinia({
         application: {
           applicationType: 'RENEW',
