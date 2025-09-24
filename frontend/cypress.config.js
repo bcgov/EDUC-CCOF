@@ -7,6 +7,7 @@ export default defineConfig({
     specPattern: 'tests/cypress/component/**/*.{js,jsx,ts,tsx,vue}',
     supportFile: 'tests/cypress/support/component.js',
     fixturesFolder: 'tests/cypress/fixtures',
+    screenshotsFolder: 'tests/cypress/screenshots',
     indexHtmlFile: 'tests/cypress/support/component-index.html',
     devServer: {
       framework: 'vue',
