@@ -54,8 +54,9 @@ or for headless mode:
 
       npx cypress run
 
-# Group Application:
-To run the full E2E automation, run the "full-e2e.cy.js" file when opening cypress
+### Group Application:
+
+To run the full E2E automation, run the "full-e2e.cy.js" file when opening cypress.
 There are 3 areas requiring future contribution for added automation functionality:
 1) Adding Multiple Facilities to a single group application
 2) Adding Multiple Closures to a facility
