@@ -62,15 +62,15 @@ describe('Group Application-CCFRI', () => {
             cy.clickByText('Save')
             cy.clickByText('Next')
             cy.get('p').should('contain', 'Enter the fees you would charge a new parent for full-time care at this facility for the months below.', { timeout: 10000 }).should('be.visible')
-            // cy.get('.v-card.my-10').each((card, index, $list) => {
-            //     const category = parentFeeCategories[index]
-            //     cy.wrap(card).should('contain', `${category}`).contains('label', `${paymentFrequency}`).click()
-            //     Object.entries(parentFees.months).forEach(([month, fee]) => {
-            //         cy.wrap(card).within(() => {
-            //             cy.getByLabel(`${month}`).invoke('val', fee).trigger('input')
-            //         });
-            //     });
-            // })
+            cy.get('.v-card.my-10').each((card, index, $list) => {
+                const category = parentFeeCategories[index]
+                cy.wrap(card).should('contain', `${category}`).contains('label', `${paymentFrequency}`).click()
+                Object.entries(parentFees.months).forEach(([month, fee]) => {
+                    cy.wrap(card).within(() => {
+                        cy.getByLabel(`${month}`).invoke('val', fee).trigger('input')
+                    });
+                });
+            })
 
             cy.clickByText('Save')
             cy.wait(5000)
