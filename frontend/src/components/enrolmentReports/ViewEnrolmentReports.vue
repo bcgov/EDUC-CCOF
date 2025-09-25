@@ -65,20 +65,55 @@
           class="elevation-2"
         >
           <template #item.reportVersion="{ item }">
-            {{ getReportVersionText(item) }}
+            {{ item.versionText }}
             <AppTooltip
               v-if="item.isAdjustment"
               tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
             />
           </template>
-          <template #item.reportingMonth="{ item }"> {{ FULL_MONTH_NAMES[item?.month] }} {{ item?.year }} </template>
+          <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
           <template #item.submissionDeadline="{ item }">
             {{ formatDateToStandardFormat(item.submissionDeadline) }}
           </template>
+          <template #item.externalCcofStatusCode="{ item }">
+            <span class="report-status" :class="getStatusClass(item.externalCcofStatusCode)">
+              {{ item.externalCcofStatusText }}
+            </span>
+          </template>
+          <template #item.externalCcfriStatusCode="{ item }">
+            <span class="report-status" :class="getStatusClass(item.externalCcfriStatusCode)">
+              {{ item.externalCcfriStatusText }}
+            </span>
+          </template>
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)"> View </AppButton>
-              <AppButton :loading="loading" :primary="false" size="medium" @click="console.log(item)">
+              <AppButton
+                v-if="showViewButton(item)"
+                :loading="loading"
+                :primary="false"
+                size="medium"
+                @click="goToEnrolmentReport(item.enrolmentReportId)"
+              >
+                View
+              </AppButton>
+              <AppButton
+                v-if="showEditButton(item)"
+                :loading="loading"
+                :disabled="isSubmissionDeadlinePassed(item)"
+                :primary="false"
+                size="medium"
+                @click="editEnrolmentReport(item)"
+              >
+                Edit
+              </AppButton>
+              <AppButton
+                v-if="showAdjustButton(item)"
+                :loading="loading"
+                :disabled="isSubmissionDeadlinePassed(item)"
+                :primary="false"
+                size="medium"
+                @click="createAdjustmentReport(item)"
+              >
                 Adjust
               </AppButton>
             </v-row>
@@ -113,8 +148,8 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
-import { FULL_MONTH_NAMES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat } from '@/utils/format';
+import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
 
 export default {
   name: 'ViewEnrolmentReports',
@@ -133,8 +168,8 @@ export default {
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Reporting Month', key: 'reportingMonth' },
         { title: 'Submission Deadline', key: 'submissionDeadline' },
-        { title: 'CCOF Base Funding Status', key: 'ccofStatus' },
-        { title: 'CCFRI Funding Status', key: 'ccfriStatus' },
+        { title: 'CCOF Base Funding Status', key: 'externalCcofStatusCode' },
+        { title: 'CCFRI Funding Status', key: 'externalCcfriStatusCode' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       enrolmentReports: [],
@@ -156,7 +191,7 @@ export default {
       const endYear = moment(programYear?.intakeEnd).year();
       for (let month = 4; month < 13; month++) {
         reportingMonths.push({
-          label: `${FULL_MONTH_NAMES[month]} ${startYear}`,
+          label: `${formatMonthYearToString(month, startYear)}`,
           value: {
             month: month,
             year: startYear,
@@ -165,7 +200,7 @@ export default {
       }
       for (let month = 1; month < 4; month++) {
         reportingMonths.push({
-          label: `${FULL_MONTH_NAMES[month]} ${endYear}`,
+          label: `${formatMonthYearToString(month, endYear)}`,
           value: {
             month: month,
             year: endYear,
@@ -197,12 +232,11 @@ export default {
   },
   async created() {
     this.PATHS = PATHS;
-    this.FULL_MONTH_NAMES = FULL_MONTH_NAMES;
     await this.loadData();
   },
   methods: {
     formatDateToStandardFormat,
-    padString,
+    formatMonthYearToString,
     async loadData() {
       this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedReportingMonths = this.allReportingMonths?.map((report) => report.value);
@@ -220,11 +254,7 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`;
-          report.isAdjustment = report?.reportVersion > 1;
-          // TODO (vietle-cgi) - review/update these statuses once CMS team added them to ER entity
-          report.ccofStatus = facility?.ccofBaseFundingStatus;
-          report.ccfriStatus = facility?.ccfriStatus;
+          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
         });
         this.sortEnrolmentReports();
       } catch (error) {
@@ -234,31 +264,128 @@ export default {
         this.loading = false;
       }
     },
+    // CCFRI-5104
     sortEnrolmentReports() {
-      // TODO (vietle-cgi) - review/update this sorting order once CMS team add the CCOF status to ER entity
       this.enrolmentReports?.sort((a, b) => {
-        // Sort by Reporting Month (asc - oldest to newest)
-        if (a.reportingMonth !== b.reportingMonth) {
-          return a.reportingMonth < b.reportingMonth ? -1 : 1;
+        // 1. CCOF Status (DRAFT first)
+        if (a.externalCcofStatusCode !== b.externalCcofStatusCode) {
+          if (a.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.DRAFT) return -1;
+          if (b.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.DRAFT) return 1;
         }
-
-        // Sort by Facility ID (facilityAccountNumber) (desc)
+        // 2. Submission Deadline (asc - string comparison of 'YYYY-MM-DD')
+        if (a.submissionDeadline !== b.submissionDeadline) {
+          return a.submissionDeadline < b.submissionDeadline ? -1 : 1;
+        }
+        // 3. Facility Account Number (desc)
         if (a.facilityAccountNumber !== b.facilityAccountNumber) {
           return a.facilityAccountNumber > b.facilityAccountNumber ? -1 : 1;
         }
-
-        // Sort by Report Version (desc - last adjustment to the original report)
-        const versionA = a.reportVersion ?? 0;
-        const versionB = b.reportVersion ?? 0;
-        return versionB - versionA;
+        // 4. Report Version (desc - last adjustment to the original report)
+        return (b.reportVersion ?? 0) - (a.reportVersion ?? 0);
       });
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;
     },
-    getReportVersionText(report) {
-      const version = padString(report.reportVersion, 2, '0');
-      return report?.isAdjustment ? `${version}-Adjustment` : version;
+    goToEnrolmentReport(enrolmentReportId) {
+      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`);
+    },
+    getStatusClass(status) {
+      switch (status) {
+        case ENROLMENT_REPORT_STATUSES.DRAFT:
+          return 'status-yellow';
+        case ENROLMENT_REPORT_STATUSES.SUBMITTED:
+          return 'status-blue';
+        case ENROLMENT_REPORT_STATUSES.PAID:
+          return 'status-green';
+        case ENROLMENT_REPORT_STATUSES.REJECTED:
+          return 'status-red';
+        case ENROLMENT_REPORT_STATUSES.EXPIRED:
+          return 'status-gray';
+        case ENROLMENT_REPORT_STATUSES.WITH_MINISTRY:
+          return 'status-orange';
+        case ENROLMENT_REPORT_STATUSES.APPROVED:
+          return 'status-mint';
+        default:
+          return null;
+      }
+    },
+    isSubmissionDeadlinePassed(enrolmentReport) {
+      return EnrolmentReportService.isSubmissionDeadlinePassed(enrolmentReport);
+    },
+    showAdjustButton(enrolmentReport) {
+      return (
+        !enrolmentReport.hasNextReportCreated &&
+        [ENROLMENT_REPORT_STATUSES.APPROVED, ENROLMENT_REPORT_STATUSES.PAID].includes(
+          enrolmentReport.externalCcofStatusCode,
+        )
+      );
+    },
+    showEditButton(enrolmentReport) {
+      return [
+        ENROLMENT_REPORT_STATUSES.DRAFT,
+        ENROLMENT_REPORT_STATUSES.SUBMITTED,
+        ENROLMENT_REPORT_STATUSES.REJECTED,
+      ].includes(enrolmentReport.externalCcofStatusCode);
+    },
+    showViewButton(enrolmentReport) {
+      return [
+        ENROLMENT_REPORT_STATUSES.APPROVED,
+        ENROLMENT_REPORT_STATUSES.EXPIRED,
+        ENROLMENT_REPORT_STATUSES.PAID,
+        ENROLMENT_REPORT_STATUSES.REJECTED,
+        ENROLMENT_REPORT_STATUSES.WITH_MINISTRY,
+      ].includes(enrolmentReport.externalCcofStatusCode);
+    },
+    async createAdjustmentReport(item) {
+      try {
+        if (this.isSubmissionDeadlinePassed(item)) return;
+        this.loading = true;
+        await EnrolmentReportService.updateEnrolmentReport(item.enrolmentReportId, { hasNextReportCreated: true });
+        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(item.enrolmentReportId);
+        this.setSuccessAlert('Adjustment report created successfully.');
+        this.goToEnrolmentReport(response.data);
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Failed to create adjustment enrolment report.');
+      } finally {
+        this.loading = false;
+      }
+    },
+    async prepareEnrolmentReportForEditing(report) {
+      const status = report.internalCcofStatusCode;
+      let payload;
+      if (status === ENROLMENT_REPORT_INTERNAL_STATUSES.CREATED) {
+        payload = {
+          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+        };
+      } else if (
+        status === ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED ||
+        status === ENROLMENT_REPORT_INTERNAL_STATUSES.REJECTED
+      ) {
+        payload = {
+          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+        };
+      } else {
+        return;
+      }
+      await EnrolmentReportService.updateEnrolmentReport(report.enrolmentReportId, payload);
+    },
+    async editEnrolmentReport(report) {
+      try {
+        this.loading = true;
+        await this.prepareEnrolmentReportForEditing(report);
+        this.goToEnrolmentReport(report.enrolmentReportId);
+      } catch (error) {
+        console.log(error);
+        this.setFailureAlert('Failed to edit enrolment report.');
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
@@ -267,5 +394,9 @@ export default {
 .action-buttons {
   gap: 8px;
   padding: 10px;
+}
+
+.report-status {
+  min-width: 112px;
 }
 </style>

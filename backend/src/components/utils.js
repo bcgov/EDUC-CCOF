@@ -53,6 +53,20 @@ function getLabelFromValue(value, constants, defaultValue) {
   return value;
 }
 
+/**
+ * Pads the given input value on the left with the specified character
+ * until it reaches the desired length.
+ *
+ * @param input - The value to pad (can be a number, string, etc.).
+ * @param length - The total desired length of the resulting string.
+ * @param char - The character to use for padding.
+ * @returns A padded string, or null if input is null or undefined.
+ */
+function padString(input, length, char) {
+  if (input == null) return null;
+  return String(input).padStart(length, char);
+}
+
 axios.interceptors.request.use((axiosRequestConfig) => {
   axiosRequestConfig.headers['X-Client-Name'] = 'EDUC-CCOF';
   return axiosRequestConfig;
@@ -340,6 +354,21 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
   }
 }
 
+async function postAdjustmentERGeneration(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/AdjustmentERGeneration';
+  if (log.isVerboseEnabled()) {
+    log.verbose(`postAdjustmentERGeneration post data for ${url}  :: is :: `, payload);
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postAdjustmentERGeneration', response);
+    return response;
+  } catch (e) {
+    log.error('postAdjustmentERGeneration Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
+  }
+}
+
 function getHttpHeader() {
   return {
     headers: {
@@ -410,6 +439,9 @@ const utils = {
   updateChangeRequestNewFacility,
   getSubmissionPDFHistory,
   getChangeActionDetails,
+  postAdjustmentERGeneration,
+  padString,
+  splitUsername,
 };
 
 module.exports = utils;

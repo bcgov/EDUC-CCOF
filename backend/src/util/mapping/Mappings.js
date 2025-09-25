@@ -63,6 +63,7 @@ const FacilityMappings = [
   { back: 'ccof_is_facility_address_same_as_org', front: 'isFacilityAddressSameAsOrgStreetAddress' },
   { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
   { back: 'ccof_healthauthority', front: 'healthAuthority' },
+  { back: 'statuscode', front: 'statusCode' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -215,6 +216,7 @@ const CCOFApplicationFundingMapping = [
 
   { back: 'ccof_has_under36months', front: 'hasUnder36Months' },
   { back: 'ccof_has_30monthtoschoolage', front: 'has30MonthToSchoolAge' },
+  { back: 'ccof__has_schoolage', front: 'hasSchoolAge' },
   { back: 'ccof_has_schoolagecareonschoolground', front: 'hasSchoolAgeCareOnSchoolGrounds' },
   { back: 'ccof_has_preschool', front: 'hasPreschool' },
   { back: 'ccof_has_multiagechildcare', front: 'hasMultiAge' },
@@ -227,6 +229,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_groupchildcare30monthtoschoolagemaxnumber', front: 'maxGroupChildCare36' },
   { back: 'ccof_preschoolmaxnumber', front: 'maxPreschool' },
   { back: 'ccof_groupchildcareschoolagecareonschoolground', front: 'maxGroupChildCareSchool' },
+  { back: 'ccof_schoolagecareonschoolgroundsmaxnumber', front: 'maxSchoolAgeCareOnSchoolGrounds' },
 
   { back: 'ccof_preschoolsessionmon', front: 'monday' },
   { back: 'ccof_preschoolsessiontues', front: 'tusday' },
@@ -245,12 +248,14 @@ const CCOFApplicationFundingMapping = [
 
   { back: 'ccof_has_under36months_extendedcc', front: 'hasUnder36MonthsExtendedCC' },
   { back: 'ccof_has_30monthtoschoolage_extendedcc', front: 'has30MonthToSchoolAgeExtendedCC' },
+  { back: 'ccof_has_schoolage_extendedcc', front: 'hasSchoolAgeExtendedCC' },
   { back: 'ccof_has_schoolagecareonschoolground_extendedc', front: 'hasSchoolAgeCareOnSchoolGroundsExtendedCC' },
   { back: 'ccof_has_multiagechildcare_extendedcc', front: 'hasMultiAgeExtendedCC' },
 
   { back: 'ccof_under36months4hoursoflessextendedcc', front: 'extendedChildCareUnder36Months4OrLess' },
   { back: 'ccof_30monthtoschoolage4hoursoflessextendedcc', front: 'extendedChildCare36MonthsToSchoolAge4OrLess' },
   { back: 'ccof_schoolageonground4hoursoflessextendedcc', front: 'extendedChildCareSchoolAge4OrLess' },
+  { back: 'ccof_careonschoolgrounds4hoursorlessextendedcc', front: 'extendedSchoolAgeCareOnSchoolGrounds4OrLess' },
   { back: 'ccof_multiagechildcare4hoursoflessextendedcc', front: 'multiAgeCare4OrLess' },
   { back: 'ccof_familychildcare4hoursorlessextendedcc', front: 'familyExtendedCC4OrLess' },
   { back: 'ccof_inhomemultiagecc4hoursorlessextendedcc', front: 'inHomeMultiAgeExtendedCC4OrLess' },
@@ -258,6 +263,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_under36monthsmorethan4hourextendedcc', front: 'extendedChildCareUnder36Months4OrMore' },
   { back: 'ccof_30monthtoschoolagemorethan4hourextended', front: 'extendedChildCare36MonthsToSchoolAge4OrMore' },
   { back: 'ccof_schoolageongroundmorethan4hrextendedcc', front: 'extendedChildCareSchoolAge4OrMore' },
+  { back: 'ccof_careonschoolgroundsmorethan4hrsextendedcc', front: 'extendedSchoolAgeCareOnSchoolGrounds4OrMore' },
   { back: 'ccof_multiagechildcaremorethan4hourextendedcc', front: 'multiAgeCare4more' },
   { back: 'ccof_familychildcaremorethan4hoursextendedcc', front: 'familyExtendedCC4OrMore' },
   { back: 'ccof_inhomemultiageccmorethan4hoursextendedcc', front: 'inHomeMultiAgeExtendedCC4OrMore' },
@@ -292,6 +298,10 @@ const ECEWEFacilityMappings = [
   { back: 'ccof_facilityunionstatus', front: 'facilityUnionStatus' },
   { back: 'ccof_change_request_new_facilityid', front: 'changeRequestNewFacilityId' },
 ];
+
+const UserProfileMappings = [{ back: 'contactid', front: 'contactId' }];
+
+const ContactFacilityMappings = [{ back: '_ccof_facility_value', front: 'facilityId' }];
 
 const UserProfileOrganizationMappings = [
   { back: 'organization_name', front: 'organizationName' },
@@ -542,10 +552,14 @@ const FundingAgreementMappings = [
   { back: '_ccof_programyear_value', front: 'programYearId' },
   { back: 'ccof_end_date', front: 'endDate' },
   { back: '_ccof_programyear_value@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementTerm' },
-  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementStatus' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'internalStatus' },
+  { back: 'ccof_external_portal_status@OData.Community.Display.V1.FormattedValue', front: 'externalStatus' },
   { back: 'ccof_start_date', front: 'fundingAgreementStartDate' },
   { back: 'ccof_funding_agreementid', front: 'fundingAgreementId' },
   { back: '_ccof_organization_value', front: 'organizationId' },
+  { back: 'ccof_declaration', front: 'consentCheck' },
+  { back: 'ccof_date_signed_sp', front: 'signedOn' },
+  { back: 'ccof_fa_signed_by', front: 'signedBy' },
 ];
 
 const DocumentsMappings = [
@@ -564,6 +578,7 @@ const ContactMappings = [
   { back: 'firstname', front: 'firstName' },
   { back: 'lastname', front: 'lastName' },
   { back: 'telephone1', front: 'telephone' },
+  { back: '_ccof_ccof_portal_id_value', front: 'roleId' },
 ];
 
 const ApplicationDocumentsMappings = [
@@ -581,11 +596,185 @@ const EnrolmentReportSummaryMappings = [
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_submissiondeadline', front: 'submissionDeadline' },
   { back: 'ccof_reportversion', front: 'reportVersion' },
-  { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_ccof_external_status', front: 'externalCcofStatusCode' },
+  { back: 'ccof_ccof_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcofStatusText' },
+  { back: 'ccof_ccfri_external_status', front: 'externalCcfriStatusCode' },
+  { back: 'ccof_ccfri_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcfriStatusText' },
+];
+
+const EnrolmentReportExtensionMappings = [
+  { back: 'ccof_approvedparentfee0to18', front: 'approvedParentFees0To18' },
+  { back: 'ccof_approvedparentfee18to36', front: 'approvedParentFees18To36' },
+  { back: 'ccof_approvedparentfee3yk', front: 'approvedParentFees3YK' },
+  { back: 'ccof_approvedparentfeeoosck', front: 'approvedParentFeesOOSCK' },
+  { back: 'ccof_approvedparentfeeooscg', front: 'approvedParentFeesOOSCG' },
+  { back: 'ccof_approvedparentfeepre', front: 'approvedParentFeesPre' },
+  { back: 'ccof_approvedparentfeefrequency0to18', front: 'approvedParentFeesFrequency0To18' },
+  { back: 'ccof_approvedparentfeefrequency18to36', front: 'approvedParentFeesFrequency18To36' },
+  { back: 'ccof_approvedparentfeefrequency3yk', front: 'approvedParentFeesFrequency3YK' },
+  { back: 'ccof_approvedparentfeefrequencyoosck', front: 'approvedParentFeesFrequencyOOSCK' },
+  { back: 'ccof_approvedparentfeefrequencyooscg', front: 'approvedParentFeesFrequencyOOSCG' },
+  { back: 'ccof_approvedparentfeefrequencypre', front: 'approvedParentFeesFrequencyPre' },
+  { back: 'ccof_dailyccfrirateless0to18', front: 'dailyCcfriRateLess0To18' },
+  { back: 'ccof_dailyccfrirateover0to18', front: 'dailyCcfriRateOver0To18' },
+  { back: 'ccof_dailyccfrirateless18to36', front: 'dailyCcfriRateLess18To36' },
+  { back: 'ccof_dailyccfrirateover18to36', front: 'dailyCcfriRateOver18To36' },
+  { back: 'ccof_dailyccfrirateless3yk', front: 'dailyCcfriRateLess3YK' },
+  { back: 'ccof_dailyccfrirateover3yk', front: 'dailyCcfriRateOver3YK' },
+  { back: 'ccof_dailccfriratelessoosck', front: 'dailyCcfriRateLessOOSCK' },
+  { back: 'ccof_dailyccfrirateoveroosck', front: 'dailyCcfriRateOverOOSCK' },
+  { back: 'ccof_dailyccfriratelessooscg', front: 'dailyCcfriRateLessOOSCG' },
+  { back: 'ccof_dailyccfrirateoverooscg', front: 'dailyCcfriRateOverOOSCG' },
+  { back: 'ccof_dailyccfriratelesspre', front: 'dailyCcfriRateLessPre' },
+];
+
+const RateMappings = [
+  { back: 'ccof_over18to36', front: 'less0To18' },
+  { back: 'ccof_over0to18', front: 'over0To18' },
+  { back: 'ccof_less18to36', front: 'less18To36' },
+  { back: 'ccof_over18to36', front: 'over18To36' },
+  { back: 'ccof_less3yk', front: 'less3YK' },
+  { back: 'ccof_over3yk', front: 'over3YK' },
+  { back: 'ccof_lessooscg', front: 'lessOOSCG' },
+  { back: 'ccof_overooscg', front: 'overOOSCG' },
+  { back: 'ccof_lessoosck', front: 'lessOOSCK' },
+  { back: 'ccof_overoosck', front: 'overOOSCK' },
+  { back: 'ccof_lesspre', front: 'lessPre' },
+];
+
+const EnrolmentReportMappings = [
+  ...EnrolmentReportSummaryMappings,
+  ...EnrolmentReportExtensionMappings,
+  { back: 'ccof_providertype', front: 'organizationProviderType' },
+  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
+  { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
+  { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
+  { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
+  { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
+  { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },
+  { back: 'ccof_totalenrolledoosck', front: 'totalEnrolledOOSCK' },
+  { back: 'ccof_totalenrolledooscg', front: 'totalEnrolledOOSCG' },
+  { back: 'ccof_totalenrolledpre', front: 'totalEnrolledPre' },
+  { back: 'ccof_currenttotalless0to18', front: 'currentTotalLess0To18' },
+  { back: 'ccof_currenttotalover0to18', front: 'currentTotalOver0To18' },
+  { back: 'ccof_currenttotalless18to36', front: 'currentTotalLess18To36' },
+  { back: 'ccof_currenttotalover18to36', front: 'currentTotalOver18To36' },
+  { back: 'ccof_currenttotalless3yk', front: 'currentTotalLess3YK' },
+  { back: 'ccof_currenttotalover3yk', front: 'currentTotalOver3YK' },
+  { back: 'ccof_currenttotallessooscg', front: 'currentTotalLessOOSCG' },
+  { back: 'ccof_currenttotaloverooscg', front: 'currentTotalOverOOSCG' },
+  { back: 'ccof_currenttotallessoosck', front: 'currentTotalLessOOSCK' },
+  { back: 'ccof_currenttotaloveroosck', front: 'currentTotalOverOOSCK' },
+  { back: 'ccof_currenttotallesspre', front: 'currentTotalLessPre' },
+  { back: 'ccof_ccofbaseamountless0to18', front: 'ccofBaseAmountLess0To18' },
+  { back: 'ccof_ccofbaseamountover0to18', front: 'ccofBaseAmountOver0To18' },
+  { back: 'ccof_ccofbaseamountless18to36', front: 'ccofBaseAmountLess18To36' },
+  { back: 'ccof_ccofbaseamountover18to36', front: 'ccofBaseAmountOver18To36' },
+  { back: 'ccof_ccofbaseamountless3yk', front: 'ccofBaseAmountLess3YK' },
+  { back: 'ccof_ccofbaseamountover3yk', front: 'ccofBaseAmountOver3YK' },
+  { back: 'ccof_ccofbaseamountlessooscg', front: 'ccofBaseAmountLessOOSCG' },
+  { back: 'ccof_ccofbaseamountoverooscg', front: 'ccofBaseAmountOverOOSCG' },
+  { back: 'ccof_ccofbaseamountlessoosck', front: 'ccofBaseAmountLessOOSCK' },
+  { back: 'ccof_ccofbaseamountoveroosck', front: 'ccofBaseAmountOverOOSCK' },
+  { back: 'ccof_ccofbaseamountlesspre', front: 'ccofBaseAmountLessPre' },
+  { back: 'ccof_ccfriamountless0to18', front: 'ccfriAmountLess0To18' },
+  { back: 'ccof_ccfriamountover0to18', front: 'ccfriAmountOver0To18' },
+  { back: 'ccof_ccfriamountless18to36', front: 'ccfriAmountLess18To36' },
+  { back: 'ccof_ccfriamountover18to36', front: 'ccfriAmountOver18To36' },
+  { back: 'ccof_ccfriamountless3yk', front: 'ccfriAmountLess3YK' },
+  { back: 'ccof_ccfriamountover3yk', front: 'ccfriAmountOver3YK' },
+  { back: 'ccof_ccfriamountlessooscg', front: 'ccfriAmountLessOOSCG' },
+  { back: 'ccof_ccfriamountoverooscg', front: 'ccfriAmountOverOOSCG' },
+  { back: 'ccof_ccfriamountlessoosck', front: 'ccfriAmountLessOOSCK' },
+  { back: 'ccof_ccfriamountoveroosck', front: 'ccfriAmountOverOOSCK' },
+  { back: 'ccof_ccfriamountlesspre', front: 'ccfriAmountLessPre' },
+  { back: 'ccof_ccfriprovideramountless0to18', front: 'ccfriProviderAmountLess0To18' },
+  { back: 'ccof_ccfriprovideramountover0to18', front: 'ccfriProviderAmountOver0To18' },
+  { back: 'ccof_ccfriprovideramountless18to36', front: 'ccfriProviderAmountLess18To36' },
+  { back: 'ccof_ccfriprovideramountover18to36', front: 'ccfriProviderAmountOver18To36' },
+  { back: 'ccof_ccfriprovideramountless3yk', front: 'ccfriProviderAmountLess3YK' },
+  { back: 'ccof_ccfriprovideramountover3yk', front: 'ccfriProviderAmountOver3YK' },
+  { back: 'ccof_ccfriprovideramountlessooscg', front: 'ccfriProviderAmountLessOOSCG' },
+  { back: 'ccof_ccfriprovideramountoverooscg', front: 'ccfriProviderAmountOverOOSCG' },
+  { back: 'ccof_ccfriprovideramountlessoosck', front: 'ccfriProviderAmountLessOOSCK' },
+  { back: 'ccof_ccfriprovideramountoveroosck', front: 'ccfriProviderAmountOverOOSCK' },
+  { back: 'ccof_ccfriprovideramountlesspre', front: 'ccfriProviderAmountLessPre' },
+  { back: 'ccof_grandtotalbase', front: 'grandTotalBase' },
+  { back: 'ccof_grandtotalccfri', front: 'grandTotalCcfri' },
+  { back: 'ccof_grandtotalccfriprovider', front: 'grandTotalCcfriProvider' },
+];
+
+const DailyEnrolmentMappings = [
+  { back: 'ccof_dailyenrollmentid', front: 'dailyEnrolmentId' },
+  { back: '_ccof_monthlyenrollmentreport_value', front: 'enrolmentReportId' },
+  { back: 'ccof_day', front: 'day' },
+  { back: 'ccof_daytype', front: 'dayType' },
+  { back: 'ccof_daytype@OData.Community.Display.V1.FormattedValue', front: 'dayTypeName' },
+  { back: 'ccof_less0to18', front: 'less0To18' },
+  { back: 'ccof_over0to18', front: 'over0To18' },
+  { back: 'ccof_less18to36', front: 'less18To36' },
+  { back: 'ccof_over18to36', front: 'over18To36' },
+  { back: 'ccof_less3yk', front: 'less3YK' },
+  { back: 'ccof_over3yk', front: 'over3YK' },
+  { back: 'ccof_lessooscg', front: 'lessOOSCG' },
+  { back: 'ccof_overooscg', front: 'overOOSCG' },
+  { back: 'ccof_lessoosck', front: 'lessOOSCK' },
+  { back: 'ccof_overoosck', front: 'overOOSCK' },
+  { back: 'ccof_lesspre', front: 'lessPre' },
+];
+
+const LicenceMappings = [
+  { back: 'ccof_licenseid', front: 'licenceId' },
+  { back: 'ccof_name', front: 'licenceNumber' },
+  { back: 'ccof_organization', front: 'ccofOrganization' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_start_date', front: 'licenceStartDate' },
+  { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
+];
+
+const ServiceDeliveryMappings = [
+  { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
+  { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
+  { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
+  { back: 'ccof_overnight_care', front: 'overnightCare' },
+  { back: 'ccof_care_type@OData.Community.Display.V1.FormattedValue', front: 'capacityByCareType' },
+  { back: 'ccof_extended_hours_offered', front: 'extendedHours' },
+
+  { back: 'ccof_start_date', front: 'licenceStartDate' },
+  { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_max_capacity', front: 'maximumCapacity' },
+  { back: 'ccof_licenced_spaces', front: 'licencedSpaces' },
+  { back: 'ccof_hours_of_operation_start', front: 'facilityHoursFrom' },
+  { back: 'ccof_hours_of_operation_end', front: 'facilityHoursTo' },
+
+  { back: 'ccof_max_4_or_less', front: 'maxfourorLess' },
+  { back: 'ccof_max_over_4', front: 'maxoverFour' },
+
+  { back: 'ccof_number_of_preschool_sessions', front: 'preschoolSessions' },
+  { back: 'ccof_school_age_on_school_grounds', front: 'schoolAgeOnSchoolGrounds' },
+  { back: 'ccof_recreational_care', front: 'recreationalCare' },
+  { back: 'ccof_before_school', front: 'beforeSchoolCare' },
+  { back: 'ccof_after_school', front: 'afterSchoolCare' },
+  { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
+  { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
+  { back: 'ccof_accepts_subsidy', front: 'acceptsSubsidy' },
+];
+
+const RoleMappings = [
+  { back: 'ofm_name', front: 'roleName' },
+  { back: 'ofm_portal_role_number', front: 'roleNumber' },
+  { back: 'ofm_portal_roleid', front: 'roleId' },
+];
+
+const PermissionMappings = [
+  { back: 'ofm_name', front: 'permissionName' },
+  { back: 'ofm_portal_privilege_number', front: 'permissionNumber' },
 ];
 
 module.exports = {
   ApplicationDocumentsMappings,
+  DailyEnrolmentMappings,
   DocumentsMappings,
   ContactMappings,
   OrganizationMappings,
@@ -594,6 +783,8 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  EnrolmentReportExtensionMappings,
+  EnrolmentReportMappings,
   EnrolmentReportSummaryMappings,
   UserProfileFacilityMappings,
   UserProfileBaseFundingMappings,
@@ -608,6 +799,7 @@ module.exports = {
   CCFRIFacilityMappings,
   OrganizationFacilityMappings,
   ClosureMappings,
+  RateMappings,
   RFIApplicationMappings,
   DeclarationMappings,
   ServiceExpansionDetailsMappings,
@@ -622,4 +814,10 @@ module.exports = {
   UserProfileChangeRequestNewFacilityMappings,
   PdfDocumentMappings,
   FundingAgreementMappings,
+  LicenceMappings,
+  ServiceDeliveryMappings,
+  RoleMappings,
+  PermissionMappings,
+  UserProfileMappings,
+  ContactFacilityMappings,
 };

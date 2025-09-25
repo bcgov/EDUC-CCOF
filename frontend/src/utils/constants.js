@@ -58,6 +58,7 @@ export const ApiRoutes = Object.freeze({
   CANADA_POST: baseRoot + '/canadaPost',
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
+  LICENCES: baseRoot + '/licences',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -75,7 +76,7 @@ export const PAGE_TITLES = Object.freeze({
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
   ORGANIZATION_CLOSURES: 'Organization Closures',
-  ENROLMENT_REPORTS_VIEW: 'Enrolment Report',
+  ENROLMENT_REPORTS: 'Enrolment Report',
 });
 
 export const CHANGE_TYPES = Object.freeze({
@@ -99,7 +100,6 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
-    VIEW_FUNDING_AGREEMENT: '/org-facilities/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -427,7 +427,7 @@ export const BCSSA_REGION_LINKS = Object.freeze({
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
-  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  EMPTY_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
   FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
@@ -512,6 +512,15 @@ export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
   INACTIVE: 2,
 });
 
+export const GROUP_LICENCE_CATEGORIES = Object.freeze({
+  GROUP_CHILD_CARE_UNDER_36_MONTHS: 1,
+  GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE: 2,
+  GROUP_CHILD_CARE_SCHOOL_AGE: 3,
+  MULTI_AGE_CHILD_CARE: 4,
+  PRESCHOOL: 8,
+  SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS: 9,
+});
+
 export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
   MULTI_AGE_CHILD_CARE: 5,
   IN_HOME_MULTI_AGE_CHILD_CARE: 6,
@@ -543,20 +552,12 @@ export const CCFRI_MIN_FEE = 0;
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
-export const FULL_MONTH_NAMES = {
-  1: 'January',
-  2: 'February',
-  3: 'March',
-  4: 'April',
-  5: 'May',
-  6: 'June',
-  7: 'July',
-  8: 'August',
-  9: 'September',
-  10: 'October',
-  11: 'November',
-  12: 'December',
-};
+export const ROLES = Object.freeze({
+  ORG_ADMIN: '10',
+  FAC_ADMIN_ADVANCED: '11',
+  FAC_ADMIN_BASIC: '13',
+  READ_ONLY: '12',
+});
 
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   ACTIVE: 'Active',
@@ -568,4 +569,37 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   TERMINATED: 'Terminated',
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
+});
+
+export const DAY_TYPES = Object.freeze({
+  WEEKDAY: 100000000,
+  WEEKEND: 100000001,
+  STATUTORY: 100000002,
+});
+
+export const DAYS_OF_WEEK = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+};
+
+export const ENROLMENT_REPORT_STATUSES = Object.freeze({
+  DRAFT: 1,
+  SUBMITTED: 2,
+  WITH_MINISTRY: 3,
+  REJECTED: 4,
+  APPROVED: 6,
+  PAID: 7,
+  EXPIRED: 8,
+});
+
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  CREATED: 1,
+  INCOMPLETE: 2,
+  SUBMITTED: 3,
+  REJECTED: 5,
 });

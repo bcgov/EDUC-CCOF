@@ -5,6 +5,19 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
+    <v-row>
+      <v-col class="d-flex justify-end">
+        <AppButton
+          v-if="hasPermission(PERMISSIONS.ADD_USERS)"
+          size="small"
+          prepend-icon="mdi-plus"
+          display="inline-grid"
+          @click="addUserDialogOpen = true"
+        >
+          Add User
+        </AppButton>
+      </v-col>
+    </v-row>
     <v-row v-if="contactsLoading" no-gutters>
       <v-col cols="12">
         <v-card variant="outlined" class="soft-outline fill-height px-2">
@@ -27,7 +40,9 @@
         >
           <template #[`item.edit-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <AppButton :primary="false" size="small" @click="editUser(item.contactId)">Edit</AppButton>
+              <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
+                Edit
+              </AppButton>
             </v-row>
           </template>
           <template #[`item.accessType`]="{ item }">
@@ -40,7 +55,13 @@
           </template>
           <template #[`item.remove-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end">
-              <AppButton :primary="false" color="#d8292f" size="small" @click="() => deleteUser(item.contactId)">
+              <AppButton
+                v-if="mayRemoveUser(item)"
+                :primary="false"
+                color="#d8292f"
+                size="small"
+                @click="() => confirmDeleteUser(item.contactId)"
+              >
                 Remove
               </AppButton>
             </v-row>
@@ -54,32 +75,65 @@
       </v-col>
     </v-row>
   </v-container>
+  <RemoveUserDialog
+    :show="removeUserDialogOpen"
+    :user="targetUser"
+    @contact-deactivated="contactDeactivatedHandler"
+    @close-remove-dialog="removeUserDialogOpen = false"
+  />
+  <AddUserDialog
+    :show="addUserDialogOpen"
+    @contact-created="reloadContacts"
+    @close-add-dialog="addUserDialogOpen = false"
+  />
+  <EditUserDialog
+    :show="editUserDialogOpen"
+    :user="targetUser"
+    @contact-updated="reloadContacts"
+    @close-edit-dialog="editUserDialogOpen = false"
+  />
 </template>
+
 <script>
 import { mapState, mapActions } from 'pinia';
 import { isEmpty } from 'lodash';
-import { PATHS } from '@/utils/constants.js';
-import contactService from '@/services/contactService.js';
-import { useOrganizationStore } from '@/store/ccof/organization';
+
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AddUserDialog from '@/components/accountMgmt/AddUserDialog.vue';
+import EditUserDialog from '@/components/accountMgmt/EditUserDialog.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import RemoveUserDialog from '@/components/accountMgmt/RemoveUserDialog.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import NavButton from '@/components/util/NavButton.vue';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
+
+import contactService from '@/services/contactService.js';
+
+import { useAuthStore } from '@/store/auth';
+import { useOrganizationStore } from '@/store/ccof/organization';
+
+import { ROLES, PATHS } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 export default {
   name: 'ManageUsers',
-  components: { AppButton, NavButton },
-  mixins: [alertMixin],
+  components: { AppButton, AddUserDialog, NavButton, RemoveUserDialog, EditUserDialog },
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       tab: undefined,
       PATHS,
       contacts: [],
+      targetUser: {},
       sortBy: [{ key: 'isPrimaryContact', order: 'desc' }],
       contactsLoading: false,
+      removeUserDialogOpen: false,
+      addUserDialogOpen: false,
+      editUserDialogOpen: false,
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, [
       'organizationId',
       'organizationName',
@@ -105,7 +159,7 @@ export default {
         await this.loadOrganization(this.organizationId);
       }
       const contactsData = await contactService.loadContacts(this.organizationId);
-      this.contacts = contactsData.map(this.setAccessTypeField);
+      this.contacts = this.sortUsers(contactsData.map(this.setAccessTypeField));
     } catch (error) {
       this.setFailureAlert('There was an error loading the users');
       console.error('Error loading users: ', error);
@@ -116,17 +170,73 @@ export default {
   methods: {
     ...mapActions(useOrganizationStore, ['loadOrganization']),
     setAccessTypeField(contact) {
+      let accessType = 'Contact Only';
+      if (contact.isPortalUser) {
+        accessType = contact.role?.roleName || 'No Role Assigned';
+      }
+
       return {
         ...contact,
         isPrimaryContact: contact.contactId === this.loadedModel.primaryContactId,
-        accessType: contact.isPortalUser ? 'Portal User' : 'Contact Only',
+        accessType,
       };
     },
     editUser(id) {
-      alert(`Edit: ${id}`);
+      this.targetUser = this.contacts.find((c) => c.contactId == id);
+      this.editUserDialogOpen = true;
     },
-    deleteUser(id) {
-      alert(`Delete: ${id}`);
+    async confirmDeleteUser(id) {
+      this.targetUser = this.contacts.find((c) => c.contactId == id);
+      this.removeUserDialogOpen = true;
+    },
+    mayEditUser(user) {
+      if (!user.isPortalUser) {
+        return false;
+      }
+      if (this.isSelf(user)) {
+        return this.hasPermission(PERMISSIONS.UPDATE_SELF);
+      }
+      return this.hasPermission(PERMISSIONS.EDIT_USERS);
+    },
+    mayRemoveUser(user) {
+      return this.hasPermission(PERMISSIONS.DELETE_USERS) && !user.isPrimaryContact && !this.isSelf(user);
+    },
+    isSelf(user) {
+      return this.userInfo.contactId === user.contactId;
+    },
+    contactDeactivatedHandler(id) {
+      this.contacts = this.contacts.filter((c) => c.contactId !== id);
+    },
+    async reloadContacts() {
+      this.contacts = this.sortUsers(
+        (await contactService.loadContacts(this.organizationId)).map(this.setAccessTypeField),
+      );
+    },
+    sortUsers(contacts) {
+      const rolePriority = {
+        [ROLES.ORG_ADMIN]: 1,
+        [ROLES.FAC_ADMIN_ADVANCED]: 2,
+        [ROLES.FAC_ADMIN_BASIC]: 3,
+        [ROLES.READ_ONLY]: 4,
+      };
+      const defaultPriority = 100;
+      // 1. Primary contact first
+      return contacts.sort((a, b) => {
+        if (a.isPrimaryContact !== b.isPrimaryContact) {
+          return a.isPrimaryContact ? -1 : 1;
+        }
+
+        // 2. Sort by role priority (1.ORG_ADMIN, 2.FAC_ADMIN_ADVANCED, 3.FAC_ADMIN_BASIC, 4.READONLY, 5.Contact Only/No Role Assigned)
+        const priorityA = rolePriority[a.role.roleNumber] ?? defaultPriority;
+        const priorityB = rolePriority[b.role.roleNumber] ?? defaultPriority;
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+
+        // 3. Sort by last name (A-Z)
+        return a.lastName.localeCompare(b.lastName);
+      });
     },
   },
 };

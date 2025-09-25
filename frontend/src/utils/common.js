@@ -1,6 +1,8 @@
 'use strict';
 
-import { isPlainObject, sortBy } from 'lodash';
+import Decimal from 'decimal.js';
+import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
+import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import {
@@ -53,6 +55,9 @@ export function isNullOrBlank(value) {
  *                     otherwise returns `false`.
  */
 export function validateHourDifference(from, to, difference) {
+  if (isNullOrBlank(from) || isNullOrBlank(to) || isNullOrBlank(difference)) {
+    return false;
+  }
   // Extract and convert the time to minutes from "HH:mm" format
   const minutesFrom =
     parseInt(formatTime12to24(from).split(':')[0], 10) * 60 + parseInt(formatTime12to24(from).split(':')[1], 10);
@@ -209,4 +214,66 @@ export function getOrganizationNameLabel(organizationType) {
 export function padString(input, length, char) {
   if (input == null) return null;
   return String(input).padStart(length, char);
+}
+
+export function getDayOfWeek(day, month, year, dateFormat = 'dddd') {
+  // Adjust month to 0-based index
+  const date = moment({ year, month: month - 1, day });
+  return date.format(dateFormat); // e.g., "Monday"
+}
+
+/**
+ * Returns an array of objects from the `updated` array that differ from the `original` array
+ * based on a specified set of keys and a shared identifier.
+ *
+ * @param {Array<Object>} original - The original array of objects.
+ * @param {Array<Object>} updated - The updated array of objects.
+ * @param {Array<string>} keys - The list of keys to compare for detecting changes.
+ * @param {string} idKey - The key used to uniquely identify and match objects (e.g., 'id').
+ * @returns {Array<Object>} An array of objects from `updated` that have changed values for the specified keys.
+ */
+export function getUpdatedObjectsByKeys(original, updated, keys, idKey) {
+  if (isEmpty(original) || isEmpty(updated) || isEmpty(keys) || isEmpty(idKey)) return [];
+  const originalMap = new Map(original.map((obj) => [obj[idKey], obj]));
+  return updated.filter((updatedObj) => {
+    const originalObj = originalMap.get(updatedObj[idKey]);
+    if (!originalObj) return true; // If not found in original, treat as new/changed
+    return !isEqual(pick(updatedObj, keys), pick(originalObj, keys));
+  });
+}
+
+/**
+ * Adds two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   0.1 + 0.2 === 0.30000000000000004
+ *
+ * @param {number} a - First number to add.
+ * @param {number} b - Second number to add.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded sum as a Number.
+ */
+export function addDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).plus(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Multiplies two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   12 * 3.7 === 44.400000000000006
+ *
+ * @param {number} a - First number to multiply.
+ * @param {number} b - Second number to multiply.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded result as a Number.
+ */
+export function multiplyDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
 }

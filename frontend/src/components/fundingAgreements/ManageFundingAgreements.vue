@@ -23,7 +23,7 @@
             v-model="selectedTerms"
             :items="fundingAgreementTerms"
             item-value="fundingAgreementTerm"
-            item-title="term"
+            item-title="displayTerm"
             clearable
             hide-details
           />
@@ -38,9 +38,13 @@
           mobile-breakpoint="md"
           class="elevation-2"
         >
-          <template #[`item.fundingAgreementStatus`]="{ item }">
-            <span :class="getStatusClass(item.fundingAgreementStatus)">
-              {{ item.fundingAgreementStatus }}
+          <template #[`item.fundingAgreementTerm`]="{ item }">
+            {{ item.fundingAgreementTerm.slice(0, -3) }}
+          </template>
+
+          <template #[`item.externalStatus`]="{ item }">
+            <span :class="getStatusClass(item.externalStatus)">
+              {{ item.externalStatus }}
             </span>
           </template>
 
@@ -54,12 +58,8 @@
 
           <template #[`item.actions`]="{ item }">
             <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
-              <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
-                View
-              </AppButton>
-              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item.fundingAgreementId)">
-                Download
-              </AppButton>
+              <AppButton :primary="false" size="small" @click="goToViewFundingAgreement(item)"> View </AppButton>
+              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item)"> Download </AppButton>
             </v-row>
           </template>
         </v-data-table>
@@ -68,20 +68,24 @@
   </v-container>
 </template>
 <script>
-import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
-
-import { formatUTCDate } from '@/utils/format';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
+import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+
 import FundingAgreementService from '@/services/fundingAgreementService.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
+import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants';
+import { formatUTCDate } from '@/utils/format';
 
 export default {
   name: 'ManageFundingAgreements',
   components: { AppButton, AppMultiSelectInput },
+  mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
@@ -91,7 +95,7 @@ export default {
       fundingAgreementTableHeaders: [
         { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
         { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
-        { title: 'Status', sortable: true, value: 'fundingAgreementStatus' },
+        { title: 'Status', sortable: true, value: 'externalStatus' },
         { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
@@ -114,7 +118,7 @@ export default {
     async loadData() {
       await this.loadFundingAgreements();
       this.fundingAgreementTerms = [...new Set(this.fundingAgreements.map((a) => a.fundingAgreementTerm))].map(
-        (term) => ({ term, fundingAgreementTerm: term }),
+        (displayTerm) => ({ displayTerm: displayTerm.slice(0, -3), fundingAgreementTerm: displayTerm }),
       );
     },
     async loadFundingAgreements() {
@@ -128,11 +132,8 @@ export default {
         this.isLoading = false;
       }
     },
-    navigateToViewFundingAgreement(id) {
-      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
-    },
-    goToChangeRequestHistory() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
+    goToViewFundingAgreement(agreement) {
+      this.$router.push(`${PATHS.ROOT.FUNDING_AGREEMENTS}/${agreement.fundingAgreementId}`);
     },
     getStatusClass(status) {
       switch (status) {
@@ -164,8 +165,8 @@ export default {
       const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
       this.fundingAgreements?.sort((a, b) => {
         // 1. Prioritize "Drafted – Provider Action Required" over "Drafted - With Ministry"
-        const priorityA = statusPriority[a.fundingAgreementStatus] ?? defaultPriority;
-        const priorityB = statusPriority[b.fundingAgreementStatus] ?? defaultPriority;
+        const priorityA = statusPriority[a.externalStatus] ?? defaultPriority;
+        const priorityB = statusPriority[b.externalStatus] ?? defaultPriority;
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
@@ -179,6 +180,19 @@ export default {
         const fundingagreementB = b.fundingAgreementOrderNumber ?? 0;
         return fundingagreementB - fundingagreementA;
       });
+    },
+    async downloadPDFFundingAgreement(agreement) {
+      try {
+        const resp = await FundingAgreementService.getFundingAgreementPDF(agreement.fundingAgreementId);
+        const filename = `Funding_Agreement_${agreement.fundingAgreementNumber}.pdf`;
+        Object.assign(document.createElement('a'), {
+          href: `data:application/pdf;base64,${resp}`,
+          download: filename,
+        }).click();
+      } catch (error) {
+        this.setFailureAlert('Failed to download Funding Agreement PDF');
+        console.error(error);
+      }
     },
   },
 };

@@ -1,24 +1,40 @@
 <template>
   <v-container fluid class="pa-12">
-    <h1>Facility Information</h1>
-    <v-skeleton-loader v-if="facilityLoading" class="header-skeleton" width="250px" type="paragraph" />
-    <p v-else class="mb-6">
-      <b>{{ facility.facilityName }}</b> <br />
-      ID: {{ facility.facilityAccountNumber }} <br />
-      Licence #: {{ facility.licenseNumber }}
-    </p>
+    <v-row no-gutters>
+      <v-col cols="8" sm="7">
+        <h1>Facility Information</h1>
+        <v-skeleton-loader v-if="facilityLoading" class="header-skeleton" width="250px" type="paragraph" />
+        <p v-else class="mb-6">
+          <b>{{ facility.facilityName }}</b> <br />
+          ID: {{ facility.facilityAccountNumber }} <br />
+          Licence #: {{ facility.licenseNumber }}
+        </p>
+      </v-col>
+      <v-col cols="4" sm="5" class="d-flex justify-end align-end">
+        <AppButton size="small" :disabled="!facilityIsActive" @click="goToChangeRequest">Request a Change</AppButton>
+      </v-col>
+    </v-row>
     <v-row>
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
             <v-tab value="facility-details">Facility Details</v-tab>
+            <v-tab value="licences-details">Licences </v-tab>
             <v-tab value="programs-and-services">Programs and Services</v-tab>
             <v-tab value="closures">Closures</v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
               <v-window-item value="facility-details">
-                <ManageFacilityDetails :facility="facility" :facility-loading="facilityLoading" />
+                <ManageFacilityDetails
+                  v-if="facilityDataReady"
+                  :facility="facility"
+                  :facility-loading="facilityLoading"
+                  @facility-updated="updateFacility"
+                />
+              </v-window-item>
+              <v-window-item value="licences-details">
+                <ManageLicence />
               </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
               <v-window-item value="closures">Closures</v-window-item>
@@ -36,18 +52,23 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { isEmpty } from 'lodash';
 import { PATHS } from '@/utils/constants.js';
 
+import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
 import alertMixin from '@/mixins/alertMixin.js';
+import { isFacilityActive } from '@/utils/facility.js';
 
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import ManageLicence from '@/components/licences/ManageLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { NavButton, ManageFacilityDetails },
+  components: { AppButton, NavButton, ManageFacilityDetails, ManageLicence },
   mixins: [alertMixin],
   data() {
     return {
@@ -59,8 +80,16 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
+    ...mapState(useApplicationStore, ['applicationMap', 'programYearId']),
     facilityId() {
       return this.$route.params.facilityId;
+    },
+    facilityIsActive() {
+      const application = this.applicationMap?.get(this.programYearId);
+      return isFacilityActive(this.facility, application);
+    },
+    facilityDataReady() {
+      return !isEmpty(this.facility);
     },
   },
   async mounted() {
@@ -70,7 +99,10 @@ export default {
 
     try {
       this.facilityLoading = true;
-      this.facility = await facilityService.getFacilityById(this.facilityId);
+      this.facility = {
+        ...(await facilityService.getFacilityById(this.facilityId)),
+        facilityId: this.facilityId,
+      };
     } catch (error) {
       this.setFailureAlert('There was an error loading the facility details.');
       console.error('Error loading facility: ', error);
@@ -81,6 +113,15 @@ export default {
   methods: {
     goBackToManageFacilities() {
       this.$router.push(`${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
+    },
+    goToChangeRequest() {
+      this.$router.push({ name: 'Report Change' });
+    },
+    updateFacility(payload) {
+      this.facility = {
+        ...this.facility,
+        ...payload,
+      };
     },
   },
 };

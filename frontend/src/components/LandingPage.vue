@@ -231,7 +231,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" lg="4">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Organization and Facilities</p>
@@ -248,7 +248,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" lg="4">
+      <v-col v-if="hasPermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Users</p>
@@ -387,13 +387,14 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
   components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       input: '',

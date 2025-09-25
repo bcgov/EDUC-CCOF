@@ -28,6 +28,9 @@
             <template #item.programYearValue="{ item }">
               {{ formatFiscalYearName(item.programYearValue) }}
             </template>
+            <template #item.dateReceived="{ item }">
+              {{ formatDateToStandardFormat(item.dateReceived) }}
+            </template>
           </v-data-table>
         </v-card>
       </v-col>
@@ -39,7 +42,7 @@
                 {{ message.sender }}
               </v-col>
               <v-col cols="12" sm="4" class="text-right">
-                {{ message.dateReceived }}
+                {{ formatDateToStandardFormat(message.dateReceived) }}
               </v-col>
             </v-row>
             <div class="pt-2">
@@ -60,7 +63,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 
 import { useAuthStore } from '@/store/auth.js';
 import { useMessageStore } from '@/store/message.js';
@@ -69,7 +72,7 @@ import Spinner from '@/components/common/Spinner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import { PATHS } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
+import { formatDateToStandardFormat, formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'MessagesPage',
@@ -128,6 +131,7 @@ export default {
   methods: {
     ...mapActions(useMessageStore, ['updateMessage', 'getAllMessages']),
     formatFiscalYearName,
+    formatDateToStandardFormat,
     async loadMessages() {
       try {
         this.loading = true;

@@ -17,6 +17,7 @@ import {
   CHANGE_TYPES,
   ERROR_MESSAGES,
   FAMILY_LICENCE_CATEGORIES,
+  GROUP_LICENCE_CATEGORIES,
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
@@ -75,51 +76,52 @@ export default {
     hasLicenceCategory() {
       return ApplicationService.hasLicenceCategory(this.fundingModel);
     },
+    hasSchoolAgeCareLicenceCategory() {
+      return ApplicationService.hasSchoolAgeCareLicenceCategory(this.fundingModel);
+    },
     hasSchoolAgeCareServices() {
       return ApplicationService.hasSchoolAgeCareServices(this.fundingModel);
     },
     hasLicenceCategoryWithExtendedChildCare() {
       return ApplicationService.hasLicenceCategoryWithExtendedChildCare(this.fundingModel);
     },
-    isUnder36ExtendedChildCareValid() {
-      return ApplicationService.isUnder36ExtendedChildCareValid(this.fundingModel);
+    isUnder36ExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
+      );
     },
-    is30MonthToSchoolAgeExtendedChildCareValid() {
-      return ApplicationService.is30MonthToSchoolAgeExtendedChildCareValid(this.fundingModel);
+    is30MonthToSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE,
+      );
     },
-    isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid() {
-      return ApplicationService.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid(this.fundingModel);
+    isSchoolAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
+      );
     },
-    isMultiAgeExtendedChildCareValid() {
-      return ApplicationService.isMultiAgeExtendedChildCareValid(this.fundingModel);
+    isSchoolAgeCareOnSchoolGroundsExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
+      );
+    },
+    isMultiAgeExtendedCCMaxSpacesEntered() {
+      return ApplicationService.isGroupExtendedCCMaxSpacesEntered(
+        this.fundingModel,
+        GROUP_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE,
+      );
     },
     isFormComplete() {
       if (this.showApplicationTemplateV1) {
         return this.fundingModel.isCCOFComplete;
       }
-      const isClosedMonthsValid =
-        !this.fundingModel.hasClosedMonth || (!this.hasAllMonthsClosed && !this.hasNoMonthClosed);
-      if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
-        const licenceCategoryNumber = this.fundingModel.familyLicenseType
-          ? this.fundingModel.familyLicenseType
-          : this.getFamilyLicenceCategoryNumberById(this.fundingModel.licenceCategoryId);
-        const isExtendedCCMaximumSpacesValid =
-          this.fundingModel.isExtendedHours === 0 ||
-          ApplicationService.isFamilyExtendedCCMaximumSpacesValid(this.fundingModel, licenceCategoryNumber);
-        return this.fundingModel.isCCOFComplete && isClosedMonthsValid && isExtendedCCMaximumSpacesValid;
-      }
-      return (
-        this.fundingModel.isCCOFComplete &&
-        isClosedMonthsValid &&
-        this.hasLicenceCategory &&
-        (!this.fundingModel.hasSchoolAgeCareOnSchoolGrounds || this.hasSchoolAgeCareServices) &&
-        (this.fundingModel.isExtendedHours === 0 ||
-          (this.hasLicenceCategoryWithExtendedChildCare &&
-            this.isUnder36ExtendedChildCareValid &&
-            this.is30MonthToSchoolAgeExtendedChildCareValid &&
-            this.isSchoolAgeCareOnSchoolGroundsExtendedChildCareValid &&
-            this.isMultiAgeExtendedChildCareValid))
-      );
+      return this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY
+        ? ApplicationService.isCCOFCompleteFamilyV2(this.fundingModel)
+        : ApplicationService.isCCOFCompleteGroupV2(this.fundingModel);
     },
   },
   created() {
@@ -194,15 +196,15 @@ export default {
         'inHomeMultiAgeExtendedCC4OrMore',
       ];
       const MULTI_AGE_CC_FIEDS = ['maxGroupChildCareMultiAge', 'multiAgeCare4OrLess', 'multiAgeCare4more'];
-      if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE) {
+      if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE) {
         this.fundingModel.maxFamilyChildCare = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
         resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
-      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE) {
+      } else if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.IN_HOME_MULTI_AGE_CHILD_CARE) {
         this.fundingModel.maxInHomeMultiAgeChildCare = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, FAMILY_CC_FIELDS);
         resetValues(this.fundingModel, MULTI_AGE_CC_FIEDS);
-      } else if (this.fundingModel.familyLicenseType === FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE) {
+      } else if (this.fundingModel.licenceCategoryNumber === FAMILY_LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE) {
         this.fundingModel.maxGroupChildCareMultiAge = this.fundingModel.maxLicensesCapacity;
         resetValues(this.fundingModel, FAMILY_CC_FIELDS);
         resetValues(this.fundingModel, IN_HOME_MULTI_AGE_CC_FIELDS);
@@ -218,6 +220,15 @@ export default {
     resetGroupChildCareSchoolAgeRelatedFields() {
       if (isEmpty(this.fundingModel)) return;
       this.fundingModel.maxGroupChildCareSchool = null;
+      this.resetSchoolAgeCareServiceDetails();
+    },
+    resetSchoolAgeCareOnSchoolGroundsRelatedFields() {
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.maxSchoolAgeCareOnSchoolGrounds = null;
+      this.resetSchoolAgeCareServiceDetails();
+    },
+    resetSchoolAgeCareServiceDetails() {
+      if (this.hasSchoolAgeCareLicenceCategory) return;
       this.fundingModel.beforeSchool = null;
       this.fundingModel.beforeKindergarten = null;
       this.fundingModel.afterKindergarten = null;
@@ -240,8 +251,10 @@ export default {
       this.resetUnder36MonthsExtendedCCRelatedFields();
       this.fundingModel.has30MonthToSchoolAgeExtendedCC = null;
       this.reset30MonthsToSchoolAgeExtendedCCRelatedFields();
-      this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.fundingModel.hasSchoolAgeExtendedCC = null;
       this.resetSchoolAgeExtendedCCRelatedFields();
+      this.fundingModel.hasSchoolAgeCareOnSchoolGroundsExtendedCC = null;
+      this.resetSchoolAgeCareOnSchoolGroundsExtendedCCRelatedFields();
       this.fundingModel.hasMultiAgeExtendedCC = null;
       this.resetMultiAgeExtendedCCRelatedFields();
     },
@@ -259,6 +272,11 @@ export default {
       if (isEmpty(this.fundingModel)) return;
       this.fundingModel.extendedChildCareSchoolAge4OrLess = null;
       this.fundingModel.extendedChildCareSchoolAge4OrMore = null;
+    },
+    resetSchoolAgeCareOnSchoolGroundsExtendedCCRelatedFields() {
+      if (isEmpty(this.fundingModel)) return;
+      this.fundingModel.extendedSchoolAgeCareOnSchoolGrounds4OrLess = null;
+      this.fundingModel.extendedSchoolAgeCareOnSchoolGrounds4OrMore = null;
     },
     resetMultiAgeExtendedCCRelatedFields() {
       if (isEmpty(this.fundingModel)) return;

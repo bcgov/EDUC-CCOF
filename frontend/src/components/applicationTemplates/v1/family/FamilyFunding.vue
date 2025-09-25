@@ -11,7 +11,7 @@
 
               <v-radio-group
                 v-show="!isApplicationProcessing"
-                v-model="fundingModel.familyLicenseType"
+                v-model="fundingModel.licenceCategoryNumber"
                 :disabled="isLocked"
                 required
                 :rules="rules.required"

@@ -226,10 +226,10 @@
                 Licence:
               </p>
               <v-radio-group
-                v-model="fundingModel.familyLicenseType"
+                v-model="fundingModel.licenceCategoryNumber"
                 :disabled="isLocked"
                 :rules="rules.required"
-                :hide-details="isEmpty(fundingModel.familyLicenseType)"
+                :hide-details="isEmpty(fundingModel.licenceCategoryNumber)"
               >
                 <div v-for="item in sortedFamilyLicenseCategories" :key="item.ccof_categorynumber">
                   <v-radio
@@ -237,7 +237,7 @@
                     :value="item.ccof_categorynumber"
                   />
                   <v-text-field
-                    v-if="item.ccof_categorynumber === fundingModel.familyLicenseType"
+                    v-if="item.ccof_categorynumber === fundingModel.licenceCategoryNumber"
                     v-model.number="fundingModel.maxLicensesCapacity"
                     :disabled="isLocked"
                     type="number"
@@ -252,7 +252,7 @@
               </v-radio-group>
             </div>
 
-            <div v-if="fundingModel.familyLicenseType" class="mt-4">
+            <div v-if="fundingModel.licenceCategoryNumber" class="mt-4">
               <p class="mb-2">Maximum Licensed Capacity</p>
               <v-text-field
                 :model-value="fundingModel.maxLicensesCapacity"
@@ -338,14 +338,14 @@
               Enter the number of spaces for which you offer extended hours (care before 6:00 AM, after 7:00 PM or
               overnight service regularly offered)
             </p>
-            <v-radio-group :model-value="fundingModel.familyLicenseType" hide-details>
+            <v-radio-group :model-value="fundingModel.licenceCategoryNumber" hide-details>
               <div v-for="item in sortedFamilyLicenseCategories" :key="item.id">
                 <v-radio
                   :label="getLicenceCategoryName(item.ccof_categorynumber)"
                   :value="item.ccof_categorynumber"
                   :disabled="true"
                 />
-                <v-row v-if="item.ccof_categorynumber === fundingModel.familyLicenseType">
+                <v-row v-if="item.ccof_categorynumber === fundingModel.licenceCategoryNumber">
                   <v-col cols="12" lg="6" class="py-0">
                     <p class="pl-4"><strong>4 hours or less extended child care</strong></p>
                     <v-text-field
@@ -379,7 +379,7 @@
                     />
                   </v-col>
                   <div v-if="showInvalidMaxSpacesErrorMessage" class="error-message pl-4">
-                    {{ ERROR_MESSAGES.INVALID_MAX_SPACES_EXTENDED_CC }}
+                    {{ ERROR_MESSAGES.EMPTY_MAX_SPACES_EXTENDED_CC }}
                   </div>
                 </v-row>
               </div>
@@ -401,10 +401,10 @@ export default {
   mixins: [fundMixin, globalMixin],
   computed: {
     maxSpaces4OrLessExtendedCC() {
-      return ApplicationService.getFieldNameOfMaxSpaces4OrLessExtendedCC(this.fundingModel?.familyLicenseType);
+      return ApplicationService.getFieldNameOfMaxSpaces4OrLessExtendedCC(this.fundingModel?.licenceCategoryNumber);
     },
     maxSpaces4OrMoreExtendedCC() {
-      return ApplicationService.getFieldNameOfMaxSpaces4OrMoreExtendedCC(this.fundingModel?.familyLicenseType);
+      return ApplicationService.getFieldNameOfMaxSpaces4OrMoreExtendedCC(this.fundingModel?.licenceCategoryNumber);
     },
     showInvalidMaxSpacesErrorMessage() {
       return (
