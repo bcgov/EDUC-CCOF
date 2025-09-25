@@ -8,3 +8,5 @@ cypress/reports/
 
 # Environment / config secrets
 cypress.env.json
+.env.json
+.env

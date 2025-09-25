@@ -68,34 +68,39 @@ describe('Group Application', () => {
 
     it('Full E2E Flow', () => {
         // Update any test data here --> NOTE: Some data may need to be updated in related fixture file directly
+
+        // CCFRI Variables
         ccfriOptInOrOut = ccfriOptInOrOut.optIn
         parentFeeCategories = parentFees.parentFeeCategories
-        paymentFrequency = parentFees.frequency.monthly
+        paymentFrequency = parentFees.frequency.daily
         closureCharges = closures.closureCharges.chargeForClosures
         startDate = closures.startDate
         endDate = closures.endDate
         closureReason = closures.closureReason
         fullFacilityClosureStatus = closures.fullFacilityClosureStatus.fullFacilityClosure
-        careCategoriesAffected = closures.careCategoriesAffected
 
+        // ECE-WE Variables
         eceWeOptInOrOut = eceWeOptInOrOut.optIn
         publicSectorEmployer = publicSectorEmployer.isEmployer
-        csseaSelection = cssea.csseaMember.status
+        csseaSelection = cssea.csseaNonMember.status
         fundingType = cssea.csseaMember.fundingModel.provinciallyFunded
-        unionStatus = cssea.csseaNonMember.response.someOrAllUnionized
+        unionStatus = cssea.csseaNonMember.response.noneUnionized
         facilityOptInOrOut = facility.facilityOptInOrOut.optIn
         facilityUnionStatus = facility.facilityUnionStatus.unionized
 
+        // START 
         cy.clickByText('Start Application')
         cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)', { timeout: 15000 }).should('be.visible')
         cy.get('#start-application').should('be.visible').click()
         cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible')
         cy.contains('.v-card-title', 'Group Provider').should('be.visible')
         cy.clickByText('Start Application')
+
         // Organization Information
         cy.get('.v-card-title > h3')
             .should('be.visible')
             .and('contain', 'Organization Information')
+
         // Choosing Registered Company in Type of Organization
         cy.get('#input-46').click();
         cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(orgData.legalOrgName)
@@ -112,6 +117,7 @@ describe('Group Application', () => {
         cy.getByLabel("Email Address of the Organization's Authorized Signing Authority").typeAndAssert(orgData.email)
         cy.clickByText('Save')
         cy.clickByText('Next')
+
         // Facility Information
         cy.get('.v-card-title > h3', { timeout: 10000 })
             .should('be.visible')
@@ -172,7 +178,6 @@ describe('Group Application', () => {
             cy.getByLabel("Maximum number of days per week you offer extended hours of child care?").typeAndAssert(facilityLicenceDetailsData.maxDaysPerWeekExtendedHours)
             cy.getByLabel("Maximum number of weeks per year you offer extended hours of child care?").typeAndAssert(facilityLicenceDetailsData.maxWeeksPerYearExtendedHours)
 
-
             const licenceCategoriesExtendedHours = facilityLicenceDetailsData.licenceCategoriesExtendedHours;
             if (licenceCategoriesExtendedHours) {
                 Object.entries(licenceCategoriesExtendedHours).forEach(([category, value]) => {
@@ -186,7 +191,7 @@ describe('Group Application', () => {
         cy.clickByText('Save')
         cy.clickByText('Next')
 
-        //Add Facility Page
+        //Add Facility Page - MULTI FACILITY TODO
         cy.get('p.text-center.mb-4', { timeout: 10000 })
             .should('be.visible')
             .and('have.text', 'You have successfully applied for CCOF for the following facilities:');
@@ -195,9 +200,8 @@ describe('Group Application', () => {
             .should('be.visible');
         cy.contains('button', 'No').click();
 
-        // Licence Upload Page
+        // Licence Upload 
         cy.contains('h3', 'Licence Upload').should('be.visible');
-        // Upload Licence File
         const fileName = 'Sample500kb.pdf'; // Ensure this file exists in cypress/fixtures
         cy.get('input[placeholder="Select your file"]')
             .attachFile(fileName, { force: true })
@@ -229,7 +233,6 @@ describe('Group Application', () => {
                 cy.wrap(card).should('contain', `${category}`).contains('label', `${paymentFrequency}`).click()
 
                 Object.entries(parentFees.months).forEach(([month, fee]) => {
-
                     cy.wrap(card).within(() => {
                         cy.getByLabel(month).then($input => {
                             cy.wrap($input).invoke('val', fee).trigger('input', { force: true });
@@ -251,9 +254,9 @@ describe('Group Application', () => {
             if (closureCharges == "No") {
                 return
             } else {
-                // Charge for Closures
+                // Full Closure - MULTI CLOSURE TODO
                 cy.get('.v-form').should('be.visible')
-                cy.getByLabel('Start Date').typeAndAssert(startDate)
+                cy.getByLabel('Start Date').typeAndAssert(startDate)                        
                 cy.getByLabel('End Date').typeAndAssert(endDate)
                 cy.getByLabel('Closure Reason').typeAndAssert(closureReason)
                 cy.get('p.span-label.pr-4').should('contain', 'Is this a full facility closure?')
@@ -262,29 +265,19 @@ describe('Group Application', () => {
                     cy.getByLabel(`${fullFacilityClosureStatus}`).click()
                 });
 
-                //Not Full Facility Closure
+                //Partial Care Category Closures
                 if (fullFacilityClosureStatus == "No") {
-                    cy.get('.span-label.pr-8.mb-2').should('contain', 'Select all care categories that are affected by the closure:')
-                    careCategoriesAffected.forEach((category) => {
-
-                        //BUG - CAN'T FIND DROPDOWN
-                        cy.getByLabel('Care Categories').click({ force: true })
-                        cy.get('.v-overlay-container', { timeout: 5000 }).getByLabel(`${category}`).click({ force: true })
-                    })
-
+                    //TODO
                 }
             }
         }
+        
         cy.clickByText('Save')
         cy.clickByText('Next')
 
         // ECE-WE Eligibility
         cy.get('.text-h5.my-6').should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE)')
-
-        // Opt-in Status
         cy.get('.v-card').should('contain', 'For the 2025-26 funding term, would you like to opt-in to ECE-WE for any facility in your organization?').getByLabel(`${eceWeOptInOrOut}`).click({ force: true })
-
-        // Public Sector Employer
         cy.contains('.v-card', 'Are you a public sector employer, as defined in the Public Sector Employers Act?').within(() => {
             cy.getByLabel(publicSectorEmployer).click({ force: true })
         })
@@ -335,5 +328,22 @@ describe('Group Application', () => {
         cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
             .click({ force: true })
         cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy', { force: true })
+        cy.clickByText('Submit')
+
+        // Validate & Logout
+        cy.get('.dialog-header')
+            .should('contain', 'Submission Complete')
+        cy.wait(5000)
+        cy.clickByText('Return to your dashboard')
+        cy.url()
+            .should('equal', 'https://qa.mychildcareservices.gov.bc.ca/')
+        cy.get('.v-col-lg-4.v-col-12')
+            .should('contain','Apply for Child Care Operating Funding (CCOF) including:')
+            .should('contain', 'Status: Submitted')
+        cy.get('.v-card')
+            .should('contain', 'Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED')
+            .should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED')
+        cy.get('span.v-chip').click({force: true})
+        cy.get('a#logout_button').click({force:true})
     })
 })

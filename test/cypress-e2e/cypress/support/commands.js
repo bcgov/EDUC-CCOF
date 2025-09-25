@@ -252,7 +252,7 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
 * Method to Continue the application if the button is present
 **/
 Cypress.Commands.add('continueApplicationIfPresent', () => {
-  cy.wait(10000);
+  cy.wait(10000)
   cy.document({ timeout: 30000 }).then((doc) => {
     cy.get('.pb-12.text-h4.text-center').contains('What would you like to do?', {timeout: 10000}).should('be.visible')
     const btn = Array.from(doc.querySelectorAll('button')).find(
