@@ -54,6 +54,15 @@ or for headless mode:
 
       npx cypress run
 
+# Group Application:
+To run the full E2E automation, run the "full-e2e.cy.js" file when opening cypress
+There are 3 areas requiring future contribution for added automation functionality:
+1) Adding Multiple Facilities to a single group application
+2) Adding Multiple Closures to a facility
+3) Adding a Partial Closure affecting specific Care Categories in a facility
+
+These functions are more challenging to implement due to the structure of their respective pages in the Portal. Each area has been marked with "TODO" in terms of where it would likely need to be added in all scripts under "2-group-application".
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit pull requests for improvements and bug fixes.

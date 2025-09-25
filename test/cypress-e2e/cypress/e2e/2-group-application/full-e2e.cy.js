@@ -2,15 +2,16 @@ import { loginPage } from '../../support/pages/LoginPage'
 import 'cypress-file-upload';
 
 describe('Group Application', () => {
+    // Org & Facility Variables
     let orgData
     let facilityData
     let facilityLicenceDetailsData
     let addFacilityData
 
+    // CCFRI Variables
     let ccfriOptInOrOut
     let parentFees
     let closures
-
     let parentFeeCategories
     let paymentFrequency
     let closureCharges
@@ -20,11 +21,11 @@ describe('Group Application', () => {
     let fullFacilityClosureStatus
     let careCategoriesAffected
 
+    // ECE-WE Variables
     let cssea
     let publicSectorEmployer
     let eceWeOptInOrOut
     let facility
-
     let csseaSelection
     let facilityOptInOrOut
     let fundingType
@@ -32,7 +33,6 @@ describe('Group Application', () => {
     let facilityUnionStatus
 
     beforeEach(() => {
-        // Load fixture data for this test
         cy.fixture('groupApplicationData').then((data) => {
             orgData = data.orgData
             facilityData = data.facilityData
@@ -53,7 +53,6 @@ describe('Group Application', () => {
             facility = data.facility
         })
 
-        // Login
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
