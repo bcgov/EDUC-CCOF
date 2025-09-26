@@ -81,7 +81,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should mount the dialog and display inputs for user without edit permissions', () => {
-    mountWithPinia(mockUser);
+    mountWithPinia();
     cy.contains('h3', 'Edit User');
 
     cy.get('form input').should('have.length', 5);
@@ -94,7 +94,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should load the users prior data', () => {
-    mountWithPinia(mockUser);
+    mountWithPinia();
     cy.get('form input').eq(0).should('have.value', mockUser.firstName);
     cy.get('form input').eq(1).should('have.value', mockUser.lastName);
     cy.get('form input').eq(2).should('have.value', mockUser.bceid).shou;
@@ -103,7 +103,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should disable bceid input', () => {
-    mountWithPinia(mockUser);
+    mountWithPinia();
     cy.get('form input').eq(2).should('have.value', mockUser.bceid).should('have.css', 'pointer-events', 'none');
   });
 
@@ -170,7 +170,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should close dialog', () => {
-    mountWithPinia(mockUser);
+    mountWithPinia();
     cy.contains('button', 'Cancel').click();
     cy.contains('Edit User').should('not.be.visible');
     cy.get('@closeEditDialogSpy').should('have.been.calledOnce');
