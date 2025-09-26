@@ -135,3 +135,26 @@ export function formatDecimalNumber(input) {
     maximumFractionDigits: 2,
   });
 }
+
+/**
+ * Formats a numeric value into a properly localized Canadian currency string.
+ *
+ * - Uses Intl.NumberFormat with the "en-CA" locale and "CAD" currency.
+ * - Applies two decimal places and thousands separators automatically.
+ * - Displays negative values in accounting style (e.g., ($6.28)).
+ * - Ensures zero values are displayed with two decimals (e.g., $0.00).
+ *
+ * Examples:
+ *   formatCurrency(1345489.6568) => "$1,345,489.66"
+ *   formatCurrency(-6.28)        => "($6.28)"
+ *   formatCurrency(0)            => "$0.00"
+ */
+export function formatCurrency(value) {
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    currencySign: 'accounting', // Parentheses for negatives
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
