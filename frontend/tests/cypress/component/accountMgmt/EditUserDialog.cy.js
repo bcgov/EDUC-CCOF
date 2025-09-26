@@ -40,7 +40,7 @@ const facilityResponse = [
   },
 ];
 
-function mountWithPinia(initialState = {}, user) {
+function mountWithPinia(user, initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
     const onContactUpdated = cy.spy().as('contactUpdatedSpy');
@@ -81,7 +81,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should mount the dialog and display inputs for user without edit permissions', () => {
-    mountWithPinia({}, mockUser);
+    mountWithPinia(mockUser);
     cy.contains('h3', 'Edit User');
 
     cy.get('form input').should('have.length', 5);
@@ -94,7 +94,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should load the users prior data', () => {
-    mountWithPinia({}, mockUser);
+    mountWithPinia(mockUser);
     cy.get('form input').eq(0).should('have.value', mockUser.firstName);
     cy.get('form input').eq(1).should('have.value', mockUser.lastName);
     cy.get('form input').eq(2).should('have.value', mockUser.bceid).shou;
@@ -103,12 +103,12 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should disable bceid input', () => {
-    mountWithPinia({}, mockUser);
+    mountWithPinia(mockUser);
     cy.get('form input').eq(2).should('have.value', mockUser.bceid).should('have.css', 'pointer-events', 'none');
   });
 
   it('should render user role input for users with edit permission', () => {
-    mountWithPinia({
+    mountWithPinia(null, {
       auth: {
         isAuthenticated: true,
         userInfo: {
@@ -132,20 +132,17 @@ describe('<EditUserDialog />', () => {
       body: facilityResponse,
     });
 
-    mountWithPinia(
-      {
-        auth: {
-          isAuthenticated: true,
-          userInfo: {
-            serverTime: new Date(),
-          },
-        },
-        organization: {
-          organizationId,
+    mountWithPinia(adminUser, {
+      auth: {
+        isAuthenticated: true,
+        userInfo: {
+          serverTime: new Date(),
         },
       },
-      adminUser,
-    );
+      organization: {
+        organizationId,
+      },
+    });
 
     cy.then(() => {
       const authStore = useAuthStore();
@@ -153,7 +150,6 @@ describe('<EditUserDialog />', () => {
     });
 
     cy.contains('label', 'Facilities');
-    // TODO: assert size of results
   });
 
   it('should update user on clicking `Update` button', () => {
@@ -162,7 +158,7 @@ describe('<EditUserDialog />', () => {
       body: {},
     });
 
-    mountWithPinia({});
+    mountWithPinia();
 
     cy.contains('button', 'Update').click();
     cy.get('@contactUpdatedSpy').should('have.been.calledOnce');
@@ -174,7 +170,7 @@ describe('<EditUserDialog />', () => {
   });
 
   it('should close dialog', () => {
-    mountWithPinia({}, mockUser);
+    mountWithPinia(mockUser);
     cy.contains('button', 'Cancel').click();
     cy.contains('Edit User').should('not.be.visible');
     cy.get('@closeEditDialogSpy').should('have.been.calledOnce');

@@ -13,7 +13,7 @@ const mockUser = {
   facilities: [],
 };
 
-function mountWithPinia(initialState = {}, user) {
+function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
     const onRemoveDialog = cy.spy().as('closeRemoveDialogSpy');
