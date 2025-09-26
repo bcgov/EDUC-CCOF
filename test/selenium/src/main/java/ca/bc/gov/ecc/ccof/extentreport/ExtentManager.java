@@ -1,4 +1,4 @@
-package ExtentReport;
+package ca.bc.gov.ecc.ccof.extentreport;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;

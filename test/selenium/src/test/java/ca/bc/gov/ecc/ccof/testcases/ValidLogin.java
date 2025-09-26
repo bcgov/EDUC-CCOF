@@ -1,4 +1,4 @@
-package ca.bc.gov.educ.ccof.selenium.TestCases;
+package ca.bc.gov.ecc.ccof.testcases;
 
 import java.lang.reflect.Method;
 
@@ -6,9 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.annotations.Test;
 
-import ExtentReport.ExtentTestManager;
-import baseclass.BaseTest;
-import ca.bc.gov.educ.ccof.selenium.PageObjects.CRMSignInCredentialPage;
+import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
+import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 
 public class ValidLogin extends BaseTest {
 
@@ -26,11 +26,12 @@ public class ValidLogin extends BaseTest {
 		objCRMSignInCredentialPage.clickSignIn();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.clickYes();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 		objCRMSignInCredentialPage.clickSignInAgain();
+		Thread.sleep(5000);
+		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
+		Thread.sleep(5000);
 		objCRMSignInCredentialPage.clickOrgFacilities();
-		// objCRMSignInCredentialPage.clickheaderPicture();
-		// objCRMSignInCredentialPage.clicksignOut();
 	}
 
 }

@@ -1,4 +1,4 @@
-package ExtentReport;
+package ca.bc.gov.ecc.ccof.extentreport;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package ca.bc.gov.educ.ccof.selenium.PageObjects;
+package ca.bc.gov.ecc.ccof.pageobjects;
 
 import java.time.Duration;
 
@@ -10,7 +10,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class CRMSignInCredentialPage {
+import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+
+public class CRMSignInCredentialPage extends BaseTest {
 
 	WebDriver driver;
 	WebDriverWait wait;
@@ -51,6 +53,14 @@ public class CRMSignInCredentialPage {
 	@FindBy(xpath = "//*[@id='mectrl_body_signOut']")
 	WebElement signOut;
 
+	// Apps dashboard
+
+	@FindBy(xpath = "//iframe[@id='AppLandingPage']")
+	WebElement appsDashboardIFrame;
+
+	@FindBy(xpath = "//div[@title='Case Management System']")
+	WebElement selectCaseManagementSystem;
+
 	// Invalid login elements
 	@FindBy(xpath = "//div[@id='passwordError']")
 	WebElement invalidLoginErrorMessage;
@@ -61,13 +71,13 @@ public class CRMSignInCredentialPage {
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
 
-	public void clickheaderPicture() {
+	public void clickHeaderPicture() {
 		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.visibilityOf(headerPicture));
 		headerPicture.click();
 	}
 
-	public void clicksignOut() {
+	public void clickSignOut() {
 		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.visibilityOf(signOut));
 		signOut.click();
@@ -94,7 +104,6 @@ public class CRMSignInCredentialPage {
 	public void enterPassword(String userPassword) {
 		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.visibilityOf(text_password));
-		// wait(text_password);
 		text_password.sendKeys(userPassword);
 	}
 
@@ -139,11 +148,37 @@ public class CRMSignInCredentialPage {
 		}
 	}
 
+	// apps dashboard method
+
+	public void switchToAppsDashboardIFrame() {
+		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
+		wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(appsDashboardIFrame));
+		wait.until(ExpectedConditions.elementToBeClickable(selectCaseManagementSystem)).click();
+		driver.switchTo().defaultContent();
+	}
+
 	// Invalid Login methods
 	public String getInvalidLoginErrorMessage() {
 		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.visibilityOf(invalidLoginErrorMessage));
 		return invalidLoginErrorMessage.getText();
+
+	}
+
+	public void signInApplication() throws InterruptedException {
+
+		enterUserId(CRM_USERNAME);
+		clickNext();
+		enterPassword(CRM_PASSWORD);
+		Thread.sleep(2000);
+		clickSignIn();
+		Thread.sleep(2000);
+		clickYes();
+		Thread.sleep(5000);
+		clickSignInAgain();
+		Thread.sleep(5000);
+		switchToAppsDashboardIFrame();
+		Thread.sleep(2000);
 
 	}
 }

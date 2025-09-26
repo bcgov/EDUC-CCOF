@@ -1,4 +1,4 @@
-package ca.bc.gov.educ.ccof.selenium.PageObjects;
+package ca.bc.gov.ecc.ccof.pageobjects;
 
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -54,13 +54,13 @@ public class DeleteApplicationPage {
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
 
-	public void MouseOverDeactivate() throws InterruptedException {
+	public void mouseOverDeactivate() throws InterruptedException {
 		Actions action = new Actions(driver);
 		action.moveToElement(deactivateBtn).click().build().perform();
 		Thread.sleep(5000);
 	}
 
-	public void MouseOverDelete() throws InterruptedException {
+	public void mouseOverDelete() throws InterruptedException {
 		Actions action = new Actions(driver);
 		action.moveToElement(deleteBtn).click().build().perform();
 
@@ -81,13 +81,13 @@ public class DeleteApplicationPage {
 		return searchBox.getAttribute("value");
 	}
 
-	public void PressEnter() throws Throwable {
+	public void pressEnter() throws Throwable {
 		Robot robot = new Robot();
 		robot.keyPress(KeyEvent.VK_ENTER);
 		robot.keyRelease(KeyEvent.VK_ENTER);
 	}
 
-	public void FullName() {
+	public void fullName() {
 		WebElement fullName = driver.findElement(By.xpath("//*[contains(@title,'" + getV + "')]"));
 		fullName.click();
 	}
@@ -102,7 +102,7 @@ public class DeleteApplicationPage {
 		selectIdCheckBox.click();
 	}
 
-	public void threeDotsbtn() {
+	public void threeDotsBtn() {
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 		threeDotsbtn.click();
 	}

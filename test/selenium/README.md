@@ -12,34 +12,44 @@ Environment Setup - Eclipse IDE
 
 # Selenium Test Automation Project
 
-## 🚀 Setup Instructions
+This project contains automated test scripts built using Selenium WebDriver, Java, and TestNG.
+It follows the Page Object Model (POM) design pattern and integrates with Extent Reports for detailed test reporting.
+
+## Setup Instructions
 
 1. **Clone the repository**
 
-   git clone < repo - url >
+   git clone https://github.com/bcgov/EDUC-CCOF.git
 
-   cd < project-folder >
+   cd EDUC-CCOF
 
-2. cp config.sample.properties config.properties # Mac/Linux
-   copy config.sample.properties config.properties # Windows
+2. copy config.sample.properties config.properties
 
 3. Open config.properties and update values for:
 
-username / password → your login credentials
+   qa_crm_url=
 
-Any other settings as per your environment
+   uat_crm_url=
+
+   crm_username=
+
+   crm_password=
+
+   browser=
 
 4. Run Tests
 
-From Eclipse: Right-click your TestNG runner → Run As → TestNG Suite
+   Add any test class tag names to testNG.xml that you would like to run
+
+   From Eclipse: Right-click your TestNG runner → Run As → TestNG Suite
 
 5. Reports & Logs
 
-Extent Reports: /extent-reports/
+   Extent Reports: /extent-reports/
 
-Logs: /logs/
+   Logs: /logs/
 
-TestNG default: /test-output/
+   TestNG default: /test-output/
 
 Note: config.properties, logs, extent-reports and test-output are ignored from Git.
 Each developer must maintain their own local config.properties file.

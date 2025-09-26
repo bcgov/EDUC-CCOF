@@ -1,4 +1,4 @@
-package baseclass;
+package ca.bc.gov.ecc.ccof.baseclass;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -76,7 +77,6 @@ public class BaseTest {
 			extent.attachReporter(sparkReporter);
 
 			logger = Logger.getLogger("CCOFCRM");
-			// PropertyConfigurator.configure("Log4j.properties");
 
 			properties = new Properties();
 			FileInputStream fileInputStream = new FileInputStream("config.properties");
@@ -131,7 +131,13 @@ public class BaseTest {
 		return destination;
 	}
 
-	/*
-	 * @AfterSuite private void teardown() { extent.flush(); }
-	 */
+	protected void clickIfPresent(WebElement element, String elementName, boolean isPresent) {
+
+		if (isPresent != true) {
+			element.click();
+			System.out.println("Clicked: " + elementName);
+		}
+
+	}
+
 }

@@ -1,4 +1,4 @@
-package ExtentReport;
+package ca.bc.gov.ecc.ccof.extentreport;
 
 import java.util.HashMap;
 import java.util.Map;
