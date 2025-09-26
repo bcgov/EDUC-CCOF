@@ -247,6 +247,35 @@ describe('<ManageUsers />', () => {
       cy.contains('button', 'Remove').should('not.exist');
     });
 
+    it('should render edit button', () => {
+      const user = {
+        contactid: '1',
+        role: { roleNumber: 123 },
+        firstName: 'John',
+        lastName: 'Doe',
+        isPortalUser: true,
+        telephone: '250-999-9999',
+      };
+
+      mockApiResponses({
+        getContacts: { response: [user] },
+      });
+
+      mountWithPinia({
+        organization: { organizationId },
+        auth: { isAuthenticated: true, userInfo: { contactId: userId } },
+      });
+
+      cy.then(() => {
+        const authStore = useAuthStore();
+        authStore.permissions = [PERMISSIONS.EDIT_USERS];
+      });
+
+      cy.contains('button', 'Edit').click();
+      cy.contains('Edit User');
+      cy.get('form input').eq(0).should('have.value', user.firstName);
+    });
+
     it('should navigate on clicking Back button', () => {
       mountWithPinia({ organization: { organizationId } });
       cy.contains('button', 'Back').click();
