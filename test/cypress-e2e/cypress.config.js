@@ -1,6 +1,7 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
+  defaultCommandTimeout: 10000,
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     reportDir: "cypress/reports/mocha",

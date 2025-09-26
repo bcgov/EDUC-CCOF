@@ -1,0 +1,61 @@
+{
+    "optInOrOut": {
+        "optIn": "Opt-In",
+        "optOut": "Opt-Out"
+    },
+    "parentFees": {
+        "frequency": {
+            "monthly": "Monthly",
+            "daily": "Daily"
+        },
+        "parentFeeCategories": [
+            " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2024-25 FY: Full-Time Preschool",
+            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2025-26 FY: Full-Time Preschool"
+        ],
+        "months": {
+            "Apr": "1",
+            "May": "1",
+            "Jun": "1",
+            "Jul": "1",
+            "Aug": "1",
+            "Sep": "1",
+            "Oct": "1",
+            "Nov": "1",
+            "Dec": "1",
+            "Jan": "1",
+            "Feb": "1",
+            "Mar": "1"
+        }
+    },
+    "closures": {
+        "closureCharges": {
+            "chargeForClosures": "Yes",
+            "noChargeForClosures": "No"
+        },
+        "fullFacilityClosureStatus" : {
+            "fullFacilityClosure": "Yes",
+            "notFullFacilityClosure": "No"
+        },
+        "careCategoriesAffected": [
+            "0 to 18 months",
+            "18 to 36 months",
+            "3 Years to Kindergarten",
+            "Kindergarten",
+            "Grade 1 to Age 12",
+            "Preschool"
+        ],
+        "startDate": "2025-12-01",
+        "endDate": "2025-12-06",
+        "closureReason": "renovations"
+    }
+}
