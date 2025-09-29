@@ -88,9 +88,9 @@
                 <v-table density="compact">
                   <thead>
                     <tr>
-                      <th><b>Facility ID #</b></th>
-                      <th><b>License #</b></th>
-                      <th><b>Facility Name</b></th>
+                      <th scope="col"><b>Facility ID #</b></th>
+                      <th scope="col"><b>License #</b></th>
+                      <th scope="col"><b>Facility Name</b></th>
                     </tr>
                   </thead>
                   <tbody>
