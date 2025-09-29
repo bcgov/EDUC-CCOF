@@ -42,6 +42,10 @@ jobs:
     runs-on: ubuntu-24.04
     needs: test
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
