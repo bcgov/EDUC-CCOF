@@ -54,29 +54,25 @@ async function deactivateContact(req, res) {
 }
 
 async function getRawContactFacilities(contactId) {
-  const facilities = [];
-
   if (!contactId) {
-    return facilities;
+    return [];
   }
 
   try {
     const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$expand=ccof_facility($select=name,ccof_facilitylicencenumber,accountnumber)&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId}) and statecode eq 0`;
     const response = await getOperation(operation);
+    const responseValues = response?.value || [];
 
-    response?.value?.forEach((item) => {
+    return responseValues.map((item) => {
       let facility = new MappableObjectForFront(item, ContactFacilityMappings);
-      facility.data = {
+      return {
         ...facility.data,
         ...new MappableObjectForFront(item.ccof_facility, FacilityMappings).data,
       };
-      facilities.push(facility);
     });
-
-    return facilities;
   } catch (e) {
     log.error(e);
-    return facilities;
+    return [];
   }
 }
 
