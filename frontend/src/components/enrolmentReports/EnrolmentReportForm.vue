@@ -1405,6 +1405,7 @@ export default {
     },
 
     calculate() {
+      if (this.readonly) return;
       this.calculateCurrentTotals();
       this.calculateBaseFundingAmounts();
       this.calculateCcfriAmounts();
