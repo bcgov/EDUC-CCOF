@@ -85,7 +85,7 @@
               "
             >
               <td :colspan="columns.length">
-                <v-table density="compact">
+                <v-table class="mb-2 mt-2 border-b-sm" density="compact">
                   <thead>
                     <tr>
                       <th scope="col"><b>Facility ID #</b></th>
@@ -293,6 +293,10 @@ export default {
 /* These are default framework settings that was somehow allowed to be overriden in CcfriEstimator.vue */
 :deep(h1) {
   font-size: 2em;
+}
+
+.v-data-table th {
+  background-color: #f2f2f2;
 }
 
 .primary-contact {
