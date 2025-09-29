@@ -65,7 +65,6 @@ jobs:
 
       - name: Run Cypress component tests
         run: |
-          cd frontend
           npx cypress run --component
 
   # TODO: Uncomment after project is set up in sonar
