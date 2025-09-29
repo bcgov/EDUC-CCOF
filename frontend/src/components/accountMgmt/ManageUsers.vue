@@ -35,14 +35,18 @@
           :items-per-page="10"
           density="compact"
           :mobile="null"
+          show-expand
+          item-value="contactId"
           mobile-breakpoint="md"
           class="soft-outline"
         >
-          <template #[`item.edit-user`]="{ item }">
+          <template #[`item.action-buttons`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
-                Edit
-              </AppButton>
+              <v-col>
+                <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
+                  Edit
+                </AppButton>
+              </v-col>
             </v-row>
           </template>
           <template #[`item.accessType`]="{ item }">
@@ -65,6 +69,45 @@
                 Remove
               </AppButton>
             </v-row>
+          </template>
+          <template #expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length"><b>Current Facility Access</b></td>
+            </tr>
+            <tr v-if="item.role.roleNumber === roles.ORG_ADMIN || item.role.roleNumber === roles.READ_ONLY">
+              <td :colspan="columns.length">
+                <p>This user has access to all facilities in the organization</p>
+              </td>
+            </tr>
+            <tr
+              v-else-if="
+                item.role.roleNumber === roles.FAC_ADMIN_BASIC || item.role.roleNumber === roles.FAC_ADMIN_ADVANCED
+              "
+            >
+              <td :colspan="columns.length">
+                <v-table density="compact">
+                  <thead>
+                    <tr>
+                      <th><b>Facility ID #</b></th>
+                      <th><b>License #</b></th>
+                      <th><b>Facility Name</b></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="f in item.facilities" :key="f.facilityId">
+                      <td>{{ f.facilityAccountNumber }}</td>
+                      <td>{{ f.licenseNumber }}</td>
+                      <td>{{ f.facilityName }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
+              </td>
+            </tr>
+            <tr v-else>
+              <td :colspan="columns.length">
+                <p>This user does not have any portal access.</p>
+              </td>
+            </tr>
           </template>
         </v-data-table>
       </v-col>
@@ -142,7 +185,8 @@ export default {
     ]),
     headers() {
       return [
-        { title: '', key: 'edit-user', sortable: false },
+        { title: '', key: 'data-table-expand' },
+        { title: '', key: 'action-buttons', sortable: false },
         { title: 'First Name', key: 'firstName' },
         { title: 'Last Name', key: 'lastName' },
         { title: 'Phone Number', key: 'telephone' },
@@ -150,6 +194,9 @@ export default {
         { title: 'Access Type', key: 'accessType' },
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
+    },
+    roles() {
+      return ROLES;
     },
   },
   async mounted() {

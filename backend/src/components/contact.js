@@ -3,7 +3,7 @@ const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
 const { getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
-const { ContactMappings, ContactFacilityMappings } = require('../util/mapping/Mappings');
+const { ContactMappings, ContactFacilityMappings, FacilityMappings } = require('../util/mapping/Mappings');
 const { getRoles } = require('../components/lookup');
 const log = require('./logger');
 
@@ -61,11 +61,15 @@ async function getRawContactFacilities(contactId) {
   }
 
   try {
-    const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId}) and statecode eq 0`;
+    const operation = `ccof_bceid_organizations?$select=ccof_bceid_organizationid,ccof_name,_ccof_facility_value,_ccof_organization_value&$expand=ccof_facility($select=name,ccof_facilitylicencenumber,accountnumber)&$filter=(_ccof_facility_value ne null and _ccof_businessbceid_value eq ${contactId}) and statecode eq 0`;
     const response = await getOperation(operation);
 
     response?.value?.forEach((item) => {
-      const facility = new MappableObjectForFront(item, ContactFacilityMappings);
+      let facility = new MappableObjectForFront(item, ContactFacilityMappings);
+      facility.data = {
+        ...facility.data,
+        ...new MappableObjectForFront(item.ccof_facility, FacilityMappings).data,
+      };
       facilities.push(facility);
     });
 
