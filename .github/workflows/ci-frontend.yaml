@@ -8,18 +8,18 @@ on:
   push:
     branches:
       - main
-      - 'feature/**'
-      - 'Feature/**'
-      - 'fix/*'
-      - 'Fix/*'
-      - 'ccfri-*'
+      - "feature/**"
+      - "Feature/**"
+      - "fix/*"
+      - "Fix/*"
+      - "ccfri-*"
     paths:
-      - 'frontend/src/**'
+      - "frontend/src/**"
   pull_request:
     branches: [main]
     paths:
-      - 'frontend/src/**'
-      - 'frontend/src/**'
+      - "frontend/src/**"
+      - "frontend/src/**"
 
 jobs:
   test:
@@ -34,9 +34,35 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.16.x'
+          node-version: "20.16.x"
       - run: npm ci
       - run: npm run lint
+  cypress-run:
+    name: Run Component Tests
+    runs-on: ubuntu-24.04
+    needs: lint
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Cypress component tests
+        uses: cypress-io/github-action@v6
+        with:
+          component: true
 
   # TODO: Uncomment after project is set up in sonar
   # sonarcloud:
