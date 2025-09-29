@@ -40,7 +40,7 @@
           mobile-breakpoint="md"
           class="soft-outline"
         >
-          <template #[`item.action-buttons`]="{ item }">
+          <template #[`item.edit-user`]="{ item }">
             <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
               <v-col>
                 <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
@@ -186,7 +186,7 @@ export default {
     headers() {
       return [
         { title: '', key: 'data-table-expand' },
-        { title: '', key: 'action-buttons', sortable: false },
+        { title: '', key: 'edit-user', sortable: false },
         { title: 'First Name', key: 'firstName' },
         { title: 'Last Name', key: 'lastName' },
         { title: 'Phone Number', key: 'telephone' },
