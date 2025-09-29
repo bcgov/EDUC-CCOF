@@ -7,6 +7,35 @@ import { PERMISSIONS } from '@/utils/constants/permissions.js';
 const organizationId = '1234';
 const userId = '123';
 
+const portalUser = {
+  contactid: '1',
+  role: { roleNumber: 123, roleName: 'Portal User' },
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john.doe@test.com',
+  isPortalUser: true,
+  telephone: '250-999-9999',
+};
+
+const noRoleUser = {
+  contactid: '2',
+  role: { roleNumber: 123 },
+  firstName: 'Jane',
+  lastName: 'Smith',
+  email: 'Jane.Smith@test.com',
+  isPortalUser: true,
+  telephone: '250-123-4567',
+};
+
+const mockUser = {
+  contactid: '3',
+  role: { roleNumber: 123 },
+  firstName: 'Anna',
+  lastName: 'Brown',
+  isPortalUser: true,
+  telephone: '250-000-0000',
+};
+
 function mountWithPinia(initialState = {}, dataOverride = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
@@ -91,18 +120,8 @@ describe('<ManageUsers />', () => {
 
   context('User Table Tests', () => {
     it('should render portal user table with contact info', () => {
-      const user = {
-        contactid: '1',
-        role: { roleNumber: 123, roleName: 'Portal User' },
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@test.com',
-        isPortalUser: true,
-        telephone: '250-999-9999',
-      };
-
       mockApiResponses({
-        getContacts: { response: [user] },
+        getContacts: { response: [portalUser] },
       });
 
       mountWithPinia({
@@ -111,26 +130,16 @@ describe('<ManageUsers />', () => {
       });
 
       cy.wait('@getContacts');
-      cy.get('td').contains('div', 'First Name').next('div').should('have.text', 'John');
-      cy.get('td').contains('div', 'Last Name').next('div').should('have.text', 'Doe');
-      cy.get('td').contains('div', 'Phone Number').next('div').should('have.text', '250-999-9999');
-      cy.get('td').contains('div', 'Email').next('div').should('have.text', 'john.doe@test.com');
+      cy.get('td').contains('div', 'First Name').next('div').should('have.text', portalUser.firstName);
+      cy.get('td').contains('div', 'Last Name').next('div').should('have.text', portalUser.lastName);
+      cy.get('td').contains('div', 'Phone Number').next('div').should('have.text', portalUser.telephone);
+      cy.get('td').contains('div', 'Email').next('div').should('have.text', portalUser.email);
       cy.get('td').contains('div', 'Access Type').next('div').contains('Portal User');
     });
 
     it('should render `No Role Assigned`', () => {
-      const user = {
-        contactid: '1',
-        role: { roleNumber: 123 },
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@test.com',
-        isPortalUser: true,
-        telephone: '250-999-9999',
-      };
-
       mockApiResponses({
-        getContacts: { response: [user] },
+        getContacts: { response: [noRoleUser] },
       });
 
       mountWithPinia({
@@ -143,32 +152,7 @@ describe('<ManageUsers />', () => {
     });
 
     it('should render user table with multiple users', () => {
-      const users = [
-        {
-          contactid: '1',
-          role: { roleNumber: 123 },
-          firstName: 'John',
-          lastName: 'Doe',
-          isPortalUser: true,
-          telephone: '250-999-9999',
-        },
-        {
-          contactid: '2',
-          role: { roleNumber: 1243 },
-          firstName: 'Jane',
-          lastName: 'Smith',
-          isPortalUser: false,
-          telephone: '250-123-4567',
-        },
-        {
-          contactid: '3',
-          role: { roleNumber: 1235 },
-          firstName: 'Anna',
-          lastName: 'Brown',
-          isPortalUser: false,
-          telephone: '250-000-0000',
-        },
-      ];
+      const users = [portalUser, noRoleUser, mockUser];
 
       mockApiResponses({
         getContacts: { response: users },
@@ -205,17 +189,8 @@ describe('<ManageUsers />', () => {
     });
 
     it('should render `Remove` button and confirm removal', () => {
-      const user = {
-        contactid: '1',
-        role: { roleNumber: 123 },
-        firstName: 'John',
-        lastName: 'Doe',
-        isPortalUser: true,
-        telephone: '250-999-9999',
-      };
-
       mockApiResponses({
-        getContacts: { response: [user] },
+        getContacts: { response: [mockUser] },
       });
 
       mountWithPinia({
@@ -230,7 +205,7 @@ describe('<ManageUsers />', () => {
 
       cy.wait('@getContacts');
       cy.contains('button', 'Remove').click();
-      cy.contains('Are you sure you want to remove John Doe');
+      cy.contains(`Are you sure you want to remove ${mockUser.firstName} ${mockUser.lastName}`);
     });
 
     it('should not display `Remove` button for current user', () => {
@@ -248,17 +223,8 @@ describe('<ManageUsers />', () => {
     });
 
     it('should render edit button', () => {
-      const user = {
-        contactid: '1',
-        role: { roleNumber: 123 },
-        firstName: 'John',
-        lastName: 'Doe',
-        isPortalUser: true,
-        telephone: '250-999-9999',
-      };
-
       mockApiResponses({
-        getContacts: { response: [user] },
+        getContacts: { response: [mockUser] },
       });
 
       mountWithPinia({
@@ -273,7 +239,7 @@ describe('<ManageUsers />', () => {
 
       cy.contains('button', 'Edit').click();
       cy.contains('Edit User');
-      cy.get('form input').eq(0).should('have.value', user.firstName);
+      cy.get('form input').eq(0).should('have.value', mockUser.firstName);
     });
 
     it('should navigate on clicking Back button', () => {
