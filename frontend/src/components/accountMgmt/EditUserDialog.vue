@@ -179,6 +179,7 @@ export default {
       }
     },
   },
+
   methods: {
     async loadEditUserData() {
       const { contactId, firstName, lastName, bceid, email, telephone } = this.user;
