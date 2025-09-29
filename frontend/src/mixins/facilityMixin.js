@@ -99,8 +99,6 @@ export default {
     },
     resetFacilityContact() {
       if (this.isApplicationProcessing) return;
-      this.facilityModel.contactName = null;
-      this.facilityModel.position = null;
       this.facilityModel.phone = null;
       this.facilityModel.email = null;
     },
@@ -116,8 +114,6 @@ export default {
     },
     populateFacilityContact() {
       if (!this.facilityModel.isFacilityContactSameAsOrgContact) return;
-      this.facilityModel.contactName = this.organizationModel?.contactName;
-      this.facilityModel.position = this.organizationModel?.position;
       this.facilityModel.phone = this.organizationModel?.phone;
       this.facilityModel.email = this.organizationModel?.email;
     },

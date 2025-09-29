@@ -6,7 +6,7 @@
       :disabled="isLocked"
       :rules="rules.required"
       inline
-      label="Is the Facility Contact the same as the Organization's Authorized Signing Authority Information?"
+      label="Is the Facility Contact the same as the Organization Contact Information?"
       class="application-label mt-6"
       @update:model-value="resetFacilityContact"
     >
@@ -18,35 +18,11 @@
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
-            :model-value="organizationModel.contactName"
-            :rules="rules.required"
-            readonly
-            variant="outlined"
-            label="Facility Contact Name"
-            class="pointer-events-none"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            :model-value="organizationModel.position"
-            :rules="rules.required"
-            readonly
-            variant="outlined"
-            label="Position"
-            placeholder="Position (e.g., owner, manager)"
-            class="pointer-events-none"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
             :model-value="organizationModel.phone"
             :rules="[...rules.required, rules.phone]"
             readonly
             variant="outlined"
-            label="Facility Phone Number"
+            label="Facility Business Phone"
             class="pointer-events-none"
           />
         </v-col>
@@ -67,33 +43,11 @@
       <v-row>
         <v-col cols="12" md="6">
           <v-text-field
-            v-model="facilityModel.contactName"
-            :disabled="isLocked"
-            variant="outlined"
-            :rules="rules.required"
-            label="Facility Contact Name"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="facilityModel.position"
-            :disabled="isLocked"
-            variant="outlined"
-            :rules="rules.required"
-            label="Position"
-            placeholder="Position (e.g., owner, manager)"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
             v-model="facilityModel.phone"
             :disabled="isLocked"
             variant="outlined"
             :rules="[...rules.required, rules.phone]"
-            label="Facility Phone Number"
+            label="Facility Business Phone"
           />
         </v-col>
         <v-col cols="12" md="6">
