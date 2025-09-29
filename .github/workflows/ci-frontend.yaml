@@ -40,7 +40,6 @@ jobs:
   cypress-run:
     name: Run Component Tests
     runs-on: ubuntu-24.04
-    needs: test
 
     defaults:
       run:
@@ -65,7 +64,7 @@ jobs:
 
       - name: Run Cypress component tests
         run: |
-          npx cypress run --component
+          npm run test:component:headless
 
   # TODO: Uncomment after project is set up in sonar
   # sonarcloud:
