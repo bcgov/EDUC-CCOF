@@ -97,7 +97,7 @@ describe('<EditUserDialog />', () => {
     mountWithPinia();
     cy.get('form input').eq(0).should('have.value', mockUser.firstName);
     cy.get('form input').eq(1).should('have.value', mockUser.lastName);
-    cy.get('form input').eq(2).should('have.value', mockUser.bceid).shou;
+    cy.get('form input').eq(2).should('have.value', mockUser.bceid);
     cy.get('form input').eq(3).should('have.value', mockUser.telephone);
     cy.get('form input').eq(4).should('have.value', mockUser.email);
   });
