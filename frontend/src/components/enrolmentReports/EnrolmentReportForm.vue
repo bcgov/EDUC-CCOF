@@ -1195,7 +1195,9 @@ export default {
       lessPre: 100000010,
     };
     await this.loadData();
-    this.calculate();
+    if (!this.readonly) {
+      this.calculate();
+    }
   },
   methods: {
     formatCurrency,
@@ -1418,7 +1420,6 @@ export default {
     },
 
     calculate() {
-      if (this.readonly) return;
       this.calculateCurrentTotals();
       this.calculateBaseFundingAmounts();
       this.calculateCcfriAmounts();
