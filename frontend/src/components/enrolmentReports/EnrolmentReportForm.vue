@@ -1431,13 +1431,13 @@ export default {
 
     flagDailyEnrolmentChanges() {
       if (!this.enrolmentReport.isAdjustment) return;
-      this.dailyEnrolments.forEach((dailyEnrolment) => {
+      for (const dailyEnrolment of this.dailyEnrolments) {
         const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
         const updatedColumns = this.CATEGORY_FIELDS.filter(
           (category) => dailyEnrolment[category] !== previousDailyEnrolment[category],
         ).map((category) => this.DAILY_ENROLMENT_CATEGORIES[category]);
         dailyEnrolment.updatedColumns = isEmpty(updatedColumns) ? null : updatedColumns.join(',');
-      });
+      }
     },
 
     previous() {
