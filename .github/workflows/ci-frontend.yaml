@@ -37,9 +37,9 @@ jobs:
           node-version: "20.16.x"
       - run: npm ci
       - run: npm run lint
-  cypress-run:
-    name: Run Component Tests
-    uses: ./.github/workflows/cypress-test.yaml
+
+  cypress-component:
+    uses: ./.github/workflows/cypress-component.yaml
 
   # TODO: Uncomment after project is set up in sonar
   # sonarcloud:

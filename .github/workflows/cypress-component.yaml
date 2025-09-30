@@ -1,11 +1,11 @@
-name: Cypress Tests
+name: Cypress Component Tests
 
 on:
   workflow_call:
 
 jobs:
-  cypress-run:
-    name: Run Component Tests
+  cypress-component:
+    name: Run Cypress Component Tests
     runs-on: ubuntu-24.04
 
     defaults:
