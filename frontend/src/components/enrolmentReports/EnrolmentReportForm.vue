@@ -1430,6 +1430,7 @@ export default {
     },
 
     flagDailyEnrolmentChanges() {
+      if (!this.enrolmentReport.isAdjustment) return;
       this.dailyEnrolments.forEach((dailyEnrolment) => {
         const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
         const updatedColumns = this.CATEGORY_FIELDS.filter(
@@ -1457,7 +1458,9 @@ export default {
       try {
         this.processing = true;
         this.calculate();
-        this.flagDailyEnrolmentChanges();
+        if (this.enrolmentReport.isAdjustment) {
+          this.flagDailyEnrolmentChanges();
+        }
         await this.saveEnrolmentReport();
         await this.saveDailyEnrolments();
         if (showMessage) {
@@ -1516,7 +1519,10 @@ export default {
     },
 
     async saveDailyEnrolments() {
-      const keysForBackend = [...this.CATEGORY_FIELDS, 'updatedColumns', 'dailyEnrolmentId'];
+      const keysForBackend = [...this.CATEGORY_FIELDS, 'dailyEnrolmentId'];
+      if (this.enrolmentReport.isAdjustment) {
+        keysForBackend.push('updatedColumns');
+      }
       const updatedDailyEnrolments = getUpdatedObjectsByKeys(
         this.originalDailyEnrolments,
         this.dailyEnrolments,
