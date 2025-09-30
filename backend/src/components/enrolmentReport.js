@@ -101,7 +101,10 @@ async function updateDailyEnrolments(req, res) {
 
 async function createAdjustmentEnrolmentReport(req, res) {
   try {
-    const response = await postAdjustmentERGeneration(req.body.enrolmentReportId);
+    const payload = {
+      ERGuid: req.body.enrolmentReportId,
+    };
+    const response = await postAdjustmentERGeneration(payload);
     return res.status(HttpStatus.CREATED).json(response.data.ccof_monthlyenrollmentreportid);
   } catch (e) {
     log.error(e);
