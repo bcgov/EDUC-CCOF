@@ -49,6 +49,7 @@ on:
 
 jobs:
   cypress-component:
+    name: Run Cypress Component Tests
     uses: ./.github/workflows/cypress-component.yaml
 
   openshift-ci-cd:

@@ -39,6 +39,7 @@ jobs:
       - run: npm run lint
 
   cypress-component:
+    name: Run Cypress Component Tests
     uses: ./.github/workflows/cypress-component.yaml
 
   # TODO: Uncomment after project is set up in sonar
