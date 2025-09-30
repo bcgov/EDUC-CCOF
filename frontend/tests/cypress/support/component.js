@@ -25,7 +25,7 @@ import { h } from 'vue';
 // HACK: The first test file often fails on a cold start after an `npm i`,
 // but all other tests pass without issues. After the initial test run, the problem
 // does not reoccur. This temporary fix mounts a hidden dummy component to warm up
-// the environment - needed for CI/CD until a proper solution is found.
+// the environment to prevent false test failures - needed for CI/CD until issue identified
 before(() => {
   cy.mount({
     render() {
