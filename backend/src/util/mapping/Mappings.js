@@ -773,6 +773,7 @@ const DailyEnrolmentMappings = [
   { back: 'ccof_lessoosck', front: 'lessOOSCK' },
   { back: 'ccof_overoosck', front: 'overOOSCK' },
   { back: 'ccof_lesspre', front: 'lessPre' },
+  { back: 'ccof_columnsareupdated', front: 'updatedColumns' },
 ];
 
 const LicenceMappings = [
