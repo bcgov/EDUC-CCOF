@@ -39,7 +39,7 @@ jobs:
       - run: npm run lint
   cypress-run:
     name: Run Component Tests
-    uses: ./.github/workflows/cypress-test.yml
+    uses: ./.github/workflows/cypress-test.yaml
 
   # TODO: Uncomment after project is set up in sonar
   # sonarcloud:
