@@ -59,7 +59,14 @@
           <template #[`item.actions`]="{ item }">
             <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
               <AppButton :primary="false" size="small" @click="goToViewFundingAgreement(item)"> View </AppButton>
-              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item)"> Download </AppButton>
+              <AppButton
+                v-if="hasPermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT)"
+                :primary="false"
+                size="small"
+                @click="downloadPDFFundingAgreement(item)"
+              >
+                Download
+              </AppButton>
             </v-row>
           </template>
         </v-data-table>
@@ -75,6 +82,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -85,7 +93,7 @@ import { formatUTCDate } from '@/utils/format';
 export default {
   name: 'ManageFundingAgreements',
   components: { AppButton, AppMultiSelectInput },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,

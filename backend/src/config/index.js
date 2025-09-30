@@ -78,5 +78,9 @@ nconf.defaults({
     apiEndpoint: process.env.CANADA_POST_API_ENDPOINT,
     apiKey: process.env.CANADA_POST_API_KEY,
   },
+  clamav: {
+    host: process.env.CLAMAV_HOST,
+    port: process.env.CLAMAV_PORT,
+  },
 });
 module.exports = nconf;

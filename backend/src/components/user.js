@@ -132,7 +132,7 @@ async function getUserInfo(req, res) {
   }
 
   // Get facilities for Facility Admin users
-  if (user.role?.ofm_portal_role_number === ROLES.FAC_ADMIN_ADVANCED) {
+  if (user.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED || user.role?.roleNumber === ROLES.FAC_ADMIN_BASIC) {
     const facilities = await getRawContactFacilities(user.contactId);
     user.facilities = facilities;
   }
