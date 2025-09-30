@@ -596,6 +596,7 @@ const EnrolmentReportSummaryMappings = [
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_submissiondeadline', front: 'submissionDeadline' },
   { back: 'ccof_reportversion', front: 'reportVersion' },
+  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
   { back: 'ccof_ccof_external_status', front: 'externalCcofStatusCode' },
   { back: 'ccof_ccof_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcofStatusText' },
   { back: 'ccof_ccfri_external_status', front: 'externalCcfriStatusCode' },
@@ -679,7 +680,7 @@ const EnrolmentReportDifferenceMappings = [
 ];
 
 const RateMappings = [
-  { back: 'ccof_over18to36', front: 'less0To18' },
+  { back: 'ccof_less0to18', front: 'less0To18' },
   { back: 'ccof_over0to18', front: 'over0To18' },
   { back: 'ccof_less18to36', front: 'less18To36' },
   { back: 'ccof_over18to36', front: 'over18To36' },
@@ -698,7 +699,6 @@ const EnrolmentReportMappings = [
   { back: '_ccof_reportextension_value', front: 'enrolmentReportExtensionId' },
   { back: '_ccof_prevenrollmentreport_value', front: 'prevEnrolmentReportId' },
   { back: 'ccof_providertype', front: 'organizationProviderType' },
-  { back: 'ccof_hasnextreportcreated', front: 'hasNextReportCreated' },
   { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
   { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
