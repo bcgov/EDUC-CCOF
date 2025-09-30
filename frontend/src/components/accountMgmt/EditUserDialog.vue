@@ -228,12 +228,12 @@ export default {
         console.error('Error updating user:', error);
       } finally {
         this.isProcessing = false;
+
         this.closeDialog();
       }
     },
     closeDialog() {
       this.dialogOpen = false;
-
       this.$emit('close-edit-dialog');
     },
   },

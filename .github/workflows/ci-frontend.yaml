@@ -37,7 +37,7 @@ jobs:
           node-version: "20.16.x"
       - run: npm ci
       - run: npm run lint
-  cypress-test:
+  cypress-run:
     name: Run Component Tests
     uses: ./.github/workflows/cypress-test.yml
 
