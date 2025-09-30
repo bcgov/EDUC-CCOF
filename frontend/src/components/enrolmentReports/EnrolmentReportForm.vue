@@ -1181,6 +1181,19 @@ export default {
       'lessOOSCG',
       'overOOSCG',
     ];
+    this.DAILY_ENROLMENT_CATEGORIES = {
+      less0To18: 100000000,
+      over0To18: 100000001,
+      less18To36: 100000002,
+      over18To36: 100000003,
+      less3YK: 100000004,
+      over3YK: 100000005,
+      lessOOSCK: 100000006,
+      overOOSCK: 100000007,
+      lessOOSCG: 100000008,
+      overOOSCG: 100000009,
+      lessPre: 100000010,
+    };
     await this.loadData();
     this.calculate();
   },
@@ -1416,6 +1429,16 @@ export default {
       }
     },
 
+    flagDailyEnrolmentChanges() {
+      this.dailyEnrolments.forEach((dailyEnrolment) => {
+        const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
+        const updatedColumns = this.CATEGORY_FIELDS.filter(
+          (category) => dailyEnrolment[category] !== previousDailyEnrolment[category],
+        ).map((category) => this.DAILY_ENROLMENT_CATEGORIES[category]);
+        dailyEnrolment.updatedColumns = isEmpty(updatedColumns) ? null : updatedColumns.join(',');
+      });
+    },
+
     previous() {
       if (this.readonly) {
         this.$router.push(PATHS.ROOT.ENROLMENT_REPORTS);
@@ -1434,6 +1457,7 @@ export default {
       try {
         this.processing = true;
         this.calculate();
+        this.flagDailyEnrolmentChanges();
         await this.saveEnrolmentReport();
         await this.saveDailyEnrolments();
         if (showMessage) {
@@ -1492,7 +1516,7 @@ export default {
     },
 
     async saveDailyEnrolments() {
-      const keysForBackend = [...this.CATEGORY_FIELDS, 'dailyEnrolmentId'];
+      const keysForBackend = [...this.CATEGORY_FIELDS, 'updatedColumns', 'dailyEnrolmentId'];
       const updatedDailyEnrolments = getUpdatedObjectsByKeys(
         this.originalDailyEnrolments,
         this.dailyEnrolments,
