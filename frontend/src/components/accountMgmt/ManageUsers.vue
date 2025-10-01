@@ -41,12 +41,10 @@
           class="soft-outline"
         >
           <template #[`item.edit-user`]="{ item }">
-            <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
-              <v-col>
-                <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
-                  Edit
-                </AppButton>
-              </v-col>
+            <v-row no-gutters class="my-2 align-center justify-end">
+              <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
+                Edit
+              </AppButton>
             </v-row>
           </template>
           <template #[`item.accessType`]="{ item }">
@@ -181,14 +179,13 @@ export default {
     ]),
     headers() {
       return [
-        { title: '', key: 'data-table-expand' },
-        { title: '', key: 'edit-user', sortable: false },
         { title: 'First Name', key: 'firstName' },
         { title: 'Last Name', key: 'lastName' },
         { title: 'Phone Number', key: 'telephone' },
         { title: 'Email', key: 'email' },
         { title: 'Access Type', key: 'accessType' },
-        { title: '', key: 'remove-user', align: 'end', sortable: false },
+        { title: '', key: 'edit-user', sortable: false, width: 1 },
+        { title: '', key: 'remove-user', sortable: false, width: 1 },
       ];
     },
   },
