@@ -626,6 +626,9 @@ export default {
       );
     },
     showOrganizationClosuresButton() {
+      if (!this.hasPermission(this.PERMISSIONS.VIEW_CLOSURES)) {
+        return false;
+      }
       const application = this.applicationMap?.get(this.selectedProgramYearId);
       // XXX (vietle-cgi) - Status texts come from CCFRI_STATUS_CODES in parseFacilityData() (user.js backend).
       return application?.facilityList?.some((facility) =>

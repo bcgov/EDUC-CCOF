@@ -7,17 +7,21 @@
         <div class="text-primary">Organization ID: {{ organizationAccountNumber }}</div>
       </v-col>
       <v-col cols="12" lg="6" align="right">
-        <div>
-          <AppButton :loading="isLoading" size="large" @click="closureRequestType = CHANGE_REQUEST_TYPES.NEW_CLOSURE"
+        <div class="add-new">
+          <AppButton
+            v-if="hasPermission(PERMISSIONS.REQUEST_CLOSURE)"
+            :loading="isLoading"
+            size="large"
+            @click="closureRequestType = CHANGE_REQUEST_TYPES.NEW_CLOSURE"
             >Add New Closure</AppButton
           >
-          <div class="text-h6 font-weight-bold my-4">
-            Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
-          </div>
+        </div>
+        <div class="text-h6 font-weight-bold my-4">
+          Fiscal Year: {{ getProgramYearNameById($route.params.programYearGuid).slice(0, -3) }}
         </div>
       </v-col>
     </v-row>
-    <v-card variant="outlined" class="pa-8 pt-4 my-6">
+    <v-card variant="outlined" class="pa-8 pt-4 my-6 mt-2">
       <v-row>
         <v-col cols="12" lg="7">
           <AppAlertBanner type="info">
@@ -85,6 +89,7 @@
                 View Details
               </AppButton>
               <AppButton
+                v-if="hasPermission(PERMISSIONS.EDIT_CLOSURE)"
                 :loading="isLoading"
                 :primary="false"
                 :disabled="isClosureReadonly(item)"
@@ -95,6 +100,7 @@
                 Update
               </AppButton>
               <AppButton
+                v-if="hasPermission(PERMISSIONS.REMOVE_CLOSURE)"
                 :loading="isLoading"
                 :primary="false"
                 :disabled="isClosureReadonly(item)"
@@ -144,8 +150,10 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ClosureService from '@/services/closureService.js';
 import { useAppStore } from '@/store/app.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { formatDateToStandardFormat } from '@/utils/format';
@@ -169,7 +177,7 @@ export default {
     ClosureDetailsDialog,
     NavButton,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
@@ -199,10 +207,15 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     ...mapState(useNavBarStore, ['getNavByFacilityId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     filteredClosures() {
       return this.closures?.filter((closure) => {
+        // Facility Admins can only see closures for their own facilities
+        if (this.isFacilityAdmin && !this.userInfo?.facilities?.some((f) => f.facilityId === closure.facilityId)) {
+          return false;
+        }
         const facilityAccountNumber = this.getFacilityAccountNumber(closure?.facilityId);
         return (
           facilityAccountNumber?.toLowerCase().includes(this.filter.toLowerCase()) ||
@@ -357,5 +370,8 @@ export default {
 .action-buttons {
   gap: 8px;
   padding: 10px 0px 10px 10px;
+}
+.add-new {
+  height: 50px;
 }
 </style>

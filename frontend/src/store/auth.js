@@ -6,6 +6,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { ROLES } from '@/utils/constants.js';
 
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
@@ -34,6 +35,12 @@ export const useAuthStore = defineStore('auth', {
         if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
         return state.permissions.includes(permission);
       };
+    },
+    isFacilityAdmin: (state) => {
+      return (
+        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED ||
+        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_BASIC
+      );
     },
   },
   actions: {
