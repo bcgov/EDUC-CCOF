@@ -12,7 +12,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Cypress component tests
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Clear Vite cache
+        working-directory: frontend
+        run: rm -rf node_modules/.vite
+
+      - name: Optimize Vite dependencies
+        working-directory: frontend
+        run: npx vite optimize
+
+      - name: Run Cypress component tests
         uses: cypress-io/github-action@v6
         with:
           component: true
