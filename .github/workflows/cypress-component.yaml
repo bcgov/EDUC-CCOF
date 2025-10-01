@@ -25,9 +25,9 @@ jobs:
         working-directory: frontend
         run: rm -rf node_modules/.vite
 
-      - name: Optimize Vite dependencies
+      - name: Build frontend with Vite
         working-directory: frontend
-        run: npx vite optimize
+        run: npx vite build
 
       - name: Run Cypress component tests
         uses: cypress-io/github-action@v6
