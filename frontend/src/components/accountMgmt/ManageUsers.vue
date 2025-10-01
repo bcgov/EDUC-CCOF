@@ -283,7 +283,7 @@ export default {
     },
     userRoleHasAccessToSomeFacilities(roleNumber) {
       return roleNumber === ROLES.FAC_ADMIN_BASIC || roleNumber === ROLES.FAC_ADMIN_ADVANCED;
-    }
+    },
   },
 };
 </script>
