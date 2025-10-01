@@ -20,19 +20,18 @@ import 'vuetify/styles';
 import './commands';
 
 import { mount } from 'cypress/vue';
-
-// import { h } from 'vue';
+import { h } from 'vue';
 
 // HACK: The first test file often fails on a cold start after an `npm i`,
 // but all other tests pass without issues. After the initial test run, the problem
 // does not reoccur. This temporary fix mounts a hidden dummy component to warm up
 // the environment to prevent false test failures - needed for CI/CD until issue identified
-// before(() => {
-//   cy.mount({
-//     render() {
-//       return h('div', { style: 'display: none' }, 'Warmup');
-//     },
-//   });
-// });
+before(() => {
+  cy.mount({
+    render() {
+      return h('div', { style: 'display: none' }, 'Warmup');
+    },
+  });
+});
 
 Cypress.Commands.add('mount', mount);
