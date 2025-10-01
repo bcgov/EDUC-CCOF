@@ -61,22 +61,22 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
+function mockApiResponses(overrides = {}) {
+  const defaultResponses = {
+    getFacilities: {
+      method: 'GET',
+      url: `${ApiRoutes.FACILITY}/${facilityId}`,
+      response: facilityResponse,
+    },
+  };
+
+  Object.keys(defaultResponses).forEach((key) => {
+    const { method, url, response } = { ...defaultResponses[key], ...overrides[key] };
+    cy.intercept(method, url, { statusCode: 200, body: response }).as(key);
+  });
+}
+
 describe('<ManageFacility />', () => {
-  function mockApiResponses(overrides = {}) {
-    const defaultResponses = {
-      getFacilities: {
-        method: 'GET',
-        url: `${ApiRoutes.FACILITY}/${facilityId}`,
-        response: facilityResponse,
-      },
-    };
-
-    Object.keys(defaultResponses).forEach((key) => {
-      const { method, url, response } = { ...defaultResponses[key], ...overrides[key] };
-      cy.intercept(method, url, { statusCode: 200, body: response }).as(key);
-    });
-  }
-
   beforeEach(() => {
     mockApiResponses();
   });
@@ -161,7 +161,7 @@ describe('<ManageFacility />', () => {
     cy.contains('To request changes to any other information to this tab, click Request a Change.');
   });
 
-  it('should navigate on clicking Back button', () => {
+  it('should navigate on clicking back button', () => {
     mountWithPinia({ ...createOrgStore() });
     cy.contains('button', 'Back').click();
     cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
