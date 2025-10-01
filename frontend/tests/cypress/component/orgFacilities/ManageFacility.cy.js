@@ -1,9 +1,34 @@
 import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
 import vuetify from '@/plugins/vuetify';
 import { ApiRoutes, FUNDING_AGREEMENTS_STATUS, ORGANIZATION_FACILITY_STATUS_CODES, PATHS } from '@/utils/constants.js';
-import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const facilityId = '9876';
+
+const facilityResponse = {
+  facilityName: 'Greenwood Medical Center',
+  facilityAccountNumber: '3401',
+  licenseNumber: 'A1234B',
+  healthAuthority: 'Northern Health Authority',
+  organizationName: 'Greenwood Healthcare Ltd.',
+  phone: '250-555-0198',
+  facilityAddress: '1234 Pine St.',
+  city: 'Victoria',
+  province: 'British Columbia',
+  postalCode: 'V8Z 2R0',
+  email: 'contact@greenwoodhealthcare.ca',
+  facilityId: '55678',
+  facilityCopy: true,
+  statusCode: ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE,
+};
+
+function createOrgStore(overrides = {}) {
+  return {
+    organization: {
+      organizationProviderType: 'org-1234',
+      ...overrides,
+    },
+  };
+}
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -42,22 +67,7 @@ describe('<ManageFacility />', () => {
       getFacilities: {
         method: 'GET',
         url: `${ApiRoutes.FACILITY}/${facilityId}`,
-        response: {
-          facilityName: 'Greenwood Medical Center',
-          facilityAccountNumber: '3401',
-          licenseNumber: 'A1234B',
-          healthAuthority: 'Northern Health Authority',
-          organizationName: 'Greenwood Healthcare Ltd.',
-          phone: '250-555-0198',
-          facilityAddress: '1234 Pine St.',
-          city: 'Victoria',
-          province: 'British Columbia',
-          postalCode: 'V8Z 2R0',
-          email: 'contact@greenwoodhealthcare.ca',
-          facilityId: '55678',
-          facilityCopy: true,
-          statusCode: ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE,
-        },
+        response: facilityResponse,
       },
     };
 
@@ -73,40 +83,28 @@ describe('<ManageFacility />', () => {
 
   it('should render main header', () => {
     mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
+      ...createOrgStore(),
     });
     cy.contains('h1', 'Facility Information');
   });
 
   it('should render facility details', () => {
-    mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
-    });
+    mountWithPinia({ ...createOrgStore() });
 
-    cy.contains('b', 'Greenwood Medical Center');
-    cy.contains('ID: 3401');
-    cy.contains('Licence #: A1234B');
+    cy.contains('b', facilityResponse.facilityName);
+    cy.contains(`ID: ${facilityResponse.facilityAccountNumber}`);
+    cy.contains(`Licence #: ${facilityResponse.licenseNumber}`);
   });
 
   it('should disable `Request a Change` button', () => {
-    mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
-    });
+    mountWithPinia({ ...createOrgStore() });
 
     cy.contains('Request a Change').should('exist').should('have.css', 'pointer-events', 'none');
   });
 
   it('should enable `Request a Change` button', () => {
     mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
+      ...createOrgStore(),
       application: {
         programYearId: '111',
         applicationMap: new Map([
@@ -126,54 +124,46 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render tabs with correct values', () => {
-    mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
-    });
+    const expectedTexts = ['Facility Details', 'Licences', 'Programs and Services', 'Closures'];
+    mountWithPinia({ ...createOrgStore() });
 
     cy.get('.v-tabs')
       .find('button')
       .should('have.length', 4)
       .each((button, index) => {
-        const expectedTexts = ['Facility Details', 'Licences', 'Programs and Services', 'Closures'];
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
   });
 
   it('should render facility details with correct values', () => {
-    mountWithPinia({
-      organization: {
-        organizationProviderType: 'org-1234',
-      },
-    });
+    mountWithPinia({ ...createOrgStore() });
 
-    cy.contains('p', 'Greenwood Medical Center');
-    cy.contains('p', '3401');
-    cy.contains('p', 'A1234B');
-    cy.contains('p', '250-555-0198');
-    cy.contains('p', '1234 Pine St.');
-    cy.contains('p', 'Victoria');
-    cy.contains('p', 'British Columbia');
-    cy.contains('p', 'V8Z 2R0');
-    cy.contains('p', 'contact@greenwoodhealthcare.ca');
-  });
-
-  it('should navigate on clicking Back button', () => {
-    mountWithPinia({ organization: { organizationProviderType: 'org-1234' } });
-    cy.contains('button', 'Back').click();
-    cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
+    cy.contains('p', facilityResponse.facilityName);
+    cy.contains('p', facilityResponse.facilityAccountNumber);
+    cy.contains('p', facilityResponse.licenseNumber);
+    cy.contains('p', facilityResponse.phone);
+    cy.contains('p', facilityResponse.facilityAddress);
+    cy.contains('p', facilityResponse.city);
+    cy.contains('p', facilityResponse.province);
+    cy.contains('p', facilityResponse.postalCode);
+    cy.contains('p', facilityResponse.email);
   });
 
   it('should switch to `Licences` window', () => {
     cy.intercept('GET', `${ApiRoutes.LICENCES}?facilityId=${facilityId}`, { statusCode: 200, body: [] });
 
     mountWithPinia({
-      organization: { organizationProviderType: 'org-1234' },
+      ...createOrgStore(),
       auth: { userInfo: { organizationName: 'TEST_ORG' } },
     });
     cy.contains('button', 'Licences').click();
     cy.contains('Review and update your licence and service details. You may update your hours of operation directly.');
     cy.contains('To request changes to any other information to this tab, click Request a Change.');
+  });
+
+  it('should navigate on clicking Back button', () => {
+    mountWithPinia({ ...createOrgStore() });
+    cy.contains('button', 'Back').click();
+    cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
   });
 });
