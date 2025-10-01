@@ -74,16 +74,12 @@
             <tr>
               <td :colspan="columns.length"><b>Current Facility Access</b></td>
             </tr>
-            <tr v-if="item.role.roleNumber === roles.ORG_ADMIN || item.role.roleNumber === roles.READ_ONLY">
+            <tr v-if="userRoleHasAccessToAllFacilities(item.role.roleNumber)">
               <td :colspan="columns.length">
                 <p>This user has access to all facilities in the organization</p>
               </td>
             </tr>
-            <tr
-              v-else-if="
-                item.role.roleNumber === roles.FAC_ADMIN_BASIC || item.role.roleNumber === roles.FAC_ADMIN_ADVANCED
-              "
-            >
+            <tr v-else-if="userRoleHasAccessToSomeFacilities(item.role.roleNumber)">
               <td :colspan="columns.length">
                 <v-table class="mb-2 mt-2 border-b-sm" density="compact">
                   <thead>
@@ -195,9 +191,6 @@ export default {
         { title: '', key: 'remove-user', align: 'end', sortable: false },
       ];
     },
-    roles() {
-      return ROLES;
-    },
   },
   async mounted() {
     try {
@@ -285,6 +278,12 @@ export default {
         return a.lastName.localeCompare(b.lastName);
       });
     },
+    userRoleHasAccessToAllFacilities(roleNumber) {
+      return roleNumber === ROLES.ORG_ADMIN || roleNumber === ROLES.READ_ONLY;
+    },
+    userRoleHasAccessToSomeFacilities(roleNumber) {
+      return roleNumber === ROLES.FAC_ADMIN_BASIC || roleNumber === ROLES.FAC_ADMIN_ADVANCED;
+    }
   },
 };
 </script>

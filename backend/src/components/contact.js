@@ -64,7 +64,7 @@ async function getRawContactFacilities(contactId) {
     const responseValues = response?.value || [];
 
     return responseValues.map((item) => {
-      let facility = new MappableObjectForFront(item, ContactFacilityMappings);
+      const facility = new MappableObjectForFront(item, ContactFacilityMappings);
       return {
         ...facility.data,
         ...new MappableObjectForFront(item.ccof_facility, FacilityMappings).data,
