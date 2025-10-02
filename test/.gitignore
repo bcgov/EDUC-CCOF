@@ -14,7 +14,6 @@ screenshots
 local*.json*
 .env
 .env.development
-.env.json
 # Editor directories and files
 .idea
 .vscode
@@ -22,5 +21,3 @@ local*.json*
 *.ntvs*
 *.njsproj
 *.sln
-
-/Cypressautomation/cypress.env.json
