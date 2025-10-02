@@ -34,7 +34,6 @@ class CcofApplication {
       cy.clickByText('Save')
       cy.contains('Success! Organization information has been saved.').should('be.visible')
       cy.clickByText('Next')
-      
 
       // Facility Information
       cy.contains('Facility Information')
@@ -55,7 +54,6 @@ class CcofApplication {
       cy.clickByText('Save')
       cy.contains('Success! Facility information has been saved.').should('be.visible')
       cy.clickByText('Next')
-      
 
       // Facility Licence and Service Details
       cy.contains('Facility Licence and Service Details')
@@ -71,9 +69,7 @@ class CcofApplication {
 
       Object.entries(licenceCategories).forEach(([category, value]) => {
         if (value.checked) {
-          // Check the checkbox for the category
           cy.getByLabel(category).check({ force: true }).should('be.checked');
-          // Fill the max value textbox for the category
           cy.getByLabel(`Maximum number for ${category}`).typeAndAssert(value.max);
         }
       });
@@ -97,10 +93,9 @@ class CcofApplication {
         cy.getByLabel(facilityLicenceDetailsData.offerExtendedHoursChildCare).click({force:true})
       })
 
-      if (facilityLicenceDetailsData.offerExtendedHoursChildCare == "Yes") {
+      if (facilityLicenceDetailsData.offerExtendedHoursChildCare === "Yes") {
         cy.getByLabel("Maximum number of days per week you offer extended hours of child care?").typeAndAssert(facilityLicenceDetailsData.maxDaysPerWeekExtendedHours)
         cy.getByLabel("Maximum number of weeks per year you offer extended hours of child care?").typeAndAssert(facilityLicenceDetailsData.maxWeeksPerYearExtendedHours)
-
 
         const licenceCategoriesExtendedHours = facilityLicenceDetailsData.licenceCategoriesExtendedHours;
         if (licenceCategoriesExtendedHours) {
