@@ -10,13 +10,13 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class CcfrisInfoPage extends BaseTest {
 	WebDriverWait wait;
 
 	public CcfrisInfoPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -38,7 +38,7 @@ public class CcfrisInfoPage extends BaseTest {
 	}
 
 	public void clickCcfriFacilityAdjudicationTitle() {
-		wait.until(ExpectedConditions.elementToBeClickable(ccfriFacilityAdjudicationTitle)).click();
+		ccfriFacilityAdjudicationTitle.click();
 	}
 
 	public void clickOpenFacility() {
@@ -47,6 +47,6 @@ public class CcfrisInfoPage extends BaseTest {
 	}
 
 	public void clickSaveAndCloseBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveAndCloseBtn)).click();
+		saveAndCloseBtn.click();
 	}
 }

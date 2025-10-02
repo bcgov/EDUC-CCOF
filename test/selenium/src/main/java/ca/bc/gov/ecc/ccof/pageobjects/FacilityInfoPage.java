@@ -3,7 +3,6 @@ package ca.bc.gov.ecc.ccof.pageobjects;
 import java.time.Duration;
 import java.util.List;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -12,13 +11,13 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class FacilityInfoPage extends BaseTest {
 	WebDriverWait wait;
 
 	public FacilityInfoPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -82,44 +81,41 @@ public class FacilityInfoPage extends BaseTest {
 	WebElement saveAndCloseCcfriFacilityBtn;
 
 	public void clickFacilityNameLink() {
-		wait.until(ExpectedConditions.elementToBeClickable(facilityNameLink)).click();
+		facilityNameLink.click();
 	}
 
 	public void clickMyCcsTestDropdown() {
-		wait.until(ExpectedConditions.elementToBeClickable(myccsTestDropdown)).click();
+		myccsTestDropdown.click();
 	}
 
 	public void clickFacilityStatusField() {
-		wait.until(ExpectedConditions.elementToBeClickable(facilityStatusField)).click();
+		facilityStatusField.click();
 	}
 
-	public void mouseOverCcfriComplete() throws InterruptedException {
+	public void mouseOverCcfriComplete() {
 		Actions action = new Actions(driver);
 		action.moveToElement(ccfriCompleteOption).click().build().perform();
 	}
 
 	public void clickSaveAndCloseFacilityBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveAndCloseFacilityBtn)).click();
+		saveAndCloseFacilityBtn.click();
 	}
 
 	public void clickInitialDecisionLink() {
-		wait.until(ExpectedConditions.elementToBeClickable(initialDecisionlink)).click();
+		initialDecisionlink.click();
 	}
 
-	public void clickIgnoreAndSaveIfPresent() {
-		List<WebElement> elements = driver.findElements(By.xpath("//*[@title='Ignore and save']"));
-		Boolean isPresent = elements.isEmpty();
-		clickIfPresent(ignoreAndSaveBtn, "Ignore and Save Button", isPresent);
+	public WebElement ignoreAndSaveButton() {
+		return ignoreAndSaveBtn;
 	}
 
 //initial decision tab methods can be added here
 
 	public void clickCcfriRecommendationField() {
-		wait.until(ExpectedConditions.elementToBeClickable(ccfriRecommendationField)).click();
+		ccfriRecommendationField.click();
 	}
 
 	public void switchToCcfriStartDateIFrame() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(ccfriStartDateIFrame));
 
 	}
@@ -132,68 +128,38 @@ public class FacilityInfoPage extends BaseTest {
 		driver.switchTo().defaultContent();
 	}
 
-	public void getCCFRIAdjudicatorRecommendation(String value) {
-		List<WebElement> valueOptions = ccfriAdjudicatorRecommendation;
-		int count = valueOptions.size();
-		for (int i = 0; i < count; i++) {
-			String valueDisplay = valueOptions.get(i).getText();
-			System.out.println(valueDisplay);
-			if (valueDisplay.equals(value)) {
-				valueOptions.get(i).click();
-				break;
-			}
-		}
-
+	public List<WebElement> getCCFRIAdjudicatorRecommendation() {
+		return ccfriAdjudicatorRecommendation;
 	}
 
 	public void clickCcfriQcDecisionField() {
-		wait.until(ExpectedConditions.elementToBeClickable(ccfriQcDecisionField)).click();
+		ccfriQcDecisionField.click();
 	}
 
-	public void getCCFRIQCDecision(String value) {
-		List<WebElement> valueOptions = ccfriQcDecisionOptions;
-		int count = valueOptions.size();
-		for (int i = 0; i < count; i++) {
-			String valueDisplay = valueOptions.get(i).getText();
-			System.out.println(valueDisplay);
-			if (valueDisplay.equals(value)) {
-				valueOptions.get(i).click();
-				break;
-			}
-		}
-
+	public List<WebElement> getCCFRIQCDecision() {
+		return ccfriQcDecisionOptions;
 	}
 
 	// main page methods
 
 	public void clickSaveBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
+		saveBtn.click();
 	}
 
 	public void clickExpandIcon() {
-		wait.until(ExpectedConditions.elementToBeClickable(expandIcon)).click();
+		expandIcon.click();
 	}
 
 	public void clickCcfriStatusField() {
-		wait.until(ExpectedConditions.elementToBeClickable(ccfriStatusField)).click();
+		ccfriStatusField.click();
 	}
 
-	public void getCcfriStatusOptions(String value) {
-		List<WebElement> valueOptions = ccfriStatusOptions;
-		int count = valueOptions.size();
-		for (int i = 0; i < count; i++) {
-			String valueDisplay = valueOptions.get(i).getText();
-			System.out.println(valueDisplay);
-			if (valueDisplay.equals(value)) {
-				valueOptions.get(i).click();
-				break;
-			}
-		}
-
+	public List<WebElement> getCcfriStatusOptions() {
+		return ccfriStatusOptions;
 	}
 
 	public void clickSaveAndCloseCcfriFacilityBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveAndCloseCcfriFacilityBtn)).click();
+		saveAndCloseCcfriFacilityBtn.click();
 	}
 
 }

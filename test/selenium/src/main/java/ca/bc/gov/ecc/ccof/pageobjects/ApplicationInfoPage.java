@@ -8,16 +8,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class ApplicationInfoPage extends BaseTest {
 	WebDriverWait wait;
 
 	public ApplicationInfoPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -29,71 +28,60 @@ public class ApplicationInfoPage extends BaseTest {
 	WebElement selectCcfrisLink;
 
 	@FindBy(xpath = "//*[@col-id='ccof_name']//div//a")
-	WebElement CcfrisLink;
+	WebElement ccfrisLink;
 
 	@FindBy(xpath = "//*[@data-id='form-tab-relatedEntity-nav_ccof_adjudication_Application_ccof_applic']")
 	WebElement selectCcfosLink;
 
 	@FindBy(xpath = "//*[@col-id='ccof_name']//div//a")
-	WebElement CcfosLink;
+	WebElement ccfosLink;
 
 	@FindBy(xpath = "//*[@title='CCOF']")
-	WebElement CcofTab;
+	WebElement ccofTab;
 
 	@FindBy(xpath = "//*[@aria-label='CCOF Status']")
-	WebElement CcofStatus;
+	WebElement ccofStatus;
 
 	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
-	List<WebElement> CcofStatusOptions;
+	List<WebElement> ccofStatusOptions;
 
 	@FindBy(xpath = "//*[@title='Save']")
 	WebElement saveBtn;
 
 	public void clickRelatedTab() {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		wait.until(ExpectedConditions.elementToBeClickable(relatedTab)).click();
+		relatedTab.click();
 	}
 
 	public void clickCCFRISLink() {
-		wait.until(ExpectedConditions.elementToBeClickable(selectCcfrisLink)).click();
+		selectCcfrisLink.click();
 	}
 
 	public void clickCcfri() {
-		wait.until(ExpectedConditions.elementToBeClickable(CcfrisLink)).click();
+		ccfrisLink.click();
 	}
 
-	public void clickCCFOSLink() throws InterruptedException {
+	public void clickCCFOSLink() {
 		Actions action = new Actions(driver);
 		action.moveToElement(selectCcfosLink).click().build().perform();
-		Thread.sleep(5000);
 	}
 
 	public void clickCcfos() {
-		wait.until(ExpectedConditions.elementToBeClickable(CcfosLink)).click();
+		ccfosLink.click();
 	}
 
 	public void clickCcofTab() {
-		wait.until(ExpectedConditions.elementToBeClickable(CcofTab)).click();
+		ccofTab.click();
 	}
 
 	public void clickCcofStatus() {
-		wait.until(ExpectedConditions.elementToBeClickable(CcofStatus)).click();
+		ccofStatus.click();
 	}
 
-	public void getCcofStatusOptions(String value) {
-		List<WebElement> valueOptions = CcofStatusOptions;
-		int count = valueOptions.size();
-		for (int i = 0; i < count; i++) {
-			String valueDisplay = valueOptions.get(i).getText();
-			System.out.println(valueDisplay);
-			if (valueDisplay.equals(value)) {
-				valueOptions.get(i).click();
-				break;
-			}
-		}
+	public List<WebElement> getCcofStatusOptions() {
+		return ccofStatusOptions;
 	}
 
 	public void clickSaveBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
+		saveBtn.click();
 	}
 }

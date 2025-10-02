@@ -2,7 +2,6 @@ package ca.bc.gov.ecc.ccof.pageobjects;
 
 import java.time.Duration;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -10,7 +9,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class CRMSignInCredentialPage extends BaseTest {
 
@@ -18,31 +17,31 @@ public class CRMSignInCredentialPage extends BaseTest {
 	WebDriverWait wait;
 
 	@FindBy(name = "loginfmt")
-	WebElement text_userID;
+	WebElement userIdField;
 
 	@FindBy(name = "passwd")
-	WebElement text_password;
+	WebElement passwordField;
 
 	@FindBy(id = "idSIButton9")
-	WebElement button_next;
+	WebElement nextBtn;
 
 	@FindBy(id = "idSIButton9")
-	WebElement button_signIn;
+	WebElement signInBtn;
 
 	@FindBy(id = "lightbox")
-	WebElement form_lightbox;
+	WebElement lightboxForm;
 
 	@FindBy(id = "idSIButton9")
-	WebElement button_Yes;
+	WebElement yesBtn;
 
 	@FindBy(id = "okButton_1")
-	WebElement button_SignInAgain;
+	WebElement signInAgainBtn;
 
 	@FindBy(xpath = "//*[text()='Organization-Facilities']")
-	WebElement button_OrgFacilities;
+	WebElement orgFacilitiesBtn;
 
 	@FindBy(xpath = "//*[text()='Assistance Requests']")
-	WebElement buttonAssistanceRequest;
+	WebElement assistanceRequestBtn;
 
 	@FindBy(xpath = "//*[@aria-label[contains(., 'Sign in with')]]")
 	WebElement signInAccount;
@@ -69,89 +68,88 @@ public class CRMSignInCredentialPage extends BaseTest {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+
 	}
 
 	public void clickHeaderPicture() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(headerPicture));
 		headerPicture.click();
 	}
 
 	public void clickSignOut() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(signOut));
 		signOut.click();
 	}
 
-	public void wait(WebElement ele) {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(60));
-		wait.until(ExpectedConditions.visibilityOf(ele));
+	public void enterUserId(String userid) {
+		userIdField.sendKeys(userid);
 	}
 
-	public void enterUserId(String userid) {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(text_userID));
-		// wait(text_userID);
-		text_userID.sendKeys(userid);
+	public WebElement waitBeforeEnterUserId() {
+		return userIdField;
 	}
 
 	public void clickNext() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(button_next));
-		button_next.click();
+		nextBtn.click();
 	}
 
 	public void enterPassword(String userPassword) {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(text_password));
-		text_password.sendKeys(userPassword);
+		passwordField.sendKeys(userPassword);
+	}
+
+	public WebElement waitBeforePasswordEntered() {
+		return passwordField;
 	}
 
 	public void clickForm() {
-		wait.until(ExpectedConditions.visibilityOf(form_lightbox)).click();
+		lightboxForm.click();
 	}
 
 	public void clickSignIn() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(button_signIn));
-		button_signIn.click();
+		signInBtn.click();
+	}
+
+	public WebElement waitBeforeClickSignIn() {
+		return signInBtn;
+	}
+
+	public WebElement displaySignIn() {
+		return signInBtn;
 	}
 
 	public void clickYes() {
-		wait(form_lightbox);
-		form_lightbox.click();
-		button_Yes.click();
+		lightboxForm.click();
+		yesBtn.click();
+	}
+
+	public WebElement waitBeforeClickYes() {
+		return yesBtn;
 	}
 
 	public void clickSignInAgain() {
-		wait.until(ExpectedConditions.visibilityOf(button_SignInAgain)).click();
+		signInAgainBtn.click();
+	}
+
+	public WebElement waitBeforeClickSignInAgain() {
+		return signInAgainBtn;
 	}
 
 	public void clickOrgFacilities() {
-		wait.until(ExpectedConditions.elementToBeClickable(button_OrgFacilities)).click();
+		orgFacilitiesBtn.click();
+	}
+
+	public WebElement waitBeforeClickOrgFacilities() {
+		return orgFacilitiesBtn;
 	}
 
 	public void clickAssistanceRequest() {
-		wait.until(ExpectedConditions.elementToBeClickable(buttonAssistanceRequest)).click();
+		assistanceRequestBtn.click();
 	}
 
 	public void clickAccount() {
-		wait.until(ExpectedConditions.elementToBeClickable(signInAccount)).click();
-	}
-
-	public void isLoginScreenAvailable() throws Exception {
-
-		WebElement element = driver.findElement(By.xpath("//*[text()='Pick an account']"));
-
-		if (element == null) {
-			throw new Exception("Login page not present");
-		}
+		signInAccount.click();
 	}
 
 	// apps dashboard method
-
 	public void switchToAppsDashboardIFrame() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(appsDashboardIFrame));
 		wait.until(ExpectedConditions.elementToBeClickable(selectCaseManagementSystem)).click();
 		driver.switchTo().defaultContent();
@@ -159,26 +157,9 @@ public class CRMSignInCredentialPage extends BaseTest {
 
 	// Invalid Login methods
 	public String getInvalidLoginErrorMessage() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
 		wait.until(ExpectedConditions.visibilityOf(invalidLoginErrorMessage));
 		return invalidLoginErrorMessage.getText();
 
 	}
 
-	public void signInApplication() throws InterruptedException {
-
-		enterUserId(CRM_USERNAME);
-		clickNext();
-		enterPassword(CRM_PASSWORD);
-		Thread.sleep(2000);
-		clickSignIn();
-		Thread.sleep(2000);
-		clickYes();
-		Thread.sleep(5000);
-		clickSignInAgain();
-		Thread.sleep(5000);
-		switchToAppsDashboardIFrame();
-		Thread.sleep(2000);
-
-	}
 }

@@ -10,7 +10,7 @@ import org.testng.ITestResult;
 
 import com.aventstack.extentreports.Status;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class TestListener extends BaseTest implements ITestListener {
 
@@ -44,9 +44,8 @@ public class TestListener extends BaseTest implements ITestListener {
 	@Override
 	public void onTestFailure(ITestResult iTestResult) {
 		Log.info(getTestMethodName(iTestResult) + " test is failed.");
-		System.out.println("Method failed" + iTestResult.getName());
 		String base64Screenshot = "data:image/png;base64,"
-				+ ((TakesScreenshot) Objects.requireNonNull(BaseTest.driver)).getScreenshotAs(OutputType.BASE64);
+				+ ((TakesScreenshot) Objects.requireNonNull(this.driver)).getScreenshotAs(OutputType.BASE64);
 		// ExtentReports log and screenshot operations for failed tests.
 		ExtentTestManager.getTest().log(Status.FAIL, "Test Failed", ExtentTestManager.getTest()
 				.addScreenCaptureFromBase64String(base64Screenshot).getModel().getMedia().get(0));

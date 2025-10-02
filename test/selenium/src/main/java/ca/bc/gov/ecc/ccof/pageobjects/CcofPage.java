@@ -3,21 +3,19 @@ package ca.bc.gov.ecc.ccof.pageobjects;
 import java.time.Duration;
 import java.util.List;
 
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.baseclass.BaseTest;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class CcofPage extends BaseTest {
 	WebDriverWait wait;
 
 	public CcofPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -72,85 +70,63 @@ public class CcofPage extends BaseTest {
 	// methods can be added here
 
 	public void clickCcofAdjudicationLink() {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-		wait.until(ExpectedConditions.elementToBeClickable(ccofAdjudicationLink)).click();
+		ccofAdjudicationLink.click();
 	}
 
-	public void clickNewApplicationIsSignedBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", newApplicationIsSignedField);
-
+	public WebElement clickNewApplicationIsSignedBtn() {
+		return newApplicationIsSignedField;
 	}
 
-	public void clickApplicationFormAndLicenseSubmittedBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", applicationFormAndLicenseSubmittedField);
-
+	public WebElement clickApplicationFormAndLicenseSubmittedBtn() {
+		return applicationFormAndLicenseSubmittedField;
 	}
 
-	public void clickLegalNameAndLicenseMatchBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", legalNameAndLicenseMatchField);
+	public WebElement clickLegalNameAndLicenseMatchBtn() {
+		return legalNameAndLicenseMatchField;
 	}
 
-	public void clickLicenseValidInHealthSpaceBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", licenseValidInHealthSpaceField);
+	public WebElement clickLicenseValidInHealthSpaceBtn() {
+		return licenseValidInHealthSpaceField;
 	}
 
-	public void clickMailingAddressInCasSupplierBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", mailingAddressInCasSupplierField);
+	public WebElement clickMailingAddressInCasSupplierBtn() {
+		return mailingAddressInCasSupplierField;
 	}
 
-	public void clickProviderPreviouslyWithCcofBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", providerPreviouslyWithCcofField);
-
+	public WebElement clickProviderPreviouslyWithCcofBtn() {
+		return providerPreviouslyWithCcofField;
 	}
 
-	public void clickProviderInGoodStandingBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", providerInGoodStandingField);
+	public WebElement clickProviderInGoodStandingBtn() {
+		return providerInGoodStandingField;
 	}
 
-	public void clickBasePayEligibleBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", basePayEligibleField);
+	public WebElement clickBasePayEligibleBtn() {
+		return basePayEligibleField;
 	}
 
-	public void clickBasePayActivatedBtn() {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", basePayActivatedField);
+	public WebElement clickBasePayActivatedBtn() {
+		return basePayActivatedField;
 	}
 
 	public void clickSaveBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
+		saveBtn.click();
 	}
 
 	public void clickDashboardLink() {
-		wait.until(ExpectedConditions.elementToBeClickable(dashboardLink)).click();
+		dashboardLink.click();
 	}
 
 	public void clickBaseFundingProgressStatusField() {
-		wait.until(ExpectedConditions.elementToBeClickable(baseFundingProgressStatusField)).click();
+		baseFundingProgressStatusField.click();
 	}
 
-	public void getBaseFundingProgressStatusOptions(String value) {
-		List<WebElement> valueOptions = baseFundingProgressStatusOptions;
-		int count = valueOptions.size();
-		for (int i = 0; i < count; i++) {
-			String valueDisplay = valueOptions.get(i).getText();
-			System.out.println(valueDisplay);
-			if (valueDisplay.equals(value)) {
-				valueOptions.get(i).click();
-				break;
-			}
-		}
+	public List<WebElement> getBaseFundingProgressStatusOptions() {
+		return baseFundingProgressStatusOptions;
 	}
 
 	public void clickSaveAndCloseBtn() {
-		wait.until(ExpectedConditions.elementToBeClickable(saveAndCloseBtn)).click();
+		saveAndCloseBtn.click();
 	}
 
 }

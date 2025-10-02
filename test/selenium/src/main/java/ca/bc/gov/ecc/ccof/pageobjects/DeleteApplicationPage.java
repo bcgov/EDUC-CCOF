@@ -1,8 +1,8 @@
 package ca.bc.gov.ecc.ccof.pageobjects;
 
+import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
-import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,13 +10,18 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class DeleteApplicationPage {
-	WebDriver driver;
-	WebDriverWait wait;
+import ca.bc.gov.ecc.ccof.base.BaseTest;
+
+public class DeleteApplicationPage extends BaseTest {
+
 	String getV;
+	Actions action;
+
+	public DeleteApplicationPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+	}
 
 	@FindBy(xpath = "//*[@id='GlobalSearchBox']")
 	WebElement searchBox;
@@ -48,28 +53,20 @@ public class DeleteApplicationPage {
 	@FindBy(xpath = "//*[@title= 'Ignore and save']")
 	WebElement ignoreAndSaveBtn;
 
-	public DeleteApplicationPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	public WebElement mouseOverDeactivate() {
+		return deactivateBtn;
 	}
 
-	public void mouseOverDeactivate() throws InterruptedException {
-		Actions action = new Actions(driver);
-		action.moveToElement(deactivateBtn).click().build().perform();
-		Thread.sleep(5000);
-	}
-
-	public void mouseOverDelete() throws InterruptedException {
-		Actions action = new Actions(driver);
-		action.moveToElement(deleteBtn).click().build().perform();
-
+	public WebElement mouseOverDelete() {
+		return deleteBtn;
 	}
 
 	public void cancelBtn() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(cancelBtn));
 		cancelBtn.click();
+	}
+
+	public WebElement waitBeforeCancelBtn() {
+		return cancelBtn;
 	}
 
 	public void searchBox(String value) {
@@ -77,11 +74,15 @@ public class DeleteApplicationPage {
 		getV = getVsearchBox();
 	}
 
+	public WebElement waitBeforeSearchBox() {
+		return searchBox;
+	}
+
 	public String getVsearchBox() {
 		return searchBox.getAttribute("value");
 	}
 
-	public void pressEnter() throws Throwable {
+	public void pressEnter() throws AWTException {
 		Robot robot = new Robot();
 		robot.keyPress(KeyEvent.VK_ENTER);
 		robot.keyRelease(KeyEvent.VK_ENTER);
@@ -98,24 +99,26 @@ public class DeleteApplicationPage {
 	}
 
 	public void selectIdCheckBox() {
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 		selectIdCheckBox.click();
 	}
 
+	public WebElement waitBeforeSelectIdCheckBox() {
+		return selectIdCheckBox;
+	}
+
 	public void threeDotsBtn() {
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 		threeDotsbtn.click();
 	}
 
+	public WebElement waitBeforeThreeDotsBtn() {
+		return threeDotsbtn;
+	}
+
 	public void deactivateBtn() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(deactivateBtn));
 		deactivateBtn.click();
 	}
 
 	public void deactivateBtnPopup() {
-		WebDriverWait wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(100));
-		wait.until(ExpectedConditions.visibilityOf(deactivateBtnPopup));
 		deactivateBtnPopup.click();
 	}
 
@@ -123,11 +126,23 @@ public class DeleteApplicationPage {
 		deleteBtnPopup.click();
 	}
 
+	public WebElement waitBeforeDeleteBtnPopup() {
+		return deleteBtnPopup;
+	}
+
 	public void saveAndCloseBtn() {
 		saveAndCloseBtn.click();
 	}
 
-	public void ignoreAndSaveBtn() {
+	public WebElement waitBeforeSaveAndCloseBtn() {
+		return saveAndCloseBtn;
+	}
+
+	public void clickIgnoreAndSaveBtn() {
 		ignoreAndSaveBtn.click();
+	}
+
+	public WebElement ignoreAndSaveButton() {
+		return ignoreAndSaveBtn;
 	}
 }
