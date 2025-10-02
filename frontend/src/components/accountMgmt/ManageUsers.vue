@@ -83,7 +83,7 @@
                   <thead>
                     <tr>
                       <th scope="col"><b>Facility ID #</b></th>
-                      <th scope="col"><b>License #</b></th>
+                      <th scope="col"><b>Licence #</b></th>
                       <th scope="col"><b>Facility Name</b></th>
                     </tr>
                   </thead>
