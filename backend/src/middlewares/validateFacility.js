@@ -12,7 +12,7 @@ module.exports = function () {
     // TODO (weskubo-cgi) Determine if this is required once Impersonate is confirmed
     //if (isIdirUser(req)) return next();
 
-    const facilityId = req.params.facilityId ?? req.query.facilityId ?? req.body.facilityId + '67';
+    const facilityId = req.params.facilityId ?? req.query.facilityId ?? req.body.facilityId;
     if (!facilityId) {
       return next();
     }
