@@ -6,9 +6,9 @@
     <template v-else>
       <EnrolmentReportHeader :enrolment-report="enrolmentReport" />
       <v-skeleton-loader v-if="processing" :loading="processing" type="table-tbody" class="mt-4 mb-8" />
-      <v-card v-else variant="outlined" class="overflow-auto mt-4 pa-4 pt-0">
+      <v-card v-else variant="outlined" class="overflow-auto mt-4 pa-4 pt-0 pa-md-8 pt-md-0">
         <v-row no-gutters class="py-2">
-          <span class="pr-4 pt-4">Report full month closure</span>
+          <span class="pr-2 pt-4">Report full month closure or no enrolment</span>
           <v-switch
             v-model="enrolmentReport.isFullMonthClosure"
             :disabled="readonly"
@@ -16,9 +16,9 @@
             hide-details
             @update:model-value="toggleFullMonthClosure"
           />
-          <span class="pt-4 pl-4">
+          <span class="pt-4 pl-2">
             <AppTooltip
-              tooltip-content="Select this option if your facility was fully closed or had no enrolment for any day in the reporting month."
+              tooltip-content="Select this option if your facility was closed or had no enrolment for the entire reporting month."
             />
           </span>
         </v-row>
@@ -1134,8 +1134,9 @@
   <BackConfirmationDialog :show="showBackConfirmationDialog" @close="showBackConfirmationDialog = false" />
   <FullMonthClosureConfirmationDialog
     :show="showFullMonthClosureConfirmationDialog"
+    :loading="loading || processing"
     @close="closeFullMonthClosureDialog"
-    @confirm="confirmFullMonthClosure"
+    @proceed="confirmFullMonthClosure"
   />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
@@ -1492,19 +1493,18 @@ export default {
     async confirmFullMonthClosure() {
       this.resetForm(0);
       await this.next();
-      console.log('reset form');
     },
 
-    resetForm(defaultValue = null) {
-      this.enrolmentReport.totalEnrolled0To18 = defaultValue;
-      this.enrolmentReport.totalEnrolled18To36 = defaultValue;
-      this.enrolmentReport.totalEnrolled3YK = defaultValue;
-      this.enrolmentReport.totalEnrolledOOSCK = defaultValue;
-      this.enrolmentReport.totalEnrolledOOSCG = defaultValue;
-      this.enrolmentReport.totalEnrolledPre = defaultValue;
+    resetForm(resetValue = null) {
+      this.enrolmentReport.totalEnrolled0To18 = resetValue;
+      this.enrolmentReport.totalEnrolled18To36 = resetValue;
+      this.enrolmentReport.totalEnrolled3YK = resetValue;
+      this.enrolmentReport.totalEnrolledOOSCK = resetValue;
+      this.enrolmentReport.totalEnrolledOOSCG = resetValue;
+      this.enrolmentReport.totalEnrolledPre = resetValue;
       for (const dailyEnrolment of this.dailyEnrolments) {
         for (const category of this.CATEGORY_FIELDS) {
-          dailyEnrolment[category] = defaultValue;
+          dailyEnrolment[category] = resetValue;
         }
       }
       this.calculate();

@@ -1,24 +1,33 @@
 <template>
-  <AppDialog :model-value="show" persistent max-width="50%" @close="close">
+  <AppDialog :model-value="show" :loading="loading" persistent max-width="50%" @close="close">
     <template #content>
-      <div class="text-center">
-        <p class="pt-4 font-weight-bold text-h5">Report Full Month Closure ?</p>
-        <p class="pt-6 text-h6">
-          You're about to report that your facility will be fully closed for the
-          <strong>entire reporting month.</strong>
+      <p class="pt-4 font-weight-bold text-h5">Confirm Full Month Closure or No Enrolment</p>
+      <div class="text-left px-8 pt-8">
+        <p class="text-h6">
+          You are reporting that your facility was closed or had no enrolment for the entire reporting month.
         </p>
-        <p class="pt-6 text-h6">
-          You will be taken to a declaration page to confirm before submitting your Enrolment Report.
+        <p class="pt-4 text-h6">
+          You will be redirected to a declaration page to confirm this before submitting your Enrolment Report.
+        </p>
+        <p class="pt-4 text-h6">
+          If your facility opens or enrolment begins during this month, you must submit an adjustment before the
+          reporting deadline.
+        </p>
+        <p class="pt-4 text-h6">
+          If your facility is permanently closed, or remains closed for three consecutive months, you must contact the
+          program as it may impact your Funding Agreement.
         </p>
       </div>
     </template>
     <template #button>
       <v-row justify="space-around" class="px-4">
         <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton id="cancel" :primary="false" @click="close"> Cancel </AppButton>
+          <AppButton id="cancel" :loading="loading" :primary="false" min-width="150px" @click="close">
+            Cancel
+          </AppButton>
         </v-col>
         <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton id="confirm" @click="confirm"> Yes, report full month closure </AppButton>
+          <AppButton id="proceed" :loading="loading" min-width="150px" @click="proceed"> Proceed </AppButton>
         </v-col>
       </v-row>
     </template>
@@ -36,18 +45,22 @@ export default {
     AppDialog,
   },
   props: {
+    loading: {
+      type: Boolean,
+      default: false,
+    },
     show: {
       type: Boolean,
       default: false,
     },
   },
-  emits: ['close', 'confirm'],
+  emits: ['close', 'proceed'],
   methods: {
     close() {
       this.$emit('close');
     },
-    confirm() {
-      this.$emit('confirm');
+    proceed() {
+      this.$emit('proceed');
     },
   },
 };
