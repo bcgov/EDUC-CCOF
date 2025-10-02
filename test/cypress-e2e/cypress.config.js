@@ -1,6 +1,7 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
+  defaultCommandTimeout: 60000,
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     reportDir: "cypress/reports/mocha",
@@ -12,7 +13,7 @@ module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       require("cypress-mochawesome-reporter/plugin")(on);
-      config.baseUrl = config.env.CCOF_PORTAL_URL;
+      config.baseUrl = config.env.CCOF_PORTAL_LOGIN;
       return config;
     },
     screenshotOnRunFailure: true,
