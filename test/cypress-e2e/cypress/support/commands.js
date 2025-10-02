@@ -31,20 +31,6 @@
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
 
-// SELECTORPLAYGROUND FOR OLD CYPRESS VERSION
-// Cypress.SelectorPlayground.defaults({
-//   selectorPriority: [
-//     'data-cy',       
-//     'data-test',
-//     'data-testid',
-//     'id',
-//     'class',
-//     'tag',
-//     'attributes',
-//     'nth-child',
-//   ],
-// })
-
 // Updated with new Cypress Version
 Cypress.ElementSelector.defaults({
   selectorPriority: [
@@ -167,14 +153,23 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
       expect(pointerEvents, 'pointer-events').to.not.eq('none')
       expect(el.hasAttribute('disabled'), 'disabled attr').to.eq(false)
     })
-    // ADDED FORCE:TRUE BC SOMETIMES ITS JUST GOTTA BE CLICKED
     .click({force:true}) 
 })
+
+
+Cypress.Commands.add('startNewApp', () => {
+  cy.url().should('eq', Cypress.env('CCOF_PORTAL_HOME')).then(()=> {
+      cy.contains('What would you like to do?').should('be.visible').clickByText('Start Application')
+      cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
+      cy.contains('Group Provider').should('be.visible').clickByText('Start Application')
+  })
+});
+
 /*
 * Method to Cancel the application if the button is present
 **/
 Cypress.Commands.add('cancelApplicationIfPresent', () => {
-    cy.wait(10000);
+  cy.wait(10000);
   cy.document({ timeout: 30000 }).then((doc) => {
     const btn = Array.from(doc.querySelectorAll('button')).find(
       (el) => el.textContent.trim() === 'Cancel Application'

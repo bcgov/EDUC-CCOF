@@ -1,4 +1,4 @@
-import { loginPage } from "../../support/pages/LoginPage";
+import { loginPage } from "../../support/pages/1-portal-login-pages/LoginPage";
 
 describe("Portal Login and Navigation", () => {
   // This hook runs before each test case
