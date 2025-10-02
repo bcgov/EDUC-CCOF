@@ -3,7 +3,7 @@ import { defineConfig } from 'cypress';
 import viteConfig from './vite.config.js';
 
 viteConfig.optimizeDeps = {
-  ...(viteConfig.optimizeDeps || {}),
+  ...viteConfig.optimizeDeps,
   exclude: ['vue'],
 };
 
