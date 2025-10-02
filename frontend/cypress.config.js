@@ -2,6 +2,11 @@ import { defineConfig } from 'cypress';
 
 import viteConfig from './vite.config.js';
 
+viteConfig.optimizeDeps = {
+  ...(viteConfig.optimizeDeps || {}),
+  exclude: ['vue'],
+};
+
 export default defineConfig({
   component: {
     specPattern: 'tests/cypress/component/**/*.{js,jsx,ts,tsx,vue}',
