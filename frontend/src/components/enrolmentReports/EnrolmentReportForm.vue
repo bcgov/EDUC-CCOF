@@ -24,7 +24,7 @@
         </v-row>
         <div class="table-scroll-wrapper mb-6">
           <v-row no-gutters class="background-light-grey border-bottom font-weight-bold sticky-row row-0">
-            <v-col class="border-right close-column cell-text-center"></v-col>
+            <v-col class="border-right first-column cell-text-center"></v-col>
             <v-col class="border-right cell-text-center">0 - 18 Months</v-col>
             <v-col class="border-right cell-text-center">18 - 36 Months</v-col>
             <v-col class="border-right cell-text-center">3 Years to Kinder</v-col>
@@ -33,7 +33,7 @@
             <v-col v-if="isGroup" cols="1" class="border-right cell-text-center">Preschool</v-col>
           </v-row>
           <v-row no-gutters class="border-bottom text-center">
-            <v-col class="close-column border-right background-light-grey d-flex align-center justify-center">
+            <v-col class="first-column border-right background-light-grey d-flex align-center justify-center">
               <span class="pr-1"> Total Enrolled </span>
               <AppTooltip
                 tooltip-content="For each rate category, enter the number of individual children, including drop-ins, who were enrolled this month."
@@ -104,7 +104,7 @@
             </p>
           </v-row>
           <v-row no-gutters class="background-light-grey border-bottom">
-            <v-col class="border-right close-column cell-text-center">Approved Parent Fees $</v-col>
+            <v-col class="border-right first-column cell-text-center">Approved Parent Fees $</v-col>
             <v-col class="border-right cell-text-center">
               {{ getApprovedParentFees(enrolmentReport.approvedParentFees0To18) }}
             </v-col>
@@ -125,7 +125,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey">
-            <v-col class="border-right close-column cell-text-center">Frequency</v-col>
+            <v-col class="border-right first-column cell-text-center">Frequency</v-col>
             <v-col class="border-right cell-text-center">
               {{ getParentFeesFrequency(enrolmentReport.approvedParentFeesFrequency0To18) }}
             </v-col>
@@ -146,7 +146,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey border-bottom border-top sticky-row row-1">
-            <v-col class="border-right close-column cell-text-center">Day</v-col>
+            <v-col class="border-right first-column cell-text-center">Day</v-col>
             <v-col v-for="i in 5" :key="i" class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-center">4 Hours Or Less</v-col>
@@ -161,7 +161,7 @@
             no-gutters
             :class="getRowClass(dailyEnrolment, rowIndex)"
           >
-            <v-col class="background-light-grey border-right close-column d-flex align-center justify-center">
+            <v-col class="background-light-grey border-right first-column d-flex align-center justify-center">
               <span>{{ dailyEnrolment.day }}</span>
               <span class="day-label">
                 {{ getDayOfWeek(dailyEnrolment.day, enrolmentReport.month, enrolmentReport.year) }}
@@ -281,7 +281,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey border-top-yellow">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">Current Total</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">Current Total</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">{{ enrolmentReport.currentTotalLess0To18 }}</v-col>
@@ -318,7 +318,7 @@
           </v-row>
           <template v-if="enrolmentReport.isAdjustment">
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Prev Approved</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Prev Approved</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -364,7 +364,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Difference</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Difference</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -421,63 +421,61 @@
             </v-row>
           </template>
           <v-row no-gutters class="background-light-grey border-top-blue">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">CCOF Base Rate</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">CCOF Base Rate $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.less0To18) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.less0To18) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.over0To18) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.over0To18) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.less18To36) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.less18To36) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.over18To36) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.over18To36) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.less3YK) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.less3YK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.over3YK) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.over3YK) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.lessOOSCK) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.lessOOSCK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.overOOSCK) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.overOOSCK) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.lessOOSCG) }}
+                  {{ formatCurrency(enrolmentReport.baseFundingRates.lessOOSCG) }}
                 </v-col>
-                <v-col class="cell-text-right">
-                  {{ formatDecimalNumber(enrolmentReport.baseFundingRates.overOOSCG) }}</v-col
-                >
+                <v-col class="cell-text-right"> {{ formatCurrency(enrolmentReport.baseFundingRates.overOOSCG) }}</v-col>
               </v-row>
             </v-col>
             <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
-              {{ formatDecimalNumber(enrolmentReport.baseFundingRates.lessPre) }}
+              {{ formatCurrency(enrolmentReport.baseFundingRates.lessPre) }}
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey border-top">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">CCOF Base $</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">CCOF Base $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
@@ -524,7 +522,7 @@
           </v-row>
           <template v-if="enrolmentReport.isAdjustment">
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Prev CCOF Base $</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Prev CCOF Base $</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -580,7 +578,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Difference CCOF Base $</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Difference CCOF Base $</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -637,61 +635,63 @@
             </v-row>
           </template>
           <v-row no-gutters class="background-light-grey border-top-blue">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">Daily CCFRI Rate</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">Daily CCFRI Rate $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLess0To18) }}
-                </v-col>
-                <v-col class="cell-text-right">{{ formatCCFRIRate(enrolmentReport.dailyCcfriRateOver0To18) }}</v-col>
-              </v-row>
-            </v-col>
-            <v-col class="border-right">
-              <v-row no-gutters>
-                <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLess18To36) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLess0To18) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateOver18To36) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateOver0To18) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLess3YK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLess18To36) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateOver3YK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateOver18To36) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLessOOSCK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLess3YK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateOverOOSCK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateOver3YK) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLessOOSCG) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLessOOSCK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateOverOOSCG) }}
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateOverOOSCK) }}
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLessOOSCG) }}
+                </v-col>
+                <v-col class="cell-text-right">
+                  {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateOverOOSCG) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
-              {{ formatCCFRIRate(enrolmentReport.dailyCcfriRateLessPre) }}
+              {{ formatCCFRICurrency(enrolmentReport.dailyCcfriRateLessPre) }}
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey border-top">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">CCFRI $</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">CCFRI $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
@@ -738,7 +738,7 @@
           </v-row>
           <template v-if="enrolmentReport.isAdjustment">
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Prev CCFRI $</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Prev CCFRI $</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -794,7 +794,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Difference CCFRI $</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Difference CCFRI $</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -851,63 +851,65 @@
             </v-row>
           </template>
           <v-row no-gutters class="background-light-grey border-top-blue">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">CCFRI Provider Payment Rate</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">
+              CCFRI Provider Payment Rate $
+            </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.less0To18) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.less0To18) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.over0To18) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.over0To18) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.less18To36) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.less18To36) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.over18To36) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.over18To36) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.less3YK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.less3YK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.over3YK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.over3YK) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.lessOOSCK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.lessOOSCK) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.overOOSCK) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.overOOSCK) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.lessOOSCG) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.lessOOSCG) }}
                 </v-col>
                 <v-col class="cell-text-right">
-                  {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.overOOSCG) }}
+                  {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.overOOSCG) }}
                 </v-col>
               </v-row>
             </v-col>
             <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
-              {{ formatCCFRIRate(enrolmentReport.ccfriProviderPaymentRates.lessPre) }}
+              {{ formatCCFRICurrency(enrolmentReport.ccfriProviderPaymentRates.lessPre) }}
             </v-col>
           </v-row>
           <v-row no-gutters class="background-light-grey border-top">
-            <v-col class="border-right close-column font-weight-bold cell-text-left">CCFRI Provider $</v-col>
+            <v-col class="border-right first-column font-weight-bold cell-text-left">CCFRI Provider $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
                 <v-col class="border-right cell-text-right">
@@ -964,7 +966,7 @@
           </v-row>
           <template v-if="enrolmentReport.isAdjustment">
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">Prev CCFRI Provider $</v-col>
+              <v-col class="border-right first-column font-weight-bold cell-text-left">Prev CCFRI Provider $</v-col>
               <v-col class="border-right">
                 <v-row no-gutters>
                   <v-col class="border-right cell-text-right">
@@ -1020,7 +1022,7 @@
               </v-col>
             </v-row>
             <v-row no-gutters class="background-light-grey border-top">
-              <v-col class="border-right close-column font-weight-bold cell-text-left">
+              <v-col class="border-right first-column font-weight-bold cell-text-left">
                 Difference CCFRI Provider $
               </v-col>
               <v-col class="border-right">
@@ -1239,7 +1241,6 @@ export default {
   },
   methods: {
     formatCurrency,
-    formatDecimalNumber,
     getDayOfWeek,
     async loadData() {
       try {
@@ -1282,10 +1283,6 @@ export default {
 
     formatCCFRICurrency(value) {
       return this.areCCFRIRatesEmpty ? EMPTY_PLACEHOLDER : formatCurrency(value);
-    },
-
-    formatCCFRIRate(rate) {
-      return this.areCCFRIRatesEmpty ? EMPTY_PLACEHOLDER : formatDecimalNumber(rate);
     },
 
     getApprovedParentFees(fee) {
@@ -1673,8 +1670,8 @@ export default {
   border-bottom: 1px solid;
 }
 
-.close-column {
-  max-width: 250px;
+.first-column {
+  max-width: 270px;
   position: relative;
   overflow: hidden;
 }
@@ -1697,7 +1694,7 @@ export default {
 .table-scroll-wrapper {
   border: 1px solid;
   max-height: 60vh;
-  min-width: 1700px;
+  min-width: 1800px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
