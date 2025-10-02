@@ -699,6 +699,7 @@ const EnrolmentReportMappings = [
   { back: '_ccof_reportextension_value', front: 'enrolmentReportExtensionId' },
   { back: '_ccof_prevenrollmentreport_value', front: 'prevEnrolmentReportId' },
   { back: 'ccof_providertype', front: 'organizationProviderType' },
+  { back: 'ccof_is_full_month_closure', front: 'isFullMonthClosure' },
   { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
   { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
