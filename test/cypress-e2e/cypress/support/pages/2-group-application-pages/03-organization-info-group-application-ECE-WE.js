@@ -25,11 +25,11 @@ class EceWeApplication {
             // Update any test data here --> NOTE: Some data may need to be updated in related fixture file directly
             optInOrOut = optInOrOut.optIn
             publicSectorEmployer = publicSectorEmployer.isEmployer
-            let csseaSelection = cssea.csseaMember.status
-            let fundingType = cssea.csseaMember.fundingModel.provinciallyFunded
-            let unionStatus = cssea.csseaNonMember.response.someOrAllUnionized
-            let facilityOptInOrOut = facility.facilityOptInOrOut.optIn
-            let facilityUnionStatus = facility.facilityUnionStatus.unionized
+            const csseaSelection = cssea.csseaMember.status
+            const fundingType = cssea.csseaMember.fundingModel.provinciallyFunded
+            const unionStatus = cssea.csseaNonMember.response.someOrAllUnionized
+            const facilityOptInOrOut = facility.facilityOptInOrOut.optIn
+            const facilityUnionStatus = facility.facilityUnionStatus.unionized
 
             // ECE-WE Eligibility
             cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE)').should('be.visible')
@@ -46,10 +46,10 @@ class EceWeApplication {
             cy.contains('Which of the following describes your organization?').should('be.visible')
             cy.getByLabel(csseaSelection).click({force:true})
             // Non-Member
-            if (csseaSelection == cssea.csseaNonMember.status) {
+            if (csseaSelection === cssea.csseaNonMember.status) {
                 cy.getByLabel(unionStatus).click({force:true})
                 // Non-Member + Union
-                if (unionStatus == cssea.csseaNonMember.someOrAllUnionizedUnionized) {
+                if (unionStatus === cssea.csseaNonMember.someOrAllUnionizedUnionized) {
                     cy.clickByText(cssea.confirmation) 
                 } 
             } else {
@@ -60,15 +60,14 @@ class EceWeApplication {
             cy.clickByText('Save')
             cy.clickByText('Next')
 
-            if (facilityOptInOrOut == " Opt-In All Facilities ") {
+            if (facilityOptInOrOut === facility.facilityOptInOrOut.optIn) {
                 cy.contains(' Opt-In All Facilities ').should('be.visible')
                 cy.clickByText(facilityOptInOrOut)
                 cy.clickByText(' Update ')
-                if (unionStatus == "Some or all of our facilities are unionized." || csseaSelection == cssea.csseaMember) {
+                if (unionStatus === cssea.csseaNonMember.response.someOrAllUnionized || csseaSelection === cssea.csseaMember) {
                     allFacilitiesUnionized('.v-card', facilityUnionStatus)
                 }
             }
-
             cy.clickByText('Save')
             cy.clickByText('Next')
             cy.contains('Supporting Document Upload')

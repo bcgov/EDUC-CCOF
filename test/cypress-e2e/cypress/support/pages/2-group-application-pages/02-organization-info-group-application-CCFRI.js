@@ -21,19 +21,19 @@ class CcfriApplication{
         cy.then(()=> {
             // Update any test data here --> NOTE: Some data may need to be updated in related fixture file directly
             optInOrOut = optInOrOut.optIn
-            let parentFeeCategories = parentFees.parentFeeCategories
-            let paymentFrequency = parentFees.frequency.monthly
-            let closureCharges = closures.closureCharges.chargeForClosures
-            let startDate = closures.startDate
-            let endDate = closures.endDate
-            let closureReason = closures.closureReason
-            let fullFacilityClosureStatus = closures.fullFacilityClosureStatus.notFullFacilityClosure
+            const parentFeeCategories = parentFees.parentFeeCategories
+            const paymentFrequency = parentFees.frequency.monthly
+            const closureCharges = closures.closureCharges.chargeForClosures
+            const startDate = closures.startDate
+            const endDate = closures.endDate
+            const closureReason = closures.closureReason
+            const fullFacilityClosureStatus = closures.fullFacilityClosureStatus.notFullFacilityClosure
 
 
             // CCFRI - Parent Fees 
             cy.url().should('include', '/ccfri', {timeout: 10000})
             //Opt-Out Path
-            if (optInOrOut == 'Opt-Out') {
+            if (optInOrOut === 'Opt-Out') {
                 cy.contains('Child Care Fee Reduction Initiative (CCFRI)').clickByText('Update')
                 cy.getByLabel(optInOrOut).click()
             } else {
@@ -50,7 +50,6 @@ class CcfriApplication{
                         .click()
                         .then(() => handleCardWithin(card, parentFees.months))
                 })
-
                 cy.clickByText('Save')
                 cy.clickByText('Next')
 
@@ -61,7 +60,7 @@ class CcfriApplication{
 
                 cy.getByLabel(`${closureCharges}`).click()
                 // No Charge for Closures
-                if (closureCharges == "No") {
+                if (closureCharges === "No") {
                     return
                 }
 
@@ -73,11 +72,9 @@ class CcfriApplication{
                 cy.getByLabel(`${fullFacilityClosureStatus}`).click({force: true})
 
                 //Partial Care Category Closures
-                if (fullFacilityClosureStatus == "No") {
+                if (fullFacilityClosureStatus === "No") {
                     //TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories
                 }
-                
-            
                 cy.clickByText('Save')
                 cy.clickByText('Next')
             }

@@ -35,11 +35,13 @@
           :items-per-page="10"
           density="compact"
           :mobile="null"
+          show-expand
+          item-value="contactId"
           mobile-breakpoint="md"
           class="soft-outline"
         >
           <template #[`item.edit-user`]="{ item }">
-            <v-row no-gutters class="my-2 align-center justify-end justify-md-start">
+            <v-row no-gutters class="my-2 align-center justify-end">
               <AppButton v-if="mayEditUser(item)" :primary="false" size="small" @click="editUser(item.contactId)">
                 Edit
               </AppButton>
@@ -65,6 +67,41 @@
                 Remove
               </AppButton>
             </v-row>
+          </template>
+          <template #expanded-row="{ columns, item }">
+            <tr>
+              <td :colspan="columns.length"><b>Current Facility Access</b></td>
+            </tr>
+            <tr v-if="userRoleHasAccessToAllFacilities(item.role.roleNumber)">
+              <td :colspan="columns.length">
+                <p>This user has access to all facilities in the organization</p>
+              </td>
+            </tr>
+            <tr v-else-if="userRoleHasAccessToSomeFacilities(item.role.roleNumber)">
+              <td :colspan="columns.length">
+                <v-table class="mb-2 mt-2 border-b-sm" density="compact">
+                  <thead>
+                    <tr>
+                      <th scope="col"><b>Facility ID #</b></th>
+                      <th scope="col"><b>Licence #</b></th>
+                      <th scope="col"><b>Facility Name</b></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="f in item.facilities" :key="f.facilityId">
+                      <td>{{ f.facilityAccountNumber }}</td>
+                      <td>{{ f.licenseNumber }}</td>
+                      <td>{{ f.facilityName }}</td>
+                    </tr>
+                  </tbody>
+                </v-table>
+              </td>
+            </tr>
+            <tr v-else>
+              <td :colspan="columns.length">
+                <p>This user does not have any portal access.</p>
+              </td>
+            </tr>
           </template>
         </v-data-table>
       </v-col>
@@ -142,13 +179,13 @@ export default {
     ]),
     headers() {
       return [
-        { title: '', key: 'edit-user', sortable: false },
         { title: 'First Name', key: 'firstName' },
         { title: 'Last Name', key: 'lastName' },
         { title: 'Phone Number', key: 'telephone' },
         { title: 'Email', key: 'email' },
         { title: 'Access Type', key: 'accessType' },
-        { title: '', key: 'remove-user', align: 'end', sortable: false },
+        { title: '', key: 'edit-user', sortable: false, width: 1 },
+        { title: '', key: 'remove-user', sortable: false, width: 1 },
       ];
     },
   },
@@ -238,6 +275,12 @@ export default {
         return a.lastName.localeCompare(b.lastName);
       });
     },
+    userRoleHasAccessToAllFacilities(roleNumber) {
+      return roleNumber === ROLES.ORG_ADMIN || roleNumber === ROLES.READ_ONLY;
+    },
+    userRoleHasAccessToSomeFacilities(roleNumber) {
+      return roleNumber === ROLES.FAC_ADMIN_BASIC || roleNumber === ROLES.FAC_ADMIN_ADVANCED;
+    },
   },
 };
 </script>
@@ -246,6 +289,10 @@ export default {
 /* These are default framework settings that was somehow allowed to be overriden in CcfriEstimator.vue */
 :deep(h1) {
   font-size: 2em;
+}
+
+.v-data-table th {
+  background-color: #f2f2f2;
 }
 
 .primary-contact {

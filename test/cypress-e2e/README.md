@@ -61,6 +61,8 @@ or for headless mode:
 ### Group Application:
 To run the full E2E automation, navigate to "e2e > 2-group-application-full-e2e".
 
+Ensure your environmental BCeID has no organization currently attached to it and has the appropriate role assigned. 
+
 There are 3 areas requiring future contribution for added automation functionality:
 1) Adding Multiple Facilities to a single group application
 2) Adding Multiple Closures to a facility
@@ -69,7 +71,6 @@ There are 3 areas requiring future contribution for added automation functionali
 These functions are more challenging to implement due to the structure of their respective pages in the Portal. Each area has been marked with "TODO" in terms of where they would likely need to be added in their respective scripts (located under pages > 2-group-application-pages).
 
 If you choose to work on them, please update the comment with your github username.
-
 
 ## Contributing
 
