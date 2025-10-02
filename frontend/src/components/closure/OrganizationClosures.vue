@@ -212,10 +212,6 @@ export default {
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     filteredClosures() {
       return this.closures?.filter((closure) => {
-        // Facility Admins can only see closures for their own facilities
-        if (this.isFacilityAdmin && !this.userInfo?.facilities?.some((f) => f.facilityId === closure.facilityId)) {
-          return false;
-        }
         const facilityAccountNumber = this.getFacilityAccountNumber(closure?.facilityId);
         return (
           facilityAccountNumber?.toLowerCase().includes(this.filter.toLowerCase()) ||

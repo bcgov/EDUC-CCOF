@@ -1,4 +1,7 @@
 'use strict';
+
+const { ROLES } = require('./constants');
+
 /**
  * Normalize a date string into ISO 8601 (UTC noon).
  * - Returns null if input is empty/invalid.
@@ -12,4 +15,16 @@ function formatDateForBack(dateStr) {
   return isNaN(date) ? null : date.toISOString();
 }
 
-module.exports = { formatDateForBack };
+function isFacilityAdmin(user) {
+  return user?.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED || user?.role?.roleNumber === ROLES.FAC_ADMIN_BASIC;
+}
+
+function restrictFacilities(req, results, property = 'facilityId') {
+  const user = req.session?.passport?.user;
+  if (!isFacilityAdmin(user)) {
+    return results;
+  }
+  return results.filter((closure) => user.facilities?.some((facility) => facility.facilityId === closure[property]));
+}
+
+module.exports = { formatDateForBack, isFacilityAdmin, restrictFacilities };

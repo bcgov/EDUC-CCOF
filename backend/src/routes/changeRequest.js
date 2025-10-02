@@ -19,6 +19,7 @@ const {
 } = require('../components/changeRequest');
 const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { checkSchema, param, query, validationResult } = require('express-validator');
+const validateFacility = require('../middlewares/validateFacility');
 const validatePermission = require('../middlewares/validatePermission');
 const { CHANGE_REQUEST_TYPES, PERMISSIONS } = require('../util/constants');
 const { scanFilePayload } = require('../util/clamav');
@@ -170,6 +171,7 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.REQUEST_CLOSURE, PERMISSIONS.EDIT_CLOSURE, PERMISSIONS.REMOVE_CLOSURE),
+  validateFacility(),
   [checkSchema(closureChangeRequestSchema)],
   scanFilePayload,
   (req, res) => {
