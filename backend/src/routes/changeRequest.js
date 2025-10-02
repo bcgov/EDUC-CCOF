@@ -90,6 +90,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES),
+  validateFacility(),
   query('facilityId', 'URL query: [facilityId] is required').notEmpty().isUUID(),
   query('programYearId', 'URL query: [programYearId] is required').notEmpty().isUUID(),
   (req, res) => {
