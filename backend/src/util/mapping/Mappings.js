@@ -601,6 +601,8 @@ const EnrolmentReportSummaryMappings = [
   { back: 'ccof_ccof_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcofStatusText' },
   { back: 'ccof_ccfri_external_status', front: 'externalCcfriStatusCode' },
   { back: 'ccof_ccfri_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcfriStatusText' },
+  { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
+  { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
 ];
 
 const EnrolmentReportExtensionMappings = [
@@ -699,8 +701,7 @@ const EnrolmentReportMappings = [
   { back: '_ccof_reportextension_value', front: 'enrolmentReportExtensionId' },
   { back: '_ccof_prevenrollmentreport_value', front: 'prevEnrolmentReportId' },
   { back: 'ccof_providertype', front: 'organizationProviderType' },
-  { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
-  { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
+  { back: 'ccof_is_full_month_closure', front: 'isFullMonthClosure' },
   { back: 'ccof_totalenrolled0to18', front: 'totalEnrolled0To18' },
   { back: 'ccof_totalenrolled18to36', front: 'totalEnrolled18To36' },
   { back: 'ccof_totalenrolled3yk', front: 'totalEnrolled3YK' },

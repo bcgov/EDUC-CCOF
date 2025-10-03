@@ -54,6 +54,7 @@ export default {
   background-color: #003366;
   color: white;
   padding: 10px 30px;
+  min-height: 70px;
 }
 .sticky-header {
   position: sticky;
