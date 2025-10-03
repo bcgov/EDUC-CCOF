@@ -70,10 +70,10 @@ function mockApiResponses(overrides = {}) {
     },
   };
 
-  Object.keys(defaultResponses).forEach((key) => {
+  for (const key of Object.keys(defaultResponses)) {
     const { method, url, response } = { ...defaultResponses[key], ...overrides[key] };
     cy.intercept(method, url, { statusCode: 200, body: response }).as(key);
-  });
+  }
 }
 
 describe('<ManageFacility />', () => {
