@@ -28,6 +28,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		logger.info("Starting the AdjudicateGroupApplicationCcfri  test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
+		// login to application
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -44,6 +45,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(3000);
 		deleteapp.pressEnter();
@@ -54,21 +56,25 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(3000);
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		// selecting the application
 		orginfo.clickApplication();
 		Thread.sleep(5000);
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickRelatedTab();
 		Thread.sleep(5000);
+		// navigating to CCFRIs in related Tab
 		appinfo.clickCCFRISLink();
 		Thread.sleep(5000);
 		appinfo.clickCcfri();
 		Thread.sleep(5000);
 		CcfrisInfoPage ccfriinfo = new CcfrisInfoPage(driver);
+		// checking system recommendation inside Overview page of CCFRI
 		String recommendation = ccfriinfo.getSystemRecommendation();
 		logger.info("System Recommendation is: {}", recommendation);
 		Thread.sleep(5000);
 		ccfriinfo.clickCcfriFacilityAdjudicationTitle();
 		Thread.sleep(5000);
+		// selecting the facility and changing the status to CCFRI Complete
 		ccfriinfo.clickOpenFacility();
 		Thread.sleep(5000);
 		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
@@ -84,6 +90,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
+		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityinfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriRecommendationField();

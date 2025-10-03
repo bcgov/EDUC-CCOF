@@ -1,21 +1,28 @@
 package ca.bc.gov.ecc.ccof.extentreport;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 
 public class ExtentTestManager {
-	 static Map<Integer, ExtentTest> extentTestMap = new HashMap<>();
-	    static ExtentReports extent = ExtentManager.createExtentReports();
-	    
-	    public static synchronized ExtentTest getTest() {
-	        return extentTestMap.get((int) Thread.currentThread().getId());
-	    }
-	    public static synchronized ExtentTest startTest(String testName, String desc) {
-	        ExtentTest test = extent.createTest(testName, desc);
-	        extentTestMap.put((int) Thread.currentThread().getId(), test);
-	        return test;
-	    }
+
+	// Prevent instantiation
+	private ExtentTestManager() {
 	}
+
+	private static final ExtentReports extent = ExtentManager.createExtentReports();
+	private static final ThreadLocal<ExtentTest> extentTestThreadLocal = new ThreadLocal<>();
+
+	public static ExtentTest getTest() {
+		return extentTestThreadLocal.get();
+	}
+
+	public static ExtentTest startTest(String testName, String desc) {
+		ExtentTest test = extent.createTest(testName, desc);
+		extentTestThreadLocal.set(test);
+		return test;
+	}
+
+	public static void removeTest() {
+		extentTestThreadLocal.remove();
+	}
+}

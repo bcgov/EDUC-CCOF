@@ -13,8 +13,14 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class CRMSignInCredentialPage extends BaseTest {
 
-	WebDriver driver;
 	WebDriverWait wait;
+
+	public CRMSignInCredentialPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+
+	}
 
 	@FindBy(name = "loginfmt")
 	WebElement userIdField;
@@ -63,13 +69,6 @@ public class CRMSignInCredentialPage extends BaseTest {
 	// Invalid login elements
 	@FindBy(xpath = "//div[@id='passwordError']")
 	WebElement invalidLoginErrorMessage;
-
-	public CRMSignInCredentialPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-
-	}
 
 	public void clickHeaderPicture() {
 		headerPicture.click();

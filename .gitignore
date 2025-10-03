@@ -40,4 +40,5 @@ yarn-error.log*
 
 # temp office files
 ~$*
-/.metadata/
+.metadata/
+.sonarlint/

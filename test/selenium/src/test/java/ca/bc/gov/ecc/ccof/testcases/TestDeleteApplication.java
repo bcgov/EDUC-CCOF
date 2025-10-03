@@ -22,6 +22,7 @@ public class TestDeleteApplication extends BaseTest {
 		logger.info("Starting the DeleteApplication test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities ut = new Utilities(driver);
+		// login to application
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -38,22 +39,27 @@ public class TestDeleteApplication extends BaseTest {
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 		Thread.sleep(5000);
+		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
+		// selecting the contact
 		deleteapp.fullName();
+		// delinking the Main Organization
 		ut.waitForElement(deleteapp.waitBeforeCancelBtn());
 		deleteapp.cancelBtn();
 		Thread.sleep(2000);
 		deleteapp.selectIdCheckBox();
 		ut.waitForElement(deleteapp.waitBeforeThreeDotsBtn());
 		deleteapp.threeDotsBtn();
+		// delete the BCeID Organization
 		ut.mouseOverAction(deleteapp.mouseOverDelete());
 		Thread.sleep(5000);
 		deleteapp.deleteBtnPopup();
 		Thread.sleep(5000);
 		deleteapp.saveAndCloseBtn();
+		// Handles Ignore and Save pop up if appears
 		ut.clickIfPresent(deleteapp.ignoreAndSaveButton());
 		logger.info("Ending the DeleteApplication test...");
 

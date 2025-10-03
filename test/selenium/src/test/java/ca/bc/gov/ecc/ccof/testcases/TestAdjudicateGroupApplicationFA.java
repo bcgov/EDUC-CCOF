@@ -27,6 +27,7 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 		logger.info("Starting the AdjudicateGroupApplicationFA test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
+		// Login to CRM
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -43,6 +44,7 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(8000);
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		// Search contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
@@ -50,11 +52,13 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 		deleteapp.fullName();
 		Thread.sleep(5000);
 		BCeIDPage bceidpage = new BCeIDPage(driver);
+		// Switch to organization information page
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(5000);
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
+		// Open funding agreement and adjudicate
 		orginfo.clickFundingAgreement();
 		Thread.sleep(5000);
 		FundingAgreementPage fainfo = new FundingAgreementPage(driver);
@@ -64,6 +68,7 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 		Thread.sleep(2000);
 		fainfo.clickSaveAndClose();
 		Thread.sleep(3000);
+		// Change status to Drafted - with Ministry
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
 		orginfo.clickFundingAgreement();
@@ -75,6 +80,7 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 		ut.selectDropdownValue("Drafted - with Ministry", fainfo.getStatusReasonField());
 		Thread.sleep(2000);
 		fainfo.clickSaveAndClose();
+		// Change status to Active
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
 		orginfo.clickFundingAgreement();

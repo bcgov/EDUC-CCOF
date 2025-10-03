@@ -3,6 +3,7 @@ package ca.bc.gov.ecc.ccof.pageobjects;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
+import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 
@@ -17,10 +19,12 @@ public class DeleteApplicationPage extends BaseTest {
 
 	String getV;
 	Actions action;
+	WebDriverWait wait;
 
 	public DeleteApplicationPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
 
 	@FindBy(xpath = "//*[@id='GlobalSearchBox']")

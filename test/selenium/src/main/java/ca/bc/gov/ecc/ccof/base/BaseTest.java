@@ -11,7 +11,6 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 
 import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
@@ -22,16 +21,15 @@ public abstract class BaseTest {
 
 	protected ExtentReports extent;
 	protected ExtentTest test;
-	protected Properties properties;
-	protected String QA_CRM_URL;
-	protected String CRM_USERNAME;
-	protected String CRM_PASSWORD;
-	protected String UAT_CRM_URL;
-	protected String BROWSER;
-	public Logger logger;
-
 	protected WebDriver driver;
-	static String destination;
+	public static final String CRM_USERNAME;
+	public static final String CRM_PASSWORD;
+	public static final String QA_CRM_URL;
+	public static final String UAT_CRM_URL;
+	public static final String BROWSER;
+	private static final String PROPERTY_FILE = System.getProperty("user.dir") + "//config.properties";
+	protected static final Logger logger;
+	private static final Properties properties;
 
 	public void browserSetup(String browser, String url) {
 		if (browser.equalsIgnoreCase("chrome")) {
@@ -49,9 +47,8 @@ public abstract class BaseTest {
 	}
 
 	@BeforeMethod
-	public void initDriver() throws InterruptedException {
+	public void initDriver() {
 		browserSetup(BROWSER, QA_CRM_URL);
-		Thread.sleep(1000);
 	}
 
 	@AfterMethod
@@ -59,34 +56,34 @@ public abstract class BaseTest {
 		driver.close();
 	}
 
-	String filepath = System.getProperty("user.dir") + "//config.properties";
+	static {
+		logger = Logger.getLogger("CCOFCRM");
+		properties = new Properties();
 
-	@BeforeSuite
-	public void setup() {
+		String username = null;
+		String password = null;
+		String qaUrl = null;
+		String uatUrl = null;
+		String browser = null;
+
 		FileInputStream fileInputStream = null;
 		try {
-			logger = Logger.getLogger("CCOFCRM");
-
-			properties = new Properties();
-			fileInputStream = new FileInputStream(filepath);
+			fileInputStream = new FileInputStream(PROPERTY_FILE);
 			properties.load(fileInputStream);
-
-			CRM_USERNAME = properties.getProperty("crm_username");
-			CRM_PASSWORD = properties.getProperty("crm_password");
-			QA_CRM_URL = properties.getProperty("qa_crm_url");
-			BROWSER = properties.getProperty("browser");
-			UAT_CRM_URL = properties.getProperty("uat_crm_url");
 		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+			logger.info("Failed to load properties file: " + e.getMessage());
 		}
-	}
 
+		username = properties.getProperty("crm_username");
+		password = properties.getProperty("crm_password");
+		qaUrl = properties.getProperty("qa_crm_url");
+		uatUrl = properties.getProperty("uat_crm_url");
+		browser = properties.getProperty("browser");
+
+		CRM_USERNAME = username;
+		CRM_PASSWORD = password;
+		QA_CRM_URL = qaUrl;
+		UAT_CRM_URL = uatUrl;
+		BROWSER = browser;
+	}
 }

@@ -27,6 +27,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		logger.info("Starting the AdjudicateGroupApplicationCcof test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
+		// login to application
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -43,6 +44,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(5000);
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
@@ -53,10 +55,10 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(5000);
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		// selecting the application
 		orginfo.clickApplication();
 		Thread.sleep(5000);
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
-
 		// start of CCOF Adjudication
 		appinfo.clickRelatedTab();
 		Thread.sleep(5000);
@@ -89,12 +91,14 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 		ccofinfo.clickBaseFundingProgressStatusField();
 		Thread.sleep(5000);
+		// selecting Confirmed - Active from dropdown
 		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
 		Thread.sleep(5000);
 		ccofinfo.clickSaveAndCloseBtn();
 		Thread.sleep(10000);
 		appinfo.clickCcofTab();
 		Thread.sleep(5000);
+		// changing the CCOF status to Active
 		appinfo.clickCcofStatus();
 		Thread.sleep(5000);
 		ut.selectDropdownValue("Active", appinfo.getCcofStatusOptions());
