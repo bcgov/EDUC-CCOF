@@ -871,6 +871,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_CLOSURES,
       },
     },
     {

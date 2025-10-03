@@ -3,6 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
+const validatePermission = require('../middlewares/validatePermission');
+const { PERMISSIONS } = require('../util/constants');
 const { createClosure, deleteClosures, getClosures, updateClosure } = require('../components/closure');
 const { checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
@@ -47,6 +49,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_CLOSURES, PERMISSIONS.VIEW_SUBMITTED_PCF),
   oneOf([query('organizationId').notEmpty().isUUID(), query('programYearId').notEmpty().isUUID(), query('ccfriApplicationId').notEmpty().isUUID()], {
     message: 'URL query: [organizationId or programYearId or ccfriApplicationId] is required',
   }),

@@ -2,6 +2,7 @@
 const { deleteOperationWithObjectId, getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
+const { restrictFacilities } = require('../util/common');
 const { ClosureMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery } = require('./../components/utils');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -23,8 +24,11 @@ function mapClosureForBack(data) {
 async function getClosures(req, res) {
   try {
     const response = await getOperation(`ccof_application_ccfri_closures?${buildFilterQuery(req.query, ClosureMappings)}`);
-    const closures = [];
+    let closures = [];
     response?.value?.forEach((closure) => closures.push(new MappableObjectForFront(closure, ClosureMappings).toJSON()));
+
+    closures = restrictFacilities(req, closures);
+
     return res.status(HttpStatus.OK).json(closures);
   } catch (e) {
     log.error(e);
