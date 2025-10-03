@@ -1167,7 +1167,7 @@ import {
   PARENT_FEE_FREQUENCIES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatCurrency, formatDecimalNumber } from '@/utils/format';
+import { formatCurrency } from '@/utils/format';
 
 export default {
   name: 'EnrolmentReportForm',
@@ -1287,7 +1287,7 @@ export default {
     },
 
     getApprovedParentFees(fee) {
-      return formatDecimalNumber(fee) ?? EMPTY_PLACEHOLDER;
+      return fee == null ? EMPTY_PLACEHOLDER : formatCurrency(fee);
     },
 
     getParentFeesFrequency(frequency) {
