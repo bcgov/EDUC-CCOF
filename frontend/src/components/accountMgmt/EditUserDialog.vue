@@ -233,6 +233,7 @@ export default {
     },
     closeDialog() {
       this.dialogOpen = false;
+
       this.$emit('close-edit-dialog');
     },
   },
