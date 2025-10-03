@@ -33,7 +33,7 @@
           </template>
 
           <template #[`item.actions`]="{ item }">
-            <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
+            <v-row class="action-buttons align-center justify-end justify-md-start ga-2" style="padding-left: 16px">
               <AppButton :primary="false" size="small" @click="$emit('view-service-details', item)">
                 View Record
               </AppButton>
@@ -67,12 +67,12 @@ export default {
   data() {
     return {
       licenceTableHeaders: [
-        { title: 'Status', sortable: true, value: 'licenceStatus' },
+        { title: 'Actions', sortable: false, value: 'actions', width: '250px' },
         { title: 'Licence Number', sortable: true, value: 'licenceNumber' },
         { title: 'Licence Effective Date', sortable: true, value: 'licenceStartDate' },
         { title: 'Record Start Date', sortable: true, value: 'recordStartDate' },
         { title: 'Record End Date', sortable: true, value: 'recordEndDate' },
-        { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
+        { title: 'Status', sortable: true, value: 'licenceStatus' },
       ],
     };
   },
