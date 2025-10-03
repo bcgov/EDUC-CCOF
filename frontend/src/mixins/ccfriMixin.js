@@ -47,7 +47,6 @@ export default {
   mixins: [alertMixin, closureMixin, globalMixin],
   data() {
     return {
-      prevFeesCorrect: undefined,
       showRfiDialog: false,
       rfi3percentCategories: [],
     };

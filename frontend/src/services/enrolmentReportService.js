@@ -66,4 +66,21 @@ export default {
       throw error;
     }
   },
+
+  async createAdjustmentEnrolmentReport(enrolmentReportId) {
+    try {
+      if (isEmpty(enrolmentReportId)) return;
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.ENROLMENT_REPORTS}/adjustment`, {
+        enrolmentReportId: enrolmentReportId,
+      });
+      return response;
+    } catch (error) {
+      console.error(`Failed to create adjustment report - ${error}`);
+      throw error;
+    }
+  },
+
+  isSubmissionDeadlinePassed(enrolmentReport) {
+    return new Date() > new Date(enrolmentReport.submissionDeadline);
+  },
 };

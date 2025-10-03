@@ -304,29 +304,10 @@ export default {
       if (!paymentEligibility) {
         return '';
       }
-      paymentEligibility = paymentEligibility.replace(
-        `${CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI}`,
-        CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI,
+      const eligibilityKey = Object.keys(CLOSURE_PAYMENT_ELIGIBILITIES).find(
+        (k) => CLOSURE_PAYMENT_ELIGIBILITIES[k] === paymentEligibility,
       );
-      paymentEligibility = paymentEligibility.replace(
-        `${CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF}`,
-        CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCFRI_AND_CCOF,
-      );
-      paymentEligibility = paymentEligibility.replace(
-        `${CLOSURE_PAYMENT_ELIGIBILITIES.CCOF}`,
-        CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.CCOF,
-      );
-      paymentEligibility = paymentEligibility.replace(
-        `${CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE}`,
-        CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.INELIGIBLE,
-      );
-      paymentEligibility = paymentEligibility.replace(
-        `${CLOSURE_PAYMENT_ELIGIBILITIES.PENDING}`,
-        CLOSURE_PAYMENT_ELIGIBILITY_TEXTS.PENDING,
-      );
-      paymentEligibility = paymentEligibility.replaceAll(',', ', ');
-
-      return paymentEligibility;
+      return eligibilityKey ? CLOSURE_PAYMENT_ELIGIBILITY_TEXTS[eligibilityKey] : '';
     },
     getClosureStatusClass(closure) {
       if (this.hasApprovedStatus(closure) && this.hasPendingClosureRequest(closure)) {

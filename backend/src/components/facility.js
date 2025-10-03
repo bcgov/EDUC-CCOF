@@ -1,4 +1,6 @@
 'use strict';
+
+const { isEmpty } = require('lodash');
 const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId, getApplicationDocument, getHttpHeader } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const axios = require('axios');
@@ -6,7 +8,7 @@ const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
-const { CHILD_AGE_CATEGORY_TYPES, ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER, CHILD_AGE_CATEGORY_TYPES, LICENCE_CATEGORIES } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
 function buildNewFacilityPayload(req) {
@@ -53,7 +55,7 @@ function mapCCFRIObjectForFront(data) {
 }
 
 async function getFacilityByFacilityId(facilityId) {
-  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority`;
+  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority,statuscode`;
   const facility = await getOperation(operation);
 
   if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
@@ -163,31 +165,41 @@ async function getFacilityChildCareTypes(req, res) {
   }
 }
 
+function getGroupLicenceCategories(licence, categories) {
+  if (isEmpty(licence) || isEmpty(categories)) return [];
+  const licenceCategories = [];
+  if (licence.maxGroupChildCareUnder36 > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS)?.ccof_license_categoryid);
+  }
+  if (licence.maxGroupChildCare36 > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE)?.ccof_license_categoryid);
+  }
+  if (licence.maxGroupChildCareMultiAge > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.MULTI_AGE_CHILD_CARE)?.ccof_license_categoryid);
+  }
+  if (licence.maxGroupChildCareSchool > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE)?.ccof_license_categoryid);
+  }
+  if (licence.maxSchoolAgeCareOnSchoolGrounds > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS)?.ccof_license_categoryid);
+  }
+  if (licence.maxPreschool > 0) {
+    licenceCategories.push(categories.find((item) => item.ccof_categorynumber === LICENCE_CATEGORIES.PRESCHOOL)?.ccof_license_categoryid);
+  }
+  return licenceCategories;
+}
+
 async function updateFacilityLicenseType(facilityId, data) {
   // Load the license categories from Lookup
   const categories = await getLicenseCategory();
-  const groupLicenseCategory = categories.groupLicenseCategory;
 
   // Figure out new Licence categories from data form
-  const newLicenseCategories = [];
-  if (data.familyLicenseType) {
-    newLicenseCategories.push(categories.familyLicenseCategory.find((item) => item.ccof_categorynumber == data.familyLicenseType).ccof_license_categoryid);
+  let newLicenseCategories = [];
+  if (data.licenceCategoryNumber) {
+    // Family Provider
+    newLicenseCategories.push(categories?.familyLicenseCategory.find((item) => item.ccof_categorynumber === data.licenceCategoryNumber).ccof_license_categoryid);
   } else {
-    if (data.maxGroupChildCareUnder36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 1)?.ccof_license_categoryid);
-    }
-    if (data.maxGroupChildCare36 > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 2)?.ccof_license_categoryid);
-    }
-    if (data.maxGroupChildCareMultiAge > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 4)?.ccof_license_categoryid);
-    }
-    if (data.maxGroupChildCareSchool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 3)?.ccof_license_categoryid);
-    }
-    if (data.maxPreschool > 0) {
-      newLicenseCategories.push(groupLicenseCategory.find((item) => item.ccof_categorynumber == 8)?.ccof_license_categoryid);
-    }
+    newLicenseCategories = getGroupLicenceCategories(data, categories?.groupLicenseCategory);
   }
 
   // Find the current Licence Categories associated with this facility

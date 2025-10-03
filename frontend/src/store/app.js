@@ -22,6 +22,7 @@ export const useAppStore = defineStore('app', {
     organizationTypeList: [],
     fundingModelTypeList: [],
     healthAuthorities: [],
+    roles: [],
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
@@ -93,6 +94,7 @@ export const useAppStore = defineStore('app', {
         this.setOrganizationTypeList(lookupInfo.data?.organizationType);
         this.setFundingModelTypeList(lookupInfo.data?.fundingModelType);
         this.setHealthAuthorities(lookupInfo.data?.healthAuthorities);
+        this.roles = lookupInfo?.data?.roles;
       }
     },
     async startCounter() {
@@ -186,6 +188,12 @@ export const useAppStore = defineStore('app', {
           (item) => item.ccof_license_categoryid === id,
         );
         return licenceCategory?.ccof_categorynumber;
+      };
+    },
+    getRoleNameById: (state) => {
+      return (id) => {
+        const role = state.roles?.find((role) => role.roleId === id);
+        return role?.roleName;
       };
     },
   },

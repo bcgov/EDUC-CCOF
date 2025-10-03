@@ -22,10 +22,10 @@ async function updateFunding(req, res) {
     delete req.body.facilityId;
     await updateFacilityLicenseType(facilityId, req.body);
     let familyLicenseId;
-    if (req.body.familyLicenseType) {
+    if (req.body.licenceCategoryNumber) {
       const categories = await getLicenseCategory();
-      familyLicenseId = categories.familyLicenseCategory.find((item) => item.ccof_categorynumber === req.body.familyLicenseType)?.ccof_license_categoryid;
-      delete req.body.familyLicenseType;
+      familyLicenseId = categories.familyLicenseCategory.find((item) => item.ccof_categorynumber === req.body.licenceCategoryNumber)?.ccof_license_categoryid;
+      delete req.body.licenceCategoryNumber;
     }
 
     const payload = mapFundingObjectForBack(req.body);
@@ -51,7 +51,7 @@ async function getFunding(req, res) {
     const model = mapFundingObjectForFront(funding);
     if (funding._ccof_licensetypes_value) {
       const categories = await getLicenseCategory();
-      model.familyLicenseType = categories.familyLicenseCategory.find((item) => item.ccof_license_categoryid === funding._ccof_licensetypes_value)?.ccof_categorynumber;
+      model.licenceCategoryNumber = categories.familyLicenseCategory.find((item) => item.ccof_license_categoryid === funding._ccof_licensetypes_value)?.ccof_categorynumber;
     }
     return res.status(HttpStatus.OK).json(model);
   } catch (e) {

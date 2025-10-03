@@ -23,9 +23,14 @@
     <!-- this is for read only mode - when user is viewing a submitted Renewal application - they don't see the page where we ask them if the current fees are correct -->
     <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="my-10 rounded-lg">
       <p class="px-6 py-3 card-title font-weight-bold">Are the previous year's fees correct for this facility?</p>
-      <v-radio-group v-model="prevFeesCorrect" :disabled="true" :rules="rules.required" class="pa-8">
-        <v-radio label="Yes" value="Yes" />
-        <v-radio label="No" value="No" />
+      <v-radio-group
+        v-model="CCFRIFacilityModel.existingFeesCorrect"
+        :disabled="true"
+        :rules="rules.required"
+        class="pa-8"
+      >
+        <v-radio label="Yes" :value="CCFRI_FEE_CORRECT_TYPES.YES" />
+        <v-radio label="No" :value="CCFRI_FEE_CORRECT_TYPES.NO" />
       </v-radio-group>
     </v-card>
 

@@ -5,6 +5,7 @@ const ApiError = require('./error');
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
+const { isEmpty } = require('lodash');
 const {
   APPLICATION_STATUS_CODES,
   CCFRI_STATUS_CODES,
@@ -14,8 +15,10 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
+  ROLES,
 } = require('../util/constants');
 const {
+  UserProfileMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileBaseFundingMappings,
@@ -23,8 +26,11 @@ const {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   FundingAgreementMappings,
+  RoleMappings,
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { getRoles } = require('../components/lookup');
+const { getRawContactFacilities } = require('./contact');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -82,28 +88,62 @@ async function getUserInfo(req, res) {
     const userGuid = getUserGuid(req);
     log.verbose('User Guid is: ', userGuid);
     userResponse = await getUserProfile(userGuid, userName);
+
+    // Block requests from deactivated BCeID users
+    if (userResponse?.statecode === 1) {
+      return res.status(HttpStatus.UNAUTHORIZED).json();
+    }
   }
 
   if (log.isVerboseEnabled) {
     log.verbose('getUserProfile response:', minify(userResponse));
   }
 
-  if (userResponse === null) {
-    creatUser(req);
-    return res.status(HttpStatus.OK).json(resData);
+  log.info('getUserProfile response:', minify(userResponse));
+
+  // There are two scenarios under which the userResponse is empty
+  // 1. A null response means no user found, so create a new BCeID user with a default Organization Admin role
+  // 2. An empty ({}) userResponse means no Organization and/or Applications
+  if (isEmpty(userResponse)) {
+    const roles = await getRoles();
+    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMIN);
+    const {
+      data: { roleId, roleNumber },
+    } = orgAdminRole;
+
+    if (userResponse === null) {
+      createUser(req, roleId);
+    }
+
+    // Add the default role to the response so the user can create Organization and Applications
+    const role = { roleId, roleNumber };
+    const result = {
+      ...resData,
+      role,
+    };
+
+    return res.status(HttpStatus.OK).json(result);
   }
-  if (userResponse == {}) {
-    // If no data back, then no associated Organization/Facilities, return empty orgination data
-    return res.status(HttpStatus.OK).json(resData);
+
+  // 3. Non-empty response means the user has an Organization and Applications
+  const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
+  if (userResponse.portalRole) {
+    user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
   }
-  let organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
-  let applicationList = [];
+
+  // Get facilities for Facility Admin users
+  if (user.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED || user.role?.roleNumber === ROLES.FAC_ADMIN_BASIC) {
+    const facilities = await getRawContactFacilities(user.contactId);
+    user.facilities = facilities;
+  }
+
+  const organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
+  const applicationList = [];
 
   if (userResponse.application && userResponse.application.length > 0) {
     //call the funding agreement table and load that to the application
     let operation = `ccof_funding_agreements?$filter=_ccof_organization_value eq '${organization.organizationId}'`;
     let fundingAgreementDetails = (await getOperation(operation)).value;
-    //log.info(fundingAgreementDetails);
 
     userResponse.application.forEach((ap) => {
       let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
@@ -131,10 +171,10 @@ async function getUserInfo(req, res) {
       applicationList.push(application);
     });
   }
-  let results = {
+  const results = {
     ...resData,
+    ...user,
     ...organization,
-    contactid: userResponse.contactid,
     applications: applicationList,
   };
   return res.status(HttpStatus.OK).json(results);
@@ -237,12 +277,12 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function creatUser(req) {
+async function createUser(req, roleId) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
-  let firstname = undefined;
-  let lastname = undefined;
+  let firstname;
+  let lastname;
   try {
     if (!family_name && given_name && given_name.split(' ').length > 1) {
       //If for some reason we don't have a last name from SSO, see if firstname has 2 words
@@ -263,6 +303,8 @@ async function creatUser(req) {
       lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
+      // Add a role for new users
+      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {
@@ -273,4 +315,5 @@ async function creatUser(req) {
 
 module.exports = {
   getUserInfo,
+  getUserProfile,
 };

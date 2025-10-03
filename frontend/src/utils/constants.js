@@ -100,7 +100,6 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
-    VIEW_FUNDING_AGREEMENT: '/org-facilities/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -428,7 +427,7 @@ export const BCSSA_REGION_LINKS = Object.freeze({
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
-  INVALID_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
+  EMPTY_MAX_SPACES_EXTENDED_CC: 'Enter a number greater than 0 in at least one of the two fields above.',
   CLOSURE_DATE_OUTSIDE_FUNDING_AGREEMENT_YEAR: 'You can only submit closures for the selected funding agreement term.',
   START_DATE_AFTER_END_DATE: 'Start date must not exceed end date.',
   FACILITY_MUST_OPERATE_ONE_MONTH: 'Facility should operate at least one month.',
@@ -513,6 +512,15 @@ export const ORGANIZATION_FACILITY_STATUS_CODES = Object.freeze({
   INACTIVE: 2,
 });
 
+export const GROUP_LICENCE_CATEGORIES = Object.freeze({
+  GROUP_CHILD_CARE_UNDER_36_MONTHS: 1,
+  GROUP_CHILD_CARE_30_MONTHS_TO_SCHOOL_AGE: 2,
+  GROUP_CHILD_CARE_SCHOOL_AGE: 3,
+  MULTI_AGE_CHILD_CARE: 4,
+  PRESCHOOL: 8,
+  SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS: 9,
+});
+
 export const FAMILY_LICENCE_CATEGORIES = Object.freeze({
   MULTI_AGE_CHILD_CARE: 5,
   IN_HOME_MULTI_AGE_CHILD_CARE: 6,
@@ -543,6 +551,13 @@ export const CCFRI_MIN_FEE = 0;
 
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
+
+export const ROLES = Object.freeze({
+  ORG_ADMIN: '10',
+  FAC_ADMIN_ADVANCED: '11',
+  FAC_ADMIN_BASIC: '13',
+  READ_ONLY: '12',
+});
 
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   ACTIVE: 'Active',
@@ -580,4 +595,11 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   APPROVED: 6,
   PAID: 7,
   EXPIRED: 8,
+});
+
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  CREATED: 1,
+  INCOMPLETE: 2,
+  SUBMITTED: 3,
+  REJECTED: 5,
 });

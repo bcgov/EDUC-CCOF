@@ -58,10 +58,13 @@
 
           <template #[`item.actions`]="{ item }">
             <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
-              <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
-                View
-              </AppButton>
-              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item.fundingAgreementId)">
+              <AppButton :primary="false" size="small" @click="goToViewFundingAgreement(item)"> View </AppButton>
+              <AppButton
+                v-if="hasPermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT)"
+                :primary="false"
+                size="small"
+                @click="downloadPDFFundingAgreement(item)"
+              >
                 Download
               </AppButton>
             </v-row>
@@ -72,20 +75,25 @@
   </v-container>
 </template>
 <script>
-import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
-
-import { formatUTCDate } from '@/utils/format';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { PATHS, FUNDING_AGREEMENTS_STATUS } from '@/utils/constants';
+import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
+
 import FundingAgreementService from '@/services/fundingAgreementService.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
+import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants';
+import { formatUTCDate } from '@/utils/format';
 
 export default {
   name: 'ManageFundingAgreements',
   components: { AppButton, AppMultiSelectInput },
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
@@ -132,11 +140,8 @@ export default {
         this.isLoading = false;
       }
     },
-    navigateToViewFundingAgreement(id) {
-      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
-    },
-    goToChangeRequestHistory() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
+    goToViewFundingAgreement(agreement) {
+      this.$router.push(`${PATHS.ROOT.FUNDING_AGREEMENTS}/${agreement.fundingAgreementId}`);
     },
     getStatusClass(status) {
       switch (status) {
@@ -183,6 +188,19 @@ export default {
         const fundingagreementB = b.fundingAgreementOrderNumber ?? 0;
         return fundingagreementB - fundingagreementA;
       });
+    },
+    async downloadPDFFundingAgreement(agreement) {
+      try {
+        const resp = await FundingAgreementService.getFundingAgreementPDF(agreement.fundingAgreementId);
+        const filename = `Funding_Agreement_${agreement.fundingAgreementNumber}.pdf`;
+        Object.assign(document.createElement('a'), {
+          href: `data:application/pdf;base64,${resp}`,
+          download: filename,
+        }).click();
+      } catch (error) {
+        this.setFailureAlert('Failed to download Funding Agreement PDF');
+        console.error(error);
+      }
     },
   },
 };

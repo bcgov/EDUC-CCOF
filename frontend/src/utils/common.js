@@ -1,5 +1,6 @@
 'use strict';
 
+import Decimal from 'decimal.js';
 import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
@@ -54,6 +55,9 @@ export function isNullOrBlank(value) {
  *                     otherwise returns `false`.
  */
 export function validateHourDifference(from, to, difference) {
+  if (isNullOrBlank(from) || isNullOrBlank(to) || isNullOrBlank(difference)) {
+    return false;
+  }
   // Extract and convert the time to minutes from "HH:mm" format
   const minutesFrom =
     parseInt(formatTime12to24(from).split(':')[0], 10) * 60 + parseInt(formatTime12to24(from).split(':')[1], 10);
@@ -236,4 +240,58 @@ export function getUpdatedObjectsByKeys(original, updated, keys, idKey) {
     if (!originalObj) return true; // If not found in original, treat as new/changed
     return !isEqual(pick(updatedObj, keys), pick(originalObj, keys));
   });
+}
+
+/**
+ * Adds two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   0.1 + 0.2 === 0.30000000000000004
+ *
+ * @param {number} a - First number to add.
+ * @param {number} b - Second number to add.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded sum as a Number.
+ */
+export function addDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).plus(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Subtracts two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   0.3 - 0.1 === 0.19999999999999998
+ *
+ * @param {number} a - Number to subtract from.
+ * @param {number} b - Number to subtract.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded difference as a Number.
+ */
+export function subtractDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).minus(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Multiplies two decimal numbers and rounds the result to a fixed number of decimal places,
+ * returning it as a Number.
+ *
+ * This avoids common floating-point precision issues in JavaScript, e.g.:
+ *   12 * 3.7 === 44.400000000000006
+ *
+ * @param {number} a - First number to multiply.
+ * @param {number} b - Second number to multiply.
+ * @param {number} [decimals = 4] - Number of decimal places to round to.
+ * @returns {number} The rounded result as a Number.
+ */
+export function multiplyDecimal(a, b, decimals = 4) {
+  const safeA = a || 0;
+  const safeB = b || 0;
+  return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
 }

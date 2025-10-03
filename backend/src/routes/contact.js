@@ -2,9 +2,12 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
+const validatePermission = require('../middlewares/validatePermission');
+const validateUpdateContact = require('../middlewares/validateUpdateContact');
 const isValidBackendToken = auth.isValidBackendToken();
-const { deactivateContact, getActiveContactsInOrganization } = require('../components/contact');
-const { param, validationResult } = require('express-validator');
+const { PERMISSIONS } = require('../util/constants');
+const { body, param, validationResult } = require('express-validator');
 
 module.exports = router;
 
@@ -15,7 +18,8 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  validatePermission(PERMISSIONS.VIEW_USERS),
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getActiveContactsInOrganization(req, res);
@@ -25,9 +29,50 @@ router.get(
 /**
  * Soft delete (deactivate) a contact.
  */
-router.delete('/:contactId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('contactId', 'URL param: [contactId] is required').not().isEmpty()], (req, res) => {
+router.delete(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.DELETE_USERS),
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return deactivateContact(req, res);
+  },
+);
+
+const contactValidators = [
+  body('firstName').optional().trim(),
+  body('lastName').trim(),
+  body('email').trim().isEmail(),
+  body('bceid').optional().trim(),
+  body('facilities').isArray(),
+  body('telephone').trim(),
+  body('portalRole').optional().trim(),
+];
+
+/**
+ * Add a contact.
+ */
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
   validationResult(req).throw();
-  return deactivateContact(req, res);
+  return createContact(req, res);
 });
+
+/**
+ * Update an existing Contact using contactId
+ */
+router.patch(
+  '/:contactId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
+  validateUpdateContact(),
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateContact(req, res);
+  },
+);
 
 module.exports = router;
