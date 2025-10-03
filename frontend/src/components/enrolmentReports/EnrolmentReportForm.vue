@@ -18,7 +18,7 @@
           />
           <span class="pt-4 pl-2">
             <AppTooltip
-              tooltip-content="Select this option if your facility was closed or had no enrolment for the entire reporting month."
+              tooltip-content="Select this if your facility was closed or had no enrolment for the entire reporting month."
             />
           </span>
         </v-row>

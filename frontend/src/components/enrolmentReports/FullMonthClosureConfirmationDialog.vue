@@ -2,20 +2,18 @@
   <AppDialog :model-value="show" :loading="loading" persistent max-width="50%" @close="close">
     <template #content>
       <p class="pt-4 font-weight-bold text-h5">Confirm Full Month Closure or No Enrolment</p>
-      <div class="text-left px-8 pt-8">
-        <p class="text-h6">
-          You are reporting that your facility was closed or had no enrolment for the entire reporting month.
-        </p>
-        <p class="pt-4 text-h6">
+      <div class="text-h6 text-left px-8 pt-8">
+        <p>You are reporting that your facility was closed or had no enrolment for the entire reporting month.</p>
+        <p class="pt-4">
           You will be redirected to a declaration page to confirm this before submitting your Enrolment Report.
         </p>
-        <p class="pt-4 text-h6">
+        <p class="pt-4">
           If your facility opens or enrolment begins during this month, you must submit an adjustment before the
           reporting deadline.
         </p>
-        <p class="pt-4 text-h6">
+        <p class="pt-4">
           If your facility is permanently closed, or remains closed for three consecutive months, you must contact the
-          program as it may impact your Funding Agreement.
+          Child Care Operating Funding Program as it may impact your Funding Agreement.
         </p>
       </div>
     </template>
