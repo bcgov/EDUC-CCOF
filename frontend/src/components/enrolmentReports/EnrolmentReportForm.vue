@@ -1501,7 +1501,9 @@ export default {
       this.enrolmentReport.totalEnrolled3YK = resetValue;
       this.enrolmentReport.totalEnrolledOOSCK = resetValue;
       this.enrolmentReport.totalEnrolledOOSCG = resetValue;
-      this.enrolmentReport.totalEnrolledPre = resetValue;
+      if (this.isGroup) {
+        this.enrolmentReport.totalEnrolledPre = resetValue;
+      }
       for (const dailyEnrolment of this.dailyEnrolments) {
         for (const category of this.CATEGORY_FIELDS) {
           dailyEnrolment[category] = resetValue;
