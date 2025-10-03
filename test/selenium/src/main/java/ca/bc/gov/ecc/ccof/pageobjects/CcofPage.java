@@ -13,15 +13,7 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 
 public class CcofPage extends BaseTest {
 	WebDriverWait wait;
-
-	public CcofPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	// elements can be added here
-
 	@FindBy(xpath = "//*[@title='CCOF Adjudication']")
 	WebElement ccofAdjudicationLink;
 
@@ -67,8 +59,13 @@ public class CcofPage extends BaseTest {
 	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
 	List<WebElement> baseFundingProgressStatusOptions;
 
-	// methods can be added here
+	public CcofPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
+	// methods can be added here
 	public void clickCcofAdjudicationLink() {
 		ccofAdjudicationLink.click();
 	}

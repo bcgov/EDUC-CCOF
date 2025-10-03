@@ -12,12 +12,12 @@ import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestDeleteApplication extends BaseTest {
+public class TestDelinkApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestValidLogin.class);
 
 	@Test(priority = 1)
-	public void Deleteapplication(Method method) throws Throwable {
+	public void Delinkapplication(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "valid login");
 		logger.info("Starting the DeleteApplication test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);

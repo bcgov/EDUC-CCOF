@@ -15,12 +15,6 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class CcfrisInfoPage extends BaseTest {
 	WebDriverWait wait;
 
-	public CcfrisInfoPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	@FindBy(xpath = "//*[@data-id='ccof_systemrecommendation.fieldControl-text-box-text']")
 	WebElement systemRecommendation;
 
@@ -32,6 +26,12 @@ public class CcfrisInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[contains(text(),'Save & Close')]")
 	WebElement saveAndCloseBtn;
+
+	public CcfrisInfoPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
 	public String getSystemRecommendation() {
 		return wait.until(ExpectedConditions.visibilityOf(systemRecommendation)).getAttribute("value");

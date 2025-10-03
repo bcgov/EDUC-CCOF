@@ -14,12 +14,6 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class OrganizationInfoPage extends BaseTest {
 	WebDriverWait wait;
 
-	public OrganizationInfoPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	@FindBy(xpath = "//*[@aria-label='Submitted']")
 	WebElement openApplication;
 
@@ -28,6 +22,12 @@ public class OrganizationInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[contains(text(),'Funding Agreement History')]")
 	WebElement fundingAgreementHistory;
+
+	public OrganizationInfoPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
 	public void clickApplication() {
 		Actions action = new Actions(driver);

@@ -5,12 +5,12 @@ import com.aventstack.extentreports.ExtentTest;
 
 public class ExtentTestManager {
 
+	private static final ExtentReports extent = ExtentManager.createExtentReports();
+	private static final ThreadLocal<ExtentTest> extentTestThreadLocal = new ThreadLocal<>();
+
 	// Prevent instantiation
 	private ExtentTestManager() {
 	}
-
-	private static final ExtentReports extent = ExtentManager.createExtentReports();
-	private static final ThreadLocal<ExtentTest> extentTestThreadLocal = new ThreadLocal<>();
 
 	public static ExtentTest getTest() {
 		return extentTestThreadLocal.get();

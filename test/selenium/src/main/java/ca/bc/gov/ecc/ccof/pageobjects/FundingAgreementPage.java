@@ -15,14 +15,7 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class FundingAgreementPage extends BaseTest {
 	WebDriverWait wait;
 
-	public FundingAgreementPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	// elements can be added here
-
 	@FindBy(xpath = "//*[@aria-label='Date of Start Date']")
 	WebElement startDateField;
 
@@ -44,8 +37,13 @@ public class FundingAgreementPage extends BaseTest {
 	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
 	List<WebElement> statusReasonOptions;
 
-	// methods can be added here
+	public FundingAgreementPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
+	// methods can be added here
 	public WebElement clickReadyForProviderAction() {
 		return readyForProviderActionField;
 	}

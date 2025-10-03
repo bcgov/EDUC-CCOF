@@ -14,14 +14,14 @@ public class BCeIDPage extends BaseTest {
 
 	WebDriverWait wait;
 
+	@FindBy(xpath = "//*[@data-id='parentcustomerid.fieldControl-LookupResultsDropdown_parentcustomerid_selected_tag_text']")
+	WebElement selectOrganization;
+
 	public BCeIDPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
-
-	@FindBy(xpath = "//*[@data-id='parentcustomerid.fieldControl-LookupResultsDropdown_parentcustomerid_selected_tag_text']")
-	WebElement selectOrganization;
 
 	public void clickSelectOrganization() {
 		selectOrganization.click();

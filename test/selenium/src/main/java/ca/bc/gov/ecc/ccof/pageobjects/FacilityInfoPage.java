@@ -16,12 +16,6 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class FacilityInfoPage extends BaseTest {
 	WebDriverWait wait;
 
-	public FacilityInfoPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	@FindBy(xpath = "//*[contains(@id,'headerControlsList_')]//div[3]//a")
 	WebElement facilityNameLink;
 
@@ -79,6 +73,12 @@ public class FacilityInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[contains(text(),'Save & Close')]")
 	WebElement saveAndCloseCcfriFacilityBtn;
+
+	public FacilityInfoPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
 	public void clickFacilityNameLink() {
 		facilityNameLink.click();

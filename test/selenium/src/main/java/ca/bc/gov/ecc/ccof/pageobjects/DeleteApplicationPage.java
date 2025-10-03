@@ -21,12 +21,6 @@ public class DeleteApplicationPage extends BaseTest {
 	Actions action;
 	WebDriverWait wait;
 
-	public DeleteApplicationPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	@FindBy(xpath = "//*[@id='GlobalSearchBox']")
 	WebElement searchBox;
 
@@ -56,6 +50,12 @@ public class DeleteApplicationPage extends BaseTest {
 
 	@FindBy(xpath = "//*[@title= 'Ignore and save']")
 	WebElement ignoreAndSaveBtn;
+
+	public DeleteApplicationPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
 	public WebElement mouseOverDeactivate() {
 		return deactivateBtn;

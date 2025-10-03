@@ -31,6 +31,25 @@ public abstract class BaseTest {
 	protected static final Logger logger;
 	private static final Properties properties;
 
+	// Static initialization block
+	static {
+		logger = Logger.getLogger("CCOFCRM");
+		properties = new Properties();
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(PROPERTY_FILE);
+			properties.load(fileInputStream);
+		} catch (IOException e) {
+			logger.error("Failed to load properties file: " + e.getMessage());
+		}
+
+		CRM_USERNAME = properties.getProperty("crm_username");
+		CRM_PASSWORD = properties.getProperty("crm_password");
+		QA_CRM_URL = properties.getProperty("qa_crm_url");
+		UAT_CRM_URL = properties.getProperty("uat_crm_url");
+		BROWSER = properties.getProperty("browser");
+	}
+
 	public void browserSetup(String browser, String url) {
 		if (browser.equalsIgnoreCase("chrome")) {
 			WebDriverManager.chromedriver().setup();
@@ -56,34 +75,4 @@ public abstract class BaseTest {
 		driver.close();
 	}
 
-	static {
-		logger = Logger.getLogger("CCOFCRM");
-		properties = new Properties();
-
-		String username = null;
-		String password = null;
-		String qaUrl = null;
-		String uatUrl = null;
-		String browser = null;
-
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(PROPERTY_FILE);
-			properties.load(fileInputStream);
-		} catch (IOException e) {
-			logger.info("Failed to load properties file: " + e.getMessage());
-		}
-
-		username = properties.getProperty("crm_username");
-		password = properties.getProperty("crm_password");
-		qaUrl = properties.getProperty("qa_crm_url");
-		uatUrl = properties.getProperty("uat_crm_url");
-		browser = properties.getProperty("browser");
-
-		CRM_USERNAME = username;
-		CRM_PASSWORD = password;
-		QA_CRM_URL = qaUrl;
-		UAT_CRM_URL = uatUrl;
-		BROWSER = browser;
-	}
 }

@@ -15,12 +15,6 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class ApplicationInfoPage extends BaseTest {
 	WebDriverWait wait;
 
-	public ApplicationInfoPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
-
 	@FindBy(xpath = "//*[@title='Related']")
 	WebElement relatedTab;
 
@@ -47,6 +41,12 @@ public class ApplicationInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[@title='Save']")
 	WebElement saveBtn;
+
+	public ApplicationInfoPage(WebDriver driver) {
+		this.driver = driver;
+		PageFactory.initElements(driver, this);
+		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
 
 	public void clickRelatedTab() {
 		relatedTab.click();
