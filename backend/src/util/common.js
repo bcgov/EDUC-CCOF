@@ -24,7 +24,7 @@ function restrictFacilities(req, results, property = 'facilityId') {
   if (!isFacilityAdmin(user)) {
     return results;
   }
-  return results.filter((closure) => user.facilities?.some((facility) => facility.facilityId === closure[property]));
+  return results.filter((closure) => user?.facilities?.some((facility) => facility.facilityId === closure[property]));
 }
 
 module.exports = { formatDateForBack, isFacilityAdmin, restrictFacilities };
