@@ -571,7 +571,7 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   EXPIRED: 'Expired',
 });
 
-export const FUNDING_AGREEMENTS_INTERNAL_STATUS = Object.freeze({
+export const FUNDING_AGREEMENT_EXTERNAL_STATUSES = Object.freeze({
   DRAFTED_WITH_MINISTRY: 101510004,
 });
 

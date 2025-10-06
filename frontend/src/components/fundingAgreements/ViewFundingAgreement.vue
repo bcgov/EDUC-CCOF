@@ -94,13 +94,6 @@
             label="Your Organization's Authorized Signing Authority"
           />
         </template>
-        <NavButton
-          :is-submit-displayed="displaySignFundingAgreementSection"
-          :is-submit-disabled="isSubmitDisabled"
-          :is-processing="processing"
-          @previous="goBackToManageFundingAgreement"
-          @submit="submit"
-        />
         <AppDialog
           v-model="showSubmissionConfirmationDialog"
           persistent
@@ -125,6 +118,13 @@
         </AppDialog>
       </div>
     </v-skeleton-loader>
+    <NavButton
+      :is-submit-displayed="displaySignFundingAgreementSection"
+      :is-submit-disabled="isSubmitDisabled"
+      :is-processing="processing || isLoading"
+      @previous="goBackToManageFundingAgreement"
+      @submit="submit"
+    />
   </v-container>
 </template>
 
@@ -138,7 +138,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
-import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENTS_INTERNAL_STATUS, PATHS } from '@/utils/constants.js';
+import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENT_EXTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 
 const READ_ONLY_STATUSES = [
   FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
@@ -230,7 +230,7 @@ export default {
           consentCheck: this.fundingAgreement.consentCheck,
           signedOn: new Date().toISOString(),
           signedBy: this.fundingAgreement.signedBy,
-          externalStatusCode: FUNDING_AGREEMENTS_INTERNAL_STATUS.DRAFTED_WITH_MINISTRY,
+          externalStatusCode: FUNDING_AGREEMENT_EXTERNAL_STATUSES.DRAFTED_WITH_MINISTRY,
         };
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
         this.showSubmissionConfirmationDialog = true;
