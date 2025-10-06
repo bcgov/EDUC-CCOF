@@ -1,6 +1,5 @@
 import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import vuetify from '@/plugins/vuetify';
-import { useAuthStore } from '@/store/auth';
 import { PATHS } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
@@ -75,13 +74,10 @@ describe('<ManageOrgFacilities />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_FUNDING_AGREEMENT],
       },
     });
 
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.VIEW_FUNDING_AGREEMENT];
-    });
     cy.get('.v-tab').should('have.length', 3);
     cy.get('.v-tab').eq(1).should('contain', 'Funding Agreement');
   });
@@ -97,13 +93,10 @@ describe('<ManageOrgFacilities />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
+        permissions: [permissionsWithoutViewFundingAgreement],
       },
     });
 
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [permissionsWithoutViewFundingAgreement];
-    });
     cy.get('.v-tab').contains('Funding Agreement').should('not.exist');
   });
 
@@ -144,12 +137,8 @@ describe('<ManageOrgFacilities />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_FUNDING_AGREEMENT],
       },
-    });
-
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.VIEW_FUNDING_AGREEMENT];
     });
 
     cy.contains('button', 'Funding Agreement').click();

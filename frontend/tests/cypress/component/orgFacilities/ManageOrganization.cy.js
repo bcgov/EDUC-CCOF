@@ -1,6 +1,5 @@
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
 import vuetify from '@/plugins/vuetify';
-import { useAuthStore } from '@/store/auth';
 import { ApiRoutes, ORGANIZATION_TYPES } from '@/utils/constants';
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
@@ -167,12 +166,10 @@ describe('<ManageOrganization />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
+        permissions: [permissionsWithoutChangeOrgInfo],
       },
     });
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [permissionsWithoutChangeOrgInfo];
-    });
+
     cy.get('.v-card')
       .eq(0)
       .within(() => {
@@ -180,7 +177,7 @@ describe('<ManageOrganization />', () => {
       });
   });
 
-  it('should render edit buttons with proper permissions', () => {
+  it.only('should render edit buttons with proper permissions', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
@@ -192,12 +189,10 @@ describe('<ManageOrganization />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
+        permissions: [PERMISSIONS.CHANGE_ORG_INFORMATION],
       },
     });
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.CHANGE_ORG_INFORMATION];
-    });
+
     cy.get('.v-card')
       .eq(0)
       .within(() => {
