@@ -313,12 +313,13 @@ export default {
       ageGroups: [],
       uploadedDocuments: [],
       input: { documents: [] },
+      facilityList: [],
     };
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
-    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     title() {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
@@ -343,9 +344,6 @@ export default {
           this.input.endDate < this.fiscalStartAndEndDates.startDate ||
           this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
-    },
-    facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
     applicationId() {
       const application = this.userInfo.applications?.find(
@@ -385,8 +383,25 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
+    this.loadData();
   },
   methods: {
+    async loadData() {
+      try {
+        this.isLoading = true;
+        this.facilityList = await this.getFacilityListForPCFByProgramYearId(this.programYearId);
+        if (this.isFacilityAdmin) {
+          this.facilityList = this.facilityList.filter((facility) => {
+            return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async initInput() {
       try {
         const input = cloneDeep(this.closure);
