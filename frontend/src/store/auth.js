@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', {
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
+    permissions: [],
   }),
   getters: {
     hasPermission: (state) => {
