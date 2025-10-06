@@ -104,7 +104,7 @@ describe('<ManageOrgFacilities />', () => {
       const authStore = useAuthStore();
       authStore.permissions = [permissionsWithoutViewFundingAgreement];
     });
-    cy.get('.v-tab').should('not.contain', 'Funding Agreement');
+    cy.get('.v-tab').contains('Funding Agreement').should('not.exist');
   });
 
   it('should render manage organization content', () => {
