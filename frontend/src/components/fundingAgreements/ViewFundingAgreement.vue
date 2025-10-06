@@ -94,17 +94,13 @@
             label="Your Organization's Authorized Signing Authority"
           />
         </template>
-        <v-row class="mt-4" align="center" dense>
-          <v-col cols="auto">
-            <AppButton color="primary" :loading="processing" @click="goBackToManageFundingAgreement"> Back </AppButton>
-          </v-col>
-
-          <v-col v-if="displaySignFundingAgreementSection" cols="auto" class="ml-4">
-            <AppButton color="primary" :disabled="isSubmitDisabled" :loading="processing" @click="submit">
-              Submit
-            </AppButton>
-          </v-col>
-        </v-row>
+        <NavButton
+          :is-submit-displayed="displaySignFundingAgreementSection"
+          :is-submit-disabled="isSubmitDisabled"
+          :is-processing="processing"
+          @previous="goBackToManageFundingAgreement"
+          @submit="submit"
+        />
         <AppDialog
           v-model="showSubmissionConfirmationDialog"
           persistent
@@ -136,12 +132,13 @@
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
+import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
-import { FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
+import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENTS_INTERNAL_STATUS, PATHS } from '@/utils/constants.js';
 
 const READ_ONLY_STATUSES = [
   FUNDING_AGREEMENTS_STATUS.DRAFTED_WITH_MINISTRY,
@@ -159,6 +156,7 @@ export default {
     AppButton,
     AppDialog,
     AppPDFViewer,
+    NavButton,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
@@ -173,7 +171,7 @@ export default {
   },
   computed: {
     isReadOnly() {
-      return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatus);
+      return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
     fundingAgreementNumber() {
       return this.fundingAgreement?.fundingAgreementNumber;
@@ -187,7 +185,7 @@ export default {
       );
     },
     displaySignFundingAgreementSection() {
-      const status = this.fundingAgreement?.externalStatus;
+      const status = this.fundingAgreement?.externalStatusText;
       const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
@@ -232,6 +230,7 @@ export default {
           consentCheck: this.fundingAgreement.consentCheck,
           signedOn: new Date().toISOString(),
           signedBy: this.fundingAgreement.signedBy,
+          externalStatusCode: FUNDING_AGREEMENTS_INTERNAL_STATUS.DRAFTED_WITH_MINISTRY,
         };
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
         this.showSubmissionConfirmationDialog = true;
