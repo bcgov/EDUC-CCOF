@@ -180,7 +180,7 @@ async function populateUserInfo(profile) {
       // Add facilities for Facility Admin users
       if (isFacilityAdmin(profile)) {
         const facilities = await getRawContactFacilities(profile.contactId);
-        profile.facilities = facilities.map((f) => ({ facilityId: f.data.facilityId }));
+        profile.facilities = facilities.map((f) => ({ facilityId: f.facilityId }));
       }
     } else {
       // If the user is not found in Dynamics at all, assign the default Organization Admin role
