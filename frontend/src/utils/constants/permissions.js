@@ -1,6 +1,6 @@
 export const PERMISSIONS = Object.freeze({
   // Applications/Renewals
-  VIEW_SUBMITTED_PCF: '20',
+  VIEW_SUBMITTED_PCF: '28',
   // View Funding Agreements
   SIGN_FUNDING_AGREEMENT: '36',
   VIEW_FUNDING_AGREEMENT: '37',

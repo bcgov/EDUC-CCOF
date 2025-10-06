@@ -92,26 +92,28 @@
                   Status of your funding agreement for the current fiscal year: Active
                 </p>
                 <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
-                <v-btn
-                  v-if="applicationType === 'NEW'"
-                  theme="dark"
-                  class="blueButton mt-4"
-                  @click="viewApplication('NEW')"
-                >
-                  View Recent Application
-                </v-btn>
-                <v-btn
-                  v-else-if="
-                    applicationType === 'RENEW' &&
-                    applicationStatus === 'SUBMITTED' &&
-                    ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
-                  "
-                  theme="dark"
-                  class="blueButton"
-                  @click="viewApplication('RENEW')"
-                >
-                  View Recent Application
-                </v-btn>
+                <template v-if="hasPermission(PERMISSIONS.VIEW_SUBMITTED_PCF)">
+                  <v-btn
+                    v-if="applicationType === 'NEW'"
+                    theme="dark"
+                    class="blueButton mt-4"
+                    @click="viewApplication('NEW')"
+                  >
+                    View Recent Application
+                  </v-btn>
+                  <v-btn
+                    v-else-if="
+                      applicationType === 'RENEW' &&
+                      applicationStatus === 'SUBMITTED' &&
+                      ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
+                    "
+                    theme="dark"
+                    class="blueButton"
+                    @click="viewApplication('RENEW')"
+                  >
+                    View Recent Application
+                  </v-btn>
+                </template>
               </div>
               <p class="mt-4">Fiscal year runs April 1 to March 31</p>
               <router-link
