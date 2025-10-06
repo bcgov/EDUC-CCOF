@@ -264,6 +264,7 @@ describe('<LandingPage />', () => {
 
   it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]', () => {
     mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
         applicationType: 'NEW',
         applicationStatus: 'SUBMITTED',
@@ -279,6 +280,7 @@ describe('<LandingPage />', () => {
 
   it('should display `View Recent Application` button when clicked navigate to license upload', () => {
     mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
         applicationType: 'RENEW',
         applicationStatus: 'SUBMITTED',
@@ -288,10 +290,29 @@ describe('<LandingPage />', () => {
       organization: {
         organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
       },
-      ...createAuthStore(),
     });
 
     checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
+  });
+
+  it('should not display `View Recent Application` button with invalid permissions', () => {
+    const permissionsWithoutViewSubmittedPCF = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.VIEW_SUBMITTED_PCF,
+    );
+
+    mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [permissionsWithoutViewSubmittedPCF] }),
+      application: {
+        applicationType: 'RENEW',
+        applicationStatus: 'SUBMITTED',
+        ccofApplicationStatus: 'ACTIVE',
+        programYearId,
+      },
+      organization: {
+        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+      },
+    });
+    cy.contains('button', 'View Recent Application').should('not.exist');
   });
 
   it('should display `View submission history` button', () => {
@@ -476,18 +497,10 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
-        },
-        app: {
-          role: {
-            permissions: { permissionNumber: '1111' },
-          },
+          permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
-      });
       cy.contains('p', 'Manage Organization and Facilitie');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'have.css',
@@ -503,21 +516,13 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
-        },
-        app: {
-          role: {
-            permissions: { permissionNumber: '1111' },
-          },
+          permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
         },
         organization: {
           organizationAccountNumber: '12345',
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
-      });
       cy.contains('p', 'Manage Organization and Facilitie');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.have.css',
@@ -540,12 +545,8 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
+          permissions: [PERMISSIONS.VIEW_USERS],
         },
-      });
-
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_USERS];
       });
 
       cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
@@ -561,13 +562,10 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
+          permissions: [PERMISSIONS.VIEW_USERS],
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_USERS];
-      });
       checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
     });
   });
