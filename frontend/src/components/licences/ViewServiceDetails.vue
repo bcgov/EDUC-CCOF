@@ -62,10 +62,6 @@
               </v-col>
             </v-row>
             <v-row class="mb-2">
-              <v-col cols="12" md="6" class="field-container">
-                <strong class="label">Is the facility located on school property?</strong>
-                <span>{{ licence.locatedOnSchoolProperty ? 'Yes' : 'No' }}</span>
-              </v-col>
               <v-col v-if="Object.keys(preschoolDetail).length" cols="12" md="6" class="field-container">
                 <strong class="label">Number of preschool sessions per week:</strong>
                 <span>{{ preschoolDetail.preschoolSessions ?? EMPTY_PLACEHOLDER }}</span>
