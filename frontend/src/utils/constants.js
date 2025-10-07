@@ -607,3 +607,8 @@ export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
   SUBMITTED: 3,
   REJECTED: 5,
 });
+
+export const LICENCE_STATUSES = Object.freeze({
+  APPROVED: 'Approved',
+  INACTIVE: 'Inactive',
+});
