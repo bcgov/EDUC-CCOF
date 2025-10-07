@@ -791,7 +791,6 @@ const LicenceMappings = [
   { back: 'ccof_extended_hours_offered', front: 'licenceExtendedHours' },
   { back: 'ccof_extended_days_per_week', front: 'extendedDaysPerWeek' },
   { back: 'ccof_extended_weeks_per_year', front: 'extendedWeeksPerYear' },
-  { back: 'ccof_located_on_school_property', front: 'locatedOnSchoolProperty' },
   { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
 ];
 
