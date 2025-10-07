@@ -81,7 +81,7 @@ export default {
     getStatusClass(status) {
       switch (status) {
         case LICENCE_STATUSES.APPROVED:
-          return 'status-blue';
+          return 'status-green';
         case LICENCE_STATUSES.INACTIVE:
           return 'status-gray';
         default:

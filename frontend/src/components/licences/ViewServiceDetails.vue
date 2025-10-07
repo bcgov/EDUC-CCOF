@@ -2,6 +2,31 @@
   <AppDialog v-model="isOpen" max-width="1200px" text-alignment="left" persistent scrollable @close="closeDialog">
     <template #content>
       <div class="outer-box">
+        <div class="box-container mb-4">
+          <v-row class="mb-2">
+            <v-col cols="12" md="6" class="field-container">
+              <strong class="label">Licence Number:</strong>
+              <span>{{ licence.licenceNumber ?? EMPTY_PLACEHOLDER }}</span>
+              <span class="ml-2" :class="getStatusClass(licence.licenceStatus)">
+                {{ licence.licenceStatus }}
+              </span>
+            </v-col>
+          </v-row>
+          <v-row class="mb-2">
+            <v-col cols="12" md="4" class="field-container">
+              <strong class="label">Licence Effective Date:</strong>
+              <span>{{ formatUTCDate(licence.licenceStartDate) ?? EMPTY_PLACEHOLDER }}</span>
+            </v-col>
+            <v-col cols="12" md="4" class="field-container">
+              <strong class="label">Record Start Date:</strong>
+              <span>{{ licence.recordStartDate ?? EMPTY_PLACEHOLDER }}</span>
+            </v-col>
+            <v-col cols="12" md="4" class="field-container">
+              <strong class="label">Record End Date:</strong>
+              <span>{{ licence.recordEndDate ?? EMPTY_PLACEHOLDER }}</span>
+            </v-col>
+          </v-row>
+        </div>
         <h2 class="mb-2 section-heading">Community Care and Assisted Living Act Facility Licence Details</h2>
 
         <div v-if="licence?.serviceDeliveryDetails?.length">
@@ -90,7 +115,7 @@
 <script>
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
-import { capitalize } from '@/utils/format';
+import { capitalize, formatUTCDate } from '@/utils/format';
 
 export default {
   name: 'ViewServiceDetails',
@@ -133,8 +158,19 @@ export default {
   },
   methods: {
     capitalize,
+    formatUTCDate,
     closeDialog() {
       this.isOpen = false;
+    },
+    getStatusClass(status) {
+      switch (status) {
+        case 'Approved':
+          return 'status-green';
+        case 'Inactive':
+          return 'status-gray';
+        default:
+          return 'status-default';
+      }
     },
   },
 };
