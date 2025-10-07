@@ -22,7 +22,7 @@ public class TestAdjudicateGroupApplicationFA extends BaseTest {
 	Utilities ut;
 
 	@Test(priority = 1)
-	public void AdjudicateGroupApplicationsFA(Method method) throws Throwable {
+	public void adjudicateGroupApplicationsFA(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "AdjudicateGroupApplicationFA");
 		logger.info("Starting the AdjudicateGroupApplicationFA test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);

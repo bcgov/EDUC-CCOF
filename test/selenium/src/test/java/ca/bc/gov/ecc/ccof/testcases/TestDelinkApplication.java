@@ -14,15 +14,16 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestDelinkApplication extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestValidLogin.class);
+	private static final Logger logger = LogManager.getLogger(TestDelinkApplication.class);
 
 	@Test(priority = 1)
-	public void Delinkapplication(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "valid login");
+	public void delinkapplication(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "TestDelinkApplication ");
 		logger.info("Starting the DeleteApplication test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities ut = new Utilities(driver);
 		// login to application
+		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());

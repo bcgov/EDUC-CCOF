@@ -22,7 +22,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 	Utilities ut;
 
 	@Test(priority = 1)
-	public void AdjudicateGroupApplicationsCcof(Method method) throws Throwable {
+	public void adjudicateGroupApplicationsCcof(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "AdjudicateGroupApplicationCcof");
 		logger.info("Starting the AdjudicateGroupApplicationCcof test...");
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);

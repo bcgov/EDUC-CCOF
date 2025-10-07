@@ -1,6 +1,7 @@
 package ca.bc.gov.ecc.ccof.pageobjects;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,6 +17,13 @@ public class OrganizationInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[@aria-label='Submitted']")
 	WebElement openApplication;
+
+	@FindBy(xpath = "//*[@aria-label='Submitted']")
+	List<WebElement> openApplications;
+
+	public List<WebElement> getOpenApplications() {
+		return openApplications;
+	}
 
 	@FindBy(xpath = "//*[@col-id='ccof_name']//div[contains(@class,'ms-StackItem truncatableText')]//a")
 	WebElement openFundingAgreement;
