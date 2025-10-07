@@ -6,7 +6,7 @@
           <v-row class="mb-2">
             <v-col cols="12" md="6" class="field-container">
               <strong class="label">Licence Number:</strong>
-              <span>{{ licence.licenceNumber ?? EMPTY_PLACEHOLDER }}</span>
+              <span>{{ licence.licenceNumber }}</span>
               <span class="ml-2" :class="getStatusClass(licence.licenceStatus)">
                 {{ licence.licenceStatus }}
               </span>
@@ -15,11 +15,11 @@
           <v-row class="mb-2">
             <v-col cols="12" md="4" class="field-container">
               <strong class="label">Licence Effective Date:</strong>
-              <span>{{ formatUTCDate(licence.licenceStartDate) ?? EMPTY_PLACEHOLDER }}</span>
+              <span>{{ formatUTCDate(licence.licenceStartDate) }}</span>
             </v-col>
             <v-col cols="12" md="4" class="field-container">
               <strong class="label">Record Start Date:</strong>
-              <span>{{ licence.recordStartDate ?? EMPTY_PLACEHOLDER }}</span>
+              <span>{{ licence.recordStartDate }}</span>
             </v-col>
             <v-col cols="12" md="4" class="field-container">
               <strong class="label">Record End Date:</strong>
