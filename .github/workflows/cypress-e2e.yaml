@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
 jobs:
   cypress-run:
+    name: Run Cypress E2E tests
     runs-on: ubuntu-24.04
     environment: qa
     steps:
