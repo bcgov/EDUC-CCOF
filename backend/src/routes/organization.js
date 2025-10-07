@@ -2,8 +2,10 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const validatePermission = require('../middlewares/validatePermission');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createOrganization, getOrganization, getOrganizationFacilities, updateOrganization } = require('../components/organization');
+const { PERMISSIONS } = require('../util/constants');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
@@ -77,7 +79,8 @@ router.put(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty(), checkSchema(organizationSchema)],
+  validatePermission(PERMISSIONS.CHANGE_ORG_INFORMATION),
+  [(param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(), checkSchema(organizationSchema))],
   (req, res) => {
     validationResult(req).throw();
     return updateOrganization(req, res);

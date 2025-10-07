@@ -93,8 +93,6 @@ export default {
         await this.decorateWithCareTypes(this.currentFacility.facilityId);
         await this.loadClosures(this.$route.params.urlGuid);
         this.loadCCFisCCRIMedian(); //this can be async. no need to wait.
-        this.prevFeesCorrect =
-          this.CCFRIFacilityModel.existingFeesCorrect === this.CCFRI_FEE_CORRECT_TYPES.YES ? 'Yes' : 'No';
       } catch (error) {
         console.error(`Failed to get CCFRI with error - ${error}`);
         this.setFailureAlert('An error occurred while loading. Please try again later.');

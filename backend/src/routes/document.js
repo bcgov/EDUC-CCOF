@@ -5,12 +5,13 @@ const auth = require('../components/auth');
 const { param, validationResult } = require('express-validator');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createApplicationDocuments, createChangeActionDocuments, getApplicationDocuments, deleteDocuments, updateDocument } = require('../components/document');
+const { scanFilePayload } = require('../util/clamav');
 
 module.exports = router;
 
-router.post('/application/', passport.authenticate('jwt', { session: false }), isValidBackendToken, createApplicationDocuments);
+router.post('/application/', passport.authenticate('jwt', { session: false }), isValidBackendToken, scanFilePayload, createApplicationDocuments);
 
-router.post('/change-action/', passport.authenticate('jwt', { session: false }), isValidBackendToken, createChangeActionDocuments);
+router.post('/change-action/', passport.authenticate('jwt', { session: false }), isValidBackendToken, scanFilePayload, createChangeActionDocuments);
 
 router.get(
   '/application/:applicationId',
@@ -30,6 +31,7 @@ router.patch(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   [param('annotationId', 'URL param: [annotationId] is required').notEmpty().isUUID()],
+  scanFilePayload,
   (req, res) => {
     validationResult(req).throw();
     return updateDocument(req, res);

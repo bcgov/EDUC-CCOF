@@ -100,7 +100,6 @@ export const PATHS = {
     HOME: '/',
     MANAGE_ORG_FACILITIES: '/org-facilities/manage-org-facilities',
     MANAGE_FACILITY: '/org-facilities/manage-facility',
-    VIEW_FUNDING_AGREEMENT: '/org-facilities/view-funding-agreement',
     MANAGE_USERS: '/manage-users',
     ESTIMATOR: '/ccfri-estimator',
     IMPERSONATE: '/impersonate',
@@ -553,6 +552,13 @@ export const CCFRI_MIN_FEE = 0;
 export const DEFAULT_NUMBER_OF_PARTNERS = 2;
 export const MAX_NUMBER_OF_PARTNERS = 4;
 
+export const ROLES = Object.freeze({
+  ORG_ADMIN: '10',
+  FAC_ADMIN_ADVANCED: '11',
+  FAC_ADMIN_BASIC: '13',
+  READ_ONLY: '12',
+});
+
 export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   ACTIVE: 'Active',
   APPROVED: 'Approved',
@@ -563,6 +569,10 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   TERMINATED: 'Terminated',
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
+});
+
+export const FUNDING_AGREEMENT_EXTERNAL_STATUSES = Object.freeze({
+  DRAFTED_WITH_MINISTRY: 101510004,
 });
 
 export const DAY_TYPES = Object.freeze({
@@ -589,4 +599,11 @@ export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   APPROVED: 6,
   PAID: 7,
   EXPIRED: 8,
+});
+
+export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
+  CREATED: 1,
+  INCOMPLETE: 2,
+  SUBMITTED: 3,
+  REJECTED: 5,
 });

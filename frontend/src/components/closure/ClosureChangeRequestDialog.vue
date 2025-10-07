@@ -233,13 +233,19 @@
       <v-container width="80%">
         <v-row>
           <v-col md="6">
-            <AppButton :primary="false" @click="closeDialog">Cancel</AppButton>
+            <AppButton :primary="false" :loading="isLoading" :disabled="isLoading" @click="closeDialog">
+              Cancel
+            </AppButton>
           </v-col>
           <v-col md="6" align="right">
-            <AppButton v-if="isRemoveClosureRequest" :disabled="disableSubmit" @click="removeClosure"
+            <AppButton
+              v-if="isRemoveClosureRequest"
+              :loading="isLoading"
+              :disabled="disableSubmit"
+              @click="removeClosure"
               >Remove Closure</AppButton
             >
-            <AppButton v-else :disabled="disableSubmit" @click="submit">Submit</AppButton>
+            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">Submit</AppButton>
           </v-col>
         </v-row>
       </v-container>
@@ -307,12 +313,13 @@ export default {
       ageGroups: [],
       uploadedDocuments: [],
       input: { documents: [] },
+      facilityList: [],
     };
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
-    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     title() {
       switch (this.requestType) {
         case CHANGE_REQUEST_TYPES.NEW_CLOSURE:
@@ -337,9 +344,6 @@ export default {
           this.input.endDate < this.fiscalStartAndEndDates.startDate ||
           this.input.endDate > this.fiscalStartAndEndDates.endDate)
       );
-    },
-    facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.programYearId);
     },
     applicationId() {
       const application = this.userInfo.applications?.find(
@@ -379,8 +383,25 @@ export default {
     this.rules = rules;
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
+    this.loadData();
   },
   methods: {
+    async loadData() {
+      try {
+        this.isLoading = true;
+        this.facilityList = await this.getFacilityListForPCFByProgramYearId(this.programYearId);
+        if (this.isFacilityAdmin) {
+          this.facilityList = this.facilityList.filter((facility) => {
+            return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
+      } finally {
+        this.isLoading = false;
+      }
+    },
     async initInput() {
       try {
         const input = cloneDeep(this.closure);
@@ -488,8 +509,13 @@ export default {
         payload.changeRequestReferenceId = response.changeRequestReferenceId;
         this.$emit('submitted', payload);
       } catch (e) {
-        console.log(e);
-        this.setFailureAlert('Failed to submit new closure request');
+        console.error(e);
+        if (e.response.data.status === 422) {
+          // Most likely found a virus in payload.documents
+          this.setFailureAlert(e.response.data.message);
+        } else {
+          this.setFailureAlert('Failed to submit new closure request');
+        }
       } finally {
         this.isLoading = false;
       }

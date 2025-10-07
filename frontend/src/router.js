@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';
@@ -38,10 +39,10 @@ import GroupOrganizationInformation from '@/components/ccofApplication/group/Org
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
+import EnrolmentReportDeclaration from '@/components/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
-import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
-import ViewFundingAgreements from '@/components/fundingAgreements/ViewFundingAgreements.vue';
+import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -66,6 +67,7 @@ import {
   pcfUrlGuid,
 } from '@/utils/constants.js';
 import { SUBTITLE_BANNERS } from '@/utils/constants/SubTitleBanners.js';
+import { PERMISSIONS } from '@/utils/constants/permissions.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 const router = createRouter({
@@ -832,6 +834,7 @@ const router = createRouter({
       component: ManageOrgFacilities,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ORG_INFORMATION,
       },
     },
     {
@@ -843,19 +846,12 @@ const router = createRouter({
       },
     },
     {
-      path: `${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/:id`,
-      name: 'ViewFundingAgreement',
-      component: ViewFundingAgreements,
+      path: `${PATHS.ROOT.FUNDING_AGREEMENTS}/:fundingAgreementId`,
+      name: 'view-funding-agreement',
+      component: ViewFundingAgreement,
       meta: {
         requiresAuth: true,
-      },
-    },
-    {
-      path: PATHS.ROOT.FUNDING_AGREEMENTS,
-      name: 'funding-agreements',
-      component: ManageFundingAgreements,
-      meta: {
-        requiresAuth: true,
+        permission: PERMISSIONS.VIEW_FUNDING_AGREEMENT,
       },
     },
     {
@@ -864,6 +860,7 @@ const router = createRouter({
       component: ManageUsers,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_USERS,
       },
     },
     {
@@ -874,6 +871,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.ORGANIZATION_CLOSURES,
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_CLOSURES,
       },
     },
     {
@@ -890,6 +888,14 @@ const router = createRouter({
       path: `${PATHS.ROOT.ENROLMENT_REPORTS}/:enrolmentReportId`,
       name: 'enrolment-report-form',
       component: EnrolmentReportForm,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: `${PATHS.ROOT.ENROLMENT_REPORTS}/:enrolmentReportId/declaration`,
+      name: 'enrolment-report-declaration',
+      component: EnrolmentReportDeclaration,
       meta: {
         requiresAuth: true,
       },
@@ -924,6 +930,25 @@ router.beforeEach((to, _from, next) => {
           authStore
             .getUserInfo(to)
             .then(async () => {
+              if (!authStore.isMinistryUser) {
+                // Validate Provider roles
+                if (isEmpty(authStore.userInfo?.role)) {
+                  return next('unauthorized');
+                }
+                // TODO: Validate Facilities for Facility Admin
+                // if (!authStore.hasFacilities) {
+                //   return next('unauthorized');
+                // }
+                // Validate specific permission
+                if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
+                  return next('unauthorized');
+                }
+                // Block access to Impersonate
+                if (to.name === 'impersonate') {
+                  return next('unauthorized');
+                }
+              }
+
               const navBarStore = useNavBarStore();
               await navBarStore.setUrlDetails(to);
               if (authStore.isMinistryUser && !authStore.impersonateId && to.path !== PATHS.ROOT.IMPERSONATE) {

@@ -6,7 +6,10 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12"><h2>Organization Info</h2></v-col>
+      <v-col cols="8" sm="7"><h2>Organization Info</h2></v-col>
+      <v-col cols="4" sm="5" class="d-flex justify-end">
+        <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
+      </v-col>
     </v-row>
     <v-row v-if="orgLoading" no-gutters>
       <v-col cols="12" lg="6">
@@ -86,7 +89,7 @@
                     <AppButton
                       size="small"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.email"
                       :loading="isProcessing"
                       @click="() => saveField('email')"
@@ -97,7 +100,7 @@
                       class="ml-1"
                       size="small"
                       :primary="false"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       @click="() => cancelEditing('email')"
                     >
@@ -111,8 +114,9 @@
                   </v-col>
                   <v-col cols="3">
                     <AppButton
+                      v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.email = true"
                     >
@@ -146,7 +150,7 @@
                     <AppButton
                       size="small"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.phone"
                       :loading="isProcessing"
                       @click="() => saveField('phone')"
@@ -156,7 +160,7 @@
                     <AppButton
                       class="ml-1"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       :primary="false"
                       @click="() => cancelEditing('phone')"
@@ -171,8 +175,9 @@
                   </v-col>
                   <v-col cols="3">
                     <AppButton
+                      v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.phone = true"
                     >
@@ -207,7 +212,7 @@
                       size="small"
                       color="#003366"
                       type="submit"
-                      :display-block="false"
+                      display="inline"
                       :disabled="!valid.website"
                       :loading="isProcessing"
                       @click="() => saveField('website')"
@@ -218,7 +223,7 @@
                       class="ml-1"
                       size="small"
                       :primary="false"
-                      :display-block="false"
+                      display="inline"
                       :disabled="isProcessing"
                       @click="() => cancelEditing('website')"
                     >
@@ -232,9 +237,10 @@
                   </v-col>
                   <v-col cols="3">
                     <AppButton
+                      v-if="hasPermission(PERMISSIONS.CHANGE_ORG_INFORMATION)"
                       size="small"
                       color="#003366"
-                      :display-block="false"
+                      display="inline"
                       :disabled="workingFieldInUse || isProcessing"
                       @click="editing.website = true"
                     >
@@ -340,6 +346,7 @@ import rules from '@/utils/rules.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageOrganization',
@@ -347,7 +354,7 @@ export default {
     AppButton,
     AppLabel,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       orgLoading: false,
@@ -379,7 +386,7 @@ export default {
       );
     },
     workingFieldInUse() {
-      return Object.values(this.editing).some((value) => value === true);
+      return Object.values(this.editing).some((value) => value);
     },
   },
   async mounted() {
@@ -430,21 +437,13 @@ export default {
       this.editing[key] = false;
       this.workingFields[key] = this.loadedModel[key];
     },
+    goToChangeRequest() {
+      this.$router.push({ name: 'Report Change' });
+    },
   },
 };
 </script>
 <style scoped>
-.less-jitter :deep(input) {
-  padding-top: 0;
-  font-size: 1rem;
-  letter-spacing: 0.03125em;
-  min-height: 0;
-}
-
-.less-jitter :deep(label.v-label) {
-  top: 0;
-}
-
 .v-row.v-row--dense {
   min-height: 38px;
 }

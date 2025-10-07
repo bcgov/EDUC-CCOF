@@ -354,6 +354,21 @@ async function getChangeActionDetails(changeActionId, changeDetailEntity, change
   }
 }
 
+async function postAdjustmentERGeneration(payload) {
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/AdjustmentERGeneration';
+  if (log.isVerboseEnabled()) {
+    log.verbose(`postAdjustmentERGeneration post data for ${url}  :: is :: `, payload);
+  }
+  try {
+    const response = await axios.post(url, payload, getHttpHeader());
+    logResponse('postAdjustmentERGeneration', response);
+    return response;
+  } catch (e) {
+    log.error('postAdjustmentERGeneration Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Post error' }, e);
+  }
+}
+
 function getHttpHeader() {
   return {
     headers: {
@@ -424,7 +439,9 @@ const utils = {
   updateChangeRequestNewFacility,
   getSubmissionPDFHistory,
   getChangeActionDetails,
+  postAdjustmentERGeneration,
   padString,
+  splitUsername,
 };
 
 module.exports = utils;

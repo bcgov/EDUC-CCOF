@@ -42,9 +42,9 @@
             {{ item.fundingAgreementTerm.slice(0, -3) }}
           </template>
 
-          <template #[`item.externalStatus`]="{ item }">
-            <span :class="getStatusClass(item.externalStatus)">
-              {{ item.externalStatus }}
+          <template #[`item.externalStatusText`]="{ item }">
+            <span :class="getStatusClass(item.externalStatusText)">
+              {{ item.externalStatusText }}
             </span>
           </template>
 
@@ -58,10 +58,15 @@
 
           <template #[`item.actions`]="{ item }">
             <v-row class="action-buttons align-center justify-end justify-md-start ga-2">
-              <AppButton :primary="false" size="small" @click="navigateToViewFundingAgreement(item.fundingAgreementId)">
-                View
+              <AppButton :primary="false" size="small" @click="goToViewFundingAgreement(item)"> View </AppButton>
+              <AppButton
+                v-if="hasPermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT)"
+                :primary="false"
+                size="small"
+                @click="downloadPDFFundingAgreement(item)"
+              >
+                Download
               </AppButton>
-              <AppButton :primary="false" size="small" @click="downloadPDFFundingAgreement(item)"> Download </AppButton>
             </v-row>
           </template>
         </v-data-table>
@@ -77,6 +82,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -87,7 +93,7 @@ import { formatUTCDate } from '@/utils/format';
 export default {
   name: 'ManageFundingAgreements',
   components: { AppButton, AppMultiSelectInput },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
@@ -97,7 +103,7 @@ export default {
       fundingAgreementTableHeaders: [
         { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
         { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
-        { title: 'Status', sortable: true, value: 'externalStatus' },
+        { title: 'Status', sortable: true, value: 'externalStatusText' },
         { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
@@ -134,8 +140,8 @@ export default {
         this.isLoading = false;
       }
     },
-    navigateToViewFundingAgreement(id) {
-      this.$router.push(`${PATHS.ROOT.VIEW_FUNDING_AGREEMENT}/${id}`);
+    goToViewFundingAgreement(agreement) {
+      this.$router.push(`${PATHS.ROOT.FUNDING_AGREEMENTS}/${agreement.fundingAgreementId}`);
     },
     getStatusClass(status) {
       switch (status) {
@@ -167,8 +173,8 @@ export default {
       const defaultPriority = Math.max(...Object.values(statusPriority)) + 1;
       this.fundingAgreements?.sort((a, b) => {
         // 1. Prioritize "Drafted – Provider Action Required" over "Drafted - With Ministry"
-        const priorityA = statusPriority[a.externalStatus] ?? defaultPriority;
-        const priorityB = statusPriority[b.externalStatus] ?? defaultPriority;
+        const priorityA = statusPriority[a.externalStatusText] ?? defaultPriority;
+        const priorityB = statusPriority[b.externalStatusText] ?? defaultPriority;
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }

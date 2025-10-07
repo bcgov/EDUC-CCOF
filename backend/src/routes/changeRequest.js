@@ -14,13 +14,15 @@ const {
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,
-  saveChangeRequestDocs,
   createChangeAction,
   deleteChangeAction,
 } = require('../components/changeRequest');
 const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIByCcfriId } = require('../components/changeRequest');
 const { checkSchema, param, query, validationResult } = require('express-validator');
-const { CHANGE_REQUEST_TYPES } = require('../util/constants');
+const validateFacility = require('../middlewares/validateFacility');
+const validatePermission = require('../middlewares/validatePermission');
+const { CHANGE_REQUEST_TYPES, PERMISSIONS } = require('../util/constants');
+const { scanFilePayload } = require('../util/clamav');
 
 module.exports = router;
 
@@ -87,6 +89,8 @@ router.get(
   '/changeActionClosure',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_CLOSURES),
+  validateFacility(),
   query('facilityId', 'URL query: [facilityId] is required').notEmpty().isUUID(),
   query('programYearId', 'URL query: [programYearId] is required').notEmpty().isUUID(),
   (req, res) => {
@@ -102,6 +106,7 @@ router.get(
   '/changeActionClosure/:changeActionClosureId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_CLOSURES),
   [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
@@ -126,7 +131,6 @@ router.get(
 /**
  * Update Change Request
  */
-
 router.patch(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
@@ -163,10 +167,19 @@ router.post(
 /**
  * Create the closure change request
  */
-router.post('/closure', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureChangeRequestSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createClosureChangeRequest(req, res);
-});
+router.post(
+  '/closure',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.REQUEST_CLOSURE, PERMISSIONS.EDIT_CLOSURE, PERMISSIONS.REMOVE_CLOSURE),
+  validateFacility(),
+  [checkSchema(closureChangeRequestSchema)],
+  scanFilePayload,
+  (req, res) => {
+    validationResult(req).throw();
+    return createClosureChangeRequest(req, res);
+  },
+);
 
 /**
  * Get Change Requests Documents
@@ -188,14 +201,6 @@ router.get(
 router.post('/documents', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(documentChangeRequestSchema)], (req, res) => {
   validationResult(req).throw();
   return createChangeRequest(req, res);
-});
-
-/**
- * Save uploaded document
- */
-router.post('/documentUpload', passport.authenticate('jwt', { session: false }), isValidBackendToken, (req, res) => {
-  //validationResult(req).throw();
-  return saveChangeRequestDocs(req, res);
 });
 
 router.post(

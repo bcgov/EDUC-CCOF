@@ -1,12 +1,12 @@
 # CCOF
 
 > Child Care Operationg Fund Project - Web Front End
-This project was built using the EDUC-EDX project as a template.  
-You may see references to the EDX project until we  get this properly cleaned up.
+> This project was built using the EDUC-EDX project as a template.  
+> You may see references to the EDX project until we get this properly cleaned up.
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 
@@ -21,6 +21,9 @@ npm run build --report
 
 # run unit tests
 npm run test:unit
+
+# run component tests (headless)
+npm run test:component:headless
 
 ```
 

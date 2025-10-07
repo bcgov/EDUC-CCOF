@@ -2,15 +2,16 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { ROLES } from '@/utils/constants.js';
 
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
-  // console.log(`Local test of JSON token: [${payload.exp}], with date: [${(new Date(payload.exp * 1000))}] is expired: [${payload.exp <= now}]`);
   return payload.exp <= now;
 }
 
@@ -23,10 +24,26 @@ export const useAuthStore = defineStore('auth', {
     error: false,
     isMinistryUser: false,
     impersonateId: null,
+    isImpersonating: false,
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
+    permissions: [],
   }),
+  getters: {
+    hasPermission: (state) => {
+      return (permission) => {
+        if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
+        return state.permissions.includes(permission);
+      };
+    },
+    isFacilityAdmin: (state) => {
+      return (
+        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED ||
+        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_BASIC
+      );
+    },
+  },
   actions: {
     //sets Json web token and determines whether user is authenticated
     setJwtToken(token = null) {
@@ -77,13 +94,26 @@ export const useAuthStore = defineStore('auth', {
         const navBarStore = useNavBarStore();
         const organizationStore = useOrganizationStore();
 
-        let userInfoRes = undefined;
+        let userInfoRes;
         if (this.impersonateId && this.isMinistryUser) {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
+          this.isImpersonating = true;
         } else {
           userInfoRes = await ApiService.getUserInfo();
         }
         this.setUserInfo(userInfoRes.data);
+
+        // Lookup the permissions
+        let role;
+        const appStore = useAppStore();
+        if (this.isImpersonating) {
+          // TODO (weskubo-cgi) How are we handling impersonation?
+          // When impersonating always use 'Impersonate', not the impersonated user's role
+          //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
+        } else {
+          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
+        }
+        this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
         await applicationStore.loadApplicationFromStore(applicationStore.latestProgramYearId);

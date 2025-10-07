@@ -1,0 +1,23 @@
+import { defineConfig } from 'cypress';
+
+import viteConfig from './vite.config.js';
+
+viteConfig.optimizeDeps = {
+  ...viteConfig.optimizeDeps,
+  exclude: ['vue'],
+};
+
+export default defineConfig({
+  component: {
+    specPattern: 'tests/cypress/component/**/*.{js,jsx,ts,tsx,vue}',
+    supportFile: 'tests/cypress/support/component.js',
+    fixturesFolder: 'tests/cypress/fixtures',
+    screenshotsFolder: 'tests/cypress/screenshots',
+    indexHtmlFile: 'tests/cypress/support/component-index.html',
+    devServer: {
+      framework: 'vue',
+      bundler: 'vite',
+      viteConfig: viteConfig,
+    },
+  },
+});
