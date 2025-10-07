@@ -35,7 +35,7 @@
               </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
               <v-window-item value="licences-details">
-                <ManageLicence />
+                <ViewLicence />
               </v-window-item>
               <v-window-item value="closures">Closures</v-window-item>
             </v-window>
@@ -62,13 +62,13 @@ import alertMixin from '@/mixins/alertMixin.js';
 import { isFacilityActive } from '@/utils/facility.js';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ManageLicence from '@/components/licences/ManageLicence.vue';
+import ViewLicence from '@/components/licences/ViewLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { AppButton, NavButton, ManageFacilityDetails, ManageLicence },
+  components: { AppButton, NavButton, ManageFacilityDetails, ViewLicence },
   mixins: [alertMixin],
   data() {
     return {

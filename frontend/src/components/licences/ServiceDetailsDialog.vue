@@ -110,11 +110,17 @@
 
 <script>
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
-import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
+import { EMPTY_PLACEHOLDER, LICENCE_STATUSES } from '@/utils/constants.js';
 import { capitalize, formatUTCDate } from '@/utils/format';
 
+const LICENCE_CATEGORIES = {
+  PRESCHOOL: 'preschool',
+  SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS: 'school age care on school grounds',
+  GROUP_CHILD_CARE_SCHOOL_AGE: 'group child care (school age)',
+};
+
 export default {
-  name: 'ViewServiceDetails',
+  name: 'ServiceDetailsDialog',
   components: { AppDialog },
   props: {
     show: {
@@ -137,15 +143,20 @@ export default {
       },
     },
     preschoolDetail() {
-      return this.licence.serviceDeliveryDetails?.find((d) => d.licenceCategory?.toLowerCase() === 'preschool') || {};
+      return (
+        this.licence.serviceDeliveryDetails?.find(
+          (d) => d.licenceCategory?.toLowerCase() === LICENCE_CATEGORIES.PRESCHOOL,
+        ) ?? {}
+      );
     },
     schoolAgeCareDetail() {
       return (
         this.licence.serviceDeliveryDetails?.find((d) =>
-          ['school age care on school grounds', 'group child care (school age)'].includes(
-            d.licenceCategory?.toLowerCase(),
-          ),
-        ) || {}
+          [
+            LICENCE_CATEGORIES.SCHOOL_AGE_CARE_ON_SCHOOL_GROUNDS,
+            LICENCE_CATEGORIES.GROUP_CHILD_CARE_SCHOOL_AGE,
+          ].includes(d.licenceCategory?.toLowerCase()),
+        ) ?? {}
       );
     },
   },
@@ -160,9 +171,9 @@ export default {
     },
     getStatusClass(status) {
       switch (status) {
-        case 'Approved':
+        case LICENCE_STATUSES.APPROVED:
           return 'status-green';
-        case 'Inactive':
+        case LICENCE_STATUSES.INACTIVE:
           return 'status-gray';
         default:
           return 'status-default';

@@ -25,7 +25,7 @@
       </v-expansion-panel>
     </v-expansion-panels>
 
-    <ViewServiceDetails
+    <ServiceDetailsDialog
       v-if="selectedLicence"
       :show="viewDialogOpen"
       :licence="selectedLicence"
@@ -35,14 +35,15 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import LicenceHistory from '@/components/licences/LicenceHistory.vue';
-import ViewServiceDetails from '@/components/licences/ViewServiceDetails.vue';
+import ServiceDetailsDialog from '@/components/licences/ServiceDetailsDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import LicenceService from '@/services/licenceService.js';
 
 export default {
-  name: 'ManageLicence',
-  components: { LicenceHistory, ViewServiceDetails },
+  name: 'ViewLicence',
+  components: { LicenceHistory, ServiceDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -60,7 +61,7 @@ export default {
       this.isLoading = true;
       try {
         this.licences = await LicenceService.getLicences(this.$route.params.facilityId);
-        if (this.licences.length === 0) {
+        if (isEmpty(this.licences)) {
           this.setWarningAlert('No licence history available for this facility.');
         }
       } catch (error) {
