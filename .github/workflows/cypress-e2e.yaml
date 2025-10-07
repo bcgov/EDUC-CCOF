@@ -1,0 +1,32 @@
+name: Cypress end-to-end tests
+on: 
+  workflow_dispatch:
+jobs:
+  cypress-run:
+    runs-on: ubuntu-24.04
+    environment: qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with: 
+          working-directory: ./test/cypress-e2e/cypress/e2e
+          browser: electron
+          # Run single spec file for testing
+          spec: ./test/cypress-e2e/cypress/e2e/2-group-application/group-application-full-e2e.cy.js
+        env:
+        # Potential Secret Setup
+          # CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
+          # CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
+          # CYPRESS_CRM_BASE_URL: ${{ secrets.CYPRESS_CRM_BASE_URL }}
+          # CYPRESS_PORTAL_URL: 'https://${{ secrets.SITE_URL }}/'
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: ./test/cypress/screenshots
+          if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
