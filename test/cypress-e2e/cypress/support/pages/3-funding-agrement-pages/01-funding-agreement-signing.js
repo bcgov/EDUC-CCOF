@@ -18,8 +18,6 @@ class FundingAgreement {
         cy.clickByText('Submit').click({force: true})
         cy.contains('Submission Complete').should('be.visible')
         cy.contains('Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates to your agreement.')
-        // TODO (Hedie-cgi) - Remove arbitrary wait for status update once ticket CCFRI-6175 is addressed
-        cy.wait(10000)
         cy.clickByText('Return to Funding Agreements')
         cy.url().should('contain', 'funding-agreement-tab')
         cy.contains('Drafted - with Ministry').should('be.visible')

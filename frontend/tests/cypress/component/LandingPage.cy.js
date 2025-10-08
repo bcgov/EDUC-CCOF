@@ -1,6 +1,5 @@
 import LandingPage from '@/components/LandingPage.vue';
 import vuetify from '@/plugins/vuetify';
-import { useAuthStore } from '@/store/auth';
 import {
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
@@ -264,6 +263,7 @@ describe('<LandingPage />', () => {
 
   it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]', () => {
     mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
         applicationType: 'NEW',
         applicationStatus: 'SUBMITTED',
@@ -279,6 +279,7 @@ describe('<LandingPage />', () => {
 
   it('should display `View Recent Application` button when clicked navigate to license upload', () => {
     mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
         applicationType: 'RENEW',
         applicationStatus: 'SUBMITTED',
@@ -288,10 +289,29 @@ describe('<LandingPage />', () => {
       organization: {
         organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
       },
-      ...createAuthStore(),
     });
 
     checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
+  });
+
+  it('should not display `View Recent Application` button with invalid permissions', () => {
+    const permWithoutViewSubmittedPCF = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.VIEW_SUBMITTED_PCF,
+    );
+
+    mountWithPinia({
+      ...createAuthStore({}, { isAuthenticated: true, permissions: [permWithoutViewSubmittedPCF] }),
+      application: {
+        applicationType: 'RENEW',
+        applicationStatus: 'SUBMITTED',
+        ccofApplicationStatus: 'ACTIVE',
+        programYearId,
+      },
+      organization: {
+        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+      },
+    });
+    cy.contains('button', 'View Recent Application').should('not.exist');
   });
 
   it('should display `View submission history` button', () => {
@@ -469,25 +489,38 @@ describe('<LandingPage />', () => {
   });
 
   context('Manage Organization and Facilities card', () => {
-    it('should display `Manage Organization and Facilities` card (disabled)', () => {
+    it('should not display `Manage Organization and Facilities` card without proper permissions', () => {
+      const permWithoutViewOrgInfo = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.VIEW_ORG_INFORMATION,
+      );
+
       mountWithPinia({
         auth: {
           isAuthenticated: true,
           userInfo: {
             serverTime: new Date(),
           },
-        },
-        app: {
-          role: {
-            permissions: { permissionNumber: '1111' },
-          },
+          permissions: [permWithoutViewOrgInfo],
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
+      cy.contains('p', 'Manage Organization and Facilitie').should('not.exist');
+      cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
+        'not.exist',
+      );
+    });
+
+    it('should display `Manage Organization and Facilities` card (disabled) with proper permissions', () => {
+      mountWithPinia({
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+          permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
+        },
       });
+
       cy.contains('p', 'Manage Organization and Facilitie');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'have.css',
@@ -503,21 +536,13 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
-        },
-        app: {
-          role: {
-            permissions: { permissionNumber: '1111' },
-          },
+          permissions: [PERMISSIONS.VIEW_ORG_INFORMATION],
         },
         organization: {
           organizationAccountNumber: '12345',
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_ORG_INFORMATION];
-      });
       cy.contains('p', 'Manage Organization and Facilitie');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.have.css',
@@ -530,6 +555,26 @@ describe('<LandingPage />', () => {
   });
 
   context('Manage Users Card', () => {
+    it('should not render `Manage User` card when no proper permissions', () => {
+      const permWithoutViewUsers = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.VIEW_USERS,
+      );
+      mountWithPinia({
+        organization: {
+          organizationAccountNumber: null,
+        },
+        auth: {
+          isAuthenticated: true,
+          userInfo: {
+            serverTime: new Date(),
+          },
+          permissions: [permWithoutViewUsers],
+        },
+      });
+
+      cy.contains('button', 'Manage Users').should('not.exist');
+    });
+
     it('should disable `Manage User` card when no organization account number', () => {
       mountWithPinia({
         organization: {
@@ -540,12 +585,8 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
+          permissions: [PERMISSIONS.VIEW_USERS],
         },
-      });
-
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_USERS];
       });
 
       cy.contains('button', 'Manage Users').should('have.css', 'pointer-events', 'none');
@@ -561,13 +602,10 @@ describe('<LandingPage />', () => {
           userInfo: {
             serverTime: new Date(),
           },
+          permissions: [PERMISSIONS.VIEW_USERS],
         },
       });
 
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.VIEW_USERS];
-      });
       checkButtonAndNavigate('Manage Users', PATHS.ROOT.MANAGE_USERS);
     });
   });

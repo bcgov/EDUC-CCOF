@@ -104,39 +104,7 @@
       </v-row>
       <v-row no-gutters>
         <v-col cols="12" md="4">
-          <p class="summary-label">Facility Contact Name</p>
-          <p v-if="facilityInfo?.contactName" class="py-2">{{ facilityInfo?.contactName }}</p>
-          <v-text-field
-            v-else
-            placeholder="Required"
-            :model-value="facilityInfo?.contactName"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-        <v-col cols="12" md="4">
-          <p class="summary-label">Position</p>
-          <v-text-field
-            placeholder="Required"
-            :model-value="facilityInfo?.position"
-            class="summary-value"
-            density="compact"
-            flat
-            variant="solo"
-            hide-details
-            readonly
-            :rules="rules.required"
-          />
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col cols="12" md="4">
-          <p class="summary-label">Facility Phone Number</p>
+          <p class="summary-label">Facility Business Phone</p>
           <v-text-field
             placeholder="Required"
             :model-value="facilityInfo?.phone"

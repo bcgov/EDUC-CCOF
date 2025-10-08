@@ -53,6 +53,9 @@ const rateLimit = require('express-rate-limit');
 const promMid = require('express-prometheus-middleware');
 const { isEmpty } = require('lodash');
 
+const { getRawContactFacilities } = require('./components/contact');
+const { isFacilityAdmin } = require('./util/common');
+
 //initialize app
 const app = express();
 app.set('trust proxy', 1);
@@ -174,7 +177,11 @@ async function populateUserInfo(profile) {
       }
       profile.statecode = user.statecode;
 
-      // TODO (weskubo-cgi) If we add facility validation in the backend then we need to add facilities here
+      // Add facilities for Facility Admin users
+      if (isFacilityAdmin(profile)) {
+        const facilities = await getRawContactFacilities(profile.contactId);
+        profile.facilities = facilities.map((f) => ({ facilityId: f.facilityId }));
+      }
     } else {
       // If the user is not found in Dynamics at all, assign the default Organization Admin role
       profile.role = {

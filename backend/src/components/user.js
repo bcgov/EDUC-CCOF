@@ -31,10 +31,11 @@ const {
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { getRoles } = require('../components/lookup');
 const { getRawContactFacilities } = require('./contact');
+const { isFacilityAdmin } = require('../util/common');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
-  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+  if (!userInfo?.jwt || !userInfo?._json) {
     return res.status(HttpStatus.UNAUTHORIZED).json({
       message: 'No session data',
     });
@@ -132,7 +133,7 @@ async function getUserInfo(req, res) {
   }
 
   // Get facilities for Facility Admin users
-  if (user.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED || user.role?.roleNumber === ROLES.FAC_ADMIN_BASIC) {
+  if (isFacilityAdmin(user)) {
     const facilities = await getRawContactFacilities(user.contactId);
     user.facilities = facilities;
   }

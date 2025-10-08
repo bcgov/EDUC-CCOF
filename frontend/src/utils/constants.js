@@ -571,6 +571,10 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   EXPIRED: 'Expired',
 });
 
+export const FUNDING_AGREEMENT_EXTERNAL_STATUSES = Object.freeze({
+  DRAFTED_WITH_MINISTRY: 101510004,
+});
+
 export const DAY_TYPES = Object.freeze({
   WEEKDAY: 100000000,
   WEEKEND: 100000001,
@@ -602,4 +606,9 @@ export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
   INCOMPLETE: 2,
   SUBMITTED: 3,
   REJECTED: 5,
+});
+
+export const LICENCE_STATUSES = Object.freeze({
+  APPROVED: 'Approved',
+  INACTIVE: 'Inactive',
 });
