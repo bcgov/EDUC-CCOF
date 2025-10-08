@@ -17,18 +17,26 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
+public class TestAdjudicateApplicationCcfri extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateGroupApplicationCcfri.class);
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationCcfri.class);
 	Utilities ut;
+	CRMSignInCredentialPage objCRMSignInCredentialPage;
+	DeleteApplicationPage deleteapp;
+	BCeIDPage bceidpage;
+	OrganizationInfoPage orginfo;
+	ApplicationInfoPage appinfo;
+	CcfrisInfoPage ccfriinfo;
+	FacilityInfoPage facilityinfo;
 
 	@Test(priority = 1)
-	public void adjudicateGroupApplications(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateGroupApplicationCcfri");
-		logger.info("Starting the AdjudicateGroupApplicationCcfri  test...");
-		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+	public void adjudicateApplications(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcfri");
+		logger.info("Starting the AdjudicateApplicationCcfri  test...");
+		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
 		// login to application
+		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -44,7 +52,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		deleteapp = new DeleteApplicationPage(driver);
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(3000);
@@ -52,14 +60,14 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		Thread.sleep(3000);
 		deleteapp.fullName();
 		Thread.sleep(3000);
-		BCeIDPage bceidpage = new BCeIDPage(driver);
+		bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(3000);
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		orginfo = new OrganizationInfoPage(driver);
 		// selecting the application
 		orginfo.clickApplication();
 		Thread.sleep(5000);
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickRelatedTab();
 		Thread.sleep(5000);
 		// navigating to CCFRIs in related Tab
@@ -67,7 +75,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		Thread.sleep(5000);
 		appinfo.clickCcfri();
 		Thread.sleep(5000);
-		CcfrisInfoPage ccfriinfo = new CcfrisInfoPage(driver);
+		ccfriinfo = new CcfrisInfoPage(driver);
 		// checking system recommendation inside Overview page of CCFRI
 		String recommendation = ccfriinfo.getSystemRecommendation();
 		logger.info("System Recommendation is: {}", recommendation);
@@ -77,7 +85,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		// selecting the facility and changing the status to CCFRI Complete
 		ccfriinfo.clickOpenFacility();
 		Thread.sleep(5000);
-		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
+		facilityinfo = new FacilityInfoPage(driver);
 		facilityinfo.clickFacilityNameLink();
 		Thread.sleep(5000);
 		facilityinfo.clickMyCcsTestDropdown();
@@ -90,6 +98,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
+		Thread.sleep(3000);
 		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityinfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
@@ -121,7 +130,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		ccfriinfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the AdjudicateGroupApplicationCcfri  test...");
+		logger.info("Ending the AdjudicateApplicationCcfri  test...");
 
 	}
 

@@ -15,13 +15,16 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestDelinkApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestDelinkApplication.class);
+	Utilities ut;
+	CRMSignInCredentialPage objCRMSignInCredentialPage;
+	DeleteApplicationPage deleteapp;
 
 	@Test(priority = 1)
 	public void delinkapplication(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "TestDelinkApplication ");
 		logger.info("Starting the DeleteApplication test...");
-		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+		ut = new Utilities(driver);
 		// login to application
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
@@ -38,7 +41,7 @@ public class TestDelinkApplication extends BaseTest {
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		deleteapp = new DeleteApplicationPage(driver);
 		Thread.sleep(5000);
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");

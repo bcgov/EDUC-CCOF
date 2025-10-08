@@ -63,9 +63,14 @@ public class Utilities extends BaseTest {
 	}
 
 	public void clickIfPresent(WebElement element) {
-		if (element != null && element.isDisplayed() && element.isEnabled()) {
-			element.click();
+		try {
+			if (element != null && element.isDisplayed() && element.isEnabled()) {
+				element.click();
+			}
+		} catch (Exception e) {
+			logger.error("Unable to click element: " + e.getMessage());
 		}
+
 	}
 
 	public void waitForElementToLoad(WebElement ele) {
