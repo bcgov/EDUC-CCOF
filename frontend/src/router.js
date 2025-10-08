@@ -843,6 +843,7 @@ const router = createRouter({
       component: ManageFacility,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_FACILITY_INFORMATION,
       },
     },
     {

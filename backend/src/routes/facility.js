@@ -2,6 +2,8 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const validatePermission = require('../middlewares/validatePermission');
+const { PERMISSIONS } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -16,15 +18,23 @@ module.exports = router;
 /**
  * Get Facility details
  */
-router.get('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getFacility(req, res);
-});
+router.get(
+  '/:facilityId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFacility(req, res);
+  },
+);
 
 router.get(
   '/:facilityId/licenseCategories',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.REQUEST_CLOSURE),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -67,10 +77,17 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
 /**
  * Update an existing Facility
  */
-router.put('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return updateFacility(req, res);
-});
+router.put(
+  '/:facilityId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION),
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateFacility(req, res);
+  },
+);
 
 router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
