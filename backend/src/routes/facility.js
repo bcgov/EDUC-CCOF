@@ -46,6 +46,7 @@ router.get(
  * Get Facility details for CCFRI Application (less detailed)
  */
 //i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out
+// TODO #securitymatrix - Implement with Applications security
 router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return getFacilityChildCareTypes(req, res);
@@ -55,6 +56,7 @@ router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), 
  * Get Parent Fees for a facility
  *
  */
+// TODO #securitymatrix - Implement with Applications security
 router.get(
   '/fees/:facilityId/year/:programYearId',
   passport.authenticate('jwt', { session: false }),
@@ -69,6 +71,7 @@ router.get(
 /**
  * Create a new Facility
  */
+// TODO #securitymatrix - Implement with Applications security
 router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
@@ -89,6 +92,7 @@ router.put(
   },
 );
 
+// TODO #securitymatrix - Implement with Applications security
 router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return deleteFacility(req, res);
@@ -97,6 +101,7 @@ router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), 
 /**
  * Submit a complete application
  */
+// TODO #securitymatrix - Implement with Applications security
 router.post('/:facilityId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
