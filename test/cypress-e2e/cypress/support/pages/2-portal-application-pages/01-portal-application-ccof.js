@@ -15,19 +15,25 @@ class CcofApplication {
 
   inputOrganizationInfo() {
     cy.contains('Organization Information')
+    cy.contains('Type of Organization').should('be.visible')
     cy.getByLabel('Registered Company').click({force: true})
     cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgData.legalOrgName)
     cy.getByLabel('Incorporation Number (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgData.incorporationNumber)
+    
+    cy.contains('Organization Mailing Address').should('be.visible')
     cy.getByLabel('Enter address manually').check({ force: true }).should('be.checked')
     cy.getByLabel('Mailing Address').typeAndAssert(this.orgData.streetAddress)
     cy.getByLabel('City/Town').typeAndAssert(this.orgData.city)
     cy.selectByLabel('Province', this.orgData.province)
     cy.getByLabel('Postal Code').typeAndAssert(this.orgData.postalCode)
-    cy.getByLabel('Yes').check({ force: true }).should('be.checked')
-    cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgData.orgContactName)
-    cy.getByLabel('Position').typeAndAssert(this.orgData.position)
-    cy.getByLabel("Phone Number of the Organization's Authorized Signing Authority").typeAndAssert(this.orgData.phone)
-    cy.getByLabel("Email Address of the Organization's Authorized Signing Authority").typeAndAssert(this.orgData.email)
+
+    cy.contains('Organization Street Address same as Mailing Address').should('be.visible')
+      .getByLabel('Yes').check({force: true})
+      .should('be.checked')
+    
+    cy.contains('Organization Contact Information').should('be.visible')
+    cy.getByLabel('Business Phone').typeAndAssert(this.orgData.phone)
+    cy.getByLabel('Email Address').typeAndAssert(this.orgData.email)
     cy.clickByText('Save')
     cy.contains('Success! Organization information has been saved.').should('be.visible')
     cy.clickByText('Next')
@@ -40,7 +46,7 @@ class CcofApplication {
     cy.contains('div', 'Is the Facility Street Address the same as the Organization Street Address?').within(()=> {
       cy.getByLabel('Yes').click({force: true})
     })
-    cy.contains('div', 'Is the Facility Contact the same as the Organization\'s Authorized Signing Authority Information?').within(()=> {
+    cy.contains('div', 'Is the Facility Contact the same as the Organization Contact Information?').within(()=> {
       cy.getByLabel('Yes').click({force: true})
     })
     cy.getByLabel('Facility Licence Number').typeAndAssert(this.facilityData.facilityLicence)
@@ -111,10 +117,14 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  licenceUpload() {
+  //TODO (Hedie-cgi) Add functionality to add multiple facilities - Ticket 6110 created as task
+  addAnotherFacility() {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
     cy.contains('button', 'No').click();
+  }
+
+  licenceUpload() {
     cy.contains('Licence Upload')
     const fileName = 'Sample500kb.pdf'; // Ensure this file exists in cypress/fixtures
     cy.get('input[placeholder="Select your file"]')
