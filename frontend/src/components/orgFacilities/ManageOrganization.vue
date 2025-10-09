@@ -118,6 +118,7 @@
                       size="small"
                       display="inline"
                       :disabled="workingFieldInUse || isProcessing"
+                      :primary="false"
                       @click="editing.email = true"
                     >
                       Edit
@@ -179,6 +180,7 @@
                       size="small"
                       display="inline"
                       :disabled="workingFieldInUse || isProcessing"
+                      :primary="false"
                       @click="editing.phone = true"
                     >
                       Edit
@@ -242,6 +244,7 @@
                       color="#003366"
                       display="inline"
                       :disabled="workingFieldInUse || isProcessing"
+                      :primary="false"
                       @click="editing.website = true"
                     >
                       Edit
