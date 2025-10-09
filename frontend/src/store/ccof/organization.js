@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import ApplicationService from '@/services/applicationService';
+import OrganizationService from '@/services/organizationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -63,7 +64,7 @@ export const useOrganizationStore = defineStore('organization', {
       if (this.organizationId) {
         // has an organization ID, so update the data
         try {
-          const response = await ApiService.apiAxios.put(`${ApiRoutes.ORGANIZATION}/${this.organizationId}`, payload);
+          const response = await OrganizationService.updateOrganization(this.organizationId, payload);
           this.setLoadedModel({ ...this.organizationModel });
           authStore.userInfo.organizationName = this.organizationModel.legalName;
           return response;
@@ -80,12 +81,12 @@ export const useOrganizationStore = defineStore('organization', {
         applicationStore.setProgramYearId(programYear.programYearId);
         applicationStore.setProgramYearLabel(programYear.name);
         try {
-          const response = await ApiService.apiAxios.post(ApiRoutes.ORGANIZATION, payload);
-          this.setOrganizationId(response.data?.organizationId);
-          this.setOrganizationProviderType(response.data?.organizationProviderType);
-          applicationStore.setApplicationId(response.data?.applicationId);
-          applicationStore.setApplicationStatus(response.data?.applicationStatus);
-          applicationStore.setApplicationType(response.data?.applicationType);
+          const response = await OrganizationService.createOrganization(payload);
+          this.setOrganizationId(response?.organizationId);
+          this.setOrganizationProviderType(response?.organizationProviderType);
+          applicationStore.setApplicationId(response?.applicationId);
+          applicationStore.setApplicationStatus(response?.applicationStatus);
+          applicationStore.setApplicationType(response?.applicationType);
           applicationStore.setCcofApplicationStatus('NEW');
           this.setLoadedModel({ ...this.organizationModel });
           authStore.userInfo.organizationName = this.organizationModel.legalName;
@@ -129,10 +130,10 @@ export const useOrganizationStore = defineStore('organization', {
       checkSession();
 
       try {
-        const response = await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${organizationId}`);
-        this.setOrganizationModel(response.data);
-        this.setLoadedModel(response.data);
-        this.setIsOrganizationComplete(response.data?.isOrganizationComplete);
+        const response = await OrganizationService.getOrganization(organizationId);
+        this.setOrganizationModel(response);
+        this.setLoadedModel(response);
+        this.setIsOrganizationComplete(response?.isOrganizationComplete);
       } catch (error) {
         console.log(`Failed to get Organization - ${error}`);
         throw error;

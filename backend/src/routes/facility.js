@@ -2,6 +2,8 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const validatePermission = require('../middlewares/validatePermission');
+const { PERMISSIONS } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -16,15 +18,23 @@ module.exports = router;
 /**
  * Get Facility details
  */
-router.get('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getFacility(req, res);
-});
+router.get(
+  '/:facilityId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFacility(req, res);
+  },
+);
 
 router.get(
   '/:facilityId/licenseCategories',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.REQUEST_CLOSURE),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -36,6 +46,7 @@ router.get(
  * Get Facility details for CCFRI Application (less detailed)
  */
 //i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out
+// TODO #securitymatrix - Implement with Applications security
 router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return getFacilityChildCareTypes(req, res);
@@ -45,6 +56,7 @@ router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), 
  * Get Parent Fees for a facility
  *
  */
+// TODO #securitymatrix - Implement with Applications security
 router.get(
   '/fees/:facilityId/year/:programYearId',
   passport.authenticate('jwt', { session: false }),
@@ -59,6 +71,7 @@ router.get(
 /**
  * Create a new Facility
  */
+// TODO #securitymatrix - Implement with Applications security
 router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);
@@ -67,11 +80,19 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
 /**
  * Update an existing Facility
  */
-router.put('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return updateFacility(req, res);
-});
+router.put(
+  '/:facilityId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION),
+  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateFacility(req, res);
+  },
+);
 
+// TODO #securitymatrix - Implement with Applications security
 router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
   validationResult(req).throw();
   return deleteFacility(req, res);
@@ -80,6 +101,7 @@ router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), 
 /**
  * Submit a complete application
  */
+// TODO #securitymatrix - Implement with Applications security
 router.post('/:facilityId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
   validationResult(req).throw();
   return createFacility(req, res);

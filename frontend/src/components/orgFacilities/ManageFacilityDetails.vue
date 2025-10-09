@@ -100,6 +100,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -202,6 +203,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -232,11 +234,12 @@ import { useOrganizationStore } from '@/store/ccof/organization';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageFacilityDetails',
   components: { AppButton, AppLabel },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   props: {
     facility: {
       type: Object,

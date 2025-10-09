@@ -199,7 +199,7 @@ export default {
     async loadFacilities() {
       this.isLoadingFacilities = true;
       try {
-        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
+        this.facilities = await OrganizationService.getFacilities(this.organizationId);
       } catch (error) {
         console.error('Failed to load facilities', error);
         this.setFailureAlert('Error loading facilities.');
