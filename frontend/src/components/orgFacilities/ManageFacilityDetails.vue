@@ -413,9 +413,6 @@ export default {
       return Object.values(this.editing).some((value) => value);
     },
   },
-  created() {
-    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
-  },
   mounted() {
     const { email, phone, hoursFrom, hoursTo } = this.facility;
     this.workingFields = { email, phone, hoursFrom, hoursTo };
