@@ -124,6 +124,7 @@
                       <v-col cols="12" md="7">
                         <AppTimeInput
                           v-model="workingFields.hoursFrom"
+                          class="time-field-edit-align"
                           density="compact"
                           variant="underlined"
                           hide-details="auto"
@@ -155,7 +156,7 @@
                     </v-row>
                     <v-row v-else no-gutters>
                       <v-col cols="12" md="9">
-                        <p>{{ formatTime24to12(facility.hoursFrom) }}</p>
+                        <p>{{ formatFacilityDisplayTime(facility.hoursFrom) ?? EMPTY_PLACEHOLDER }}</p>
                       </v-col>
                       <v-col cols="3">
                         <AppButton
@@ -164,6 +165,66 @@
                           :disabled="workingFieldInUse || isProcessing"
                           :primary="false"
                           @click="editing.hoursFrom = true"
+                        >
+                          Edit
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12" sm="6" xl="5" xxl="3">
+                  <p><AppLabel>Facility hours operation to:</AppLabel></p>
+                </v-col>
+                <v-col cols="12" sm="6" xl="7" xxl="9">
+                  <v-form v-model="valid.hoursTo" @submit.prevent>
+                    <v-row v-if="editing.hoursTo" no-gutters align="center">
+                      <v-col cols="12" md="7">
+                        <AppTimeInput
+                          v-model="workingFields.hoursTo"
+                          class="time-field-edit-align"
+                          :rules="[rules.validHourTo(workingFields.hoursFrom)]"
+                          density="compact"
+                          variant="underlined"
+                          hide-details="auto"
+                        />
+                      </v-col>
+                      <v-col cols="3" class="text-no-wrap">
+                        <AppButton
+                          size="small"
+                          type="submit"
+                          display="inline"
+                          :disabled="!valid.hoursTo"
+                          :loading="isProcessing"
+                          :primary="false"
+                          @click="() => saveField('hoursTo')"
+                        >
+                          Save
+                        </AppButton>
+                        <AppButton
+                          class="ml-1"
+                          size="small"
+                          display="inline"
+                          :primary="false"
+                          :disabled="isProcessing"
+                          @click="() => cancelEditing('hoursTo')"
+                        >
+                          Cancel
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else no-gutters>
+                      <v-col cols="12" md="9">
+                        <p>{{ formatFacilityDisplayTime(facility.hoursTo) ?? EMPTY_PLACEHOLDER }}</p>
+                      </v-col>
+                      <v-col cols="3">
+                        <AppButton
+                          size="small"
+                          display="inline"
+                          :disabled="workingFieldInUse || isProcessing"
+                          :primary="false"
+                          @click="editing.hoursTo = true"
                         >
                           Edit
                         </AppButton>
@@ -276,65 +337,6 @@
                   </v-form>
                 </v-col>
               </v-row>
-              <v-row dense>
-                <v-col cols="12" sm="6" xl="5" xxl="3">
-                  <p><AppLabel>Facility hours operation to:</AppLabel></p>
-                </v-col>
-                <v-col cols="12" sm="6" xl="7" xxl="9">
-                  <v-form v-model="valid.hoursTo" @submit.prevent>
-                    <v-row v-if="editing.hoursTo" no-gutters align="center">
-                      <v-col cols="12" md="7">
-                        <AppTimeInput
-                          v-model="workingFields.hoursTo"
-                          :rules="[rules.validHourTo(workingFields.hoursFrom)]"
-                          density="compact"
-                          variant="underlined"
-                          hide-details="auto"
-                        />
-                      </v-col>
-                      <v-col cols="3" class="text-no-wrap">
-                        <AppButton
-                          size="small"
-                          type="submit"
-                          display="inline"
-                          :disabled="!valid.hoursTo"
-                          :loading="isProcessing"
-                          :primary="false"
-                          @click="() => saveField('hoursTo')"
-                        >
-                          Save
-                        </AppButton>
-                        <AppButton
-                          class="ml-1"
-                          size="small"
-                          display="inline"
-                          :primary="false"
-                          :disabled="isProcessing"
-                          @click="() => cancelEditing('hoursTo')"
-                        >
-                          Cancel
-                        </AppButton>
-                      </v-col>
-                    </v-row>
-                    <v-row v-else no-gutters>
-                      <v-col cols="12" md="9">
-                        <p>{{ formatTime24to12(facility.hoursTo) }}</p>
-                      </v-col>
-                      <v-col cols="3">
-                        <AppButton
-                          size="small"
-                          display="inline"
-                          :disabled="workingFieldInUse || isProcessing"
-                          :primary="false"
-                          @click="editing.hoursTo = true"
-                        >
-                          Edit
-                        </AppButton>
-                      </v-col>
-                    </v-row>
-                  </v-form>
-                </v-col>
-              </v-row>
             </v-col>
           </v-row>
         </v-card>
@@ -344,6 +346,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
 import { capitalize, formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules';
 import FacilityService from '@/services/facilityService';
@@ -410,6 +413,9 @@ export default {
       return Object.values(this.editing).some((value) => value);
     },
   },
+  created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
+  },
   mounted() {
     const { email, phone, hoursFrom, hoursTo } = this.facility;
     this.workingFields = { email, phone, hoursFrom, hoursTo };
@@ -440,6 +446,9 @@ export default {
       this.editing[key] = false;
       this.workingFields[key] = this.facility[key];
     },
+    formatFacilityDisplayTime(time) {
+      return this.formatTime24to12(time)?.toUpperCase();
+    },
   },
 };
 </script>
@@ -448,9 +457,7 @@ export default {
 .v-row.v-row--dense {
   min-height: 38px;
 }
-p {
-  margin: 0;
-  min-height: 32px;
-  display: flex;
+.time-field-edit-align {
+  margin-top: -15px;
 }
 </style>
