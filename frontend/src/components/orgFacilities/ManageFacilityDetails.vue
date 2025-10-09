@@ -156,7 +156,7 @@
                     </v-row>
                     <v-row v-else no-gutters>
                       <v-col cols="12" md="9">
-                        <p>{{ formatFacilityDisplayTime(facility.hoursFrom) ?? EMPTY_PLACEHOLDER }}</p>
+                        <p>{{ formatFacilityHours(facility.hoursFrom) }}</p>
                       </v-col>
                       <v-col cols="3">
                         <AppButton
@@ -216,7 +216,7 @@
                     </v-row>
                     <v-row v-else no-gutters>
                       <v-col cols="12" md="9">
-                        <p>{{ formatFacilityDisplayTime(facility.hoursTo) ?? EMPTY_PLACEHOLDER }}</p>
+                        <p>{{ formatFacilityHours(facility.hoursTo) }}</p>
                       </v-col>
                       <v-col cols="3">
                         <AppButton
@@ -446,8 +446,9 @@ export default {
       this.editing[key] = false;
       this.workingFields[key] = this.facility[key];
     },
-    formatFacilityDisplayTime(time) {
-      return this.formatTime24to12(time)?.toUpperCase();
+    formatFacilityHours(time) {
+      const formattedHour = this.formatTime24to12(time);
+      return formattedHour?.toUpperCase() || EMPTY_PLACEHOLDER;
     },
   },
 };
