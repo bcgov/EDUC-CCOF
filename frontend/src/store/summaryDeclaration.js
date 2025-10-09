@@ -67,7 +67,8 @@ function mapFacility(facility, isGroup, eceweOrg) {
     (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
   );
 
-  if (!isGroup) {
+  // Renewal application doesn't have CCOF Funding application
+  if (!isGroup && !facility.isRenewal) {
     facility.funding.licenceCategoryNumber = appStore.getFamilyLicenceCategoryNumberById(
       facility.funding.licenceCategoryId,
     );
