@@ -5,18 +5,18 @@ import { ApiRoutes, FUNDING_AGREEMENTS_STATUS, ORGANIZATION_FACILITY_STATUS_CODE
 const facilityId = '9876';
 
 const facilityResponse = {
-  facilityName: 'Greenwood Medical Center',
+  facilityName: 'TEST_FACILITY',
   facilityAccountNumber: '3401',
   licenseNumber: 'A1234B',
-  healthAuthority: 'Northern Health Authority',
-  organizationName: 'Greenwood Healthcare Ltd.',
-  phone: '250-555-0198',
-  facilityAddress: '1234 Pine St.',
+  healthAuthority: 'Test Health Authority',
+  organizationName: 'Test Healthcare Ltd.',
+  phone: '250-555-5555',
+  facilityAddress: '1234 Test St.',
   city: 'Victoria',
   province: 'British Columbia',
-  postalCode: 'V8Z 2R0',
-  email: 'contact@greenwoodhealthcare.ca',
-  facilityId: '55678',
+  postalCode: 'V00 000',
+  email: 'contact@test.ca',
+  facilityId: '23232',
   facilityCopy: true,
   statusCode: ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE,
 };

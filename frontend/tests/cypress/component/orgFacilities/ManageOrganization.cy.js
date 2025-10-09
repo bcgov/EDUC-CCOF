@@ -6,22 +6,22 @@ import { PERMISSIONS } from '@/utils/constants/permissions';
 const organizationId = '1234';
 
 const organizationResponse = {
-  legalName: 'Green Valley Health Services',
-  incNumber: 987654,
-  doingBusinessAs: 'GV Health',
-  accountNumber: 'GVH-202510',
+  legalName: 'Test Health Services',
+  incNumber: 121212,
+  doingBusinessAs: 'T Health',
+  accountNumber: 'THS-777777',
   organizationTypeDesc: 'Non-Profit Organization',
-  email: 'info@greenvalleyhealth.org',
-  phone: '604-555-7890',
-  website: 'https://www.greenvalleyhealth.org',
-  address1: '456 Wellness Blvd',
+  email: 'info@test.org',
+  phone: '666-555-5555',
+  website: 'https://www.test9999.org',
+  address1: '456 Fake Blvd',
   city1: 'Vancouver',
   province1: 'British Columbia',
-  postalCode1: 'V5K 0A1',
+  postalCode1: 'V00 000',
   address2: 'Building B, Floor 3',
   city2: 'Vancouver',
   province2: 'British Columbia',
-  postalCode2: 'V5K 0A2',
+  postalCode2: 'V11 111',
 };
 
 function interceptRequests(response) {

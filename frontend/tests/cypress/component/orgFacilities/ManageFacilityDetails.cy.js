@@ -5,13 +5,13 @@ import { capitalize } from '@/utils/format';
 
 const facility1 = {
   facilityId: 1,
-  facilityName: 'Pineview Medical Clinic',
+  facilityName: 'Test Med Clinic',
   facilityAccountNumber: 'FAC-104839',
-  licenseNumber: 'LIC-BC-99821',
-  facilityAddress: '123 Pine Street',
+  licenseNumber: 'LIC-BC-00000',
+  facilityAddress: '123 Test Street',
   phone: '250-999-9999',
-  email: 'pine@medical.com',
-  postalCode: 'P90 W4R',
+  email: 'test123@med.com',
+  postalCode: 'V00 000',
   province: 'British Columbia',
   city: 'Victoria',
 };

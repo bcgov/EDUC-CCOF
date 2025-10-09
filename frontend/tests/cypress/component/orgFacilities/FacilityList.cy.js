@@ -4,34 +4,34 @@ import { PATHS } from '@/utils/constants';
 
 const facility1 = {
   facilityId: 1,
-  facilityName: 'Pineview Medical Clinic',
-  facilityAccountNumber: 'FAC-104839',
+  facilityName: 'TEST_FACILITY1',
+  facilityAccountNumber: 'FAC-11111',
   facilityIsActive: false,
-  licenseNumber: 'LIC-BC-99821',
+  licenseNumber: 'ZZZ-ZZ-99821',
   action: '',
-  addressLineOne: '123 Pine Street',
+  addressLineOne: '123 Fake Street',
   city: 'Victoria',
 };
 
 const facility2 = {
   facilityId: 2,
-  facilityName: 'Oakview Health Centre',
-  facilityAccountNumber: 'FAC-205734',
+  facilityName: 'TEST_FACILITY2',
+  facilityAccountNumber: 'FAC-22222',
   facilityIsActive: true,
-  licenseNumber: 'LIC-BC-77411',
+  licenseNumber: 'LLL-LL-77411',
   action: '',
-  addressLineOne: '456 Ocean Drive',
+  addressLineOne: '456 Test Drive',
   city: 'Vancouver',
 };
 
 const facility3 = {
   facilityId: 3,
-  facilityName: 'Uptown Family Practice',
-  facilityAccountNumber: 'FAC-319876',
+  facilityName: 'TEST_FACILITY3',
+  facilityAccountNumber: 'FAC-33333',
   facilityIsActive: false,
-  licenseNumber: 'LIC-BC-66123',
+  licenseNumber: 'XXX-XX-12345',
   action: '',
-  addressLineOne: '789 Alpine Way',
+  addressLineOne: '789 Random Way',
   city: 'Kelowna',
 };
 

@@ -5,23 +5,23 @@ import { ApiRoutes, FUNDING_AGREEMENTS_STATUS, ORGANIZATION_FACILITY_STATUS_CODE
 const organizationId = '1234';
 
 const activeFacility = {
-  facilityName: 'Pineview Medical Clinic',
+  facilityName: 'Test Medical Clinic',
   facilityAccountNumber: 'FAC-104839',
   facilityIsActive: false,
   licenseNumber: 'LIC-BC-99821',
   action: '',
-  addressLineOne: '123 Pine Street',
+  addressLineOne: '123 Test Street',
   city: 'Victoria',
   statusCode: ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE,
 };
 
 const inActiveFacility = {
-  facilityName: 'Rainbow Clinic',
+  facilityName: 'Fake Medical Clinic',
   facilityAccountNumber: 'GRL-135612',
   facilityIsActive: true,
-  licenseNumber: 'LIC-BC-31121',
+  licenseNumber: 'LZS-BC-31121',
   action: '',
-  addressLineOne: '543 Rain Street',
+  addressLineOne: '543 Fake Street',
   city: 'Vancouver',
 };
 
