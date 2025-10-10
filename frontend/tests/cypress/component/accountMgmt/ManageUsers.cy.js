@@ -1,6 +1,5 @@
 import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
 import vuetify from '@/plugins/vuetify';
-import { useAuthStore } from '@/store/auth';
 import { ApiRoutes, PATHS } from '@/utils/constants';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
@@ -177,11 +176,8 @@ describe('<ManageUsers />', () => {
           userInfo: {
             serverTime: new Date(),
           },
+          permissions: [PERMISSIONS.ADD_USERS],
         },
-      });
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.ADD_USERS];
       });
 
       cy.contains('button', 'Add User').click();
@@ -195,12 +191,7 @@ describe('<ManageUsers />', () => {
 
       mountWithPinia({
         organization: { organizationId, loadedModel: { primaryContactId: '2' } },
-        auth: { isAuthenticated: true, userInfo: { contactId: userId } },
-      });
-
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.DELETE_USERS];
+        auth: { isAuthenticated: true, userInfo: { contactId: userId }, permissions: [PERMISSIONS.DELETE_USERS] },
       });
 
       cy.wait('@getContacts');
@@ -229,12 +220,7 @@ describe('<ManageUsers />', () => {
 
       mountWithPinia({
         organization: { organizationId },
-        auth: { isAuthenticated: true, userInfo: { contactId: userId } },
-      });
-
-      cy.then(() => {
-        const authStore = useAuthStore();
-        authStore.permissions = [PERMISSIONS.EDIT_USERS];
+        auth: { isAuthenticated: true, userInfo: { contactId: userId }, permissions: [PERMISSIONS.EDIT_USERS] },
       });
 
       cy.contains('button', 'Edit').click();

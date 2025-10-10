@@ -1,6 +1,5 @@
 import EditUserDialog from '@/components/accountMgmt/EditUserDialog.vue';
 import vuetify from '@/plugins/vuetify';
-import { useAuthStore } from '@/store/auth';
 import { ApiRoutes, ROLES } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
@@ -114,12 +113,8 @@ describe('<EditUserDialog />', () => {
         userInfo: {
           serverTime: new Date(),
         },
+        permissions: [PERMISSIONS.EDIT_USERS],
       },
-    });
-
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.EDIT_USERS];
     });
 
     cy.contains('label', 'User Role');
@@ -138,15 +133,11 @@ describe('<EditUserDialog />', () => {
         userInfo: {
           serverTime: new Date(),
         },
+        permissions: [PERMISSIONS.EDIT_USERS],
       },
       organization: {
         organizationId,
       },
-    });
-
-    cy.then(() => {
-      const authStore = useAuthStore();
-      authStore.permissions = [PERMISSIONS.EDIT_USERS];
     });
 
     cy.contains('label', 'Facilities');
