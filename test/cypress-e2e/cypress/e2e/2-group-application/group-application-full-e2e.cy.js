@@ -5,12 +5,14 @@ import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-port
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
 function runCcofApp() {
-    ccofApp.loadFixtures()
+    ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
         ccofApp.validateGroupUrl('group')
         ccofApp.inputOrganizationInfo()
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
+        ccofApp.groupLicenses()
+        ccofApp.schoolPropertyAndExtendedHours()
         ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
     })
@@ -38,8 +40,8 @@ describe('Group Application Test', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
-            Cypress.env('USERNAME'),
-            Cypress.env('PASSWORD'))
+            Cypress.env("CYPRESS_PORTAL_USERNAME"),
+            Cypress.env("CYPRESS_PORTAL_PASSWORD"))
         cy.startNewApp()
     
         cy.then(()=> {

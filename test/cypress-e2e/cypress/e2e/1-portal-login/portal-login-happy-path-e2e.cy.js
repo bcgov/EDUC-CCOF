@@ -6,8 +6,8 @@ describe("Portal Login and Navigation", () => {
     loginPage.visitLoginPage();
     loginPage.clickLoginButton();
     loginPage.loginThroughExternalProvider(
-      Cypress.env("USERNAME"),
-      Cypress.env("PASSWORD")
+      Cypress.env("CYPRESS_PORTAL_USERNAME"),
+      Cypress.env("CYPRESS_PORTAL_PASSWORD")
     );
     // Confirm login was successful
     cy.contains("What would you like to do?").should("exist");

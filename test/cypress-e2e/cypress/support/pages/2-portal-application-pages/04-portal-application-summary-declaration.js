@@ -11,12 +11,12 @@ class SubmitApplication {
         cy.contains('Submission Complete')
         cy.clickByText('Return to your dashboard')
         cy.url()
-            .should('equal', Cypress.env('CCOF_PORTAL_HOME'))
+            .should('equal', Cypress.env('CYPRESS_PORTAL_BASE_URL'))
         cy.contains('.v-card', 'Apply for Child Care Operating Funding (CCOF) including:')
             .should('contain', 'Status: Submitted')
         cy.contains('.v-card', 'Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED')
             .should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED')
-        cy.contains(Cypress.env('USERNAME')).click({force:true})
+        cy.contains(Cypress.env('CYPRESS_PORTAL_USERNAME')).click({force:true})
         cy.contains('Logout').click({force:true})
     }
 }

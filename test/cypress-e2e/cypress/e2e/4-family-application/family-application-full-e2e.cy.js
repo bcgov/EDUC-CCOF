@@ -36,8 +36,8 @@ describe('Family Application Test', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
-            Cypress.env('USERNAME'),
-            Cypress.env('PASSWORD'))
+            Cypress.env("CYPRESS_PORTAL_USERNAME"),
+            Cypress.env("CYPRESS_PORTAL_PASSWORD"))
         cy.startNewApp()
     
         cy.then(()=> {

@@ -7,9 +7,8 @@ describe('Funding Agreement Signing', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
-            Cypress.env('USERNAME'),
-            Cypress.env('PASSWORD'))
-    
+            Cypress.env("CYPRESS_PORTAL_USERNAME"),
+            Cypress.env("CYPRESS_PORTAL_PASSWORD"))
         cy.then(()=> {
             fundingAgreement.signFundingAgreement()
         })
