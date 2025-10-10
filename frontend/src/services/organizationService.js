@@ -33,7 +33,7 @@ export default {
     }
   },
 
-  async loadFacilities(organizationId) {
+  async getFacilities(organizationId) {
     checkSession();
 
     try {

@@ -7,6 +7,7 @@ const { PERMISSIONS } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
+const validateFacility = require('../middlewares/validateFacility');
 
 const facilitySchema = {
   organizationId: { in: ['body'], exists: { errorMessage: '[organizationId] is required' } },
@@ -23,6 +24,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
+  validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -35,6 +37,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.REQUEST_CLOSURE),
+  validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -85,6 +88,7 @@ router.put(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION),
+  validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
