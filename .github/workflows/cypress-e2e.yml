@@ -20,7 +20,7 @@ jobs:
         env:
           CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
-          CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_CRM_BASE_URL }}
+          CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
