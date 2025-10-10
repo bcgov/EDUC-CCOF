@@ -13,7 +13,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with: 
-          working-directory: ./test/cypress-e2e/cypress/e2e
+          working-directory: ./test/cypress-e2e
           browser: electron
           # Run single spec file for testing
           spec: ./test/cypress-e2e/cypress/e2e/2-group-application/group-application-full-e2e.cy.js
