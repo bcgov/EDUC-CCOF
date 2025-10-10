@@ -16,7 +16,7 @@ jobs:
           working-directory: ./test/cypress-e2e
           browser: electron
           # Run single spec file for testing
-          spec: ./test/cypress-e2e/cypress/e2e/2-group-application/group-application-full-e2e.cy.js
+          spec: ./cypress/e2e/2-group-application/group-application-full-e2e.cy.js
         env:
           CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
