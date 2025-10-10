@@ -163,7 +163,7 @@ export default {
   padding: 16px;
   border: 2px solid #ccc;
   border-radius: 6px;
-  background-color: #f9f9f9;
+  background-color: #fff;
   margin-bottom: 24px;
 }
 .section-heading {
