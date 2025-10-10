@@ -32,7 +32,7 @@
 // cypress/support/e2e.js  (or e2e.ts)
 
 // Updated with new Cypress Version
-Cypress.ElementSelector.defaults({
+Cypress.SelectorPlayground.defaults({
   selectorPriority: [
     'data-cy',       
     'data-test',

@@ -13,7 +13,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with: 
-          version: 15.2.0
           working-directory: ./test/cypress-e2e
           browser: electron
           # Run single spec file for testing
