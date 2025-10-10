@@ -42,6 +42,12 @@ public class ApplicationInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[@title='Save']")
 	WebElement saveBtn;
 
+	@FindBy(xpath = "//*[@title='Delete']")
+	WebElement deleteBtn;
+
+	@FindBy(xpath = "//*[@data-id='confirmButton']")
+	WebElement deleteConfirmBtn;
+
 	public ApplicationInfoPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -83,5 +89,13 @@ public class ApplicationInfoPage extends BaseTest {
 
 	public void clickSaveBtn() {
 		saveBtn.click();
+	}
+
+	public void clickDeleteBtn() {
+		deleteBtn.click();
+	}
+
+	public void clickDeleteConfirmBtn() {
+		deleteConfirmBtn.click();
 	}
 }
