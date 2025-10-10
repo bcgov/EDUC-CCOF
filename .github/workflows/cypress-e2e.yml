@@ -10,6 +10,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Wait On Url
+        env: 
+          CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
+        run: npx wait-on $CYPRESS_PORTAL_BASE_URL/login
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with: 
