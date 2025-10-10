@@ -42,7 +42,7 @@ describe('Group Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("CYPRESS_PORTAL_USERNAME"),
             Cypress.env("CYPRESS_PORTAL_PASSWORD"))
-        cy.startNewApp()
+        cy.startNewApp('Group Provider')
     
         cy.then(()=> {
             runCcofApp()

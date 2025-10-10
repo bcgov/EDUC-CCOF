@@ -15,8 +15,8 @@ class CcofApplication {
         this.orgType = this.orgData.typeOfOrganization.company
         this.orgInfo = this.orgData.orgInfo
         this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-        // this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories.familyChildCare
-        this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories.familyChildCare
+        // this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
         this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
         this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
         this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity

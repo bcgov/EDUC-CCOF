@@ -32,18 +32,18 @@
 // cypress/support/e2e.js  (or e2e.ts)
 
 // Updated with new Cypress Version
-Cypress.SelectorPlayground.defaults({
-  selectorPriority: [
-    'data-cy',       
-    'data-test',
-    'data-testid',
-    'id',
-    'class',
-    'tag',
-    'attributes',
-    'nth-child',
-  ],
-})
+// Cypress.SelectorPlayground.defaults({
+//   selectorPriority: [
+//     'data-cy',       
+//     'data-test',
+//     'data-testid',
+//     'id',
+//     'class',
+//     'tag',
+//     'attributes',
+//     'nth-child',
+//   ],
+// })
 
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
@@ -157,11 +157,13 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
 })
 
 
-Cypress.Commands.add('startNewApp', () => {
+Cypress.Commands.add('startNewApp', (input) => {
   cy.url().should('eq', Cypress.env('CYPRESS_PORTAL_BASE_URL')).then(()=> {
       cy.contains('What would you like to do?').should('be.visible').clickByText('Start Application')
       cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
-      cy.contains('Group Provider').should('be.visible').clickByText('Start Application')
+      cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
+        cy.contains('Start Application').click({force: true})
+      })
   })
 });
 

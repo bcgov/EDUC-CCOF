@@ -5,12 +5,14 @@ import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-port
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
 function runCcofApp() {
-    ccofApp.loadFixtures()
+    ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
         ccofApp.validateGroupUrl('family')
         ccofApp.inputOrganizationInfo()
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
+        ccofApp.familyLicenses()
+        ccofApp.schoolPropertyAndExtendedHours()
         ccofApp.licenceUpload()
     })
 }
@@ -38,7 +40,7 @@ describe('Family Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("CYPRESS_PORTAL_USERNAME"),
             Cypress.env("CYPRESS_PORTAL_PASSWORD"))
-        cy.startNewApp()
+        cy.startNewApp('Family Provider')
     
         cy.then(()=> {
             runCcofApp()
