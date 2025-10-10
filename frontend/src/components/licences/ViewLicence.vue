@@ -13,6 +13,10 @@
         <v-expansion-panel-title>
           <h3>Licence and Service Details Record</h3>
         </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <ServiceDetails v-if="activeLicence" :licence="activeLicence" />
+          <p v-else>No active or approved licences found.</p>
+        </v-expansion-panel-text>
       </v-expansion-panel>
 
       <v-expansion-panel>
@@ -37,13 +41,14 @@
 <script>
 import { isEmpty } from 'lodash';
 import LicenceHistory from '@/components/licences/LicenceHistory.vue';
+import ServiceDetails from '@/components/licences/ServiceDetails.vue';
 import ServiceDetailsDialog from '@/components/licences/ServiceDetailsDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import LicenceService from '@/services/licenceService.js';
 
 export default {
   name: 'ViewLicence',
-  components: { LicenceHistory, ServiceDetailsDialog },
+  components: { LicenceHistory, ServiceDetails, ServiceDetailsDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -52,6 +57,11 @@ export default {
       selectedLicence: null,
       viewDialogOpen: false,
     };
+  },
+  computed: {
+    activeLicence() {
+      return this.licences.find((l) => !l.licenceEndDate) || null;
+    },
   },
   created() {
     this.loadData();
