@@ -31,7 +31,7 @@
   </v-container>
 </template>
 <script>
-import { mapActions, mapState } from 'pinia';
+import { mapState } from 'pinia';
 import { isEmpty } from 'lodash';
 
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -81,7 +81,7 @@ export default {
     try {
       if (isEmpty(this.facilities)) {
         this.facilitiesLoading = true;
-        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
+        this.facilities = await OrganizationService.getFacilities(this.organizationId);
       }
     } catch (error) {
       this.setFailureAlert('There was an error loading the facilities');
@@ -91,7 +91,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useOrganizationStore, ['loadFacilities']),
     facilityIsActive(facility) {
       const application = this.applicationMap?.get(this.programYearId);
       return isFacilityActive(facility, application);

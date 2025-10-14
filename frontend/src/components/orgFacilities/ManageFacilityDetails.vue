@@ -101,6 +101,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -160,6 +161,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -220,6 +222,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -324,6 +327,7 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
@@ -357,11 +361,12 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageFacilityDetails',
   components: { AppButton, AppLabel, AppTimeInput },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   props: {
     facility: {
       type: Object,
