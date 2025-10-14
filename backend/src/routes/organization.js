@@ -58,7 +58,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getOrganization(req, res);
@@ -109,7 +109,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.ADD_USERS, PERMISSIONS.EDIT_USERS, PERMISSIONS.VIEW_FACILITY_INFORMATION),
-  [param('organizationId', 'URL Param: [organizationId] is required').not().isEmpty()],
+  [param('organizationId', 'URL Param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getOrganizationFacilities(req, res);

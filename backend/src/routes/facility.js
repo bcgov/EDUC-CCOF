@@ -25,7 +25,7 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getFacility(req, res);
@@ -38,7 +38,7 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.REQUEST_CLOSURE),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getLicenseCategories(req, res);
@@ -87,9 +87,9 @@ router.put(
   '/:facilityId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.UPDATE_FACILITY_INFORMATION),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return updateFacility(req, res);

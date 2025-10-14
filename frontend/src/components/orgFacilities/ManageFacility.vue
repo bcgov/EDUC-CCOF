@@ -18,13 +18,13 @@
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
-            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facility-details"
-              >Facility Details</v-tab
-            >
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facility-details">
+              Facility Details
+            </v-tab>
             <v-tab value="programs-and-services">Programs and Services</v-tab>
-            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details"
-              >Licence and Service Details Record</v-tab
-            >
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
+              Licence and Service Details Record
+            </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
