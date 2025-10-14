@@ -57,7 +57,8 @@ router.get(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getOrganization(req, res);
@@ -67,7 +68,7 @@ router.get(
 /**
  * Create a new Organization
  */
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), [checkSchema(organizationSchema)], (req, res) => {
   validationResult(req).throw();
   return createOrganization(req, res);
 });
@@ -79,7 +80,7 @@ router.put(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CHANGE_ORG_INFORMATION),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CHANGE_ORG_INFORMATION),
   [(param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(), checkSchema(organizationSchema))],
   (req, res) => {
     validationResult(req).throw();
@@ -107,7 +108,8 @@ router.get(
   '/:organizationId/facilities',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('organizationId', 'URL Param: [organizationId] is required').not().isEmpty()],
+  validatePermission(PERMISSIONS.ADD_USERS, PERMISSIONS.EDIT_USERS, PERMISSIONS.VIEW_FACILITY_INFORMATION),
+  [param('organizationId', 'URL Param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
     return getOrganizationFacilities(req, res);

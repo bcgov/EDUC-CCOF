@@ -32,9 +32,9 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     hasPermission: (state) => {
-      return (permission) => {
-        if (!state.isAuthenticated || !state.userInfo || !state.permissions) return false;
-        return state.permissions.includes(permission);
+      return (permissions) => {
+        permissions = [].concat(permissions);
+        return state.permissions?.some((p) => permissions.includes(p));
       };
     },
     isFacilityAdmin: (state) => {

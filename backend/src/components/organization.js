@@ -6,6 +6,7 @@ const { MappableObjectForFront, MappableObjectForBack } = require('../util/mappi
 const { OrganizationMappings, OrganizationFacilityMappings } = require('../util/mapping/Mappings');
 const { getLabelFromValue } = require('./utils');
 const log = require('./logger');
+const { restrictFacilities } = require('../util/common');
 
 async function getOrganization(req, res) {
   try {
@@ -30,10 +31,8 @@ async function getFacilitiesByOrgId(orgId) {
 async function getOrganizationFacilities(req, res) {
   try {
     const facilitiesData = await getFacilitiesByOrgId(req.params.organizationId);
-    const facilities = facilitiesData.value.map((facility) => {
-      let mappedFacility = new MappableObjectForFront(facility, OrganizationFacilityMappings);
-      return mappedFacility;
-    });
+    let facilities = facilitiesData.value.map((facility) => new MappableObjectForFront(facility, OrganizationFacilityMappings).toJSON());
+    facilities = restrictFacilities(req, facilities);
     return res.status(HttpStatus.OK).json(facilities);
   } catch (e) {
     log.error('failed with error', e);
