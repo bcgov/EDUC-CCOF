@@ -103,7 +103,7 @@ describe('<ManageFacilityDetails />', () => {
     cy.contains('button', 'Cancel');
   });
 
-  it('should not make a backend request when saving without modifying the phone number', () => {
+  it('should not make a backend request when saving without modifying the phone number or email', () => {
     mountWithPinia(
       {
         organization: { organizationProviderType },
@@ -113,6 +113,10 @@ describe('<ManageFacilityDetails />', () => {
     );
 
     cy.contains('div', '*Business Phone:').next('div').find('button').contains('Edit').click();
+    cy.contains('button', 'Save').click();
+    cy.get('@facilityUpdatedSpy').should('not.have.been.called');
+
+    cy.contains('div', 'Facility Email Address:').next('div').find('button').contains('Edit').click();
     cy.contains('button', 'Save').click();
     cy.get('@facilityUpdatedSpy').should('not.have.been.called');
   });
@@ -178,19 +182,5 @@ describe('<ManageFacilityDetails />', () => {
     );
 
     cy.contains('button', 'Edit').should('not.exist');
-  });
-
-  it('should not make a backend request when saving without modifying the email', () => {
-    mountWithPinia(
-      {
-        organization: { organizationProviderType },
-        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
-      },
-      { facility: facility1, facilityLoading: false },
-    );
-
-    cy.contains('div', 'Facility Email Address:').next('div').find('button').contains('Edit').click();
-    cy.contains('button', 'Save').click();
-    cy.get('@facilityUpdatedSpy').should('not.have.been.called');
   });
 });
