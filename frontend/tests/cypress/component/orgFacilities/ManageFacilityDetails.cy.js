@@ -1,6 +1,7 @@
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import vuetify from '@/plugins/vuetify';
 import { ApiRoutes } from '@/utils/constants';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 import { capitalize } from '@/utils/format';
 
 const facility1 = {
@@ -17,6 +18,18 @@ const facility1 = {
 };
 
 const organizationProviderType = 'TEST-PROVIDER';
+
+function createAuth(permissions) {
+  return {
+    auth: {
+      userInfo: {
+        serverTime: new Date(),
+      },
+      isAuthenticated: true,
+      permissions,
+    },
+  };
+}
 
 function mountWithPinia(initialState = {}, overrideProps = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -76,7 +89,13 @@ describe('<ManageFacilityDetails />', () => {
   });
 
   it('should be able to edit business phone', () => {
-    mountWithOrgAndFacility();
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
 
     cy.contains('div', '*Business Phone:').next('div').find('button').contains('Edit').click();
     cy.get('input').should('have.value', facility1.phone);
@@ -85,7 +104,13 @@ describe('<ManageFacilityDetails />', () => {
   });
 
   it('should not make a backend request when saving without modifying the phone number', () => {
-    mountWithOrgAndFacility();
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
 
     cy.contains('div', '*Business Phone:').next('div').find('button').contains('Edit').click();
     cy.contains('button', 'Save').click();
@@ -104,7 +129,13 @@ describe('<ManageFacilityDetails />', () => {
   });
 
   it('should be able to edit facility email', () => {
-    mountWithOrgAndFacility();
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
 
     cy.contains('div', 'Facility Email Address:').next('div').find('button').contains('Edit').click();
     cy.get('input').should('have.value', facility1.email);
@@ -119,7 +150,13 @@ describe('<ManageFacilityDetails />', () => {
       statusCode: 200,
     }).as('updateFacilityDetails');
 
-    mountWithOrgAndFacility();
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
 
     cy.contains('div', 'Facility Email Address:').next('div').find('button').contains('Edit').click();
     cy.get('input').clear().type(updatedEmail);
@@ -128,8 +165,29 @@ describe('<ManageFacilityDetails />', () => {
     cy.get('@facilityUpdatedSpy').should('have.been.calledOnce');
   });
 
+  it('should not be able to edit facility email or business phone', () => {
+    const permWithoutUpdateFacInfo = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.UPDATE_FACILITY_INFORMATION,
+    );
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth(permWithoutUpdateFacInfo),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
+
+    cy.contains('button', 'Edit').should('not.exist');
+  });
+
   it('should not make a backend request when saving without modifying the email', () => {
-    mountWithOrgAndFacility();
+    mountWithPinia(
+      {
+        organization: { organizationProviderType },
+        ...createAuth([PERMISSIONS.UPDATE_FACILITY_INFORMATION]),
+      },
+      { facility: facility1, facilityLoading: false },
+    );
 
     cy.contains('div', 'Facility Email Address:').next('div').find('button').contains('Edit').click();
     cy.contains('button', 'Save').click();

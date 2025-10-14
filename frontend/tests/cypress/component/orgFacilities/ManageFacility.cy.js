@@ -1,6 +1,7 @@
 import ManageFacility from '@/components/orgFacilities/ManageFacility.vue';
 import vuetify from '@/plugins/vuetify';
 import { ApiRoutes, FUNDING_AGREEMENTS_STATUS, ORGANIZATION_FACILITY_STATUS_CODES, PATHS } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const facilityId = '9876';
 
@@ -123,13 +124,116 @@ describe('<ManageFacility />', () => {
     cy.get('@routerPush').should('have.been.calledWith', { name: 'Report Change' });
   });
 
-  it('should render tabs with correct values', () => {
-    const expectedTexts = ['Facility Details', 'Licences', 'Programs and Services', 'Closures'];
+  it('should render default tabs without any permissions', () => {
+    const expectedTexts = ['Programs and Services'];
     mountWithPinia({ ...createOrgStore() });
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 4)
+      .should('have.length', 1)
+      .each((button, index) => {
+        cy.wrap(button).should('include.text', expectedTexts[index]);
+      });
+  });
+
+  it('should render `Facility Details` tab', () => {
+    const expectedTexts = ['Facility Details', 'Programs and Services'];
+    mountWithPinia({
+      ...createOrgStore(),
+      auth: {
+        userInfo: {
+          serverTime: new Date(),
+        },
+        isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION],
+      },
+    });
+
+    cy.get('.v-tabs')
+      .find('button')
+      .should('have.length', 2)
+      .each((button, index) => {
+        cy.wrap(button).should('include.text', expectedTexts[index]);
+      });
+  });
+
+  it('should not render `Facility Details` tab', () => {
+    const permWithoutViewFac = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.VIEW_FACILITY_INFORMATION,
+    );
+
+    mountWithPinia({
+      ...createOrgStore(),
+      auth: {
+        userInfo: {
+          serverTime: new Date(),
+        },
+        isAuthenticated: true,
+        permissions: permWithoutViewFac,
+      },
+    });
+
+    cy.get('.v-tabs').find('button').should('have.length', 2);
+    cy.get('.v-tab').contains('Facility Detail').should('not.exist');
+  });
+
+  it('should render `Licence and Service Details Record` tab', () => {
+    const expectedTexts = ['Programs and Services', 'Licence and Service Details Record'];
+    mountWithPinia({
+      ...createOrgStore(),
+      auth: {
+        userInfo: {
+          serverTime: new Date(),
+        },
+        isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION],
+      },
+    });
+
+    cy.get('.v-tabs')
+      .find('button')
+      .should('have.length', 2)
+      .each((button, index) => {
+        cy.wrap(button).should('include.text', expectedTexts[index]);
+      });
+  });
+
+  it('should not render `Licence and Service Details Record` tab', () => {
+    const permWithoutViewLicInfo = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.VIEW_LICENCE_INFORMATION,
+    );
+
+    mountWithPinia({
+      ...createOrgStore(),
+      auth: {
+        userInfo: {
+          serverTime: new Date(),
+        },
+        isAuthenticated: true,
+        permissions: permWithoutViewLicInfo,
+      },
+    });
+
+    cy.get('.v-tabs').find('button').should('have.length', 2);
+    cy.get('.v-tab').contains('Licence and Service Details Record').should('not.exist');
+  });
+
+  it('should render all tabs with correct values', () => {
+    const expectedTexts = ['Facility Details', 'Programs and Services', 'Licence and Service Details Record'];
+    mountWithPinia({
+      ...createOrgStore(),
+      auth: {
+        userInfo: {
+          serverTime: new Date(),
+        },
+        isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION, PERMISSIONS.VIEW_LICENCE_INFORMATION],
+      },
+    });
+
+    cy.get('.v-tabs')
+      .find('button')
+      .should('have.length', 3)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -154,11 +258,16 @@ describe('<ManageFacility />', () => {
 
     mountWithPinia({
       ...createOrgStore(),
-      auth: { userInfo: { organizationName: 'TEST_ORG' } },
+      auth: {
+        userInfo: { serverTime: new Date(), organizationName: 'TEST_ORG' },
+        isAuthenticated: true,
+        permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION],
+      },
     });
-    cy.contains('button', 'Licences').click();
-    cy.contains('Review and update your licence and service details. You may update your hours of operation directly.');
-    cy.contains('To request changes to any other information to this tab, click Request a Change.');
+
+    cy.contains('button', 'Licence and Service Details Record').click();
+    cy.contains('Review your Licence and Service Details Record.');
+    cy.contains('You must notify the Child Care Operating Funding Program of changes to');
   });
 
   it('should navigate on clicking back button', () => {
