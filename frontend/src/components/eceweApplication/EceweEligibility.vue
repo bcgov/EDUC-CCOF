@@ -1,31 +1,23 @@
 <template>
   <v-form ref="isValidForm" v-model="isValidForm">
-    <v-container>
-      <div class="text-center">
-        <div class="text-h5">
-          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-        </div>
-        <div class="text-h5 my-6">Early Childhood Educator Wage Enhancement (ECE-WE)</div>
-        <div class="text-h5 my-6" style="color: #003466">
-          {{ userInfo.organizationName }}
-        </div>
-      </div>
-      <v-alert class="col-11 mb-0" variant="outlined" prominent>
-        <span class="pr-1" style="float: left">
-          <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
-        </span>
-        <span>
-          <strong>Note:</strong> Please read and understand the full eligibility requirements in the
-          <u>
-            <a
-              href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
-              target="_blank"
-            >
-              ECE-WE Funding Guidelines
-            </a>
-          </u>
-          . All CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
-        </span>
+    <v-container class="px-8 px-lg-12 pt-0">
+      <ApplicationPCFHeader
+        page-title="Early Childhood Educator Wage Enhancement (ECE-WE)"
+        :program-year="formattedProgramYear"
+        :organization-name="userInfo.organizationName"
+      />
+      <v-alert prominent variant="outlined" class="mt-8">
+        <template #prepend>
+          <v-icon color="primary" size="x-large">mdi-information</v-icon>
+        </template>
+        <strong>Note:</strong> Please read and understand the full eligibility requirements in the
+        <a
+          href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
+          target="_blank"
+          class="text-decoration-underline"
+        >
+          ECE-WE Funding Guidelines</a
+        >. All CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
       </v-alert>
 
       <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody" class="my-2"></v-skeleton-loader>
@@ -37,26 +29,30 @@
         :is-loading="isLoading"
         :is-read-only="isReadOnly"
       />
-
-      <NavButton
-        class="mt-10"
-        :is-next-displayed="true"
-        :is-save-displayed="true"
-        :is-save-disabled="isReadOnly"
-        :is-next-disabled="!enableButtons"
-        :is-processing="isProcessing"
-        @previous="previous"
-        @next="next"
-        @validate-form="validateForm()"
-        @save="saveECEWEApplication"
-      />
     </v-container>
   </v-form>
+  <NavButton
+    :is-next-displayed="true"
+    :is-save-displayed="true"
+    :is-save-disabled="isReadOnly"
+    :is-next-disabled="!enableButtons"
+    :is-processing="isProcessing"
+    class="mt-12"
+    @previous="previous"
+    @next="next"
+    @validate-form="validateForm()"
+    @save="saveECEWEApplication"
+  />
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
 import { cloneDeep } from 'lodash';
+
+import EceweEligibilityQuestions from '@/components/eceweApplication/EceweEligibilityQuestions.vue';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
+import NavButton from '@/components/util/NavButton.vue';
+
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -78,11 +74,9 @@ import {
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
 import { isNullOrBlank } from '@/utils/common.js';
-import NavButton from '@/components/util/NavButton.vue';
-import EceweEligibilityQuestions from './EceweEligibilityQuestions.vue';
 
 export default {
-  components: { NavButton, EceweEligibilityQuestions },
+  components: { ApplicationPCFHeader, EceweEligibilityQuestions, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     this.setIsStarted(true);
