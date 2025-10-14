@@ -55,7 +55,7 @@ function mapCCFRIObjectForFront(data) {
 }
 
 async function getFacilityByFacilityId(facilityId) {
-  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority,statuscode`;
+  const operation = `accounts(${facilityId})?$select=ccof_accounttype,name,ccof_facilitystartdate,address1_line1,address1_city,address1_stateorprovince,address1_postalcode,ccof_position,emailaddress1,address1_primarycontactname,telephone1,ccof_facilitylicencenumber,ccof_licensestartdate,ccof_formcomplete,ccof_everreceivedfundingundertheccofprogram,ccof_facilityreceived_ccof_funding,accountnumber,ccof_facilitystatus,ccof_is_facility_address_entered_manually,ccof_is_facility_address_same_as_org,ccof_is_facility_contact_same_as_org,ccof_healthauthority,statuscode,ccof_facilityhoursofoperationfrom,ccof_facilityhoursofoperationto`;
   const facility = await getOperation(operation);
 
   if (ACCOUNT_TYPE.FACILITY != facility?.ccof_accounttype) {
