@@ -35,10 +35,6 @@ function runEceWeApp() {
 }
 
 describe('Group Application Test', () => {
-    it('checks baseUrl', () => {
-        cy.log(Cypress.config('baseUrl')) // Should show your full URL
-        cy.visit('/login')
-    })
     it('Full E2E Flow', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
