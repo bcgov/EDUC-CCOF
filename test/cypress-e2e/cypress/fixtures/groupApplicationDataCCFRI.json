@@ -8,7 +8,19 @@
             "monthly": "Monthly",
             "daily": "Daily"
         },
-        "parentFeeCategories": [
+        "familyParentFeeCategories": [
+            " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12"
+        ],
+        "groupParentFeeCategories": [
             " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
             " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
             " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",

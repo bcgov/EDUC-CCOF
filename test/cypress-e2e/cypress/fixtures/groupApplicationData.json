@@ -89,8 +89,8 @@
         "maxOverFourHours": 4
       }
     },
-    "maximumLicensedCapacity": "100",
-    "maxChildCareSpaces": "100",
+    "maximumLicensedCapacity": "50",
+    "maxChildCareSpaces": "10",
     "PreschoolSessions": {
       "Monday": 1,
       "Tuesday": 1,

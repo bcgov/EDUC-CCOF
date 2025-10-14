@@ -15,8 +15,8 @@ class CcofApplication {
         this.orgType = this.orgData.typeOfOrganization.company
         this.orgInfo = this.orgData.orgInfo
         this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-        // this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories.familyChildCare
-        this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories.familyChildCare
+        // this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
         this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
         this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
         this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
@@ -102,35 +102,29 @@ class CcofApplication {
     });
 
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-      if (this.licenceCategory.Preschool.checked) {
-        Object.entries(this.preschoolSessions).forEach(([day, value]) => {
-          cy.getByLabel(day).typeAndAssert(value);
-        });
-      }
+    if (this.licenceCategory.Preschool.checked) {
+      Object.entries(this.preschoolSessions).forEach(([day, value]) => {
+        cy.getByLabel(day).typeAndAssert(value);
+      });
+    }
+    cy.get('div[label="Is the facility located on school property?"]')
+      .find('label')
+      .contains(this.schoolProperty)
+      .click()
+    this.schoolAgedCare.forEach(label => {
+      cy.getByLabel(label).check({ force: true }).should('be.checked');
+    });
   }
 
   familyLicenses() {
-    // Must change the last part of the json here depending on which licence you want
-    cy.getByLabel(this.licenceCategory).click({force: true})
+    cy.getByLabel(this.licenceCategory.name).click({force: true})
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.licenceCategory.max)
-    cy.contains('div', 'Maximum Licensed Capacity').within(()=> {
-      cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    })
     cy.contains('div', 'Enter maximum number of child care spaces you offer')
       .getByLabel('Maximum Number of Child Care Spaces')
       .typeAndAssert(this.maxChildCareSpaces)
   }
 
-  schoolPropertyAndExtendedHours() {
-    cy.get('div[label="Is the facility located on school property?"]')
-      .find('label')
-      .contains(this.schoolProperty)
-      .click()
-
-    this.schoolAgedCare.forEach(label => {
-      cy.getByLabel(label).check({ force: true }).should('be.checked');
-    });
-
+  offerExtendedHours() {
     cy.contains('div', 'Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?').within(()=> {
       cy.getByLabel(this.extendedHours).click({force:true})
     })

@@ -18,13 +18,13 @@ class CcfriApplication{
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.parentFeeCategories = this.parentFees.parentFeeCategories
+            this.parentFeeCategories = this.parentFees.familyParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
             this.startDate = this.closures.startDate
             this.endDate = this.closures.endDate
             this.closureReason = this.closures.closureReason
-            this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.notFullFacilityClosure
+            this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.fullFacilityClosure
         })
     }
 
@@ -70,8 +70,9 @@ class CcfriApplication{
         cy.getByLabel('Start Date').typeAndAssert(this.startDate)                        
         cy.getByLabel('End Date').typeAndAssert(this.endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
-        cy.contains('Is this a full facility closure?')
-        cy.getByLabel(`${this.fullFacilityClosureStatus}`).click({force: true})
+        cy.contains('div','Is this a full facility closure?').within(()=> {
+            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click({force: true})
+        })
 
         //Partial Care Category Closures
         if (this.fullFacilityClosureStatus === "No") {

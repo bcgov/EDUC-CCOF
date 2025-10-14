@@ -29,7 +29,22 @@ class EceWeApplication {
         })
     }
 
-    optInEceWe() {
+    familyOptInEceWe() {
+        cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE)').should('be.visible')
+        cy.contains('.v-card', 'For the 2025-26 funding term, would you like to opt-in to ECE-WE for any facility in your organization?').getByLabel(`${this.optInOrOut}`).click({force:true})
+        cy.clickByText('Save')
+        cy.contains('Application saved successfully.').should('be.visible')
+        cy.clickByText('Next')
+
+        cy.contains('On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your organization')
+        cy.clickByText('Save')
+        cy.clickByText('Next')
+        
+        cy.contains('Supporting Document Upload').should('be.visible')
+        cy.clickByText('Next')
+    }
+
+    groupOptInEceWe() {
         // ECE-WE Eligibility
         cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE)').should('be.visible')
 
@@ -57,10 +72,10 @@ class EceWeApplication {
             cy.getByLabel(this.cssea.confirmation).click({force:true})
         }
         cy.clickByText('Save')
+        cy.contains('Application saved successfully.').should('be.visible')
         cy.clickByText('Next')
-    }
 
-    optInFacilities() {
+        // Opt In Facilities
         if (this.facilityOptInOrOut === this.facility.facilityOptInOrOut.optIn) {
                 cy.contains(' Opt-In All Facilities ').should('be.visible')
                 cy.clickByText(this.facilityOptInOrOut)
@@ -71,7 +86,7 @@ class EceWeApplication {
             }
         cy.clickByText('Save')
         cy.clickByText('Next')
-        cy.contains('Supporting Document Upload')
+        cy.contains('Supporting Document Upload').should('be.visible')
         cy.clickByText('Next')
     }
 }

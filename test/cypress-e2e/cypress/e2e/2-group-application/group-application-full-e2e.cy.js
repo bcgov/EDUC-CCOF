@@ -12,7 +12,7 @@ function runCcofApp() {
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
         ccofApp.groupLicenses()
-        ccofApp.schoolPropertyAndExtendedHours()
+        ccofApp.offerExtendedHours()
         ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
     })
@@ -29,8 +29,7 @@ function runCcfriApp() {
 function runEceWeApp() {
     eceWeApp.loadFixturesAndVariables()
     cy.then(()=> {
-        eceWeApp.optInEceWe()
-        eceWeApp.optInFacilities()
+        eceWeApp.groupOptInEceWe()
     })
 }
 
