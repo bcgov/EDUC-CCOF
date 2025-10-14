@@ -18,10 +18,13 @@
       <v-col>
         <v-card>
           <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
-            <v-tab value="facility-details">Facility Details</v-tab>
-            <v-tab value="licences-details">Licences </v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facility-details">
+              Facility Details
+            </v-tab>
             <v-tab value="programs-and-services">Programs and Services</v-tab>
-            <v-tab value="closures">Closures</v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
+              Licence and Service Details Record
+            </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
@@ -33,11 +36,10 @@
                   @facility-updated="updateFacility"
                 />
               </v-window-item>
-              <v-window-item value="licences-details">
-                <ManageLicence />
-              </v-window-item>
               <v-window-item value="programs-and-services">Programs and Services</v-window-item>
-              <v-window-item value="closures">Closures</v-window-item>
+              <v-window-item value="licences-details">
+                <ViewLicence />
+              </v-window-item>
             </v-window>
           </v-card-text>
         </v-card>
@@ -59,17 +61,18 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import facilityService from '@/services/facilityService.js';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { isFacilityActive } from '@/utils/facility.js';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ManageLicence from '@/components/licences/ManageLicence.vue';
+import ViewLicence from '@/components/licences/ViewLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { AppButton, NavButton, ManageFacilityDetails, ManageLicence },
-  mixins: [alertMixin],
+  components: { AppButton, NavButton, ManageFacilityDetails, ViewLicence },
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       tab: undefined,
@@ -100,7 +103,7 @@ export default {
     try {
       this.facilityLoading = true;
       this.facility = {
-        ...(await facilityService.getFacilityById(this.facilityId)),
+        ...(await facilityService.getFacility(this.facilityId)),
         facilityId: this.facilityId,
       };
     } catch (error) {

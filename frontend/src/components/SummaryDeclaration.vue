@@ -492,11 +492,7 @@ export default {
         !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
       const isOrganizationComplete =
         this.isRenewal ||
-        ApplicationService.isOrganizationComplete(
-          this.summaryModel?.organization,
-          this.isGroup,
-          this.applicationTemplateVersion,
-        );
+        ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.applicationTemplateVersion);
       const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
         this.summaryModel?.ecewe,
         this.isGroup,

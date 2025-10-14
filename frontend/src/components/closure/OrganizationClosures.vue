@@ -64,10 +64,10 @@
             {{ getFacilityAccountNumber(item.facilityId) }}
           </template>
           <template #[`item.startDate`]="{ item }">
-            {{ formatDateToStandardFormat(item.startDate) }}
+            {{ formatUTCDate(item.startDate) }}
           </template>
           <template #[`item.endDate`]="{ item }">
-            {{ formatDateToStandardFormat(item.endDate) }}
+            {{ formatUTCDate(item.endDate) }}
           </template>
           <template #[`item.closureStatus`]="{ item }">
             <span :class="getClosureStatusClass(item)">
@@ -156,7 +156,7 @@ import { useAppStore } from '@/store/app.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { formatDateToStandardFormat } from '@/utils/format';
+import { formatUTCDate } from '@/utils/format';
 
 import {
   CHANGE_REQUEST_TYPES,
@@ -231,7 +231,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    formatDateToStandardFormat,
+    formatUTCDate,
     async loadData() {
       try {
         this.isLoading = true;

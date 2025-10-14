@@ -64,6 +64,8 @@ const FacilityMappings = [
   { back: 'ccof_is_facility_contact_same_as_org', front: 'isFacilityContactSameAsOrgContact' },
   { back: 'ccof_healthauthority', front: 'healthAuthority' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_facilityhoursofoperationfrom', front: 'hoursFrom' },
+  { back: 'ccof_facilityhoursofoperationto', front: 'hoursTo' },
 ];
 
 const CCFRIFacilityMappings = [
@@ -553,7 +555,8 @@ const FundingAgreementMappings = [
   { back: 'ccof_end_date', front: 'endDate' },
   { back: '_ccof_programyear_value@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementTerm' },
   { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'internalStatus' },
-  { back: 'ccof_external_portal_status@OData.Community.Display.V1.FormattedValue', front: 'externalStatus' },
+  { back: 'ccof_external_portal_status', front: 'externalStatusCode' },
+  { back: 'ccof_external_portal_status@OData.Community.Display.V1.FormattedValue', front: 'externalStatusText' },
   { back: 'ccof_start_date', front: 'fundingAgreementStartDate' },
   { back: 'ccof_funding_agreementid', front: 'fundingAgreementId' },
   { back: '_ccof_organization_value', front: 'organizationId' },
@@ -784,35 +787,31 @@ const LicenceMappings = [
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
+  { back: 'ccof_record_start_date', front: 'recordStartDate' },
+  { back: 'ccof_record_end_date', front: 'recordEndDate' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'licenceStatus' },
+  { back: 'ccof_maximum_capacity', front: 'licenceMaxCapacity' },
+  { back: 'ccof_maximum_days_per_week', front: 'licenceMaxDaysPerWeek' },
+  { back: 'ccof_maximum_weeks_per_year', front: 'licenceMaxWeeksPerYear' },
+  { back: 'ccof_extended_hours_offered', front: 'licenceExtendedHours' },
+  { back: 'ccof_extended_days_per_week', front: 'extendedDaysPerWeek' },
+  { back: 'ccof_extended_weeks_per_year', front: 'extendedWeeksPerYear' },
   { back: 'ccof_service_delivery_details_license_ccof_license', front: 'serviceDeliveryDetails' },
 ];
 
 const ServiceDeliveryMappings = [
-  { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenseCategory' },
-  { back: 'ccof_max_weeks_per_year', front: 'maxweeksPerYear' },
-  { back: 'ccof_max_days_per_week', front: 'maxdaysPerWeek' },
-  { back: 'ccof_overnight_care', front: 'overnightCare' },
+  { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenceCategory' },
   { back: 'ccof_care_type@OData.Community.Display.V1.FormattedValue', front: 'capacityByCareType' },
-  { back: 'ccof_extended_hours_offered', front: 'extendedHours' },
-
-  { back: 'ccof_start_date', front: 'licenceStartDate' },
-  { back: 'ccof_end_date', front: 'licenceEndDate' },
-  { back: 'ccof_max_capacity', front: 'maximumCapacity' },
   { back: 'ccof_licenced_spaces', front: 'licencedSpaces' },
-  { back: 'ccof_hours_of_operation_start', front: 'facilityHoursFrom' },
-  { back: 'ccof_hours_of_operation_end', front: 'facilityHoursTo' },
 
   { back: 'ccof_max_4_or_less', front: 'maxfourorLess' },
   { back: 'ccof_max_over_4', front: 'maxoverFour' },
 
   { back: 'ccof_number_of_preschool_sessions', front: 'preschoolSessions' },
-  { back: 'ccof_school_age_on_school_grounds', front: 'schoolAgeOnSchoolGrounds' },
-  { back: 'ccof_recreational_care', front: 'recreationalCare' },
   { back: 'ccof_before_school', front: 'beforeSchoolCare' },
   { back: 'ccof_after_school', front: 'afterSchoolCare' },
   { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
   { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
-  { back: 'ccof_accepts_subsidy', front: 'acceptsSubsidy' },
 ];
 
 const RoleMappings = [

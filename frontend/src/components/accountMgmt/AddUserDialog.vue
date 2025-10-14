@@ -260,7 +260,7 @@ export default {
   methods: {
     async loadData() {
       try {
-        this.facilities = await OrganizationService.loadFacilities(this.organizationId);
+        this.facilities = await OrganizationService.getFacilities(this.organizationId);
       } catch (error) {
         this.setFailureAlert('There was an error loading the facilities');
         console.error('Error loading facilities: ', error);

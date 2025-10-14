@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import ApplicationService from '@/services/applicationService';
+import OrganizationService from '@/services/organizationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -67,7 +68,8 @@ function mapFacility(facility, isGroup, eceweOrg) {
     (item) => item.ccfriApplicationId === facility?.ccfri?.ccfriApplicationId,
   );
 
-  if (!isGroup) {
+  // Renewal application doesn't have CCOF Funding application
+  if (!isGroup && !facility.isRenewal) {
     facility.funding.licenceCategoryNumber = appStore.getFamilyLicenceCategoryNumberById(
       facility.funding.licenceCategoryId,
     );
@@ -307,9 +309,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
         //ccfri 3912 show ECEWE org questions for all applications
         if (payload.application?.organizationId) {
-          summaryModel.organization = (
-            await ApiService.apiAxios.get(`${ApiRoutes.ORGANIZATION}/${payload.application.organizationId}`)
-          ).data;
+          summaryModel.organization = await OrganizationService.getOrganization(payload.application.organizationId);
           summaryModel.ecewe = (
             await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${payload.application.applicationId}`)
           ).data;

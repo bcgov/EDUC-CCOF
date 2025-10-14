@@ -12,7 +12,7 @@ export default {
       throw error;
     }
   },
-  async getFacilityById(facilityId) {
+  async getFacility(facilityId) {
     try {
       if (!facilityId) return null;
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}`);

@@ -78,6 +78,7 @@
                           display="inline"
                           :disabled="!valid.phone"
                           :loading="isProcessing"
+                          :primary="false"
                           @click="() => saveField('phone')"
                         >
                           Save
@@ -100,10 +101,133 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
+                          :primary="false"
                           @click="editing.phone = true"
+                        >
+                          Edit
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12" sm="6" xl="5" xxl="3">
+                  <p><AppLabel>Facility hours operation from:</AppLabel></p>
+                </v-col>
+                <v-col cols="12" sm="6" xl="7" xxl="9">
+                  <v-form v-model="valid.hoursFrom" @submit.prevent>
+                    <v-row v-if="editing.hoursFrom" no-gutters align="center">
+                      <v-col cols="12" md="7">
+                        <AppTimeInput
+                          v-model="workingFields.hoursFrom"
+                          class="time-field-edit-align"
+                          density="compact"
+                          variant="underlined"
+                          hide-details="auto"
+                        />
+                      </v-col>
+                      <v-col cols="3" class="text-no-wrap">
+                        <AppButton
+                          size="small"
+                          type="submit"
+                          display="inline"
+                          :disabled="!valid.hoursFrom"
+                          :loading="isProcessing"
+                          :primary="false"
+                          @click="() => saveField('hoursFrom')"
+                        >
+                          Save
+                        </AppButton>
+                        <AppButton
+                          class="ml-1"
+                          size="small"
+                          display="inline"
+                          :primary="false"
+                          :disabled="isProcessing"
+                          @click="() => cancelEditing('hoursFrom')"
+                        >
+                          Cancel
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else no-gutters>
+                      <v-col cols="12" md="9">
+                        <p>{{ formatFacilityHours(facility.hoursFrom) }}</p>
+                      </v-col>
+                      <v-col cols="3">
+                        <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
+                          size="small"
+                          display="inline"
+                          :disabled="workingFieldInUse || isProcessing"
+                          :primary="false"
+                          @click="editing.hoursFrom = true"
+                        >
+                          Edit
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                  </v-form>
+                </v-col>
+              </v-row>
+              <v-row dense>
+                <v-col cols="12" sm="6" xl="5" xxl="3">
+                  <p><AppLabel>Facility hours operation to:</AppLabel></p>
+                </v-col>
+                <v-col cols="12" sm="6" xl="7" xxl="9">
+                  <v-form v-model="valid.hoursTo" @submit.prevent>
+                    <v-row v-if="editing.hoursTo" no-gutters align="center">
+                      <v-col cols="12" md="7">
+                        <AppTimeInput
+                          v-model="workingFields.hoursTo"
+                          class="time-field-edit-align"
+                          :rules="[rules.validHourTo(workingFields.hoursFrom)]"
+                          density="compact"
+                          variant="underlined"
+                          hide-details="auto"
+                        />
+                      </v-col>
+                      <v-col cols="3" class="text-no-wrap">
+                        <AppButton
+                          size="small"
+                          type="submit"
+                          display="inline"
+                          :disabled="!valid.hoursTo"
+                          :loading="isProcessing"
+                          :primary="false"
+                          @click="() => saveField('hoursTo')"
+                        >
+                          Save
+                        </AppButton>
+                        <AppButton
+                          class="ml-1"
+                          size="small"
+                          display="inline"
+                          :primary="false"
+                          :disabled="isProcessing"
+                          @click="() => cancelEditing('hoursTo')"
+                        >
+                          Cancel
+                        </AppButton>
+                      </v-col>
+                    </v-row>
+                    <v-row v-else no-gutters>
+                      <v-col cols="12" md="9">
+                        <p>{{ formatFacilityHours(facility.hoursTo) }}</p>
+                      </v-col>
+                      <v-col cols="3">
+                        <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
+                          size="small"
+                          display="inline"
+                          :disabled="workingFieldInUse || isProcessing"
+                          :primary="false"
+                          @click="editing.hoursTo = true"
                         >
                           Edit
                         </AppButton>
@@ -180,6 +304,7 @@
                           display="inline"
                           :disabled="!valid.email"
                           :loading="isProcessing"
+                          :primary="false"
                           @click="() => saveField('email')"
                         >
                           Save
@@ -202,9 +327,11 @@
                       </v-col>
                       <v-col cols="3">
                         <AppButton
+                          v-if="hasPermission(PERMISSIONS.UPDATE_FACILITY_INFORMATION)"
                           size="small"
                           display="inline"
                           :disabled="workingFieldInUse || isProcessing"
+                          :primary="false"
                           @click="editing.email = true"
                         >
                           Edit
@@ -223,7 +350,8 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { capitalize } from '@/utils/format';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
+import { capitalize, formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules';
 import FacilityService from '@/services/facilityService';
 
@@ -231,12 +359,14 @@ import { useOrganizationStore } from '@/store/ccof/organization';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'ManageFacilityDetails',
-  components: { AppButton, AppLabel },
-  mixins: [alertMixin],
+  components: { AppButton, AppLabel, AppTimeInput },
+  mixins: [alertMixin, permissionsMixin],
   props: {
     facility: {
       type: Object,
@@ -254,18 +384,26 @@ export default {
       editing: {
         phone: false,
         email: false,
+        hoursFrom: false,
+        hoursTo: false,
       },
       workingFields: {
         email: '',
         phone: '',
+        hoursFrom: '',
+        hoursTo: '',
       },
       valid: {
         email: true,
         phone: true,
+        hoursFrom: true,
+        hoursTo: true,
       },
       facilityCopy: {
         phone: '',
         email: '',
+        hoursFrom: '',
+        hoursTo: '',
       },
       isProcessing: false,
       rules,
@@ -281,11 +419,12 @@ export default {
     },
   },
   mounted() {
-    const { email, phone } = this.facility;
-    this.workingFields = { email, phone };
-    this.facilityCopy = { email, phone };
+    const { email, phone, hoursFrom, hoursTo } = this.facility;
+    this.workingFields = { email, phone, hoursFrom, hoursTo };
+    this.facilityCopy = { email, phone, hoursFrom, hoursTo };
   },
   methods: {
+    formatTime24to12,
     async saveField(key) {
       if (this.workingFields[key] === this.facility[key]) {
         this.editing[key] = false;
@@ -309,6 +448,10 @@ export default {
       this.editing[key] = false;
       this.workingFields[key] = this.facility[key];
     },
+    formatFacilityHours(time) {
+      const formattedHour = this.formatTime24to12(time);
+      return formattedHour?.toUpperCase() || EMPTY_PLACEHOLDER;
+    },
   },
 };
 </script>
@@ -316,5 +459,8 @@ export default {
 <style scoped>
 .v-row.v-row--dense {
   min-height: 38px;
+}
+.time-field-edit-align {
+  margin-top: -15px;
 }
 </style>
