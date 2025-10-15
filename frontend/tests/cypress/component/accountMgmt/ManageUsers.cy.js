@@ -167,15 +167,12 @@ describe('<ManageUsers />', () => {
     });
   });
 
-  context('User Interaction Tests', () => {
+  context('User Interaction - positive cases', () => {
     it('should render `Add User` button and open add user dialog on click', () => {
       mountWithPinia({
         organization: { organizationId },
         auth: {
           isAuthenticated: true,
-          userInfo: {
-            serverTime: new Date(),
-          },
           permissions: [PERMISSIONS.ADD_USERS],
         },
       });
@@ -199,21 +196,7 @@ describe('<ManageUsers />', () => {
       cy.contains(`Are you sure you want to remove ${mockUser.firstName} ${mockUser.lastName}`);
     });
 
-    it('should not display `Remove` button for current user', () => {
-      mockApiResponses({
-        getContacts: { response: [{ contactId: '2', firstName: 'John' }] },
-      });
-
-      mountWithPinia({
-        organization: { organizationId },
-        auth: { userInfo: { contactId: '2' } },
-      });
-
-      cy.wait('@getContacts');
-      cy.contains('button', 'Remove').should('not.exist');
-    });
-
-    it('should render edit button', () => {
+    it('should render edit button with edit other users permissions', () => {
       mockApiResponses({
         getContacts: { response: [mockUser] },
       });
@@ -226,6 +209,77 @@ describe('<ManageUsers />', () => {
       cy.contains('button', 'Edit').click();
       cy.contains('Edit User');
       cy.get('form input').eq(0).should('have.value', mockUser.firstName);
+    });
+
+    it('should render edit button with edit self permissions', () => {
+      mockUser['contactId'] = userId;
+      mockApiResponses({
+        getContacts: { response: [mockUser] },
+      });
+
+      mountWithPinia({
+        organization: { organizationId },
+        auth: { isAuthenticated: true, userInfo: { contactId: userId }, permissions: [PERMISSIONS.UPDATE_SELF] },
+      });
+
+      cy.contains('button', 'Edit').click();
+      cy.contains('Edit User');
+      cy.get('form input').eq(0).should('have.value', mockUser.firstName);
+    });
+  });
+
+  context('User Interaction Tests - negative cases', () => {
+    it('should not render `Add User` button', () => {
+      const permWithoutAddUsers = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.ADD_USERS,
+      );
+
+      mountWithPinia({
+        organization: { organizationId },
+        auth: {
+          isAuthenticated: true,
+          permissions: permWithoutAddUsers,
+        },
+      });
+      cy.wait('@getContacts');
+      cy.contains('button', 'Add User').should('not.exist');
+    });
+
+    it('should not render `Edit` button', () => {
+      mockUser['contactId'] = userId;
+
+      const permWithoutUpdateSelf = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.UPDATE_SELF && permission !== PERMISSIONS.EDIT_USERS,
+      );
+
+      mockApiResponses({
+        getContacts: { response: [mockUser] },
+      });
+
+      mountWithPinia({
+        organization: { organizationId },
+        auth: { isAuthenticated: true, userInfo: { contactId: userId }, permissions: permWithoutUpdateSelf },
+      });
+      cy.wait('@getContacts');
+      cy.contains('button', 'Edit').should('not.exist');
+    });
+
+    it('should not display `Remove` button for current user', () => {
+      const permWithoutDelUsers = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.DELETE_USERS,
+      );
+
+      mockApiResponses({
+        getContacts: { response: [{ contactId: '2', firstName: 'John' }] },
+      });
+
+      mountWithPinia({
+        organization: { organizationId },
+        auth: { userInfo: { contactId: '2' }, permissions: [permWithoutDelUsers] },
+      });
+
+      cy.wait('@getContacts');
+      cy.contains('button', 'Remove').should('not.exist');
     });
 
     it('should navigate on clicking Back button', () => {

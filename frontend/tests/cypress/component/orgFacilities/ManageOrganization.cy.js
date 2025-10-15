@@ -177,7 +177,7 @@ describe('<ManageOrganization />', () => {
       });
   });
 
-  it.only('should render edit buttons with proper permissions', () => {
+  it('should render edit buttons with proper permissions', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({

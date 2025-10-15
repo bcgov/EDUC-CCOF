@@ -73,7 +73,7 @@ describe('<ManageFaciltiies />', () => {
     cy.get('table').should('have.length', 2);
   });
 
-  it('should render in active facilities', () => {
+  it('should render inactive facilities', () => {
     interceptRequests([inActiveFacility]);
 
     mountWithPinia({
