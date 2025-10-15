@@ -27,5 +27,5 @@ jobs:
         if: always()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: cypress/screenshots/family-application-full-e2e.cy.js
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
