@@ -158,7 +158,7 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
 
 
 Cypress.Commands.add('startNewApp', (input) => {
-  cy.url().should('eq', Cypress.env('CYPRESS_PORTAL_BASE_URL')).then(()=> {
+  cy.url().should('eq', Cypress.env('PORTAL_BASE_URL')).then(()=> {
       cy.contains('What would you like to do?').should('be.visible').clickByText('Start Application')
       cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
       cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {

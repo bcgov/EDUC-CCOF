@@ -88,8 +88,6 @@ class EceWeApplication {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
                 cy.contains('On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your organization')
-                cy.clickByText('Save')
-                cy.clickByText('Next')
             }
 
             // Opt-Out Path

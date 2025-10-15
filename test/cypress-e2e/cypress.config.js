@@ -13,7 +13,7 @@ module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
       require("cypress-mochawesome-reporter/plugin")(on);
-      config.baseUrl = config.env.CYPRESS_PORTAL_BASE_URL;
+      config.baseUrl = config.env.PORTAL_BASE_URL;
       return config;
     },
     screenshotOnRunFailure: true,
