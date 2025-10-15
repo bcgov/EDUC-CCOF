@@ -180,12 +180,14 @@ export function getOptInOptOut(status) {
 
 export function getYesNoValue(value) {
   switch (value) {
-    case 0:
-    case 100000001:
-      return 'No';
+    case true:
     case 1:
     case 100000000:
       return 'Yes';
+    case false:
+    case 0:
+    case 100000001:
+      return 'No';
     default:
       return null;
   }

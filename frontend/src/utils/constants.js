@@ -610,5 +610,7 @@ export const ENROLMENT_REPORT_INTERNAL_STATUSES = Object.freeze({
 
 export const LICENCE_STATUSES = Object.freeze({
   APPROVED: 'Approved',
+  ACTIVE: 'Active',
   INACTIVE: 'Inactive',
+  REPLACED: 'Replaced',
 });
