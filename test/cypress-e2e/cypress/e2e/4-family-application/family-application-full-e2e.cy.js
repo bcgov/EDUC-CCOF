@@ -4,6 +4,7 @@ import { ccfriApp } from '../../support/pages/2-portal-application-pages/02-port
 import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-portal-application-ecewe.js'
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
+// Ensure each page's information is loaded before running through application
 function runCcofApp() {
     ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
@@ -28,12 +29,14 @@ function runCcfriApp() {
 function runEceWeApp() {
     eceWeApp.loadFixturesAndVariables()
     cy.then(()=> {
-        eceWeApp.familyOptInEceWe()
+        eceWeApp.familyEceWe()
+        eceWeApp.supportingDocUpload()
     })
 }
 
+// Test START
 describe('Family Application Test', () => {
-    it('Full E2E Flow', () => {
+    it('Should run through Family Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(

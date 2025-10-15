@@ -2,7 +2,6 @@ import { loginPage } from '../../support/pages/1-portal-login-pages/01-portal-lo
 import { fundingAgreement } from '../../support/pages/3-funding-agrement-pages/01-funding-agreement-signing.js'
 
 describe('Funding Agreement Signing', () => {
-    
     it('Should sign funding agreement and update status accordingly', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()

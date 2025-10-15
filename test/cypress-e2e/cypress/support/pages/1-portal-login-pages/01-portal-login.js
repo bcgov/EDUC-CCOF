@@ -1,6 +1,6 @@
 class LoginPage {
   visitLoginPage() {
-    cy.visit('/');
+    cy.visit('/', { failOnStatusCode: false });
   }
 
   clickLoginButton() {

@@ -15,6 +15,7 @@ class CcfriApplication{
         })
     }
 
+    // QA: EDIT INPUTS HERE USING groupApplicationDataCCFRI.json in "fixtures"----->
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
@@ -29,7 +30,6 @@ class CcfriApplication{
     }
 
     optInFacilities() {
-        // CCFRI - Parent Fees 
         cy.url().should('include', '/ccfri', {timeout: 10000})
         //Opt-Out Path
         if (this.optInOrOut === 'Opt-Out') {
@@ -55,18 +55,17 @@ class CcfriApplication{
     }
 
     addClosures() {
-        // CCFRI - Closures 
         cy.contains('It is important to tell us your planned closures for the 2025-26 funding term to avoid any impacts on payments.')
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
         cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
 
         cy.getByLabel(`${this.closureCharges}`).click()
-        // No Charge for Closures
+        // Opt-Out Path
         if (this.closureCharges === "No") {
             return
         }
 
-        // Full Closure - TODO (Hedie-cgi) Implement option to add Multiple Closures to a Group App
+        // Opt-In (Full Closure) -> TODO (Hedie-cgi) Implement option to add Multiple Closures to a Group App [CCFRI-6111]
         cy.getByLabel('Start Date').typeAndAssert(this.startDate)                        
         cy.getByLabel('End Date').typeAndAssert(this.endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
@@ -74,9 +73,9 @@ class CcfriApplication{
             cy.getByLabel(`${this.fullFacilityClosureStatus}`).click({force: true})
         })
 
-        //Partial Care Category Closures
+        // Opt-In (Partial Closure) -> TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories [CCFRI-6112]
         if (this.fullFacilityClosureStatus === "No") {
-            //TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories
+
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
