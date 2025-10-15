@@ -226,6 +226,12 @@ describe('<ManageUsers />', () => {
       cy.contains('Edit User');
       cy.get('form input').eq(0).should('have.value', mockUser.firstName);
     });
+
+    it('should navigate on clicking Back button', () => {
+      mountWithPinia({ organization: { organizationId } });
+      cy.contains('button', 'Back').click();
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.HOME);
+    });
   });
 
   context('User Interaction Tests - negative cases', () => {
@@ -280,12 +286,6 @@ describe('<ManageUsers />', () => {
 
       cy.wait('@getContacts');
       cy.contains('button', 'Remove').should('not.exist');
-    });
-
-    it('should navigate on clicking Back button', () => {
-      mountWithPinia({ organization: { organizationId } });
-      cy.contains('button', 'Back').click();
-      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.HOME);
     });
   });
 
