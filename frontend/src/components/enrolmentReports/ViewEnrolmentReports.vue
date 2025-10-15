@@ -145,6 +145,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
@@ -178,9 +179,16 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      if (this.isFacilityAdmin) {
+        facilityList = facilityList.filter((facility) => {
+          return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+      return facilityList;
     },
     allReportingMonths() {
       const reportingMonths = [];
