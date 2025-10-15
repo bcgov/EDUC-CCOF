@@ -1,5 +1,5 @@
 name: Cypress end-to-end tests
-on: 
+on:
   workflow_dispatch:
 jobs:
   cypress-run:
@@ -11,7 +11,7 @@ jobs:
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
-        with: 
+        with:
           working-directory: ./test/cypress-e2e
           browser: electron
           wait-on: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
@@ -26,4 +26,4 @@ jobs:
         if: always()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: "**/cypress/screenshots"
