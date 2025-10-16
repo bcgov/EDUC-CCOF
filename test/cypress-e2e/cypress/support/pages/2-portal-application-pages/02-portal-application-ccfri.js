@@ -8,14 +8,14 @@ function handleCardWithin(card, data) {
 
 class CcfriApplication{
     loadFixtures() {
-        return cy.fixture('groupApplicationDataCCFRI').then((data)=> {
+        return cy.fixture('ccfriData').then((data)=> {
             this.optInOrOut = data.optInOrOut
             this.parentFees = data.parentFees
             this.closures = data.closures
         })
     }
 
-    // QA: EDIT INPUTS HERE USING groupApplicationDataCCFRI.json in "fixtures"----->
+    // QA: EDIT INPUTS HERE USING ccfriData.json in "fixtures"----->
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {

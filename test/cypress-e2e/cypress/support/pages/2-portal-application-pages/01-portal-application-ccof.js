@@ -2,14 +2,14 @@ import 'cypress-file-upload';
 
 class CcofApplication {
   loadFixtures() {
-    return cy.fixture('groupApplicationData').then((data) => {
+    return cy.fixture('ccofData').then((data) => {
       this.orgData = data.orgData
       this.facilityData = data.facilityData
       this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
     })
   }
   
-  // QA: EDIT INPUTS HERE USING groupApplicationData.json in "fixtures"----->
+  // QA: EDIT INPUTS HERE USING ccofData.json in "fixtures"----->
   loadFixturesAndVariables() {
     this.loadFixtures()
     cy.then(()=> {
