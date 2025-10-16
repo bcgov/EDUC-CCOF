@@ -31,20 +31,6 @@
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
 
-// Updated with new Cypress Version
-// Cypress.SelectorPlayground.defaults({
-//   selectorPriority: [
-//     'data-cy',       
-//     'data-test',
-//     'data-testid',
-//     'id',
-//     'class',
-//     'tag',
-//     'attributes',
-//     'nth-child',
-//   ],
-// })
-
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   'textarea',
