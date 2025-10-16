@@ -95,7 +95,6 @@ class EceWeApplication {
         })
     }
 
-    // HEDIE: Maybe add this?
     supportingDocUpload() {
         cy.contains('Supporting Document Upload').should('be.visible')
         cy.clickByText('Next')
