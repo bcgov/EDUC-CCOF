@@ -83,17 +83,15 @@ class EceWeApplication {
         this.optInEceWe()
         cy.then(()=> {
             cy.clickByText('Save')
-            cy.contains('Application saved successfully.').should('be.visible')
+            cy.contains('Success! ECEWE application has been saved').should('be.visible')
             cy.clickByText('Next')
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
                 cy.contains('On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your organization')
+                cy.clickByText('Save')
+                cy.contains('Success! ECEWE Facility applications have been saved.').should('be.visible')
+                cy.clickByText('Next')
             }
-
-            // Opt-Out Path
-            cy.clickByText('Save')
-            cy.contains('Application saved successfully.').should('be.visible')
-            cy.clickByText('Next')
         })
     }
 
