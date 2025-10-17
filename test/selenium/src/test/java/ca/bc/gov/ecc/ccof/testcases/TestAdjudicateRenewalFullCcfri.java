@@ -17,9 +17,9 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateApplicationCcfri extends BaseTest {
+public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationCcfri.class);
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcfri.class);
 	Utilities ut;
 	CRMSignInCredentialPage objCRMSignInCredentialPage;
 	DeleteApplicationPage deleteapp;
@@ -30,26 +30,26 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 	FacilityInfoPage facilityinfo;
 
 	@Test(priority = 1)
-	public void adjudicateApplications(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcfri");
-		logger.info("Starting the AdjudicateApplicationCcfri  test...");
+	public void adjudicateRenewals(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcfri");
+		logger.info("Starting the AdjudicateRenewalFullCcfri  test...");
 		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
 		// login to application
-		Thread.sleep(3000);
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		Thread.sleep(3000);
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 		deleteapp = new DeleteApplicationPage(driver);
@@ -65,7 +65,7 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		Thread.sleep(3000);
 		orginfo = new OrganizationInfoPage(driver);
 		// selecting the application
-		orginfo.clickMainApplication();
+		orginfo.clickRenewalApplication();
 		Thread.sleep(5000);
 		appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickDeclarationBStatus();
@@ -134,7 +134,7 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		ccfriinfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the AdjudicateApplicationCcfri  test...");
+		logger.info("Ending the TestAdjudicateRenewalFullCcfri test...");
 
 	}
 

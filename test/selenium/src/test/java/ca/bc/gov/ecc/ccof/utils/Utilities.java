@@ -2,7 +2,6 @@ package ca.bc.gov.ecc.ccof.utils;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
@@ -11,9 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import ca.bc.gov.ecc.ccof.base.BaseTest;
@@ -74,9 +71,14 @@ public class Utilities extends BaseTest {
 	}
 
 	public void waitForElementToLoad(WebElement ele) {
-		Wait<WebDriver> waitForElement = new FluentWait<>(driver).withTimeout(Duration.ofSeconds(100))
-				.pollingEvery(Duration.ofSeconds(5)).ignoring(NoSuchElementException.class);
-		waitForElement.until(ExpectedConditions.visibilityOf(ele));
+		new WebDriverWait(driver, Duration.ofSeconds(100));
+
+		// Wait for the document to be fully loaded
+		wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState")
+				.equals("complete"));
+
+		// Wait for the element to be visible
+		wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 
 	public void assertElementDeleted(List<WebElement> elements) {

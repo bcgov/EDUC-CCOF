@@ -15,8 +15,8 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class OrganizationInfoPage extends BaseTest {
 	WebDriverWait wait;
 
-	@FindBy(xpath = "//*[@aria-label='Submitted']")
-	WebElement openApplication;
+	@FindBy(xpath = "//*[@aria-label='New Org']")
+	WebElement openMainApplication;
 
 	@FindBy(xpath = "//*[@aria-label='Submitted']")
 	List<WebElement> openApplications;
@@ -24,6 +24,9 @@ public class OrganizationInfoPage extends BaseTest {
 	public List<WebElement> getOpenApplications() {
 		return openApplications;
 	}
+
+	@FindBy(xpath = "//*[@aria-label='Renewal']")
+	WebElement openRenewalApplication;
 
 	@FindBy(xpath = "//*[@col-id='ccof_name']//div[contains(@class,'ms-StackItem truncatableText')]//a")
 	WebElement openFundingAgreement;
@@ -37,9 +40,14 @@ public class OrganizationInfoPage extends BaseTest {
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
 
-	public void clickApplication() {
+	public void clickMainApplication() {
 		Actions action = new Actions(driver);
-		action.moveToElement(openApplication).doubleClick().build().perform();
+		action.moveToElement(openMainApplication).doubleClick().build().perform();
+	}
+
+	public void clickRenewalApplication() {
+		Actions action = new Actions(driver);
+		action.moveToElement(openRenewalApplication).doubleClick().build().perform();
 	}
 
 	public void clickFundingAgreement() {
@@ -49,6 +57,10 @@ public class OrganizationInfoPage extends BaseTest {
 
 	public WebElement getOpenFundingAgreement() {
 		return fundingAgreementHistory;
+	}
+
+	public WebElement getOpenRenewalApplication() {
+		return openRenewalApplication;
 	}
 
 }

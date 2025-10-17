@@ -17,9 +17,9 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateApplicationCcof extends BaseTest {
+public class TestAdjudicateRenewalFullCcof extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationCcof.class);
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcof.class);
 	Utilities ut;
 	CRMSignInCredentialPage objCRMSignInCredentialPage;
 	DeleteApplicationPage deleteapp;
@@ -30,26 +30,26 @@ public class TestAdjudicateApplicationCcof extends BaseTest {
 	FacilityInfoPage facilityinfo;
 
 	@Test(priority = 1)
-	public void adjudicateApplicationsCcof(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcof");
-		logger.info("Starting the AdjudicateApplicationCcof test...");
+	public void adjudicateRenewalCcof(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcof");
+		logger.info("Starting the AdjudicateRenewalCcof test...");
 		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		ut = new Utilities(driver);
 		// login to application
-		Thread.sleep(3000);
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(5000);
 		deleteapp = new DeleteApplicationPage(driver);
@@ -62,60 +62,52 @@ public class TestAdjudicateApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 		bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
-		Thread.sleep(5000);
 		orginfo = new OrganizationInfoPage(driver);
 		// selecting the application
-		orginfo.clickMainApplication();
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(orginfo.getOpenRenewalApplication());
+		orginfo.clickRenewalApplication();
+		Thread.sleep(3000);
 		appinfo = new ApplicationInfoPage(driver);
 		// start of CCOF Adjudication
 		appinfo.clickRelatedTab();
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(appinfo.waitBeforeCCFOSLink());
 		appinfo.clickCCFOSLink();
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(appinfo.waitBeforeClickCcfos());
 		appinfo.clickCcfos();
-		Thread.sleep(5000);
 		ccofinfo = new CcofPage(driver);
+		ut.waitForElementToLoad(ccofinfo.waitBeforeCcofAdjudicationLink());
 		ccofinfo.clickCcofAdjudicationLink();
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickNewApplicationIsSignedBtn());
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickApplicationFormAndLicenseSubmittedBtn());
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickLegalNameAndLicenseMatchBtn());
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickLicenseValidInHealthSpaceBtn());
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickMailingAddressInCasSupplierBtn());
-		Thread.sleep(5000);
-		ut.javaScriptExecutorAction(ccofinfo.clickProviderInGoodStandingBtn());
-		Thread.sleep(5000);
+		Thread.sleep(2000);
+		ut.javaScriptExecutorAction(ccofinfo.clickSigningAuthorityBtn());
+		Thread.sleep(2000);
+		ut.javaScriptExecutorAction(ccofinfo.clickAllLicensesCorrectBtn());
+		Thread.sleep(2000);
 		ut.javaScriptExecutorAction(ccofinfo.clickBasePayEligibleBtn());
-		Thread.sleep(5000);
+		Thread.sleep(2000);
 		ut.javaScriptExecutorAction(ccofinfo.clickBasePayActivatedBtn());
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(ccofinfo.waitBeforeClickSaveBtn());
 		ccofinfo.clickSaveBtn();
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(ccofinfo.waitBeforeDashboardLink());
 		ccofinfo.clickDashboardLink();
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(ccofinfo.waitBeforeBaseFundingProgressStatusField());
 		ccofinfo.clickBaseFundingProgressStatusField();
 		Thread.sleep(5000);
 		// selecting Confirmed - Active from dropdown
 		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(ccofinfo.waitBeforeSaveAndCloseBtn());
 		ccofinfo.clickSaveAndCloseBtn();
-		Thread.sleep(10000);
+		ut.waitForElementToLoad(appinfo.waitBeforeCcofTab());
 		appinfo.clickCcofTab();
-		Thread.sleep(5000);
 		// changing the CCOF status to Active
+		ut.waitForElementToLoad(appinfo.waitBeforeCcofStatus());
 		appinfo.clickCcofStatus();
 		Thread.sleep(5000);
 		ut.selectDropdownValue("Active", appinfo.getCcofStatusOptions());
-		Thread.sleep(5000);
+		ut.waitForElementToLoad(appinfo.waitBeforeSaveBtn());
 		appinfo.clickSaveBtn();
-		Thread.sleep(5000);
+		Thread.sleep(2000);
 
-		logger.info("Ending the AdjudicateApplicationCcof test...");
+		logger.info("Ending the TestAdjudicateRenewalFullCcof test...");
 
 	}
 

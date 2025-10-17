@@ -61,7 +61,7 @@ public class TestDeleteApplication extends BaseTest {
 		Thread.sleep(3000);
 		orginfo = new OrganizationInfoPage(driver);
 		// selecting the application
-		orginfo.clickApplication();
+		orginfo.clickMainApplication();
 		Thread.sleep(5000);
 		appinfo = new ApplicationInfoPage(driver);
 		// deleting the application
