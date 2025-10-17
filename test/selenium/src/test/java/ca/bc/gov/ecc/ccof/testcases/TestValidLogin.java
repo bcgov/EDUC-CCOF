@@ -14,14 +14,14 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestValidLogin extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestValidLogin.class);
-	Utilities ut;
 
 	@Test(priority = 1)
 	public void loginToCRM(Method method) throws InterruptedException {
 		ExtentTestManager.startTest(method.getName(), "valid login");
 		logger.info("Starting the test...");
+
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+		Utilities ut = new Utilities(driver);
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();

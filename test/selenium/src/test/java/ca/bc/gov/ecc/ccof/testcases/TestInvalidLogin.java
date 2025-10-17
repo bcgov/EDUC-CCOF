@@ -19,6 +19,7 @@ public class TestInvalidLogin extends BaseTest {
 	public void loginToCRM(Method method) {
 		ExtentTestManager.startTest(method.getName(), "Invalid login");
 		logger.info("Starting the test...");
+
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 
 		// --- Scenario 1: Wrong password ---

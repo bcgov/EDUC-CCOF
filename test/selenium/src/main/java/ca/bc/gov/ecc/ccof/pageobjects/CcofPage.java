@@ -59,6 +59,13 @@ public class CcofPage extends BaseTest {
 	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
 	List<WebElement> baseFundingProgressStatusOptions;
 
+	// Renewal application
+	@FindBy(xpath = "//*[@aria-label='Signing Authority: Mark Complete']")
+	WebElement signingAuthorityField;
+
+	@FindBy(xpath = "//*[@aria-label='All Licenses Correct: Mark Complete']")
+	WebElement allLicensesCorrectField;
+
 	public CcofPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -68,6 +75,10 @@ public class CcofPage extends BaseTest {
 	// methods can be added here
 	public void clickCcofAdjudicationLink() {
 		ccofAdjudicationLink.click();
+	}
+
+	public WebElement waitBeforeCcofAdjudicationLink() {
+		return ccofAdjudicationLink;
 	}
 
 	public WebElement clickNewApplicationIsSignedBtn() {
@@ -106,16 +117,37 @@ public class CcofPage extends BaseTest {
 		return basePayActivatedField;
 	}
 
+	// Renewal application methods
+	public WebElement clickSigningAuthorityBtn() {
+		return signingAuthorityField;
+	}
+
+	public WebElement clickAllLicensesCorrectBtn() {
+		return allLicensesCorrectField;
+	}
+
 	public void clickSaveBtn() {
 		saveBtn.click();
+	}
+
+	public WebElement waitBeforeClickSaveBtn() {
+		return saveBtn;
 	}
 
 	public void clickDashboardLink() {
 		dashboardLink.click();
 	}
 
+	public WebElement waitBeforeDashboardLink() {
+		return dashboardLink;
+	}
+
 	public void clickBaseFundingProgressStatusField() {
 		baseFundingProgressStatusField.click();
+	}
+
+	public WebElement waitBeforeBaseFundingProgressStatusField() {
+		return baseFundingProgressStatusField;
 	}
 
 	public List<WebElement> getBaseFundingProgressStatusOptions() {
@@ -124,6 +156,10 @@ public class CcofPage extends BaseTest {
 
 	public void clickSaveAndCloseBtn() {
 		saveAndCloseBtn.click();
+	}
+
+	public WebElement waitBeforeSaveAndCloseBtn() {
+		return saveAndCloseBtn;
 	}
 
 }
