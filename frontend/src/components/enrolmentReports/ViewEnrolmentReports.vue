@@ -145,6 +145,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
@@ -178,6 +179,7 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
@@ -342,7 +344,10 @@ export default {
         if (this.isSubmissionDeadlinePassed(item)) return;
         this.loading = true;
         await EnrolmentReportService.updateEnrolmentReport(item.enrolmentReportId, { hasNextReportCreated: true });
-        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(item.enrolmentReportId);
+        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(
+          item.enrolmentReportId,
+          this.userInfo.contactId,
+        );
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {

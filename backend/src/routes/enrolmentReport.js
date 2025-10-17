@@ -78,8 +78,15 @@ router.patch(
   },
 );
 
-router.post('/adjustment', passport.authenticate('jwt', { session: false }), isValidBackendToken, [body('enrolmentReportId', '[enrolmentReportId] is required').notEmpty().isUUID()], (req, res) => {
-  return createAdjustmentEnrolmentReport(req, res);
-});
+router.post(
+  '/adjustment',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [body('enrolmentReportId', '[enrolmentReportId] is required').notEmpty().isUUID(), body('contactId', '[contactId] is required').notEmpty().isUUID()],
+  (req, res) => {
+    validationResult(req).throw();
+    return createAdjustmentEnrolmentReport(req, res);
+  },
+);
 
 module.exports = router;
