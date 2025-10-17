@@ -1211,9 +1211,7 @@ export default {
       return !this.readonly && this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
     },
     isSaveDisplayed() {
-      return (
-        !this.readonly && this.hasPermission([this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER])
-      );
+      return !this.readonly && this.hasPermission(this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER);
     },
   },
   async created() {
