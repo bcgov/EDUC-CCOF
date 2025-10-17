@@ -1320,7 +1320,6 @@ export default {
     },
 
     getTotalEnrolledClass(field) {
-      console.log(this.enrolmentReport);
       return {
         'background-green':
           this.enrolmentReport.isAdjustment && this.enrolmentReport[field] !== this.previousEnrolmentReport[field],
