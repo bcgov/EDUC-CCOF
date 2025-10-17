@@ -1,35 +1,28 @@
 <template>
   <v-form ref="form">
-    <v-container>
-      <div align="center">
-        <div class="text-h5">
-          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
+    <v-container class="px-8 px-lg-12 pt-0">
+      <ApplicationPCFHeader
+        page-title="Early Childhood Educator Wage Enhancement (ECE-WE)"
+        :program-year="formattedProgramYear"
+        :organization-name="userInfo.organizationName"
+      />
+      <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
+        <div class="text-center mb-6">
+          <p v-if="showUnionQuestion">
+            Please select each facility you would like to opt-in to ECE-WE and indicate if they are unionized.
+          </p>
+          <p v-else>Please select each facility you would like to opt-in to ECE-WE:</p>
         </div>
-        <div class="text-h5 my-6">Early Childhood Educator Wage Enhancement (ECE-WE)</div>
-        <div class="text-h5 my-6" style="color: #003466">
-          {{ userInfo.organizationName }}
-        </div>
-      </div>
-      <div v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
-        <v-row v-if="showUnionQuestion" justify="center" class="pb-6"
-          >Please select each facility you would like to opt-in to ECE-WE and indicate if they are unionized.</v-row
-        >
-        <v-row v-else justify="center" class="pb-6"
-          >Please select each facility you would like to opt-in to ECE-WE:</v-row
-        >
-
-        <v-row justify="center">
-          <v-alert class="col-11" variant="outlined" prominent>
-            <span style="float: left">
-              <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
-            </span>
-            <span>
-              Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to
-              ECE-WE for each licence located at the same physical address.
-            </span>
-          </v-alert>
-        </v-row>
-      </div>
+        <v-alert prominent variant="outlined">
+          <template #prepend>
+            <v-icon color="primary" size="x-large">mdi-information</v-icon>
+          </template>
+          <span>
+            <strong>Note:</strong> if any of your facilities are located in the Vancouver Coastal Health Authority, you
+            must opt-in to ECE-WE for each licence located at the same physical address.
+          </span>
+        </v-alert>
+      </template>
       <v-row v-else-if="isFamilyFacilityOptIn" justify="center">
         <v-alert class="col-11" variant="outlined" prominent>
           <span style="float: left">
@@ -42,8 +35,7 @@
           </span>
         </v-alert>
       </v-row>
-      <br />
-      <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-2">
+      <v-skeleton-loader :loading="isLoading" type="table-tbody" class="my-8">
         <v-container fluid class="pa-0">
           <v-btn
             v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
@@ -58,7 +50,7 @@
           <div>
             <div v-for="(facility, index) in uiFacilities" :key="index">
               <v-row justify="center" class="pa-4">
-                <v-card elevation="4" class="py-2 px-5 mx-2 rounded-lg col-9" width="75%">
+                <v-card elevation="4" class="py-2 px-5 rounded-lg" width="75%">
                   <v-row>
                     <v-col cols="12" class="d-flex">
                       <strong>Facility ID: {{ navBarList[index].facilityAccountNumber }}</strong>
@@ -143,48 +135,48 @@
           </div>
         </v-container>
       </v-skeleton-loader>
-      <NavButton
-        :is-next-displayed="true"
-        :is-save-displayed="true"
-        :is-save-disabled="isSaveBtnDisabled || isReadOnly"
-        :is-next-disabled="isNextBtnDisabled"
-        :is-processing="isProcessing"
-        @previous="previous"
-        @next="next"
-        @validate-form="validateForm()"
-        @save="saveFacilities(true)"
-      />
     </v-container>
   </v-form>
+  <NavButton
+    :is-next-displayed="true"
+    :is-save-displayed="true"
+    :is-save-disabled="isSaveBtnDisabled || isReadOnly"
+    :is-next-disabled="isNextBtnDisabled"
+    :is-processing="isProcessing"
+    @previous="previous"
+    @next="next"
+    @validate-form="validateForm()"
+    @save="saveFacilities(true)"
+  />
 </template>
 
 <script>
 import { mapState, mapActions } from 'pinia';
 import { cloneDeep } from 'lodash';
-
-import { useAuthStore } from '@/store/auth.js';
-import { useEceweAppStore } from '@/store/eceweApp.js';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useEceweAppStore } from '@/store/eceweApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-
 import {
+  ECEWE_FACILITY_UNION_TYPES,
+  OPT_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
   PATHS,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
   changeUrl,
   pcfUrl,
-  ORGANIZATION_PROVIDER_TYPES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  OPT_STATUSES,
-  ECEWE_FACILITY_UNION_TYPES,
 } from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import NavButton from '@/components/util/NavButton.vue';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton },
+  components: { ApplicationPCFHeader, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     await this.saveFacilities(false);
@@ -253,7 +245,7 @@ export default {
       return this.uiFacilities.every((fac) => fac.optInOrOut);
     },
     showUnionQuestion() {
-      return this.model?.fundingModel && this.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+      return ApplicationService.showEceweFacilityUnionQuestion(this.model, this.getLanguageYearLabel);
     },
   },
   async mounted() {

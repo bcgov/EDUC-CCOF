@@ -1,192 +1,102 @@
 <template>
   <v-container v-if="!isLoading" fluid class="pa-0">
-    <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
-      <v-container>
-        <v-row class="justify-center">
-          <v-col align-self="start">
-            <v-radio-group
-              v-model="model.optInECEWE"
-              :disabled="isQuestionReadOnly('optInECEWE')"
-              :rules="rules.required"
-            >
-              <template #label>
-                <span class="radio-label" style="text-align: left"
-                  >For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any facility
-                  in your organization?</span
-                >
-              </template>
-
-              <div class="flex-left pt-2">
-                <v-radio class="pt-2 pr-8" label="Yes" :value="OPT_STATUSES.OPT_IN" />
-                <v-radio class="pt-1" label="No" :value="OPT_STATUSES.OPT_OUT" />
-              </div>
-            </v-radio-group>
-          </v-col>
-        </v-row>
-      </v-container>
+    <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
+      <p class="pa-2">
+        For the {{ formattedProgramYear }} funding term, would you like to opt-in to ECE-WE for any facility in your
+        organization?
+      </p>
+      <v-radio-group v-model="model.optInECEWE" :disabled="isQuestionReadOnly('optInECEWE')" :rules="rules.required">
+        <v-radio label="Yes" :value="OPT_STATUSES.OPT_IN" />
+        <v-radio label="No" :value="OPT_STATUSES.OPT_OUT" />
+      </v-radio-group>
     </v-card>
 
     <template v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP">
       <!-- ccfri 3819 new order and re-wording of all ece-we questions -->
       <template v-if="languageYearLabel === programYearTypes.FY2025_26 && model.optInECEWE === OPT_STATUSES.OPT_IN">
-        <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
-          <v-container>
-            <v-row class="justify-left">
-              <v-col align-self="start">
-                <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
-                  <template #label>
-                    <div class="radio-label text-left">
-                      Are you a public sector employer, as defined in the Public Sector Employers Act?
-                    </div>
-                  </template>
-                  <div class="flex-left">
-                    <v-radio class="pt-2 pr-8" label="Yes" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES" />
-                    <v-radio
-                      class="pt-1"
-                      label="No"
-                      :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO"
-                      @click="model.applicableSector = null"
-                    />
-                  </div>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-          </v-container>
+        <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
+          <p class="pa-2">Are you a public sector employer, as defined in the Public Sector Employers Act?</p>
+          <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
+            <v-radio label="Yes" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES" />
+            <v-radio label="No" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO" @click="model.applicableSector = null" />
+          </v-radio-group>
         </v-card>
 
-        <v-card elevation="4" class="py-2 px-5 my-10 rounded-lg">
-          <v-container>
-            <v-row class="justify-left">
-              <v-col align-self="start">
-                <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly" :rules="rules.required">
-                  <template #label>
-                    <div class="radio-label text-left">Which of the following describes your organization?</div>
-                  </template>
-                  <div class="flex-left">
-                    <v-radio
-                      class="pt-1"
-                      label="We are not a member of the Community Social Services Employers' Association (CSSEA)."
-                      :value="ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA"
-                      @click="
-                        model.isUnionAgreementReached = null;
-                        model.applicableSector = null;
-                      "
-                    />
-                    <v-radio
-                      class="pt-2 pr-8"
-                      label="We are a member of the Community Social Services Employers' Association (CSSEA)."
-                      :value="ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA"
-                      @click="
-                        model.isUnionAgreementReached = null;
-                        model.applicableSector = null;
-                      "
-                    />
-                  </div>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-            <template v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
-              <v-row class="justify-left">
-                <v-col align-self="start">
-                  <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
-                    <template #label>
-                      <div class="radio-label text-left">Please select a response</div>
-                    </template>
-                    <div class="flex-left">
-                      <v-radio
-                        class="pt-1"
-                        label="None of our facilities are unionized."
-                        :value="ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED"
-                        @click="model.isUnionAgreementReached = null"
-                      />
-                      <v-radio
-                        class="pt-2 pr-8"
-                        label="Some or all of our facilities are unionized."
-                        :value="ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED"
-                        @click="model.isUnionAgreementReached = null"
-                      />
-                    </div>
-                  </v-radio-group>
-                </v-col>
-              </v-row>
-              <div v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
-                <v-row class="justify-left">
-                  <AppAlertBanner type="info" class="ma-2 mb-4 w-100">Please Confirm</AppAlertBanner>
-                </v-row>
-                <v-row>
-                  <v-col class="pl-6 d-flex py-0">
-                    <v-checkbox
-                      v-model="model.isUnionAgreementReached"
-                      class="pa-0"
-                      :value="ECEWE_UNION_AGREEMENT_REACHED"
-                      label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-                      :disabled="isReadOnly"
-                      :rules="rules.required"
-                    />
-                  </v-col>
-                </v-row>
-              </div>
+        <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
+          <div>
+            <p class="pa-2">Which of the following describes your organization?</p>
+            <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly" :rules="rules.required">
+              <v-radio
+                label="We are not a member of the Community Social Services Employers' Association (CSSEA)."
+                :value="ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA"
+                @click="
+                  model.isUnionAgreementReached = null;
+                  model.applicableSector = null;
+                "
+              />
+              <v-radio
+                label="We are a member of the Community Social Services Employers' Association (CSSEA)."
+                :value="ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA"
+                @click="
+                  model.isUnionAgreementReached = null;
+                  model.applicableSector = null;
+                "
+              />
+            </v-radio-group>
+          </div>
+          <template v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
+            <p class="pa-2">Please select a response</p>
+            <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
+              <v-radio
+                label="None of our facilities are unionized."
+                :value="ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED"
+                @click="model.isUnionAgreementReached = null"
+              />
+              <v-radio
+                label="Some or all of our facilities are unionized."
+                :value="ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED"
+                @click="model.isUnionAgreementReached = null"
+              />
+            </v-radio-group>
+            <template v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
+              <AppAlertBanner type="info">Please Confirm</AppAlertBanner>
+              <v-checkbox
+                v-model="model.isUnionAgreementReached"
+                :value="ECEWE_UNION_AGREEMENT_REACHED"
+                label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
+                :disabled="isReadOnly"
+                :rules="rules.required"
+              />
             </template>
-            <v-row>
-              <AppAlertBanner v-if="showCSSEAWarning" type="error" class="ma-2 mb-4"
-                >If you are a member of the Community Social Services Employers' Association (CSSEA), you are a public
-                sector employer. Please update your response to the previous question.</AppAlertBanner
-              >
-            </v-row>
-          </v-container>
+          </template>
+          <AppAlertBanner v-if="showCSSEAWarning" type="error" class="ma-2 mb-4">
+            If you are a member of the Community Social Services Employers' Association (CSSEA), you are a public sector
+            employer. Please update your response to the previous question.
+          </AppAlertBanner>
         </v-card>
 
         <v-card
           v-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA"
           elevation="4"
-          class="py-2 px-5 my-10 rounded-lg"
+          class="px-4 px-lg-8 py-4 my-10 rounded-lg"
         >
-          <v-container>
-            <v-row>
-              <v-col align-self="start">
-                <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly" :rules="rules.required">
-                  <template #label>
-                    <div class="radio-label text-left">Select your funding model:</div>
-                  </template>
-                  <div class="flex-left">
-                    <v-radio
-                      :label="fundingModelTypeList[0].description"
-                      :value="fundingModelTypeList[0].id"
-                      class="pt-2 pr-8"
-                    />
-                    <v-radio
-                      :label="fundingModelTypeList[1].description"
-                      :value="fundingModelTypeList[1].id"
-                      class="pt-1 pr-8"
-                    />
-                    <v-radio
-                      :label="fundingModelTypeList[3].description"
-                      :value="fundingModelTypeList[3].id"
-                      class="pt-1 pr-8"
-                    />
-                  </div>
-                </v-radio-group>
-              </v-col>
-            </v-row>
-            <div v-if="model.fundingModel">
-              <v-row class="justify-left">
-                <AppAlertBanner type="info" class="ma-2 mb-4 w-100">Please Confirm</AppAlertBanner>
-              </v-row>
-              <v-row>
-                <v-col class="pl-6 d-flex py-0">
-                  <v-checkbox
-                    v-model="model.isUnionAgreementReached"
-                    class="pa-0"
-                    :true-value="ECEWE_UNION_AGREEMENT_REACHED"
-                    :false-value="null"
-                    label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-                    :disabled="isReadOnly"
-                    :rules="rules.required"
-                  />
-                </v-col>
-              </v-row>
-            </div>
-          </v-container>
+          <p class="pa-2">Select your funding model:</p>
+          <v-radio-group v-model="model.fundingModel" :disabled="isReadOnly" :rules="rules.required">
+            <v-radio :label="fundingModelTypeList[0].description" :value="fundingModelTypeList[0].id" />
+            <v-radio :label="fundingModelTypeList[1].description" :value="fundingModelTypeList[1].id" />
+            <v-radio :label="fundingModelTypeList[3].description" :value="fundingModelTypeList[3].id" />
+          </v-radio-group>
+          <template v-if="model.fundingModel">
+            <AppAlertBanner type="info">Please Confirm</AppAlertBanner>
+            <v-checkbox
+              v-model="model.isUnionAgreementReached"
+              :true-value="ECEWE_UNION_AGREEMENT_REACHED"
+              :false-value="null"
+              label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
+              :disabled="isReadOnly"
+              :rules="rules.required"
+            />
+          </template>
         </v-card>
       </template>
 
@@ -379,6 +289,8 @@
 
 <script>
 import { mapState } from 'pinia';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
@@ -387,16 +299,15 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import {
-  OPT_STATUSES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-  ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
+  ECEWE_SECTOR_TYPES,
   ECEWE_UNION_AGREEMENT_REACHED,
+  OPT_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 
 export default {
   components: { AppAlertBanner },
@@ -434,10 +345,7 @@ export default {
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     showCSSEAWarning() {
       //this is only for 2025-26
-      return (
-        this.model?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO &&
-        this.model?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA
-      );
+      return ApplicationService.showCSSEAWarning(this.model);
     },
     showApplicableSectorQuestion() {
       //This question is only valid from 2023-24 and before.
@@ -506,19 +414,3 @@ export default {
   },
 };
 </script>
-<style>
-.flex-center {
-  display: flex;
-  align-items: center;
-  align-self: center;
-}
-.radio-label {
-  font-size: 17px;
-}
-
-div.v-skeleton-loader__actions.v-skeleton-loader__bone {
-  align-self: center;
-  align-items: center;
-  text-align: center;
-}
-</style>

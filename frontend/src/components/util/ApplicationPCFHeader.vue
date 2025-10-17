@@ -2,7 +2,7 @@
   <div class="text-center mb-4">
     <p class="text-h5 mb-4">Child Care Operating Funding Program - {{ programYear }} Program Confirmation Form</p>
     <h2 v-if="pageTitle" class="my-4">{{ pageTitle }}</h2>
-    <p v-if="organizationName" class="text-h5 my-4 blue-text">
+    <p v-if="organizationName" class="text-h5 my-4 text-primary">
       {{ organizationName }}
     </p>
     <FacilityHeader
