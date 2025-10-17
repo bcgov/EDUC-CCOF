@@ -67,11 +67,12 @@ export default {
     }
   },
 
-  async createAdjustmentEnrolmentReport(enrolmentReportId) {
+  async createAdjustmentEnrolmentReport(enrolmentReportId, contactId) {
     try {
       if (isEmpty(enrolmentReportId)) return;
       const response = await ApiService.apiAxios.post(`${ApiRoutes.ENROLMENT_REPORTS}/adjustment`, {
         enrolmentReportId: enrolmentReportId,
+        contactId: contactId,
       });
       return response;
     } catch (error) {

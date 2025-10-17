@@ -350,7 +350,10 @@ export default {
         if (this.isSubmissionDeadlinePassed(item)) return;
         this.loading = true;
         await EnrolmentReportService.updateEnrolmentReport(item.enrolmentReportId, { hasNextReportCreated: true });
-        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(item.enrolmentReportId);
+        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(
+          item.enrolmentReportId,
+          this.userInfo.contactId,
+        );
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {

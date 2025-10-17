@@ -90,8 +90,9 @@ router.post(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.ADJUST_EXISTING_ER),
-  [body('enrolmentReportId', '[enrolmentReportId] is required').notEmpty().isUUID()],
+  [body('enrolmentReportId', '[enrolmentReportId] is required').notEmpty().isUUID(), body('contactId', '[contactId] is required').notEmpty().isUUID()],
   (req, res) => {
+    validationResult(req).throw();
     return createAdjustmentEnrolmentReport(req, res);
   },
 );
