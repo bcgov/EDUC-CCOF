@@ -161,6 +161,11 @@ const ROLES = Object.freeze({
 });
 
 const PERMISSIONS = Object.freeze({
+  // Enrolment Report
+  EDIT_DRAFT_ER: '20',
+  ADJUST_EXISTING_ER: '21',
+  SUBMIT_ENROLMENT_REPORT: '22',
+  VIEW_ER: '23',
   // Applications/Renewals
   CREATE_NEW_APPLICATION: '24',
   SUBMIT_NEW_APPLICATION: '25',
