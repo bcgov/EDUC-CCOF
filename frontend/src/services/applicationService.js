@@ -646,24 +646,21 @@ export default {
   },
 
   // ECE-WE VALIDATIONS
-  isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel) {
+  isECEWEOrganizationComplete(ecewe, isGroup, languageYearLabel, applicationTemplateVersion) {
     if (isEmpty(ecewe)) return false;
     if (!isGroup || !ecewe.optInECEWE) return ecewe.optInECEWE != null;
     const requiredFields = [];
     if (languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
-      requiredFields.push(...this.requiredFieldsForECEWEOrganization202526Template(ecewe));
+      requiredFields.push(...this.requiredFieldsForECEWEOrganization202526Template(ecewe, applicationTemplateVersion));
     } else {
       requiredFields.push(...this.requiredFieldsForECEWEOrganizationPreviousYearsTemplate(ecewe, languageYearLabel));
     }
-    const isCSSEAValid =
-      languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 ||
-      ecewe?.publicSector !== ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO ||
-      ecewe?.describeOrgCSSEA !== ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA;
+    const isCSSEAValid = languageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 || !this.showCSSEAWarning(ecewe);
     return !hasEmptyFields(ecewe, requiredFields) && isCSSEAValid;
   },
 
   // 2025–26 FY and beyond (CCFRI-3819)
-  requiredFieldsForECEWEOrganization202526Template(ecewe) {
+  requiredFieldsForECEWEOrganization202526Template(ecewe, applicationTemplateVersion) {
     const requiredFields = ['publicSector', 'describeOrgCSSEA'];
     if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) {
       requiredFields.push('applicableSector');
@@ -672,7 +669,10 @@ export default {
       }
     }
     if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
-      requiredFields.push('fundingModel', 'isUnionAgreementReached');
+      requiredFields.push('isUnionAgreementReached');
+      if (showApplicationTemplateV1(applicationTemplateVersion)) {
+        requiredFields.push('fundingModel');
+      }
     }
     return requiredFields;
   },
@@ -700,12 +700,28 @@ export default {
     return requiredFields;
   },
 
+  showEceweFacilityUnionQuestion(eceweOrg, languageYearLabel) {
+    return (
+      eceweOrg?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES &&
+      eceweOrg?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA &&
+      languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26
+    );
+  },
+
   isECEWEFacilityComplete(ecewe, eceweOrg, languageYearLabel) {
     if (isEmpty(ecewe)) return false;
-    if (ecewe.optInOrOut && eceweOrg?.fundingModel && languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26) {
+    if (ecewe.optInOrOut && this.showEceweFacilityUnionQuestion(eceweOrg, languageYearLabel)) {
       return ecewe?.facilityUnionStatus != null;
     }
     return ecewe?.optInOrOut != null;
+  },
+
+  showCSSEAWarning(ecewe) {
+    //this is only for 2025-26
+    return (
+      ecewe?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO &&
+      ecewe?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA
+    );
   },
 
   /*

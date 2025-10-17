@@ -118,10 +118,9 @@
           variant="accordion"
         >
           <ECEWESummary
-            :ecewe="{}"
+            :ecewe="summaryModel?.ecewe"
             :ecewe-facility="facility.ecewe"
             :funding-model="summaryModel?.ecewe?.fundingModel"
-            :change-rec-guid="facility.changeRequestId"
             :program-year-id="programYearId"
           />
         </v-expansion-panel>

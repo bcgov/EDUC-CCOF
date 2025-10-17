@@ -289,6 +289,8 @@
 
 <script>
 import { mapState } from 'pinia';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useEceweAppStore } from '@/store/eceweApp.js';
@@ -297,16 +299,15 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import {
-  OPT_STATUSES,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
-  ORGANIZATION_PROVIDER_TYPES,
-  ECEWE_SECTOR_TYPES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
+  ECEWE_SECTOR_TYPES,
   ECEWE_UNION_AGREEMENT_REACHED,
+  OPT_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 
 export default {
   components: { AppAlertBanner },
@@ -344,10 +345,7 @@ export default {
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     showCSSEAWarning() {
       //this is only for 2025-26
-      return (
-        this.model?.publicSector === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO &&
-        this.model?.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA
-      );
+      return ApplicationService.showCSSEAWarning(this.model);
     },
     showApplicableSectorQuestion() {
       //This question is only valid from 2023-24 and before.

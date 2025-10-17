@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="isValidForm" v-model="isValidForm">
+  <v-form ref="form" v-model="isValidForm">
     <v-container class="px-8 px-lg-12 pt-0">
       <ApplicationPCFHeader
         page-title="Early Childhood Educator Wage Enhancement (ECE-WE)"
@@ -21,14 +21,22 @@
       </v-alert>
 
       <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody" class="my-2"></v-skeleton-loader>
-
-      <EceweEligibilityQuestions
-        v-else
-        ref="eligibilityQuestions"
-        :ecewe-model="model"
-        :is-loading="isLoading"
-        :is-read-only="isReadOnly"
-      />
+      <template v-else>
+        <EceweEligibilityQuestionsV1
+          v-if="showApplicationTemplateV1"
+          ref="eligibilityQuestions"
+          :ecewe-model="model"
+          :is-loading="isLoading"
+          :is-read-only="isReadOnly"
+        />
+        <EceweEligibilityQuestionsV2
+          v-else
+          ref="eligibilityQuestions"
+          :ecewe-model="model"
+          :is-loading="isLoading"
+          :is-read-only="isReadOnly"
+        />
+      </template>
     </v-container>
   </v-form>
   <NavButton
@@ -49,7 +57,8 @@
 import { mapState, mapActions } from 'pinia';
 import { cloneDeep } from 'lodash';
 
-import EceweEligibilityQuestions from '@/components/eceweApplication/EceweEligibilityQuestions.vue';
+import EceweEligibilityQuestionsV1 from '@/components/applicationTemplates/v1/group/ECEWE/EceweEligibilityQuestions.vue';
+import EceweEligibilityQuestionsV2 from '@/components/applicationTemplates/v2/group/ECEWE/EceweEligibilityQuestions.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
@@ -76,7 +85,7 @@ import rules from '@/utils/rules.js';
 import { isNullOrBlank } from '@/utils/common.js';
 
 export default {
-  components: { ApplicationPCFHeader, EceweEligibilityQuestions, NavButton },
+  components: { ApplicationPCFHeader, EceweEligibilityQuestionsV1, EceweEligibilityQuestionsV2, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     this.setIsStarted(true);
@@ -103,6 +112,7 @@ export default {
       'applicationStatus',
       'unlockEcewe',
       'applicationId',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
@@ -200,7 +210,7 @@ export default {
     },
 
     validateForm() {
-      this.$refs.isValidForm?.validate();
+      this.$refs.form?.validate();
     },
 
     /* Clear values for unanswered questions, in case user changes selection after save */
