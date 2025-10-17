@@ -103,6 +103,9 @@ async function createAdjustmentEnrolmentReport(req, res) {
   try {
     const payload = {
       ERGuid: req.body.enrolmentReportId,
+      targetEntityLogicalName: 'contact',
+      targetEntitySetName: 'contacts',
+      targetRecordGuid: req.body.contactId,
     };
     const response = await postAdjustmentERGeneration(payload);
     return res.status(HttpStatus.CREATED).json(response.data.ccof_monthlyenrollmentreportid);
