@@ -1282,15 +1282,12 @@ export default {
     },
 
     async loadPreviousEnrolmentReport() {
-      console.log('Loading previous enrolment report...');
       this.previousEnrolmentReport = await EnrolmentReportService.getEnrolmentReport(
         this.enrolmentReport.prevEnrolmentReportId,
       );
-      console.log('Previous enrolment report loaded:', this.previousEnrolmentReport);
       this.previousDailyEnrolments = await EnrolmentReportService.getDailyEnrolments(
         this.previousEnrolmentReport.enrolmentReportId,
       );
-      console.log('Previous daily enrolments loaded:', this.previousDailyEnrolments);
     },
 
     formatCCFRICurrency(value) {
