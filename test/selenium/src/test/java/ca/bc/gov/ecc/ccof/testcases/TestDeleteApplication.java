@@ -18,19 +18,15 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestDeleteApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestDeleteApplication.class);
-	Utilities ut;
-	CRMSignInCredentialPage objCRMSignInCredentialPage;
-	DeleteApplicationPage deleteapp;
-	BCeIDPage bceidpage;
-	OrganizationInfoPage orginfo;
-	ApplicationInfoPage appinfo;
 
 	@Test(priority = 1)
 	public void deleteApplication(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "TestDeleteApplication");
 		logger.info("Starting the TestDeleteApplication test...");
-		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+
+		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+		Utilities ut = new Utilities(driver);
+
 		// login to application
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
@@ -48,7 +44,9 @@ public class TestDeleteApplication extends BaseTest {
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
-		deleteapp = new DeleteApplicationPage(driver);
+
+		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(3000);
@@ -56,19 +54,25 @@ public class TestDeleteApplication extends BaseTest {
 		Thread.sleep(5000);
 		deleteapp.fullName();
 		Thread.sleep(3000);
-		bceidpage = new BCeIDPage(driver);
+
+		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(3000);
-		orginfo = new OrganizationInfoPage(driver);
+
+		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+
 		// selecting the application
 		orginfo.clickMainApplication();
 		Thread.sleep(5000);
-		appinfo = new ApplicationInfoPage(driver);
+
+		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+
 		// deleting the application
 		appinfo.clickDeleteBtn();
 		Thread.sleep(3000);
 		appinfo.clickDeleteConfirmBtn();
 		Thread.sleep(5000);
+
 		// verifying the application is deleted
 		ut.assertElementDeleted(orginfo.getOpenApplications());
 		logger.info("Ending the TestDeleteApplication test...");

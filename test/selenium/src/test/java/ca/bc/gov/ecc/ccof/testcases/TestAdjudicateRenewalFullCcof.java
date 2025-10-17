@@ -13,28 +13,21 @@ import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CcofPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
-import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAdjudicateRenewalFullCcof extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcof.class);
-	Utilities ut;
-	CRMSignInCredentialPage objCRMSignInCredentialPage;
-	DeleteApplicationPage deleteapp;
-	BCeIDPage bceidpage;
-	OrganizationInfoPage orginfo;
-	ApplicationInfoPage appinfo;
-	CcofPage ccofinfo;
-	FacilityInfoPage facilityinfo;
 
 	@Test(priority = 1)
 	public void adjudicateRenewalCcof(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcof");
 		logger.info("Starting the AdjudicateRenewalCcof test...");
-		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+
+		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+		Utilities ut = new Utilities(driver);
+
 		// login to application
 		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
@@ -52,7 +45,9 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(5000);
-		deleteapp = new DeleteApplicationPage(driver);
+
+		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
@@ -60,21 +55,27 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		Thread.sleep(5000);
 		deleteapp.fullName();
 		Thread.sleep(5000);
-		bceidpage = new BCeIDPage(driver);
+
+		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
-		orginfo = new OrganizationInfoPage(driver);
+
+		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+
 		// selecting the application
 		ut.waitForElementToLoad(orginfo.getOpenRenewalApplication());
 		orginfo.clickRenewalApplication();
 		Thread.sleep(3000);
-		appinfo = new ApplicationInfoPage(driver);
+
+		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+
 		// start of CCOF Adjudication
 		appinfo.clickRelatedTab();
 		ut.waitForElementToLoad(appinfo.waitBeforeCCFOSLink());
 		appinfo.clickCCFOSLink();
 		ut.waitForElementToLoad(appinfo.waitBeforeClickCcfos());
 		appinfo.clickCcfos();
-		ccofinfo = new CcofPage(driver);
+
+		CcofPage ccofinfo = new CcofPage(driver);
 		ut.waitForElementToLoad(ccofinfo.waitBeforeCcofAdjudicationLink());
 		ccofinfo.clickCcofAdjudicationLink();
 		Thread.sleep(2000);
@@ -92,12 +93,14 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		ut.waitForElementToLoad(ccofinfo.waitBeforeBaseFundingProgressStatusField());
 		ccofinfo.clickBaseFundingProgressStatusField();
 		Thread.sleep(5000);
+
 		// selecting Confirmed - Active from dropdown
 		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
 		ut.waitForElementToLoad(ccofinfo.waitBeforeSaveAndCloseBtn());
 		ccofinfo.clickSaveAndCloseBtn();
 		ut.waitForElementToLoad(appinfo.waitBeforeCcofTab());
 		appinfo.clickCcofTab();
+
 		// changing the CCOF status to Active
 		ut.waitForElementToLoad(appinfo.waitBeforeCcofStatus());
 		appinfo.clickCcofStatus();

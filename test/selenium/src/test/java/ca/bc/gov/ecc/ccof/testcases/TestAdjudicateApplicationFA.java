@@ -8,11 +8,9 @@ import org.testng.annotations.Test;
 
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
-import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
-import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FundingAgreementPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
@@ -21,21 +19,14 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationFA.class);
 
-	Utilities ut;
-	CRMSignInCredentialPage objCRMSignInCredentialPage;
-	DeleteApplicationPage deleteapp;
-	BCeIDPage bceidpage;
-	OrganizationInfoPage orginfo;
-	ApplicationInfoPage appinfo;
-	FundingAgreementPage fainfo;
-	FacilityInfoPage facilityinfo;
-
 	@Test(priority = 1)
 	public void adjudicateApplicationsFA(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationFA");
 		logger.info("Starting the AdjudicateApplicationFA test...");
-		objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+
+		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+		Utilities ut = new Utilities(driver);
+
 		// Login to CRM
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
@@ -53,7 +44,9 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(8000);
-		deleteapp = new DeleteApplicationPage(driver);
+
+		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+
 		// Search contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
@@ -61,23 +54,29 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		Thread.sleep(5000);
 		deleteapp.fullName();
 		Thread.sleep(5000);
-		bceidpage = new BCeIDPage(driver);
+
+		BCeIDPage bceidpage = new BCeIDPage(driver);
+
 		// Switch to organization information page
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(5000);
-		orginfo = new OrganizationInfoPage(driver);
+
+		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
+
 		// Open funding agreement and adjudicate
 		orginfo.clickFundingAgreement();
 		Thread.sleep(5000);
-		fainfo = new FundingAgreementPage(driver);
+
+		FundingAgreementPage fainfo = new FundingAgreementPage(driver);
 		fainfo.enterStartDate("04/01/2025");// date should be within an year from end date of FA
 		Thread.sleep(2000);
 		ut.javaScriptExecutorAction(fainfo.clickReadyForProviderAction());
 		Thread.sleep(2000);
 		fainfo.clickSaveAndClose();
 		Thread.sleep(3000);
+
 		// Change status to Drafted - with Ministry
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
@@ -90,6 +89,7 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		ut.selectDropdownValue("Drafted - with Ministry", fainfo.getStatusReasonField());
 		Thread.sleep(2000);
 		fainfo.clickSaveAndClose();
+
 		// Change status to Approved
 		Thread.sleep(2000);
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
@@ -103,6 +103,7 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		ut.selectDropdownValue("Approved", fainfo.getStatusReasonField());
 		fainfo.clickSaveAndClose();
 		Thread.sleep(2000);
+
 		// Change status to Active
 		ut.scrollToElement(orginfo.getOpenFundingAgreement());
 		Thread.sleep(5000);

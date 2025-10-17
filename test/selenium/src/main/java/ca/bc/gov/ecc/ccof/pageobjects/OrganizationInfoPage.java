@@ -21,10 +21,6 @@ public class OrganizationInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[@aria-label='Submitted']")
 	List<WebElement> openApplications;
 
-	public List<WebElement> getOpenApplications() {
-		return openApplications;
-	}
-
 	@FindBy(xpath = "//*[@aria-label='Renewal']")
 	WebElement openRenewalApplication;
 
@@ -61,6 +57,10 @@ public class OrganizationInfoPage extends BaseTest {
 
 	public WebElement getOpenRenewalApplication() {
 		return openRenewalApplication;
+	}
+
+	public List<WebElement> getOpenApplications() {
+		return openApplications;
 	}
 
 }
