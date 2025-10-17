@@ -1140,9 +1140,8 @@
   />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
-    :is-save-displayed="true"
-    :is-save-disabled="readonly"
-    :is-next-displayed="true"
+    :is-save-displayed="isSaveDisplayed"
+    :is-next-displayed="isNextDisplayed"
     @previous="previous"
     @next="next"
     @save="save(true)"
@@ -1157,6 +1156,7 @@ import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
 import FullMonthClosureConfirmationDialog from '@/components/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
@@ -1177,7 +1177,7 @@ export default {
     BackConfirmationDialog,
     FullMonthClosureConfirmationDialog,
   },
-  mixins: [enrolmentReportMixin],
+  mixins: [enrolmentReportMixin, permissionsMixin],
   data() {
     return {
       originalEnrolmentReport: {},
@@ -1206,6 +1206,14 @@ export default {
     },
     isFormDisabled() {
       return this.readonly || this.enrolmentReport.isFullMonthClosure;
+    },
+    isNextDisplayed() {
+      return !this.readonly && this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
+    },
+    isSaveDisplayed() {
+      return (
+        !this.readonly && this.hasPermission([this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER])
+      );
     },
   },
   async created() {
@@ -1274,12 +1282,15 @@ export default {
     },
 
     async loadPreviousEnrolmentReport() {
+      console.log('Loading previous enrolment report...');
       this.previousEnrolmentReport = await EnrolmentReportService.getEnrolmentReport(
         this.enrolmentReport.prevEnrolmentReportId,
       );
+      console.log('Previous enrolment report loaded:', this.previousEnrolmentReport);
       this.previousDailyEnrolments = await EnrolmentReportService.getDailyEnrolments(
         this.previousEnrolmentReport.enrolmentReportId,
       );
+      console.log('Previous daily enrolments loaded:', this.previousDailyEnrolments);
     },
 
     formatCCFRICurrency(value) {
@@ -1312,6 +1323,7 @@ export default {
     },
 
     getTotalEnrolledClass(field) {
+      console.log(this.enrolmentReport);
       return {
         'background-green':
           this.enrolmentReport.isAdjustment && this.enrolmentReport[field] !== this.previousEnrolmentReport[field],
