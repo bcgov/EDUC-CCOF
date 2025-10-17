@@ -8,18 +8,16 @@ import { submitApp } from '../../support/pages/2-portal-application-pages/04-por
 function runCcofApp() {
     ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
-        ccofApp.validateGroupUrl('group')
+        ccofApp.validateGroupUrl('family')
         ccofApp.inputOrganizationInfo()
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
-        ccofApp.groupLicenses()
+        ccofApp.familyLicenses()
         ccofApp.offerExtendedHours()
-        ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
     })
 }
 
-// Test START
 function runCcfriApp() {
     ccfriApp.loadFixturesAndVariables()
     cy.then(()=> {
@@ -31,19 +29,20 @@ function runCcfriApp() {
 function runEceWeApp() {
     eceWeApp.loadFixturesAndVariables()
     cy.then(()=> {
-        eceWeApp.groupEceWe()
+        eceWeApp.familyEceWe()
         eceWeApp.supportingDocUpload()
     })
 }
 
-describe('Group Application Test', () => {
-    it('Should run through Group Application, submit and logout', () => {
+// Test START
+describe('Family Application Test', () => {
+    it('Should run through Family Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp('Group Provider')
+        cy.startNewApp('Family Provider')
     
         cy.then(()=> {
             runCcofApp()
@@ -52,5 +51,4 @@ describe('Group Application Test', () => {
             submitApp.summaryAndDeclaration()
         })
     })
-    
 })

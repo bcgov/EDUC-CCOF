@@ -1,6 +1,6 @@
 class LoginPage {
   visitLoginPage() {
-    cy.visit("/login");
+    cy.visit('/');
   }
 
   clickLoginButton() {
