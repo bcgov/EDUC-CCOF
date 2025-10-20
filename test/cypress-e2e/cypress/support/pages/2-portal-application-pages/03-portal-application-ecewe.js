@@ -23,7 +23,6 @@ class EceWeApplication {
             this.optInOrOut = this.optInOrOut.optIn
             this.publicSectorEmployer = this.publicSectorEmployer.isEmployer
             this.csseaSelection = this.cssea.csseaMember.status
-            this.fundingType = this.cssea.csseaMember.fundingModel.provinciallyFunded
             this.unionStatus = this.cssea.csseaNonMember.response.someOrAllUnionized
             this.facilityOptInOrOut = this.facility.facilityOptInOrOut.optIn
             this.facilityUnionStatus = this.facility.facilityUnionStatus.unionized
@@ -54,7 +53,6 @@ class EceWeApplication {
                     } 
                 } else {
                     // CSSEA Member
-                    cy.getByLabel(this.fundingType).click({force:true})
                     cy.getByLabel(this.cssea.confirmation).click({force:true})
                 }
 
