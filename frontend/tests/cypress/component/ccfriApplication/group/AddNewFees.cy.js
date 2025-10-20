@@ -144,7 +144,7 @@ describe('<AddNewFees />', () => {
     cy.get('@routerPush').should('have.been.calledWith', pcfUrlGuid(PATHS.CCFRI_RFI, programYearId));
   });
 
-  it.only('should render navigation buttons', () => {
+  it('should render navigation buttons', () => {
     mountWithPinia({
       app: {
         programYearList: {

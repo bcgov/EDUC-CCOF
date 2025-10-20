@@ -257,7 +257,7 @@ describe('<ApprovableFeeSchedule />', () => {
     cy.contains('button', 'Add File');
   });
 
-  it.only('should render navigation buttons', () => {
+  it('should render navigation buttons', () => {
     const fundingGuidelinesUrl = 'www.test-123.ca';
     mountWithPinia({
       app: {
