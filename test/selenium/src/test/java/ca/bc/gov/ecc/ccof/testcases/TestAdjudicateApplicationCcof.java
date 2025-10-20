@@ -16,18 +16,20 @@ import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateGroupApplicationCcof extends BaseTest {
+public class TestAdjudicateApplicationCcof extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateGroupApplicationCcfri.class);
-	Utilities ut;
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationCcof.class);
 
 	@Test(priority = 1)
-	public void AdjudicateGroupApplicationsCcof(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateGroupApplicationCcof");
-		logger.info("Starting the AdjudicateGroupApplicationCcof test...");
+	public void adjudicateApplicationsCcof(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcof");
+		logger.info("Starting the AdjudicateApplicationCcof test...");
+
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+		Utilities ut = new Utilities(driver);
+
 		// login to application
+		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
@@ -43,7 +45,9 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(5000);
+
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(5000);
@@ -51,14 +55,19 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 		deleteapp.fullName();
 		Thread.sleep(5000);
+
 		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(5000);
+
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+
 		// selecting the application
-		orginfo.clickApplication();
+		orginfo.clickMainApplication();
 		Thread.sleep(5000);
+
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+
 		// start of CCOF Adjudication
 		appinfo.clickRelatedTab();
 		Thread.sleep(5000);
@@ -66,6 +75,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 		appinfo.clickCcfos();
 		Thread.sleep(5000);
+
 		CcofPage ccofinfo = new CcofPage(driver);
 		ccofinfo.clickCcofAdjudicationLink();
 		Thread.sleep(5000);
@@ -91,6 +101,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 		ccofinfo.clickBaseFundingProgressStatusField();
 		Thread.sleep(5000);
+
 		// selecting Confirmed - Active from dropdown
 		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
 		Thread.sleep(5000);
@@ -98,6 +109,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		Thread.sleep(10000);
 		appinfo.clickCcofTab();
 		Thread.sleep(5000);
+
 		// changing the CCOF status to Active
 		appinfo.clickCcofStatus();
 		Thread.sleep(5000);
@@ -106,7 +118,7 @@ public class TestAdjudicateGroupApplicationCcof extends BaseTest {
 		appinfo.clickSaveBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the AdjudicateGroupApplicationCcof test...");
+		logger.info("Ending the AdjudicateApplicationCcof test...");
 
 	}
 

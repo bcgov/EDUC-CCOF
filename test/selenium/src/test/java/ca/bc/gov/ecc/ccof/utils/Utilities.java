@@ -3,6 +3,7 @@ package ca.bc.gov.ecc.ccof.utils;
 import java.time.Duration;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -59,9 +60,29 @@ public class Utilities extends BaseTest {
 	}
 
 	public void clickIfPresent(WebElement element) {
-		if (element != null && element.isDisplayed() && element.isEnabled()) {
-			element.click();
+		try {
+			if (element != null && element.isDisplayed() && element.isEnabled()) {
+				element.click();
+			}
+		} catch (Exception e) {
+			logger.error("Unable to click element: " + e.getMessage());
 		}
+
+	}
+
+	public void waitForElementToLoad(WebElement ele) {
+		new WebDriverWait(driver, Duration.ofSeconds(100));
+
+		// Wait for the document to be fully loaded
+		wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState")
+				.equals("complete"));
+
+		// Wait for the element to be visible
+		wait.until(ExpectedConditions.visibilityOf(ele));
+	}
+
+	public void assertElementDeleted(List<WebElement> elements) {
+		Assertions.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
 	}
 
 }

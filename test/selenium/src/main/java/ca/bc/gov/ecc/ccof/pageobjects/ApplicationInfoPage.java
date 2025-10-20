@@ -42,6 +42,19 @@ public class ApplicationInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[@title='Save']")
 	WebElement saveBtn;
 
+	@FindBy(xpath = "//*[@title='Delete']")
+	WebElement deleteBtn;
+
+	@FindBy(xpath = "//*[@data-id='confirmButton']")
+	WebElement deleteConfirmBtn;
+
+	// declaration B status
+	@FindBy(xpath = "//*[@aria-label='Declaration B Status']")
+	WebElement declarationBStatus;
+
+	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
+	List<WebElement> declarationBStatusOptions;
+
 	public ApplicationInfoPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -50,6 +63,10 @@ public class ApplicationInfoPage extends BaseTest {
 
 	public void clickRelatedTab() {
 		relatedTab.click();
+	}
+
+	public WebElement waitBeforeRelatedTab() {
+		return relatedTab;
 	}
 
 	public void clickCCFRISLink() {
@@ -65,16 +82,32 @@ public class ApplicationInfoPage extends BaseTest {
 		action.moveToElement(selectCcfosLink).click().build().perform();
 	}
 
+	public WebElement waitBeforeCCFOSLink() {
+		return selectCcfosLink;
+	}
+
 	public void clickCcfos() {
 		ccfosLink.click();
+	}
+
+	public WebElement waitBeforeClickCcfos() {
+		return ccfosLink;
 	}
 
 	public void clickCcofTab() {
 		ccofTab.click();
 	}
 
+	public WebElement waitBeforeCcofTab() {
+		return ccofTab;
+	}
+
 	public void clickCcofStatus() {
 		ccofStatus.click();
+	}
+
+	public WebElement waitBeforeCcofStatus() {
+		return ccofStatus;
 	}
 
 	public List<WebElement> getCcofStatusOptions() {
@@ -83,5 +116,25 @@ public class ApplicationInfoPage extends BaseTest {
 
 	public void clickSaveBtn() {
 		saveBtn.click();
+	}
+
+	public WebElement waitBeforeSaveBtn() {
+		return saveBtn;
+	}
+
+	public void clickDeleteBtn() {
+		deleteBtn.click();
+	}
+
+	public void clickDeleteConfirmBtn() {
+		deleteConfirmBtn.click();
+	}
+
+	public void clickDeclarationBStatus() {
+		declarationBStatus.click();
+	}
+
+	public List<WebElement> getDeclarationBStatusOptions() {
+		return declarationBStatusOptions;
 	}
 }
