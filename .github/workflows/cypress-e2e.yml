@@ -16,7 +16,7 @@ jobs:
           working-directory: ./test/cypress-e2e
           browser: electron
           wait-on: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
-          spec: ./cypress/e2e/2-group-application/group-application-full-e2e.cy.js
+          spec: ./cypress/e2e/1-portal-login/portal-login-happy-path-e2e.cy.js
         env:
           CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
