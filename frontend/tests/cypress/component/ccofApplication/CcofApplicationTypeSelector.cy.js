@@ -71,17 +71,6 @@ describe('<CcofApplicationTypeSelector />', () => {
     cy.contains('Child Care Operating Funding - Base Funding').should('have.attr', 'target', '_blank');
   });
 
-  it('renders the Base Funding eligibility link correctly', () => {
-    cy.contains('Child Care Operating Funding - Base Funding')
-      .should('have.prop', 'href')
-      .and(
-        'eq',
-        'https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/base-funding',
-      );
-
-    cy.contains('Child Care Operating Funding - Base Funding').should('have.attr', 'target', '_blank');
-  });
-
   it('should render both `Group Provider` and `Family Provider` cards', () => {
     cy.contains('.v-card-title', 'Group Provider');
     cy.contains('.v-card-title', 'Family Provider');

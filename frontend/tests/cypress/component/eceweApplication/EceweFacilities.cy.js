@@ -17,7 +17,7 @@ const fundingModelTypeList = [
   { description: 'TestDesc3', id: 3 },
 ];
 
-const createAuthStore = () => ({
+const getAuthState = () => ({
   auth: {
     userInfo: {
       organizationName,
@@ -77,7 +77,7 @@ function mountWithPinia(state = {}, routeParams = { urlGuid: changeRecGuid }) {
 describe('<EceweFacilities />', () => {
   it('should render component basic header information', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getApplicationState(),
       ...getAppState(),
     });
@@ -90,7 +90,7 @@ describe('<EceweFacilities />', () => {
   context('GROUP Organization Provider content', () => {
     it('should show the "Please select each facility" for union question', () => {
       mountWithPinia({
-        ...createAuthStore(),
+        ...getAuthState(),
         ...getApplicationState(),
         ...getAppState(),
         ...getOrganizationState(),
@@ -108,7 +108,7 @@ describe('<EceweFacilities />', () => {
 
     it('should show the "Please select each facility" for non union question', () => {
       mountWithPinia({
-        ...createAuthStore(),
+        ...getAuthState(),
         ...getApplicationState(),
         ...getAppState(),
         ...getOrganizationState(),
@@ -125,7 +125,7 @@ describe('<EceweFacilities />', () => {
 
   it('should render family facility opt-in message', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getApplicationState(),
       ...getAppState(),
       ...getEceweAppState({
@@ -140,7 +140,7 @@ describe('<EceweFacilities />', () => {
 
   it('should render `Opt-In All Facilities` button', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getApplicationState(),
       ...getAppState(),
       ...getOrganizationState(),
@@ -158,7 +158,7 @@ describe('<EceweFacilities />', () => {
     const facilityName = 'TEST_FAC_NAME';
 
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getApplicationState(),
       ...getAppState(),
       ...getOrganizationState(),
@@ -185,7 +185,7 @@ describe('<EceweFacilities />', () => {
 
   it('should render facility `Update` button', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getApplicationState(),
       ...getAppState(),
       ...getOrganizationState(),
@@ -214,7 +214,7 @@ describe('<EceweFacilities />', () => {
 
   it('should render radio inputs for optInOrOut', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getAppState(),
       ...getNavBarState(),
       ...getEceweAppState(),
@@ -226,7 +226,7 @@ describe('<EceweFacilities />', () => {
 
   it('should render unionized and non-unionized radio inputs when opt in', () => {
     mountWithPinia({
-      ...createAuthStore(),
+      ...getAuthState(),
       ...getAppState(),
       ...getNavBarState(),
       ...getEceweAppState({
