@@ -4,6 +4,11 @@ import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 const programYearId = '1234';
 
+function verifyExternalLink(linkText, expectedHref) {
+  cy.contains(linkText).should('have.prop', 'href').and('eq', expectedHref);
+  cy.contains(linkText).should('have.attr', 'target', '_blank');
+}
+
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
@@ -39,36 +44,24 @@ describe('<CcofApplicationTypeSelector />', () => {
   });
 
   it('should render the Family Form link correctly', () => {
-    cy.contains('Family Form')
-      .should('have.prop', 'href')
-      .and(
-        'eq',
-        'https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1320_ccof_family_application.pdf',
-      );
-
-    cy.contains('Family Form').should('have.attr', 'target', '_blank');
+    verifyExternalLink(
+      'Family Form',
+      'https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1320_ccof_family_application.pdf',
+    );
   });
 
   it('should render the Group Form link correctly', () => {
-    cy.contains('Group Form')
-      .should('have.prop', 'href')
-      .and(
-        'eq',
-        'https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1321_ccof_group_application.pdf',
-      );
-
-    cy.contains('Group Form').should('have.attr', 'target', '_blank');
+    verifyExternalLink(
+      'Group Form',
+      'https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/cf1321_ccof_group_application.pdf',
+    );
   });
 
   it('should render the Base Funding eligibility link correctly', () => {
-    cy.contains('Child Care Operating Funding - Base Funding')
-      .should('have.prop', 'href')
-      .and(
-        'eq',
-        'https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/base-funding',
-      );
-
-    cy.contains('Child Care Operating Funding - Base Funding').should('have.attr', 'target', '_blank');
+    verifyExternalLink(
+      'Child Care Operating Funding - Base Funding',
+      'https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/base-funding',
+    );
   });
 
   it('should render both `Group Provider` and `Family Provider` cards', () => {
