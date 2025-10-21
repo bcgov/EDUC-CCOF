@@ -19,11 +19,11 @@ const getCCFRIStoreState = (overrides = {}) => ({
   },
 });
 
-function mountWithPinia(
-  initialState = {},
-  routeParams = { urlGuid: ccfriApplicationId },
-  dataOverride = { loading: false },
-) {
+function mountWithPinia(initialState, routeParams, dataOverride) {
+  initialState = initialState || {};
+  routeParams = routeParams || { urlGuid: ccfriApplicationId };
+  dataOverride = dataOverride || { loading: false };
+
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ExistingFacilityFees, {
       global: {

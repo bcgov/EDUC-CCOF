@@ -61,7 +61,8 @@ const getNavBarState = (navBarList = [{}]) => ({
   },
 });
 
-function mountWithPinia(state = {}, routeParams = { urlGuid: changeRecGuid }) {
+function mountWithPinia(state = {}, routeParams) {
+  routeParams = routeParams || { urlGuid: changeRecGuid };
   cy.setupPinia({ initialState: state, stubActions: false }).then((pinia) => {
     cy.mount(EceweFacilities, {
       global: {

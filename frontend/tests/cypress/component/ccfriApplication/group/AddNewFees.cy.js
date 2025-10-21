@@ -12,7 +12,9 @@ const baseAppState = {
   },
 };
 
-function mountWithPinia(initialState = {}, routeParams = { urlGuid: ccfriApplicationId }, overrides = {}) {
+function mountWithPinia(initialState = {}, routeParams, overrides = {}) {
+  routeParams = routeParams || { urlGuid: ccfriApplicationId };
+
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
     cy.mount(AddNewFees, {
@@ -79,9 +81,9 @@ describe('<AddNewFees />', () => {
     const rfi3percentCategories = ['Category1', 'Category2', 'Category3'];
     mountWithPinia({ ...baseAppState }, {}, { showRfiDialog: true, rfi3percentCategories });
 
-    rfi3percentCategories.forEach((category) => {
+    for (const category of rfi3percentCategories) {
       cy.contains(category).should('exist');
-    });
+    }
   });
 
   it('should navigate to rfi on clicking `Continue`', () => {

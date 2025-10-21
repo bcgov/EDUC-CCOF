@@ -23,15 +23,10 @@ const fac2 = {
 
 function mountWithPinia(initialState = {}, overrides = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     cy.mount(CcfriEceLanding, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
+        mocks: {},
       },
       data() {
         return {
@@ -39,7 +34,6 @@ function mountWithPinia(initialState = {}, overrides = {}) {
         };
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 

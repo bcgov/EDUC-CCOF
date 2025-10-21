@@ -6,7 +6,9 @@ const ccfriApplicationId = '1234';
 const fundingGuidelinesUrl = 'www.test-123.ca';
 const programYearId = '1234';
 
-function mountWithPinia(initialState = {}, routeParams = { urlGuid: ccfriApplicationId }) {
+function mountWithPinia(initialState = {}, routeParams) {
+  routeParams = routeParams || { urlGuid: ccfriApplicationId };
+
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ApprovableFeeSchedule, {
       global: {

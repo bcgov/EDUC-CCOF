@@ -3,15 +3,9 @@ import vuetify from '@/plugins/vuetify';
 
 function mountWithPinia(initialState = {}, dataOverride = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     cy.mount(RenewOrganization, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
       },
       data() {
         return {
@@ -19,7 +13,6 @@ function mountWithPinia(initialState = {}, dataOverride = {}) {
         };
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 

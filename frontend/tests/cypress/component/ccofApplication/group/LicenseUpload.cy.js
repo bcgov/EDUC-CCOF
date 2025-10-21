@@ -1,19 +1,17 @@
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, FILE_REQUIREMENTS_TEXT } from '@/utils/constants.js';
+import { ApiRoutes } from '@/utils/constants.js';
 
 const applicationId = '4321';
 const programYearId = '1234';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     cy.mount(LicenseUpload, {
       global: {
         plugins: [pinia, vuetify],
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 

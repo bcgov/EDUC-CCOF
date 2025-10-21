@@ -4,23 +4,20 @@ import vuetify from '@/plugins/vuetify';
 const organizationName = 'Test-Org-Name';
 const changeRecGuid = '44434';
 
-function mountWithPinia(initialState = {}, routeParams = { urlGuid: changeRecGuid }) {
+function mountWithPinia(initialState = {}, routeParams) {
+  routeParams = routeParams || { urlGuid: changeRecGuid };
+
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     cy.mount(EceweEligibility, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
-          $router: {
-            push: pushStub,
-          },
           $route: {
             params: routeParams,
           },
         },
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 
