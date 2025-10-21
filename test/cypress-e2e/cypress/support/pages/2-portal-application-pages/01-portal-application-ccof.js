@@ -17,7 +17,7 @@ class CcofApplication {
         this.orgInfo = this.orgData.orgInfo
         this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
         // QA: Family Apps will require you to specify a single specific licence category
-        this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories.familyChildCare
         this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
         this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
         this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
