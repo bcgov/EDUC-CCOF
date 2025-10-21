@@ -1,7 +1,5 @@
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
 import vuetify from '@/plugins/vuetify';
-import { useApplicationStore } from '@/store/application';
-import { ApiRoutes, FILE_REQUIREMENTS_TEXT, PATHS, pcfUrl } from '@/utils/constants.js';
 
 function mountWithPinia(initialState = {}, dataOverride = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {

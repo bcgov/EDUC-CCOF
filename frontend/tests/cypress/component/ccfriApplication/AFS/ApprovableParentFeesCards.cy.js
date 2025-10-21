@@ -1,6 +1,5 @@
 import ApprovableParentFeesCards from '@/components/ccfriApplication/AFS/ApprovableParentFeesCards.vue';
 import vuetify from '@/plugins/vuetify';
-import { PARENT_FEE_FREQUENCIES, PATHS } from '@/utils/constants.js';
 
 const programYearId = '1234';
 const childCareCategoryId = '4321';
@@ -12,7 +11,7 @@ const approvableFeeSchedules = [
   },
 ];
 
-function mountWithPinia(initialState = {}, readOnly = false) {
+function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ApprovableParentFeesCards, {
       global: {
@@ -44,7 +43,7 @@ describe('<ApprovableParentFeesCards />', () => {
   it('should render inputs', () => {
     mountWithPinia();
     cy.get('.v-field').should('have.length', 12);
-    cy.get('.v-field').eq(0).find('input').should('have.value', '44');
+    cy.get('.v-field').eq(0).find('input').should('have.value', approvableFeeSchedules[0].approvedFeeApr);
   });
 
   it('should display program name and description', () => {

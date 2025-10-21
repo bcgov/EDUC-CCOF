@@ -1,6 +1,26 @@
 import CcfriEceLanding from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import vuetify from '@/plugins/vuetify';
 
+const facilityAccountNumber = '9999';
+const facilityName = 'TEST_FAC';
+const licenseNumber = 'LIC-4444';
+
+const fac1 = {
+  ccfriOptInStatus: '1',
+  facilityAccountNumber,
+  facilityId: '1234',
+  facilityName,
+  licenseNumber,
+};
+
+const fac2 = {
+  ccfriOptInStatus: '1',
+  facilityAccountNumber: '91911',
+  facilityId: '4321',
+  facilityName: 'TEST_FAC2',
+  licenseNumber: 'LIC-3213',
+};
+
 function mountWithPinia(initialState = {}, overrides = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
@@ -54,20 +74,9 @@ describe('<CcfriEceLanding />', () => {
   });
 
   it('should render one facility', () => {
-    const facilityAccountNumber = '9999';
-    const facilityName = 'TEST_FAC';
-    const licenseNumber = 'LIC-4444';
     mountWithPinia({
       navBar: {
-        navBarList: [
-          {
-            facilityName,
-            facilityId: '1234',
-            licenseNumber,
-            ccfriOptInStatus: '1',
-            facilityAccountNumber,
-          },
-        ],
+        navBarList: [fac1],
       },
     });
 
@@ -82,20 +91,9 @@ describe('<CcfriEceLanding />', () => {
   });
 
   it('should render `UPDATE` button', () => {
-    const facilityAccountNumber = '9999';
-    const facilityName = 'TEST_FAC';
-    const licenseNumber = 'LIC-4444';
     mountWithPinia({
       navBar: {
-        navBarList: [
-          {
-            facilityName,
-            facilityId: '1234',
-            licenseNumber,
-            ccfriOptInStatus: '1',
-            facilityAccountNumber,
-          },
-        ],
+        navBarList: [fac1],
       },
     });
 
@@ -107,23 +105,12 @@ describe('<CcfriEceLanding />', () => {
   });
 
   it('should render `UPDATE` button as disabled', () => {
-    const facilityAccountNumber = '9999';
-    const facilityName = 'TEST_FAC';
-    const licenseNumber = 'LIC-4444';
     mountWithPinia({
       application: {
         applicationStatus: 'SUBMITTED',
       },
       navBar: {
-        navBarList: [
-          {
-            facilityName,
-            facilityId: '1234',
-            licenseNumber,
-            ccfriOptInStatus: '1',
-            facilityAccountNumber,
-          },
-        ],
+        navBarList: [fac1],
       },
     });
 
@@ -135,20 +122,9 @@ describe('<CcfriEceLanding />', () => {
   });
 
   it('should render radio buttons', () => {
-    const facilityAccountNumber = '9999';
-    const facilityName = 'TEST_FAC';
-    const licenseNumber = 'LIC-4444';
     mountWithPinia({
       navBar: {
-        navBarList: [
-          {
-            facilityName,
-            facilityId: '1234',
-            licenseNumber,
-            ccfriOptInStatus: '1',
-            facilityAccountNumber,
-          },
-        ],
+        navBarList: [fac1],
       },
     });
 
@@ -160,21 +136,6 @@ describe('<CcfriEceLanding />', () => {
   });
 
   it('should render multiple facilities', () => {
-    const fac1 = {
-      facilityAccountNumber: '9999',
-      facilityName: 'TEST_FAC',
-      facilityId: '1234',
-      licenseNumber: 'LIC-4444',
-      ccfriOptInStatus: '1',
-    };
-
-    const fac2 = {
-      facilityAccountNumber: '91911',
-      facilityName: 'TEST_FAC2',
-      facilityId: '4321',
-      licenseNumber: 'LIC-3213',
-      ccfriOptInStatus: '1',
-    };
     mountWithPinia({
       navBar: {
         navBarList: [fac1, fac2],

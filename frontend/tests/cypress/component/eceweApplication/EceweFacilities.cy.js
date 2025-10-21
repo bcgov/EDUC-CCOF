@@ -1,17 +1,11 @@
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import vuetify from '@/plugins/vuetify';
 import {
-  CHANGE_REQUEST_EXTERNAL_STATUS,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   OPT_STATUSES,
-  ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
-  PATHS,
-  pcfUrl,
-  pcfUrlGuid,
 } from '@/utils/constants.js';
-import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const changeRecGuid = '44434';
 
@@ -319,7 +313,6 @@ describe('<EceweFacilities />', () => {
     const desc2 = 'TestDesc2';
     const desc3 = 'TestDesc3';
     const facilityAccountNumber = '43243';
-    const facilityName = 'TEST_FAC_NAME';
     mountWithPinia({
       auth: {
         userInfo: {
@@ -380,7 +373,6 @@ describe('<EceweFacilities />', () => {
     const desc2 = 'TestDesc2';
     const desc3 = 'TestDesc3';
     const facilityAccountNumber = '43243';
-    const facilityName = 'TEST_FAC_NAME';
     mountWithPinia({
       auth: {
         userInfo: {
@@ -437,7 +429,6 @@ describe('<EceweFacilities />', () => {
     const desc2 = 'TestDesc2';
     const desc3 = 'TestDesc3';
     const facilityAccountNumber = '43243';
-    const facilityName = 'TEST_FAC_NAME';
     mountWithPinia({
       auth: {
         userInfo: {
@@ -496,7 +487,6 @@ describe('<EceweFacilities />', () => {
     const desc2 = 'TestDesc2';
     const desc3 = 'TestDesc3';
     const facilityAccountNumber = '43243';
-    const facilityName = 'TEST_FAC_NAME';
     mountWithPinia({
       auth: {
         userInfo: {

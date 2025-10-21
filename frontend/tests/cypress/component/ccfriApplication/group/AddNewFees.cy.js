@@ -1,8 +1,16 @@
 import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, PATHS, pcfUrlGuid } from '@/utils/constants.js';
+import { PATHS, pcfUrlGuid } from '@/utils/constants.js';
 
 const ccfriApplicationId = 1234;
+
+const baseAppState = {
+  app: {
+    programYearList: {
+      list: [],
+    },
+  },
+};
 
 function mountWithPinia(initialState = {}, routeParams = { urlGuid: ccfriApplicationId }, overrides = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -35,24 +43,14 @@ describe('<AddNewFees />', () => {
   });
 
   it('should render AddNewFeesV1', () => {
-    mountWithPinia({
-      app: {
-        programYearList: {
-          list: [],
-        },
-      },
-    });
+    mountWithPinia({ ...baseAppState });
 
     cy.contains('.v-card', 'Do you charge parent fees at this facility for any closures on business days?');
   });
 
   it('should render AddNewFeesV2', () => {
     mountWithPinia({
-      app: {
-        programYearList: {
-          list: [],
-        },
-      },
+      ...baseAppState,
       application: {
         applicationTemplateVersion: 2,
       },
@@ -64,17 +62,7 @@ describe('<AddNewFees />', () => {
   });
 
   it('should render rfi dialog', () => {
-    mountWithPinia(
-      {
-        app: {
-          programYearList: {
-            list: [],
-          },
-        },
-      },
-      {},
-      { showRfiDialog: true },
-    );
+    mountWithPinia({ ...baseAppState }, {}, { showRfiDialog: true });
 
     cy.contains('h3', 'Request for Information');
     cy.contains('You have entered a parent fee above the parent fee increase limit for the following care categories:');
@@ -82,34 +70,14 @@ describe('<AddNewFees />', () => {
   });
 
   it('should not render rfi dialog', () => {
-    mountWithPinia(
-      {
-        app: {
-          programYearList: {
-            list: [],
-          },
-        },
-      },
-      {},
-      { showRfiDialog: false },
-    );
+    mountWithPinia({ ...baseAppState }, {}, { showRfiDialog: false });
 
     cy.contains('h3', 'Request for Information').should('not.exist');
   });
 
   it('should render rfi percentage categories', () => {
     const rfi3percentCategories = ['Category1', 'Category2', 'Category3'];
-    mountWithPinia(
-      {
-        app: {
-          programYearList: {
-            list: [],
-          },
-        },
-      },
-      {},
-      { showRfiDialog: true, rfi3percentCategories },
-    );
+    mountWithPinia({ ...baseAppState }, {}, { showRfiDialog: true, rfi3percentCategories });
 
     rfi3percentCategories.forEach((category) => {
       cy.contains(category).should('exist');
@@ -120,11 +88,7 @@ describe('<AddNewFees />', () => {
     const programYearId = 2222;
     mountWithPinia(
       {
-        app: {
-          programYearList: {
-            list: [],
-          },
-        },
+        ...baseAppState,
         navBar: {
           navBarList: [
             {
@@ -145,13 +109,7 @@ describe('<AddNewFees />', () => {
   });
 
   it('should render navigation buttons', () => {
-    mountWithPinia({
-      app: {
-        programYearList: {
-          list: [],
-        },
-      },
-    });
+    mountWithPinia({ ...baseAppState });
 
     cy.contains('button', 'Back');
     cy.contains('button', 'Next');

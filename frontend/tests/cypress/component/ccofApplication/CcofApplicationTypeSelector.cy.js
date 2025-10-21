@@ -1,6 +1,6 @@
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, FILE_REQUIREMENTS_TEXT, PATHS, pcfUrl } from '@/utils/constants.js';
+import { PATHS, pcfUrl } from '@/utils/constants.js';
 
 const programYearId = '1234';
 
