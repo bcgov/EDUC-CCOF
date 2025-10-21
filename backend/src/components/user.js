@@ -158,17 +158,11 @@ async function getUserInfo(req, res) {
       application.facilityList = parseFacilityData(ap, userResponse.facilities);
 
       //add in funding agreement details based on the fiscal year
-      let fundingAgreementForFront = null;
-      for (const fundingAgreementObj of fundingAgreementDetails) {
-        if (fundingAgreementObj._ccof_programyear_value != application.ccofProgramYearId) {
-          continue;
-        } else if (!fundingAgreementForFront || fundingAgreementObj.ccof_version > fundingAgreementForFront.ccof_version) {
-          fundingAgreementForFront = fundingAgreementObj;
-        }
+      let activeFundingAgreement = fundingAgreementDetails.find((fa) => fa._ccof_programyear_value === application.ccofProgramYearId && fa.statuscode === 1);
+      if (activeFundingAgreement) {
+        let fundingAgreementForFront = new MappableObjectForFront(activeFundingAgreement, FundingAgreementMappings).data;
+        application = { ...application, ...fundingAgreementForFront };
       }
-      fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, FundingAgreementMappings).data;
-      application = { ...application, ...fundingAgreementForFront };
-
       applicationList.push(application);
     });
   }
