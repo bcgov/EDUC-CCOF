@@ -158,9 +158,9 @@ async function getUserInfo(req, res) {
       application.facilityList = parseFacilityData(ap, userResponse.facilities);
 
       //add in funding agreement details based on the fiscal year
-      let fundingAgreementForFront = fundingAgreementDetails.find((fa) => fa._ccof_programyear_value === application.ccofProgramYearId && fa.statuscode === 1);
-      if (fundingAgreementForFront) {
-        fundingAgreementForFront = new MappableObjectForFront(fundingAgreementForFront, FundingAgreementMappings).data;
+      let activeFundingAgreement = fundingAgreementDetails.find((fa) => fa._ccof_programyear_value === application.ccofProgramYearId && fa.statuscode === 1);
+      if (activeFundingAgreement) {
+        let fundingAgreementForFront = new MappableObjectForFront(activeFundingAgreement, FundingAgreementMappings).data;
         application = { ...application, ...fundingAgreementForFront };
       }
       applicationList.push(application);
