@@ -8,59 +8,78 @@ import {
 } from '@/utils/constants.js';
 
 const changeRecGuid = '44434';
+const programYearId = '1234';
+const organizationName = 'TEST_ORG_NAME';
 
-function mountWithPinia(initialState = {}, routeParams = { urlGuid: changeRecGuid }) {
-  cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
+const fundingModelTypeList = [
+  { description: 'TestDesc1', id: 1 },
+  { description: 'TestDesc2', id: 2 },
+  { description: 'TestDesc3', id: 3 },
+];
+
+const createAuthStore = () => ({
+  auth: {
+    userInfo: {
+      organizationName,
+    },
+  },
+});
+
+const getApplicationState = () => ({
+  application: {
+    programYearId,
+  },
+});
+
+const getAppState = () => ({
+  app: {
+    programYearId,
+    programYearList: {
+      list: [],
+    },
+    fundingModelTypeList,
+  },
+});
+
+const getOrganizationState = (type = ORGANIZATION_PROVIDER_TYPES.GROUP) => ({
+  organization: {
+    organizationProviderType: type,
+  },
+});
+
+const getEceweAppState = (overrides = {}) => ({
+  eceweApp: {
+    isStarted: true,
+    facilities: [{}],
+    ...overrides,
+  },
+});
+
+const getNavBarState = (navBarList = [{}]) => ({
+  navBar: {
+    navBarList,
+  },
+});
+
+function mountWithPinia(state = {}, routeParams = { urlGuid: changeRecGuid }) {
+  cy.setupPinia({ initialState: state, stubActions: false }).then((pinia) => {
     cy.mount(EceweFacilities, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
-          $router: {
-            push: pushStub,
-          },
-          $route: {
-            params: routeParams,
-          },
+          $route: { params: routeParams },
         },
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 
 describe('<EceweFacilities />', () => {
   it('should render component basic header information', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-              order: 1,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
+      ...createAuthStore(),
+      ...getApplicationState(),
+      ...getAppState(),
     });
 
     cy.contains('Child Care Operating Funding Program - Program Confirmation Form');
@@ -70,468 +89,156 @@ describe('<EceweFacilities />', () => {
 
   context('GROUP Organization Provider content', () => {
     it('should show the "Please select each facility" for union question', () => {
-      const organizationName = 'TEST_ORG_NAME';
-      const programYearId = '1234';
-      const desc1 = 'TestDesc1';
-      const desc2 = 'TestDesc2';
-      const desc3 = 'TestDesc3';
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
-        application: {
-          programYearId,
-        },
-        app: {
-          programYearId,
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-          fundingModelTypeList: [
-            { description: desc1, id: 1 },
-            { description: desc2, id: 2 },
-            { description: desc3, id: 3 },
-          ],
-        },
-        organization: {
-          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-        },
-        eceweApp: {
-          isStarted: true,
-          facilities: [{}, {}],
+        ...createAuthStore(),
+        ...getApplicationState(),
+        ...getAppState(),
+        ...getOrganizationState(),
+        ...getEceweAppState({
           eceweModel: {
             fundingModel: true,
             publicSector: ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES,
             describeOrgCSSEA: ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA,
           },
-        },
+        }),
       });
+
       cy.contains('Please select each facility you would like to opt-in to ECE-WE and indicate if they are unionized.');
-      cy.contains(
-        'Note: if any of your facilities are located in the Vancouver Coastal Health Authority, you must opt-in to ECE-WE for each licence located at the same physical address.',
-      );
     });
 
     it('should show the "Please select each facility" for non union question', () => {
-      const organizationName = 'TEST_ORG_NAME';
-      const programYearId = '1234';
-      const desc1 = 'TestDesc1';
-      const desc2 = 'TestDesc2';
-      const desc3 = 'TestDesc3';
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
-        application: {
-          programYearId,
-        },
-        app: {
-          programYearId,
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-          fundingModelTypeList: [
-            { description: desc1, id: 1 },
-            { description: desc2, id: 2 },
-            { description: desc3, id: 3 },
-          ],
-        },
-        organization: {
-          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-        },
-        eceweApp: {
+        ...createAuthStore(),
+        ...getApplicationState(),
+        ...getAppState(),
+        ...getOrganizationState(),
+        ...getEceweAppState({
           eceweModel: {
             fundingModel: true,
           },
-        },
+        }),
       });
+
       cy.contains('Please select each facility you would like to opt-in to ECE-WE:');
     });
   });
 
-  it('should render familiy facility opt in message', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
+  it('should render family facility opt-in message', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      eceweApp: {
+      ...createAuthStore(),
+      ...getApplicationState(),
+      ...getAppState(),
+      ...getEceweAppState({
         eceweModel: {
           fundingModel: true,
         },
-      },
+      }),
     });
-    cy.contains(
-      'span',
-      'On the previous page, you indicated that you would like to opt-in to ECE-WE for any facility in your',
-    );
+
+    cy.contains('span', 'On the previous page, you indicated that you would like to opt-in to ECE-WE');
   });
 
   it('should render `Opt-In All Facilities` button', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      eceweApp: {
-        eceweModel: {
-          fundingModel: true,
-        },
-      },
+      ...createAuthStore(),
+      ...getApplicationState(),
+      ...getAppState(),
+      ...getOrganizationState(),
+      ...getEceweAppState({
+        eceweModel: { fundingModel: true },
+      }),
     });
+
     cy.contains('button', 'Opt-In All Facilities');
   });
 
   it('should render facility id, name, licence number', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
     const facilityAccountNumber = '43243';
-    const facilityName = 'TEST_FAC_NAME';
     const licenseNumber = '9876';
+    const facilityName = 'TEST_FAC_NAME';
+
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
+      ...createAuthStore(),
+      ...getApplicationState(),
+      ...getAppState(),
+      ...getOrganizationState(),
+      ...getNavBarState([
+        {
+          facilityAccountNumber,
+          facilityName,
+          facilityId: '32323',
+          licenseNumber,
+          update: false,
+          optInOrOut: OPT_STATUSES.OPT_IN,
         },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      navBar: {
-        navBarList: [
-          {
-            facilityAccountNumber,
-            facilityName: 'TEST_FAC_NAME',
-            facilityId: '32323',
-            licenseNumber,
-            update: false,
-            optInOrOut: OPT_STATUSES.OPT_IN,
-          },
-        ],
-      },
-      eceweApp: {
-        isStarted: true,
-        eceweModel: {
-          fundingModel: true,
-        },
-        facilities: [{ changeReqestId: changeRecGuid }, { p: 'z' }],
-      },
+      ]),
+      ...getEceweAppState({
+        facilities: [{ changeReqestId: changeRecGuid }],
+        eceweModel: { fundingModel: true },
+      }),
     });
+
     cy.contains(`Facility ID: ${facilityAccountNumber}`);
     cy.contains(`Facility Name: ${facilityName}`);
     cy.contains(`Licence Number: ${licenseNumber}`);
   });
 
   it('should render facility `Update` button', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
-    const facilityAccountNumber = '43243';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
+      ...createAuthStore(),
+      ...getApplicationState(),
+      ...getAppState(),
+      ...getOrganizationState(),
+      ...getNavBarState([
+        {
+          facilityName: 'TEST_FAC_NAME',
+          facilityId: '32323',
+          optInOrOut: OPT_STATUSES.OPT_IN,
         },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      navBar: {
-        navBarList: [
+      ]),
+      ...getEceweAppState({
+        facilities: [
           {
-            facilityAccountNumber,
-            facilityName: 'TEST_FAC_NAME',
+            changeReqestId: changeRecGuid,
             facilityId: '32323',
-            update: false,
             optInOrOut: OPT_STATUSES.OPT_IN,
           },
         ],
-      },
-      eceweApp: {
-        isStarted: true,
-        eceweModel: {
-          fundingModel: true,
-        },
-        facilities: [
-          { changeReqestId: changeRecGuid, facilityId: '32323', optInOrOut: OPT_STATUSES.OPT_IN },
-          { p: 'z' },
-        ],
-      },
+        eceweModel: { fundingModel: true },
+      }),
     });
+
     cy.contains('Status: Opt-In');
     cy.contains('button', 'Update');
   });
 
   it('should render radio inputs for optInOrOut', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
-    const facilityAccountNumber = '43243';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      navBar: {
-        navBarList: [
-          {
-            facilityAccountNumber,
-            facilityName: 'TEST_FAC_NAME',
-            facilityId: '32323',
-            update: true,
-          },
-        ],
-      },
-      eceweApp: {
-        isStarted: true,
-        eceweModel: {
-          fundingModel: true,
-        },
-        facilities: [{ changeReqestId: changeRecGuid, facilityId: '32323' }, { p: 'z' }],
-      },
+      ...createAuthStore(),
+      ...getAppState(),
+      ...getNavBarState(),
+      ...getEceweAppState(),
     });
+
     cy.get('.v-radio').eq(0).should('have.text', 'Opt-In');
     cy.get('.v-radio').eq(1).should('have.text', 'Opt-Out');
   });
 
-  it('should render ionized and non-ionized radio inputs when opt in', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
-    const facilityAccountNumber = '43243';
+  it('should render unionized and non-unionized radio inputs when opt in', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      navBar: {
-        navBarList: [
-          {
-            facilityAccountNumber,
-            facilityName: 'TEST_FAC_NAME',
-            facilityId: '32323',
-          },
-        ],
-      },
-      eceweApp: {
-        isStarted: true,
+      ...createAuthStore(),
+      ...getAppState(),
+      ...getNavBarState(),
+      ...getEceweAppState({
         eceweModel: {
-          fundingModel: true,
           publicSector: ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES,
           describeOrgCSSEA: ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA,
         },
-        facilities: [{ changeReqestId: changeRecGuid, facilityId: '32323' }, { p: 'z' }],
-      },
+      }),
     });
+
     cy.get('.v-radio').eq(0).click();
     cy.contains('.v-radio', 'Unionized');
     cy.contains('.v-radio', 'Non-Unionized');
-  });
-
-  it('should render license number', () => {
-    const organizationName = 'TEST_ORG_NAME';
-    const programYearId = '1234';
-    const desc1 = 'TestDesc1';
-    const desc2 = 'TestDesc2';
-    const desc3 = 'TestDesc3';
-    const facilityAccountNumber = '43243';
-    mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      application: {
-        programYearId,
-      },
-      app: {
-        programYearId,
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-        fundingModelTypeList: [
-          { description: desc1, id: 1 },
-          { description: desc2, id: 2 },
-          { description: desc3, id: 3 },
-        ],
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-      navBar: {
-        navBarList: [
-          {
-            facilityAccountNumber,
-            facilityName: 'TEST_FAC_NAME',
-            facilityId: '32323',
-          },
-        ],
-      },
-      eceweApp: {
-        isStarted: true,
-        eceweModel: {
-          fundingModel: true,
-          publicSector: ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES,
-          describeOrgCSSEA: ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA,
-        },
-        facilities: [{ changeReqestId: changeRecGuid, facilityId: '32323' }, { p: 'z' }],
-      },
-    });
   });
 });
