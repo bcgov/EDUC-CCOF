@@ -61,9 +61,10 @@ const getNavBarState = (navBarList = [{}]) => ({
   },
 });
 
-function mountWithPinia(state = {}, routeParams) {
+function mountWithPinia(initialState, routeParams) {
+  initialState = initialState || {};
   routeParams = routeParams || { urlGuid: changeRecGuid };
-  cy.setupPinia({ initialState: state, stubActions: false }).then((pinia) => {
+  cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(EceweFacilities, {
       global: {
         plugins: [pinia, vuetify],

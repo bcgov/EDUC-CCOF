@@ -12,7 +12,8 @@ const baseAppState = {
   },
 };
 
-function mountWithPinia(initialState = {}, routeParams, overrides = {}) {
+function mountWithPinia(initialState, routeParams, overrides = {}) {
+  initialState = initialState || {};
   routeParams = routeParams || { urlGuid: ccfriApplicationId };
 
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {

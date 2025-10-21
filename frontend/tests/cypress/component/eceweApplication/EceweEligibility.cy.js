@@ -4,7 +4,8 @@ import vuetify from '@/plugins/vuetify';
 const organizationName = 'Test-Org-Name';
 const changeRecGuid = '44434';
 
-function mountWithPinia(initialState = {}, routeParams) {
+function mountWithPinia(initialState, routeParams) {
+  initialState = initialState || {};
   routeParams = routeParams || { urlGuid: changeRecGuid };
 
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
