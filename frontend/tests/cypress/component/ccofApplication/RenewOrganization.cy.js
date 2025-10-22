@@ -67,7 +67,7 @@ describe('<RenewOrganization />', () => {
       );
   });
 
-  it('should render card if banking group', () => {
+  it('should render navigation buttons', () => {
     mountWithPinia();
     cy.contains('button', 'Back');
     cy.contains('button', 'Next');
