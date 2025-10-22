@@ -131,6 +131,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.CREATE_NEW_APPLICATION,
       },
     },
     {
@@ -140,6 +141,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.CREATE_NEW_APPLICATION,
       },
     },
     {
@@ -152,6 +154,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.VIEW_SUBMITTED_PCF,
       },
     },
     {
@@ -164,6 +167,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.VIEW_SUBMITTED_PCF,
       },
     },
 
@@ -826,6 +830,7 @@ const router = createRouter({
         pageTitle: 'submission-history',
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.DOWNLOAD_PCF_PDF,
       },
     },
     {

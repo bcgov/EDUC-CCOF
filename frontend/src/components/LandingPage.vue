@@ -17,7 +17,7 @@
     </AppAlertBanner>
 
     <v-row>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 6 : 4">
+      <v-col v-if="hasPermission(PERMISSIONS.DOWNLOAD_PCF_PDF)" cols="12" :lg="isCCOFStatusNew ? 6 : 4">
         <SmallCard>
           <template #content>
             <div class="pb-2 text-h6">
@@ -56,36 +56,45 @@
           </template>
           <template #button>
             <div v-if="ccofStatus === CCOF_STATUS_NEW">
-              <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()">
-                Start Application
-              </v-btn>
-              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+              <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()">
+                  Start Application
+                </v-btn>
+                <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+              </template>
             </div>
 
             <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
-              <p class="text-h5 blueText">Status: Incomplete</p>
-              <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
-              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <v-btn
-                v-if="isLoadingComplete && isCancelPcfButtonEnabled"
-                class="red-button"
-                @click="toggleCancelApplicationDialog"
-              >
-                Cancel Application
-              </v-btn>
+              <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                <p class="text-h5 blueText">Status: Incomplete</p>
+                <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()">
+                  Continue Application
+                </v-btn>
+                <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+                <v-btn
+                  v-if="isLoadingComplete && isCancelPcfButtonEnabled"
+                  class="red-button"
+                  @click="toggleCancelApplicationDialog"
+                >
+                  Cancel Application
+                </v-btn>
+              </template>
             </div>
 
             <div v-else>
               <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
-                <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
-                  <v-btn
-                    theme="dark"
-                    class="blueButton my-2"
-                    @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
-                  >
-                    Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
-                  </v-btn>
-                </div>
+                <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                  <p class="text-h5 blueText mb-0">Status: Action Required</p>
+                  <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
+                    <v-btn
+                      theme="dark"
+                      class="blueButton my-2"
+                      @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
+                    >
+                      Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
+                    </v-btn>
+                  </div>
+                </template>
               </div>
               <div v-else>
                 <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
@@ -127,7 +136,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
+      <v-col v-if="hasPermission(PERMISSIONS.CREATE_RENEWAL_PCF)" cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)">
           <template #content>
             <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
@@ -392,6 +401,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
+import { PERMISSIONS } from '../utils/constants/permissions';
 
 export default {
   name: 'LandingPage',
@@ -706,10 +716,6 @@ export default {
     },
     continueRenewal() {
       this.goToLicenseUpload();
-    },
-    newApplication() {
-      this.setIsRenewal(false);
-      this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
     goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);

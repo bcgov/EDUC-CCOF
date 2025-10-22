@@ -57,7 +57,7 @@ router.get(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
   (req, res) => {
     validationResult(req).throw();
