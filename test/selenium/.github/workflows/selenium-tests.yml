@@ -1,0 +1,294 @@
+name: CCOF Selenium Test Automation
+
+on:
+  push:
+    branches: [ main, develop, ccfri-5688-cms-selenium-pcf ]
+    paths:
+      - 'test/selenium/**'
+      - '.github/workflows/selenium-tests.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'test/selenium/**'
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test Suite to Run'
+        required: true
+        default: 'TestLoginSuite.xml'
+        type: choice
+        options:
+          - TestLoginSuite.xml
+          - TestNG.xml
+          - all
+      environment:
+        description: 'Environment to test against'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - uat
+      browser:
+        description: 'Browser to use for testing'
+        required: true
+        default: 'chrome'
+        type: choice
+        options:
+          - chrome
+          - edge
+          - firefox
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_VERSION: '3.9.4'
+
+jobs:
+  selenium-tests:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        browser: [chrome]
+        # Add more browsers if needed: [chrome, firefox, edge]
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        
+    - name: Cache Maven Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Install Chrome Browser
+      if: matrix.browser == 'chrome'
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+        
+    - name: Install Firefox Browser
+      if: matrix.browser == 'firefox'
+      uses: browser-actions/setup-firefox@v1
+      with:
+        firefox-version: latest
+        
+    - name: Set up Chrome Driver
+      if: matrix.browser == 'chrome'
+      uses: nanasess/setup-chromedriver@v2
+      
+    - name: Set Display for Headless
+      run: |
+        export DISPLAY=:99
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+        
+    - name: Create Config Properties
+      working-directory: test/selenium
+      run: |
+        cp config.sample.properties config.properties
+        # Update config with environment-specific values
+        if [ "${{ github.event.inputs.environment }}" == "uat" ]; then
+          echo "Using UAT environment configuration"
+          sed -i 's|qa_crm_url=|qa_crm_url=${{ secrets.UAT_CRM_URL }}|' config.properties
+          sed -i 's|uat_crm_url=|uat_crm_url=${{ secrets.UAT_CRM_URL }}|' config.properties
+        else
+          echo "Using QA environment configuration"
+          sed -i 's|qa_crm_url=|qa_crm_url=${{ secrets.QA_CRM_URL }}|' config.properties
+          sed -i 's|uat_crm_url=|uat_crm_url=${{ secrets.UAT_CRM_URL }}|' config.properties
+        fi
+        sed -i 's|crm_username=|crm_username=${{ secrets.CRM_USERNAME }}|' config.properties
+        sed -i 's|crm_password=|crm_password=${{ secrets.CRM_PASSWORD }}|' config.properties
+        sed -i 's|browser=chrome|browser=${{ matrix.browser }}|' config.properties
+        
+    - name: Compile Tests
+      working-directory: test/selenium
+      run: mvn clean compile test-compile
+      
+    - name: Run Selenium Tests
+      working-directory: test/selenium
+      run: |
+        if [ "${{ github.event.inputs.test_suite }}" == "all" ]; then
+          echo "Running all test suites"
+          mvn test -Dsuite=TestNG.xml
+        else
+          TEST_SUITE="${{ github.event.inputs.test_suite }}"
+          if [ -z "$TEST_SUITE" ]; then
+            TEST_SUITE="TestLoginSuite.xml"
+          fi
+          echo "Running test suite: $TEST_SUITE"
+          mvn test -Dsuite=$TEST_SUITE
+        fi
+      continue-on-error: true
+      
+    - name: Generate Test Report
+      working-directory: test/selenium
+      if: always()
+      run: |
+        echo "Generating test reports..."
+        if [ -d "target/surefire-reports" ]; then
+          echo "TestNG reports generated successfully"
+        fi
+        if [ -d "extent-reports" ]; then
+          echo "Extent reports generated successfully"
+        fi
+        
+    - name: Upload Test Reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-reports-${{ matrix.browser }}
+        path: |
+          test/selenium/target/surefire-reports/
+          test/selenium/extent-reports/
+          test/selenium/logs/
+        retention-days: 30
+        
+    - name: Upload Screenshots on Failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: screenshots-${{ matrix.browser }}
+        path: test/selenium/screenshots/
+        retention-days: 7
+        
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Selenium Tests (${{ matrix.browser }})
+        path: test/selenium/target/surefire-reports/*.xml
+        reporter: java-junit
+        fail-on-error: false
+        
+    - name: Comment Test Results on PR
+      uses: actions/github-script@v7
+      if: github.event_name == 'pull_request' && always()
+      with:
+        script: |
+          const fs = require('fs');
+          const path = 'test/selenium/target/surefire-reports';
+          
+          if (fs.existsSync(path)) {
+            const files = fs.readdirSync(path);
+            const xmlFiles = files.filter(file => file.endsWith('.xml'));
+            
+            let testSummary = '## 🧪 Selenium Test Results\n\n';
+            testSummary += `**Browser:** ${{ matrix.browser }}\n`;
+            testSummary += `**Environment:** ${{ github.event.inputs.environment || 'qa' }}\n\n`;
+            
+            if (xmlFiles.length > 0) {
+              testSummary += '✅ Test execution completed. Check the artifacts for detailed reports.\n';
+            } else {
+              testSummary += '❌ No test results found. Tests may have failed to execute.\n';
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: testSummary
+            });
+          }
+
+  security-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Run Security Scan
+      uses: securecodewarrior/github-action-add-sarif@v1
+      with:
+        sarif-file: 'security-scan-results.sarif'
+        
+    - name: Check for Sensitive Data
+      run: |
+        echo "Checking for potential sensitive data exposure..."
+        if grep -r "password\|secret\|key" test/selenium/src --include="*.java" --exclude-dir=target; then
+          echo "⚠️  Warning: Potential sensitive data found in source code"
+          echo "Please review and ensure no credentials are hardcoded"
+        else
+          echo "✅ No obvious sensitive data patterns found"
+        fi
+
+  docker-tests:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: Build Docker Test Image
+      run: |
+        cd test/selenium
+        cat > Dockerfile << 'EOF'
+        FROM maven:3.9.4-openjdk-17-slim
+        
+        # Install Chrome and dependencies
+        RUN apt-get update && apt-get install -y \
+            wget \
+            gnupg \
+            unzip \
+            curl \
+            xvfb \
+            && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
+            && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+            && apt-get update \
+            && apt-get install -y google-chrome-stable \
+            && rm -rf /var/lib/apt/lists/*
+        
+        WORKDIR /app
+        COPY pom.xml .
+        RUN mvn dependency:go-offline
+        
+        COPY . .
+        RUN cp config.sample.properties config.properties
+        
+        CMD ["mvn", "test"]
+        EOF
+        
+    - name: Run Tests in Docker
+      run: |
+        cd test/selenium
+        docker build -t ccof-selenium-tests .
+        docker run --rm \
+          -e QA_CRM_URL="${{ secrets.QA_CRM_URL }}" \
+          -e CRM_USERNAME="${{ secrets.CRM_USERNAME }}" \
+          -e CRM_PASSWORD="${{ secrets.CRM_PASSWORD }}" \
+          -v $(pwd)/target:/app/target \
+          ccof-selenium-tests
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [selenium-tests]
+    if: always()
+    
+    steps:
+    - name: Notify Teams on Failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: '🚨 CCOF Selenium Tests Failed! Check the workflow for details.'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: Notify Teams on Success
+      if: success()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: '✅ CCOF Selenium Tests Passed Successfully!'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

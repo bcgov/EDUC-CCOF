@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  selenium-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ccof-selenium-tests
+    environment:
+      - QA_CRM_URL=${QA_CRM_URL:-https://mychildcareservicestest.crm3.dynamics.com/}
+      - UAT_CRM_URL=${UAT_CRM_URL:-https://mychildcareservicesuat.crm3.dynamics.com/}
+      - CRM_USERNAME=${CRM_USERNAME}
+      - CRM_PASSWORD=${CRM_PASSWORD}
+      - BROWSER=${BROWSER:-chrome}
+      - DISPLAY=:99
+    volumes:
+      - ./target:/app/target
+      - ./extent-reports:/app/extent-reports
+      - ./logs:/app/logs
+      - ./screenshots:/app/screenshots
+    networks:
+      - selenium-network
+    depends_on:
+      - selenium-hub
+    command: ["mvn", "clean", "test", "-Dsuite=${TEST_SUITE:-TestLoginSuite.xml}"]
+
+  selenium-hub:
+    image: selenium/hub:4.15.0
+    container_name: selenium-hub
+    ports:
+      - "4444:4444"
+      - "4442:4442"
+      - "4443:4443"
+    environment:
+      - GRID_MAX_SESSION=4
+      - GRID_BROWSER_TIMEOUT=300
+      - GRID_TIMEOUT=300
+    networks:
+      - selenium-network
+
+  selenium-chrome:
+    image: selenium/node-chrome:4.15.0
+    container_name: selenium-chrome
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - NODE_MAX_INSTANCES=2
+      - NODE_MAX_SESSION=2
+    depends_on:
+      - selenium-hub
+    networks:
+      - selenium-network
+    shm_size: 2gb
+
+  selenium-firefox:
+    image: selenium/node-firefox:4.15.0
+    container_name: selenium-firefox
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+    depends_on:
+      - selenium-hub
+    networks:
+      - selenium-network
+    shm_size: 2gb
+
+  selenium-edge:
+    image: selenium/node-edge:4.15.0
+    container_name: selenium-edge
+    environment:
+      - HUB_HOST=selenium-hub
+      - HUB_PORT=4444
+      - NODE_MAX_INSTANCES=1
+      - NODE_MAX_SESSION=1
+    depends_on:
+      - selenium-hub
+    networks:
+      - selenium-network
+    shm_size: 2gb
+
+networks:
+  selenium-network:
+    driver: bridge
+
+volumes:
+  test-results:
+    driver: local

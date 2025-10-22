@@ -1,5 +1,5 @@
 /target/
-# Ignore properties file
+# Ignore properties file with credentials
 config.properties
 
 # Ignore Extent Reports folder
@@ -9,7 +9,49 @@ config.properties
 /logs/
 /test-output/
 
+# Ignore Screenshots folder
+/screenshots/
+
 # Ignore IDE specific files
 **/.classpath
 **/.project
 **/.settings/
+.vscode/
+.idea/
+*.iml
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Docker volumes
+docker-volumes/
+
+# Ignore environment variables
+.env
+
+# Ignore temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+
+# Ignore Maven wrapper
+.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore Node.js (if any)
+node_modules/
+npm-debug.log*
+
+# Ignore test artifacts
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Ignore build artifacts
+dist/
+build/
+out/
