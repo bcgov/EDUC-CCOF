@@ -23,13 +23,14 @@ function runCcfriApp() {
     cy.then(()=> {
         ccfriApp.optInFacilities()
         ccfriApp.addParentFees()
-        ccfriApp.addClosures()
+        ccfriApp.addClosures('2025-26')
     })
 }
 
 function runEceWeApp() {
     eceWeApp.loadFixturesAndVariables()
     cy.then(()=> {
+        eceWeApp.optInEceWe('2025-26')
         eceWeApp.familyEceWe()
         eceWeApp.supportingDocUpload()
     })
