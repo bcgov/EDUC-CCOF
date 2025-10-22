@@ -1,7 +1,7 @@
 'use strict';
 const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
-const { getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
+const { getOperation, patchOperationWithObjectId, postOperation, deleteOperationWithObjectId } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ContactMappings, ContactFacilityMappings, FacilityMappings } = require('../util/mapping/Mappings');
 const { getRoles } = require('../components/lookup');
@@ -121,29 +121,20 @@ async function syncContactFacilities(contactId, incomingFacilityIds = []) {
     const existingLinks = response?.value ?? [];
     const existingFacilityMap = new Map(existingLinks.map((item) => [item._ccof_facility_value, { id: item.ccof_bceid_organizationid, statecode: item.statecode }]));
 
-    const toActivate = [];
-    const toDeactivate = [];
+    const toDelete = [];
     const toCreate = [];
 
     for (const facilityId of incomingFacilityIds) {
-      const existing = existingFacilityMap.get(facilityId);
-      if (existing) {
-        if (existing.statecode === 1) toActivate.push(existing.id);
-      } else {
+      if (!existingFacilityMap.has(facilityId)) {
         toCreate.push(facilityId);
       }
     }
     for (const [facilityId, { id }] of existingFacilityMap.entries()) {
       if (!incomingFacilityIds.includes(facilityId)) {
-        toDeactivate.push(id);
+        toDelete.push(id);
       }
     }
-    const updates = [
-      ...toDeactivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 1 })),
-      ...toActivate.map((id) => patchOperationWithObjectId('ccof_bceid_organizations', id, { statecode: 0 })),
-      ...toCreate.map((id) => createRawContactFacility(contactId, id)),
-    ];
-
+    const updates = [...toDelete.map((id) => deleteOperationWithObjectId('ccof_bceid_organizations', id)), ...toCreate.map((id) => createRawContactFacility(contactId, id))];
     await Promise.all(updates);
   } catch (e) {
     log.error(e);

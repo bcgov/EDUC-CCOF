@@ -17,66 +17,84 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
+public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateGroupApplicationCcfri.class);
-	Utilities ut;
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcfri.class);
 
 	@Test(priority = 1)
-	public void AdjudicateGroupApplications(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateGroupApplicationCcfri");
-		logger.info("Starting the AdjudicateGroupApplicationCcfri  test...");
+	public void adjudicateRenewals(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcfri");
+		logger.info("Starting the AdjudicateRenewalFullCcfri  test...");
+
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		ut = new Utilities(driver);
+		Utilities ut = new Utilities(driver);
+
 		// login to application
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
+
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+
 		// searching the contact
 		deleteapp.searchBox("QA218 OFM");
 		Thread.sleep(3000);
 		deleteapp.pressEnter();
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 		deleteapp.fullName();
 		Thread.sleep(3000);
+
 		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
 		Thread.sleep(3000);
+
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+
 		// selecting the application
-		orginfo.clickApplication();
+		orginfo.clickRenewalApplication();
 		Thread.sleep(5000);
+
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		appinfo.clickDeclarationBStatus();
+		ut.selectDropdownValue("Yes", appinfo.getDeclarationBStatusOptions());
+		Thread.sleep(3000);
+
+		// navigating to related tab
 		appinfo.clickRelatedTab();
 		Thread.sleep(5000);
+
 		// navigating to CCFRIs in related Tab
 		appinfo.clickCCFRISLink();
 		Thread.sleep(5000);
 		appinfo.clickCcfri();
 		Thread.sleep(5000);
+
 		CcfrisInfoPage ccfriinfo = new CcfrisInfoPage(driver);
+
 		// checking system recommendation inside Overview page of CCFRI
 		String recommendation = ccfriinfo.getSystemRecommendation();
 		logger.info("System Recommendation is: {}", recommendation);
 		Thread.sleep(5000);
 		ccfriinfo.clickCcfriFacilityAdjudicationTitle();
 		Thread.sleep(5000);
+
 		// selecting the facility and changing the status to CCFRI Complete
 		ccfriinfo.clickOpenFacility();
 		Thread.sleep(5000);
+
 		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
 		facilityinfo.clickFacilityNameLink();
 		Thread.sleep(5000);
@@ -90,6 +108,8 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
+		Thread.sleep(3000);
+
 		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityinfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
@@ -121,7 +141,7 @@ public class TestAdjudicateGroupApplicationCcfri extends BaseTest {
 		ccfriinfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the AdjudicateGroupApplicationCcfri  test...");
+		logger.info("Ending the TestAdjudicateRenewalFullCcfri test...");
 
 	}
 

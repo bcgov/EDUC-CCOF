@@ -497,6 +497,7 @@ export default {
         this.summaryModel?.ecewe,
         this.isGroup,
         this.languageYearLabel,
+        this.applicationTemplateVersion,
       );
       return (
         isOrganizationComplete &&

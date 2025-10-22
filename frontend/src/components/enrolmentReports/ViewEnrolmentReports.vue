@@ -141,10 +141,12 @@ import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { padString } from '@/utils/common.js';
@@ -154,7 +156,7 @@ import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/for
 export default {
   name: 'ViewEnrolmentReports',
   components: { AppButton, AppMultiSelectInput, AppTooltip, FiscalYearSlider, NavButton },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       loading: true,
@@ -178,9 +180,16 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      if (this.isFacilityAdmin) {
+        facilityList = facilityList.filter((facility) => {
+          return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+      return facilityList;
     },
     allReportingMonths() {
       const reportingMonths = [];
@@ -318,15 +327,18 @@ export default {
         !enrolmentReport.hasNextReportCreated &&
         [ENROLMENT_REPORT_STATUSES.APPROVED, ENROLMENT_REPORT_STATUSES.PAID].includes(
           enrolmentReport.externalCcofStatusCode,
-        )
+        ) &&
+        this.hasPermission(this.PERMISSIONS.ADJUST_EXISTING_ER)
       );
     },
     showEditButton(enrolmentReport) {
-      return [
-        ENROLMENT_REPORT_STATUSES.DRAFT,
-        ENROLMENT_REPORT_STATUSES.SUBMITTED,
-        ENROLMENT_REPORT_STATUSES.REJECTED,
-      ].includes(enrolmentReport.externalCcofStatusCode);
+      return (
+        [
+          ENROLMENT_REPORT_STATUSES.DRAFT,
+          ENROLMENT_REPORT_STATUSES.SUBMITTED,
+          ENROLMENT_REPORT_STATUSES.REJECTED,
+        ].includes(enrolmentReport.externalCcofStatusCode) && this.hasPermission(this.PERMISSIONS.EDIT_DRAFT_ER)
+      );
     },
     showViewButton(enrolmentReport) {
       return [
@@ -342,7 +354,10 @@ export default {
         if (this.isSubmissionDeadlinePassed(item)) return;
         this.loading = true;
         await EnrolmentReportService.updateEnrolmentReport(item.enrolmentReportId, { hasNextReportCreated: true });
-        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(item.enrolmentReportId);
+        const response = await EnrolmentReportService.createAdjustmentEnrolmentReport(
+          item.enrolmentReportId,
+          this.userInfo.contactId,
+        );
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {

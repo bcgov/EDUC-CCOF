@@ -5,6 +5,7 @@ const { isEmpty } = require('lodash');
 const log = require('./logger');
 const { DailyEnrolmentMappings, EnrolmentReportDifferenceMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery, padString } = require('./utils');
+const { restrictFacilities } = require('../util/common');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
@@ -49,8 +50,9 @@ async function getEnrolmentReport(req, res) {
 async function getEnrolmentReports(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
-    const enrolmentReports = [];
+    let enrolmentReports = [];
     response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
+    enrolmentReports = restrictFacilities(req, enrolmentReports);
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
     log.error(e);
@@ -103,6 +105,9 @@ async function createAdjustmentEnrolmentReport(req, res) {
   try {
     const payload = {
       ERGuid: req.body.enrolmentReportId,
+      targetEntityLogicalName: 'contact',
+      targetEntitySetName: 'contacts',
+      targetRecordGuid: req.body.contactId,
     };
     const response = await postAdjustmentERGeneration(payload);
     return res.status(HttpStatus.CREATED).json(response.data.ccof_monthlyenrollmentreportid);

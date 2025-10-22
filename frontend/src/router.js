@@ -843,6 +843,7 @@ const router = createRouter({
       component: ManageFacility,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_FACILITY_INFORMATION,
       },
     },
     {
@@ -882,6 +883,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.ENROLMENT_REPORTS,
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ER,
       },
     },
     {
@@ -890,6 +892,7 @@ const router = createRouter({
       component: EnrolmentReportForm,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ER,
       },
     },
     {
@@ -898,6 +901,7 @@ const router = createRouter({
       component: EnrolmentReportDeclaration,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.SUBMIT_ENROLMENT_REPORT,
       },
     },
     {
