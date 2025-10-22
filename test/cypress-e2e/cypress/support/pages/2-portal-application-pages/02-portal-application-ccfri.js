@@ -19,7 +19,7 @@ class CcfriApplication{
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.parentFeeCategories = this.parentFees.familyParentFeeCategories
+            this.parentFeeCategories = this.parentFees.groupParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
             this.startDate = this.closures.startDate
