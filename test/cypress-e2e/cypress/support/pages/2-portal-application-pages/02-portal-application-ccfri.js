@@ -19,11 +19,11 @@ class CcfriApplication{
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.parentFeeCategories = this.parentFees.familyParentFeeCategories
+            this.parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
-            this.startDate = this.closures.startDate
-            this.endDate = this.closures.endDate
+            this.startDate = this.closures.renewalStartDate
+            this.endDate = this.closures.renewalEndDate
             this.closureReason = this.closures.closureReason
             this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.fullFacilityClosure
         })
@@ -38,24 +38,33 @@ class CcfriApplication{
         } else {
             //Opt-In Path
             cy.clickByText('Opt-In All Facilities')
-            cy.clickByText('Save')
-            cy.clickByText('Next')
-            cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
-            cy.get('.v-card.my-10').each((card, index) => {
-                const category = this.parentFeeCategories[index]
-                cy.wrap(card)
-                    .should('contain', `${category}`)
-                    .contains('label', `${this.paymentFrequency}`)
-                    .click()
-                    .then(() => handleCardWithin(card, this.parentFees.months))
-            })
-            cy.clickByText('Save')
-            cy.clickByText('Next')
         }
+        cy.clickByText('Save')
+        cy.clickByText('Next')
     }
 
-    addClosures() {
-        cy.contains('It is important to tell us your planned closures for the 2025-26 funding term to avoid any impacts on payments.')
+    parentFeesRenewal() {
+        cy.contains('Our records show this facility\'s parent fees for January 2026 to March 2026 are as follows:').should('be.visible')
+        cy.contains('We have no fees on record for this facility. Click "Next" to enter your fees for the previous 24 months.')
+        cy.clickByText('Next')
+    }
+
+    addParentFees() {
+        cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+        cy.get('.v-card.my-10').each((card, index) => {
+            const category = this.parentFeeCategories[index]
+            cy.wrap(card)
+                .should('contain', `${category}`)
+                .contains('label', `${this.paymentFrequency}`)
+                .click()
+                .then(() => handleCardWithin(card, this.parentFees.months))
+        })
+        cy.clickByText('Save')
+        cy.clickByText('Next')
+    }
+
+    addClosures(term) {
+        cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
         cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
 

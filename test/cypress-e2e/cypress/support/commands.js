@@ -154,6 +154,23 @@ Cypress.Commands.add('startNewApp', (input) => {
   })
 });
 
+Cypress.Commands.add('startNewRenewalApp', (input) => {
+  cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
+  cy.contains('Status of your funding agreement for the current fiscal year: Active')
+  cy.contains('What would you like to do?').should('be.visible')
+  cy.contains('Renew my Funding Agreement 2026-27').clickByText('Renew my Funding Agreement')
+  cy.contains('Child Care Operating Funding Program - 2026-27 Program Confirmation Form')
+  cy.url().should('include', `/${input}/renew`)
+  cy.contains('.v-card','Do your current licence and service details match the information found in Schedule A of your most recent Funding Agreement?').within(()=> {
+      cy.getByLabel('Yes').click({force: true})
+  })
+  cy.contains('.v-card','Has your banking information changed?').within(()=> {
+      cy.getByLabel('No').click({force: true})
+  })
+  cy.clickByText('Next')
+});
+
+
 /*
 * Method to Cancel the application if the button is present
 **/

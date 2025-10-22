@@ -4,16 +4,10 @@ import { ccfriApp } from '../../support/pages/2-portal-application-pages/02-port
 import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-portal-application-ecewe.js'
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
-// Ensure each page's information is loaded before running through application
-function runCcofApp() {
+
+function licenceUpload() {
     ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
-        ccofApp.validateGroupUrl('family')
-        ccofApp.inputOrganizationInfo()
-        ccofApp.inputFacilityInfo()
-        ccofApp.licenseAndServiceDeliveryDetails()
-        ccofApp.familyLicenses()
-        ccofApp.offerExtendedHours()
         ccofApp.licenceUpload()
     })
 }
@@ -22,34 +16,34 @@ function runCcfriApp() {
     ccfriApp.loadFixturesAndVariables()
     cy.then(()=> {
         ccfriApp.optInFacilities()
+        ccfriApp.parentFeesRenewal()
         ccfriApp.addParentFees()
-        ccfriApp.addClosures()
+        ccfriApp.addClosures('2026-27')
     })
 }
 
 function runEceWeApp() {
     eceWeApp.loadFixturesAndVariables()
     cy.then(()=> {
-        eceWeApp.familyEceWe()
+        eceWeApp.optInEceWe('2026-27')
+        eceWeApp.groupEceWe()
         eceWeApp.supportingDocUpload()
     })
 }
 
-// Test START
-describe('Family Application Test', () => {
-    it('Should run through Family Application, submit and logout', () => {
+describe('Group Renewal Application Test', () => {
+    it('Should run through Group Renewal Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp('Family Provider')
+        cy.startNewRenewalApp('group')
+        licenceUpload()
+        runCcfriApp()
+        runEceWeApp()
+        submitApp.summaryAndDeclaration()
     
-        cy.then(()=> {
-            runCcofApp()
-            runCcfriApp()
-            runEceWeApp()
-            submitApp.summaryAndDeclaration()
-        })
     })
+    
 })
