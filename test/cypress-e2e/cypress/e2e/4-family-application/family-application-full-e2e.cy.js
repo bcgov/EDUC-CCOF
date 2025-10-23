@@ -9,10 +9,10 @@ function runCcofApp() {
     ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
         ccofApp.validateGroupUrl('family')
-        ccofApp.inputOrganizationInfo()
+        ccofApp.inputOrganizationInfo('registeredCompany')
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
-        ccofApp.familyLicenses()
+        ccofApp.familyLicenses('familyChildCare')
         ccofApp.offerExtendedHours()
         ccofApp.licenceUpload()
     })

@@ -9,15 +9,14 @@ class CcofApplication {
     })
   }
   
-  // QA: EDIT INPUTS HERE USING ccofData.json in "fixtures"----->
   loadFixturesAndVariables() {
     this.loadFixtures()
     cy.then(()=> {
-        this.orgType = this.orgData.typeOfOrganization.company
+        this.orgType = this.orgData.typeOfOrganization
         this.orgInfo = this.orgData.orgInfo
         this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-        // QA: Family Apps will require you to specify a single specific licence category
-        this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        this.groupLicenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        this.familyLicenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
         this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
         this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
         this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
@@ -36,23 +35,23 @@ class CcofApplication {
   }
 
   // TODO (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
-  inputOrganizationInfo() {
+  inputOrganizationInfo(typeName) {
     // Org Info
     cy.contains('Organization Information')
     cy.contains('Type of Organization').should('be.visible')
-    cy.getByLabel(this.orgType).click({force: true})
+    cy.getByLabel(this.orgType[typeName]).click()
     cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.legalOrgName)
     cy.getByLabel('Incorporation Number (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.incorporationNumber)
     
     // Mailing & Street Address
     cy.contains('Organization Mailing Address').should('be.visible')
-    cy.getByLabel('Enter address manually').check({ force: true }).should('be.checked')
+    cy.getByLabel('Enter address manually').check().should('be.checked')
     cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
     cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
     cy.selectByLabel('Province', this.orgInfo.province)
     cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
     cy.contains('Organization Street Address same as Mailing Address').should('be.visible')
-      .getByLabel('Yes').check({force: true})
+      .getByLabel('Yes').check()
       .should('be.checked')
     
     // Org Contact
@@ -70,12 +69,12 @@ class CcofApplication {
     cy.getByLabel('Facility Name (as it appears on the Community Care and Assisted Living Act Licence)').typeAndAssert(this.facilityData.facilityName)
     cy.getByLabel('Year Facility Began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
     cy.contains('div', 'Is the Facility Street Address the same as the Organization Street Address?').within(()=> {
-      cy.getByLabel('Yes').click({force: true})
+      cy.getByLabel('Yes').click()
     })
 
     // Facility Contact
     cy.contains('div', 'Is the Facility Contact the same as the Organization Contact Information?').within(()=> {
-      cy.getByLabel('Yes').click({force: true})
+      cy.getByLabel('Yes').click()
     })
 
     // Licence info
@@ -85,7 +84,7 @@ class CcofApplication {
     
     // Previous CCOF enrollment 
     cy.contains('div', 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?').within(()=> {
-      cy.getByLabel('No').click({force:true})
+      cy.getByLabel('No').click()
     })
     cy.clickByText('Save')
     cy.contains('Success! Facility information has been saved.').should('be.visible')
@@ -98,22 +97,22 @@ class CcofApplication {
     cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
     cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
     cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
-    cy.getByLabel(this.licenceInfo.closedEntireMonths).check({ force: true }).should('be.checked')
-    cy.getByLabel(this.licenceInfo.closedMonths[0]).check({ force: true }).should('be.checked')
-    cy.getByLabel(this.licenceInfo.closedMonths[1]).check({ force: true }).should('be.checked')
-    cy.getByLabel(this.licenceInfo.closedMonths[2]).check({ force: true }).should('be.checked')
+    cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
+    cy.getByLabel(this.licenceInfo.closedMonths[0]).check().should('be.checked')
+    cy.getByLabel(this.licenceInfo.closedMonths[1]).check().should('be.checked')
+    cy.getByLabel(this.licenceInfo.closedMonths[2]).check().should('be.checked')
   }
 
   groupLicenses() {
     // Licence Types & Capacities
-    Object.entries(this.licenceCategory).forEach(([category, value]) => {
+    Object.entries(this.groupLicenceCategory).forEach(([category, value]) => {
       if (value.checked) {
-        cy.getByLabel(category).check({ force: true }).should('be.checked');
+        cy.getByLabel(category).check().should('be.checked');
         cy.getByLabel(`Maximum number for ${category}`).typeAndAssert(value.max);
       }
     });
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    if (this.licenceCategory.Preschool.checked) {
+    if (this.groupLicenceCategory.Preschool.checked) {
       Object.entries(this.preschoolSessions).forEach(([day, value]) => {
         cy.getByLabel(day).typeAndAssert(value);
       });
@@ -125,14 +124,15 @@ class CcofApplication {
       .contains(this.schoolProperty)
       .click()
     this.schoolAgedCare.forEach(label => {
-      cy.getByLabel(label).check({ force: true }).should('be.checked');
+      cy.getByLabel(label).check().should('be.checked');
     });
   }
 
-  familyLicenses() {
+  familyLicenses(licenceType) {
     // Licence Types & Capacities
-    cy.getByLabel(this.licenceCategory.name).click({force: true})
-    cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.licenceCategory.max)
+    const familyLicence = this.familyLicenceCategory[licenceType]
+    cy.getByLabel(familyLicence.name).click()
+    cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(familyLicence.max)
     cy.contains('div', 'Enter maximum number of child care spaces you offer')
       .getByLabel('Maximum Number of Child Care Spaces')
       .typeAndAssert(this.maxChildCareSpaces)
@@ -140,7 +140,7 @@ class CcofApplication {
 
   offerExtendedHours() {
     cy.contains('div', 'Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?').within(()=> {
-      cy.getByLabel(this.extendedHours).click({force:true})
+      cy.getByLabel(this.extendedHours).click()
     })
 
     if (this.extendedHours === "Yes") {
@@ -151,19 +151,19 @@ class CcofApplication {
       if (this.groupExtendedHours){
         Object.entries(this.groupExtendedHours).forEach(([category, value]) => {
           if (value.checked) {
-            cy.getByLabel(category).check({ force: true }).should('be.checked');
+            cy.getByLabel(category).check().should('be.checked');
             cy.getByLabel(`Maximum number for ${category}`).typeAndAssert(value.max);
           }
         });
       } else {
         // Family Application - Extended Hours (uses family licence)
         cy.contains('Enter the number of spaces for which you offer extended hours (care before 6:00 AM, after 7:00 PM or overnight service regularly offered')
-        cy.getByLabel(this.licenceCategory).should('be.checked')
+        cy.getByLabel(category).should('be.checked')
         cy.contains('div', '4 hous or less extended child care').within(()=> {
-          cy.getByLabel('Maximum Spaces Offered').typeAndAssert(this.licenceCategory.maxUnderFourHours);
+          cy.getByLabel('Maximum Spaces Offered').typeAndAssert(category.maxUnderFourHours);
         })
         cy.contains('div', 'Over 4 hours extended child care').within(()=> {
-          cy.getByLabel('Maximum Spaces Offered').typeAndAssert(this.licenceCategory.maxOverFourHours)
+          cy.getByLabel('Maximum Spaces Offered').typeAndAssert(category.maxOverFourHours)
         })
       }
     }

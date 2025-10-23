@@ -4,22 +4,21 @@ import { ccfriApp } from '../../support/pages/2-portal-application-pages/02-port
 import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-portal-application-ecewe.js'
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
-// Ensure each page's information is loaded before running through application
+
 function runCcofApp() {
     ccofApp.loadFixturesAndVariables()
     cy.then(()=>{
         ccofApp.validateGroupUrl('group')
-        ccofApp.inputOrganizationInfo()
+        ccofApp.inputOrganizationInfo('registeredCompany')
         ccofApp.inputFacilityInfo()
         ccofApp.licenseAndServiceDeliveryDetails()
-        ccofApp.groupLicenses()
+        ccofApp.groupLicenses('groupLicenceCategories')
         ccofApp.offerExtendedHours()
         ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
     })
 }
 
-// Test START
 function runCcfriApp() {
     ccfriApp.loadFixturesAndVariables()
     cy.then(()=> {

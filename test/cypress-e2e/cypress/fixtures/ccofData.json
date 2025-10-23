@@ -1,12 +1,12 @@
 {
   "orgData": {
     "typeOfOrganization": {
-      "nonProfit": "Non-Profit Society",
+      "nonProfitSociety": "Non-Profit Society",
       "publicInstitute": "Public Institution (college/university)",
-      "company": "Registered Company",
-      "localGovn": "Local Government",
-      "firstNationsGovn": "First Nations Government",
-      "proprietorship":"Sole Proprietorship",
+      "registeredCompany": "Registered Company",
+      "localGovernment": "Local Government",
+      "firstNationsGovernment": "First Nations Government",
+      "soleProprietorship":"Sole Proprietorship",
       "partnership": "Partnership"
     },
     "orgInfo": {
