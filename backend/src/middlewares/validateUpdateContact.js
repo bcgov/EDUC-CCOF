@@ -1,8 +1,3 @@
-const HttpStatus = require('http-status-codes');
-const log = require('../components/logger');
-const { getRoles } = require('../components/lookup');
-const { PERMISSIONS } = require('../util/constants');
-
 /**
  * Validates that the user can perform a contact update.
  *
@@ -12,21 +7,23 @@ const { PERMISSIONS } = require('../util/constants');
  */
 module.exports = function () {
   return async function (req, res, next) {
-    log.verbose('Validating update contact for self or other');
+    // Not used for Pre-Renewals release
+    return next();
+    // log.verbose('Validating update contact for self or other');
 
-    const currentUser = req.session?.passport?.user;
-    const targetContactId = req.params.contactId;
+    // const currentUser = req.session?.passport?.user;
+    // const targetContactId = req.params.contactId;
 
-    const roles = await getRoles();
-    const matchingRole = roles.find((role) => role.data.roleNumber === currentUser.role.roleNumber);
-    const permissions = matchingRole?.data?.permissions?.map((p) => p.permissionNumber) || [];
+    // const roles = await getRoles();
+    // const matchingRole = roles.find((role) => role.data.roleNumber === currentUser.role.roleNumber);
+    // const permissions = matchingRole?.data?.permissions?.map((p) => p.permissionNumber) || [];
 
-    if (currentUser.contactId === targetContactId) {
-      // Validate update to self
-      return permissions.includes(PERMISSIONS.UPDATE_SELF) ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
-    } else {
-      // Validate update to other user
-      return permissions.includes(PERMISSIONS.EDIT_USERS) ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
-    }
+    // if (currentUser.contactId === targetContactId) {
+    //   // Validate update to self
+    //   return permissions.includes(PERMISSIONS.UPDATE_SELF) ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
+    // } else {
+    //   // Validate update to other user
+    //   return permissions.includes(PERMISSIONS.EDIT_USERS) ? next() : res.sendStatus(HttpStatus.FORBIDDEN);
+    // }
   };
 };

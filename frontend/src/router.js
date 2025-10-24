@@ -835,6 +835,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_ORG_INFORMATION,
+        disabled: true,
       },
     },
     {
@@ -844,6 +845,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_FACILITY_INFORMATION,
+        disabled: true,
       },
     },
     {
@@ -853,6 +855,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_FUNDING_AGREEMENT,
+        disabled: true,
       },
     },
     {
@@ -862,6 +865,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_USERS,
+        disabled: true,
       },
     },
     {
@@ -873,6 +877,7 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_CLOSURES,
+        disabled: true,
       },
     },
     {
@@ -883,6 +888,7 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.ENROLMENT_REPORTS,
         showNavBar: false,
         requiresAuth: true,
+        disabled: true,
       },
     },
     {
@@ -891,6 +897,7 @@ const router = createRouter({
       component: EnrolmentReportForm,
       meta: {
         requiresAuth: true,
+        disabled: true,
       },
     },
     {
@@ -899,6 +906,7 @@ const router = createRouter({
       component: EnrolmentReportDeclaration,
       meta: {
         requiresAuth: true,
+        disabled: true,
       },
     },
     {
@@ -932,18 +940,21 @@ router.beforeEach((to, _from, next) => {
             .getUserInfo(to)
             .then(async () => {
               if (!authStore.isMinistryUser) {
-                // Validate Provider roles
-                if (isEmpty(authStore.userInfo?.role)) {
-                  return next('unauthorized');
+                if (to.meta.disabled) {
+                  return next('notfound');
                 }
+                // Validate Provider roles
+                // if (isEmpty(authStore.userInfo?.role)) {
+                //   return next('unauthorized');
+                // }
                 // TODO: Validate Facilities for Facility Admin
                 // if (!authStore.hasFacilities) {
                 //   return next('unauthorized');
                 // }
                 // Validate specific permission
-                if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
-                  return next('unauthorized');
-                }
+                // if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
+                //   return next('unauthorized');
+                // }
                 // Block access to Impersonate
                 if (to.name === 'impersonate') {
                   return next('unauthorized');

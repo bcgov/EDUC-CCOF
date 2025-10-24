@@ -22,7 +22,7 @@ export const useAppStore = defineStore('app', {
     organizationTypeList: [],
     fundingModelTypeList: [],
     healthAuthorities: [],
-    roles: [],
+    //roles: [], Not used for Pre-Renewals release
     lookupInfo: null,
     logoutTimerEnabled: false,
     logoutTime: undefined,
@@ -94,7 +94,8 @@ export const useAppStore = defineStore('app', {
         this.setOrganizationTypeList(lookupInfo.data?.organizationType);
         this.setFundingModelTypeList(lookupInfo.data?.fundingModelType);
         this.setHealthAuthorities(lookupInfo.data?.healthAuthorities);
-        this.roles = lookupInfo?.data?.roles;
+        // Not used for Pre-Renewals release
+        // this.roles = lookupInfo?.data?.roles;
       }
     },
     async startCounter() {
@@ -190,11 +191,12 @@ export const useAppStore = defineStore('app', {
         return licenceCategory?.ccof_categorynumber;
       };
     },
-    getRoleNameById: (state) => {
-      return (id) => {
-        const role = state.roles?.find((role) => role.roleId === id);
-        return role?.roleName;
-      };
-    },
+    // Not used for Pre-Renewals release
+    // getRoleNameById: (state) => {
+    //   return (id) => {
+    //     const role = state.roles?.find((role) => role.roleId === id);
+    //     return role?.roleName;
+    //   };
+    // },
   },
 });

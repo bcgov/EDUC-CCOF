@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
+const disableEndpoint = require('../middlewares/disableEndpoint');
 const validatePermission = require('../middlewares/validatePermission');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createOrganization, getOrganization, getOrganizationFacilities, updateOrganization } = require('../components/organization');
@@ -107,6 +108,7 @@ router.post('/:organizationId/renew', passport.authenticate('jwt', { session: fa
 router.get(
   '/:organizationId/facilities',
   passport.authenticate('jwt', { session: false }),
+  disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.ADD_USERS, PERMISSIONS.EDIT_USERS, PERMISSIONS.VIEW_FACILITY_INFORMATION),
   [param('organizationId', 'URL Param: [organizationId] is required').notEmpty().isUUID()],
