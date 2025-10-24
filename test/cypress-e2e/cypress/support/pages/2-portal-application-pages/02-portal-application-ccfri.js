@@ -70,7 +70,7 @@ class CcfriApplication{
         cy.getByLabel('End Date').typeAndAssert(this.endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
         cy.contains('div','Is this a full facility closure?').within(()=> {
-            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click({force: true})
+            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()
         })
 
         // Opt-In (Partial Closure) -> TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories [CCFRI-6112]

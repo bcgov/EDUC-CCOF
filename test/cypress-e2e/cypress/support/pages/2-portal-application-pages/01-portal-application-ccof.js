@@ -91,7 +91,7 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  licenseAndServiceDeliveryDetails() {
+  licenceAndServiceDeliveryDetails() {
     cy.contains('Facility Licence and Service Details')
     cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
     cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
@@ -128,7 +128,7 @@ class CcofApplication {
     });
   }
 
-  familyLicenses(licenceType) {
+  familyLicences(licenceType) {
     // Licence Types & Capacities
     const familyLicence = this.familyLicenceCategory[licenceType]
     cy.getByLabel(familyLicence.name).click()

@@ -40,20 +40,20 @@ class EceWeApplication {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
                 cy.contains('.v-card', 'Are you a public sector employer, as defined in the Public Sector Employers Act?').within(()=> {
-                    cy.getByLabel(this.publicSectorEmployer).click({force:true})
+                    cy.getByLabel(this.publicSectorEmployer).click()
                 })
                 cy.contains('Which of the following describes your organization?').should('be.visible')
-                cy.getByLabel(this.csseaSelection).click({force:true})
+                cy.getByLabel(this.csseaSelection).click()
                 // CSSEA Non-Member
                 if (this.csseaSelection === this.cssea.csseaNonMember.status) {
-                    cy.getByLabel(this.unionStatus).click({force:true})
+                    cy.getByLabel(this.unionStatus).click()
                     // CSSEA Non-Member + Union
                     if (this.unionStatus === this.cssea.csseaNonMember.someOrAllUnionizedUnionized) {
                         cy.clickByText(this.cssea.confirmation) 
                     } 
                 } else {
                     // CSSEA Member
-                    cy.getByLabel(this.cssea.confirmation).click({force:true})
+                    cy.getByLabel(this.cssea.confirmation).click()
                 }
 
                 cy.clickByText('Save')

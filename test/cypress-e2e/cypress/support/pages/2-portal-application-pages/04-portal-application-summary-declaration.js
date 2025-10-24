@@ -5,8 +5,8 @@ class SubmitApplication {
         // Submit App
         cy.contains('Summary and Declaration').should('be.visible')
         cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
-            .click({force: true})
-        cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy', {force: true})
+            .click()
+        cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy')
         cy.clickByText('Submit')
         cy.contains('Submission Complete')
         cy.clickByText('Return to your dashboard')
@@ -18,8 +18,8 @@ class SubmitApplication {
             .should('contain', 'Status: Submitted')
         cy.contains('.v-card', 'Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED')
             .should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED')
-        cy.contains(Cypress.env('PORTAL_USERNAME')).click({force:true})
-        cy.contains('Logout').click({force:true})
+        cy.contains(Cypress.env('PORTAL_USERNAME')).click()
+        cy.contains('Logout').click()
     }
 }
 
