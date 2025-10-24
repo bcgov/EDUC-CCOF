@@ -148,10 +148,12 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
 
 Cypress.Commands.add('startNewApp', (input) => {
   cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
-  cy.contains('What would you like to do?').should('be.visible').clickByText('Start Application')
-  cy.url().should('include', '/new-application', {timeout: 10000})
-  cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
-  cy.url().should('include', '/select-application-type', {timeout: 10000})
+  cy.contains('What would you like to do?').should('be.visible')
+  cy.contains('Start Application').should('be.visible').click()
+  cy.url().should('include', '/new-application')
+  cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible')
+  cy.contains('Start Application').should('be.visible').click()
+  cy.url().should('include', '/select-application-type')
   cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
     cy.contains('Start Application').click()
   })
