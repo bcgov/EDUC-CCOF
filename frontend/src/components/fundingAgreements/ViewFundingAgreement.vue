@@ -1,6 +1,21 @@
 <template>
   <v-container fluid v-bind="$attrs" class="px-md-16">
-    <h1>{{ fundingAgreementNumber }}</h1>
+    <h1 class="mb-6">Licence and Service Details Record</h1>
+
+    <v-skeleton-loader v-if="isLicencesLoading" type="list-item" class="mb-6" />
+    <v-expansion-panels v-else-if="licences.length" multiple class="mb-6">
+      <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
+        <v-expansion-panel-title>
+          <strong>{{ licence.facilityName?.name }} - {{ licence.facilityAccountNumber }}</strong>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <ServiceDetails :licence="licence" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+    <div v-else class="mb-6">No active or approved licences found.</div>
+
+    <h1 class="mb-6">Funding Agreement {{ fundingAgreementNumber }}</h1>
     <p>Carefully review your funding agreement.</p>
 
     <v-row class="mt-6" justify="center">
@@ -132,12 +147,14 @@
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
+import ServiceDetails from '@/components/licences/ServiceDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
+import LicenceService from '@/services/licenceService.js';
 import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENT_EXTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 
 const READ_ONLY_STATUSES = [
@@ -157,6 +174,7 @@ export default {
     AppDialog,
     AppPDFViewer,
     NavButton,
+    ServiceDetails,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
@@ -166,7 +184,8 @@ export default {
       isLoading: false,
       processing: false,
       showSubmissionConfirmationDialog: false,
-      signedBy: '',
+      licences: [],
+      isLicencesLoading: true,
     };
   },
   computed: {
@@ -199,6 +218,7 @@ export default {
         this.isLoading = true;
         await this.loadFundingAgreement();
         await this.loadFundingAgreementPDF();
+        await this.loadFundingAgreementLicences();
       } catch (error) {
         console.error('Failed to load Funding Agreement', error);
       } finally {
@@ -216,6 +236,18 @@ export default {
         this.pdfFile = `data:application/pdf;base64,${pdfFile}`;
       } catch (error) {
         console.error('Failed to load PDF', error);
+      }
+    },
+
+    async loadFundingAgreementLicences() {
+      this.isLicencesLoading = true;
+      try {
+        this.licences =
+          (await LicenceService.getLicencesByFundingAgreementId(this.$route.params.fundingAgreementId)) || [];
+      } catch (error) {
+        console.error('Failed to fetch licences by funding agreement:', error);
+      } finally {
+        this.isLicencesLoading = false;
       }
     },
 

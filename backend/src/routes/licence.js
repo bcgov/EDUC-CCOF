@@ -5,12 +5,12 @@ const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getLicences } = require('../components/licence');
-const { query, validationResult } = require('express-validator');
+const { getLicences, getLicencesByFundingAgreementId } = require('../components/licence');
+const { oneOf, query, validationResult } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 
 /**
- * Get Licence details for a facility
+ * Get Licence details for a facility or funding agreement
  *
  */
 router.get(
@@ -19,10 +19,15 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION),
   validateFacility(),
-  query('facilityId', 'Query param: [facilityId] is required').notEmpty().isUUID(),
+  oneOf(
+    [query('facilityId').exists().isUUID().withMessage('facilityId must be a valid UUID'), query('fundingAgreementId').exists().isUUID().withMessage('fundingAgreementId must be a valid UUID')],
+    'URL query: [facilityId or fundingAgreementId] is required',
+  ),
   (req, res) => {
     validationResult(req).throw();
-    return getLicences(req, res);
+    const { facilityId, fundingAgreementId } = req.query;
+    if (facilityId) return getLicences(req, res);
+    else if (fundingAgreementId) return getLicencesByFundingAgreementId(req, res);
   },
 );
 

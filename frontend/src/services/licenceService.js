@@ -12,4 +12,15 @@ export default {
       throw error;
     }
   },
+
+  async getLicencesByFundingAgreementId(fundingAgreementId) {
+    try {
+      if (!fundingAgreementId) return [];
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.LICENCES}?fundingAgreementId=${fundingAgreementId}`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get the licences by fundingAgreementId - ${error}`);
+      throw error;
+    }
+  },
 };
