@@ -57,7 +57,7 @@ class EceWeApplication {
                 }
 
                 cy.clickByText('Save')
-                cy.contains('Application saved successfully.').should('be.visible')
+                cy.contains('Success! ECEWE application has been saved.').should('be.visible')
                 cy.clickByText('Next')
 
                 // Opt In Facilities

@@ -124,7 +124,7 @@ Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
     .get('.v-overlay-container .v-list-item__content', { timeout: 10000 })
     .contains(optionText)
     .should('be.visible')
-    .click({ force: true })
+    .click()
 })
 
 
@@ -142,7 +142,7 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
       expect(pointerEvents, 'pointer-events').to.not.eq('none')
       expect(el.hasAttribute('disabled'), 'disabled attr').to.eq(false)
     })
-    .click({force:true}) 
+    .click() 
 })
 
 
@@ -153,7 +153,7 @@ Cypress.Commands.add('startNewApp', (input) => {
   cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
   cy.url().should('include', '/select-application-type', {timeout: 10000})
   cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
-    cy.contains('Start Application').click({force: true})
+    cy.contains('Start Application').click()
   })
 });
 
@@ -168,11 +168,11 @@ Cypress.Commands.add('cancelApplicationIfPresent', () => {
     );
 
     if (btn) {
-      cy.wrap(btn).click({ force: true });
+      cy.wrap(btn).click();
 
       cy.get('#cancel-application-button .text-wrap', { timeout: 20000 })
         .should('be.visible')
-        .click({ force: true });
+        .click();
 
       cy.contains('What would you like to do?', { timeout: 50000 })
         .should('be.visible');
@@ -186,7 +186,7 @@ Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) =>
   const v = String(value);
 
   return cy.wrap(subject).then(($el) => {
-    cy.wrap($el).clear({ force: true }).type(v, { force: true });
+    cy.wrap($el).clear().type(v);
   });
 });
 
@@ -247,7 +247,7 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
     );
 
     if (btn) {
-      cy.wrap(btn).click({ force: true });
+      cy.wrap(btn).click();
       cy.wait(10000)
     }
   });
@@ -274,10 +274,10 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   })
 });
 
-Cypress.Commands.add('runCcfriApp', () => {
+Cypress.Commands.add('runCcfriApp', (appType) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
-    ccfriApp.optInFacilities()
+    ccfriApp.optInFacilities(appType)
     ccfriApp.addClosures()
   })
 }); 

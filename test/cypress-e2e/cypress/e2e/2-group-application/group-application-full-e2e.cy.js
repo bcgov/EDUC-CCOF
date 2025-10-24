@@ -12,7 +12,7 @@ describe('Group Application Test', () => {
     
         cy.then(()=> {
             cy.runCcofApp('group', 'registeredCompany', 'groupLicenceCategories')
-            cy.runCcfriApp()
+            cy.runCcfriApp('group')
             cy.runEceWeApp('group')
             submitApp.summaryAndDeclaration()
         })

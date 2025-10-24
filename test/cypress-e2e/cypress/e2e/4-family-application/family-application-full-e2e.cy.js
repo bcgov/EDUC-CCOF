@@ -13,7 +13,7 @@ describe('Family Application Test', () => {
     
         cy.then(()=> {
             cy.runCcofApp('family', 'registeredCompany', 'familyChildCare')
-            cy.runCcfriApp()
+            cy.runCcfriApp('family')
             cy.runEceWeApp('family')
             submitApp.summaryAndDeclaration()
         })

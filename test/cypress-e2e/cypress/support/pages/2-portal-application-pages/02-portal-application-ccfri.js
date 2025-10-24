@@ -29,7 +29,7 @@ class CcfriApplication{
         })
     }
 
-    optInFacilities() {
+    optInFacilities(appType) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         //Opt-Out Path
         if (this.optInOrOut === 'Opt-Out') {
@@ -41,6 +41,9 @@ class CcfriApplication{
             cy.clickByText('Save')
             cy.clickByText('Next')
             cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+            if (appType === 'family') {
+                this.parentFeeCategories = this.parentFees.familyParentFeeCategories
+            }
             cy.get('.v-card.my-10').each((card, index) => {
                 const category = this.parentFeeCategories[index]
                 cy.wrap(card)
