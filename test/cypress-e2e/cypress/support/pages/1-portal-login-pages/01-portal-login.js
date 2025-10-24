@@ -1,11 +1,12 @@
 class LoginPage {
   visitLoginPage() {
-    cy.visit("/login");
+    cy.visit('/');
   }
 
   clickLoginButton() {
     cy.get("#login-button").click();
   }
+
   loginThroughExternalProvider(
     username,
     password,
@@ -26,6 +27,10 @@ class LoginPage {
         cy.get('input[type="submit"][value="Continue"]').click();
       }
     );
+
+    // Refresh home page once loaded, after cy.origin(), to reset url cypress uses for testing
+    cy.contains("What would you like to do?").should("exist");
+    cy.visit('/')
   }
 }
 

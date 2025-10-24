@@ -1,24 +1,24 @@
 {
   "orgData": {
-    "typeOfOrganization": [
-      "Non-Profit Society",
-      "Public Institution (college/university)",
-      "Registered Company",
-      "Local Government",
-      "First Nations Government",
-      "Sole Proprietorship",
-      "Partnership"
-    ],
-    "legalOrgName": "Hedies AutoTest Org",
-    "incorporationNumber": "BC654321",
-    "streetAddress": "506 John Street",
-    "city": "Vancouver",
-    "province": "BC",
-    "postalCode": "V5C6N5",
-    "orgContactName": "Tester",
-    "position": "QA",
-    "phone": "6470000000",
-    "email": "ofmqa01@gmail.com"
+    "typeOfOrganization": {
+      "nonProfitSociety": "Non-Profit Society",
+      "publicInstitute": "Public Institution (college/university)",
+      "registeredCompany": "Registered Company",
+      "localGovernment": "Local Government",
+      "firstNationsGovernment": "First Nations Government",
+      "soleProprietorship":"Sole Proprietorship",
+      "partnership": "Partnership"
+    },
+    "orgInfo": {
+      "legalOrgName": "Hedies AutoTest Org",
+      "incorporationNumber": "BC654321",
+      "streetAddress": "506 John Street",
+      "city": "Vancouver",
+      "province": "BC",
+      "postalCode": "V5C6N5",
+      "phone": "6470000000",
+      "email": "ofmqa01@gmail.com"
+    }
   },
   "facilityData": {
     "facilityName": "My Test Facility",
@@ -28,17 +28,19 @@
     "healthAuthority": "Fraser Health"
   },
   "facilityLicenceDetailsData": {
-    "maxDaysPerWeek": "5",
-    "maxWeeksPerYear": "52",
-    "hoursFrom": "08:00",
-    "hoursTo": "18:00",
-    "closedEntireMonths": "Yes",
-    "closedMonths": [
-      "January",
-      "September",
-      "December"
-    ],
-    "licenceCategories": {
+    "licenceInfo": {
+      "maxDaysPerWeek": "5",
+      "maxWeeksPerYear": "52",
+      "hoursFrom": "08:00",
+      "hoursTo": "18:00",
+      "closedEntireMonths": "Yes",
+      "closedMonths": [
+        "January",
+        "September",
+        "December"
+      ]
+    },
+    "groupLicenceCategories": {
       "Group Child Care (Under 36 Months)": {
         "checked": true,
         "max": "16"
@@ -64,7 +66,31 @@
         "max": "20"
       }
     },
-    "MaximumLicensedCapacity": "100",
+    "familyLicenceCategories": {
+      "familyChildCare": {
+        "name" : "Family Child Care",
+        "checked": true,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "inHomeMultiAge": {
+        "name": "In-Home Multi-Age Child Care",
+        "checked": true,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "multiAge": {
+        "name": "Multi-Age Chilld Care",
+        "checked": true,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      }
+    },
+    "maximumLicensedCapacity": "50",
+    "maxChildCareSpaces": "10",
     "PreschoolSessions": {
       "Monday": 1,
       "Tuesday": 1,
@@ -82,7 +108,7 @@
     "offerExtendedHoursChildCare": "No",
     "maxDaysPerWeekExtendedHours": "3",
     "maxWeeksPerYearExtendedHours": "12",
-    "licenceCategoriesExtendedHours": {
+    "groupLicenceCategoriesExtendedHours": {
       "Group Child Care (Under 36 Months)": {
         "checked": true,
         "maxUnderFourHours": "4",
