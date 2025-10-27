@@ -1,7 +1,7 @@
 function allFacilitiesUnionized(attr, data) {
     cy.get(attr).each((card, index, $list) => {
         cy.wrap(card).within(() => {
-            cy.getByLabel(data).click({ force: true })
+            cy.getByLabel(data).click()
         })
     })
 }
