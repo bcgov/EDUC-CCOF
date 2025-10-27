@@ -15,15 +15,14 @@ class CcfriApplication{
         })
     }
 
-    // QA: EDIT INPUTS HERE USING ccfriData.json in "fixtures"----->
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.parentFeeCategories = this.parentFees.groupParentFeeCategories
+            // this.parentFeeCategories = this.parentFees.groupParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
-            this.startDate = this.closures.startDate
-            this.endDate = this.closures.endDate
+            // this.startDate = this.closures.startDate
+            // this.endDate = this.closures.endDate
             this.closureReason = this.closures.closureReason
             this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.fullFacilityClosure
         })
@@ -50,15 +49,16 @@ class CcfriApplication{
     }
 
     addParentFees(appType) {
+        let parentFeeCategories
+        switch (appType) {
+            case 'group': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
+            case 'family': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
+            case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
+            case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break
+        }
         cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
-        if (appType === 'family') {
-            this.parentFeeCategories = this.parentFees.familyParentFeeCategories
-        }
-        if (appType === 'groupRenewal') {
-            this.parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories
-        }
         cy.get('.v-card.my-10').each((card, index) => {
-            const category = this.parentFeeCategories[index]
+            const category = parentFeeCategories[index]
             cy.wrap(card)
                 .should('contain', `${category}`)
                 .contains('label', `${this.paymentFrequency}`)
@@ -70,6 +70,19 @@ class CcfriApplication{
     }
 
     addClosures(appType, term) {
+        let startDate
+        let endDate
+        switch (appType) {
+            case 'group':
+            case'family': 
+                startDate = this.closures.startDate
+                endDate = this.closures.endDate
+                break;
+            case 'groupRenewal':
+            case 'familyRenewal': 
+                startDate = this.closures.renewalStartDate
+                endDate = this.closures.renewalEndDate
+        }
         cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
         cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
@@ -81,12 +94,8 @@ class CcfriApplication{
         }
 
         // Opt-In (Full Closure) -> TODO (Hedie-cgi) Implement option to add Multiple Closures to a Group App [CCFRI-6111]
-        if (appType === 'groupRenewal') {
-            this.startDate = this.closures.renewalStartDate
-            this.endDate = this.closures.renewalEndDate
-        }
-        cy.getByLabel('Start Date').typeAndAssert(this.startDate)                        
-        cy.getByLabel('End Date').typeAndAssert(this.endDate)
+        cy.getByLabel('Start Date').typeAndAssert(startDate)                        
+        cy.getByLabel('End Date').typeAndAssert(endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
         cy.contains('div','Is this a full facility closure?').within(()=> {
             cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()

@@ -10,8 +10,8 @@ function licenceUpload() {
     })
 }
 
-describe('Group Renewal Application Test', () => {
-    it('Should run through Group Renewal Application, submit and logout', () => {
+describe('Family Renewal Application Test', () => {
+    it('Should run through Family Renewal Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(
@@ -19,9 +19,9 @@ describe('Group Renewal Application Test', () => {
             Cypress.env("PORTAL_PASSWORD"))
         cy.startNewRenewalApp()
         licenceUpload()
-        cy.runCcfriApp('groupRenewal', '2026-27')
-        cy.runEceWeApp('groupRenewal', '2026-27')
-        submitApp.summaryAndDeclaration('groupRenewal')
+        cy.runCcfriApp('familyRenewal', '2026-27')
+        cy.runEceWeApp('familyRenewal', '2026-27')
+        submitApp.summaryAndDeclaration('familyRenewal')
     
     })
     
