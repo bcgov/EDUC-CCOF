@@ -34,8 +34,8 @@ jobs:
         uses: s4u/setup-maven-action@v1.2.0
         with:
           maven-version: '3.9.6'
-		  
+		  	  
       - name: Run tests with Maven
-        run: mvn clean test 
-		
+        run: |
+          mvn clean test
 
