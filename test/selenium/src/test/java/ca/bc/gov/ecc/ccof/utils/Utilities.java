@@ -3,7 +3,6 @@ package ca.bc.gov.ecc.ccof.utils;
 import java.time.Duration;
 import java.util.List;
 
-import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,6 +11,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 
@@ -82,7 +82,7 @@ public class Utilities extends BaseTest {
 	}
 
 	public void assertElementDeleted(List<WebElement> elements) {
-		Assertions.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
+		Assert.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
 	}
 
 }
