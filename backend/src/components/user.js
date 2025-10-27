@@ -15,10 +15,8 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
-  ROLES,
 } = require('../util/constants');
 const {
-  UserProfileMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileBaseFundingMappings,
@@ -26,12 +24,8 @@ const {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   FundingAgreementMappings,
-  RoleMappings,
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { getRoles } = require('../components/lookup');
-const { getRawContactFacilities } = require('./contact');
-const { isFacilityAdmin } = require('../util/common');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);

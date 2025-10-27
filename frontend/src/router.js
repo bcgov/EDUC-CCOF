@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import BackendSessionExpired from '@/components/BackendSessionExpired.vue';

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
-import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
