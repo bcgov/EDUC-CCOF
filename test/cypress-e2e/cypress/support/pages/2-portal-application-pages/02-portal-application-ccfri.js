@@ -22,14 +22,14 @@ class CcfriApplication{
             this.parentFeeCategories = this.parentFees.groupParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
-            this.startDate = this.closures.renewalStartDate
-            this.endDate = this.closures.renewalEndDate
+            this.startDate = this.closures.startDate
+            this.endDate = this.closures.endDate
             this.closureReason = this.closures.closureReason
             this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.fullFacilityClosure
         })
     }
 
-    optInFacilities(appType) {
+    optInFacilities() {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         //Opt-Out Path
         if (this.optInOrOut === 'Opt-Out') {
@@ -38,22 +38,6 @@ class CcfriApplication{
         } else {
             //Opt-In Path
             cy.clickByText('Opt-In All Facilities')
-            cy.clickByText('Save')
-            cy.clickByText('Next')
-            cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
-            if (appType === 'family') {
-                this.parentFeeCategories = this.parentFees.familyParentFeeCategories
-            }
-            cy.get('.v-card.my-10').each((card, index) => {
-                const category = this.parentFeeCategories[index]
-                cy.wrap(card)
-                    .should('contain', `${category}`)
-                    .contains('label', `${this.paymentFrequency}`)
-                    .click()
-                    .then(() => handleCardWithin(card, this.parentFees.months))
-            })
-            cy.clickByText('Save')
-            cy.clickByText('Next')
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
@@ -65,8 +49,14 @@ class CcfriApplication{
         cy.clickByText('Next')
     }
 
-    addParentFees() {
+    addParentFees(appType) {
         cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+        if (appType === 'family') {
+            this.parentFeeCategories = this.parentFees.familyParentFeeCategories
+        }
+        if (appType === 'groupRenewal') {
+            this.parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories
+        }
         cy.get('.v-card.my-10').each((card, index) => {
             const category = this.parentFeeCategories[index]
             cy.wrap(card)
@@ -79,7 +69,7 @@ class CcfriApplication{
         cy.clickByText('Next')
     }
 
-    addClosures(term) {
+    addClosures(appType, term) {
         cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
         cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
@@ -91,6 +81,10 @@ class CcfriApplication{
         }
 
         // Opt-In (Full Closure) -> TODO (Hedie-cgi) Implement option to add Multiple Closures to a Group App [CCFRI-6111]
+        if (appType === 'groupRenewal') {
+            this.startDate = this.closures.renewalStartDate
+            this.endDate = this.closures.renewalEndDate
+        }
         cy.getByLabel('Start Date').typeAndAssert(this.startDate)                        
         cy.getByLabel('End Date').typeAndAssert(this.endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)

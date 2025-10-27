@@ -12,9 +12,9 @@ describe('Group Application Test', () => {
     
         cy.then(()=> {
             cy.runCcofApp('group', 'registeredCompany', 'groupLicenceCategories')
-            cy.runCcfriApp('group')
-            cy.runEceWeApp('group')
-            submitApp.summaryAndDeclaration()
+            cy.runCcfriApp('group', '2025-26')
+            cy.runEceWeApp('group', '2025-26')
+            submitApp.summaryAndDeclaration('group')
         })
     })
     

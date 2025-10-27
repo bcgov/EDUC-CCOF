@@ -293,18 +293,23 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   })
 });
 
-Cypress.Commands.add('runCcfriApp', (appType) => {
+Cypress.Commands.add('runCcfriApp', (appType, term) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
-    ccfriApp.optInFacilities(appType)
-    ccfriApp.addClosures()
+    ccfriApp.optInFacilities()
+    if (appType === 'groupRenewal' || appType === 'familyRenewal') {
+      ccfriApp.parentFeesRenewal()
+    }
+    ccfriApp.addParentFees(appType)
+    ccfriApp.addClosures(appType, term)
   })
 }); 
 
-Cypress.Commands.add('runEceWeApp', (appType) => {
+Cypress.Commands.add('runEceWeApp', (appType, term) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
-    if (appType === 'group') {
+    eceWeApp.optInEceWe(term)
+    if (appType === 'group' || appType === 'groupRenewal') {
       eceWeApp.groupEceWe()
     } else {
       eceWeApp.familyEceWe()
