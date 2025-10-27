@@ -117,7 +117,9 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
 });
 
 
-
+/* NOTE: use of {force:true} due to dropdowns being dynamically created on webpage, making it difficult
+to pick up an item in the dropdown without forcing the selection.
+*/
 Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
   cy.getByLabel(labelText).click({ force: true })
   return cy

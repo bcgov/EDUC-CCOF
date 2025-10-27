@@ -183,7 +183,7 @@ class CcofApplication {
     cy.contains('Licence Upload')
     const fileName = 'Sample500kb.pdf';
     cy.get('input[placeholder="Select your file"]')
-      .attachFile(fileName, { force: true })
+      .attachFile(fileName)
     cy.contains('div', fileName)
     cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
       cy.contains('button', 'Save').should('have.class', 'blueButton')
