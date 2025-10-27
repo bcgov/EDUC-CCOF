@@ -16,7 +16,6 @@ class EceWeApplication {
         })
     }
 
-    // QA: EDIT INPUTS HERE USING eceweData.json in "fixtures"----->
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
