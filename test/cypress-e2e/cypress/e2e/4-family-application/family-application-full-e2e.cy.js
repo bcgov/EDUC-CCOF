@@ -1,42 +1,7 @@
 import { loginPage } from '../../support/pages/1-portal-login-pages/01-portal-login.js'
-import { ccofApp } from '../../support/pages/2-portal-application-pages/01-portal-application-ccof.js'
-import { ccfriApp } from '../../support/pages/2-portal-application-pages/02-portal-application-ccfri.js'
-import { eceWeApp } from '../../support/pages/2-portal-application-pages/03-portal-application-ecewe.js'
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 
 // Ensure each page's information is loaded before running through application
-function runCcofApp() {
-    ccofApp.loadFixturesAndVariables()
-    cy.then(()=>{
-        ccofApp.validateGroupUrl('family')
-        ccofApp.inputOrganizationInfo()
-        ccofApp.inputFacilityInfo()
-        ccofApp.licenseAndServiceDeliveryDetails()
-        ccofApp.familyLicenses()
-        ccofApp.offerExtendedHours()
-        ccofApp.licenceUpload()
-    })
-}
-
-function runCcfriApp() {
-    ccfriApp.loadFixturesAndVariables()
-    cy.then(()=> {
-        ccfriApp.optInFacilities()
-        ccfriApp.addParentFees()
-        ccfriApp.addClosures('2025-26')
-    })
-}
-
-function runEceWeApp() {
-    eceWeApp.loadFixturesAndVariables()
-    cy.then(()=> {
-        eceWeApp.optInEceWe('2025-26')
-        eceWeApp.familyEceWe()
-        eceWeApp.supportingDocUpload()
-    })
-}
-
-// Test START
 describe('Family Application Test', () => {
     it('Should run through Family Application, submit and logout', () => {
         loginPage.visitLoginPage()
@@ -47,9 +12,9 @@ describe('Family Application Test', () => {
         cy.startNewApp('Family Provider')
     
         cy.then(()=> {
-            runCcofApp()
-            runCcfriApp()
-            runEceWeApp()
+            cy.runCcofApp('family', 'registeredCompany', 'familyChildCare')
+            cy.runCcfriApp('family')
+            cy.runEceWeApp('family')
             submitApp.summaryAndDeclaration()
         })
     })

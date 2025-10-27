@@ -8,15 +8,6 @@ describe("Portal Login and Navigation", () => {
       Cypress.env("PORTAL_USERNAME"),
       Cypress.env("PORTAL_PASSWORD")
     );
-    cy.contains("button", "Start Application").click({force: true});
-    cy.contains("p", "Welcome to Child Care Operating Funding (CCOF)").should(
-      "exist"
-    );
-    cy.get("#start-application").should("be.visible").click({force: true});
-    cy.contains("p", "Welcome to Child Care Operating Funding (CCOF)").should(
-      "exist"
-    );
-    cy.contains("div.v-card-title", "Group Provider").should("exist");
-    cy.contains("button", "Start Application").click();
-    });
+    cy.startNewApp('Group Provider')
+  })
 });

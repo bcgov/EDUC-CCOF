@@ -19,7 +19,7 @@ class CcfriApplication{
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories
+            this.parentFeeCategories = this.parentFees.groupParentFeeCategories
             this.paymentFrequency = this.parentFees.frequency.monthly
             this.closureCharges = this.closures.closureCharges.chargeForClosures
             this.startDate = this.closures.renewalStartDate
@@ -29,7 +29,7 @@ class CcfriApplication{
         })
     }
 
-    optInFacilities() {
+    optInFacilities(appType) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         //Opt-Out Path
         if (this.optInOrOut === 'Opt-Out') {
@@ -38,6 +38,22 @@ class CcfriApplication{
         } else {
             //Opt-In Path
             cy.clickByText('Opt-In All Facilities')
+            cy.clickByText('Save')
+            cy.clickByText('Next')
+            cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+            if (appType === 'family') {
+                this.parentFeeCategories = this.parentFees.familyParentFeeCategories
+            }
+            cy.get('.v-card.my-10').each((card, index) => {
+                const category = this.parentFeeCategories[index]
+                cy.wrap(card)
+                    .should('contain', `${category}`)
+                    .contains('label', `${this.paymentFrequency}`)
+                    .click()
+                    .then(() => handleCardWithin(card, this.parentFees.months))
+            })
+            cy.clickByText('Save')
+            cy.clickByText('Next')
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
@@ -79,7 +95,7 @@ class CcfriApplication{
         cy.getByLabel('End Date').typeAndAssert(this.endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
         cy.contains('div','Is this a full facility closure?').within(()=> {
-            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click({force: true})
+            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()
         })
 
         // Opt-In (Partial Closure) -> TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories [CCFRI-6112]
