@@ -80,10 +80,14 @@ export default {
     formatUTCDate,
     getStatusClass(status) {
       switch (status) {
+        case LICENCE_STATUSES.ACTIVE:
+          return 'status-blue';
         case LICENCE_STATUSES.APPROVED:
           return 'status-green';
         case LICENCE_STATUSES.INACTIVE:
           return 'status-gray';
+        case LICENCE_STATUSES.REPLACED:
+          return 'status-yellow';
         default:
           return '';
       }
