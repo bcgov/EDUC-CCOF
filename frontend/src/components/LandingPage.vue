@@ -10,6 +10,8 @@
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
 
+    <EnrolmentReportDialog v-if="true" />
+
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
       Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
       requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve. Please
@@ -375,6 +377,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
+import EnrolmentReportDialog from '@/components/EnrolmentReportDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
@@ -395,7 +398,15 @@ import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    CancelApplicationDialog,
+    EnrolmentReportDialog,
+    SmallCard,
+    MessagesToolbar,
+    FiscalYearSlider,
+  },
   mixins: [alertMixin, permissionsMixin],
   data() {
     return {
@@ -403,6 +414,7 @@ export default {
       showCancelDialog: false,
       isLoadingComplete: false,
       selectedProgramYear: undefined,
+      dialog: true,
     };
   },
   computed: {
