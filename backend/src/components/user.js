@@ -277,7 +277,7 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function createUser(req, roleId) {
+async function createUser(req) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
