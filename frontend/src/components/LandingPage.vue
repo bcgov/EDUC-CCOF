@@ -417,7 +417,6 @@ export default {
       isLoadingComplete: false,
       selectedProgramYear: undefined,
       showEnrolmentReportDialog: false,
-      dialog: true,
     };
   },
   computed: {
