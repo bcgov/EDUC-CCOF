@@ -5,7 +5,7 @@
         <v-col cols="12" md="6" class="d-flex flex-wrap align-center">
           <strong class="mr-2">Licence Number:</strong>
           <span>{{ licence.licenceNumber }}</span>
-          <span class="ml-2" :class="getStatusClass(licence.licenceStatus)">
+          <span class="ml-2" :class="getLicenceStatusClass(licence.licenceStatus)">
             {{ licence.licenceStatus }}
           </span>
         </v-col>
@@ -102,8 +102,8 @@
   </div>
 </template>
 <script>
-import { EMPTY_PLACEHOLDER, LICENCE_STATUSES } from '@/utils/constants.js';
-import { getYesNoValue } from '@/utils/common.js';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
+import { getLicenceStatusClass, getYesNoValue } from '@/utils/common.js';
 import { capitalize, formatUTCDate } from '@/utils/format';
 
 const LICENCE_CATEGORIES = {
@@ -146,16 +146,7 @@ export default {
     capitalize,
     formatUTCDate,
     getYesNoValue,
-    getStatusClass(status) {
-      switch (status) {
-        case LICENCE_STATUSES.APPROVED:
-          return 'status-green';
-        case LICENCE_STATUSES.INACTIVE:
-          return 'status-gray';
-        default:
-          return 'status-default';
-      }
-    },
+    getLicenceStatusClass,
   },
 };
 </script>
