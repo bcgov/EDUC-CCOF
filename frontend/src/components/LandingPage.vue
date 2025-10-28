@@ -692,7 +692,7 @@ export default {
       try {
         this.isLoadingComplete = false;
         if (!sessionStorage.getItem('pendingEnrolmentCheck')) {
-          const pendingEnrolment = await this.isEnrolmentReportPending();
+          const pendingEnrolment = await this.hasPendingEnrolments();
           sessionStorage.setItem('pendingEnrolmentCheck', true);
           if (pendingEnrolment) {
             this.showEnrolmentReportDialog = true;
@@ -712,8 +712,7 @@ export default {
         this.isLoadingComplete = true;
       }
     },
-    async isEnrolmentReportPending() {
-      const today = new Date();
+    async hasPendingEnrolments() {
       const { previousYearId } = this.programYearList.newApp;
 
       const enrolmentReports = (
@@ -723,17 +722,7 @@ export default {
         ])
       ).flat();
 
-      return enrolmentReports.some((report) => {
-        const { submissionDeadline, year, month, externalCcfriStatusText, externalCcofStatusText } = report;
-        const deadline = new Date(submissionDeadline);
-        const firstOfNextMonth = new Date(year, month, 1);
-
-        const withinDeadline = today < deadline;
-        const pastFirstOfNextMonth = today >= firstOfNextMonth;
-        const submitted = externalCcfriStatusText === 'Submitted' && externalCcofStatusText === 'Submitted';
-
-        return withinDeadline && pastFirstOfNextMonth && !submitted;
-      });
+      return enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
     },
     toggleCancelApplicationDialog() {
       this.showCancelDialog = !this.showCancelDialog;
