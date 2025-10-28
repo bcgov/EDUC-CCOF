@@ -2,6 +2,7 @@
 <template>
   <v-container fluid class="pa-12">
     <MessagesToolbar />
+    <EnrolmentReportDialog v-if="showEnrolmentReportDialog" />
 
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
@@ -9,8 +10,6 @@
     </div>
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
-
-    <EnrolmentReportDialog v-if="true" />
 
     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
       Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
@@ -368,6 +367,7 @@
 <script>
 import { isEmpty, orderBy } from 'lodash';
 import { mapState, mapActions } from 'pinia';
+
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -375,6 +375,8 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
+
+import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import EnrolmentReportDialog from '@/components/EnrolmentReportDialog.vue';
@@ -414,6 +416,7 @@ export default {
       showCancelDialog: false,
       isLoadingComplete: false,
       selectedProgramYear: undefined,
+      showEnrolmentReportDialog: false,
       dialog: true,
     };
   },
@@ -689,11 +692,20 @@ export default {
     async loadData() {
       try {
         this.isLoadingComplete = false;
+
+        if (!sessionStorage.getItem('enrolmentReportDialogShown')) {
+          const pendingEnrolment = this.isEnrolmentReportPending();
+          if (pendingEnrolment) {
+            this.showEnrolmentReportDialog = true;
+            sessionStorage.setItem('enrolmentReportDialogShown', true);
+          }
+        }
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
           this.getAllMessages(this.organizationId),
           this.getChangeRequestList(),
         ]);
+
         this.refreshNavBarList();
       } catch (error) {
         console.error('Failed to load data for Landing Page.', error);
@@ -701,6 +713,29 @@ export default {
       } finally {
         this.isLoadingComplete = true;
       }
+    },
+    async isEnrolmentReportPending() {
+      const today = new Date();
+      const { previousYearId } = this.programYearList.newApp;
+
+      const enrolmentReports = (
+        await Promise.all([
+          EnrolmentReportService.getEnrolmentReports(this.organizationId, previousYearId),
+          EnrolmentReportService.getEnrolmentReports(this.organizationId, this.programYearId),
+        ])
+      ).flat();
+
+      return enrolmentReports.some((report) => {
+        const { submissionDeadline, year, month, externalCcfriStatusText, externalCcofStatusText } = report;
+        const deadline = new Date(submissionDeadline);
+        const firstOfNextMonth = new Date(year, month + 1, 1);
+
+        const withinDeadline = today < deadline;
+        const pastFirstOfNextMonth = today >= firstOfNextMonth;
+        const submitted = externalCcfriStatusText === 'SUBMITTED' && externalCcofStatusText === 'SUBMITTED';
+
+        return withinDeadline && pastFirstOfNextMonth && !submitted;
+      });
     },
     toggleCancelApplicationDialog() {
       this.showCancelDialog = !this.showCancelDialog;
