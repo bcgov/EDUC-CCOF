@@ -242,8 +242,9 @@ export default {
     async loadFundingAgreementLicences() {
       this.isLicencesLoading = true;
       try {
-        this.licences =
-          (await LicenceService.getLicencesByFundingAgreementId(this.$route.params.fundingAgreementId)) || [];
+        this.licences = await LicenceService.getLicences({
+          fundingAgreementId: this.$route.params.fundingAgreementId,
+        });
       } catch (error) {
         console.error('Failed to fetch licences by funding agreement:', error);
       } finally {

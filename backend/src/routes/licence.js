@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getLicences, getLicencesByFundingAgreementId } = require('../components/licence');
+const { getLicences } = require('../components/licence');
 const { oneOf, query, validationResult } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 
@@ -25,9 +25,7 @@ router.get(
   ),
   (req, res) => {
     validationResult(req).throw();
-    const { facilityId, fundingAgreementId } = req.query;
-    if (facilityId) return getLicences(req, res);
-    else if (fundingAgreementId) return getLicencesByFundingAgreementId(req, res);
+    getLicences(req, res);
   },
 );
 
