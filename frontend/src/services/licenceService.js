@@ -4,11 +4,12 @@ import { ApiRoutes } from '@/utils/constants';
 export default {
   async getLicences({ facilityId, fundingAgreementId } = {}) {
     try {
-      const queryParam = facilityId
-        ? `facilityId=${facilityId}`
-        : fundingAgreementId
-          ? `fundingAgreementId=${fundingAgreementId}`
-          : null;
+      let queryParam = null;
+      if (facilityId) {
+        queryParam = `facilityId=${facilityId}`;
+      } else if (fundingAgreementId) {
+        queryParam = `fundingAgreementId=${fundingAgreementId}`;
+      }
 
       if (!queryParam) return [];
       const response = await ApiService.apiAxios.get(`${ApiRoutes.LICENCES}?${queryParam}`);
