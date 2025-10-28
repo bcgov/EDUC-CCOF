@@ -107,6 +107,7 @@ public class TestPCFRenewalApplication extends BaseTest {
 		ut.scrollToElement(ccfriunlock.clickConfirmAndCloseBtn());
 		Thread.sleep(3000);
 		// TODO neha - handle final status change after the bug isCCFRI-6285 is fixed
+
 		logger.info("Ending the TestPCFRenewalApplication test...");
 
 	}
