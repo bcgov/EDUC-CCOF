@@ -90,7 +90,7 @@ class CcfriApplication{
             return
         }
 
-        // Opt-In (Full Closure) -> TODO (Hedie-cgi) Implement option to add Multiple Closures to a Group App [CCFRI-6111]
+        // Opt-In (Full Closure) -> TODO [CCFRI-6111] (Hedie-cgi) Implement option to add Multiple Closures to a Group App
         cy.getByLabel('Start Date').typeAndAssert(startDate)                        
         cy.getByLabel('End Date').typeAndAssert(endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
@@ -98,7 +98,7 @@ class CcfriApplication{
             cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()
         })
 
-        // Opt-In (Partial Closure) -> TODO (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories [CCFRI-6112]
+        // Opt-In (Partial Closure) -> TODO [CCFRI-6112] (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories
         if (this.fullFacilityClosureStatus === "No") {
 
         }

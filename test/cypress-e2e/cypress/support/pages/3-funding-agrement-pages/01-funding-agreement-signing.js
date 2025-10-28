@@ -8,11 +8,10 @@ class FundingAgreement {
         cy.clickByText('Funding Agreement')
         cy.contains('Drafted – Provider Action Required').should('be.visible')
         cy.clickByText('View')
-        // TODO (Hedie-cgi) - Validation of FA PDF requires additional npm package pdf-parse (pending download due to Shai-Hulud worm)
+        // TODO [CCFRI-6183] (Hedie-cgi) - Validation of FA PDF requires additional npm package pdf-parse (pending download due to Shai-Hulud worm)
 
         // Validate PDF & submit
         cy.contains('Carefully review your funding agreement.').should('be.visible')
-        // cy.get('.vue-pdf-embed').should('be.visible')
         cy.getByLabel('I agree, consent and certify').click({force: true})
         cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy', {force: true})
         cy.clickByText('Submit').click({force: true})
