@@ -20,16 +20,24 @@ jobs:
           java-version: '17'
           cache: maven
 
-      # Install Google Chrome (needed even when WebDriverManager manages the driver)
       - name: Install Chrome
         run: |
           set -eux
           sudo apt-get update
-          sudo apt-get install -y wget
+          sudo apt-get install -y wget fonts-liberation libasound2 libnss3 libgbm1 xdg-utils
           wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i /tmp/chrome.deb || sudo apt-get -f install -y
           google-chrome --version
+          
+      - name: Create root-level config.properties (QA only)
+        run: |
+          cat > config.properties <<'EOL'
+          qa_crm_url=${{ secrets.QA_CRM_URL }}
+          crm_username=${{ secrets.CRM_USERNAME }}
+          crm_password=${{ secrets.CRM_PASSWORD }}
+          browser=chrome
+          headless=true
+          EOL
 
       - name: Build & run tests
         run: mvn -B -ntp clean test
-
