@@ -54,7 +54,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = false;
         this.jwtToken = null;
         localStorage.removeItem('jwtToken');
-        sessionStorage.removeItem('enrolmentReportDialogShown');
+        sessionStorage.removeItem('pendingEnrolmentCheck');
       }
     },
     setIsUserInfoLoaded(isUserInfoLoaded) {

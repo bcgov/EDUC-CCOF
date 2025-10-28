@@ -691,12 +691,11 @@ export default {
     async loadData() {
       try {
         this.isLoadingComplete = false;
-
-        if (!sessionStorage.getItem('enrolmentReportDialogShown')) {
-          const pendingEnrolment = this.isEnrolmentReportPending();
+        if (!sessionStorage.getItem('pendingEnrolmentCheck')) {
+          const pendingEnrolment = await this.isEnrolmentReportPending();
+          sessionStorage.setItem('pendingEnrolmentCheck', true);
           if (pendingEnrolment) {
             this.showEnrolmentReportDialog = true;
-            sessionStorage.setItem('enrolmentReportDialogShown', true);
           }
         }
         await Promise.all([
@@ -727,11 +726,11 @@ export default {
       return enrolmentReports.some((report) => {
         const { submissionDeadline, year, month, externalCcfriStatusText, externalCcofStatusText } = report;
         const deadline = new Date(submissionDeadline);
-        const firstOfNextMonth = new Date(year, month + 1, 1);
+        const firstOfNextMonth = new Date(year, month, 1);
 
         const withinDeadline = today < deadline;
         const pastFirstOfNextMonth = today >= firstOfNextMonth;
-        const submitted = externalCcfriStatusText === 'SUBMITTED' && externalCcofStatusText === 'SUBMITTED';
+        const submitted = externalCcfriStatusText === 'Submitted' && externalCcofStatusText === 'Submitted';
 
         return withinDeadline && pastFirstOfNextMonth && !submitted;
       });
