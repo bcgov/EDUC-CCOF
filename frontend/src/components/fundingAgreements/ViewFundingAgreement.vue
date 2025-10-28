@@ -245,11 +245,20 @@ export default {
         this.licences = await LicenceService.getLicences({
           fundingAgreementId: this.$route.params.fundingAgreementId,
         });
+        this.sortLicencesByFacilityName();
       } catch (error) {
         console.error('Failed to fetch licences by funding agreement:', error);
       } finally {
         this.isLicencesLoading = false;
       }
+    },
+
+    sortLicencesByFacilityName() {
+      this.licences.sort((a, b) => {
+        const nameA = a.serviceDeliveryDetails[0]?.facilityName?.toLowerCase();
+        const nameB = b.serviceDeliveryDetails[0]?.facilityName?.toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
     },
 
     goBackToManageFundingAgreement() {
