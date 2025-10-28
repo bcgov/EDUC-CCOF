@@ -785,7 +785,6 @@ const LicenceMappings = [
   { back: 'ccof_name', front: 'licenceNumber' },
   { back: 'ccof_organization', front: 'ccofOrganization' },
   { back: '_ccof_facility_value', front: 'facilityId' },
-  { back: 'ccof_facility', front: 'facilityName' },
   { back: 'ccof_facility_id', front: 'facilityAccountNumber' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
@@ -814,6 +813,8 @@ const ServiceDeliveryMappings = [
   { back: 'ccof_after_school', front: 'afterSchoolCare' },
   { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
   { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
+
+  { back: 'ccof_license.ccof_facility.name', front: 'facilityName' },
 ];
 
 const RoleMappings = [

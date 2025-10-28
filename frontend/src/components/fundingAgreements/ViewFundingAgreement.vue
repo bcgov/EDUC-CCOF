@@ -6,7 +6,7 @@
     <v-expansion-panels v-else-if="licences.length" multiple class="mb-6">
       <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
         <v-expansion-panel-title>
-          <strong>{{ licence.facilityName?.name }} - {{ licence.facilityAccountNumber }}</strong>
+          <strong>{{ licence.serviceDeliveryDetails[0].facilityName }} - {{ licence.facilityAccountNumber }}</strong>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
           <ServiceDetails :licence="licence" />
