@@ -319,3 +319,10 @@ Cypress.Commands.add('runEceWeApp', (appType, term) => {
     eceWeApp.supportingDocUpload()
   })
 }); 
+
+Cypress.Commands.add('licenceUpload', () => {
+  ccofApp.loadFixturesAndVariables()
+    cy.then(()=>{
+      ccofApp.licenceUpload()
+  })
+})
