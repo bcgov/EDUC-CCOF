@@ -1,5 +1,6 @@
 'use strict';
 const { getOperation } = require('./utils');
+const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { LicenceMappings, ServiceDeliveryMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
@@ -24,8 +25,9 @@ async function getLicencesByFacilityId(facilityId, res) {
   }
 }
 
-async function getLicencesByFundingAgreementId(fundingAgreementId, res) {
+async function getLicencesByFundingAgreementId(req, res) {
   try {
+    const { fundingAgreementId } = req.query;
     const operation =
       'ccof_funding_agreements?$select=ccof_funding_agreementid' +
       '&$expand=ccof_Funding_Agreement_ccof_license_ccof_license' +
@@ -34,18 +36,16 @@ async function getLicencesByFundingAgreementId(fundingAgreementId, res) {
       '$filter=(statecode eq 0 and statuscode ne 100000001 and statuscode ne 1))' +
       `&$filter=(ccof_funding_agreementid eq ${fundingAgreementId})`;
     const response = await getOperation(operation);
-    const licences = [];
+    let licences = [];
     for (const fa of response.value) {
-      for (const l of fa.ccof_Funding_Agreement_ccof_license_ccof_license) {
+      for (const licence of fa.ccof_Funding_Agreement_ccof_license_ccof_license) {
         licences.push({
-          ...new MappableObjectForFront(l, LicenceMappings).toJSON(),
-          serviceDeliveryDetails: (await getRawServiceDetails(l.ccof_licenseid)).map((d) => ({
-            ...new MappableObjectForFront(d, ServiceDeliveryMappings).toJSON(),
-            facilityName: d.ccof_license?.ccof_facility?.name,
-          })),
+          ...new MappableObjectForFront(licence, LicenceMappings).toJSON(),
+          serviceDeliveryDetails: await getRawServiceDetails(licence.ccof_licenseid),
         });
       }
     }
+    licences = restrictFacilities(req, licences);
     return res.status(HttpStatus.OK).json(licences);
   } catch (e) {
     log.error(e);
@@ -62,7 +62,10 @@ async function getRawServiceDetails(licenceId) {
     '$expand=ccof_facility($select=accountid,name))' +
     `&$filter=(_ccof_license_value eq '${licenceId}')`;
   const response = await getOperation(operation);
-  return response.value;
+  return response.value.map((detail) => ({
+    ...new MappableObjectForFront(detail, ServiceDeliveryMappings).toJSON(),
+    facilityName: detail.ccof_license?.ccof_facility?.name,
+  }));
 }
 
 async function getLicences(req, res) {
@@ -71,7 +74,7 @@ async function getLicences(req, res) {
     if (facilityId) {
       return await getLicencesByFacilityId(facilityId, res);
     } else if (fundingAgreementId) {
-      return await getLicencesByFundingAgreementId(fundingAgreementId, res);
+      return await getLicencesByFundingAgreementId(req, res);
     }
   } catch (e) {
     log.error(e);

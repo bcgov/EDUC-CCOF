@@ -2,7 +2,7 @@
   <v-container fluid v-bind="$attrs" class="px-md-16">
     <h1 class="mb-6">Licence and Service Details Record</h1>
 
-    <v-skeleton-loader v-if="isLicencesLoading" type="list-item" class="mb-6" />
+    <v-skeleton-loader v-if="isLoading" type="list-item" class="mb-6" />
     <v-expansion-panels v-else-if="licences.length" multiple class="mb-6">
       <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
         <v-expansion-panel-title>
@@ -20,8 +20,8 @@
 
     <v-row class="mt-6" justify="center">
       <v-col cols="12" md="10" lg="8">
-        <AppPDFViewer v-if="pdfFile" :pdf-file="pdfFile" />
-        <v-skeleton-loader v-else type="image" height="800px" />
+        <v-skeleton-loader v-if="isLoading || !pdfFile" type="image" height="800px" />
+        <AppPDFViewer v-else :pdf-file="pdfFile" />
       </v-col>
     </v-row>
 
@@ -214,13 +214,15 @@ export default {
   },
   methods: {
     async loadData() {
+      this.isLoading = true;
       try {
-        this.isLoading = true;
-        await this.loadFundingAgreement();
-        await this.loadFundingAgreementPDF();
-        await this.loadFundingAgreementLicences();
+        await Promise.all([
+          this.loadFundingAgreement(),
+          this.loadFundingAgreementPDF(),
+          this.loadFundingAgreementLicences(),
+        ]);
       } catch (error) {
-        console.error('Failed to load Funding Agreement', error);
+        console.error('Failed to load Funding Agreement data', error);
       } finally {
         this.isLoading = false;
       }
@@ -240,7 +242,6 @@ export default {
     },
 
     async loadFundingAgreementLicences() {
-      this.isLicencesLoading = true;
       try {
         this.licences = await LicenceService.getLicences({
           fundingAgreementId: this.$route.params.fundingAgreementId,
@@ -248,8 +249,6 @@ export default {
         this.sortLicencesByFacilityName();
       } catch (error) {
         console.error('Failed to fetch licences by funding agreement:', error);
-      } finally {
-        this.isLicencesLoading = false;
       }
     },
 
