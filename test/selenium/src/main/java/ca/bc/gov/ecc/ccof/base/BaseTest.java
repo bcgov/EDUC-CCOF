@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.annotations.AfterMethod;
@@ -53,7 +54,22 @@ public abstract class BaseTest {
 	public void browserSetup(String browser, String url) {
 		if (browser.equalsIgnoreCase("chrome")) {
 			WebDriverManager.chromedriver().setup();
-			driver = new ChromeDriver();
+			ChromeOptions options = new ChromeOptions();
+
+			// Check if headless mode is enabled in config.properties
+			String headless = properties.getProperty("headless");
+			logger.info("Launching browser in headless mode: " + headless);
+
+			if ("true".equalsIgnoreCase(headless)) {
+				options.addArguments("--headless");
+				options.addArguments("--disable-gpu");
+				options.addArguments("--window-size=1920,1080");
+				options.addArguments("--no-sandbox");
+				options.addArguments("--disable-dev-shm-usage");
+			}
+
+			driver = new ChromeDriver(options);
+
 		} else if (browser.equalsIgnoreCase("edge")) {
 			WebDriverManager.edgedriver().setup();
 			driver = new EdgeDriver();

@@ -27,6 +27,9 @@ public class CcfrisInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[contains(text(),'Save & Close')]")
 	WebElement saveAndCloseBtn;
 
+	@FindBy(xpath = "//span[contains(text(),'Unlock')]")
+	WebElement unlockBtn;
+
 	public CcfrisInfoPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -48,5 +51,9 @@ public class CcfrisInfoPage extends BaseTest {
 
 	public void clickSaveAndCloseBtn() {
 		saveAndCloseBtn.click();
+	}
+
+	public void clickUnlockBtn() {
+		unlockBtn.click();
 	}
 }
