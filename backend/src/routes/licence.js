@@ -19,10 +19,9 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION),
   validateFacility(),
-  oneOf([
-    query('facilityId', 'Query param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-    query('fundingAgreementId', 'Query param: [fundingAgreementId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-  ]),
+  oneOf([query('facilityId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('fundingAgreementId').notEmpty().isUUID(UUID_VALIDATOR_VERSION)], {
+    message: 'URL query: [facilityId or fundingAgreementId] is required',
+  }),
   (req, res) => {
     validationResult(req).throw();
     getLicences(req, res);

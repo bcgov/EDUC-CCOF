@@ -222,7 +222,7 @@ export default {
           this.loadFundingAgreementLicences(),
         ]);
       } catch (error) {
-        console.error('Failed to load Funding Agreement data', error);
+        console.error('Failed to load Funding Agreement', error);
       } finally {
         this.isLoading = false;
       }
@@ -248,7 +248,7 @@ export default {
         });
         this.sortLicencesByFacilityName();
       } catch (error) {
-        console.error('Failed to fetch licences by funding agreement:', error);
+        console.error('Failed to load licences by Funding Agreement', error);
       }
     },
 
