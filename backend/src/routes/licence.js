@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getLicences } = require('../components/licence');
 const { oneOf, query, validationResult } = require('express-validator');
@@ -19,10 +19,10 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION),
   validateFacility(),
-  oneOf(
-    [query('facilityId').exists().isUUID().withMessage('facilityId must be a valid UUID'), query('fundingAgreementId').exists().isUUID().withMessage('fundingAgreementId must be a valid UUID')],
-    'URL query: [facilityId or fundingAgreementId] is required',
-  ),
+  oneOf([
+    query('facilityId', 'Query param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('fundingAgreementId', 'Query param: [fundingAgreementId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ]),
   (req, res) => {
     validationResult(req).throw();
     getLicences(req, res);

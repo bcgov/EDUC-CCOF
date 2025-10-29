@@ -5,8 +5,8 @@ describe("Login Page Test", () => {
     loginPage.visitLoginPage();
     loginPage.clickLoginButton();
     loginPage.loginThroughExternalProvider(
-      Cypress.env("USERNAME"),
-      Cypress.env("PASSWORD")
+      Cypress.env("PORTAL_USERNAME"),
+      Cypress.env("PORTAL_PASSWORD")
     );
     cy.contains("What would you like to do?").should("exist");
     // apply application card check
