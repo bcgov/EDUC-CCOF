@@ -397,7 +397,7 @@ export default {
     ]),
 
     previous() {
-      this.$router.push(PATHS.ROOT.HOME);
+      this.$router.back();
     },
     // FUTURE RELEASE - filter change request to be displayed in Change History by Program Year
     // isCurrentOrFuture(programYearId) {
