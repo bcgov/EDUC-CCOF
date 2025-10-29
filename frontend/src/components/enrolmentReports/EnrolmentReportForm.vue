@@ -1161,6 +1161,7 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
+  CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
   ORGANIZATION_PROVIDER_TYPES_IDS,
@@ -1185,6 +1186,7 @@ export default {
       dailyEnrolments: [],
       originalDailyEnrolments: [],
       previousDailyEnrolments: [],
+      paymentEligibleDaysCount: {},
       showBackConfirmationDialog: false,
       showFullMonthClosureConfirmationDialog: false,
     };
@@ -1241,6 +1243,7 @@ export default {
       overOOSCG: 100000009,
       lessPre: 100000010,
     };
+    this.initializePaymentEligibleDaysCount();
     await this.loadData();
     if (!this.readonly) {
       this.calculate();
@@ -1347,6 +1350,40 @@ export default {
       });
     },
 
+    initializePaymentEligibleDaysCount() {
+      this.paymentEligibleDaysCount = { CCOF: {}, CCFRI: {} };
+      for (const category of this.CATEGORY_FIELDS) {
+        this.paymentEligibleDaysCount.CCOF[category] = 0;
+        this.paymentEligibleDaysCount.CCFRI[category] = 0;
+      }
+    },
+
+    calculatePaymentEligibleDays() {
+      this.initializePaymentEligibleDaysCount();
+      for (const dailyEnrolment of this.dailyEnrolments) {
+        for (const category of this.CATEGORY_FIELDS) {
+          if (!dailyEnrolment[category]) continue;
+          const eligibility = dailyEnrolment.paymentEligibility;
+          switch (eligibility) {
+            case null:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
+              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI:
+              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    },
+
     calculateCurrentTotals() {
       const currentTotals = Object.fromEntries(this.CATEGORY_FIELDS.map((category) => [category, 0]));
       this.dailyEnrolments.forEach((dailyEnrolment) => {
@@ -1362,10 +1399,9 @@ export default {
 
     calculateBaseFundingAmounts() {
       this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         this.enrolmentReport[ccofBaseAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCOF[category],
           this.enrolmentReport.baseFundingRates[category],
         );
       });
@@ -1373,11 +1409,10 @@ export default {
 
     calculateCcfriAmounts() {
       this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         this.enrolmentReport[ccfriAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport[ccfriRateField],
         );
       });
@@ -1385,10 +1420,9 @@ export default {
 
     calculateCcfriProviderAmounts() {
       this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
         this.enrolmentReport[ccfriProviderAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport.ccfriProviderPaymentRates[category],
         );
       });
@@ -1463,6 +1497,7 @@ export default {
 
     calculate() {
       this.calculateCurrentTotals();
+      this.calculatePaymentEligibleDays();
       this.calculateBaseFundingAmounts();
       this.calculateCcfriAmounts();
       this.calculateCcfriProviderAmounts();
