@@ -199,7 +199,7 @@ const PERMISSIONS = Object.freeze({
   VIEW_FACILITY_CLOSURES: '54',
 });
 
-const UUID_VERSION = 'loose';
+const UUID_VALIDATOR_VERSION = 'loose';
 
 module.exports = {
   ACCOUNT_TYPE,
@@ -221,5 +221,5 @@ module.exports = {
   PERMISSIONS,
   SCAN_RESULTS,
   ROLES,
-  UUID_VERSION,
+  UUID_VALIDATOR_VERSION,
 };
