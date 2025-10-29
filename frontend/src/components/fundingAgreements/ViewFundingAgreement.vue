@@ -185,7 +185,6 @@ export default {
       processing: false,
       showSubmissionConfirmationDialog: false,
       licences: [],
-      isLicencesLoading: true,
     };
   },
   computed: {
