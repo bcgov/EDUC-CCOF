@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
@@ -25,7 +25,7 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getFacility(req, res);
@@ -38,7 +38,7 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.REQUEST_CLOSURE),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getLicenseCategories(req, res);
@@ -89,7 +89,7 @@ router.put(
   isValidBackendToken,
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.UPDATE_FACILITY_INFORMATION),
   validateFacility(),
-  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID()],
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return updateFacility(req, res);
