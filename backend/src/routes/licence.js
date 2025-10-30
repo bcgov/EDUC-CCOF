@@ -17,7 +17,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION),
+  validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION, PERMISSIONS.VIEW_FUNDING_AGREEMENT),
   validateFacility(),
   oneOf([query('facilityId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('fundingAgreementId').notEmpty().isUUID(UUID_VALIDATOR_VERSION)], {
     message: 'URL query: [facilityId or fundingAgreementId] is required',
