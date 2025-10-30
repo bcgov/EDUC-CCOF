@@ -110,7 +110,8 @@ export const useAppStore = defineStore('app', {
           EnrolmentReportService.getEnrolmentReports(organizationId, programYearId),
         ])
       ).flat();
-      return enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
+      this.hasDueReports = enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
+      return this.hasDueReports;
     },
     async startCounter() {
       const d = new Date();

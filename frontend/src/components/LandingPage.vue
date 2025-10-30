@@ -700,7 +700,6 @@ export default {
         if (this.hasDueReports == null) {
           const pendingEnrolment = await this.checkDueReports(this.organizationId);
           if (pendingEnrolment) {
-            this.hasDueReports = true;
             this.showEnrolmentReportDialog = true;
           }
         }
