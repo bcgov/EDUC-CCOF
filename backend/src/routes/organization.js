@@ -6,7 +6,7 @@ const disableEndpoint = require('../middlewares/disableEndpoint');
 const validatePermission = require('../middlewares/validatePermission');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createOrganization, getOrganization, getOrganizationFacilities, updateOrganization } = require('../components/organization');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { param, validationResult, checkSchema } = require('express-validator');
 
 const organizationSchema = {
@@ -59,7 +59,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
-  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getOrganization(req, res);
@@ -82,7 +82,7 @@ router.put(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CHANGE_ORG_INFORMATION),
-  [(param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(), checkSchema(organizationSchema))],
+  [(param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), checkSchema(organizationSchema))],
   (req, res) => {
     validationResult(req).throw();
     return updateOrganization(req, res);
@@ -111,7 +111,7 @@ router.get(
   disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.ADD_USERS, PERMISSIONS.EDIT_USERS, PERMISSIONS.VIEW_FACILITY_INFORMATION),
-  [param('organizationId', 'URL Param: [organizationId] is required').notEmpty().isUUID()],
+  [param('organizationId', 'URL Param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getOrganizationFacilities(req, res);
