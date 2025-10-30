@@ -85,7 +85,7 @@ export default {
     return new Date() > new Date(enrolmentReport.submissionDeadline);
   },
 
-  isPendingEnrolmentReport(enrolmentReport) {
+  isDueEnrolmentReport(enrolmentReport) {
     const today = new Date();
     const { year, month, externalCcfriStatusCode, externalCcofStatusCode } = enrolmentReport;
     const firstOfNextMonth = new Date(year, month, 1);
@@ -95,6 +95,6 @@ export default {
       externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT &&
       externalCcfriStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT;
 
-    return pastFirstOfNextMonth && submitted && !this.isSubmissionDeadlinePassed(enrolmentReport);
+    return pastFirstOfNextMonth && !submitted && !this.isSubmissionDeadlinePassed(enrolmentReport);
   },
 };

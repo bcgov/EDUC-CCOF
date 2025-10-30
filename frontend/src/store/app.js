@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
-import EnrolmentReportService from '@/services/enrolmentReportService';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
@@ -16,8 +15,6 @@ export const useAppStore = defineStore('app', {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
-
-    hasDueReports: null,
 
     //Lookup Table Details
     programYearList: {},
@@ -100,18 +97,6 @@ export const useAppStore = defineStore('app', {
         this.roles = lookupInfo?.data?.roles;
       }
     },
-    async checkDueReports(organizationId) {
-      const { programYearId, previousYearId } = this.programYearList.newApp;
-
-      const enrolmentReports = (
-        await Promise.all([
-          EnrolmentReportService.getEnrolmentReports(organizationId, previousYearId),
-          EnrolmentReportService.getEnrolmentReports(organizationId, programYearId),
-        ])
-      ).flat();
-      this.hasDueReports = enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
-      return this.hasDueReports;
-    },
     async startCounter() {
       const d = new Date();
       const time = d.getTime() + 1000 * 120; //add 120 secons to current time
@@ -166,6 +151,12 @@ export const useAppStore = defineStore('app', {
         //default to last updated year for wording so pages like ECE-WE don't break.
         //Ministry may come back to add new wording for the upcoming fiscal year
       }
+    },
+    getPreviousProgramYearId: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear?.previousYearId;
+      };
     },
     getProgramYearNameById: (state) => {
       return (id) => {

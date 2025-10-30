@@ -1,8 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <div v-if="!isLoadingComplete">
-    <Spinner />
-  </div>
+  <Spinner v-if="!isLoadingComplete" />
   <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
     <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
@@ -375,6 +373,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useEnrolmentReport } from '@/store/enrolmentReport';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
@@ -425,7 +424,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useAppStore, ['renewalYearLabel', 'programYearList', 'hasDueReports']),
+    ...mapState(useAppStore, ['renewalYearLabel', 'programYearList']),
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',
@@ -445,6 +444,7 @@ export default {
       'applicationStatus',
       'applicationId',
     ]),
+    ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
@@ -688,8 +688,8 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions(useAppStore, ['checkDueReports']),
     ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
+    ...mapActions(useEnrolmentReport, ['checkDueReports']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
@@ -698,10 +698,8 @@ export default {
         this.isLoadingComplete = false;
 
         if (this.hasDueReports === null) {
-          const pendingEnrolment = await this.checkDueReports(this.organizationId);
-          if (pendingEnrolment) {
-            this.showEnrolmentReportDialog = true;
-          }
+          await this.checkDueReports(this.organizationId, this.latestProgramYearId);
+          this.showEnrolmentReportDialog = this.hasDueReports;
         }
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
