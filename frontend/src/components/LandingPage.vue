@@ -697,7 +697,7 @@ export default {
       try {
         this.isLoadingComplete = false;
 
-        if (this.hasDueReports == null) {
+        if (this.hasDueReports === null) {
           const pendingEnrolment = await this.checkDueReports(this.organizationId);
           if (pendingEnrolment) {
             this.showEnrolmentReportDialog = true;
