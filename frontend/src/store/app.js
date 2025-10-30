@@ -101,8 +101,7 @@ export const useAppStore = defineStore('app', {
       }
     },
     async checkDueReports(organizationId) {
-      const { previousYearId } = this.programYearList.newApp;
-      const { programYearId } = this.programYearList.newApp;
+      const { programYearId, previousYearId } = this.programYearList.newApp;
 
       const enrolmentReports = (
         await Promise.all([
