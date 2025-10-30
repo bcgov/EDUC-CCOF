@@ -110,7 +110,6 @@ export const useAppStore = defineStore('app', {
           EnrolmentReportService.getEnrolmentReports(organizationId, programYearId),
         ])
       ).flat();
-      this.hasDueReports = true;
       return enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
     },
     async startCounter() {
