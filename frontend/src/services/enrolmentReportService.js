@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { ApiRoutes } from '@/utils/constants';
+import { ApiRoutes, ENROLMENT_REPORT_STATUSES } from '@/utils/constants';
 
 export default {
   async getDailyEnrolments(enrolmentReportId) {
@@ -87,12 +87,14 @@ export default {
 
   isPendingEnrolmentReport(enrolmentReport) {
     const today = new Date();
-    const { year, month, externalCcfriStatusText, externalCcofStatusText } = enrolmentReport;
+    const { year, month, externalCcfriStatusCode, externalCcofStatusCode } = enrolmentReport;
     const firstOfNextMonth = new Date(year, month, 1);
 
     const pastFirstOfNextMonth = today >= firstOfNextMonth;
-    const submitted = externalCcfriStatusText === 'Submitted' && externalCcofStatusText === 'Submitted';
+    const submitted =
+      externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT &&
+      externalCcfriStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT;
 
-    return pastFirstOfNextMonth && !submitted && !this.isSubmissionDeadlinePassed(enrolmentReport);
+    return pastFirstOfNextMonth && submitted && !this.isSubmissionDeadlinePassed(enrolmentReport);
   },
 };

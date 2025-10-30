@@ -1,11 +1,11 @@
-import EnrolmentReportDialog from '@/components/EnrolmentReportDialog.vue';
+import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
 import vuetify from '@/plugins/vuetify';
 import { PATHS } from '@/utils/constants.js';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
-    cy.mount(EnrolmentReportDialog, {
+    cy.mount(EnrolmentReportDueDialog, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
@@ -19,7 +19,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<EnrolmentReportDialog />', () => {
+describe('<EnrolmentReportDueDialog />', () => {
   beforeEach(() => {
     cy.viewport(1020, 1000);
   });

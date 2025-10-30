@@ -1,8 +1,11 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-container fluid class="pa-12">
+  <div v-if="!isLoadingComplete">
+    <Spinner />
+  </div>
+  <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
-    <EnrolmentReportDialog v-if="showEnrolmentReportDialog" />
+    <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
 
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
@@ -379,12 +382,14 @@ import { useMessageStore } from '@/store/message.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
-import EnrolmentReportDialog from '@/components/EnrolmentReportDialog.vue';
+import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
+import Spinner from '@/components/common/Spinner.vue';
+
 import {
   PATHS,
   pcfUrl,
@@ -404,10 +409,11 @@ export default {
     AppAlertBanner,
     AppButton,
     CancelApplicationDialog,
-    EnrolmentReportDialog,
+    EnrolmentReportDueDialog,
     SmallCard,
     MessagesToolbar,
     FiscalYearSlider,
+    Spinner,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {

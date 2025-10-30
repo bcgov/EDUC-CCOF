@@ -13,9 +13,9 @@
     <template #button>
       <v-row class="px-9 flex-column flex-md-row justify-md-space-between">
         <AppButton :primary="false" class="text-body-2 mb-4 mb-md-0" min-width="250px" @click="isDisplayed = false">
-          Not Now
+          Not now
         </AppButton>
-        <AppButton :primary="true" class="text-body-2" min-width="250px" @click="goToEnrolmentDashboard()">
+        <AppButton class="text-body-2" min-width="250px" @click="goToEnrolmentDashboard()">
           Yes, take me to the Enrolment Report Dashboard
         </AppButton>
       </v-row>
@@ -30,7 +30,7 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import { PATHS } from '@/utils/constants.js';
 
 export default {
-  name: 'EnrolmentReportDialog',
+  name: 'EnrolmentReportDueDialog',
   components: { AppButton, AppDialog },
   data() {
     return {
