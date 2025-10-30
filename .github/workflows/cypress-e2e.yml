@@ -1,12 +1,23 @@
 name: Cypress end-to-end tests
 on:
   workflow_dispatch:
+    inputs:
+      testFile:
+        description: 'Path to Cypress test file'
+        required: true
+        default: '1-portal-login/portal-login-happy-path-e2e.cy.js'
 jobs:
   cypress-run:
     name: Run Cypress E2E tests
     runs-on: ubuntu-24.04
     environment: dev
     steps:
+      - name: Print Workflow Dispatch Inputs and Env Vars
+        uses: shayki5/print-workflow-dispatch-inputs@v1
+        with:
+          add_to_summary: "true"
+          print_env_vars: "false"
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -16,7 +27,7 @@ jobs:
           working-directory: ./test/cypress-e2e
           browser: electron
           wait-on: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
-          spec: ./cypress/e2e/5-group-renewal-application/group-renewal-application-full-e2e.cy.js
+          spec: ./cypress/e2e/${{ github.event.inputs.testFile }}
         env:
           CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
