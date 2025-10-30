@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import EnrolmentReportService from '@/services/enrolmentReportService';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
@@ -15,6 +16,8 @@ export const useAppStore = defineStore('app', {
     alertNotificationText: '',
     alertNotificationQueue: [],
     alertNotification: false,
+
+    hasDueReports: null,
 
     //Lookup Table Details
     programYearList: {},
@@ -96,6 +99,19 @@ export const useAppStore = defineStore('app', {
         this.setHealthAuthorities(lookupInfo.data?.healthAuthorities);
         this.roles = lookupInfo?.data?.roles;
       }
+    },
+    async checkDueReports(organizationId) {
+      const { previousYearId } = this.programYearList.newApp;
+      const { programYearId } = this.programYearList.newApp;
+
+      const enrolmentReports = (
+        await Promise.all([
+          EnrolmentReportService.getEnrolmentReports(organizationId, previousYearId),
+          EnrolmentReportService.getEnrolmentReports(organizationId, programYearId),
+        ])
+      ).flat();
+      this.hasDueReports = true;
+      return enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
     },
     async startCounter() {
       const d = new Date();

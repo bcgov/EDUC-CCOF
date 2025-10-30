@@ -379,8 +379,6 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
-import EnrolmentReportService from '@/services/enrolmentReportService.js';
-
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
@@ -427,7 +425,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useAppStore, ['renewalYearLabel', 'programYearList']),
+    ...mapState(useAppStore, ['renewalYearLabel', 'programYearList', 'hasDueReports']),
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',
@@ -690,6 +688,7 @@ export default {
     await this.loadData();
   },
   methods: {
+    ...mapActions(useAppStore, ['checkDueReports']),
     ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
@@ -697,9 +696,9 @@ export default {
     async loadData() {
       try {
         this.isLoadingComplete = false;
-        if (!sessionStorage.getItem('pendingEnrolmentCheck')) {
-          const pendingEnrolment = await this.hasPendingEnrolments();
-          sessionStorage.setItem('pendingEnrolmentCheck', true);
+
+        if (this.hasDueReports == null) {
+          const pendingEnrolment = await this.checkDueReports(this.organizationId);
           if (pendingEnrolment) {
             this.showEnrolmentReportDialog = true;
           }
@@ -717,18 +716,6 @@ export default {
       } finally {
         this.isLoadingComplete = true;
       }
-    },
-    async hasPendingEnrolments() {
-      const { previousYearId } = this.programYearList.newApp;
-
-      const enrolmentReports = (
-        await Promise.all([
-          EnrolmentReportService.getEnrolmentReports(this.organizationId, previousYearId),
-          EnrolmentReportService.getEnrolmentReports(this.organizationId, this.programYearId),
-        ])
-      ).flat();
-
-      return enrolmentReports.some((report) => EnrolmentReportService.isPendingEnrolmentReport(report));
     },
     toggleCancelApplicationDialog() {
       this.showCancelDialog = !this.showCancelDialog;

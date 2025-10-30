@@ -31,7 +31,7 @@ describe('<EnrolmentReportDueDialog />', () => {
 
   it('should contain dialog buttons', () => {
     mountWithPinia();
-    cy.contains('button', 'Not Now');
+    cy.contains('button', 'Not now');
     cy.contains('button', 'Yes, take me to the Enrolment Report Dashboard');
   });
 
@@ -44,7 +44,7 @@ describe('<EnrolmentReportDueDialog />', () => {
   it('should close dialog', () => {
     mountWithPinia();
     cy.contains('You have one or more Enrolment Report(s) that have not been submitted.');
-    cy.contains('button', 'Not Now').click();
+    cy.contains('button', 'Not now').click();
     cy.contains('You have one or more Enrolment Report(s)').should('not.be.visible');
   });
 });
