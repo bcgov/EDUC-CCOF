@@ -34,6 +34,32 @@
             " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
             " Parent Fees 2025-26 FY: Full-Time Preschool"
         ],
+        "groupRenewalParentFeeCategories": [
+            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2025-26 FY: Full-Time Preschool",
+            " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2026-27 FY: Full-Time Kindergarten",
+            " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2026-27 FY: Full-Time Preschool"
+        ],
+        "familyRenewalParentFeeCategories": [
+            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
+            " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2026-27 FY: Full-Time Kindergarten",
+            " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12"
+        ],
         "months": {
             "Apr": "1",
             "May": "1",
@@ -68,6 +94,8 @@
         ],
         "startDate": "2025-12-01",
         "endDate": "2025-12-06",
+        "renewalStartDate": "2026-07-01",
+        "renewalEndDate": "2026-07-06",
         "closureReason": "renovations"
     }
 }
