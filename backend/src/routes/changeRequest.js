@@ -23,6 +23,7 @@ const validateFacility = require('../middlewares/validateFacility');
 const validatePermission = require('../middlewares/validatePermission');
 const { CHANGE_REQUEST_TYPES, PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { scanFilePayload } = require('../util/clamav');
+const disableEndpoint = require('../middlewares/disableEndpoint');
 
 module.exports = router;
 
@@ -88,6 +89,7 @@ const documentChangeRequestSchema = {
 router.get(
   '/changeActionClosure',
   passport.authenticate('jwt', { session: false }),
+  disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES),
   validateFacility(),
@@ -105,6 +107,7 @@ router.get(
 router.get(
   '/changeActionClosure/:changeActionClosureId',
   passport.authenticate('jwt', { session: false }),
+  disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES),
   [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
