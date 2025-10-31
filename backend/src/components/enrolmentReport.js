@@ -64,11 +64,11 @@ async function checkDueEnrolmentReports(req, res) {
   try {
     const { organizationId, programYearId, prevProgramYearId } = req.query;
     const today = new Date();
-    let enrolmentReports = [];
 
     const operation = `ccof_monthlyenrollmentreports?$filter=_ccof_organization_value eq ${organizationId} and (_ccof_programyear_value eq ${programYearId} or _ccof_programyear_value eq ${prevProgramYearId}) and (ccof_ccof_external_status eq 1 or ccof_ccfri_external_status eq 1)`;
     const responses = await getOperation(operation);
-    responses?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
+
+    let enrolmentReports = responses?.value?.map(mapEnrolmentReportSummaryForFront) ?? [];
     enrolmentReports = restrictFacilities(req, enrolmentReports);
 
     const hasDueReports = enrolmentReports.some((report) => {
