@@ -81,6 +81,20 @@ export default {
     }
   },
 
+  async checkDueEnrolmentReports(organizationId, programYearId, prevProgramYearId) {
+    try {
+      if (!organizationId || !programYearId || !prevProgramYearId) return false;
+
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ENROLMENT_REPORTS}/has-due?organizationId=${organizationId}&programYearId=${programYearId}&prevProgramYearId=${prevProgramYearId}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to check due enrolment reports - ${error}`);
+      throw error;
+    }
+  },
+
   isSubmissionDeadlinePassed(enrolmentReport) {
     return new Date() > new Date(enrolmentReport.submissionDeadline);
   },
