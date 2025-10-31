@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { param, query, validationResult } = require('express-validator');
 const validatePermission = require('../middlewares/validatePermission');
 /**
@@ -15,7 +15,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT),
-  query('organizationId').notEmpty().withMessage('organizationId is required').isUUID().withMessage('organizationId must be a valid UUID'),
+  query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
   (req, res) => {
     validationResult(req).throw();
     return getFundingAgreements(req, res);
@@ -30,7 +30,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT),
-  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
+  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getFundingAgreement(req, res);
@@ -45,7 +45,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT),
-  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
+  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getFundingAgreementPDF(req, res);
@@ -60,7 +60,7 @@ router.patch(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT),
-  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID()],
+  [param('fundingAgreementId', 'URL param: [fundingAgreementId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return updateFundingAgreement(req, res);

@@ -21,8 +21,9 @@ const { updateChangeRequestMTFI, deleteChangeRequestMTFI, getChangeRequestMTFIBy
 const { checkSchema, param, query, validationResult } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 const validatePermission = require('../middlewares/validatePermission');
-const { CHANGE_REQUEST_TYPES, PERMISSIONS } = require('../util/constants');
+const { CHANGE_REQUEST_TYPES, PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { scanFilePayload } = require('../util/clamav');
+const disableEndpoint = require('../middlewares/disableEndpoint');
 
 module.exports = router;
 
@@ -88,11 +89,12 @@ const documentChangeRequestSchema = {
 router.get(
   '/changeActionClosure',
   passport.authenticate('jwt', { session: false }),
+  disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES),
   validateFacility(),
-  query('facilityId', 'URL query: [facilityId] is required').notEmpty().isUUID(),
-  query('programYearId', 'URL query: [programYearId] is required').notEmpty().isUUID(),
+  query('facilityId', 'URL query: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  query('programYearId', 'URL query: [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
     return getChangeActionClosures(req, res);
@@ -105,9 +107,10 @@ router.get(
 router.get(
   '/changeActionClosure/:changeActionClosureId',
   passport.authenticate('jwt', { session: false }),
+  disableEndpoint(),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES),
-  [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').notEmpty().isUUID()],
+  [param('changeActionClosureId', 'URL param: [changeActionClosureId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getChangeActionClosure(req, res);
@@ -121,7 +124,7 @@ router.get(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID()],
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequest(req, res);
@@ -135,7 +138,7 @@ router.patch(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID()],
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return updateChangeRequest(req, res);
@@ -157,7 +160,7 @@ router.post(
   '/newFacility/:changeActionId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID()],
+  [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return createChangeRequestFacility(req, res);
@@ -188,7 +191,7 @@ router.get(
   '/documents/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID()],
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequestDocs(req, res);
@@ -207,7 +210,7 @@ router.post(
   '/:changeRequestId/documents',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID()],
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return createChangeAction(req, res, CHANGE_REQUEST_TYPES.PDF_CHANGE);
@@ -221,7 +224,7 @@ router.delete(
   '/changeAction/:changeActionId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID()],
+  [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return deleteChangeAction(req, res);
@@ -235,7 +238,7 @@ router.delete(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID()],
+  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return deleteChangeRequest(req, res);
@@ -245,24 +248,42 @@ router.delete(
 /**
  * Get Change Requests MTFI using CCFRI Application Id
  */
-router.get('/mtfi/:ccfriId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  return getChangeRequestMTFIByCcfriId(req, res);
-});
+router.get(
+  '/mtfi/:ccfriId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    return getChangeRequestMTFIByCcfriId(req, res);
+  },
+);
 
 /**
  * Delete Change Requests MTFI
  */
-router.delete('/mtfi/:mtfiId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID()], (req, res) => {
-  return deleteChangeRequestMTFI(req, res);
-});
+router.delete(
+  '/mtfi/:mtfiId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    return deleteChangeRequestMTFI(req, res);
+  },
+);
 
 /**
  * Update Change Request MTFI
  */
 
-router.patch('/mtfi/:mtfiId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return updateChangeRequestMTFI(req, res);
-});
+router.patch(
+  '/mtfi/:mtfiId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateChangeRequestMTFI(req, res);
+  },
+);
 
 module.exports = router;

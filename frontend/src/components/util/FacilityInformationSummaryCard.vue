@@ -37,7 +37,7 @@
         </p>
       </v-col>
     </v-row>
-    <v-row no-gutters>
+    <v-row v-if="!showApplicationTemplateV1" no-gutters>
       <v-col cols="6" md="4" class="pa-2">
         <p class="summary-label">Health Authority</p>
         <p :class="facility.healthAuthority ? '' : 'text-error'" class="summary-value">
@@ -63,6 +63,7 @@
 <script>
 import { mapState } from 'pinia';
 import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
 import { getOptInOptOut } from '@/utils/common.js';
 import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
 
@@ -77,6 +78,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getHealthAuthorityNameById']),
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
   },
   created() {
     this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;

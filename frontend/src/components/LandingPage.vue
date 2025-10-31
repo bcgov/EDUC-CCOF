@@ -224,16 +224,16 @@
           </template>
           <template #button>
             <v-btn
+              href="https://childcareinfo.gov.bc.ca/childcare/welcome_ccof.aspx"
               :class="buttonColor(!isCCOFApproved)"
               theme="dark"
-              @click="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
             >
               Submit a report
             </v-btn>
           </template>
         </SmallCard>
       </v-col>
-      <v-col v-if="hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION)" cols="12" lg="4">
+      <v-col v-if="false && hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Organization and Facilities</p>
@@ -250,7 +250,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col v-if="hasPermission(PERMISSIONS.VIEW_USERS)" cols="12" lg="4">
+      <v-col v-if="false && hasPermission(PERMISSIONS.VIEW_USERS)" cols="12" lg="4">
         <SmallCard :disable="!organizationAccountNumber">
           <template #content>
             <p class="text-h6">Manage Users</p>
@@ -628,14 +628,16 @@ export default {
       );
     },
     showOrganizationClosuresButton() {
-      if (!this.hasPermission(this.PERMISSIONS.VIEW_CLOSURES)) {
-        return false;
-      }
-      const application = this.applicationMap?.get(this.selectedProgramYearId);
-      // XXX (vietle-cgi) - Status texts come from CCFRI_STATUS_CODES in parseFacilityData() (user.js backend).
-      return application?.facilityList?.some((facility) =>
-        ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
-      );
+      // Not used for Pre-Renewals release
+      return false;
+      // if (!this.hasPermission(this.PERMISSIONS.VIEW_CLOSURES)) {
+      //   return false;
+      // }
+      // const application = this.applicationMap?.get(this.selectedProgramYearId);
+      // // XXX (vietle-cgi) - Status texts come from CCFRI_STATUS_CODES in parseFacilityData() (user.js backend).
+      // return application?.facilityList?.some((facility) =>
+      //   ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
+      // );
     },
   },
   async created() {

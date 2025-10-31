@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const validatePermission = require('../middlewares/validatePermission');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { createClosure, deleteClosures, getClosures, updateClosure } = require('../components/closure');
 const { checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
@@ -50,9 +50,16 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_CLOSURES, PERMISSIONS.VIEW_SUBMITTED_PCF),
-  oneOf([query('organizationId').notEmpty().isUUID(), query('programYearId').notEmpty().isUUID(), query('ccfriApplicationId').notEmpty().isUUID()], {
-    message: 'URL query: [organizationId or programYearId or ccfriApplicationId] is required',
-  }),
+  oneOf(
+    [
+      query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('ccfriApplicationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    ],
+    {
+      message: 'URL query: [organizationId or programYearId or ccfriApplicationId] is required',
+    },
+  ),
   (req, res) => {
     validationResult(req).throw();
     return getClosures(req, res);
@@ -66,10 +73,16 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
 });
 
 // TODO #securitymatrix - Implement with Applications security
-router.patch('/:closureId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('closureId', 'URL param: [closureId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return updateClosure(req, res);
-});
+router.patch(
+  '/:closureId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('closureId', 'URL param: [closureId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateClosure(req, res);
+  },
+);
 
 // TODO #securitymatrix - Implement with Applications security
 router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, deleteClosures);

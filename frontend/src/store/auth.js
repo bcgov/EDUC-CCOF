@@ -2,11 +2,9 @@ import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
-import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ROLES } from '@/utils/constants.js';
 
 function isExpiredToken(jwtToken) {
   const now = Date.now().valueOf() / 1000;
@@ -31,17 +29,21 @@ export const useAuthStore = defineStore('auth', {
     permissions: [],
   }),
   getters: {
-    hasPermission: (state) => {
-      return (permissions) => {
-        permissions = [].concat(permissions);
-        return state.permissions?.some((p) => permissions.includes(p));
+    hasPermission: (_state) => {
+      return (_permissions) => {
+        // Allow all access for Pre-Renewals release
+        return true;
+        // permissions = [].concat(permissions);
+        // return state.permissions?.some((p) => permissions.includes(p));
       };
     },
-    isFacilityAdmin: (state) => {
-      return (
-        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED ||
-        state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_BASIC
-      );
+    isFacilityAdmin: () => {
+      // Allow all access for Pre-Renewals release
+      return false;
+      // return (
+      //   state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_ADVANCED ||
+      //   state.userInfo?.role?.roleNumber === ROLES.FAC_ADMIN_BASIC
+      // );
     },
   },
   actions: {
@@ -104,16 +106,17 @@ export const useAuthStore = defineStore('auth', {
         this.setUserInfo(userInfoRes.data);
 
         // Lookup the permissions
-        let role;
-        const appStore = useAppStore();
-        if (this.isImpersonating) {
-          // TODO (weskubo-cgi) How are we handling impersonation?
-          // When impersonating always use 'Impersonate', not the impersonated user's role
-          //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
-        } else {
-          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
-        }
-        this.permissions = role?.permissions.map((p) => p.permissionNumber);
+        // Not used for Pre-Renewals release
+        // let role;
+        // const appStore = useAppStore();
+        // if (this.isImpersonating) {
+        //   // TODO (weskubo-cgi) How are we handling impersonation?
+        //   // When impersonating always use 'Impersonate', not the impersonated user's role
+        //   //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
+        // } else {
+        //   role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
+        // }
+        // this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
         await applicationStore.loadApplicationFromStore(applicationStore.latestProgramYearId);

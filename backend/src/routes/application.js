@@ -16,6 +16,7 @@ const {
   updateStatusForApplicationComponents,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
+const { UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { param, validationResult, body } = require('express-validator');
 
 router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
@@ -26,64 +27,130 @@ router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isV
   CCOF application guid and facility guid are defined in the payload
 */
 
-router.get('/ccfri/:ccfriId/afs', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getApprovableFeeSchedules(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId/afs',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getApprovableFeeSchedules(req, res);
+  },
+);
 
-router.get('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getRFIApplication(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId/rfi',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getRFIApplication(req, res);
+  },
+);
 
-router.post('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return createRFIApplication(req, res);
-});
+router.post(
+  '/ccfri/:ccfriId/rfi',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createRFIApplication(req, res);
+  },
+);
 
-router.put('/ccfri/rfi/:rfipfiid', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('rfipfiid', 'URL param: [rfipfiid] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return updateRFIApplication(req, res);
-});
+router.put(
+  '/ccfri/rfi/:rfipfiid',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('rfipfiid', 'URL param: [rfipfiid] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateRFIApplication(req, res);
+  },
+);
 
-router.get('/ccfri/:ccfriId/median', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getRFIMedian(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId/median',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getRFIMedian(req, res);
+  },
+);
 
-router.delete('/ccfri/:ccfriId/rfi', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return deleteRfiApplication(req, res);
-});
+router.delete(
+  '/ccfri/:ccfriId/rfi',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return deleteRfiApplication(req, res);
+  },
+);
 
 router.patch('/ccfri', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
   //validationResult(req).throw();
   return updateCCFRIApplication(req, res);
 });
 
-router.patch('/ccfri/:ccfriId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return patchCCFRIApplication(req, res);
-});
+router.patch(
+  '/ccfri/:ccfriId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return patchCCFRIApplication(req, res);
+  },
+);
 
-router.delete('/ccfri/:ccfriId/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  return deleteCCFRIApplication(req, res);
-});
+router.delete(
+  '/ccfri/:ccfriId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    return deleteCCFRIApplication(req, res);
+  },
+);
 
-router.get('/ccfri/:ccfriId/nmf', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return getNMFApplication(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId/nmf',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getNMFApplication(req, res);
+  },
+);
 
-router.post('/ccfri/:ccfriId/nmf', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return createNMFApplication(req, res);
-});
+router.post(
+  '/ccfri/:ccfriId/nmf',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createNMFApplication(req, res);
+  },
+);
 
-router.put('/ccfri/nmf/:nmfpfiid', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('nmfpfiid', 'URL param: [nmfpfiid] is required').notEmpty().isUUID()], (req, res) => {
-  validationResult(req).throw();
-  return updateNMFApplication(req, res);
-});
+router.put(
+  '/ccfri/nmf/:nmfpfiid',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('nmfpfiid', 'URL param: [nmfpfiid] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateNMFApplication(req, res);
+  },
+);
 
 /* CREATE or UPDATE parent fees for a specified age group and year.
   age group and year are defined in the payload
@@ -98,7 +165,7 @@ router.get(
   '/ecewe/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getECEWEApplication(req, res);
   },
@@ -109,7 +176,7 @@ router.patch(
   '/ecewe/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return updateECEWEApplication(req, res);
   },
@@ -120,7 +187,7 @@ router.post(
   '/ecewe/facilities/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return updateECEWEFacilityApplication(req, res);
   },
@@ -131,7 +198,7 @@ router.get(
   '/declaration/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getDeclaration(req, res);
   },
@@ -142,7 +209,7 @@ router.patch(
   '/declaration/submit/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return submitApplication(req, res);
   },
@@ -153,7 +220,7 @@ router.get(
   '/summary/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getApplicationSummary(req, res);
   },
@@ -164,7 +231,7 @@ router.post(
   '/summary/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(), body('facilities').isArray(), body('facilities.*').isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), body('facilities').isArray(), body('facilities.*').isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getApplicationSummary(req, res);
   },
@@ -174,7 +241,7 @@ router.put(
   '/status/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return updateStatusForApplicationComponents(req, res);
@@ -187,7 +254,7 @@ router.get(
   '/changeRequest/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getChangeRequest(req, res);
   },
@@ -199,7 +266,7 @@ router.delete(
   '/:applicationId/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID()],
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return deletePcfApplication(req, res);
   },
