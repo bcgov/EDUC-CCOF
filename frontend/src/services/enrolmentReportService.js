@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { ApiRoutes, ENROLMENT_REPORT_STATUSES } from '@/utils/constants';
+import { ApiRoutes } from '@/utils/constants';
 
 export default {
   async getDailyEnrolments(enrolmentReportId) {
@@ -81,20 +81,21 @@ export default {
     }
   },
 
-  isSubmissionDeadlinePassed(enrolmentReport) {
-    return new Date() > new Date(enrolmentReport.submissionDeadline);
+  async checkDueEnrolmentsReports(organizationId, programYearId, prevProgramYearId) {
+    try {
+      if (!organizationId || !programYearId || !prevProgramYearId) return [];
+
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ENROLMENT_REPORTS}/due?organizationId=${organizationId}&programYearId=${programYearId}&prevProgramYearId=${prevProgramYearId}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to check due enrolment reports - ${error}`);
+      throw error;
+    }
   },
 
-  isDueEnrolmentReport(enrolmentReport) {
-    const today = new Date();
-    const { year, month, externalCcfriStatusCode, externalCcofStatusCode } = enrolmentReport;
-    const firstOfNextMonth = new Date(year, month, 1);
-
-    const pastFirstOfNextMonth = today >= firstOfNextMonth;
-    const submitted =
-      externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT &&
-      externalCcfriStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT;
-
-    return pastFirstOfNextMonth && !submitted && !this.isSubmissionDeadlinePassed(enrolmentReport);
+  isSubmissionDeadlinePassed(enrolmentReport) {
+    return new Date() > new Date(enrolmentReport.submissionDeadline);
   },
 };

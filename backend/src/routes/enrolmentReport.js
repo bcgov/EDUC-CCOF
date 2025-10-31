@@ -5,7 +5,15 @@ const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { createAdjustmentEnrolmentReport, getDailyEnrolments, getEnrolmentReport, getEnrolmentReports, updateDailyEnrolments, updateEnrolmentReport } = require('../components/enrolmentReport');
+const {
+  createAdjustmentEnrolmentReport,
+  getDailyEnrolments,
+  getEnrolmentReport,
+  getEnrolmentReports,
+  checkDueEnrolmentReports,
+  updateDailyEnrolments,
+  updateEnrolmentReport,
+} = require('../components/enrolmentReport');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -44,6 +52,27 @@ router.patch(
   (req, res) => {
     validationResult(req).throw();
     return updateDailyEnrolments(req, res);
+  },
+);
+
+router.get(
+  '/due',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ER),
+  oneOf(
+    [
+      query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('prevProgramYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    ],
+    {
+      message: 'URL query: [organizationId or programYearId or prevProgramYearId] is required',
+    },
+  ),
+  (req, res) => {
+    validationResult(req).throw();
+    return checkDueEnrolmentReports(req, res);
   },
 );
 

@@ -7,18 +7,19 @@ export const useEnrolmentReport = defineStore('enrolmentReport', {
   state: () => ({
     hasDueReports: null,
   }),
+
   actions: {
     async checkDueReports(organizationId, programYearId) {
       const appStore = useAppStore();
+      const prevProgramYearId = appStore.getPreviousProgramYearId(programYearId);
 
-      const enrolmentReports = (
-        await Promise.all([
-          EnrolmentReportService.getEnrolmentReports(organizationId, programYearId),
-          EnrolmentReportService.getEnrolmentReports(organizationId, appStore.getPreviousProgramYearId(programYearId)),
-        ])
-      ).flat();
+      const result = await EnrolmentReportService.checkDueEnrolmentsReports(
+        organizationId,
+        programYearId,
+        prevProgramYearId,
+      );
 
-      this.hasDueReports = enrolmentReports.some((report) => EnrolmentReportService.isDueEnrolmentReport(report));
+      this.hasDueReports = result?.hasDueReports;
     },
   },
 });

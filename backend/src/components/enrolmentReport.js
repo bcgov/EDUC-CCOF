@@ -60,6 +60,28 @@ async function getEnrolmentReports(req, res) {
   }
 }
 
+async function checkDueEnrolmentReports(req, res) {
+  try {
+    const { organizationId, programYearId, prevProgramYearId } = req.query;
+    const today = new Date();
+    let enrolmentReports = [];
+
+    const operation = `ccof_monthlyenrollmentreports?$filter=_ccof_organization_value eq ${organizationId} and (_ccof_programyear_value eq ${programYearId} or _ccof_programyear_value eq ${prevProgramYearId}) and (ccof_ccof_external_status eq 1 or ccof_ccfri_external_status eq 1)`;
+    const responses = await getOperation(operation);
+    responses?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
+    enrolmentReports = restrictFacilities(req, enrolmentReports);
+
+    const hasDueReports = enrolmentReports.some((report) => {
+      const firstOfNextMonth = new Date(report.year, report.month, 1);
+      return today >= firstOfNextMonth && today <= new Date(report.submissionDeadline);
+    });
+    return res.status(HttpStatus.OK).json({ hasDueReports });
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ?? e?.status);
+  }
+}
+
 async function updateEnrolmentReport(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, EnrolmentReportMappings).toJSON();
@@ -122,6 +144,7 @@ module.exports = {
   getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
+  checkDueEnrolmentReports,
   updateDailyEnrolments,
   updateEnrolmentReport,
 };
