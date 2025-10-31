@@ -6,11 +6,11 @@ const isValidBackendToken = auth.isValidBackendToken();
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const {
+  checkDueEnrolmentReports,
   createAdjustmentEnrolmentReport,
   getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
-  checkDueEnrolmentReports,
   updateDailyEnrolments,
   updateEnrolmentReport,
 } = require('../components/enrolmentReport');
@@ -56,20 +56,15 @@ router.patch(
 );
 
 router.get(
-  '/due',
+  '/has-due',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_ER),
-  oneOf(
-    [
-      query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-      query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-      query('prevProgramYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-    ],
-    {
-      message: 'URL query: [organizationId or programYearId or prevProgramYearId] is required',
-    },
-  ),
+  validatePermission(PERMISSIONS.SUBMIT_ENROLMENT_REPORT),
+  [
+    query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
+    query('programYearId').notEmpty().withMessage('programYearId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('programYearId must be a valid UUID'),
+    query('prevProgramYearId').notEmpty().withMessage('prevProgramYearId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('prevProgramYearId must be a valid UUID'),
+  ],
   (req, res) => {
     validationResult(req).throw();
     return checkDueEnrolmentReports(req, res);

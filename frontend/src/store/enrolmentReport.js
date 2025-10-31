@@ -13,7 +13,7 @@ export const useEnrolmentReport = defineStore('enrolmentReport', {
       const appStore = useAppStore();
       const prevProgramYearId = appStore.getPreviousProgramYearId(programYearId);
 
-      const result = await EnrolmentReportService.checkDueEnrolmentsReports(
+      const result = await EnrolmentReportService.checkDueEnrolmentReports(
         organizationId,
         programYearId,
         prevProgramYearId,

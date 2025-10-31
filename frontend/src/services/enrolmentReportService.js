@@ -81,12 +81,12 @@ export default {
     }
   },
 
-  async checkDueEnrolmentsReports(organizationId, programYearId, prevProgramYearId) {
+  async checkDueEnrolmentReports(organizationId, programYearId, prevProgramYearId) {
     try {
-      if (!organizationId || !programYearId || !prevProgramYearId) return [];
+      if (!organizationId || !programYearId || !prevProgramYearId) return false;
 
       const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.ENROLMENT_REPORTS}/due?organizationId=${organizationId}&programYearId=${programYearId}&prevProgramYearId=${prevProgramYearId}`,
+        `${ApiRoutes.ENROLMENT_REPORTS}/has-due?organizationId=${organizationId}&programYearId=${programYearId}&prevProgramYearId=${prevProgramYearId}`,
       );
       return response?.data;
     } catch (error) {

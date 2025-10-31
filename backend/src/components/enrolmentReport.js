@@ -140,11 +140,11 @@ async function createAdjustmentEnrolmentReport(req, res) {
 }
 
 module.exports = {
+  checkDueEnrolmentReports,
   createAdjustmentEnrolmentReport,
   getDailyEnrolments,
   getEnrolmentReport,
   getEnrolmentReports,
-  checkDueEnrolmentReports,
   updateDailyEnrolments,
   updateEnrolmentReport,
 };
