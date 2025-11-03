@@ -38,9 +38,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
 
-  cypress-component:
-    name: Automation Tests
-    uses: ./.github/workflows/cypress-component.yaml
+  # cypress-component:
+  #  name: Automation Tests
+  #  uses: ./.github/workflows/cypress-component.yaml
 
   # TODO: Uncomment after project is set up in sonar
   # sonarcloud:

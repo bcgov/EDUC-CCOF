@@ -171,10 +171,11 @@ export default {
           this.organizationModel.postalCode2 = this.organizationModel.postalCode1;
           this.organizationModel.province2 = this.organizationModel.province1;
         }
-        this.organizationModel.legalName = this.isPartnership
-          ? this.partnershipLegalOrganizationName
-          : this.organizationModel.legalName;
-        if (!this.isPartnership) {
+        if (this.isPartnership) {
+          this.organizationModel.legalName = this.showApplicationTemplateV1
+            ? this.organizationModel.legalName
+            : this.partnershipLegalOrganizationName;
+        } else {
           for (let i = 1; i <= MAX_NUMBER_OF_PARTNERS; i++) {
             this.organizationModel[`partner${i}FirstName`] = null;
             this.organizationModel[`partner${i}MiddleName`] = null;

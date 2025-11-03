@@ -15,10 +15,8 @@ const {
   ORGANIZATION_PROVIDER_TYPES,
   CHANGE_REQUEST_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
-  ROLES,
 } = require('../util/constants');
 const {
-  UserProfileMappings,
   UserProfileFacilityMappings,
   UserProfileOrganizationMappings,
   UserProfileBaseFundingMappings,
@@ -26,12 +24,8 @@ const {
   UserProfileCCFRIMappings,
   UserProfileECEWEMappings,
   FundingAgreementMappings,
-  RoleMappings,
 } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { getRoles } = require('../components/lookup');
-const { getRawContactFacilities } = require('./contact');
-const { isFacilityAdmin } = require('../util/common');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -106,37 +100,42 @@ async function getUserInfo(req, res) {
   // 1. A null response means no user found, so create a new BCeID user with a default Organization Admin role
   // 2. An empty ({}) userResponse means no Organization and/or Applications
   if (isEmpty(userResponse)) {
-    const roles = await getRoles();
-    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMIN);
-    const {
-      data: { roleId, roleNumber },
-    } = orgAdminRole;
+    // Not used for Pre-Renewals release
+    // const roles = await getRoles();
+    // const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMIN);
+    // const {
+    //   data: { roleId, roleNumber },
+    // } = orgAdminRole;
 
     if (userResponse === null) {
-      createUser(req, roleId);
+      createUser(req);
+      return res.status(HttpStatus.OK).json(resData);
     }
-
-    // Add the default role to the response so the user can create Organization and Applications
-    const role = { roleId, roleNumber };
-    const result = {
-      ...resData,
-      role,
-    };
-
-    return res.status(HttpStatus.OK).json(result);
+    if (userResponse == {}) {
+      // If no data back, then no associated Organization/Facilities, return empty orgination data
+      return res.status(HttpStatus.OK).json(resData);
+    }
+    // Not used for Pre-Renewals release
+    // // Add the default role to the response so the user can create Organization and Applications
+    // const role = { roleId, roleNumber };
+    // const result = {
+    //   ...resData,
+    //   role,
+    // };
   }
 
-  // 3. Non-empty response means the user has an Organization and Applications
-  const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
-  if (userResponse.portalRole) {
-    user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
-  }
+  // Not used for Pre-Renewals release
+  // // 3. Non-empty response means the user has an Organization and Applications
+  // const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
+  // if (userResponse.portalRole) {
+  //   user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
+  // }
 
-  // Get facilities for Facility Admin users
-  if (isFacilityAdmin(user)) {
-    const facilities = await getRawContactFacilities(user.contactId);
-    user.facilities = facilities;
-  }
+  // // Get facilities for Facility Admin users
+  // if (isFacilityAdmin(user)) {
+  //   const facilities = await getRawContactFacilities(user.contactId);
+  //   user.facilities = facilities;
+  // }
 
   const organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;
   const applicationList = [];
@@ -174,8 +173,8 @@ async function getUserInfo(req, res) {
   }
   const results = {
     ...resData,
-    ...user,
     ...organization,
+    contactid: userResponse.contactid,
     applications: applicationList,
   };
   return res.status(HttpStatus.OK).json(results);
@@ -278,7 +277,7 @@ async function getDynamicsUserByEmail(req) {
   }
 }
 
-async function createUser(req, roleId) {
+async function createUser(req) {
   log.info('No user found, creating BCeID User: ', getUserName(req));
   let given_name = req.session.passport.user._json.given_name;
   let family_name = req.session.passport.user._json.family_name;
@@ -304,8 +303,6 @@ async function createUser(req, roleId) {
       lastname: lastname,
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
-      // Add a role for new users
-      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {
@@ -316,5 +313,4 @@ async function createUser(req, roleId) {
 
 module.exports = {
   getUserInfo,
-  getUserProfile,
 };
