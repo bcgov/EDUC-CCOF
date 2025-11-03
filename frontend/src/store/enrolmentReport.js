@@ -11,7 +11,6 @@ export const useEnrolmentReport = defineStore('enrolmentReport', {
   actions: {
     async checkDueReports(organizationId, programYearId) {
       const appStore = useAppStore();
-
       const prevProgramYearId = appStore.getPreviousProgramYearId(programYearId);
 
       const result = await EnrolmentReportService.checkDueEnrolmentReports(
