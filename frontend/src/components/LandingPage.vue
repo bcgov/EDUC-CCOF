@@ -697,7 +697,7 @@ export default {
       try {
         this.isLoadingComplete = false;
 
-        if (this.hasDueReports === null) {
+        if (this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT) && this.hasDueReports === null) {
           await this.checkDueReports(this.organizationId, this.latestProgramYearId);
           this.showEnrolmentReportDialog = this.hasDueReports;
         }
