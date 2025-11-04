@@ -24,7 +24,7 @@
           <h3>Record History</h3>
         </v-expansion-panel-title>
         <v-expansion-panel-text>
-          <LicenceHistory :licences="licences" :loading="isLoading" @view-service-details="openViewDialog" />
+          <LicenceHistory :licences="licences" :loading="isLicenceLoading" @view-service-details="openViewDialog" />
         </v-expansion-panel-text>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       licences: [],
-      isLoading: false,
+      isLicenceLoading: false,
       selectedLicence: null,
       viewDialogOpen: false,
     };
@@ -68,7 +68,7 @@ export default {
   },
   methods: {
     async loadData() {
-      this.isLoading = true;
+      this.isLicenceLoading = true;
       try {
         this.licences = await LicenceService.getLicences({ facilityId: this.$route.params.facilityId });
         if (isEmpty(this.licences)) {
@@ -78,7 +78,7 @@ export default {
         this.setFailureAlert('Failed to load licence history.');
         console.error(error);
       } finally {
-        this.isLoading = false;
+        this.isLicenceLoading = false;
       }
     },
     openViewDialog(licence) {
