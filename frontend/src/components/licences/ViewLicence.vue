@@ -70,7 +70,7 @@ export default {
     async loadData() {
       this.isLoading = true;
       try {
-        this.licences = await LicenceService.getLicences(this.$route.params.facilityId);
+        this.licences = await LicenceService.getLicences({ facilityId: this.$route.params.facilityId });
         if (isEmpty(this.licences)) {
           this.setWarningAlert('No licence history available for this facility.');
         }

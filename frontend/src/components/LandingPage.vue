@@ -1,7 +1,9 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-container fluid class="pa-12">
+  <Spinner v-if="!isLoadingComplete" />
+  <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
+    <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
 
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
@@ -375,20 +377,25 @@
 <script>
 import { isEmpty, orderBy } from 'lodash';
 import { mapState, mapActions } from 'pinia';
+
 import { useAuthStore } from '@/store/auth.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
+import { useEnrolmentReport } from '@/store/enrolmentReport';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
+import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
+import Spinner from '@/components/common/Spinner.vue';
+
 import {
   PATHS,
   pcfUrl,
@@ -405,7 +412,16 @@ import { PERMISSIONS } from '../utils/constants/permissions';
 
 export default {
   name: 'LandingPage',
-  components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    CancelApplicationDialog,
+    EnrolmentReportDueDialog,
+    SmallCard,
+    MessagesToolbar,
+    FiscalYearSlider,
+    Spinner,
+  },
   mixins: [alertMixin, permissionsMixin],
   data() {
     return {
@@ -413,6 +429,7 @@ export default {
       showCancelDialog: false,
       isLoadingComplete: false,
       selectedProgramYear: undefined,
+      showEnrolmentReportDialog: false,
     };
   },
   computed: {
@@ -437,6 +454,7 @@ export default {
       'applicationStatus',
       'applicationId',
     ]),
+    ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
@@ -681,17 +699,24 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
+    ...mapActions(useEnrolmentReport, ['checkDueReports']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     async loadData() {
       try {
         this.isLoadingComplete = false;
+
+        if (this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT) && this.hasDueReports === null) {
+          await this.checkDueReports(this.organizationId, this.latestProgramYearId);
+          this.showEnrolmentReportDialog = this.hasDueReports;
+        }
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
           this.getAllMessages(this.organizationId),
           this.getChangeRequestList(),
         ]);
+
         this.refreshNavBarList();
       } catch (error) {
         console.error('Failed to load data for Landing Page.', error);

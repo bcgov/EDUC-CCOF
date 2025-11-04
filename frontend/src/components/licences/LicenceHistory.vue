@@ -23,7 +23,7 @@
           </template>
 
           <template #[`item.licenceStatus`]="{ item }">
-            <span :class="getStatusClass(item.licenceStatus)">
+            <span :class="getLicenceStatusClass(item.licenceStatus)">
               {{ item.licenceStatus }}
             </span>
           </template>
@@ -48,7 +48,7 @@
 <script>
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import { formatUTCDate } from '@/utils/format';
-import { LICENCE_STATUSES } from '@/utils/constants';
+import { getLicenceStatusClass } from '@/utils/common.js';
 
 export default {
   name: 'LicenceHistory',
@@ -78,16 +78,7 @@ export default {
   },
   methods: {
     formatUTCDate,
-    getStatusClass(status) {
-      switch (status) {
-        case LICENCE_STATUSES.APPROVED:
-          return 'status-green';
-        case LICENCE_STATUSES.INACTIVE:
-          return 'status-gray';
-        default:
-          return '';
-      }
-    },
+    getLicenceStatusClass,
     customSort(items, sortBy, sortDesc) {
       //1.licencedate= null 2.recordEndDate (newest to oldest)
       if (sortBy.length === 1 && sortBy[0] === 'recordEndDate') {

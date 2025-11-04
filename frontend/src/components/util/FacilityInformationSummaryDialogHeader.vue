@@ -19,7 +19,7 @@
           {{ isEmpty(facilityInfo?.licenseNumber) ? 'Required' : facilityInfo?.licenseNumber }}
         </p>
       </v-col>
-      <v-col cols="12" md="4" sm="6">
+      <v-col v-if="!showApplicationTemplateV1" cols="12" md="4" sm="6">
         <p class="summary-label">Health Authority</p>
         <p :class="facilityInfo.healthAuthority ? '' : 'text-error'">
           {{ getHealthAuthorityNameById(facilityInfo.healthAuthority) ?? 'Required' }}
@@ -44,7 +44,9 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import summaryMixin from '@/mixins/summaryMixin.js';
+import { useApplicationStore } from '@/store/application.js';
 
 export default {
   name: 'FacilityInformationSummaryDialogHeader',
@@ -66,6 +68,9 @@ export default {
       type: String,
       default: '',
     },
+  },
+  computed: {
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
   },
 };
 </script>

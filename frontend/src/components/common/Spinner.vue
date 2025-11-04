@@ -1,21 +1,20 @@
 <template>
-  <v-card :flat="flat" class="mx-auto pa-4">
-    <v-row align="center" justify="center" style="min-height: 12em">
-      <v-progress-circular :size="70" :width="7" color="primary" indeterminate />
-    </v-row>
-  </v-card>
+  <div class="spinner-container">
+    <v-progress-circular indeterminate size="96" :width="6" color="primary" />
+  </div>
 </template>
 
 <script>
 export default {
   name: 'SpinnerComponent',
-  props: {
-    flat: {
-      type: Boolean,
-      default: false,
-    },
-  },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
+</style>

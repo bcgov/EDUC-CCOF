@@ -21,6 +21,7 @@ function createAuth(permissions) {
 function mountWithPinia(initialState = {}, tab = 'organization-tab') {
   cy.setupPinia({ initialState }).then((pinia) => {
     const pushStub = cy.stub();
+    const replaceStub = cy.stub();
     const isReadyStub = cy.stub().returns(Promise.resolve());
 
     const mockRoute = {
@@ -36,6 +37,7 @@ function mountWithPinia(initialState = {}, tab = 'organization-tab') {
           $router: {
             isReady: isReadyStub,
             push: pushStub,
+            replace: replaceStub,
           },
           $route: mockRoute,
         },
