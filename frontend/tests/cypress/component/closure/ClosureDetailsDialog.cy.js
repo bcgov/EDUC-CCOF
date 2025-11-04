@@ -16,7 +16,7 @@ const closurePartial = {
   fullClosure: false,
 };
 
-function mountWithPinia(dateOverrides = {}, closureProp = {}) {
+function mountWithPinia({ dateOverrides = {}, closureProp = {} } = {}) {
   cy.setupPinia({ stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
     const onClose = cy.spy().as('closeDialogSpy');
@@ -51,17 +51,17 @@ describe('<ClosureDetailsDialog />', () => {
   });
 
   it('should not render dialog', () => {
-    mountWithPinia({ isDisplayed: false });
+    mountWithPinia({ dateOverrides: { isDisplayed: false } });
     cy.contains('Closure Details').should('not.exist');
   });
 
   it('should render dialog', () => {
-    mountWithPinia({ isDisplayed: true });
+    mountWithPinia({ dateOverrides: { isDisplayed: true } });
     cy.contains('Closure Details');
   });
 
   it('should render full closure details', () => {
-    mountWithPinia({ isDisplayed: true }, closureFull);
+    mountWithPinia({ dateOverrides: { isDisplayed: true }, closureProp: { ...closureFull } });
 
     cy.contains('div', 'Licence Number').within(() => {
       cy.contains(closureFull.licenseNumber);
@@ -75,7 +75,7 @@ describe('<ClosureDetailsDialog />', () => {
   });
 
   it('should render partial closure details', () => {
-    mountWithPinia({ isDisplayed: true }, closurePartial);
+    mountWithPinia({ dateOverrides: { isDisplayed: true }, closureProp: { ...closurePartial } });
 
     cy.contains('div', 'Affected Care Types').within(() => {
       cy.contains(
@@ -85,7 +85,7 @@ describe('<ClosureDetailsDialog />', () => {
   });
 
   it('should render `Back to Summary` button', () => {
-    mountWithPinia({ isDisplayed: true }, closurePartial);
+    mountWithPinia({ dateOverrides: { isDisplayed: true }, closureProp: { ...closurePartial } });
 
     cy.contains('button', 'Back to Summary').click();
     cy.get('@closeDialogSpy').should('have.been.calledOnce');
