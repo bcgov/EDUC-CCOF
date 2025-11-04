@@ -59,6 +59,7 @@ export const ApiRoutes = Object.freeze({
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
   LICENCES: baseRoot + '/licences',
+  PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
 });
 
 export const PAGE_TITLES = Object.freeze({

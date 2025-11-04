@@ -825,6 +825,28 @@ const PermissionMappings = [
   { back: 'ofm_portal_privilege_number', front: 'permissionNumber' },
 ];
 
+const ProgramsVacanciesMappings = [
+  { back: 'ccof_facility', front: 'facilityName' },
+  { back: 'ccof_selectedprograms@OData.Community.Display.V1.FormattedValue', front: 'selectedPrograms' },
+  { back: 'ccof_daysofoperation@OData.Community.Display.V1.FormattedValue', front: 'daysOfOperation' },
+  { back: 'ccof_additionallanguages@OData.Community.Display.V1.FormattedValue', front: 'additionalLanguages' },
+  { back: 'ccof_mealservices@OData.Community.Display.V1.FormattedValue', front: 'mealServices' },
+  { back: 'ccof_pickupservices@OData.Community.Display.V1.FormattedValue', front: 'pickupServices' },
+  { back: 'ccof_preschoolservices@OData.Community.Display.V1.FormattedValue', front: 'preschoolServices' },
+  { back: 'ccof_aboriginalprogramming', front: 'aboriginalProgramming' },
+  { back: 'ccof_indigenousled@OData.Community.Display.V1.FormattedValue', front: 'indigenousLed' },
+  { back: 'ccof_accessibility', front: 'accessibility' },
+  { back: 'ccof_accomodatesspecialneeds', front: 'accommodatesSpecialNeeds' },
+  { back: 'ccof_ece', front: 'ece' },
+  { back: 'ccof_elf', front: 'elf' },
+  { back: 'ccof_vacancies018months', front: 'vacancies018Months' },
+  { back: 'ccof_vacancies1836months', front: 'vacancies1836Months' },
+  { back: 'ccof_vacancies3yearstokindergarten', front: 'vacancies3YearsToKindergarten' },
+  { back: 'ccof_vacancieskindergartenbeforeandafter', front: 'vacanciesKindergartenBeforeAndAfter' },
+  { back: 'ccof_vacanciesgrade1toage12', front: 'vacanciesGrade1ToAge12' },
+  { back: 'ccof_vacanciespreschool', front: 'vacanciesPreschool' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -874,4 +896,5 @@ module.exports = {
   PermissionMappings,
   UserProfileMappings,
   ContactFacilityMappings,
+  ProgramsVacanciesMappings,
 };

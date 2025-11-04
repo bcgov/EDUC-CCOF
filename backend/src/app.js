@@ -45,6 +45,7 @@ const fundingAgreementRouter = require('./routes/fundingAgreement');
 const enrolmentReportRouter = require('./routes/enrolmentReport');
 const licenceRouter = require('./routes/licence');
 const contactRouter = require('./routes/contact');
+const programsVacanciesRouter = require('./routes/programsVacancies');
 
 const connectRedis = require('connect-redis');
 const { RedisStore } = require('rate-limit-redis');
@@ -278,6 +279,7 @@ apiRouter.use('/fundingAgreements', fundingAgreementRouter);
 apiRouter.use('/enrolmentReports', enrolmentReportRouter);
 apiRouter.use('/licences', licenceRouter);
 apiRouter.use('/contacts', contactRouter);
+apiRouter.use('/programsVacancies', programsVacanciesRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
