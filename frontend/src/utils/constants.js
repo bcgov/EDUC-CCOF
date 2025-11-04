@@ -539,11 +539,6 @@ export const TOOLTIP_TYPES = Object.freeze({
   WARNING: 'Warning',
 });
 
-export const APPLICATION_TEMPLATE_VERSIONS = [
-  { id: '1', isActive: false, note: 'Original application template' },
-  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
-];
-
 export const EMPTY_PLACEHOLDER = '--';
 
 export const CCFRI_MAX_FEE = 9999;

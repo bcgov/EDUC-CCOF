@@ -128,6 +128,9 @@ export const useAppStore = defineStore('app', {
     renewalYearLabel: (state) => {
       return formatFiscalYearName(state.programYearList?.renewal?.name);
     },
+    getApplicationTemplateVersion: (state) => (programYearId) => {
+      return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
+    },
     getFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;
     },
