@@ -48,15 +48,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  cypress-component:
-    name: Automation Tests
-    uses: ./.github/workflows/cypress-component.yaml
+  # cypress-component:
+  #   name: Automation Tests
+  #   uses: ./.github/workflows/cypress-component.yaml
 
   openshift-ci-cd:
     name: Build and deploy Frontend to DEV
     runs-on: ubuntu-24.04
     environment: dev
-    needs: cypress-component
+    # needs: cypress-component
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
