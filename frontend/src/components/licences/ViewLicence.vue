@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     activeLicence() {
-      return this.licences.find((l) => !l.licenceEndDate) ?? null;
+      return this.licences.find((l) => !l.recordEndDate) ?? null;
     },
   },
   created() {
