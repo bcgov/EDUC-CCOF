@@ -1,32 +1,41 @@
-# This is a basic workflow that is manually triggered
-
-name: Cypress End-to-End Tests
-
-# Controls when the action will run. Workflow runs when manually triggered using the UI
-# or API.
+name: Cypress end-to-end tests
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
     inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
+      testFile:
+        description: 'Path to Cypress test file'
         required: true
-        # The data type of the input
-        type: string
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+        default: '1-portal-login/portal-login-happy-path-e2e.cy.js'
 jobs:
-  # This workflow contains a single job called "greet"
-  greet:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  cypress-run:
+    name: Run Cypress E2E tests
+    runs-on: ubuntu-24.04
+    environment: dev
     steps:
-    # Runs a single command using the runners shell
-    - name: Send greeting
-      run: echo "Hello ${{ inputs.name }}"
+      - name: Print Workflow Dispatch Inputs and Env Vars
+        uses: shayki5/print-workflow-dispatch-inputs@v1
+        with:
+          add_to_summary: "true"
+          print_env_vars: "false"
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./test/cypress-e2e
+          browser: electron
+          wait-on: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
+          spec: ./cypress/e2e/${{ github.event.inputs.testFile }}
+        env:
+          CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
+          CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
+          CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-screenshots
+          path: test/cypress-e2e/cypress/screenshots

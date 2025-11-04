@@ -7,6 +7,7 @@ import useRfdc from 'rfdc';
 
 import {
   BCSSA_REGION_LINKS,
+  LICENCE_STATUSES,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
@@ -297,4 +298,25 @@ export function multiplyDecimal(a, b, decimals = 4) {
   const safeA = a || 0;
   const safeB = b || 0;
   return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Maps a licence status to a CSS class name.
+ *
+ * @param {string} status - Licence status
+ * @returns {string} CSS class name corresponding to the status
+ */
+export function getLicenceStatusClass(status) {
+  switch (status) {
+    case LICENCE_STATUSES.ACTIVE:
+      return 'status-blue';
+    case LICENCE_STATUSES.APPROVED:
+      return 'status-green';
+    case LICENCE_STATUSES.INACTIVE:
+      return 'status-gray';
+    case LICENCE_STATUSES.REPLACED:
+      return 'status-yellow';
+    default:
+      return '';
+  }
 }
