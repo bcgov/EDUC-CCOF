@@ -119,7 +119,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="ISSUER=EDUC_CCOF" \
   --from-literal="CANADA_POST_API_ENDPOINT=$CANADA_POST_API_ENDPOINT" \
   --from-literal="CANADA_POST_API_KEY=$CANADA_POST_API_KEY" \
-  --from-literal=TEST_VAR=foo \
+  --from-literal=TEST_VAR=bar \
   --dry-run=client -o yaml | oc apply --wait -f -
 
 echo
