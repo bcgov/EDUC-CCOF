@@ -155,10 +155,13 @@ describe('<OrganizationClosures /> ', () => {
       .within(() => {
         cy.get('td').should('have.length', expectedCells.length);
 
-        cy.get('td').each((cell, index) => {
-          expectedCells[index].forEach((text) => {
-            cy.wrap(cell).contains(text);
-          });
+        cy.get('td').then((cells) => {
+          for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            for (const text of expectedCells[index]) {
+              cy.wrap(cell).contains(text);
+            }
+          }
         });
       });
   });
