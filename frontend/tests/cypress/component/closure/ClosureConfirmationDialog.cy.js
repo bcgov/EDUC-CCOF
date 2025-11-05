@@ -5,16 +5,10 @@ const changeRequestReferenceId = '43321';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     const onClose = cy.spy().as('closeDialogSpy');
     cy.mount(ClosureConfirmationDialog, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
       },
       data() {
         return {
@@ -28,7 +22,6 @@ function mountWithPinia(initialState = {}) {
         onClose,
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 

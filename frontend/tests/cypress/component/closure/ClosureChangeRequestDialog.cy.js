@@ -17,13 +17,11 @@ function interceptAPI() {
 
 function mountDialog({ initialState = {}, dataOverride = {}, propOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     const onCloseDialog = cy.spy().as('closeDialogSpy');
 
     cy.mount(ClosureChangeRequestDialog, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: { $router: { push: pushStub } },
       },
       data() {
         return { ...dataOverride };
@@ -36,7 +34,6 @@ function mountDialog({ initialState = {}, dataOverride = {}, propOverride = {} }
       },
     }).then(async ({ wrapper }) => {
       cy.wrap(wrapper).as('vueWrapper');
-      cy.wrap(pushStub).as('routerPush');
       await wrapper.setProps({ show: true });
       await wrapper.vm.$nextTick();
     });

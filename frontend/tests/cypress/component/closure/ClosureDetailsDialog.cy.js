@@ -18,16 +18,10 @@ const closurePartial = {
 
 function mountWithPinia({ dateOverrides = {}, closureProp = {} } = {}) {
   cy.setupPinia({ stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     const onClose = cy.spy().as('closeDialogSpy');
     cy.mount(ClosureDetailsDialog, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
       },
       data() {
         return {
@@ -41,7 +35,6 @@ function mountWithPinia({ dateOverrides = {}, closureProp = {} } = {}) {
         onClose,
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 
