@@ -94,8 +94,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAppStore, ['currentYearLabel', 'programYearList', 'renewalYearLabel']),
     ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
-    ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
     isSomeChangeRequestActive() {
       return isAnyChangeRequestActive(this.changeRequestStore);
