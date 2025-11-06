@@ -588,6 +588,22 @@ export const DAYS_OF_WEEK = {
   7: 'Sunday',
 };
 
+export const CCOF_STATUS = Object.freeze({
+  NEW: 'NEW',
+  COMPLETE: 'COMPLETE',
+  CONTINUE: 'CONTINUE',
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION_REQUIRED',
+});
+
+export const RENEW_STATUS = Object.freeze({
+  NEW: 'NEW',
+  COMPLETE: 'COMPLETE',
+  CONTINUE: 'CONTINUE',
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION_REQUIRED',
+});
+
 export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   DRAFT: 1,
   SUBMITTED: 2,

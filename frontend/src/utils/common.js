@@ -12,6 +12,7 @@ import {
   ORGANIZATION_TYPES,
   PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  CCOF_STATUS,
 } from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
@@ -298,6 +299,105 @@ export function multiplyDecimal(a, b, decimals = 4) {
   const safeA = a || 0;
   const safeB = b || 0;
   return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Derive the CCOF Status from the global application and organization state.
+ *
+ * @param {string} applicationStatus - applicationStore.applicationStatus
+ * @param {string} applicationType - applicationSTore.applicationType
+ * @param {boolean} isOrganizationUnlock - is the organization unlocked in Dynamics?
+ * @param {string} ccofApplicationStatus - applicationStore.ccofApplicationStatus
+ */
+export function getCcofStatus(applicationStatus, applicationType, isOrganizationUnlock, ccofApplicationStatus) {
+  if (!applicationType) {
+    return CCOF_STATUS.NEW;
+  }
+  if (applicationType === 'NEW') {
+    switch (applicationStatus) {
+      case 'DRAFT':
+        return CCOF_STATUS.CONTINUE;
+      case 'SUBMITTED':
+        if (isOrganizationUnlock) {
+          return CCOF_STATUS.ACTION_REQUIRED;
+        } else {
+          if (ccofApplicationStatus === 'ACTIVE') {
+            return CCOF_STATUS.APPROVED;
+          } else {
+            return CCOF_STATUS.COMPLETE;
+          }
+        }
+      default:
+        return CCOF_STATUS.NEW;
+    }
+  } else {
+    return CCOF_STATUS.APPROVED;
+  }
+}
+
+export function getUnlockCCFRIList(facilityList) {
+  const unlockList = [];
+  facilityList?.forEach((facility) => {
+    if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
+  });
+  return unlockList;
+}
+
+export function getUnlockNMFList(facilityList) {
+  const unlockList = [];
+  facilityList?.forEach((facility) => {
+    if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
+  });
+  return unlockList;
+}
+
+export function getUnlockRFIList(facilityList) {
+  const unlockList = [];
+  facilityList?.forEach((facility) => {
+    if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
+  });
+  return unlockList;
+}
+
+export function getUnlockAFSList(facilityList) {
+  const unlockList = [];
+  facilityList?.forEach((facility) => {
+    if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
+  });
+  return unlockList;
+}
+
+/**
+ * Figure out if the organization is unlocked
+ *
+ * @param unlockBaseFunding - applicationStore.unlockBaseFunding
+ * @param applicationType - applicationStore.applicationType
+ * @paran unlockDeclaration - applicationStore.unlockDeclaration
+ * @param unlockEcewe - applicationStore.unlockEcewe
+ * @param unlockLicenseUpload - applicationStore.unlockLicenseUpload
+ * @param unlockSupportingDocuments - applicationStore.unlockSupportingDocuments
+ * @param facilityList - navBarStore.navBarList
+ */
+export function isOrganizationUnlocked(
+  unlockBaseFunding,
+  applicationType,
+  unlockDeclaration,
+  unlockEcewe,
+  unlockLicenseUpload,
+  unlockSupportingDocuments,
+  facilityList,
+) {
+  return (
+    (unlockBaseFunding && applicationType === 'NEW') ||
+    unlockDeclaration ||
+    unlockEcewe ||
+    unlockLicenseUpload ||
+    unlockSupportingDocuments ||
+    !isEmpty(getUnlockCCFRIList(facilityList)) ||
+    !isEmpty(getUnlockNMFList(facilityList)) ||
+    !isEmpty(getUnlockRFIList(facilityList)) ||
+    !isEmpty(getUnlockAFSList(facilityList))
+  );
 }
 
 /**

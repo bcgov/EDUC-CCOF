@@ -18,7 +18,7 @@
     </p>
     <v-row>
       <v-col>
-        <SmallCard>
+        <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <h2 class="mb-2">Enrolment Report</h2>
             <p>
@@ -70,6 +70,9 @@
 import { mapState } from 'pinia';
 import { PATHS } from '@/utils/constants.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { getCcofStatus, isOrganizationUnlocked } from '@/utils/common';
 
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
@@ -79,6 +82,37 @@ export default {
   components: { SmallCard, NavButton },
   computed: {
     ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
+    ...mapState(useApplicationStore, [
+      'applicationType',
+      'applicationStatus',
+      'ccofApplicationStatus',
+      'unlockDeclaration',
+      'unlockEcewe',
+      'unlockLicenseUpload',
+      'unlockSupportingDocuments',
+    ]),
+    ...mapState(useNavBarStore, ['navBarList']),
+    ccofStatus() {
+      return getCcofStatus(
+        this.applicationStatus,
+        this.applicationType,
+        this.isOrganizationUnlock,
+        this.ccofApplicationStatus,
+      );
+    },
+    isOrganizationUnlock() {
+      return isOrganizationUnlocked(
+        this.unlockBaseFunding,
+        this.applicationType,
+        this.unlockEcewe,
+        this.unlockLicenseUpload,
+        this.unlockSupportingDocuments,
+        this.navBarList,
+      );
+    },
+    isCCOFApproved() {
+      return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS.APPROVED;
+    },
   },
   methods: {
     goToEnrolmentReports() {
