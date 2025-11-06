@@ -72,6 +72,7 @@ export const PAGE_TITLES = Object.freeze({
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
+  MANAGE_REPORTS: 'Manage Reports',
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
@@ -109,6 +110,7 @@ export const PATHS = {
     SUBMISSION_HISTORY: '/submission-history',
     FUNDING_AGREEMENTS: '/funding-agreements',
     CLOSURES: '/closures',
+    MANAGE_REPORTS: '/manage-reports',
     ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {

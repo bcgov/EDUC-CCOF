@@ -123,7 +123,7 @@
     </v-card>
     <v-row class="pt-12">
       <v-col>
-        <NavButton @previous="$router.push(PATHS.ROOT.HOME)" />
+        <NavButton @previous="$router.back()" />
       </v-col>
     </v-row>
   </v-container>

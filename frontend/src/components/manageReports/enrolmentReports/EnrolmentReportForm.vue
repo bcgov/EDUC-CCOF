@@ -1153,8 +1153,8 @@ import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
 
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
-import FullMonthClosureConfirmationDialog from '@/components/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
+import BackConfirmationDialog from '@/components/manageReports/enrolmentReports/BackConfirmationDialog.vue';
+import FullMonthClosureConfirmationDialog from '@/components/manageReports/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
