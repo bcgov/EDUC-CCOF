@@ -5,13 +5,13 @@
       <p class="text-h5 text-center">
         Child Care Operating Funding Program - {{ renewalYearLabel }} Program Confirmation Form
       </p>
-      <div class="d-flex flex-column align-center mt-16">
+      <div class="d-flex flex-column align-center mt-12">
         <v-card v-if="isSomeChangeRequestActive" rounded="0" width="85%" max-width="1200">
           <v-card-title class="noticeAlert text-wrap">
             <v-icon size="x-large" class="noticeAlertIcon"> mdi-alert-octagon </v-icon>
             You have a change request for the {{ currentYearLabel }} funding term still in progress.
           </v-card-title>
-          <p class="pa-8">
+          <p class="pa-8 pt-4">
             The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.
             <AppButton :loading="processing" class="mt-4" @click="goToChangeRequestHistory">
               View My Changes
@@ -94,47 +94,35 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, [
-      'applicationStatus',
-      'applicationType',
-      'ccofApplicationStatus',
-      'programYearId',
-      'latestProgramYearId',
-    ]),
+    ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
     nextProgramYear() {
       return this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
     },
     isSomeChangeRequestActive() {
-      return true;
       return isAnyChangeRequestActive(this.changeRequestStore);
+    },
+    hasDraftRenewalApplication() {
+      return this.applicationStatus === 'DRAFT' && this.applicationType === 'RENEW';
     },
   },
   async created() {
     this.PATHS = PATHS;
     this.rules = rules;
-    await this.loadData();
+    await this.init();
   },
-  // mounted() {
-  //   //this.processing = false;
-  //   //prevents a user from creating another RENEWAL, in case they hit the 'back' button on the browser and try again.
-  //   if (
-  //     this.applicationStatus == 'DRAFT' &&
-  //     this.applicationType == 'RENEW' &&
-  //     this.ccofApplicationStatus == 'NEW' &&
-  //     this.programYearId == this.nextProgramYear?.programYearId
-  //   ) {
-  //     this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
-  //   }
-  // },
   methods: {
     ...mapActions(useOrganizationStore, ['renewApplication']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
-    async loadData() {
+    async init() {
       try {
         this.processing = true;
         await this.getChangeRequestList();
+        // Prevents users from creating a duplicate RENEWAL application if they click the browser's back arrow and try again.
+        if (this.hasDraftRenewalApplication) {
+          this.back();
+        }
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
