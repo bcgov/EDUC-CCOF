@@ -97,9 +97,6 @@ export default {
     ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-    nextProgramYear() {
-      return this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
-    },
     isSomeChangeRequestActive() {
       return isAnyChangeRequestActive(this.changeRequestStore);
     },
@@ -132,8 +129,9 @@ export default {
     },
     async next() {
       this.processing = true;
+      const nextProgramYear = this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
       await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
     },
     validateForm() {
       this.$refs.form?.validate();
