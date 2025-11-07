@@ -120,7 +120,6 @@ export const useAppStore = defineStore('app', {
     },
   },
   getters: {
-    //jb oct 24 - changed so state is no longer passed in as a param - this shouldn't break other things
     currentYearLabel: (state) => {
       return formatFiscalYearName(state.programYearList?.newApp?.name);
     },
