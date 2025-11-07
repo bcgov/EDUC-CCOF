@@ -81,7 +81,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { isAnyChangeRequestActive } from '@/utils/common.js';
-import { PATHS, pcfUrl } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, APPLICATION_TYPES, PATHS, pcfUrl } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -101,7 +101,9 @@ export default {
       return isAnyChangeRequestActive(this.changeRequestStore);
     },
     hasDraftRenewalApplication() {
-      return this.applicationStatus === 'DRAFT' && this.applicationType === 'RENEW';
+      return (
+        this.applicationStatus === APPLICATION_STATUSES.DRAFT && this.applicationType === APPLICATION_TYPES.RENEWAL
+      );
     },
   },
   async created() {
