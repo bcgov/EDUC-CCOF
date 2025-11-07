@@ -2,7 +2,7 @@ import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
-import FacilityService from '@/services/facilityService';
+import FacilityService from '@/services/facilityService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -217,7 +217,6 @@ export const useFacilityStore = defineStore('facility', {
       } else {
         checkSession();
         try {
-          //const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}`);
           const response = await FacilityService.getFacility(facilityId);
           this.addFacilityToStore({ facilityId: facilityId, facilityModel: response });
           this.setFacilityModel(response);
@@ -233,8 +232,7 @@ export const useFacilityStore = defineStore('facility', {
       checkSession();
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-
-      await FacilityService.delete(facilityObj.facilityId, { data: facilityObj });
+      await FacilityService.deleteFacility(facilityObj.facilityId, { data: facilityObj });
 
       this.deleteFromStore(facilityObj.facilityId);
       applicationStore.removeFacilityFromMap(facilityObj.facilityId);

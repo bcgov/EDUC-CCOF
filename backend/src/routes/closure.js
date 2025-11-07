@@ -66,17 +66,16 @@ router.get(
   },
 );
 
-// TODO #securitymatrix - Implement with Applications security
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(closureSchema)], (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), [checkSchema(closureSchema)], (req, res) => {
   validationResult(req).throw();
   return createClosure(req, res);
 });
 
-// TODO #securitymatrix - Implement with Applications security
 router.patch(
   '/:closureId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION),
   [param('closureId', 'URL param: [closureId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -84,7 +83,6 @@ router.patch(
   },
 );
 
-// TODO #securitymatrix - Implement with Applications security
-router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, deleteClosures);
+router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), deleteClosures);
 
 module.exports = router;

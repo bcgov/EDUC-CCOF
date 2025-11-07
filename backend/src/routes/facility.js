@@ -51,12 +51,17 @@ router.get(
 /**
  * Get Facility details for CCFRI Application (less detailed)
  */
-//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out
-// TODO #securitymatrix - Implement with Applications security
-router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getFacilityChildCareTypes(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFacilityChildCareTypes(req, res);
+  },
+);
 
 /**
  * Get Parent Fees for a facility

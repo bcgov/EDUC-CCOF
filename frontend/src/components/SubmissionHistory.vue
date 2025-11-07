@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 
 import NavButton from '@/components/util/NavButton.vue';
 import PDFService from '@/services/pdfService';

@@ -43,9 +43,9 @@ export default {
     }
   },
 
-  async deleteFacility(payload) {
+  async deleteFacility(facilityId, payload) {
     try {
-      const response = await ApiService.apiAxios.delete(payload);
+      const response = await ApiService.apiAxios.delete(`${ApiRoutes.FACILITY}/${facilityId}`, payload);
       return response;
     } catch (error) {
       console.log(`Failed to delete Facility - ${error}`);

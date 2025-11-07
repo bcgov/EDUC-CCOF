@@ -408,7 +408,6 @@ import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
-import { PERMISSIONS } from '../utils/constants/permissions';
 
 export default {
   name: 'LandingPage',
@@ -622,6 +621,9 @@ export default {
       return index > -1;
     },
     isSubmissionHistoryDisplayed() {
+      if (!this.hasPermission(this.PERMISSIONS.DOWNLOAD_PCF_PDF)) {
+        return false;
+      }
       const applicationList = Array.from(this.applicationMap?.values());
       const index = applicationList?.findIndex((application) => application.applicationStatus != 'DRAFT');
       return index > -1;

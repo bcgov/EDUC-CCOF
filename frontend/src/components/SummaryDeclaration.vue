@@ -318,6 +318,7 @@ import FacilityInformationSummaryCard from '@/components/util/FacilityInformatio
 import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -348,7 +349,7 @@ export default {
     NavButton,
     OrganizationSummary,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       model: {},
@@ -409,6 +410,9 @@ export default {
     },
     isReadOnly() {
       if (this.isMinistryUser) {
+        return true;
+      }
+      if (!this.hasPermission(this.PERMISSIONS.SUBMIT_NEW_APPLICATION, this.PERMISSIONS.SUBMIT_RENEWAL_PCF)) {
         return true;
       }
       if (

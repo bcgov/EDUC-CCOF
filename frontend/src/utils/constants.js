@@ -39,7 +39,6 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
-  APPLICATION_STATUS: baseRoot + '/application/status',
   SUPPORTING_DOCUMENT_UPLOAD: baseRoot + '/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
