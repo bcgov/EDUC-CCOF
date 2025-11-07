@@ -1,6 +1,9 @@
-import ApiService from '../common/apiService';
-import { ApiRoutes } from '../utils/constants';
-import { checkSession } from '../utils/session';
+import { isEmpty } from 'lodash';
+
+import ApiService from '@/common/apiService';
+import { buildQueryString } from '@/utils/common.js';
+import { ApiRoutes } from '@/utils/constants';
+import { checkSession } from '@/utils/session';
 
 export default {
   async getFundingAgreements(organizationId) {
@@ -50,6 +53,19 @@ export default {
       return response?.data;
     } catch (error) {
       console.log(`Failed to update the Funding Agreement - ${error}`);
+      throw error;
+    }
+  },
+
+  async checkFundingAgreementExists(query) {
+    try {
+      if (isEmpty(query)) return false;
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.FUNDING_AGREEMENTS}/exists${buildQueryString(query)}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to check if Funding Agreement exists - ${error}`);
       throw error;
     }
   },

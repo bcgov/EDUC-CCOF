@@ -555,6 +555,7 @@ const FundingAgreementMappings = [
   { back: '_ccof_programyear_value', front: 'programYearId' },
   { back: 'ccof_end_date', front: 'endDate' },
   { back: '_ccof_programyear_value@OData.Community.Display.V1.FormattedValue', front: 'fundingAgreementTerm' },
+  { back: 'statuscode', front: 'internalStatusCode' },
   { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'internalStatus' },
   { back: 'ccof_external_portal_status', front: 'externalStatusCode' },
   { back: 'ccof_external_portal_status@OData.Community.Display.V1.FormattedValue', front: 'externalStatusText' },
