@@ -5,7 +5,7 @@
         <v-col cols="12" md="6" class="d-flex flex-wrap align-center">
           <strong class="mr-2">Licence Number:</strong>
           <span>{{ licence.licenceNumber }}</span>
-          <span class="ml-2" :class="getStatusClass(licence.licenceStatus)">
+          <span class="ml-2" :class="getLicenceStatusClass(licence.licenceStatus)">
             {{ licence.licenceStatus }}
           </span>
         </v-col>
@@ -97,13 +97,45 @@
             <span>{{ getYesNoValue(licence.licenceExtendedHours) }}</span>
           </v-col>
         </v-row>
+        <template v-if="licence.licenceExtendedHours">
+          <v-row class="mb-2">
+            <v-col cols="12" class="d-flex flex-wrap align-center">
+              <strong class="mr-2">Extended Hours - Maximum number of days per week:</strong>
+              <span>{{ licence.extendedDaysPerWeek ?? EMPTY_PLACEHOLDER }}</span>
+            </v-col>
+          </v-row>
+          <v-row class="mb-4">
+            <v-col cols="12" class="d-flex flex-wrap align-center">
+              <strong class="mr-2">Extended Hours - Maximum number of weeks per year:</strong>
+              <span>{{ licence.extendedWeeksPerYear ?? EMPTY_PLACEHOLDER }}</span>
+            </v-col>
+          </v-row>
+          <div class="extended-hours-table-wrapper">
+            <table class="extended-hours-table font-regular">
+              <thead>
+                <tr>
+                  <th>Licence Category (Extended Hours)</th>
+                  <th>Maximum spaces offered (4 hours or less)</th>
+                  <th>Maximum spaces offered (over 4 hours)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(detail, idx) in licence.serviceDeliveryDetails" :key="idx">
+                  <td>{{ capitalize(detail.licenceCategory) }}</td>
+                  <td>{{ detail.maxfourorLess ?? EMPTY_PLACEHOLDER }}</td>
+                  <td>{{ detail.maxoverFour ?? EMPTY_PLACEHOLDER }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { EMPTY_PLACEHOLDER, LICENCE_STATUSES } from '@/utils/constants.js';
-import { getYesNoValue } from '@/utils/common.js';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
+import { getLicenceStatusClass, getYesNoValue } from '@/utils/common.js';
 import { capitalize, formatUTCDate } from '@/utils/format';
 
 const LICENCE_CATEGORIES = {
@@ -146,16 +178,7 @@ export default {
     capitalize,
     formatUTCDate,
     getYesNoValue,
-    getStatusClass(status) {
-      switch (status) {
-        case LICENCE_STATUSES.APPROVED:
-          return 'status-green';
-        case LICENCE_STATUSES.INACTIVE:
-          return 'status-gray';
-        default:
-          return 'status-default';
-      }
-    },
+    getLicenceStatusClass,
   },
 };
 </script>
@@ -170,5 +193,18 @@ export default {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 20px;
+}
+.extended-hours-table-wrapper {
+  overflow-x: auto;
+}
+.extended-hours-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.extended-hours-table th,
+.extended-hours-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
 }
 </style>

@@ -1,12 +1,27 @@
 <template>
   <v-container fluid v-bind="$attrs" class="px-md-16">
-    <h1>{{ fundingAgreementNumber }}</h1>
+    <h1 class="mb-6">Licence and Service Details Record</h1>
+
+    <v-skeleton-loader v-if="isLoading" type="list-item" class="mb-6" />
+    <v-expansion-panels v-else-if="licences.length" multiple class="mb-6">
+      <v-expansion-panel v-for="licence in licenceToDisplay" :key="licence.licenceId">
+        <v-expansion-panel-title>
+          <strong>{{ licence.serviceDeliveryDetails[0].facilityName }} - {{ licence.facilityAccountNumber }}</strong>
+        </v-expansion-panel-title>
+        <v-expansion-panel-text>
+          <ServiceDetails :licence="licence" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
+    <div v-else class="mb-6">No active or approved licences found.</div>
+
+    <h1 class="mb-6">Funding Agreement {{ fundingAgreementNumber }}</h1>
     <p>Carefully review your funding agreement.</p>
 
     <v-row class="mt-6" justify="center">
       <v-col cols="12" md="10" lg="8">
-        <AppPDFViewer v-if="pdfFile" :pdf-file="pdfFile" />
-        <v-skeleton-loader v-else type="image" height="800px" />
+        <v-skeleton-loader v-if="isLoading || !pdfFile" type="image" height="800px" />
+        <AppPDFViewer v-else :pdf-file="pdfFile" />
       </v-col>
     </v-row>
 
@@ -132,12 +147,14 @@
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
+import ServiceDetails from '@/components/licences/ServiceDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
+import LicenceService from '@/services/licenceService.js';
 import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENT_EXTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 
 const READ_ONLY_STATUSES = [
@@ -157,6 +174,7 @@ export default {
     AppDialog,
     AppPDFViewer,
     NavButton,
+    ServiceDetails,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
@@ -166,7 +184,7 @@ export default {
       isLoading: false,
       processing: false,
       showSubmissionConfirmationDialog: false,
-      signedBy: '',
+      licences: [],
     };
   },
   computed: {
@@ -189,16 +207,22 @@ export default {
       const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
+    licenceToDisplay() {
+      return [this.licences.find((l) => !l.recordEndDate) || this.licences[0]];
+    },
   },
   async created() {
     await this.loadData();
   },
   methods: {
     async loadData() {
+      this.isLoading = true;
       try {
-        this.isLoading = true;
-        await this.loadFundingAgreement();
-        await this.loadFundingAgreementPDF();
+        await Promise.all([
+          this.loadFundingAgreement(),
+          this.loadFundingAgreementPDF(),
+          this.loadFundingAgreementLicences(),
+        ]);
       } catch (error) {
         console.error('Failed to load Funding Agreement', error);
       } finally {
@@ -217,6 +241,25 @@ export default {
       } catch (error) {
         console.error('Failed to load PDF', error);
       }
+    },
+
+    async loadFundingAgreementLicences() {
+      try {
+        this.licences = await LicenceService.getLicences({
+          fundingAgreementId: this.$route.params.fundingAgreementId,
+        });
+        this.sortLicencesByFacilityName();
+      } catch (error) {
+        console.error('Failed to load licences by Funding Agreement', error);
+      }
+    },
+
+    sortLicencesByFacilityName() {
+      this.licences.sort((a, b) => {
+        const nameA = a.serviceDeliveryDetails[0]?.facilityName?.toLowerCase();
+        const nameB = b.serviceDeliveryDetails[0]?.facilityName?.toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
     },
 
     goBackToManageFundingAgreement() {

@@ -433,6 +433,7 @@ const ProgramYearMappings = [
   { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
   { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
+  { back: 'ccof_ccof_application_template_version', front: 'applicationTemplateVersion' },
 ];
 
 const MessageMappings = [
@@ -778,6 +779,7 @@ const DailyEnrolmentMappings = [
   { back: 'ccof_overoosck', front: 'overOOSCK' },
   { back: 'ccof_lesspre', front: 'lessPre' },
   { back: 'ccof_columnsareupdated', front: 'updatedColumns' },
+  { back: 'ccof_paymenteligibility', front: 'paymentEligibility' },
 ];
 
 const LicenceMappings = [
@@ -785,6 +787,7 @@ const LicenceMappings = [
   { back: 'ccof_name', front: 'licenceNumber' },
   { back: 'ccof_organization', front: 'ccofOrganization' },
   { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_facility_id', front: 'facilityAccountNumber' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
   { back: 'ccof_record_start_date', front: 'recordStartDate' },
@@ -812,6 +815,8 @@ const ServiceDeliveryMappings = [
   { back: 'ccof_after_school', front: 'afterSchoolCare' },
   { back: 'ccof_morning_kindercare', front: 'morningKinderCare' },
   { back: 'ccof_afternoon_kindercare', front: 'afterKinderCare' },
+
+  { back: 'ccof_license.ccof_facility.name', front: 'facilityName' },
 ];
 
 const RoleMappings = [

@@ -6,7 +6,7 @@ const { createContact, deactivateContact, getActiveContactsInOrganization, updat
 const validatePermission = require('../middlewares/validatePermission');
 const validateUpdateContact = require('../middlewares/validateUpdateContact');
 const isValidBackendToken = auth.isValidBackendToken();
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { body, param, validationResult } = require('express-validator');
 
 module.exports = router;
@@ -19,7 +19,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_USERS),
-  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID()],
+  [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getActiveContactsInOrganization(req, res);
@@ -34,7 +34,7 @@ router.delete(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.DELETE_USERS),
-  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return deactivateContact(req, res);
@@ -68,7 +68,7 @@ router.patch(
   isValidBackendToken,
   validatePermission(PERMISSIONS.UPDATE_SELF, PERMISSIONS.EDIT_USERS),
   validateUpdateContact(),
-  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID()],
+  [param('contactId', 'URL param: [contactId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return updateContact(req, res);

@@ -161,6 +161,11 @@ const ROLES = Object.freeze({
 });
 
 const PERMISSIONS = Object.freeze({
+  // Enrolment Report
+  EDIT_DRAFT_ER: '20',
+  ADJUST_EXISTING_ER: '21',
+  SUBMIT_ENROLMENT_REPORT: '22',
+  VIEW_ER: '23',
   // Applications/Renewals
   CREATE_NEW_APPLICATION: '24',
   SUBMIT_NEW_APPLICATION: '25',
@@ -194,6 +199,8 @@ const PERMISSIONS = Object.freeze({
   VIEW_FACILITY_CLOSURES: '54',
 });
 
+const UUID_VALIDATOR_VERSION = 'loose';
+
 module.exports = {
   ACCOUNT_TYPE,
   APPLICATION_STATUS_CODES,
@@ -214,4 +221,5 @@ module.exports = {
   PERMISSIONS,
   SCAN_RESULTS,
   ROLES,
+  UUID_VALIDATOR_VERSION,
 };

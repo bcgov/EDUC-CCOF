@@ -4,12 +4,17 @@
       <v-col cols="12">
         <p class="mb-4">View and manage the funding agreements for your organization.</p>
       </v-col>
-      <v-col cols="12" md="9">
+      <v-col cols="12" sm="9">
         <p class="mb-2">
           You must notify the Child Care Operating Funding Program within <strong>two business days</strong> of any
           change to your Facility Licence or Child Care Services outlined in Schedule A of your Child Care Operating
           Funding Agreement.
         </p>
+      </v-col>
+      <v-col cols="12" sm="3" class="d-flex justify-end align-end">
+        <div>
+          <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
+        </div>
       </v-col>
     </v-row>
     <div class="my-4"></div>
@@ -201,6 +206,9 @@ export default {
         this.setFailureAlert('Failed to download Funding Agreement PDF');
         console.error(error);
       }
+    },
+    goToChangeRequest() {
+      this.$router.push({ name: 'Report Change' });
     },
   },
 };

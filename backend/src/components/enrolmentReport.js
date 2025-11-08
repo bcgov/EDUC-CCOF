@@ -5,6 +5,7 @@ const { isEmpty } = require('lodash');
 const log = require('./logger');
 const { DailyEnrolmentMappings, EnrolmentReportDifferenceMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
 const { buildFilterQuery, padString } = require('./utils');
+const { restrictFacilities } = require('../util/common');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
@@ -49,12 +50,35 @@ async function getEnrolmentReport(req, res) {
 async function getEnrolmentReports(req, res) {
   try {
     const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
-    const enrolmentReports = [];
+    let enrolmentReports = [];
     response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
+    enrolmentReports = restrictFacilities(req, enrolmentReports);
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function checkDueEnrolmentReports(req, res) {
+  try {
+    const { organizationId, programYearId, prevProgramYearId } = req.query;
+    const today = new Date();
+
+    const operation = `ccof_monthlyenrollmentreports?$filter=_ccof_organization_value eq ${organizationId} and (_ccof_programyear_value eq ${programYearId} or _ccof_programyear_value eq ${prevProgramYearId}) and (ccof_ccof_external_status eq 1 or ccof_ccfri_external_status eq 1)`;
+    const responses = await getOperation(operation);
+
+    let enrolmentReports = responses?.value?.map(mapEnrolmentReportSummaryForFront) ?? [];
+    enrolmentReports = restrictFacilities(req, enrolmentReports);
+
+    const hasDueReports = enrolmentReports.some((report) => {
+      const firstOfNextMonth = new Date(report.year, report.month, 1);
+      return today >= firstOfNextMonth && today <= new Date(report.submissionDeadline);
+    });
+    return res.status(HttpStatus.OK).json({ hasDueReports });
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ?? e?.status);
   }
 }
 
@@ -116,6 +140,7 @@ async function createAdjustmentEnrolmentReport(req, res) {
 }
 
 module.exports = {
+  checkDueEnrolmentReports,
   createAdjustmentEnrolmentReport,
   getDailyEnrolments,
   getEnrolmentReport,

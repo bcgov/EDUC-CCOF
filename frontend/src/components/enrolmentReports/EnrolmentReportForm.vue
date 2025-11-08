@@ -1140,9 +1140,8 @@
   />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
-    :is-save-displayed="true"
-    :is-save-disabled="readonly"
-    :is-next-displayed="true"
+    :is-save-displayed="isSaveDisplayed"
+    :is-next-displayed="isNextDisplayed"
     @previous="previous"
     @next="next"
     @save="save(true)"
@@ -1157,10 +1156,12 @@ import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
 import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
 import FullMonthClosureConfirmationDialog from '@/components/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
+  CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
   ORGANIZATION_PROVIDER_TYPES_IDS,
@@ -1177,7 +1178,7 @@ export default {
     BackConfirmationDialog,
     FullMonthClosureConfirmationDialog,
   },
-  mixins: [enrolmentReportMixin],
+  mixins: [enrolmentReportMixin, permissionsMixin],
   data() {
     return {
       originalEnrolmentReport: {},
@@ -1185,6 +1186,7 @@ export default {
       dailyEnrolments: [],
       originalDailyEnrolments: [],
       previousDailyEnrolments: [],
+      paymentEligibleDaysCount: {},
       showBackConfirmationDialog: false,
       showFullMonthClosureConfirmationDialog: false,
     };
@@ -1193,13 +1195,28 @@ export default {
     isGroup() {
       return this.enrolmentReport.organizationProviderType === ORGANIZATION_PROVIDER_TYPES_IDS.GROUP;
     },
+    categoryFields() {
+      const categories = [
+        'less0To18',
+        'over0To18',
+        'less18To36',
+        'over18To36',
+        'less3YK',
+        'over3YK',
+        'lessOOSCK',
+        'overOOSCK',
+        'lessOOSCG',
+        'overOOSCG',
+      ];
+      return this.isGroup ? [...categories, 'lessPre'] : categories;
+    },
     previousDailyEnrolmentsMap() {
       return new Map(
         (this.previousDailyEnrolments || []).map((dailyEnrolment) => [dailyEnrolment.day, dailyEnrolment]),
       );
     },
     areCCFRIRatesEmpty() {
-      return this.CATEGORY_FIELDS.every((category) => {
+      return this.categoryFields.every((category) => {
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         return !this.enrolmentReport[ccfriRateField] && !this.enrolmentReport.ccfriProviderPaymentRates[category];
       });
@@ -1207,21 +1224,15 @@ export default {
     isFormDisabled() {
       return this.readonly || this.enrolmentReport.isFullMonthClosure;
     },
+    isNextDisplayed() {
+      return !this.readonly && this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
+    },
+    isSaveDisplayed() {
+      return !this.readonly && this.hasPermission(this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER);
+    },
   },
   async created() {
     window.scrollTo(0, 0);
-    this.CATEGORY_FIELDS = [
-      'less0To18',
-      'over0To18',
-      'less18To36',
-      'over18To36',
-      'less3YK',
-      'over3YK',
-      'lessOOSCK',
-      'overOOSCK',
-      'lessOOSCG',
-      'overOOSCG',
-    ];
     this.DAILY_ENROLMENT_CATEGORIES = {
       less0To18: 100000000,
       over0To18: 100000001,
@@ -1248,6 +1259,7 @@ export default {
         this.loading = true;
         await this.loadEnrolmentReport();
         await this.loadDailyEnrolments();
+        this.initializePaymentEligibleDaysCount();
         if (this.enrolmentReport.isAdjustment) {
           await this.loadPreviousEnrolmentReport();
         }
@@ -1261,9 +1273,6 @@ export default {
 
     async loadEnrolmentReport() {
       this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
-      if (this.isGroup) {
-        this.CATEGORY_FIELDS.push('lessPre');
-      }
       this.normalizeRates();
       this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
     },
@@ -1332,7 +1341,7 @@ export default {
     },
 
     normalizeRates() {
-      this.CATEGORY_FIELDS.forEach((category) => {
+      this.categoryFields.forEach((category) => {
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         this.enrolmentReport[ccfriRateField] = this.enrolmentReport[ccfriRateField] || 0;
         this.enrolmentReport.baseFundingRates[category] = this.enrolmentReport.baseFundingRates[category] || 0;
@@ -1341,48 +1350,79 @@ export default {
       });
     },
 
+    initializePaymentEligibleDaysCount() {
+      this.paymentEligibleDaysCount = { CCOF: {}, CCFRI: {} };
+      for (const category of this.categoryFields) {
+        this.paymentEligibleDaysCount.CCOF[category] = 0;
+        this.paymentEligibleDaysCount.CCFRI[category] = 0;
+      }
+    },
+
+    calculatePaymentEligibleDays() {
+      this.initializePaymentEligibleDaysCount();
+      for (const dailyEnrolment of this.dailyEnrolments) {
+        for (const category of this.categoryFields) {
+          if (!dailyEnrolment[category]) continue;
+          const eligibility = dailyEnrolment.paymentEligibility;
+          switch (eligibility) {
+            case null:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
+              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI:
+              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              break;
+            default:
+              break;
+          }
+        }
+      }
+    },
+
     calculateCurrentTotals() {
-      const currentTotals = Object.fromEntries(this.CATEGORY_FIELDS.map((category) => [category, 0]));
+      const currentTotals = Object.fromEntries(this.categoryFields.map((category) => [category, 0]));
       this.dailyEnrolments.forEach((dailyEnrolment) => {
-        this.CATEGORY_FIELDS.forEach((category) => {
+        this.categoryFields.forEach((category) => {
           currentTotals[category] += dailyEnrolment[category] || 0;
         });
       });
-      this.CATEGORY_FIELDS.forEach((category) => {
+      this.categoryFields.forEach((category) => {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         this.enrolmentReport[currentTotalField] = currentTotals[category] || 0;
       });
     },
 
     calculateBaseFundingAmounts() {
-      this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
+      this.categoryFields.forEach((category) => {
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         this.enrolmentReport[ccofBaseAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCOF[category],
           this.enrolmentReport.baseFundingRates[category],
         );
       });
     },
 
     calculateCcfriAmounts() {
-      this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
+      this.categoryFields.forEach((category) => {
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         this.enrolmentReport[ccfriAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport[ccfriRateField],
         );
       });
     },
 
     calculateCcfriProviderAmounts() {
-      this.CATEGORY_FIELDS.forEach((category) => {
-        const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
+      this.categoryFields.forEach((category) => {
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
         this.enrolmentReport[ccfriProviderAmountField] = multiplyDecimal(
-          this.enrolmentReport[currentTotalField],
+          this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport.ccfriProviderPaymentRates[category],
         );
       });
@@ -1394,7 +1434,7 @@ export default {
         ccfriAmount: 0,
         ccfriProviderAmount: 0,
       };
-      this.CATEGORY_FIELDS.forEach((category) => {
+      this.categoryFields.forEach((category) => {
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
@@ -1411,7 +1451,7 @@ export default {
     },
 
     calculateDifferences() {
-      this.CATEGORY_FIELDS.forEach((category) => {
+      this.categoryFields.forEach((category) => {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const diffCurrentTotalField = this.buildCalculationFieldName('diffCurrentTotal', category);
         this.enrolmentReport.differences[diffCurrentTotalField] = subtractDecimal(
@@ -1457,6 +1497,7 @@ export default {
 
     calculate() {
       this.calculateCurrentTotals();
+      this.calculatePaymentEligibleDays();
       this.calculateBaseFundingAmounts();
       this.calculateCcfriAmounts();
       this.calculateCcfriProviderAmounts();
@@ -1470,9 +1511,9 @@ export default {
       if (!this.enrolmentReport.isAdjustment) return;
       for (const dailyEnrolment of this.dailyEnrolments) {
         const previousDailyEnrolment = this.previousDailyEnrolmentsMap?.get(dailyEnrolment?.day);
-        const updatedColumns = this.CATEGORY_FIELDS.filter(
-          (category) => dailyEnrolment[category] !== previousDailyEnrolment[category],
-        ).map((category) => this.DAILY_ENROLMENT_CATEGORIES[category]);
+        const updatedColumns = this.categoryFields
+          .filter((category) => dailyEnrolment[category] !== previousDailyEnrolment[category])
+          .map((category) => this.DAILY_ENROLMENT_CATEGORIES[category]);
         dailyEnrolment.updatedColumns = isEmpty(updatedColumns) ? null : updatedColumns.join(',');
       }
     },
@@ -1505,7 +1546,7 @@ export default {
         this.enrolmentReport.totalEnrolledPre = resetValue;
       }
       for (const dailyEnrolment of this.dailyEnrolments) {
-        for (const category of this.CATEGORY_FIELDS) {
+        for (const category of this.categoryFields) {
           dailyEnrolment[category] = resetValue;
         }
       }
@@ -1558,7 +1599,7 @@ export default {
         'grandTotalCcfriProvider',
         'isFullMonthClosure',
       ];
-      this.CATEGORY_FIELDS.forEach((category) => {
+      this.categoryFields.forEach((category) => {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
@@ -1592,7 +1633,7 @@ export default {
     },
 
     async saveDailyEnrolments() {
-      const keysForBackend = [...this.CATEGORY_FIELDS, 'dailyEnrolmentId'];
+      const keysForBackend = [...this.categoryFields, 'dailyEnrolmentId'];
       if (this.enrolmentReport.isAdjustment) {
         keysForBackend.push('updatedColumns');
       }

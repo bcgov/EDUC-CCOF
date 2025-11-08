@@ -30,20 +30,9 @@
 //<reference types="cypress" />
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
-
-// Updated with new Cypress Version
-Cypress.ElementSelector.defaults({
-  selectorPriority: [
-    'data-cy',       
-    'data-test',
-    'data-testid',
-    'id',
-    'class',
-    'tag',
-    'attributes',
-    'nth-child',
-  ],
-})
+import { ccofApp } from './pages/2-portal-application-pages/01-portal-application-ccof.js'
+import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
+import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
 
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
@@ -128,14 +117,16 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
 });
 
 
-
+/* NOTE: use of {force:true} due to dropdowns being dynamically created on webpage, making it difficult
+to pick up an item in the dropdown without forcing the selection.
+*/
 Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
   cy.getByLabel(labelText).click({ force: true })
   return cy
     .get('.v-overlay-container .v-list-item__content', { timeout: 10000 })
     .contains(optionText)
     .should('be.visible')
-    .click({ force: true })
+    .click()
 })
 
 
@@ -153,15 +144,20 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
       expect(pointerEvents, 'pointer-events').to.not.eq('none')
       expect(el.hasAttribute('disabled'), 'disabled attr').to.eq(false)
     })
-    .click({force:true}) 
+    .click() 
 })
 
 
-Cypress.Commands.add('startNewApp', () => {
-  cy.url().should('eq', Cypress.env('CCOF_PORTAL_HOME')).then(()=> {
-      cy.contains('What would you like to do?').should('be.visible').clickByText('Start Application')
-      cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible').clickByText('Start Application')
-      cy.contains('Group Provider').should('be.visible').clickByText('Start Application')
+Cypress.Commands.add('startNewApp', (input) => {
+  cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
+  cy.contains('What would you like to do?').should('be.visible')
+  cy.contains('Start Application').should('be.visible').click()
+  cy.url().should('include', '/new-application')
+  cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible')
+  cy.contains('Start Application').should('be.visible').click()
+  cy.url().should('include', '/select-application-type')
+  cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
+    cy.contains('Start Application').click()
   })
 });
 
@@ -176,11 +172,11 @@ Cypress.Commands.add('cancelApplicationIfPresent', () => {
     );
 
     if (btn) {
-      cy.wrap(btn).click({ force: true });
+      cy.wrap(btn).click();
 
       cy.get('#cancel-application-button .text-wrap', { timeout: 20000 })
         .should('be.visible')
-        .click({ force: true });
+        .click();
 
       cy.contains('What would you like to do?', { timeout: 50000 })
         .should('be.visible');
@@ -194,7 +190,7 @@ Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) =>
   const v = String(value);
 
   return cy.wrap(subject).then(($el) => {
-    cy.wrap($el).clear({ force: true }).type(v, { force: true });
+    cy.wrap($el).clear().type(v);
   });
 });
 
@@ -255,8 +251,49 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
     );
 
     if (btn) {
-      cy.wrap(btn).click({ force: true });
+      cy.wrap(btn).click();
       cy.wait(10000)
     }
   });
 });
+
+Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
+  ccofApp.loadFixturesAndVariables()
+  cy.then(()=>{
+    ccofApp.validateGroupUrl(appType)
+    ccofApp.inputOrganizationInfo(companyType)
+    ccofApp.inputFacilityInfo()
+    ccofApp.licenceAndServiceDeliveryDetails()
+
+    if (licenceType === 'groupLicenceCategories') {
+      ccofApp.groupLicenses()
+      ccofApp.offerExtendedHours()
+      ccofApp.addAnotherFacility()
+      ccofApp.licenceUpload()
+    } else {
+      ccofApp.familyLicences(licenceType)
+      ccofApp.offerExtendedHours()
+      ccofApp.licenceUpload()
+    }
+  })
+});
+
+Cypress.Commands.add('runCcfriApp', (appType) => {
+  ccfriApp.loadFixturesAndVariables()
+  cy.then(()=> {
+    ccfriApp.optInFacilities(appType)
+    ccfriApp.addClosures()
+  })
+}); 
+
+Cypress.Commands.add('runEceWeApp', (appType) => {
+  eceWeApp.loadFixturesAndVariables()
+  cy.then(()=> {
+    if (appType === 'group') {
+      eceWeApp.groupEceWe()
+    } else {
+      eceWeApp.familyEceWe()
+    }
+    eceWeApp.supportingDocUpload()
+  })
+}); 

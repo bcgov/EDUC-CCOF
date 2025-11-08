@@ -119,7 +119,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="ISSUER=EDUC_CCOF" \
   --from-literal="CANADA_POST_API_ENDPOINT=$CANADA_POST_API_ENDPOINT" \
   --from-literal="CANADA_POST_API_KEY=$CANADA_POST_API_KEY" \
-  --dry-run=client -o yaml | oc apply -f -
+  --dry-run=client -o yaml | oc apply --wait -f -
 
 echo
 echo Setting environment variables for "$APP_NAME-backend-$ENV_VAL" application

@@ -1,212 +1,139 @@
 <template>
-  <v-form ref="form" v-model="isValidForm">
-    <v-container>
-      <div class="pa-10 text-h5 text-center">
-        Child Care Operating Funding Program - {{ formattedNextProgramYearName }} Program Confirmation Form
-      </div>
-
-      <div v-if="processing">
-        <v-skeleton-loader max-height="475px" :loading="processing" type="image, image" />
-        <br /><br />
-        <v-skeleton-loader max-height="475px" :loading="processing" type="image, image" />
-      </div>
-
-      <div v-else>
-        <v-row>
-          <v-card v-if="isSomeChangeRequestActive()" width="100%" class="mx-3 my-10">
-            <v-row>
-              <v-col class="py-0">
-                <v-card-title class="py-1 noticeAlert">
-                  <span style="float: left">
-                    <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                  </span>
-                  You have a change request for the {{ currentYearLabel }} funding term still in progress.
-                </v-card-title>
-              </v-col>
-            </v-row>
-            <v-card-text>
-              The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.<br /><br />
-              <br />
-
-              <v-btn dark class="blueButton mb-10" :loading="processing" @click="goToChangeRequestHistory()">
-                View My Changes
-              </v-btn>
-            </v-card-text>
+  <Spinner v-if="processing" />
+  <v-form v-else ref="form" v-model="isValidForm">
+    <v-container class="my-8 py-0">
+      <p class="text-h5 text-center">
+        Child Care Operating Funding Program - {{ renewalYearLabel }} Program Confirmation Form
+      </p>
+      <div class="d-flex flex-column align-center mt-12">
+        <v-card v-if="isSomeChangeRequestActive" rounded="0" width="85%" max-width="1200">
+          <v-card-title class="noticeAlert text-wrap">
+            <v-icon size="x-large" class="noticeAlertIcon"> mdi-alert-octagon </v-icon>
+            You have a change request for the {{ currentYearLabel }} funding term still in progress.
+          </v-card-title>
+          <p class="pa-8 pt-4">
+            The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.
+            <AppButton :loading="processing" class="mt-4" @click="goToChangeRequestHistory">
+              View My Changes
+            </AppButton>
+          </p>
+        </v-card>
+        <v-card class="my-8 pa-8 pb-4" width="85%" max-width="1200">
+          <p>Has your banking information changed?</p>
+          <v-radio-group
+            v-model="hasBankingInfoChanged"
+            inline
+            :disabled="isSomeChangeRequestActive"
+            :rules="rules.required"
+          >
+            <v-radio label="Yes" :value="true" />
+            <v-radio label="No" :value="false" />
+          </v-radio-group>
+          <v-card v-if="hasBankingInfoChanged" rounded="0" class="mb-4">
+            <v-card-title class="noticeAlert">
+              <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
+              Do not continue.
+            </v-card-title>
+            <div class="px-8 py-4">
+              <p>
+                Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
+                Confirmation Form.
+              </p>
+              <p class="py-2">
+                Update your banking information by submitting the
+                <a
+                  href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
+                  target="_blank"
+                >
+                  Direct Deposit Application
+                </a>
+                by email to <a href="mailto:ccdda@gov.bc.ca" target="_blank">ccdda@gov.bc.ca.</a>
+              </p>
+              <p class="pb-2">
+                You can also submit the form by mail to:<br />
+                Child Care Operating Funding<br />
+                PO Box 9965 Stn Prov Govt<br />
+                Victoria BC V8W 9R4
+              </p>
+              <p>For any questions, call the program at 1-888-338-6622 (option 2)</p>
+            </div>
           </v-card>
-        </v-row>
-        <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center pa-4" width="800">
-            <v-card-text>
-              Do your current licence and service details match the information found in Schedule A of your most recent
-              Funding Agreement?
-            </v-card-text>
-            <v-row>
-              <v-col class="d-flex justify-center">
-                <v-radio-group v-model="fundingGroup" inline :disabled="isSomeChangeRequestActive()">
-                  <v-radio label="Yes" value="true" />
-                  <v-radio label="No" value="false" />
-                </v-radio-group>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-card v-if="fundingGroup == 'false'" width="100%" class="mx-3">
-                <v-row>
-                  <v-col class="py-0">
-                    <v-card-title class="py-1 noticeAlert">
-                      <span style="float: left">
-                        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                      </span>
-                      Do not continue.
-                    </v-card-title>
-                  </v-col>
-                </v-row>
-                <v-card-text>
-                  If your current licence and service details do not match the information found in schedule A of your
-                  most recent funding agreement then please submit a change request.
-                  <br /><br />
-
-                  Please submit a change request using the link below:
-                  <br />
-                  <br />
-                  <router-link :to="goToChangeDashboard()">
-                    <span style="color: #3289ec; text-underline: black"
-                      ><u>Go to Report a Change. This will bring you to a different page.</u></span
-                    >
-                  </router-link>
-                </v-card-text>
-              </v-card>
-            </v-row>
-          </v-card>
-        </v-row>
-        <v-row justify="space-around">
-          <v-card class="cc-top-level-card justify-center pa-4" width="800">
-            <v-card-text> Has your banking information changed? </v-card-text>
-            <v-row>
-              <v-col class="d-flex justify-center">
-                <v-radio-group v-model="bankingGroup" inline :disabled="isSomeChangeRequestActive()">
-                  <v-radio label="Yes" value="true" />
-                  <v-radio label="No" value="false" />
-                </v-radio-group>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-card v-if="bankingGroup == 'true'" width="100%" class="mx-3">
-                <v-row>
-                  <v-col class="py-0">
-                    <v-card-title class="py-1 noticeAlert">
-                      <span style="float: left">
-                        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-                      </span>
-                      Do not continue.
-                    </v-card-title>
-                  </v-col>
-                </v-row>
-                <v-card-text>
-                  Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
-                  Confirmation Form.<br /><br />
-                  Update your banking information by submitting the
-                  <a
-                    href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
-                    target="_blank"
-                  >
-                    Direct Deposit Application
-                  </a>
-                  by email to <a href="mailto:ccdda@gov.bc.ca" target="_blank">ccdda@gov.bc.ca.</a><br />You can also
-                  submit the form by mail to:<br />
-                  Child Care Operating Funding<br />
-                  PO Box 9965 Stn Prov Govt<br />
-                  Victoria BC V8W 9R4<br /><br />
-                  For any questions, call the program at 1-888-338-6622 (option 2)
-                </v-card-text>
-              </v-card>
-            </v-row>
-          </v-card>
-        </v-row>
+        </v-card>
       </div>
-
-      <NavButton
-        :is-next-displayed="true"
-        :is-next-disabled="!(fundingGroup == 'true' && bankingGroup == 'false')"
-        :is-processing="processing"
-        @previous="back"
-        @next="next"
-        @validate-form="validateForm"
-      />
     </v-container>
   </v-form>
+  <NavButton
+    :is-next-displayed="true"
+    :is-next-disabled="!isValidForm || hasBankingInfoChanged"
+    :is-processing="processing"
+    @previous="back"
+    @next="next"
+    @validate-form="validateForm"
+  />
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import Spinner from '@/components/common/Spinner.vue';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { isAnyChangeRequestActive } from '@/utils/common.js';
-import { PATHS, pcfUrl } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
+import { APPLICATION_STATUSES, APPLICATION_TYPES, PATHS, pcfUrl } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { NavButton },
+  components: { AppButton, NavButton, Spinner },
   data() {
     return {
-      rules,
       processing: false,
       isValidForm: true,
-      fundingGroup: undefined,
-      bankingGroup: undefined,
+      hasBankingInfoChanged: null,
     };
   },
   computed: {
-    ...mapState(useApplicationStore, [
-      'applicationStatus',
-      'applicationType',
-      'ccofApplicationStatus',
-      'programYearId',
-      'latestProgramYearId',
-    ]),
-    ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
+    ...mapState(useAppStore, ['currentYearLabel', 'programYearList', 'renewalYearLabel']),
+    ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-    nextProgramYear() {
-      return this.programYearList?.list?.find((el) => el.previousYearId == this.latestProgramYearId);
+    isSomeChangeRequestActive() {
+      return isAnyChangeRequestActive(this.changeRequestStore);
     },
-    formattedNextProgramYearName() {
-      return formatFiscalYearName(this.nextProgramYear?.name);
+    hasDraftRenewalApplication() {
+      return (
+        this.applicationStatus === APPLICATION_STATUSES.DRAFT && this.applicationType === APPLICATION_TYPES.RENEWAL
+      );
     },
   },
   async created() {
-    this.processing = true;
-    await this.getChangeRequestList();
-    this.processing = false;
-  },
-  mounted() {
-    //this.processing = false;
-    //prevents a user from creating another RENEWAL, in case they hit the 'back' button on the browser and try again.
-    if (
-      this.applicationStatus == 'DRAFT' &&
-      this.applicationType == 'RENEW' &&
-      this.ccofApplicationStatus == 'NEW' &&
-      this.programYearId == this.nextProgramYear?.programYearId
-    ) {
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
-    }
+    this.PATHS = PATHS;
+    this.rules = rules;
+    await this.init();
   },
   methods: {
     ...mapActions(useOrganizationStore, ['renewApplication']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
+    async init() {
+      try {
+        this.processing = true;
+        await this.getChangeRequestList();
+        // Prevents users from creating a duplicate RENEWAL application if they click the browser's back arrow and try again.
+        if (this.hasDraftRenewalApplication) {
+          this.back();
+        }
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while loading. Please try again later.');
+      } finally {
+        this.processing = false;
+      }
+    },
     async next() {
       this.processing = true;
+      const nextProgramYear = this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
       await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
-    },
-    isSomeChangeRequestActive() {
-      //Status of : "Submitted" "Action Required";
-      if (!this.changeRequestStore) {
-        return true;
-      }
-      return isAnyChangeRequestActive(this.changeRequestStore);
+      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
     },
     validateForm() {
       this.$refs.form?.validate();
@@ -215,10 +142,7 @@ export default {
       this.$router.push(PATHS.ROOT.HOME);
     },
     goToChangeRequestHistory() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
-    },
-    goToChangeDashboard() {
-      return PATHS.ROOT.CHANGE_LANDING;
+      this.$router.push(`${PATHS.ROOT.CHANGE_LANDING}#change-request-history`);
     },
   },
 };

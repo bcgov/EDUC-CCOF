@@ -40,7 +40,7 @@
   <SubmitConfirmationDialog :show="showSubmitConfirmationDialog" />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
-    :is-submit-displayed="true"
+    :is-submit-displayed="isSubmitDisplayed"
     :is-submit-disabled="readonly"
     @previous="$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${$route.params.enrolmentReportId}`)"
     @submit="submit"
@@ -50,6 +50,7 @@
 <script>
 import SubmitConfirmationDialog from '@/components/enrolmentReports/SubmitConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES } from '@/utils/constants.js';
 
@@ -58,11 +59,16 @@ export default {
   components: {
     SubmitConfirmationDialog,
   },
-  mixins: [enrolmentReportMixin],
+  mixins: [enrolmentReportMixin, permissionsMixin],
   data() {
     return {
       showSubmitConfirmationDialog: false,
     };
+  },
+  computed: {
+    isSubmitDisplayed() {
+      return this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
+    },
   },
   async created() {
     window.scrollTo(0, 0);
