@@ -433,6 +433,7 @@ const ProgramYearMappings = [
   { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
   { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
+  { back: 'ccof_ccof_application_template_version', front: 'applicationTemplateVersion' },
 ];
 
 const MessageMappings = [

@@ -266,6 +266,20 @@ export const CCFRI_Categories = [
   'Family Before & After School (Kindergarten only)',
 ];
 
+export const APPLICATION_STATUSES = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  WITHDRAWN: 'WITHDRAWN',
+  // Additional status codes not from Dynamics
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION REQUIRED',
+};
+
+export const APPLICATION_TYPES = {
+  NEW_ORG: 'NEW',
+  RENEWAL: 'RENEW',
+};
+
 export const CHANGE_REQUEST_TYPES = {
   LEGAL_ORG_NAME_CHANGE: 100000000,
   ORG_MAILING_ADDRESS: 100000001,
@@ -537,11 +551,6 @@ export const TOOLTIP_TYPES = Object.freeze({
   ERROR: 'Error',
   WARNING: 'Warning',
 });
-
-export const APPLICATION_TEMPLATE_VERSIONS = [
-  { id: '1', isActive: false, note: 'Original application template' },
-  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
-];
 
 export const EMPTY_PLACEHOLDER = '--';
 
