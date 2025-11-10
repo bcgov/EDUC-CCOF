@@ -267,6 +267,10 @@ export const CCFRI_Categories = [
   'Family Before & After School (Kindergarten only)',
 ];
 
+export const APPLICATION_CCOF_STATUSES = {
+  ACTIVE: 'ACTIVE',
+};
+
 export const APPLICATION_STATUSES = {
   DRAFT: 'DRAFT',
   SUBMITTED: 'SUBMITTED',

@@ -391,6 +391,9 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { checkApplicationUnlocked } from '@/utils/common.js';
 import {
+  APPLICATION_CCOF_STATUSES,
+  APPLICATION_STATUSES,
+  APPLICATION_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   FUNDING_AGREEMENT_INTERNAL_STATUS_CODES,
   ORGANIZATION_GOOD_STANDING_STATUSES,
@@ -516,13 +519,14 @@ export default {
       );
     },
     isRenewEnabled() {
-      if (this.applicationStatus === 'DRAFT') {
-        return this.applicationType !== 'NEW';
+      if (this.applicationStatus === APPLICATION_STATUSES.DRAFT) {
+        return this.applicationType !== APPLICATION_TYPES.NEW_ORG;
       }
       if (
-        (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') &&
+        (this.applicationStatus === APPLICATION_STATUSES.SUBMITTED ||
+          this.applicationStatus === APPLICATION_STATUSES.APPROVED) &&
         this.organizationAccountNumber &&
-        this.ccofApplicationStatus === 'ACTIVE'
+        this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE
       ) {
         return (
           this.isWithinRenewDate &&

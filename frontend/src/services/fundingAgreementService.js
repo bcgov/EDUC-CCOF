@@ -63,7 +63,7 @@ export default {
       const response = await ApiService.apiAxios.get(
         `${ApiRoutes.FUNDING_AGREEMENTS}/exists${buildQueryString(query)}`,
       );
-      return response.data;
+      return response?.data?.exists;
     } catch (error) {
       console.error(`Failed to check if Funding Agreement exists - ${error}`);
       throw error;
