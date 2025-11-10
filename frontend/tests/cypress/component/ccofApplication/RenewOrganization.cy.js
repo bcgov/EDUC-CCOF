@@ -1,16 +1,11 @@
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
 import vuetify from '@/plugins/vuetify';
 
-function mountWithPinia(initialState = {}, dataOverride = {}) {
+function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(RenewOrganization, {
       global: {
         plugins: [pinia, vuetify],
-      },
-      data() {
-        return {
-          ...dataOverride,
-        };
       },
     });
   });
@@ -29,35 +24,26 @@ describe('<RenewOrganization />', () => {
     cy.contains('div', 'Child Care Operating Funding Program -');
   });
 
-  it('should render funding agreement radio selection', () => {
+  it('should contain banking information changed inputs', () => {
     mountWithPinia();
-    cy.contains('Do your current licence and service details match the information')
-      .closest('.v-row')
-      .within(() => {
-        cy.contains('.v-radio', 'Yes');
-        cy.contains('.v-radio', 'No');
-      });
+
+    cy.contains('p', 'Has your banking information changed?');
+    cy.get('.v-radio-group').within(() => {
+      cy.get('.v-radio').should('have.length', 2);
+      cy.get('.v-radio').eq(0).should('have.text', 'Yes');
+      cy.get('.v-radio').eq(1).should('have.text', 'No');
+    });
   });
 
-  it('should render `Do not continue` card if not funding group', () => {
-    mountWithPinia({}, { fundingGroup: 'false' });
+  it('should render `Do not continue` text if banking info changes', () => {
+    mountWithPinia();
+
+    cy.get('.v-radio-group').within(() => {
+      cy.get('.v-radio').eq(0).click();
+    });
+
     cy.contains('Do not continue.');
-    cy.contains('router-link', 'Go to Report a Change');
-  });
-
-  it('should render change in banking information inputs', () => {
-    mountWithPinia();
-    cy.contains('Has your banking information change')
-      .closest('.v-row')
-      .within(() => {
-        cy.contains('.v-radio', 'Yes');
-        cy.contains('.v-radio', 'No');
-      });
-  });
-
-  it('should render card if banking group', () => {
-    mountWithPinia({}, { bankingGroup: 'true' });
-    cy.contains('Once these changes have been processed, you may complete your');
+    cy.contains('Update your banking information by submitting the');
     cy.get('a')
       .contains('Direct Deposit Application')
       .should(
