@@ -1,19 +1,19 @@
 import OrganizationInformation from '@/components/applicationTemplates/v1/group/CCOF/OrganizationInformation.vue';
 import vuetify from '@/plugins/vuetify';
 
+const createAuthStore = () => {
+  return {
+    auth: {
+      userInfo: { userName: 'TEST-USERNAME' },
+    },
+  };
+};
+
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const fullPathStub = cy.stub();
     cy.mount(OrganizationInformation, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $route: {
-            fullPath: {
-              includes: fullPathStub,
-            },
-          },
-        },
       },
     });
   });
@@ -22,9 +22,7 @@ function mountWithPinia(initialState = {}) {
 describe('<OrganizationInformation /> -- V1', () => {
   it('should render default inputs', () => {
     mountWithPinia({
-      auth: {
-        userInfo: { userName: 'TEST-USERNAME' },
-      },
+      ...createAuthStore(),
     });
 
     cy.contains('h3', 'Organization Information');
@@ -38,9 +36,7 @@ describe('<OrganizationInformation /> -- V1', () => {
 
   it('should render change request in progress card', () => {
     mountWithPinia({
-      auth: {
-        userInfo: { userName: 'TEST-USERNAME' },
-      },
+      ...createAuthStore(),
       reportChanges: {
         changeRequestStore: [{ externalStatus: 2, changeActions: [{ changeType: '' }] }],
       },
@@ -56,9 +52,7 @@ describe('<OrganizationInformation /> -- V1', () => {
 
   it('should render contact information inputs', () => {
     mountWithPinia({
-      auth: {
-        userInfo: { userName: 'TEST-USERNAME' },
-      },
+      ...createAuthStore(),
     });
 
     cy.contains('Contact Information');
@@ -72,11 +66,7 @@ describe('<OrganizationInformation /> -- V1', () => {
     const n2 = 'n2';
     const n3 = 'n3';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
+      ...createAuthStore(),
       app: {
         organizationTypeList: [
           { name: n1, id: '1' },

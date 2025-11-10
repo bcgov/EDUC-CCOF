@@ -47,11 +47,6 @@ describe('<OrganizationInformation /> -- V2', () => {
     const n2 = 'n2';
     const n3 = 'n3';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       app: {
         organizationTypeList: [
           { name: n1, id: '1' },
@@ -74,11 +69,6 @@ describe('<OrganizationInformation /> -- V2', () => {
   context('Partnership Card', () => {
     it('should render default inputs for two partners', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            userName: 'TEST-USERNAME',
-          },
-        },
         organization: {
           organizationModel: {
             organizationType: ORGANIZATION_TYPES.PARTNERSHIP,
@@ -94,11 +84,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
     it('should render add another partner button', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            userName: 'TEST-USERNAME',
-          },
-        },
         organization: {
           organizationModel: {
             organizationType: ORGANIZATION_TYPES.PARTNERSHIP,
@@ -111,11 +96,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
     it('should not render add another partner button', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            userName: 'TEST-USERNAME',
-          },
-        },
         organization: {
           organizationModel: {
             organizationType: ORGANIZATION_TYPES.PARTNERSHIP,
@@ -131,11 +111,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should render sole proprietorship inputs', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
@@ -149,11 +124,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should render inputs for neither partnership nor sole proprietorship', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
@@ -165,11 +135,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should render incorporation number input', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
@@ -181,11 +146,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should render org address same as mailing address', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
@@ -197,11 +157,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should not render organization contact info if sole proprietorship', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
@@ -213,11 +168,6 @@ describe('<OrganizationInformation /> -- V2', () => {
 
   it('should render organization contact info if not sole proprietorship', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
       organization: {
         organizationModel: {
           organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
