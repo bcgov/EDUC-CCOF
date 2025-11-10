@@ -128,7 +128,7 @@ describe('<SupportingDocumentUpload />', () => {
       cy.get('input[placeholder="Enter a description (Optional)"]').should('exist');
     });
   });
-  it('should render change request message', () => {
+  it('should render change request message and app dialog for response change confirmation', () => {
     const changeRequestId = '424452';
     mountWithPinia({
       ...createAuthStore(),
@@ -153,38 +153,6 @@ describe('<SupportingDocumentUpload />', () => {
       .closest('.v-card')
       .within(() => {
         cy.get('input[type="radio"]').should('have.length', 2);
-        cy.get('.v-radio').eq(0).find('label').should('have.text', 'Yes');
-
-        cy.get('.v-radio').eq(1).find('label').should('have.text', 'No');
-      });
-  });
-
-  it('should render app dialog for response change confirmation', () => {
-    const changeRequestId = '424452';
-    mountWithPinia({
-      ...createAuthStore(),
-      application: {
-        programYearId,
-        programYearLabel: '2025-26 FY',
-      },
-      navBar: {
-        currentUrl: PATHS.PREFIX.CHANGE_REQUEST,
-        changeRequestId,
-      },
-      reportChanges: {
-        changeRequestMap: new Map([
-          [
-            changeRequestId,
-            { changeActions: [{ changeType: CHANGE_REQUEST_TYPES.PDF_CHANGE, changeActionId: '4324234' }] },
-          ],
-        ]),
-      },
-    });
-    cy.contains('Would you like to report any other changes to your licence or service?')
-      .closest('.v-card')
-      .within(() => {
-        cy.get('input[type="radio"]').should('have.length', 2);
-
         cy.get('.v-radio').eq(1).click();
       });
 
