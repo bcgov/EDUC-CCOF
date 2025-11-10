@@ -1,9 +1,9 @@
-import FacilityInformation from '@/components/applicationTemplates/v2/group/CCOF/FacilityInformation.vue';
+import FacilityInformationV2 from '@/components/applicationTemplates/v2/group/CCOF/FacilityInformation.vue';
 import vuetify from '@/plugins/vuetify';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    cy.mount(FacilityInformation, {
+    cy.mount(FacilityInformationV2, {
       global: {
         plugins: [pinia, vuetify],
       },
@@ -11,7 +11,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<FacilityInformation /> -- V2', () => {
+describe('<FacilityInformationV2 />', () => {
   it('should render component header', () => {
     mountWithPinia();
     cy.contains('h3', 'Facility Information');

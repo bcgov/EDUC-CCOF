@@ -1,4 +1,4 @@
-import FundAmount from '@/components/applicationTemplates/v2/group/CCOF/FundAmount.vue';
+import FundAmountV2 from '@/components/applicationTemplates/v2/group/CCOF/FundAmount.vue';
 import vuetify from '@/plugins/vuetify';
 
 function selectExtendedOption() {
@@ -14,7 +14,7 @@ function selectExtendedOption() {
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    cy.mount(FundAmount, {
+    cy.mount(FundAmountV2, {
       global: {
         plugins: [pinia, vuetify],
       },
@@ -22,7 +22,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<FundAmount /> -- V2', () => {
+describe('<FundAmountV2 />', () => {
   beforeEach(() => {
     mountWithPinia();
   });

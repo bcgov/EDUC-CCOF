@@ -1,9 +1,9 @@
-import FundAmount from '@/components/applicationTemplates/v1/group/CCOF/FundAmount.vue';
+import FundAmountV1 from '@/components/applicationTemplates/v1/group/CCOF/FundAmount.vue';
 import vuetify from '@/plugins/vuetify';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    cy.mount(FundAmount, {
+    cy.mount(FundAmountV1, {
       global: {
         plugins: [pinia, vuetify],
       },
@@ -11,7 +11,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<FundAmount /> -- V1', () => {
+describe('<FundAmountV1 />', () => {
   beforeEach(() => {
     mountWithPinia();
   });

@@ -1,4 +1,4 @@
-import OrganizationInformation from '@/components/applicationTemplates/v2/group/CCOF/OrganizationInformation.vue';
+import OrganizationInformationV2 from '@/components/applicationTemplates/v2/group/CCOF/OrganizationInformation.vue';
 import vuetify from '@/plugins/vuetify';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 
@@ -13,7 +13,7 @@ const mountWithOrgType = (type) => {
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const fullPathStub = cy.stub();
-    cy.mount(OrganizationInformation, {
+    cy.mount(OrganizationInformationV2, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
@@ -28,7 +28,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<OrganizationInformation /> -- V2', () => {
+describe('<OrganizationInformationV2 />', () => {
   it('should render default text', () => {
     mountWithPinia();
     cy.contains('h3', 'Organization Information');

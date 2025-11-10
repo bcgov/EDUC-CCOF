@@ -1,4 +1,4 @@
-import OrganizationInformation from '@/components/applicationTemplates/v1/group/CCOF/OrganizationInformation.vue';
+import OrganizationInformationV1 from '@/components/applicationTemplates/v1/group/CCOF/OrganizationInformation.vue';
 import vuetify from '@/plugins/vuetify';
 
 const createAuthStore = () => {
@@ -11,7 +11,7 @@ const createAuthStore = () => {
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    cy.mount(OrganizationInformation, {
+    cy.mount(OrganizationInformationV1, {
       global: {
         plugins: [pinia, vuetify],
       },
@@ -19,7 +19,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<OrganizationInformation /> -- V1', () => {
+describe('<OrganizationInformationV1 />', () => {
   it('should render default inputs', () => {
     mountWithPinia({
       ...createAuthStore(),

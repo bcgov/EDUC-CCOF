@@ -1,11 +1,10 @@
-import FacilityInformation from '@/components/applicationTemplates/v1/group/CCOF/FacilityInformation.vue';
+import FacilityInformationV1 from '@/components/applicationTemplates/v1/group/CCOF/FacilityInformation.vue';
 import vuetify from '@/plugins/vuetify';
-import { PATHS } from '@/utils/constants.js';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
-    cy.mount(FacilityInformation, {
+    cy.mount(FacilityInformationV1, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
@@ -19,7 +18,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<FacilityInformation /> -- V1', () => {
+describe('<FacilityInformationV1 />', () => {
   it('should render component header', () => {
     mountWithPinia();
     cy.contains('h3', 'Facility Information');

@@ -1,9 +1,9 @@
-import FamilyFunding from '@/components/applicationTemplates/v1/family/FamilyFunding.vue';
+import FamilyFundingV1 from '@/components/applicationTemplates/v1/family/FamilyFunding.vue';
 import vuetify from '@/plugins/vuetify';
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    cy.mount(FamilyFunding, {
+    cy.mount(FamilyFundingV1, {
       global: {
         plugins: [pinia, vuetify],
       },
@@ -21,7 +21,7 @@ function selectRadio(labelText, optionText) {
   });
 }
 
-describe('<FamilyFunding /> --V1', () => {
+describe('<FamilyFundingV1 />', () => {
   beforeEach(() => {
     mountWithPinia();
   });

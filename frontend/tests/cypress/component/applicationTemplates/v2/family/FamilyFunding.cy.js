@@ -1,4 +1,4 @@
-import FamilyFunding from '@/components/applicationTemplates/v2/family/FamilyFunding.vue';
+import FamilyFundingV2 from '@/components/applicationTemplates/v2/family/FamilyFunding.vue';
 import vuetify from '@/plugins/vuetify';
 import { FAMILY_LICENCE_CATEGORIES, ORGANIZATION_TYPES } from '@/utils/constants.js';
 
@@ -11,7 +11,7 @@ const familyLicenseCategory = [
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const fullPathStub = cy.stub();
-    cy.mount(FamilyFunding, {
+    cy.mount(FamilyFundingV2, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
@@ -26,7 +26,7 @@ function mountWithPinia(initialState = {}) {
   });
 }
 
-describe('<FamilyFunding /> --V2', () => {
+describe('<FamilyFundingV2 />', () => {
   it('should render input asking if program closed for any month', () => {
     mountWithPinia({
       app: {
