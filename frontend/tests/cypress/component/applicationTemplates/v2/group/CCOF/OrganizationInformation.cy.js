@@ -2,6 +2,14 @@ import OrganizationInformation from '@/components/applicationTemplates/v2/group/
 import vuetify from '@/plugins/vuetify';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 
+const mountWithOrgType = (type) => {
+  mountWithPinia({
+    organization: {
+      organizationModel: { organizationType: type },
+    },
+  });
+};
+
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const fullPathStub = cy.stub();
@@ -67,6 +75,9 @@ describe('<OrganizationInformation /> -- V2', () => {
   });
 
   context('Partnership Card', () => {
+    beforeEach(() => {
+      mountWithOrgType(ORGANIZATION_TYPES.PARTNERSHIP);
+    });
     it('should render default inputs for two partners', () => {
       mountWithPinia({
         organization: {
@@ -109,73 +120,41 @@ describe('<OrganizationInformation /> -- V2', () => {
     });
   });
 
-  it('should render sole proprietorship inputs', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
-        },
-      },
+  context('Sole Proprietorship', () => {
+    beforeEach(() => {
+      mountWithOrgType(ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP);
     });
-    cy.contains('label', 'Full Legal Name of Sole Proprietor (Licensee)');
-    cy.contains('label', 'Business Phone');
-    cy.contains('label', 'Email Address');
+    it('should render sole proprietorship inputs', () => {
+      cy.contains('label', 'Full Legal Name of Sole Proprietor (Licensee)');
+      cy.contains('label', 'Business Phone');
+      cy.contains('label', 'Email Address');
+    });
+
+    it('should not render organization contact info if sole proprietorship', () => {
+      cy.contains('label', 'Organization Contact Information').should('not.exist');
+    });
   });
 
-  it('should render inputs for neither partnership nor sole proprietorship', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
-        },
-      },
+  context('Non Profit Society', () => {
+    beforeEach(() => {
+      mountWithOrgType(ORGANIZATION_TYPES.NON_PROFIT_SOCIETY);
     });
-    cy.contains('label', 'Legal Organization Name (as it appears in BC Registries and Online Services)');
-  });
+    it('should render inputs for neither partnership nor sole proprietorship', () => {
+      cy.contains('label', 'Legal Organization Name (as it appears in BC Registries and Online Services)');
+    });
 
-  it('should render incorporation number input', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
-        },
-      },
+    it('should render incorporation number input', () => {
+      cy.contains('label', 'Incorporation Number (as it appears in BC Registries and Online Services)');
     });
-    cy.contains('label', 'Incorporation Number (as it appears in BC Registries and Online Services)');
-  });
 
-  it('should render org address same as mailing address', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
-        },
-      },
+    it('should render org address same as mailing address', () => {
+      cy.contains('label', 'Organization Street Address same as Mailing Address');
     });
-    cy.contains('label', 'Organization Street Address same as Mailing Address');
-  });
 
-  it('should not render organization contact info if sole proprietorship', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.SOLE_PROPRIETORSHIP,
-        },
-      },
+    it('should render organization contact info if not sole proprietorship', () => {
+      cy.contains('Organization Contact Information');
+      cy.contains('label', 'Business Phone');
+      cy.contains('label', 'Email Address');
     });
-    cy.contains('label', 'Organization Contact Information').should('not.exist');
-  });
-
-  it('should render organization contact info if not sole proprietorship', () => {
-    mountWithPinia({
-      organization: {
-        organizationModel: {
-          organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY,
-        },
-      },
-    });
-    cy.contains('Organization Contact Information');
-    cy.contains('label', 'Business Phone');
-    cy.contains('label', 'Email Address');
   });
 });
