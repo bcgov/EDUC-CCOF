@@ -49,7 +49,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_CLOSURES, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(PERMISSIONS.VIEW_CLOSURES, PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   oneOf(
     [
       query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
@@ -66,16 +66,23 @@ router.get(
   },
 );
 
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), [checkSchema(closureSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createClosure(req, res);
-});
+router.post(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  [checkSchema(closureSchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createClosure(req, res);
+  },
+);
 
 router.patch(
   '/:closureId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
   [param('closureId', 'URL param: [closureId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -83,6 +90,6 @@ router.patch(
   },
 );
 
-router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), deleteClosures);
+router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF), deleteClosures);
 
 module.exports = router;

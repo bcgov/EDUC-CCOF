@@ -10,6 +10,12 @@ const { getUserInfo } = require('../components/user');
 
 router.get('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, getUserInfo);
 
-router.get('/:queryUserName', passport.authenticate('jwt', { session: false }), isValidBackendToken, getUserInfo);
+router.get(
+  '/:queryUserName',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  // TODO #securitymatrix Add with Usre security
+  getUserInfo,
+);
 
 module.exports = router;

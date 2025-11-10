@@ -11,13 +11,21 @@ const { saveLicenses, getLicenseFiles, deleteLicenseFiles } = require('../compon
 
 module.exports = router;
 
-router.post('', passport.authenticate('jwt', { session: false }), isValidBackendToken, isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), scanFilePayload, saveLicenses);
+router.post(
+  '',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  scanFilePayload,
+  saveLicenses,
+);
 
 router.get(
   '/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   getLicenseFiles,
 );

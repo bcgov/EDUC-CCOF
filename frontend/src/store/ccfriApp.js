@@ -233,7 +233,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       payload[0] = obj;
 
       try {
-        let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        const res = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_PARENT_FEE, payload);
         return res;
       } catch (error) {
         console.log(error);
