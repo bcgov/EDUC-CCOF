@@ -10,31 +10,53 @@ const facilityName = 'TEST-FAC-NAME1';
 const fileName = 'TEST-FILE-NAME';
 const description = 'TEST-DESCRIPTION';
 
+const createAuthStore = () => {
+  return {
+    auth: {
+      userInfo: {
+        organizationName,
+      },
+    },
+  };
+};
+
+const createDefaultNavStore = () => {
+  return {
+    navBar: {
+      navBarList: [
+        {
+          facilityId,
+        },
+      ],
+    },
+  };
+};
+
+const createDocument = (extra = {}) => ({
+  facilityName,
+  document: 'TEST-DOCUMENT',
+  description,
+  actions: '',
+  facilityId,
+  documentType: DOCUMENT_TYPES.APPLICATION_SUPPORTING,
+  fileName,
+  ...extra,
+});
+
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
     cy.mount(SupportingDocumentUpload, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 
 describe('<SupportingDocumentUpload />', () => {
   it('should render default component content', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -50,98 +72,37 @@ describe('<SupportingDocumentUpload />', () => {
   context('Data Table', () => {
     it('should render `Add File` button when not locked', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         application: {
           programYearId,
-          applicationUploadedDocuments: [
-            {
-              facilityName,
-              document: 'zzzzz',
-              description,
-              actions: '',
-              facilityId,
-              documentType: DOCUMENT_TYPES.APPLICATION_SUPPORTING,
-              fileName,
-            },
-          ],
+          applicationUploadedDocuments: [createDocument()],
         },
-        navBar: {
-          navBarList: [
-            {
-              facilityId,
-            },
-          ],
-        },
+        ...createDefaultNavStore(),
       });
       cy.contains('button', 'Add File');
     });
 
     it('should not render `Add File` button when locked', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         application: {
           programYearId,
           applicationStatus: 'SUBMITTED',
-          applicationUploadedDocuments: [
-            {
-              facilityName,
-              document: 'zzzzz',
-              description,
-              actions: '',
-              facilityId,
-              documentType: DOCUMENT_TYPES.APPLICATION_SUPPORTING,
-              fileName,
-            },
-          ],
+          applicationUploadedDocuments: [createDocument()],
         },
-        navBar: {
-          navBarList: [
-            {
-              facilityId,
-            },
-          ],
-        },
+        ...createDefaultNavStore(),
       });
       cy.contains('button', 'Add File').should('not.exist');
     });
 
     it('should render facilityName, fileName, description if facility contains annotationId', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         application: {
           programYearId,
-          applicationUploadedDocuments: [
-            {
-              facilityName,
-              document: 'zzzzz',
-              description,
-              actions: '',
-              annotationId: '1233',
-              facilityId,
-              documentType: DOCUMENT_TYPES.APPLICATION_SUPPORTING,
-              fileName,
-            },
-          ],
+          applicationUploadedDocuments: [createDocument({ annotationId: '1233' })],
         },
-        navBar: {
-          navBarList: [
-            {
-              facilityId,
-            },
-          ],
-        },
+        ...createDefaultNavStore(),
       });
       cy.contains('span', facilityName);
       cy.contains('span', description);
@@ -150,11 +111,7 @@ describe('<SupportingDocumentUpload />', () => {
 
     it('should render table inputs if no annotationId', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         application: {
           programYearId,
           applicationUploadedDocuments: [
@@ -164,13 +121,7 @@ describe('<SupportingDocumentUpload />', () => {
             },
           ],
         },
-        navBar: {
-          navBarList: [
-            {
-              facilityId,
-            },
-          ],
-        },
+        ...createDefaultNavStore(),
       });
       cy.get('input[placeholder="Select a facility"]').should('exist');
       cy.get('input[placeholder="Select your file"]').should('exist');
@@ -180,11 +131,7 @@ describe('<SupportingDocumentUpload />', () => {
   it('should render change request message', () => {
     const changeRequestId = '424452';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -215,11 +162,7 @@ describe('<SupportingDocumentUpload />', () => {
   it('should render app dialog for response change confirmation', () => {
     const changeRequestId = '424452';
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',

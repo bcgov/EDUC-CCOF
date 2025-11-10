@@ -9,6 +9,30 @@ const organizationName = 'TEST-ORG-NAME';
 const programYearId = '1234';
 const previousYearId = '4321';
 
+const createAuthStore = () => {
+  return {
+    auth: {
+      userInfo: {
+        organizationName,
+      },
+    },
+  };
+};
+
+const createDefaultAppStore = () => {
+  return {
+    app: {
+      programYearList: {
+        list: [
+          {
+            programYearId,
+          },
+        ],
+      },
+    },
+  };
+};
+
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
@@ -29,23 +53,11 @@ function mountWithPinia(initialState = {}) {
 describe('<SummaryDeclaration />', () => {
   it('should render default component text', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-      },
+      ...createAuthStore(),
+      ...createDefaultAppStore(),
       application: {
         programYearId,
-        programYearLabel: '2025-26 FY', // optional; for this test only
+        programYearLabel: '2025-26 FY',
       },
     });
     cy.contains('Child Care Operating Funding Program - 2025-26');
@@ -57,11 +69,7 @@ describe('<SummaryDeclaration />', () => {
     it('should render the change request notice card when a change request is active', () => {
       const curProgramYearName = 'ProgramYearListName';
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         app: {
           programYearList: {
             list: [
@@ -85,14 +93,14 @@ describe('<SummaryDeclaration />', () => {
               externalStatus: 2,
               changeActions: [
                 {
-                  changeType: '', // is not != PARENT_FEE_CHANGE
+                  changeType: '',
                 },
               ],
             },
           ],
         },
         navBar: {
-          currentUrl: '', // does not start with PATHS.PREFIX.CHANGE_REQUEST
+          currentUrl: '',
         },
       });
       cy.contains(`You have a change request for the ${curProgramYearName} funding term still in progress.`);
@@ -101,11 +109,7 @@ describe('<SummaryDeclaration />', () => {
 
     it('should not render the change request notice card', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         app: {
           programYearList: {
             list: [
@@ -135,11 +139,7 @@ describe('<SummaryDeclaration />', () => {
     it('should render `View my Changes` button and redirect to change request history on click', () => {
       const curProgramYearName = 'ProgramYearListName';
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthStore(),
         app: {
           programYearList: {
             list: [
@@ -163,14 +163,14 @@ describe('<SummaryDeclaration />', () => {
               externalStatus: 2,
               changeActions: [
                 {
-                  changeType: '', // is not != PARENT_FEE_CHANGE
+                  changeType: '',
                 },
               ],
             },
           ],
         },
         navBar: {
-          currentUrl: '', // does not start with PATHS.PREFIX.CHANGE_REQUEST
+          currentUrl: '',
         },
       });
       cy.contains('button', 'View My Changes').click();
@@ -180,20 +180,8 @@ describe('<SummaryDeclaration />', () => {
 
   it('should render `Unlocked PCF application in progress` card', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-      },
+      ...createAuthStore(),
+      ...createDefaultAppStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -209,20 +197,8 @@ describe('<SummaryDeclaration />', () => {
 
   it('should not render `Unlocked PCF application in progress` card', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-      },
+      ...createAuthStore(),
+      ...createDefaultAppStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -236,20 +212,8 @@ describe('<SummaryDeclaration />', () => {
 
   it('should render `Incomplete Form` when applications are incomplete', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-      },
+      ...createAuthStore(),
+      ...createDefaultAppStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -262,20 +226,8 @@ describe('<SummaryDeclaration />', () => {
 
   it('should not render `Incomplete Form` when applications are complete', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId,
-            },
-          ],
-        },
-      },
+      ...createAuthStore(),
+      ...createDefaultAppStore(),
       application: {
         programYearId,
         programYearLabel: '2025-26 FY',
@@ -294,20 +246,8 @@ describe('<SummaryDeclaration />', () => {
   context('Declaration Section', () => {
     it('should render declaration A text', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
-        app: {
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-        },
+        ...createAuthStore(),
+        ...createDefaultAppStore(),
         application: {
           programYearId,
         },
@@ -319,20 +259,8 @@ describe('<SummaryDeclaration />', () => {
 
     it('should render checkbox for not a renewal', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
-        app: {
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-        },
+        ...createAuthStore(),
+        ...createDefaultAppStore(),
         application: {
           programYearId,
           isRenewal: false,
@@ -345,20 +273,8 @@ describe('<SummaryDeclaration />', () => {
 
     it('should render checkbox for renewal type', () => {
       mountWithPinia({
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
-        app: {
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-        },
+        ...createAuthStore(),
+        ...createDefaultAppStore(),
         application: {
           programYearId,
           isRenewal: true,
@@ -372,7 +288,7 @@ describe('<SummaryDeclaration />', () => {
       cy.contains('.v-checkbox', 'I agree, consent, and certify');
     });
 
-    it.only('should render last submitted timestamp', () => {
+    it('should render last submitted timestamp', () => {
       const latestSubmissionDate = '2025-12-31 12:59';
       mountWithPinia({
         auth: {
@@ -381,15 +297,7 @@ describe('<SummaryDeclaration />', () => {
           },
           isMinistryUser: true,
         },
-        app: {
-          programYearList: {
-            list: [
-              {
-                programYearId,
-              },
-            ],
-          },
-        },
+        ...createDefaultAppStore(),
         application: {
           programYearId,
         },
