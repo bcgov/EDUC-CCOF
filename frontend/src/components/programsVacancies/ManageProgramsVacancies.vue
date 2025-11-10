@@ -1,59 +1,345 @@
 <template>
-  <v-container class="pa-0 text-body-1" fluid>
-    <v-row no-gutters>
-      <v-card class="pa-4 mb-4" outlined style="border-color: #0d47a1; border-width: 2px">
-        <p class="mb-2">
-          Please complete the following questionnaire and update your responses whenever there are changes.
-        </p>
-        <p class="mb-0">
-          The information collected will be used to administer your facility's Child Care Operating Funding and to
-          update details on the Child Care Map. Responses to questions marked with an asterisk(*) may appear on the map.
-        </p>
-      </v-card>
-      <div>
-        <p class="mb-1">Fiscal Year: {{ programVacancies?.fiscalYear || '-' }}</p>
-        <p class="mb-1">Last Updated: {{ programVacancies?.lastUpdated || '-' }}</p>
-      </div>
-      <v-card class="pa-4 mb-4" outlined style="border-color: grey; border-width: 2px">
-        <p class="mb-2">* What are the age(s) of the children served at this facility?</p>
-        <p class="mb-2">* How many vacancies do you currently have based on age group?</p>
-        <p class="mb-0">* What are the regular days of operation for this facility?</p>
-      </v-card>
-    </v-row>
+  <v-container class="text-body-1" fluid>
+    <v-skeleton-loader :loading="isLoading" type="card">
+      <v-row no-gutters>
+        <v-col cols="12">
+          <v-card class="pa-4 mb-4" outlined style="border-color: #2c5282; border-width: 2px">
+            <p class="mb-2">
+              <v-icon size="x-large" class="py-1 noticeInfoIcon"> mdi-information </v-icon>
+              Please complete the following questionnaire and update your responses whenever there are changes.
+            </p>
+            <p class="mb-0">
+              The information collected will be used to administer your facility's Child Care Operating Funding and to
+              update details on the
+              <a
+                href="https://maps.gov.bc.ca/ess/hm/ccf/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: navy; text-decoration: underline; font-weight: 500"
+              >
+                Child Care Map</a
+              >. Responses to questions marked with an asterisk (*) may appear on the map.
+            </p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="12" class="mb-4">
+          <p class="mb-1 text-grey mt-2">Last Updated: {{ lastUpdated }}</p>
+        </v-col>
+        <v-card class="pa-6 border" style="position: relative; overflow: auto; max-height: 600px">
+          <div class="d-flex justify-end sticky-buttons">
+            <AppButton v-if="!isEditing" size="small" :primary="false" @click="onEdit">Edit</AppButton>
+            <template v-else>
+              <AppButton size="small" :loading="isProcessing" :disabled="isProcessing" @click="onSave">
+                Save
+              </AppButton>
+              <AppButton size="small" :primary="false" class="ml-2" :disabled="isProcessing" @click="onCancel">
+                Cancel
+              </AppButton>
+            </template>
+          </div>
+
+          <div>
+            <p class="mb-2">* What are the age(s) of the children served at this facility? (Check all that apply)</p>
+            <div class="d-flex flex-wrap">
+              <v-checkbox
+                v-for="age in ageGroups"
+                :key="age.value"
+                v-model="form.selectedPrograms"
+                :label="age.label"
+                :value="age.value"
+                :disabled="!isEditing"
+                class="mr-4"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2">* How many vacancies do you currently have based on age group(s)?</p>
+            <div v-for="(label, key) in vacancyFields" :key="key" class="d-flex align-center">
+              <span style="width: 280px">{{ label }}</span>
+              <div style="width: 80px">
+                <v-text-field
+                  v-model.number="form[key]"
+                  :disabled="!isEditing"
+                  type="number"
+                  :rules="[rules.wholeNumber]"
+                  :placeholder="EMPTY_PLACEHOLDER"
+                  @wheel="$event.target.blur()"
+                  @update:model-value="convertBlankNumberToNull(form, key)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2">* What are the regular days of operation for this facility? (Check all that apply)</p>
+            <div class="d-flex flex-wrap">
+              <v-checkbox
+                v-for="day in daysOptions"
+                :key="day.value"
+                v-model="form.daysOfOperation"
+                :label="day.label"
+                :value="day.value"
+                :disabled="!isEditing"
+                class="mr-4"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2">* In what language(s) do you offer services at this facility?</p>
+            <div class="d-flex flex-wrap">
+              <v-checkbox
+                v-for="lang in languageOptions"
+                :key="lang.value"
+                v-model="form.additionalLanguages"
+                :label="lang.label"
+                :value="lang.value"
+                :disabled="!isEditing"
+                class="mr-4"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2">* Do you provide a meal program (breakfast, lunch, or dinner) on a consistent basis?</p>
+            <v-radio-group v-model="form.mealServices" :disabled="!isEditing">
+              <v-row>
+                <v-col v-for="option in mealOptions" :key="option.value" cols="auto">
+                  <v-radio :label="option.label" :value="option.value" />
+                </v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2">
+              * Do you provide pick-up or drop-off service (to and /or from facility by vehicle or walking)?
+            </p>
+            <v-radio-group v-model="form.pickupServices" :disabled="!isEditing">
+              <v-row>
+                <v-col v-for="option in pickupOptions" :key="option.value" cols="auto">
+                  <v-radio :label="option.label" :value="option.value" />
+                </v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div>
+            <p class="mb-2">* What time of day are preschool sessions offered? (Check all that apply)</p>
+            <div class="d-flex flex-wrap">
+              <v-checkbox
+                v-for="option in preschoolOptions"
+                :key="option.value"
+                v-model="form.preschoolServices"
+                :label="option.label"
+                :value="option.value"
+                :disabled="!isEditing"
+                class="mr-4"
+              />
+            </div>
+          </div>
+
+          <div>
+            <p class="mb-2">
+              * Do you offer specific programs or services to support the cultural needs of First Nations, Métis and
+              Inuit children and families?
+            </p>
+            <v-radio-group v-model="form.aboriginalProgramming" :disabled="!isEditing">
+              <v-row>
+                <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
+                <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div>
+            <p class="mb-2">
+              * Does this facility consider itself an Indigenous-led (First Nations, Métis and/or Inuit) organization?
+              Please select all that apply.
+            </p>
+            <div class="d-flex flex-wrap">
+              <v-checkbox
+                v-for="option in indigenousLedOptions"
+                :key="option.value"
+                v-model="form.indigenousLed"
+                :label="option.label"
+                :value="option.value"
+                :disabled="!isEditing"
+                class="mr-4"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <p class="mb-2">
+              * Is your facility equipped to provide care to children who have physical mobility or accessibility
+              support needs (e.g. wheelchair or walker access)?
+            </p>
+            <v-radio-group v-model="form.accessibility" :disabled="!isEditing">
+              <v-row>
+                <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
+                <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div>
+            <p class="mb-2">
+              * Does your program have capacity to provide care to children who require additional support due to
+              developmental delay or disability (i.e. support for physical, cognitive, communicative, social, emotional,
+              and/or behavioral needs)?
+            </p>
+            <v-radio-group v-model="form.accommodatesSpecialNeeds" :disabled="!isEditing">
+              <v-row>
+                <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
+                <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div>
+            <p class="mb-2">
+              * Do one or more of the child care staff (including yourself) have an Early Childhood Educator (ECE)
+              Certificate?
+            </p>
+            <v-radio-group v-model="form.ece" :disabled="!isEditing">
+              <v-row>
+                <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
+                <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+
+          <div>
+            <p class="mb-2">* Is the BC Early Learning Framework (ELF) used as a resource here?</p>
+            <v-radio-group v-model="form.elf" :disabled="!isEditing">
+              <v-row>
+                <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
+                <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
+              </v-row>
+            </v-radio-group>
+          </div>
+        </v-card>
+      </v-row>
+    </v-skeleton-loader>
   </v-container>
 </template>
 
 <script>
-import { isEmpty } from 'lodash';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
 import alertMixin from '@/mixins/alertMixin.js';
+import globalMixin from '@/mixins/globalMixin.js';
+
 import ProgramsVacanciesService from '@/services/programsVacancies.js';
+
+import {
+  AGE_GROUPS,
+  DAYS_OPTIONS,
+  EMPTY_PLACEHOLDER,
+  INDIGENOUS_LED_OPTIONS,
+  LANGUAGE_OPTIONS,
+  MEAL_OPTIONS,
+  PICKUP_OPTIONS,
+  PRESCHOOL_OPTIONS,
+  VACANCY_FIELDS,
+} from '@/utils/constants.js';
+import { formatUTCDate } from '@/utils/format';
+import rules from '@/utils/rules.js';
 
 export default {
   name: 'ManageProgramsVacancies',
-  mixins: [alertMixin],
+  components: { AppButton },
+  mixins: [alertMixin, globalMixin],
   data() {
     return {
       isLoading: false,
+      isEditing: false,
+      isProcessing: false,
+      programVacancies: null,
+      form: {},
+      ageGroups: AGE_GROUPS,
+      daysOptions: DAYS_OPTIONS,
+      languageOptions: LANGUAGE_OPTIONS,
+      indigenousLedOptions: INDIGENOUS_LED_OPTIONS,
+      preschoolOptions: PRESCHOOL_OPTIONS,
+      mealOptions: MEAL_OPTIONS,
+      pickupOptions: PICKUP_OPTIONS,
+      vacancyFields: VACANCY_FIELDS,
     };
   },
+  computed: {
+    lastUpdated() {
+      return formatUTCDate(this.programVacancies?.updatedOn);
+    },
+  },
   created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
+    this.rules = rules;
     this.loadData();
   },
   methods: {
+    formatUTCDate,
+    parseNumberList(str) {
+      if (!str) return [];
+      return str.split(',').map((x) => Number(x.trim()));
+    },
     async loadData() {
       this.isLoading = true;
       try {
-        this.programVacancies = await ProgramsVacanciesService.getprogramsVacancies(this.$route.params.facilityId);
-        if (isEmpty(this.programVacancies)) {
-          this.setWarningAlert('No Programs and Vacancies for this facility.');
-        }
+        const response = await ProgramsVacanciesService.getProgramsVacancies(this.$route.params.facilityId);
+        this.programVacancies = response[0];
+        this.form = {
+          ...this.programVacancies,
+          selectedPrograms: this.parseNumberList(this.programVacancies.selectedPrograms),
+          daysOfOperation: this.parseNumberList(this.programVacancies.daysOfOperation),
+          additionalLanguages: this.parseNumberList(this.programVacancies.additionalLanguages),
+          indigenousLed: this.parseNumberList(this.programVacancies.indigenousLed),
+          preschoolServices: this.parseNumberList(this.programVacancies.preschoolServices),
+        };
       } catch (error) {
-        this.setFailureAlert('Failed to load Programs and Vacancies.');
-        console.error(error);
+        this.setFailureAlert('Failed to load Programs and Vacancies.', error);
       } finally {
         this.isLoading = false;
+      }
+    },
+    onEdit() {
+      this.isEditing = true;
+    },
+    onCancel() {
+      this.isEditing = false;
+      this.loadData();
+    },
+    async onSave() {
+      this.isProcessing = true;
+      try {
+        const payload = {
+          ...this.form,
+          selectedPrograms: this.form.selectedPrograms?.length ? this.form.selectedPrograms.join(',') : null,
+          daysOfOperation: this.form.daysOfOperation?.length ? this.form.daysOfOperation.join(',') : null,
+          additionalLanguages: this.form.additionalLanguages?.length ? this.form.additionalLanguages.join(',') : null,
+          indigenousLed: this.form.indigenousLed?.length ? this.form.indigenousLed.join(',') : null,
+          preschoolServices: this.form.preschoolServices?.length ? this.form.preschoolServices.join(',') : null,
+        };
+        await ProgramsVacanciesService.updateProgramsVacancies(this.form.programsVacanciesId, payload);
+        this.programVacancies.updatedOn = new Date().toISOString();
+        this.setSuccessAlert('Programs and Vacancies updated successfully.');
+        this.isEditing = false;
+      } catch (error) {
+        this.setFailureAlert('Failed to update Programs and Vacancies.');
+        console.error(error);
+      } finally {
+        this.isProcessing = false;
       }
     },
   },
 };
 </script>
+<style>
+.sticky-buttons {
+  position: sticky;
+  top: 0;
+}
+</style>

@@ -830,17 +830,17 @@ const PermissionMappings = [
 ];
 
 const ProgramsVacanciesMappings = [
-  { back: 'ccof_facility', front: 'facilityName' },
-  { back: 'ccof_selectedprograms@OData.Community.Display.V1.FormattedValue', front: 'selectedPrograms' },
-  { back: 'ccof_daysofoperation@OData.Community.Display.V1.FormattedValue', front: 'daysOfOperation' },
-  { back: 'ccof_additionallanguages@OData.Community.Display.V1.FormattedValue', front: 'additionalLanguages' },
-  { back: 'ccof_mealservices@OData.Community.Display.V1.FormattedValue', front: 'mealServices' },
-  { back: 'ccof_pickupservices@OData.Community.Display.V1.FormattedValue', front: 'pickupServices' },
-  { back: 'ccof_preschoolservices@OData.Community.Display.V1.FormattedValue', front: 'preschoolServices' },
+  { back: 'ccof_programandvacanciesid', front: 'programsVacanciesId' },
+  { back: 'ccof_selectedprograms', front: 'selectedPrograms' },
+  { back: 'ccof_daysofoperation', front: 'daysOfOperation' },
+  { back: 'ccof_additionallanguage', front: 'additionalLanguages' },
+  { back: 'ccof_mealservices', front: 'mealServices' },
+  { back: 'ccof_pickupservices', front: 'pickupServices' },
+  { back: 'ccof_preschoolservices', front: 'preschoolServices' },
   { back: 'ccof_aboriginalprogramming', front: 'aboriginalProgramming' },
-  { back: 'ccof_indigenousled@OData.Community.Display.V1.FormattedValue', front: 'indigenousLed' },
+  { back: 'ccof_indigenousled', front: 'indigenousLed' },
   { back: 'ccof_accessibility', front: 'accessibility' },
-  { back: 'ccof_accomodatesspecialneeds', front: 'accommodatesSpecialNeeds' },
+  { back: 'ccof_accommodatesspecialneeds', front: 'accommodatesSpecialNeeds' },
   { back: 'ccof_ece', front: 'ece' },
   { back: 'ccof_elf', front: 'elf' },
   { back: 'ccof_vacancies018months', front: 'vacancies018Months' },
@@ -849,6 +849,7 @@ const ProgramsVacanciesMappings = [
   { back: 'ccof_vacancieskindergartenbeforeandafter', front: 'vacanciesKindergartenBeforeAndAfter' },
   { back: 'ccof_vacanciesgrade1toage12', front: 'vacanciesGrade1ToAge12' },
   { back: 'ccof_vacanciespreschool', front: 'vacanciesPreschool' },
+  { back: 'modifiedon', front: 'updatedOn' },
 ];
 
 module.exports = {
