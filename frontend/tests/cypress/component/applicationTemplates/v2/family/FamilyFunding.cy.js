@@ -1,6 +1,6 @@
 import FamilyFundingV2 from '@/components/applicationTemplates/v2/family/FamilyFunding.vue';
 import vuetify from '@/plugins/vuetify';
-import { FAMILY_LICENCE_CATEGORIES, ORGANIZATION_TYPES } from '@/utils/constants.js';
+import { FAMILY_LICENCE_CATEGORIES } from '@/utils/constants.js';
 
 const familyLicenseCategory = [
   { ccof_categorynumber: FAMILY_LICENCE_CATEGORIES.FAMILY_CHILD_CARE },

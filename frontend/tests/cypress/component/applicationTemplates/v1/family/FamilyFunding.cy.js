@@ -54,7 +54,10 @@ describe('<FamilyFundingV1 />', () => {
     it('should render month checkboxes if "Yes" selected', () => {
       selectRadio(question, 'Yes');
       cy.contains('If YES, check all the applicable months:').should('be.visible');
-      ['Jan', 'Jul', 'Dec'].forEach((month) => cy.contains('.v-input', month));
+
+      for (const month of ['Jan', 'Jul', 'Dec']) {
+        cy.contains('.v-input', month);
+      }
     });
   });
 
@@ -70,10 +73,15 @@ describe('<FamilyFundingV1 />', () => {
 
     it('should render additional inputs if selecting Yes', () => {
       selectRadio(question, 'Yes');
-      [
+
+      const labels = [
         'Maximum number of days per week you offer extended hours of child care?',
         'Maximum number of weeks per year you offer extended hours of child care?',
-      ].forEach((label) => cy.contains('label', label).should('be.visible'));
+      ];
+
+      for (const label of labels) {
+        cy.contains('label', label).should('be.visible');
+      }
     });
   });
 

@@ -88,7 +88,7 @@ describe('<FundAmountV2 />', () => {
       },
     ];
 
-    categories.forEach(({ label, selector, maxLabel }) => {
+    for (const { label, selector, maxLabel } of categories) {
       const clickTarget = selector
         ? () => cy.get(selector).click()
         : () => cy.contains('label', label).closest('.v-checkbox').click();
@@ -101,7 +101,7 @@ describe('<FundAmountV2 />', () => {
       it(`should not render input when "${label}" checkbox unselected`, () => {
         cy.contains('label', maxLabel).should('not.exist');
       });
-    });
+    }
   });
 
   it('should render licensed capcity input', () => {

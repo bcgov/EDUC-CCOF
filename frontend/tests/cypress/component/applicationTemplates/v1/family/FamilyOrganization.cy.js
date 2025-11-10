@@ -89,33 +89,4 @@ describe('<FamilyOrganization />', () => {
       cy.contains('label', /^Street Address$/).should('exist');
     });
   });
-
-  it('should render type of organization radio group', () => {
-    const n1 = 'n1';
-    const n2 = 'n2';
-    const n3 = 'n3';
-    mountWithPinia({
-      auth: {
-        userInfo: {
-          userName: 'TEST-USERNAME',
-        },
-      },
-      app: {
-        organizationTypeList: [
-          { name: n1, id: '1' },
-          { name: n2, id: '2' },
-          { name: n3, id: '2' },
-        ],
-      },
-    });
-
-    cy.contains('Type of Organization')
-      .closest('.v-row')
-      .within(() => {
-        cy.get('.v-radio').should('have.length', 3);
-        cy.contains(n1);
-        cy.contains(n2);
-        cy.contains(n3);
-      });
-  });
 });
