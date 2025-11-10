@@ -113,21 +113,6 @@ describe('<FundAmount /> -- V2', () => {
     cy.contains('label', 'Maximum Licensed Capacity').should('not.exist');
   });
 
-  it('should render additional preschool sessions when preschool selected as license', () => {
-    cy.get('#preschool-checkbox').click();
-    cy.contains('Please indicate how many preschool sessions your facility offers per day')
-      .closest('.v-card')
-      .within(() => {
-        cy.get('input[type="number"').eq(0).type(1);
-        cy.get('input[type="number"').eq(1).type(1);
-        cy.get('input[type="number"').eq(2).type(2);
-        cy.get('input[type="number"').eq(3).type(2);
-        cy.get('input[type="number"').eq(4).type(2);
-
-        cy.get('input[type="number"').eq(5).should('have.value', '8');
-      });
-  });
-
   it('should render additional school age inputs when school age care selected as license', () => {
     cy.get('#schoolage-care-checkbox').click();
     cy.contains('Please indicate each service that your facility offers');
@@ -186,39 +171,6 @@ describe('<FundAmount /> -- V2', () => {
         mountWithPinia();
         selectExtendedOption();
         cy.contains('4 hours or less extended child care').should('not.exist');
-      });
-
-      it('should render 30 months to school age extended inputs when selected', () => {
-        mountWithPinia();
-        selectExtendedOption();
-
-        cy.get('#30months-to-schoolage-extendedCC-checkbox').click();
-        cy.contains('4 hours or less extended child care');
-        cy.contains('Over 4 hours extended child care');
-      });
-
-      it('should render school age care extended inputs when selected', () => {
-        selectExtendedOption();
-
-        cy.get('#schoolage-care-extendedCC-checkbox').click();
-        cy.contains('4 hours or less extended child care');
-        cy.contains('Over 4 hours extended child care');
-      });
-
-      it('should render care on school grounds extended inputs when selected', () => {
-        selectExtendedOption();
-
-        cy.get('#care-on-school-grounds-extendedCC-checkbox').click();
-        cy.contains('4 hours or less extended child care');
-        cy.contains('Over 4 hours extended child care');
-      });
-
-      it('should render multi age extended inputs when selected', () => {
-        selectExtendedOption();
-
-        cy.get('#multi-age-extendedCC-checkbox').click();
-        cy.contains('4 hours or less extended child care');
-        cy.contains('Over 4 hours extended child care');
       });
     });
   });

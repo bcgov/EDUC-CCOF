@@ -1,6 +1,3 @@
-// TODO: Do expansion panel tests if needed
-// REfactor tests
-
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
 import vuetify from '@/plugins/vuetify';
 import { PATHS } from '@/utils/constants.js';
@@ -105,6 +102,8 @@ describe('<SummaryDeclaration />', () => {
       });
       cy.contains(`You have a change request for the ${curProgramYearName} funding term still in progress.`);
       cy.contains('The Program Confirmation Form cannot be submitted until the change is complete.');
+      cy.contains('button', 'View My Changes').click();
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     });
 
     it('should not render the change request notice card', () => {
@@ -134,47 +133,6 @@ describe('<SummaryDeclaration />', () => {
       cy.contains('The Program Confirmation Form cannot be submitted until the change is complete.').should(
         'not.exist',
       );
-    });
-
-    it('should render `View my Changes` button and redirect to change request history on click', () => {
-      const curProgramYearName = 'ProgramYearListName';
-      mountWithPinia({
-        ...createAuthStore(),
-        app: {
-          programYearList: {
-            list: [
-              {
-                programYearId,
-                previousYearId,
-                name: curProgramYearName,
-              },
-              {
-                programYearId: previousYearId,
-              },
-            ],
-          },
-        },
-        application: {
-          programYearId,
-        },
-        reportChanges: {
-          changeRequestStore: [
-            {
-              externalStatus: 2,
-              changeActions: [
-                {
-                  changeType: '',
-                },
-              ],
-            },
-          ],
-        },
-        navBar: {
-          currentUrl: '',
-        },
-      });
-      cy.contains('button', 'View My Changes').click();
-      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     });
   });
 
