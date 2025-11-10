@@ -571,6 +571,7 @@ export default {
       return isOrganizationUnlocked(
         this.unlockBaseFunding,
         this.applicationType,
+        this.unlockDeclaration,
         this.unlockEcewe,
         this.unlockLicenseUpload,
         this.unlockSupportingDocuments,
