@@ -56,7 +56,6 @@ export const useOrganizationStore = defineStore('organization', {
 
       const payload = {
         ...this.organizationModel,
-        applicationTemplateVersion: appStore.getApplicationTemplateVersion(applicationStore.programYearId),
       };
       payload.providerType = this.getOrgProviderTypeID;
       //update the loaded model here before the same, otherwise errors will prevent you from leaving the page
@@ -77,6 +76,7 @@ export const useOrganizationStore = defineStore('organization', {
         //we calculate which app to use in lookup - no need to do it again here
         const programYear = appStore.programYearList.newApp;
         payload.programYearId = programYear.programYearId;
+        payload.applicationTemplateVersion = appStore.getApplicationTemplateVersion(programYear.programYearId);
         applicationStore.setProgramYearId(programYear.programYearId);
         applicationStore.setProgramYearLabel(programYear.name);
         try {
