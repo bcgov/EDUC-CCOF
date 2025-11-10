@@ -14,7 +14,6 @@
               <a
                 href="https://maps.gov.bc.ca/ess/hm/ccf/"
                 target="_blank"
-                rel="noopener noreferrer"
                 style="color: navy; text-decoration: underline; font-weight: 500"
               >
                 Child Care Map</a
@@ -56,23 +55,28 @@
 
           <div>
             <p class="mb-2">* How many vacancies do you currently have based on age group(s)?</p>
-            <div v-for="(label, key) in vacancyFields" :key="key" class="d-flex align-center">
-              <span style="width: 280px">{{ label }}</span>
-              <div style="width: 80px">
+            <v-row v-for="(label, key) in vacancyFields" :key="key" class="align-center mb-3" no-gutters>
+              <v-col cols="12" sm="5" md="4" class="pr-2">
+                {{ label }}
+              </v-col>
+              <v-col cols="12" sm="3" md="2" class="mb-2">
                 <v-text-field
                   v-model.number="form[key]"
                   :disabled="!isEditing"
                   type="number"
                   :rules="[rules.wholeNumber]"
                   :placeholder="EMPTY_PLACEHOLDER"
+                  density="compact"
+                  hide-details
+                  style="max-width: 80px"
                   @wheel="$event.target.blur()"
                   @update:model-value="convertBlankNumberToNull(form, key)"
                 />
-              </div>
-            </div>
+              </v-col>
+            </v-row>
           </div>
 
-          <div class="mt-4">
+          <div class="mt-5">
             <p class="mb-2">* What are the regular days of operation for this facility? (Check all that apply)</p>
             <div class="d-flex flex-wrap">
               <v-checkbox
