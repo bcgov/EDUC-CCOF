@@ -28,7 +28,7 @@ export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
 };
 
 export function setEmptyInputParams(params, ...excludedParams) {
-  Object.keys(params).forEach((key) => {
+  for (const key of Object.keys(params)) {
     if (!excludedParams.includes(key)) {
       if (isPlainObject(params[key])) {
         setEmptyInputParams(params[key], ...excludedParams);
@@ -36,7 +36,7 @@ export function setEmptyInputParams(params, ...excludedParams) {
         params[key] = null;
       }
     }
-  });
+  }
 }
 export function deepCloneObject(objectToBeCloned) {
   return clone(objectToBeCloned);
@@ -320,12 +320,10 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
       case 'SUBMITTED':
         if (isOrganizationUnlock) {
           return CCOF_STATUS.ACTION_REQUIRED;
+        } else if (ccofApplicationStatus === 'ACTIVE') {
+          return CCOF_STATUS.APPROVED;
         } else {
-          if (ccofApplicationStatus === 'ACTIVE') {
-            return CCOF_STATUS.APPROVED;
-          } else {
-            return CCOF_STATUS.COMPLETE;
-          }
+          return CCOF_STATUS.COMPLETE;
         }
       default:
         return CCOF_STATUS.NEW;
@@ -337,33 +335,41 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
 
 export function getUnlockCCFRIList(facilityList) {
   const unlockList = [];
-  facilityList?.forEach((facility) => {
-    if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
-  });
+  if (facilityList) {
+    for (const facility of facilityList) {
+      if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
+    }
+  }
   return unlockList;
 }
 
 export function getUnlockNMFList(facilityList) {
   const unlockList = [];
-  facilityList?.forEach((facility) => {
-    if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
-  });
+  if (facilityList) {
+    for (const facility of facilityList) {
+      if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
+    }
+  }
   return unlockList;
 }
 
 export function getUnlockRFIList(facilityList) {
   const unlockList = [];
-  facilityList?.forEach((facility) => {
-    if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
-  });
+  if (facilityList) {
+    for (const facility of facilityList) {
+      if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
+    }
+  }
   return unlockList;
 }
 
 export function getUnlockAFSList(facilityList) {
   const unlockList = [];
-  facilityList?.forEach((facility) => {
-    if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
-  });
+  if (facilityList) {
+    for (const facility of facilityList) {
+      if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
+    }
+  }
   return unlockList;
 }
 
