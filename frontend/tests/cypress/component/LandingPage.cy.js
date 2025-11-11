@@ -455,23 +455,7 @@ describe('<LandingPage />', () => {
     });
   });
 
-  it('should disable `Submit Enrolment Reports or monthly ECE reports` card', () => {
-    mountWithPinia({
-      application: {
-        applicationType: null,
-      },
-    });
-
-    cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
-      'have.css',
-      'pointer-events',
-      'none',
-    );
-
-    cy.contains('button', 'Submit a report').should('have.css', 'pointer-events', 'none');
-  });
-
-  it('should redirect on clicking the `Submit a report` button', () => {
+  it('should redirect on clicking the `Manage Reporst` button', () => {
     mountWithPinia({
       application: {
         applicationType: 'RENEW',
@@ -485,7 +469,7 @@ describe('<LandingPage />', () => {
       'none',
     );
 
-    checkButtonAndNavigate('Submit a report', PATHS.ROOT.ENROLMENT_REPORTS);
+    checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
   });
 
   context('Manage Organization and Facilities card', () => {
