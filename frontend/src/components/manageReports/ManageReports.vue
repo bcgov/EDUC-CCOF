@@ -68,7 +68,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { PATHS } from '@/utils/constants.js';
+import { PATHS, CCOF_STATUS } from '@/utils/constants.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -111,7 +111,7 @@ export default {
       );
     },
     isCCOFApproved() {
-      return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS.APPROVED;
+      return this.applicationType === 'RENEW' || this.ccofStatus === CCOF_STATUS.APPROVED;
     },
   },
   methods: {
