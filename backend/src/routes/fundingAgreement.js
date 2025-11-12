@@ -30,7 +30,7 @@ router.get(
   '/exists',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT, PERMISSIONS.CREATE_RENEWAL_PCF),
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF),
   query('organizationId').notEmpty().withMessage('URL query: [organizationId] is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
   oneOf([query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('internalStatusCode').notEmpty()], {
     message: 'URL query: [programYearId or internalStatusCode] is required',
