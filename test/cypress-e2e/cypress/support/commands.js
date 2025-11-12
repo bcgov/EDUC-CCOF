@@ -148,7 +148,7 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
 })
 
 
-Cypress.Commands.add('startNewApp', (input) => {
+Cypress.Commands.add('startNewApp', (provider) => {
   cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
   cy.contains('What would you like to do?').should('be.visible')
   cy.contains('Start Application').should('be.visible').click()
@@ -156,9 +156,16 @@ Cypress.Commands.add('startNewApp', (input) => {
   cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible')
   cy.contains('Start Application').should('be.visible').click()
   cy.url().should('include', '/select-application-type')
-  cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
-    cy.contains('Start Application').click()
-  })
+
+  if (provider === 'Family') {
+      cy.contains('.v-card', 'Family Provider').should('be.visible').within(()=> {
+      cy.contains('Start Application').click()
+    })
+  } else {
+      cy.contains('.v-card', 'Group Provider').should('be.visible').within(()=> {
+      cy.contains('Start Application').click()
+    })
+  }
 });
 
 Cypress.Commands.add('startNewRenewalApp', () => {

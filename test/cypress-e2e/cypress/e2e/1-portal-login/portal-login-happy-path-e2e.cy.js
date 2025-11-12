@@ -1,4 +1,5 @@
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login";
+import { APPTYPE } from '../../support/constants.js'
 
 describe("Portal Login and Navigation", () => {
   it("should navigate and verify pages after login", () => {
@@ -8,6 +9,6 @@ describe("Portal Login and Navigation", () => {
       Cypress.env("PORTAL_USERNAME"),
       Cypress.env("PORTAL_PASSWORD")
     );
-    cy.startNewApp('Group Provider')
+    cy.startNewApp(APPTYPE.GROUP)
   })
 });

@@ -1,5 +1,6 @@
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login";
+import { APPTYPE, PROGRAM_YEAR, LICENCE, ORG_TYPE  } from '../../support/constants.js'
 
 describe('Group Application Test', () => {
     it('Should run through Group Application, submit and logout', () => {
@@ -8,13 +9,13 @@ describe('Group Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp('Group Provider')
+        cy.startNewApp(APPTYPE.GROUP)
     
         cy.then(()=> {
-            cy.runCcofApp('group', 'registeredCompany', 'groupLicenceCategories')
-            cy.runCcfriApp('group', '2025-26')
-            cy.runEceWeApp('group', '2025-26')
-            submitApp.summaryAndDeclaration('group')
+            cy.runCcofApp(APPTYPE.GROUP, ORG_TYPE.REGISTERED_COMPANY, LICENCE.GROUP)
+            cy.runCcfriApp(APPTYPE.GROUP, PROGRAM_YEAR.CURRENT)
+            cy.runEceWeApp(APPTYPE.GROUP, PROGRAM_YEAR.CURRENT)
+            submitApp.summaryAndDeclaration(APPTYPE.GROUP)
         })
     })
     
