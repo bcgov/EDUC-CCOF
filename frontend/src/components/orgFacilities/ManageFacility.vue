@@ -95,6 +95,7 @@ export default {
       return !isEmpty(this.facility);
     },
   },
+
   async mounted() {
     this.$router.isReady().then(() => {
       this.tab = this.$route.query?.tab || 'facility-details';
