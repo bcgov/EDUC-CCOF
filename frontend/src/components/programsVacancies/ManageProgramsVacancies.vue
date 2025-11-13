@@ -25,8 +25,8 @@
         <v-col cols="12" class="mb-4">
           <p class="mb-1 text-grey mt-2">Last Updated: {{ lastUpdated }}</p>
         </v-col>
-        <v-card class="pa-6 border" style="position: relative; overflow: auto; max-height: 600px">
-          <div class="d-flex justify-end sticky-buttons">
+        <v-card class="pa-6 border">
+          <div class="d-flex justify-end">
             <AppButton v-if="!isEditing" size="small" :primary="false" @click="onEdit">Edit</AppButton>
             <template v-else>
               <AppButton size="small" :loading="isProcessing" :disabled="isProcessing" @click="onSave">
@@ -232,6 +232,8 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
+
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -250,7 +252,7 @@ import {
   PRESCHOOL_OPTIONS,
   VACANCY_FIELDS,
 } from '@/utils/constants.js';
-import { formatUTCDate } from '@/utils/format';
+import { formatStringToNumberList, formatUTCDate } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -264,14 +266,6 @@ export default {
       isProcessing: false,
       programVacancies: null,
       form: {},
-      ageGroups: AGE_GROUPS,
-      daysOptions: DAYS_OPTIONS,
-      languageOptions: LANGUAGE_OPTIONS,
-      indigenousLedOptions: INDIGENOUS_LED_OPTIONS,
-      preschoolOptions: PRESCHOOL_OPTIONS,
-      mealOptions: MEAL_OPTIONS,
-      pickupOptions: PICKUP_OPTIONS,
-      vacancyFields: VACANCY_FIELDS,
     };
   },
   computed: {
@@ -282,27 +276,33 @@ export default {
   created() {
     this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.rules = rules;
+    this.ageGroups = AGE_GROUPS;
+    this.daysOptions = DAYS_OPTIONS;
+    this.languageOptions = LANGUAGE_OPTIONS;
+    this.indigenousLedOptions = INDIGENOUS_LED_OPTIONS;
+    this.preschoolOptions = PRESCHOOL_OPTIONS;
+    this.mealOptions = MEAL_OPTIONS;
+    this.pickupOptions = PICKUP_OPTIONS;
+    this.vacancyFields = VACANCY_FIELDS;
     this.loadData();
   },
   methods: {
     formatUTCDate,
-    parseNumberList(str) {
-      if (!str) return [];
-      return str.split(',').map((x) => Number(x.trim()));
-    },
     async loadData() {
       this.isLoading = true;
       try {
         const response = await ProgramsVacanciesService.getProgramsVacancies(this.$route.params.facilityId);
-        this.programVacancies = response[0];
-        this.form = {
-          ...this.programVacancies,
-          selectedPrograms: this.parseNumberList(this.programVacancies.selectedPrograms),
-          daysOfOperation: this.parseNumberList(this.programVacancies.daysOfOperation),
-          additionalLanguages: this.parseNumberList(this.programVacancies.additionalLanguages),
-          indigenousLed: this.parseNumberList(this.programVacancies.indigenousLed),
-          preschoolServices: this.parseNumberList(this.programVacancies.preschoolServices),
-        };
+        if (!isEmpty(response)) {
+          this.programVacancies = response[0];
+          this.form = {
+            ...this.programVacancies,
+            selectedPrograms: formatStringToNumberList(this.programVacancies.selectedPrograms),
+            daysOfOperation: formatStringToNumberList(this.programVacancies.daysOfOperation),
+            additionalLanguages: formatStringToNumberList(this.programVacancies.additionalLanguages),
+            indigenousLed: formatStringToNumberList(this.programVacancies.indigenousLed),
+            preschoolServices: formatStringToNumberList(this.programVacancies.preschoolServices),
+          };
+        }
       } catch (error) {
         this.setFailureAlert('Failed to load Programs and Vacancies.', error);
       } finally {
@@ -311,10 +311,11 @@ export default {
     },
     onEdit() {
       this.isEditing = true;
+      this.formBackup = { ...this.form };
     },
     onCancel() {
       this.isEditing = false;
-      this.loadData();
+      this.form = this.formBackup;
     },
     async onSave() {
       this.isProcessing = true;
@@ -328,7 +329,7 @@ export default {
           preschoolServices: this.form.preschoolServices?.length ? this.form.preschoolServices.join(',') : null,
         };
         await ProgramsVacanciesService.updateProgramsVacancies(this.form.programsVacanciesId, payload);
-        this.programVacancies.updatedOn = new Date().toISOString();
+        this.programVacancies.updatedOn = new Date().toISOString(); // Manually update timestamp since server doesn't return updated value
         this.setSuccessAlert('Programs and Vacancies updated successfully.');
         this.isEditing = false;
       } catch (error) {
@@ -341,9 +342,3 @@ export default {
   },
 };
 </script>
-<style>
-.sticky-buttons {
-  position: sticky;
-  top: 0;
-}
-</style>
