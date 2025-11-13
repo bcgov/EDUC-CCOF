@@ -4,7 +4,7 @@
 
     <v-skeleton-loader v-if="isLoading" type="list-item" class="mb-6" />
     <v-expansion-panels v-else-if="licences.length" multiple class="mb-6">
-      <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
+      <v-expansion-panel v-for="licence in licenceToDisplay" :key="licence.licenceId">
         <v-expansion-panel-title>
           <strong>{{ licence.serviceDeliveryDetails[0].facilityName }} - {{ licence.facilityAccountNumber }}</strong>
         </v-expansion-panel-title>
@@ -206,6 +206,9 @@ export default {
       const status = this.fundingAgreement?.externalStatusText;
       const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
+    },
+    licenceToDisplay() {
+      return [this.licences.find((l) => !l.recordEndDate) || this.licences[0]];
     },
   },
   async created() {

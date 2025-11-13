@@ -67,13 +67,12 @@ router.get('/logout', async (req, res, next) => {
 
     req.session.destroy();
 
-    let endpoint = '';
+    // If the session has expired just return as SSO logout isn't required
     if (req.query?.sessionExpired) {
-      endpoint = `/session-expired?idir=${isIdir}`;
-    } else {
-      endpoint = `/logout?idir=${isIdir}`;
+      return res.redirect(`/session-expired?idir=${isIdir}`);
     }
 
+    const endpoint = `/logout?idir=${isIdir}`;
     const redirectUri = `${config.get('server:frontend')}${endpoint}`;
     const retUrl = encodeURIComponent(`${config.get('logoutEndpoint')}?post_logout_redirect_uri=${redirectUri}&id_token_hint=${idToken}`);
     const logoutUrl = config.get('siteMinder_logout_endpoint') + retUrl;
