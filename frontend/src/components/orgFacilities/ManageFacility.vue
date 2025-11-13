@@ -36,7 +36,7 @@
                   @facility-updated="updateFacility"
                 />
               </v-window-item>
-              <v-window-item value="programs-and-services">Programs and Services</v-window-item>
+              <v-window-item value="programs-and-services">Programs and Services </v-window-item>
               <v-window-item value="licences-details">
                 <ViewLicence />
               </v-window-item>
