@@ -1,6 +1,7 @@
 'use strict';
 const { getOperation, patchOperationWithObjectId, getUserGuid } = require('./utils');
 const HttpStatus = require('http-status-codes');
+const { isEmpty } = require('lodash');
 const log = require('./logger');
 const { buildFilterQuery } = require('./utils');
 const { FundingAgreementMappings } = require('../util/mapping/Mappings');
@@ -52,7 +53,18 @@ async function updateFundingAgreement(req, res) {
   }
 }
 
+async function checkFundingAgreementExists(req, res) {
+  try {
+    const response = await getOperation(`ccof_funding_agreements?$select=ccof_name&${buildFilterQuery(req.query, FundingAgreementMappings)}`);
+    return res.status(HttpStatus.OK).json({ exists: !isEmpty(response?.value) });
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 module.exports = {
+  checkFundingAgreementExists,
   getFundingAgreement,
   getFundingAgreements,
   getFundingAgreementPDF,
