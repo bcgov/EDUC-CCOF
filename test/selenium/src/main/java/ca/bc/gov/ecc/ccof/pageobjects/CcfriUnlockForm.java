@@ -44,7 +44,7 @@ public class CcfriUnlockForm extends BaseTest {
 	WebElement confirmAndCloseBtn;
 
 	public CcfriUnlockForm(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

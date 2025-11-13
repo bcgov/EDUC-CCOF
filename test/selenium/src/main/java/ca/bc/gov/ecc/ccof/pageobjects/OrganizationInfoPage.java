@@ -30,8 +30,17 @@ public class OrganizationInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[contains(text(),'Funding Agreement History')]")
 	WebElement fundingAgreementHistory;
 
+	@FindBy(xpath = "//*[@aria-label='Organization ID']")
+	WebElement organizationID;
+
+	@FindBy(xpath = "//*[@aria-label='Save (CTRL+S)']")
+	WebElement saveBtn;
+
+	@FindBy(xpath = "//*[@title= 'Ignore and save']")
+	WebElement ignoreAndSaveBtn;
+
 	public OrganizationInfoPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -61,6 +70,18 @@ public class OrganizationInfoPage extends BaseTest {
 
 	public List<WebElement> getOpenApplications() {
 		return openApplications;
+	}
+
+	public void enterOrgId(String orgId) {
+		organizationID.sendKeys(orgId);
+	}
+
+	public void clickSaveBtn() {
+		saveBtn.click();
+	}
+
+	public WebElement ignoreAndSaveButton() {
+		return ignoreAndSaveBtn;
 	}
 
 }

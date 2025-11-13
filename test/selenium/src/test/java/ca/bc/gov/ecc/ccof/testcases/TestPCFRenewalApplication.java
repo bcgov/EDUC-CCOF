@@ -50,7 +50,7 @@ public class TestPCFRenewalApplication extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(3000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);

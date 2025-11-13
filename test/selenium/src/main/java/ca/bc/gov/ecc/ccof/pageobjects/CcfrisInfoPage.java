@@ -31,7 +31,7 @@ public class CcfrisInfoPage extends BaseTest {
 	WebElement unlockBtn;
 
 	public CcfrisInfoPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

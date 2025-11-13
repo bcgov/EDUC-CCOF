@@ -56,7 +56,7 @@ public class ApplicationInfoPage extends BaseTest {
 	List<WebElement> declarationBStatusOptions;
 
 	public ApplicationInfoPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

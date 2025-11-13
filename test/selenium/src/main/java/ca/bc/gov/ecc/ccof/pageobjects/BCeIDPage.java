@@ -18,7 +18,7 @@ public class BCeIDPage extends BaseTest {
 	WebElement selectOrganization;
 
 	public BCeIDPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

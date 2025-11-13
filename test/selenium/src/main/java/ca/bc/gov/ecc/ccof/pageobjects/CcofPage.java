@@ -67,7 +67,7 @@ public class CcofPage extends BaseTest {
 	WebElement allLicensesCorrectField;
 
 	public CcofPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

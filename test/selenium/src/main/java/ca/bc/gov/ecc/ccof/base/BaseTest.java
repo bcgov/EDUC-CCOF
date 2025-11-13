@@ -22,11 +22,9 @@ public abstract class BaseTest {
 
 	protected ExtentReports extent;
 	protected ExtentTest test;
-	protected WebDriver driver;
+	protected static WebDriver driver;
 	public static final String CRM_USERNAME;
 	public static final String CRM_PASSWORD;
-	public static final String QA_CRM_URL;
-	public static final String UAT_CRM_URL;
 	public static final String BROWSER;
 	private static final String PROPERTY_FILE = System.getProperty("user.dir") + "//config.properties";
 	protected static final Logger logger;
@@ -46,13 +44,11 @@ public abstract class BaseTest {
 
 		CRM_USERNAME = properties.getProperty("crm_username");
 		CRM_PASSWORD = properties.getProperty("crm_password");
-		QA_CRM_URL = properties.getProperty("qa_crm_url");
-		UAT_CRM_URL = properties.getProperty("uat_crm_url");
 		BROWSER = properties.getProperty("browser");
 	}
 
-	public void browserSetup(String browser, String url) {
-		if (browser.equalsIgnoreCase("chrome")) {
+	public static void browserSetup(String browser) {
+		if (browser.equalsIgnoreCase("CHROME")) {
 			WebDriverManager.chromedriver().setup();
 			ChromeOptions options = new ChromeOptions();
 
@@ -70,25 +66,27 @@ public abstract class BaseTest {
 
 			driver = new ChromeDriver(options);
 
-		} else if (browser.equalsIgnoreCase("edge")) {
+		} else if (browser.equalsIgnoreCase("EDGE")) {
 			WebDriverManager.edgedriver().setup();
 			driver = new EdgeDriver();
-		} else if (browser.equalsIgnoreCase("firefox")) {
+		} else if (browser.equalsIgnoreCase("FIREFOX")) {
 			WebDriverManager.firefoxdriver().setup();
 			driver = new FirefoxDriver();
 		}
 		driver.manage().window().maximize();
+		String env = properties.getProperty("env");
+		String url = properties.getProperty(env + ".url");
 		driver.get(url);
 	}
 
 	@BeforeMethod
 	public void initDriver() {
-		browserSetup(BROWSER, QA_CRM_URL);
+		browserSetup(BROWSER);
 	}
 
 	@AfterMethod
 	public void tearDown() {
-		driver.close();
+		driver.quit();
 	}
 
 }

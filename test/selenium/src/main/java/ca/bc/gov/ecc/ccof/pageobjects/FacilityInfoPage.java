@@ -37,6 +37,9 @@ public class FacilityInfoPage extends BaseTest {
 	@FindBy(xpath = "//*[@title='Initial Decision']")
 	WebElement initialDecisionlink;
 
+	@FindBy(xpath = "//*[@aria-label='ID']")
+	WebElement facilityID;
+
 	// initial decision tab elements can be added here
 
 	@FindBy(xpath = "//*[@aria-label='CCFRI Adjudicator Recommendation']")
@@ -75,7 +78,7 @@ public class FacilityInfoPage extends BaseTest {
 	WebElement saveAndCloseCcfriFacilityBtn;
 
 	public FacilityInfoPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
@@ -160,6 +163,10 @@ public class FacilityInfoPage extends BaseTest {
 
 	public void clickSaveAndCloseCcfriFacilityBtn() {
 		saveAndCloseCcfriFacilityBtn.click();
+	}
+
+	public void enterFacId(String facId) {
+		facilityID.sendKeys(facId);
 	}
 
 }

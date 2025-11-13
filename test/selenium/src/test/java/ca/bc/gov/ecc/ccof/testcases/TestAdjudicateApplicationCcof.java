@@ -49,7 +49,7 @@ public class TestAdjudicateApplicationCcof extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
@@ -103,7 +103,8 @@ public class TestAdjudicateApplicationCcof extends BaseTest {
 		Thread.sleep(5000);
 
 		// selecting Confirmed - Active from dropdown
-		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("baseFundingProgressStatusOptions"),
+				ccofinfo.getBaseFundingProgressStatusOptions());
 		Thread.sleep(5000);
 		ccofinfo.clickSaveAndCloseBtn();
 		Thread.sleep(10000);
@@ -113,7 +114,7 @@ public class TestAdjudicateApplicationCcof extends BaseTest {
 		// changing the CCOF status to Active
 		appinfo.clickCcofStatus();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Active", appinfo.getCcofStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("ccofStatusOptions"), appinfo.getCcofStatusOptions());
 		Thread.sleep(5000);
 		appinfo.clickSaveBtn();
 		Thread.sleep(5000);

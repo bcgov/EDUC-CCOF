@@ -63,7 +63,7 @@ public class CRMSignInCredentialPage extends BaseTest {
 	WebElement invalidLoginErrorMessage;
 
 	public CRMSignInCredentialPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 
