@@ -11,7 +11,7 @@ export const PROGRAM_YEAR = Object.freeze({
 })
 
 export const ORG_TYPE = Object.freeze({
-    REGISTERED_COMPANY: 'Registered Company'
+    REGISTERED_COMPANY: 'registeredCompany'
 })
 
 export const LICENCE = Object.freeze({
