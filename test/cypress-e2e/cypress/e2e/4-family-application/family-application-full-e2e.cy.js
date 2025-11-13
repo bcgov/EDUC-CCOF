@@ -1,6 +1,6 @@
 import { loginPage } from '../../support/pages/1-portal-login-pages/01-portal-login.js'
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
-import { APPTYPE, PROGRAM_YEAR, LICENCE, ORG_TYPE  } from '../../support/constants.js'
+import { APP_TYPE, PROGRAM_YEAR, LICENCE_TYPE, ORG_TYPE  } from '../../support/constants.js'
 
 // Ensure each page's information is loaded before running through application
 describe('Family Application Test', () => {
@@ -10,13 +10,13 @@ describe('Family Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp(APPTYPE.FAMILY)
+        cy.startNewApp(APP_TYPE.FAMILY)
     
         cy.then(()=> {
-            cy.runCcofApp(APPTYPE.FAMILY, ORG_TYPE.REGISTERED_COMPANY, LICENCE.FAMILY)
-            cy.runCcfriApp(APPTYPE.FAMILY, PROGRAM_YEAR.CURRENT)
-            cy.runEceWeApp(APPTYPE.FAMILY, PROGRAM_YEAR.CURRENT)
-            submitApp.summaryAndDeclaration(APPTYPE.FAMILY)
+            cy.runCcofApp(APP_TYPE.FAMILY, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.FAMILY)
+            cy.runCcfriApp(APP_TYPE.FAMILY, PROGRAM_YEAR.CURRENT)
+            cy.runEceWeApp(APP_TYPE.FAMILY, PROGRAM_YEAR.CURRENT)
+            submitApp.summaryAndDeclaration(APP_TYPE.FAMILY)
         })
     })
 })
