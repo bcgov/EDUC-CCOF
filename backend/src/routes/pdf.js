@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const validatePermission = require('../middlewares/validatePermission');
-const { PERMISSIONS } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { getPdfs } = require('../components/pdf');
 const { param } = require('express-validator');
 
@@ -14,7 +14,7 @@ router.get(
   passport.authenticate('jwt', { session: false }, undefined),
   isValidBackendToken,
   validatePermission(PERMISSIONS.DOWNLOAD_PCF_PDF),
-  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
+  [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getPdfs(req, res);
   },

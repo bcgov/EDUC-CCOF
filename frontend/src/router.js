@@ -449,7 +449,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        // TODO #securitymatrix - Implement with Applications security
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -462,7 +466,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        // TODO #securitymatrix - Implement with Applications security
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -514,7 +522,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        // TODO #securitymatrix - Implement with Applications security
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
