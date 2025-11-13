@@ -426,3 +426,19 @@ export function getLicenceStatusClass(status) {
       return '';
   }
 }
+
+/**
+ * Builds a simple query string from an object.
+ *
+ * Example:
+ *   buildQueryString({ statusCode: 123456, orgName: 'TEST' })
+ *   result: queryString = "?statusCode=123456&orgName=TEST"
+ */
+export function buildQueryString(query) {
+  if (isEmpty(query)) return '';
+  let queryString = '';
+  for (const [key, value] of Object.entries(query)) {
+    queryString += queryString ? `&${key}=${value}` : `?${key}=${value}`;
+  }
+  return queryString;
+}
