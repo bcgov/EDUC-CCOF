@@ -13,7 +13,7 @@ describe('Group Application Test Template 1', () => {
     
         cy.then(()=> {
             cy.runCcofAppOld(APPTYPE.GROUP, ORG_TYPE.REGISTERED_COMPANY, LICENCE.GROUP)
-            // cy.runCcfriAppOld(APPTYPE.GROUP, PROGRAM_YEAR.CURRENT)
+            cy.runCcfriApp(APPTYPE.GROUP_OLD, PROGRAM_YEAR.CURRENT)
             // cy.runEceWeAppOld(APPTYPE.GROUP, PROGRAM_YEAR.CURRENT)
             // submitApp.summaryAndDeclarationOld(APPTYPE.GROUP)
         })

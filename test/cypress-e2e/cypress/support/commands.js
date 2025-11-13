@@ -331,10 +331,15 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
     if (appType === 'groupRenewal' || appType === 'familyRenewal') {
       ccfriApp.parentFeesRenewal()
     }
-    ccfriApp.addParentFees(appType)
-    ccfriApp.addClosures(appType, term)
+    ccfriApp.addParentFees(appType, term)
+
+    if (appType != "groupOld") {
+      ccfriApp.addClosures(appType, term)
+    }
   })
 }); 
+
+
 
 Cypress.Commands.add('runEceWeApp', (appType, term) => {
   eceWeApp.loadFixturesAndVariables()

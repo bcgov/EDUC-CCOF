@@ -45,13 +45,14 @@ class CcfriApplication{
         cy.clickByText('Next')
     }
 
-    addParentFees(appType) {
+    addParentFees(appType, term) {
         let parentFeeCategories
         switch (appType) {
-            case 'group': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
+            case 'group': 
+            case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
             case 'family': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
             case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
-            case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break
+            case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
         }
         cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
         cy.get('.v-card.my-10').each((card, index) => {
@@ -62,8 +63,13 @@ class CcfriApplication{
                 .click()
                 .then(() => handleCardWithin(card, this.parentFees.months))
         })
-        cy.clickByText('Save')
-        cy.clickByText('Next')
+
+        if (appType === "groupOld"){
+            this.addClosures(appType, term)
+        } else {
+            cy.clickByText('Save')
+            cy.clickByText('Next')
+        }
     }
 
     addClosures(appType, term) {
@@ -71,7 +77,8 @@ class CcfriApplication{
         let endDate
         switch (appType) {
             case 'group':
-            case'family': 
+            case 'family': 
+            case 'groupOld':
                 startDate = this.closures.startDate
                 endDate = this.closures.endDate
                 break;
@@ -80,10 +87,13 @@ class CcfriApplication{
                 startDate = this.closures.renewalStartDate
                 endDate = this.closures.renewalEndDate
         }
-        cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
+
+        if (appType != "groupOld"){
+            cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
+        }
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
         cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
-
+        
         cy.getByLabel(`${this.closureCharges}`).click()
         // Opt-Out Path
         if (this.closureCharges === "No") {
@@ -94,13 +104,19 @@ class CcfriApplication{
         cy.getByLabel('Start Date').typeAndAssert(startDate)                        
         cy.getByLabel('End Date').typeAndAssert(endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
-        cy.contains('div','Is this a full facility closure?').within(()=> {
-            cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()
-        })
 
-        // Opt-In (Partial Closure) -> TODO [CCFRI-6112] (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories
-        if (this.fullFacilityClosureStatus === "No") {
+        if (appType === "groupOld"){
+            cy.contains('div','Did parents pay for this closure?').within(()=> {
+                cy.getByLabel('Yes').click()
+            })
+        } else {
+            cy.contains('div','Is this a full facility closure?').within(()=> {
+                cy.getByLabel(`${this.fullFacilityClosureStatus}`).click()
+            })
 
+            // Opt-In (Partial Closure) -> TODO [CCFRI-6112] (Hedie-cgi) Implement ability to select Partial Closure & choose affected Care Categories
+            if (this.fullFacilityClosureStatus === "No") {
+            }
         }
         cy.clickByText('Save')
         cy.clickByText('Next')

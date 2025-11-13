@@ -2,7 +2,8 @@ export const APPTYPE = Object.freeze({
     GROUP: 'group',
     FAMILY: 'family',
     GROUP_RENEWAL: 'groupRenewal',
-    FAMILY_RENEWAL: 'familyRenewal'
+    FAMILY_RENEWAL: 'familyRenewal',
+    GROUP_OLD: "groupOld"
 })
 
 export const PROGRAM_YEAR = Object.freeze({
