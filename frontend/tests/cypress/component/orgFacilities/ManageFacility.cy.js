@@ -125,7 +125,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render default tabs without any permissions', () => {
-    const expectedTexts = ['Programs and Services'];
+    const expectedTexts = ['Programs and Vacancies'];
     mountWithPinia({ ...createOrgStore() });
 
     cy.get('.v-tabs')
@@ -137,7 +137,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render `Facility Details` tab', () => {
-    const expectedTexts = ['Facility Details', 'Programs and Services'];
+    const expectedTexts = ['Facility Details', 'Programs and Vacancies'];
     mountWithPinia({
       ...createOrgStore(),
       auth: {
@@ -178,7 +178,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render `Licence and Service Details Record` tab', () => {
-    const expectedTexts = ['Programs and Services', 'Licence and Service Details Record'];
+    const expectedTexts = ['Programs and Vacancies', 'Licence and Service Details Record'];
     mountWithPinia({
       ...createOrgStore(),
       auth: {
@@ -219,7 +219,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render all tabs with correct values', () => {
-    const expectedTexts = ['Facility Details', 'Programs and Services', 'Licence and Service Details Record'];
+    const expectedTexts = ['Facility Details', 'Programs and Vacancies', 'Licence and Service Details Record'];
     mountWithPinia({
       ...createOrgStore(),
       auth: {
