@@ -28,14 +28,6 @@
         <v-card class="pa-6 border">
           <div class="d-flex justify-end">
             <AppButton v-if="!isEditing" size="small" :primary="false" @click="onEdit">Edit</AppButton>
-            <template v-else>
-              <AppButton size="small" :loading="isProcessing" :disabled="isProcessing" @click="onSave">
-                Save
-              </AppButton>
-              <AppButton size="small" :primary="false" class="ml-2" :disabled="isProcessing" @click="onCancel">
-                Cancel
-              </AppButton>
-            </template>
           </div>
 
           <div>
@@ -224,6 +216,12 @@
                 <v-col cols="auto"><v-radio label="No" :value="false" /></v-col>
               </v-row>
             </v-radio-group>
+          </div>
+          <div v-if="isEditing" class="d-flex justify-end">
+            <AppButton size="small" :loading="isProcessing" :disabled="isProcessing" @click="onSave"> Save </AppButton>
+            <AppButton size="small" :primary="false" class="ml-2" :disabled="isProcessing" @click="onCancel">
+              Cancel
+            </AppButton>
           </div>
         </v-card>
       </v-row>
