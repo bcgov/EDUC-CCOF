@@ -20,10 +20,17 @@ const fundingSchema = {
 /**
  * Create new funding
  */
-router.put('/:fundId', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), [checkSchema(fundingSchema)], (req, res) => {
-  validationResult(req).throw();
-  return updateFunding(req, res);
-});
+router.put(
+  '/:fundId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  [checkSchema(fundingSchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateFunding(req, res);
+  },
+);
 
 /**
  * Get funding.
@@ -32,7 +39,7 @@ router.get(
   '/:fundId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('fundId', 'URL param: [fundId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();

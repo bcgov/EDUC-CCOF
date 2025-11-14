@@ -30,4 +30,11 @@ router.get(
   getLicenseFiles,
 );
 
-router.delete('', passport.authenticate('jwt', { session: false }), isValidBackendToken, isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), deleteLicenseFiles);
+router.delete(
+  '',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  deleteLicenseFiles,
+);

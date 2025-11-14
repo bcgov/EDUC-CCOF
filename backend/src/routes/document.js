@@ -32,7 +32,7 @@ router.get(
   '/application/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCFAPPLICATION),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -40,7 +40,7 @@ router.get(
   },
 );
 
-router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION), deleteDocuments);
+router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF), deleteDocuments);
 
 router.patch(
   '/:annotationId',
