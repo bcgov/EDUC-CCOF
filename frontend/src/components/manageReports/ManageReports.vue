@@ -33,7 +33,7 @@
         </SmallCard>
       </v-col>
       <v-col>
-        <SmallCard>
+        <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <h2 class="mb-2">Monthly ECE Report</h2>
             <p>
@@ -99,7 +99,6 @@ export default {
       );
     },
     isCCOFApproved() {
-      console.log(this.ccofStatus);
       return this.applicationType === APPLICATION_TYPES.RENEWAL || this.ccofStatus === CCOF_STATUS.APPROVED;
     },
   },

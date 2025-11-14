@@ -216,7 +216,7 @@
         </SmallCard>
       </v-col>
       <v-col cols="12" lg="4">
-        <SmallCard>
+        <SmallCard :disable="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
             <p>
