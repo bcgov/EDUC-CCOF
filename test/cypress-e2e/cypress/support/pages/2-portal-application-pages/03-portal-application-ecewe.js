@@ -31,7 +31,7 @@ class EceWeApplication {
 
     optInEceWe(term) {
         cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE)').should('be.visible')
-        cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click({force:true})
+        cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click()
     }
 
     groupEceWe({model = null} = {}) {

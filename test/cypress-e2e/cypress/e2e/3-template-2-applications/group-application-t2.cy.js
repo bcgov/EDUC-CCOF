@@ -1,5 +1,5 @@
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
-import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login";
+import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
 import { APP_TYPE, PROGRAM_YEAR, LICENCE_TYPE, ORG_TYPE  } from '../../support/constants.js'
 
 describe('Group Application Test', () => {

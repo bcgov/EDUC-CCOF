@@ -31,7 +31,6 @@
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
 import { ccofApp } from './pages/2-portal-application-pages/01-portal-application-ccof.js'
-import { ccofAppOld } from './pages/2-1-portal-template1-pages/01-portal-application-old-ccof.js';
 import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
 import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
 
@@ -286,40 +285,33 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
-    ccofApp.inputOrganizationInfo(companyType)
-    ccofApp.inputFacilityInfo()
-    ccofApp.licenceAndServiceDeliveryDetails()
-
-    if (licenceType === 'groupLicenceCategories') {
-      ccofApp.groupLicenses()
-      ccofApp.offerExtendedHours()
-      ccofApp.addAnotherFacility()
-      ccofApp.licenceUpload()
-    } else {
-      ccofApp.familyLicences(licenceType)
-      ccofApp.offerExtendedHours()
-      ccofApp.licenceUpload()
-    }
-  })
-});
-
-Cypress.Commands.add('runCcofAppOld', (appType, companyType, licenceType) => {
-  ccofApp.loadFixturesAndVariables()
-  cy.then(()=>{
-    ccofApp.validateGroupUrl(appType)
-    ccofApp.inputOrganizationInfoOld(companyType)
-    ccofApp.inputFacilityInfoOld()
-    ccofApp.licenceAndServiceDeliveryDetailsOld()
-
-    if (licenceType === 'groupLicenceCategories') {
-      ccofApp.groupLicensesOld()
-      ccofApp.offerExtendedHoursOld()
-      ccofApp.addAnotherFacility()
-      ccofApp.licenceUpload()
-    } else {
-      // ccofApp.familyLicences(licenceType)
-      // ccofApp.offerExtendedHours()
-      // ccofApp.licenceUpload()
+    switch(licenceType) {
+      case 'groupLicenceCategories':
+        ccofApp.inputOrganizationInfo(companyType)
+        ccofApp.inputFacilityInfo()
+        ccofApp.licenceAndServiceDeliveryDetails()
+        ccofApp.groupLicenses()
+        ccofApp.offerExtendedHours()
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
+      case 'oldGroupLicenceCategories':
+        ccofApp.inputOrganizationInfoOld(companyType)
+        ccofApp.inputFacilityInfoOld()
+        ccofApp.licenceAndServiceDeliveryDetailsOld()
+        ccofApp.groupLicensesOld()
+        ccofApp.offerExtendedHoursOld()
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
+      case 'familyChildCare':
+        ccofApp.inputOrganizationInfo(companyType)
+        ccofApp.inputFacilityInfo()
+        ccofApp.licenceAndServiceDeliveryDetails()
+        ccofApp.familyLicences(licenceType)
+        ccofApp.offerExtendedHours()
+        ccofApp.licenceUpload()
+        break;
     }
   })
 });

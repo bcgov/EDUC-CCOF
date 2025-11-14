@@ -12,26 +12,32 @@ class CcofApplication {
   loadFixturesAndVariables() {
     this.loadFixtures()
     cy.then(()=> {
-        this.orgType = this.orgData.typeOfOrganization
-        this.orgInfo = this.orgData.orgInfo
-        this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-        this.groupLicenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
-        this.oldGroupLicenceCategories = this.facilityLicenceDetailsData.oldGroupLicenceCategories
-        this.familyLicenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
-        this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
-        this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
-        this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
-        this.maxChildCareSpaces = this.facilityLicenceDetailsData.maxChildCareSpaces
-        this.extendedHours = this.facilityLicenceDetailsData.offerExtendedHoursChildCare
-        this.extendedMaxDays = this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours
-        this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
-        this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
-        this.groupExtendedHours = this.facilityLicenceDetailsData.groupLicenceCategoriesExtendedHours
-        this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData.addAnotherFacility
+      this.orgType = this.orgData.typeOfOrganization
+      this.orgInfo = this.orgData.orgInfo
+      this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
+      this.groupLicenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+      this.oldGroupLicenceCategories = this.facilityLicenceDetailsData.oldGroupLicenceCategories
+      this.familyLicenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
+      this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
+      this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
+      this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
+      this.maxChildCareSpaces = this.facilityLicenceDetailsData.maxChildCareSpaces
+      this.extendedHours = this.facilityLicenceDetailsData.offerExtendedHoursChildCare
+      this.extendedMaxDays = this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours
+      this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
+      this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
+      this.groupExtendedHours = this.facilityLicenceDetailsData.groupLicenceCategoriesExtendedHours
+      this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData.addAnotherFacility
     })
   }
 
   validateGroupUrl(path) {
+    switch(path) {
+      case "group":
+      case "groupOld": path = "group"; break;
+      case "family":
+      case "familyOld": path = "family"; break;
+    }
     cy.url().should('include', `/${path}/organization`)
   }
 
