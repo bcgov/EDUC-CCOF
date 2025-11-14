@@ -339,16 +339,14 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
   })
 }); 
 
-
-
-Cypress.Commands.add('runEceWeApp', (appType, term) => {
+Cypress.Commands.add('runEceWeApp', (appType, term, {model = null} = {}) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
-    if (appType === 'group' || appType === 'groupRenewal') {
-      eceWeApp.groupEceWe()
-    } else {
+    if (appType === "family" || appType === "familyRenewal") {
       eceWeApp.familyEceWe()
+    } else {
+      eceWeApp.groupEceWe({model})
     }
     eceWeApp.supportingDocUpload()
   })

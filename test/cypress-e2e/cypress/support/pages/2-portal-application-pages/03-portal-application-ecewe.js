@@ -22,6 +22,7 @@ class EceWeApplication {
             this.optInOrOut = this.optInOrOut.optIn
             this.publicSectorEmployer = this.publicSectorEmployer.isEmployer
             this.csseaSelection = this.cssea.csseaMember.status
+            this.fundingType = this.cssea.csseaMember.fundingModel
             this.unionStatus = this.cssea.csseaNonMember.response.someOrAllUnionized
             this.facilityOptInOrOut = this.facility.facilityOptInOrOut.optIn
             this.facilityUnionStatus = this.facility.facilityUnionStatus.unionized
@@ -33,7 +34,7 @@ class EceWeApplication {
         cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click({force:true})
     }
 
-    groupEceWe() {
+    groupEceWe({model = null} = {}) {
         cy.then(()=> {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
@@ -50,7 +51,9 @@ class EceWeApplication {
                         cy.clickByText(this.cssea.confirmation) 
                     } 
                 } else {
-                    // CSSEA Member
+                    if (model) {
+                        this.selectFundingModel(model)
+                    }
                     cy.getByLabel(this.cssea.confirmation).click()
                 }
 
@@ -73,6 +76,16 @@ class EceWeApplication {
             cy.clickByText('Next')
         })
          
+    }
+
+    selectFundingModel(fundingModel) {
+        switch (fundingModel) {
+            case 'provinciallyFunded': this.fundingType = this.cssea.csseaMember.fundingModel.provinciallyFunded
+            case 'nonProvinciallyFunded': this.fundingType = this.cssea.csseaMember.fundingModel.nonProvinciallyFunded
+            case 'mixedFunding': this.fundingType = this.cssea.csseaMember.fundingModel.mixedFunding
+        }
+        // Member
+        cy.contains(this.fundingType).click()
     }
 
     familyEceWe() {

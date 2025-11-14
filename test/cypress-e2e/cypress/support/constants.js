@@ -19,3 +19,9 @@ export const LICENCE_TYPE = Object.freeze({
     GROUP: 'groupLicenceCategories',
     FAMILY: 'familyChildCare'
 })
+
+export const FUNDING_MODEL = Object.freeze({
+    PROVINCIALLY_FUNDED: "provinciallyFunded",
+    NON_PROVINCIALLY_FUNDED: "nonProvinciallyFunded",
+    MIXED: "mixedFunding"
+})
