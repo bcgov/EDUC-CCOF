@@ -27,7 +27,14 @@
         </v-col>
         <v-card class="pa-6 border">
           <div class="d-flex justify-end">
-            <AppButton v-if="!isEditing" size="small" :primary="false" @click="onEdit">Edit</AppButton>
+            <AppButton
+              v-if="hasPermission(PERMISSIONS.EDIT_PROGRAMS_VACANCIES) && !isEditing && programVacancies"
+              size="small"
+              :primary="false"
+              @click="onEdit"
+            >
+              Edit
+            </AppButton>
           </div>
 
           <div>
@@ -84,7 +91,7 @@
           </div>
 
           <div class="mt-4">
-            <p class="mb-2">* In what language(s) do you offer services at this facility?</p>
+            <p class="mb-2">* In what language(s) do you offer services at this facility? (Check all that apply)</p>
             <div class="d-flex flex-wrap">
               <v-checkbox
                 v-for="lang in languageOptions"
@@ -209,7 +216,7 @@
           </div>
 
           <div>
-            <p class="mb-2">* Is the BC Early Learning Framework (ELF) used as a resource here?</p>
+            <p class="mb-2">* Is the BC Early Learning Framework (ELF) used as a resource at this facility?</p>
             <v-radio-group v-model="form.elf" :disabled="!isEditing">
               <v-row>
                 <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
@@ -237,6 +244,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import ProgramsVacanciesService from '@/services/programsVacancies.js';
 
@@ -257,7 +265,7 @@ import rules from '@/utils/rules.js';
 export default {
   name: 'ManageProgramsVacancies',
   components: { AppButton },
-  mixins: [alertMixin, globalMixin],
+  mixins: [alertMixin, globalMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
@@ -301,6 +309,8 @@ export default {
             indigenousLed: formatStringToNumberList(this.programVacancies.indigenousLed),
             preschoolServices: formatStringToNumberList(this.programVacancies.preschoolServices),
           };
+        } else {
+          this.setWarningAlert('No Programs and Vacancies available for this facility.');
         }
       } catch (error) {
         this.setFailureAlert('Failed to load Programs and Vacancies.', error);

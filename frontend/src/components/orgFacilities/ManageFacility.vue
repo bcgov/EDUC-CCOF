@@ -21,7 +21,9 @@
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facility-details">
               Facility Details
             </v-tab>
-            <v-tab value="programs-and-services">Programs and Vacancies</v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_PROGRAMS_VACANCIES)" value="programs-and-services">
+              Programs and Vacancies
+            </v-tab>
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
               Licence and Service Details Record
             </v-tab>
