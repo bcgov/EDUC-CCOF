@@ -16,7 +16,7 @@
       <a href="#" @click.prevent="goToChangeRequest">Submit a change request</a> to notify the Child Care Operating
       Funding Program.
     </p>
-    <v-row class="mt-5">
+    <v-row class="mt-5 pb-10">
       <v-col>
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
@@ -48,7 +48,6 @@
         </SmallCard>
       </v-col>
     </v-row>
-
     <NavButton @previous="() => $router.back()" @next="false" />
   </v-container>
 </template>
