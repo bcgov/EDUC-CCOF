@@ -225,7 +225,9 @@
             </p>
           </template>
           <template #button>
-            <v-btn theme="dark" @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)"> Manage Reports </v-btn>
+            <v-btn class="blueButton" theme="dark" @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)">
+              Manage Reports
+            </v-btn>
           </template>
         </SmallCard>
       </v-col>
