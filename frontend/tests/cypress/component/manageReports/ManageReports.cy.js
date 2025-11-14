@@ -26,7 +26,7 @@ function createApplicationStore(overrides = {}) {
     application: {
       applicationType: APPLICATION_TYPES.RENEWAL,
       applicationStatus: APPLICATION_STATUSES.SUBMITTED,
-      ccofApplicationStatus: APPLICATION_CCOF_STATUSES.RENEW,
+      ccofApplicationStatus: APPLICATION_CCOF_STATUSES.APPROVED,
       unlockDeclaration: false,
       unlockEcewe: false,
       unlockLicenseUpload: false,
