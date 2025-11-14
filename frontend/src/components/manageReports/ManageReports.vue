@@ -91,6 +91,7 @@ export default {
       return isOrganizationUnlocked(
         this.unlockBaseFunding,
         this.applicationType,
+        this.unlockDeclaration,
         this.unlockEcewe,
         this.unlockLicenseUpload,
         this.unlockSupportingDocuments,
@@ -98,6 +99,7 @@ export default {
       );
     },
     isCCOFApproved() {
+      console.log(this.ccofStatus);
       return this.applicationType === APPLICATION_TYPES.RENEWAL || this.ccofStatus === CCOF_STATUS.APPROVED;
     },
   },
