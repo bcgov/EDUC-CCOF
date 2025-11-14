@@ -1,9 +1,12 @@
 package ca.bc.gov.ecc.ccof.extentreport;
 
-import java.util.Objects;
+import java.io.File;
+import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
@@ -44,11 +47,25 @@ public class TestListener extends BaseTest implements ITestListener {
 	@Override
 	public void onTestFailure(ITestResult iTestResult) {
 		logger.info(getTestMethodName(iTestResult) + " test is failed.");
-		String base64Screenshot = "data:image/png;base64,"
-				+ ((TakesScreenshot) Objects.requireNonNull(this.driver)).getScreenshotAs(OutputType.BASE64);
-		// ExtentReports log and screenshot operations for failed tests.
-		ExtentTestManager.getTest().log(Status.FAIL, "Test Failed", ExtentTestManager.getTest()
-				.addScreenCaptureFromBase64String(base64Screenshot).getModel().getMedia().get(0));
+		WebDriver driver = BaseTest.driver;
+
+		TakesScreenshot scrShot = ((TakesScreenshot) driver);
+		// Call getScreenshotAs method to create image file
+		File srcfile = scrShot.getScreenshotAs(OutputType.FILE);
+		String screenshotPath = System.getProperty("user.dir") + "/screenshots/" + iTestResult.getName() + ".png";
+
+		File destFile = new File(screenshotPath);
+		// Copy file at destination
+		try {
+			FileUtils.copyFile(srcfile, destFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Log failure and attach screenshot to ExtentReports
+		ExtentTestManager.getTest().log(Status.FAIL, "Test Failed");
+		ExtentTestManager.getTest().addScreenCaptureFromPath(screenshotPath);
+
 	}
 
 	@Override

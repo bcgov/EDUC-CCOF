@@ -50,8 +50,8 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
-		Thread.sleep(3000);
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
 		deleteapp.fullName();
@@ -69,7 +69,9 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickDeclarationBStatus();
-		ut.selectDropdownValue("Yes", appinfo.getDeclarationBStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("declarationBStatus"), appinfo.getDeclarationBStatusOptions());
+		Thread.sleep(3000);
+		appinfo.clickSaveBtn();
 		Thread.sleep(3000);
 
 		// navigating to related tab
@@ -89,11 +91,11 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		logger.info("System Recommendation is: {}", recommendation);
 		Thread.sleep(5000);
 		ccfriinfo.clickCcfriFacilityAdjudicationTitle();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 
 		// selecting the facility and changing the status to CCFRI Complete
 		ccfriinfo.clickOpenFacility();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 
 		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
 		facilityinfo.clickFacilityNameLink();
@@ -108,24 +110,26 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 
 		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityinfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriRecommendationField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Stage 1 (NRC)", facilityinfo.getCCFRIAdjudicatorRecommendation());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriAdjudicatorRecommendation"),
+				facilityinfo.getCCFRIAdjudicatorRecommendation());
 		Thread.sleep(5000);
 		facilityinfo.switchToCcfriStartDateIFrame();
 		ut = new Utilities(driver);
-		ut.selectvalue(facilityinfo.getCCFRIPaymentEligibilityStartDate(), "Jul");
+		ut.selectvalue(facilityinfo.getCCFRIPaymentEligibilityStartDate(),
+				ut.getDataFromJson("ccfriPaymentEligibilityStartDate"));
 		Thread.sleep(2000);
 		facilityinfo.switchToDefaultContent();
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriQcDecisionField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Stage 1 (NRC)", facilityinfo.getCCFRIQCDecision());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriQcDecision"), facilityinfo.getCCFRIQCDecision());
 		Thread.sleep(5000);
 		facilityinfo.clickSaveBtn();
 		Thread.sleep(5000);
@@ -133,7 +137,7 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriStatusField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Complete - Approved", facilityinfo.getCcfriStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriStatusOptions"), facilityinfo.getCcfriStatusOptions());
 		Thread.sleep(5000);
 		logger.info("Complete-Approved option is selected from CCFRI Status dropdown");
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();

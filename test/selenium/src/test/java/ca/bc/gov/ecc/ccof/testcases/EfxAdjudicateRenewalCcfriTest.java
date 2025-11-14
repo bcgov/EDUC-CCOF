@@ -17,14 +17,14 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateRenewalFullCcfri extends BaseTest {
+public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcfri.class);
+	private static final Logger logger = LogManager.getLogger(EfxAdjudicateRenewalCcfriTest.class);
 
 	@Test(priority = 1)
-	public void adjudicateRenewals(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcfri");
-		logger.info("Starting the AdjudicateRenewalFullCcfri  test...");
+	public void adjudicateRenewalsEfx(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcfriEfx");
+		logger.info("Starting the AdjudicateRenewalFullCcfriEfx  test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities ut = new Utilities(driver);
@@ -63,6 +63,14 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 
+		// adding Organization ID
+		orginfo.enterOrgId(ut.generateDynamicValue("organizationId"));
+		Thread.sleep(3000);
+		orginfo.clickSaveBtn();
+		Thread.sleep(5000);
+		ut.clickIfPresent(orginfo.ignoreAndSaveButton());
+		Thread.sleep(3000);
+
 		// selecting the application
 		orginfo.clickRenewalApplication();
 		Thread.sleep(5000);
@@ -97,6 +105,10 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
 		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
 		facilityinfo.clickFacilityNameLink();
+
+		// adding Facility ID
+		facilityinfo.enterFacId(ut.generateDynamicValue("facilityId"));
+
 		Thread.sleep(5000);
 		facilityinfo.clickMyCcsTestDropdown();
 		Thread.sleep(5000);
@@ -143,7 +155,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 		ccfriinfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the TestAdjudicateRenewalFullCcfri test...");
+		logger.info("Ending the EfxAdjudicateRenewalCcfriTest  test...");
 
 	}
 

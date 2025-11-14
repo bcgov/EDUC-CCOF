@@ -48,7 +48,7 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// Search contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
@@ -70,7 +70,8 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		Thread.sleep(5000);
 
 		FundingAgreementPage fainfo = new FundingAgreementPage(driver);
-		fainfo.enterStartDate("04/01/2025");// date should be within an year from end date of FA
+		fainfo.enterStartDate(ut.getDataFromJson("fundingAgreementStartDate"));// date should be within an year from end
+																				// date of FA
 		Thread.sleep(2000);
 		ut.javaScriptExecutorAction(fainfo.clickReadyForProviderAction());
 		Thread.sleep(2000);

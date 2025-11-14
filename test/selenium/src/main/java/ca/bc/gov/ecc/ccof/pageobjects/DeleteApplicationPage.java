@@ -52,7 +52,7 @@ public class DeleteApplicationPage extends BaseTest {
 	WebElement ignoreAndSaveBtn;
 
 	public DeleteApplicationPage(WebDriver driver) {
-		this.driver = driver;
+		BaseTest.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
