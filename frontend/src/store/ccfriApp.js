@@ -233,7 +233,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       payload[0] = obj;
 
       try {
-        let res = await ApiService.apiAxios.patch('/api/application/parentfee/', payload);
+        const res = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_PARENT_FEE, payload);
         return res;
       } catch (error) {
         console.log(error);
@@ -323,6 +323,7 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       return over3percentFacilities;
     },
     async loadCCFisCCRIMedian() {
+      console.log('Loading CCFRI RFI Median...');
       let ccfriMedian = this.getCCFRIMedianById(this.ccfriId);
       if (!ccfriMedian) {
         checkSession();

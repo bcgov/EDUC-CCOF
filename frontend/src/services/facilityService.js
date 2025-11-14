@@ -22,12 +22,33 @@ export default {
       throw error;
     }
   },
+
+  async createFacility(payload) {
+    try {
+      const response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+      return response;
+    } catch (error) {
+      console.log(`Failed to create Facility - ${error}`);
+      throw error;
+    }
+  },
+
   async updateFacility(facilityId, payload) {
     try {
       const response = await ApiService.apiAxios.put(`${ApiRoutes.FACILITY}/${facilityId}`, payload);
       return response;
     } catch (error) {
       console.log(`Failed to update existing Facility - ${error}`);
+      throw error;
+    }
+  },
+
+  async deleteFacility(facilityId, payload) {
+    try {
+      const response = await ApiService.apiAxios.delete(`${ApiRoutes.FACILITY}/${facilityId}`, payload);
+      return response;
+    } catch (error) {
+      console.log(`Failed to delete Facility - ${error}`);
       throw error;
     }
   },

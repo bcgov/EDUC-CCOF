@@ -48,7 +48,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useApplicationStore, ['formattedProgramYear']),
   },
