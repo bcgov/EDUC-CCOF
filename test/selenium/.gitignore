@@ -8,6 +8,7 @@ config.properties
 # Ignore Logs folder
 /logs/
 /test-output/
+/screenshots/
 
 # Ignore IDE specific files
 **/.classpath
