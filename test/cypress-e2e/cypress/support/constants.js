@@ -1,4 +1,4 @@
-export const APPTYPE = Object.freeze({
+export const APP_TYPE = Object.freeze({
     GROUP: 'group',
     FAMILY: 'family',
     GROUP_RENEWAL: 'groupRenewal',
@@ -15,7 +15,7 @@ export const ORG_TYPE = Object.freeze({
     REGISTERED_COMPANY: 'registeredCompany'
 })
 
-export const LICENCE = Object.freeze({
+export const LICENCE_TYPE = Object.freeze({
     GROUP: 'groupLicenceCategories',
     FAMILY: 'familyChildCare'
 })
