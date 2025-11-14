@@ -91,7 +91,7 @@
           </div>
 
           <div class="mt-4">
-            <p class="mb-2">* In what language(s) do you offer services at this facility?</p>
+            <p class="mb-2">* In what language(s) do you offer services at this facility? (Check all that apply)</p>
             <div class="d-flex flex-wrap">
               <v-checkbox
                 v-for="lang in languageOptions"
@@ -216,7 +216,7 @@
           </div>
 
           <div>
-            <p class="mb-2">* Is the BC Early Learning Framework (ELF) used as a resource here?</p>
+            <p class="mb-2">* Is the BC Early Learning Framework (ELF) used as a resource at this facility?</p>
             <v-radio-group v-model="form.elf" :disabled="!isEditing">
               <v-row>
                 <v-col cols="auto"><v-radio label="Yes" :value="true" /></v-col>
