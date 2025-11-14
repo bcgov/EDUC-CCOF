@@ -286,7 +286,7 @@
       :loading="!isLoadingComplete"
       type="paragraph, text@3, text@3, paragraph"
     />
-    <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
+    <v-card v-if="showFacilitiesCard" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row class="ml-2" no-gutters>
         <v-col cols="12" md="6">
           <div>
@@ -300,73 +300,83 @@
           <AppButton size="large" height="50" @click="goToOrganizationClosures">Organization Closures</AppButton>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12" md="4" order="2" order-md="1">
-          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+      <template
+        v-if="
+          hasPermission(
+            PERMISSIONS.CREATE_NEW_APPLICATION,
+            PERMISSIONS.CREATE_RENEWAL_PCF,
+            PERMISSIONS.VIEW_SUBMITTED_PCF,
+          )
+        "
+      >
+        <v-row>
+          <v-col cols="12" md="4" order="2" order-md="1">
+            <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
-          <v-text-field
-            v-if="facilityListForFacilityCards?.length > 2"
-            v-model="input"
-            clearable
-            variant="filled"
-            label="Filter by Facility Name "
-            :bind="input"
-            class="mx-2"
-          />
-        </v-col>
-        <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
-          <v-row class="justify-md-end">
-            <h3 class="ml-5">Select fiscal year:</h3>
-            <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row no-gutters class="justify-space-around">
-        <v-col
-          v-for="facility in filteredFacilityListForFacilityCards"
-          :key="facility.facilityId"
-          class="pa-2"
-          cols="12"
-          md="6"
-        >
-          <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
-            <v-card-text>
-              <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
-                Facility ID: {{ facility?.facilityAccountNumber }}
-              </p>
-              <p v-if="facility?.facilityName" class="text-h5 text--primary text-center">
-                Facility Name: {{ facility?.facilityName }}
-              </p>
-              <p v-if="facility?.licenseNumber" class="text-h5 text--primary text-center">
-                Licence Number: {{ facility?.licenseNumber }}
-              </p>
-              <br />
-              <p class="blueText">
-                Child Care Fee Reduction Initiative (CCFRI) Status:
-                <strong> {{ getCcfriStatusForFacilityCard(facility) }}</strong>
-              </p>
-              <br />
-              <p class="blueText">
-                Early Childhood Educator Wage Enhancement (ECE-WE) Status:
-                <strong> {{ getEceweStatusForFacilityCard(facility) }}</strong>
-              </p>
-            </v-card-text>
-            <v-row v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
-              <v-btn
-                class="blueButton"
-                theme="dark"
-                width="80%"
-                align="center"
-                @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
-              >
-                Update your PCF
-              </v-btn>
+            <v-text-field
+              v-if="facilityListForFacilityCards?.length > 1"
+              v-model="input"
+              clearable
+              variant="filled"
+              label="Filter by Facility Name "
+              :bind="input"
+              class="mx-2"
+            />
+          </v-col>
+          <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
+            <v-row class="justify-md-end">
+              <h3 class="ml-5">Select fiscal year:</h3>
+              <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
             </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="justify-space-around">
+          <v-col
+            v-for="facility in filteredFacilityListForFacilityCards"
+            :key="facility.facilityId"
+            class="pa-2"
+            cols="12"
+            md="6"
+          >
+            <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
+              <v-card-text>
+                <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
+                  Facility ID: {{ facility?.facilityAccountNumber }}
+                </p>
+                <p v-if="facility?.facilityName" class="text-h5 text--primary text-center">
+                  Facility Name: {{ facility?.facilityName }}
+                </p>
+                <p v-if="facility?.licenseNumber" class="text-h5 text--primary text-center">
+                  Licence Number: {{ facility?.licenseNumber }}
+                </p>
+                <br />
+                <p class="blueText">
+                  Child Care Fee Reduction Initiative (CCFRI) Status:
+                  <strong> {{ getCcfriStatusForFacilityCard(facility) }}</strong>
+                </p>
+                <br />
+                <p class="blueText">
+                  Early Childhood Educator Wage Enhancement (ECE-WE) Status:
+                  <strong> {{ getEceweStatusForFacilityCard(facility) }}</strong>
+                </p>
+              </v-card-text>
+              <v-row v-if="showUpdateYourPCF(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
+                <v-btn
+                  class="blueButton"
+                  theme="dark"
+                  width="80%"
+                  align="center"
+                  @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
+                >
+                  Update your PCF
+                </v-btn>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
+      </template>
     </v-card>
     <CancelApplicationDialog :show="showCancelDialog" max-width="60%" @close="toggleCancelApplicationDialog" />
     <p class="text-center mt-4 font-weight-bold">
@@ -667,6 +677,17 @@ export default {
         ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
       );
     },
+    showFacilitiesCard() {
+      return (
+        this.navBarList?.length > 0 &&
+        this.hasPermission(
+          this.PERMISSIONS.CREATE_NEW_APPLICATION,
+          this.PERMISSIONS.CREATE_RENEWAL_PCF,
+          this.PERMISSIONS.VIEW_SUBMITTED_PCF,
+          this.PERMISSIONS.VIEW_CLOSURES,
+        )
+      );
+    },
   },
   async created() {
     this.CCOF_STATUS_NEW = 'NEW';
@@ -851,7 +872,10 @@ export default {
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
     },
-    isFacilityCardUnlock(ccfriApplicationId) {
+    showUpdateYourPCF(ccfriApplicationId) {
+      if (!this.hasPermission(this.PERMISSIONS.CREATE_NEW_APPLICATION, this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
+        return false;
+      }
       const application = this.applicationMap?.get(this.selectedProgramYearId);
       return (
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
