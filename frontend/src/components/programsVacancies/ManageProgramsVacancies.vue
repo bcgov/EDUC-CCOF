@@ -231,6 +231,7 @@
 
 <script>
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
@@ -328,7 +329,7 @@ export default {
         };
         await ProgramsVacanciesService.updateProgramsVacancies(this.form.programsVacanciesId, payload);
         // Manually update timestamp since server doesn't return updated value
-        this.programVacancies.updatedOn = new Date().toISOString().split('.')[0] + 'Z';
+        this.programVacancies.updatedOn = moment().utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
         this.setSuccessAlert('Programs and Vacancies updated successfully.');
         this.isEditing = false;
       } catch (error) {
