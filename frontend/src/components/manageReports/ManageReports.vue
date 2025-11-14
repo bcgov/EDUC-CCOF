@@ -9,14 +9,14 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
-    <p class="mb-5">
+    <p>
       <v-icon class="mr-2" icon="mdi-information" color="primary" />
       <b>NOTE:</b> You must notify the Child Care Operating Funding Program within two business days of any change to
       your Facility Licence or Child Care Services.
       <a href="#" @click.prevent="goToChangeRequest">Submit a change request</a> to notify the Child Care Operating
       Funding Program.
     </p>
-    <v-row>
+    <v-row class="mt-5">
       <v-col>
         <SmallCard :disable="!isCCOFApproved">
           <template #content>

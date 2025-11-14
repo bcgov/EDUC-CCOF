@@ -7,7 +7,9 @@ import { LocalDate } from '@js-joda/core';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import {
+  APPLICATION_CCOF_STATUSES,
   APPLICATION_TYPES,
+  APPLICATION_STATUSES,
   BCSSA_REGION_LINKS,
   CCOF_STATUS,
   LICENCE_STATUSES,
@@ -313,13 +315,13 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
   if (!applicationType) {
     return CCOF_STATUS.NEW;
   }
-  if (applicationType === 'NEW') {
+  if (applicationType === APPLICATION_TYPES.NEW_ORG) {
     switch (applicationStatus) {
-      case 'DRAFT':
+      case APPLICATION_STATUSES.DRAFT:
         return CCOF_STATUS.CONTINUE;
-      case 'SUBMITTED':
+      case APPLICATION_STATUSES.SUBMITTED:
         if (isOrganizationUnlock) return CCOF_STATUS.ACTION_REQUIRED;
-        if (ccofApplicationStatus === 'ACTIVE') return CCOF_STATUS.APPROVED;
+        if (ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE) return CCOF_STATUS.APPROVED;
         return CCOF_STATUS.COMPLETE;
       default:
         return CCOF_STATUS.NEW;
