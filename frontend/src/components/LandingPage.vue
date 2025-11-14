@@ -90,13 +90,13 @@
                 </div>
               </div>
               <div v-else>
-                <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
+                <p v-if="ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE" class="text-h5 blueText mb-0">
                   Status of your funding agreement for the current fiscal year: Active
                 </p>
                 <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
                 <template v-if="hasPermission(PERMISSIONS.VIEW_SUBMITTED_PCF)">
                   <v-btn
-                    v-if="applicationType === 'NEW'"
+                    v-if="applicationType === APPLICATION_TYPES.NEW_ORG"
                     theme="dark"
                     class="blueButton mt-4"
                     @click="viewApplication('NEW')"
@@ -105,8 +105,8 @@
                   </v-btn>
                   <v-btn
                     v-else-if="
-                      applicationType === 'RENEW' &&
-                      applicationStatus === 'SUBMITTED' &&
+                      applicationType === APPLICATION_TYPES.RENEWAL &&
+                      applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
                       ccofRenewStatus != RENEW_STATUS.ACTION_REQUIRED
                     "
                     theme="dark"
@@ -132,7 +132,7 @@
       <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS.ACTION_REQUIRED || isRenewEnabled)">
           <template #content>
-            <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
+            <p class="text-h6">Renew my Funding Agreement {{ renewYearLabel }}</p>
 
             <p>
               Current providers must renew their Funding Agreement every year. For more information, visit the
@@ -470,9 +470,11 @@ export default {
     nextProgramYear() {
       return this.programYearList?.list?.find((el) => el.previousYearId == this.latestProgramYearId);
     },
-    getRenewYearLabel() {
-      if ((this.applicationType == 'NEW' && this.applicationStatus == 'DRAFT') || !this.applicationId) {
-        //console.log('no year');
+    renewYearLabel() {
+      if (
+        (this.applicationType == APPLICATION_TYPES.NEW_ORG && this.applicationStatus == APPLICATION_STATUSES.DRAFT) ||
+        !this.applicationId
+      ) {
         return '';
       }
       //show the year ahead because we can't pull from application year YET
@@ -500,7 +502,7 @@ export default {
         const isLatestRenewApplication =
           application.ccofProgramYearId === this.latestProgramYearId &&
           this.ccofRenewStatus !== this.RENEW_STATUS.NEW &&
-          application.applicationType === 'RENEW';
+          application.applicationType === APPLICATION_TYPES.RENEWAL;
         const isApplicationUnlocked = checkApplicationUnlocked(application);
         return !isLatestRenewApplication && isApplicationUnlocked;
       });
@@ -553,14 +555,17 @@ export default {
       );
     },
     ccofRenewStatus() {
-      if (this.applicationType === 'RENEW') {
-        if (this.applicationStatus === 'DRAFT') {
+      if (this.applicationType === APPLICATION_TYPES.RENEWAL) {
+        if (this.applicationStatus === APPLICATION_STATUSES.DRAFT) {
           return this.RENEW_STATUS.CONTINUE;
         } else if (this.isWithinRenewDate) {
           return this.RENEW_STATUS.NEW;
         } else if (this.isOrganizationUnlock) {
           return this.RENEW_STATUS.ACTION_REQUIRED;
-        } else if (this.applicationStatus === 'SUBMITTED' && this.ccofApplicationStatus === 'ACTIVE') {
+        } else if (
+          this.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+          this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE
+        ) {
           return this.RENEW_STATUS.APPROVED;
         } else {
           return this.RENEW_STATUS.COMPLETE;
@@ -593,10 +598,10 @@ export default {
       return getUnlockAFSList(this.navBarList);
     },
     isCCOFApproved() {
-      return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS.APPROVED;
+      return this.applicationType === APPLICATION_TYPES.RENEWAL || this.ccofStatus === this.CCOF_STATUS.APPROVED;
     },
     isReportChangeButtonEnabled() {
-      if (this.applicationType === 'RENEW' && this.organizationAccountNumber) {
+      if (this.applicationType === APPLICATION_TYPES.RENEWAL && this.organizationAccountNumber) {
         return true;
       }
       return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
@@ -609,7 +614,9 @@ export default {
     },
     isSubmissionHistoryDisplayed() {
       const applicationList = Array.from(this.applicationMap?.values());
-      const index = applicationList?.findIndex((application) => application.applicationStatus != 'DRAFT');
+      const index = applicationList?.findIndex(
+        (application) => application.applicationStatus != APPLICATION_STATUSES.DRAFT,
+      );
       return index > -1;
     },
     mtfiChangeRequestList() {
@@ -629,7 +636,9 @@ export default {
     },
     isCancelPcfButtonEnabled() {
       return (
-        this.applicationStatus === 'DRAFT' && this.applicationType === 'NEW' && this.ccofApplicationStatus === 'NEW'
+        this.applicationStatus === APPLICATION_STATUSES.DRAFT &&
+        this.applicationType === APPLICATION_TYPES.NEW_ORG &&
+        this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.NEW
       );
     },
     isCCOFStatusNew() {
@@ -653,9 +662,12 @@ export default {
     },
   },
   async created() {
+    this.APPLICATION_CCOF_STATUSES = APPLICATION_CCOF_STATUSES;
+    this.APPLICATION_STATUSES = APPLICATION_STATUSES;
+    this.APPLICATION_TYPES = APPLICATION_TYPES;
     this.CCOF_STATUS = CCOF_STATUS;
-    this.RENEW_STATUS = RENEW_STATUS;
     this.PATHS = PATHS;
+    this.RENEW_STATUS = RENEW_STATUS;
 
     this.CCOF_NEW_APPLICATION_TEXT = [
       {
@@ -805,7 +817,7 @@ export default {
       const unlockNMFList = getUnlockNMFList(facilityList);
       const unlockAFSList = getUnlockAFSList(facilityList);
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
-      else if (application?.unlockBaseFunding && application?.applicationType === 'NEW')
+      else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG)
         this.goToCCOFFunding(programYearId, facilityList);
       else if (application?.unlockEcewe) this.goToECEWE(programYearId);
       else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
@@ -842,22 +854,31 @@ export default {
     isCCFRIUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
       const unlockCCFRIList = getUnlockCCFRIList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockCCFRIList.includes(ccfriApplicationId);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+        unlockCCFRIList.includes(ccfriApplicationId)
+      );
     },
     isNMFUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
       const unlockNMFList = getUnlockNMFList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockNMFList.includes(ccfriApplicationId);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockNMFList.includes(ccfriApplicationId)
+      );
     },
     isRFIUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
       const unlockRFIList = getUnlockRFIList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockRFIList.includes(ccfriApplicationId);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockRFIList.includes(ccfriApplicationId)
+      );
     },
     isAFSUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
       const unlockAFSList = getUnlockAFSList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockAFSList?.includes(ccfriApplicationId);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockAFSList?.includes(ccfriApplicationId)
+      );
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;

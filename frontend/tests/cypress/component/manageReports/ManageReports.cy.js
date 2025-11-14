@@ -1,7 +1,12 @@
 import { createPinia, setActivePinia } from 'pinia';
 import vuetify from '@/plugins/vuetify';
 import ManageReports from '@/components/manageReports/ManageReports.vue';
-import { PATHS } from '@/utils/constants.js';
+import {
+  APPLICATION_CCOF_STATUSES,
+  APPLICATION_STATUSES,
+  APPLICATION_TYPES,
+  PATHS
+} from '@/utils/constants.js';
 
 const organizationName = 'Test Organization';
 const organizationAccountNumber = 'ORG-12345';
@@ -19,9 +24,9 @@ function createOrganizationStore(overrides = {}) {
 function createApplicationStore(overrides = {}) {
   return {
     application: {
-      applicationType: 'RENEW',
-      applicationStatus: 'SUBMITTED',
-      ccofApplicationStatus: 'APPROVED',
+      applicationType: APPLICATION_TYPES.RENEWAL,
+      applicationStatus: APPLICATION_STATUSES.SUBMITTED,
+      ccofApplicationStatus: APPLICATION_CCOF_STATUSES.RENEW,
       unlockDeclaration: false,
       unlockEcewe: false,
       unlockLicenseUpload: false,
@@ -180,10 +185,10 @@ describe('<ManageReports />', () => {
   });
 
   context('CCOF Approval Status', () => {
-    it('should enable Enrolment Report button when application type is RENEW', () => {
+    it(`should enable Enrolment Report button when application type is ${APPLICATION_TYPES.RENEW}`, () => {
       mountWithPinia({
         ...createOrganizationStore(),
-        ...createApplicationStore({ applicationType: 'RENEW' }),
+        ...createApplicationStore({ applicationType: APPLICATION_TYPES.RENEW }),
         ...createNavBarStore(),
       });
 
@@ -191,12 +196,12 @@ describe('<ManageReports />', () => {
       cy.contains('button', 'Manage ECE Report').should('be.visible').click();
     });
 
-    it('should enable Enrolment Report button when CCOF status is APPROVED', () => {
+    it(`should enable Enrolment Report button when CCOF status is ${APPLICATION_CCOF_STATUSES.ACTIVE}`, () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: 'NEW',
-          ccofApplicationStatus: 'APPROVED',
+          applicationType: APPLICATION_TYPES.NEW,
+          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.ACTIVE,
         }),
         ...createNavBarStore(),
       });
@@ -209,8 +214,8 @@ describe('<ManageReports />', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: 'NEW',
-          ccofApplicationStatus: 'PENDING',
+          applicationType: APPLICATION_TYPES.NEW,
+          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.PENDING,
         }),
         ...createNavBarStore(),
       });
@@ -222,8 +227,8 @@ describe('<ManageReports />', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: 'NEW',
-          ccofApplicationStatus: 'PENDING',
+          applicationType: APPLICATION_TYPES.NEW,
+          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.PENDING,
         }),
         ...createNavBarStore(),
       });

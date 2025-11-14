@@ -271,6 +271,9 @@ export const CCFRI_Categories = [
 
 export const APPLICATION_CCOF_STATUSES = {
   ACTIVE: 'ACTIVE',
+  NEW: 'NEW',
+  PENDING: 'PENDING',
+  RENEW: 'RENEW',
 };
 
 export const APPLICATION_STATUSES = {

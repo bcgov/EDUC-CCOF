@@ -9,8 +9,8 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
-    <p>
-      <v-icon class="mr-2" icon="mdi-information" color="#003366 " />
+    <p class="mb-5">
+      <v-icon class="mr-2" icon="mdi-information" color="primary" />
       <b>NOTE:</b> You must notify the Child Care Operating Funding Program within two business days of any change to
       your Facility Licence or Child Care Services.
       <a href="#" @click.prevent="goToChangeRequest">Submit a change request</a> to notify the Child Care Operating
@@ -28,11 +28,7 @@
             <br />
           </template>
           <template #button>
-            <v-row>
-              <v-col>
-                <v-btn dark class="blueButton mb-10" @click="goToEnrolmentReports">Manage Enrolment Report</v-btn>
-              </v-col>
-            </v-row>
+            <AppButton size="small" @click="goToEnrolmentReports"> Manage Enrolment Report </AppButton>
           </template>
         </SmallCard>
       </v-col>
@@ -47,44 +43,34 @@
             <br />
           </template>
           <template #button>
-            <v-row>
-              <v-col>
-                <v-btn dark class="blueButton mb-10" @click="goToEceReports">Manage ECE Report</v-btn>
-              </v-col>
-            </v-row>
+            <AppButton size="small" @click="goToEceReports">Manage ECE Report</AppButton>
           </template>
         </SmallCard>
       </v-col>
     </v-row>
 
-    <NavButton
-      :is-next-displayed="false"
-      :is-save-displayed="false"
-      :is-next-disabled="true"
-      @previous="() => $router.back()"
-      @next="false"
-    />
+    <NavButton @previous="() => $router.back()" @next="false" />
   </v-container>
 </template>
 <script>
+import { APPLICATION_TYPES, CCOF_STATUS, PATHS } from '@/utils/constants.js';
+import { getCcofStatus, isOrganizationUnlocked } from '@/utils/common';
 import { mapState } from 'pinia';
-import { PATHS, CCOF_STATUS } from '@/utils/constants.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { getCcofStatus, isOrganizationUnlocked } from '@/utils/common';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
 
 export default {
   name: 'ManageReports',
-  components: { SmallCard, NavButton },
+  components: { AppButton, NavButton, SmallCard },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationName', 'organizationAccountNumber']),
     ...mapState(useApplicationStore, [
-      'applicationType',
       'applicationStatus',
+      'applicationType',
       'ccofApplicationStatus',
       'unlockDeclaration',
       'unlockEcewe',
@@ -92,6 +78,7 @@ export default {
       'unlockSupportingDocuments',
     ]),
     ...mapState(useNavBarStore, ['navBarList']),
+    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationName']),
     ccofStatus() {
       return getCcofStatus(
         this.applicationStatus,
@@ -111,7 +98,7 @@ export default {
       );
     },
     isCCOFApproved() {
-      return this.applicationType === 'RENEW' || this.ccofStatus === CCOF_STATUS.APPROVED;
+      return this.applicationType === APPLICATION_TYPES.RENEWAL || this.ccofStatus === CCOF_STATUS.APPROVED;
     },
   },
   methods: {

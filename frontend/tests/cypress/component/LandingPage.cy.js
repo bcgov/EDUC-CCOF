@@ -455,7 +455,7 @@ describe('<LandingPage />', () => {
     });
   });
 
-  it('should redirect on clicking the `Manage Reporst` button', () => {
+  it('should redirect on clicking the `Manage Reports` button', () => {
     mountWithPinia({
       application: {
         applicationType: 'RENEW',

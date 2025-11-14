@@ -1,21 +1,21 @@
 'use strict';
 
 import Decimal from 'decimal.js';
-import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
-
+import { LocalDate } from '@js-joda/core';
+import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
+import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import {
+  APPLICATION_TYPES,
   BCSSA_REGION_LINKS,
+  CCOF_STATUS,
   LICENCE_STATUSES,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-  CCOF_STATUS,
 } from '@/utils/constants.js';
-import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
-import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
@@ -318,19 +318,14 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
       case 'DRAFT':
         return CCOF_STATUS.CONTINUE;
       case 'SUBMITTED':
-        if (isOrganizationUnlock) {
-          return CCOF_STATUS.ACTION_REQUIRED;
-        } else if (ccofApplicationStatus === 'ACTIVE') {
-          return CCOF_STATUS.APPROVED;
-        } else {
-          return CCOF_STATUS.COMPLETE;
-        }
+        if (isOrganizationUnlock) return CCOF_STATUS.ACTION_REQUIRED;
+        if (ccofApplicationStatus === 'ACTIVE') return CCOF_STATUS.APPROVED;
+        return CCOF_STATUS.COMPLETE;
       default:
         return CCOF_STATUS.NEW;
     }
-  } else {
-    return CCOF_STATUS.APPROVED;
   }
+  return CCOF_STATUS.APPROVED;
 }
 
 export function getUnlockCCFRIList(facilityList) {
@@ -394,7 +389,7 @@ export function isOrganizationUnlocked(
   facilityList,
 ) {
   return (
-    (unlockBaseFunding && applicationType === 'NEW') ||
+    (unlockBaseFunding && applicationType === APPLICATION_TYPES.NEW_ORG) ||
     unlockDeclaration ||
     unlockEcewe ||
     unlockLicenseUpload ||
