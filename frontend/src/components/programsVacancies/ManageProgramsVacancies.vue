@@ -327,7 +327,8 @@ export default {
           preschoolServices: this.form.preschoolServices?.length ? this.form.preschoolServices.join(',') : null,
         };
         await ProgramsVacanciesService.updateProgramsVacancies(this.form.programsVacanciesId, payload);
-        this.programVacancies.updatedOn = new Date().toISOString().split('.')[0] + 'Z'; // Manually update timestamp since server doesn't return updated value
+        // Manually update timestamp since server doesn't return updated value
+        this.programVacancies.updatedOn = new Date().toISOString().split('.')[0] + 'Z';
         this.setSuccessAlert('Programs and Vacancies updated successfully.');
         this.isEditing = false;
       } catch (error) {
