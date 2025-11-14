@@ -250,7 +250,7 @@ import {
   PRESCHOOL_OPTIONS,
   VACANCY_FIELDS,
 } from '@/utils/constants.js';
-import { formatStringToNumberList, formatUTCDate } from '@/utils/format';
+import { formatStringToNumberList, formatUTCDateToLocal } from '@/utils/format';
 import rules from '@/utils/rules.js';
 
 export default {
@@ -268,7 +268,7 @@ export default {
   },
   computed: {
     lastUpdated() {
-      return formatUTCDate(this.programVacancies?.updatedOn);
+      return formatUTCDateToLocal(this.programVacancies?.updatedOn);
     },
   },
   created() {
@@ -285,7 +285,7 @@ export default {
     this.loadData();
   },
   methods: {
-    formatUTCDate,
+    formatUTCDateToLocal,
     async loadData() {
       this.isLoading = true;
       try {
@@ -327,7 +327,7 @@ export default {
           preschoolServices: this.form.preschoolServices?.length ? this.form.preschoolServices.join(',') : null,
         };
         await ProgramsVacanciesService.updateProgramsVacancies(this.form.programsVacanciesId, payload);
-        this.programVacancies.updatedOn = new Date().toISOString(); // Manually update timestamp since server doesn't return updated value
+        this.programVacancies.updatedOn = new Date().toISOString().split('.')[0] + 'Z'; // Manually update timestamp since server doesn't return updated value
         this.setSuccessAlert('Programs and Vacancies updated successfully.');
         this.isEditing = false;
       } catch (error) {
