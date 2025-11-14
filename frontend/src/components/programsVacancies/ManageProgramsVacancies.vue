@@ -27,7 +27,14 @@
         </v-col>
         <v-card class="pa-6 border">
           <div class="d-flex justify-end">
-            <AppButton v-if="!isEditing" size="small" :primary="false" @click="onEdit">Edit</AppButton>
+            <AppButton
+              v-if="hasPermission(PERMISSIONS.EDIT_PROGRAMS_VACANCIES) && !isEditing"
+              size="small"
+              :primary="false"
+              @click="onEdit"
+            >
+              Edit
+            </AppButton>
           </div>
 
           <div>
@@ -237,6 +244,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import globalMixin from '@/mixins/globalMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import ProgramsVacanciesService from '@/services/programsVacancies.js';
 
@@ -257,7 +265,7 @@ import rules from '@/utils/rules.js';
 export default {
   name: 'ManageProgramsVacancies',
   components: { AppButton },
-  mixins: [alertMixin, globalMixin],
+  mixins: [alertMixin, globalMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
