@@ -330,44 +330,25 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
   return CCOF_STATUS.APPROVED;
 }
 
+function getUnlockList(facilityList = [], facilityProperty = '') {
+  if (isEmpty(facilityList)) return [];
+  return facilityList.filter((f) => !!f[facilityProperty]).map((f) => f.ccfriApplicationId);
+}
+
 export function getUnlockCCFRIList(facilityList) {
-  const unlockList = [];
-  if (facilityList) {
-    for (const facility of facilityList) {
-      if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
-    }
-  }
-  return unlockList;
+  return getUnlockList(facilityList, 'unlockCcfri');
 }
 
 export function getUnlockNMFList(facilityList) {
-  const unlockList = [];
-  if (facilityList) {
-    for (const facility of facilityList) {
-      if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
-    }
-  }
-  return unlockList;
+  return getUnlockList(facilityList, 'unlockNmf');
 }
 
 export function getUnlockRFIList(facilityList) {
-  const unlockList = [];
-  if (facilityList) {
-    for (const facility of facilityList) {
-      if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
-    }
-  }
-  return unlockList;
+  return getUnlockList(facilityList, 'unlockRfi');
 }
 
 export function getUnlockAFSList(facilityList) {
-  const unlockList = [];
-  if (facilityList) {
-    for (const facility of facilityList) {
-      if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
-    }
-  }
-  return unlockList;
+  return getUnlockList(facilityList, 'unlockAfs');
 }
 
 /**
