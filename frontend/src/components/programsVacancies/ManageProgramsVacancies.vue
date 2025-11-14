@@ -309,6 +309,8 @@ export default {
             indigenousLed: formatStringToNumberList(this.programVacancies.indigenousLed),
             preschoolServices: formatStringToNumberList(this.programVacancies.preschoolServices),
           };
+        } else {
+          this.setWarningAlert('No Programs and Vacancies available for this facility.');
         }
       } catch (error) {
         this.setFailureAlert('Failed to load Programs and Vacancies.', error);
