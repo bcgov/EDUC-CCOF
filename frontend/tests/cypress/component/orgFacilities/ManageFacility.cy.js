@@ -124,20 +124,14 @@ describe('<ManageFacility />', () => {
     cy.get('@routerPush').should('have.been.calledWith', { name: 'Report Change' });
   });
 
-  it('should render default tabs without any permissions', () => {
-    const expectedTexts = ['Programs and Vacancies'];
+  it('should not render any tabs without any permissions', () => {
     mountWithPinia({ ...createOrgStore() });
 
-    cy.get('.v-tabs')
-      .find('button')
-      .should('have.length', 1)
-      .each((button, index) => {
-        cy.wrap(button).should('include.text', expectedTexts[index]);
-      });
+    cy.get('.v-tabs').find('button').should('have.length', 0);
   });
 
   it('should render `Facility Details` tab', () => {
-    const expectedTexts = ['Facility Details', 'Programs and Vacancies'];
+    const expectedTexts = ['Facility Details'];
     mountWithPinia({
       ...createOrgStore(),
       auth: {
@@ -151,7 +145,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 2)
+      .should('have.length', 1)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -178,7 +172,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render `Licence and Service Details Record` tab', () => {
-    const expectedTexts = ['Programs and Vacancies', 'Licence and Service Details Record'];
+    const expectedTexts = ['Licence and Service Details Record'];
     mountWithPinia({
       ...createOrgStore(),
       auth: {
@@ -192,7 +186,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 2)
+      .should('have.length', 1)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -214,7 +208,6 @@ describe('<ManageFacility />', () => {
       },
     });
 
-    cy.get('.v-tabs').find('button').should('have.length', 2);
     cy.get('.v-tab').contains('Licence and Service Details Record').should('not.exist');
   });
 
@@ -227,7 +220,11 @@ describe('<ManageFacility />', () => {
           serverTime: new Date(),
         },
         isAuthenticated: true,
-        permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION, PERMISSIONS.VIEW_LICENCE_INFORMATION],
+        permissions: [
+          PERMISSIONS.VIEW_FACILITY_INFORMATION,
+          PERMISSIONS.VIEW_PROGRAMS_VACANCIES,
+          PERMISSIONS.VIEW_LICENCE_INFORMATION,
+        ],
       },
     });
 
