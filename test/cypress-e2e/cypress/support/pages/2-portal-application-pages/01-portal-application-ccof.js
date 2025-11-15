@@ -34,7 +34,7 @@ class CcofApplication {
     cy.url().should('include', `/${path}/organization`)
   }
 
-  // TODO (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
+  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
   inputOrganizationInfo(typeName) {
     // Org Info
     cy.contains('Organization Information')
@@ -172,7 +172,7 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  //TODO (Hedie-cgi) Add functionality to add multiple facilities [CCFRI-6110]
+  //TODO [CCFRI-6110] (Hedie-cgi) Add functionality to add multiple facilities
   addAnotherFacility() {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)

@@ -10,7 +10,7 @@
       "partnership": "Partnership"
     },
     "orgInfo": {
-      "legalOrgName": "Hedies AutoTest Org",
+      "legalOrgName": "Hedies Demo Auto Org",
       "incorporationNumber": "BC654321",
       "streetAddress": "506 John Street",
       "city": "Vancouver",
@@ -21,7 +21,7 @@
     }
   },
   "facilityData": {
-    "facilityName": "My Test Facility",
+    "facilityName": "Hedies Demo Facility",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
