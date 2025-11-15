@@ -185,37 +185,38 @@ describe('<ManageReports />', () => {
   });
 
   context('CCOF Approval Status', () => {
-    it(`should enable Enrolment Report button when application type is ${APPLICATION_TYPES.RENEW}`, () => {
+    it(`should enable Enrolment Report button when application type is ${APPLICATION_TYPES.RENEWAL}`, () => {
       mountWithPinia({
         ...createOrganizationStore(),
-        ...createApplicationStore({ applicationType: APPLICATION_TYPES.RENEW }),
+        ...createApplicationStore({ applicationType: APPLICATION_TYPES.RENEWAL }),
         ...createNavBarStore(),
       });
 
-      cy.contains('button', 'Manage ECE Report').should('have.css', 'pointer-events', 'auto');
-      cy.contains('button', 'Manage ECE Report').should('be.visible').click();
+      cy.contains('button', 'Manage Enrolment Report').should('have.css', 'pointer-events', 'auto');
+      cy.contains('button', 'Manage Enrolment Report').should('be.visible').click();
     });
 
     it(`should enable Enrolment Report button when CCOF status is ${APPLICATION_CCOF_STATUSES.ACTIVE}`, () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: APPLICATION_TYPES.NEW,
-          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.ACTIVE,
+          applicationType: APPLICATION_TYPES.NEW_ORG,
+          applicationStatus: APPLICATION_STATUSES.SUBMITTED,
+          ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
         }),
         ...createNavBarStore(),
       });
 
-      cy.contains('button', 'Manage ECE Report').should('have.css', 'pointer-events', 'auto');
-      cy.contains('button', 'Manage ECE Report').should('be.visible').click();
+      cy.contains('button', 'Manage Enrolment Report').should('have.css', 'pointer-events', 'auto');
+      cy.contains('button', 'Manage Enrolment Report').should('be.visible').click();
     });
 
     it('should disable Enrolment Report button when CCOF is not approved', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: APPLICATION_TYPES.NEW,
-          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.PENDING,
+          applicationType: APPLICATION_TYPES.NEW_ORG,
+          ccofApplicationStatus: APPLICATION_CCOF_STATUSES.PENDING,
         }),
         ...createNavBarStore(),
       });
@@ -223,18 +224,17 @@ describe('<ManageReports />', () => {
       cy.contains('button', 'Manage Enrolment Report').should('have.css', 'pointer-events', 'none');
     });
 
-    it('should always enable ECE Report button regardless of CCOF status', () => {
+    it('should disable ECE Report button when CCOF is not approved', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore({
-          applicationType: APPLICATION_TYPES.NEW,
-          ccofApplicationStatus:APPLICATION_CCOF_STATUSES.PENDING,
+          applicationType: APPLICATION_TYPES.NEW_ORG,
+          ccofApplicationStatus: APPLICATION_CCOF_STATUSES.PENDING,
         }),
         ...createNavBarStore(),
       });
 
-      cy.contains('button', 'Manage ECE Report').should('have.css', 'pointer-events', 'auto');
-      cy.contains('button', 'Manage ECE Report').should('be.visible').click();
+      cy.contains('button', 'Manage ECE Report').should('have.css', 'pointer-events', 'none');
     });
   });
 
