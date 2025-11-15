@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import SubmitConfirmationDialog from '@/components/enrolmentReports/SubmitConfirmationDialog.vue';
+import SubmitConfirmationDialog from '@/components/manageReports/enrolmentReports/SubmitConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';

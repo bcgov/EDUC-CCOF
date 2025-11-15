@@ -123,7 +123,7 @@
     </v-card>
     <v-row class="pt-12">
       <v-col>
-        <NavButton @previous="$router.push(PATHS.ROOT.HOME)" />
+        <NavButton @previous="$router.back()" />
       </v-col>
     </v-row>
   </v-container>
@@ -258,13 +258,13 @@ export default {
           this.organizationId,
           this.selectedProgramYearId,
         );
-        this.enrolmentReports?.forEach((report) => {
+        for (const report of this.enrolmentReports || []) {
           const facility = this.facilityList?.find((item) => item.facilityId === report.facilityId);
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
           report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
-        });
+        }
         this.sortEnrolmentReports();
       } catch (error) {
         console.log(error);

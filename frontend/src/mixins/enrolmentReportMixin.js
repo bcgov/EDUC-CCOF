@@ -1,5 +1,5 @@
-import EnrolmentReportHeader from '@/components/enrolmentReports/EnrolmentReportHeader.vue';
-import EnrolmentReportNavButtons from '@/components/enrolmentReports/EnrolmentReportNavButtons.vue';
+import EnrolmentReportHeader from '@/components/manageReports/enrolmentReports/EnrolmentReportHeader.vue';
+import EnrolmentReportNavButtons from '@/components/manageReports/enrolmentReports/EnrolmentReportNavButtons.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
