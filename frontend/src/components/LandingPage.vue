@@ -225,7 +225,11 @@
             </p>
           </template>
           <template #button>
-            <v-btn class="blueButton" theme="dark" @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)">
+            <v-btn
+              :class="buttonColor(!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0)"
+              theme="dark"
+              @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)"
+            >
               Manage Reports
             </v-btn>
           </template>
