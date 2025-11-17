@@ -456,13 +456,39 @@ describe('<LandingPage />', () => {
   });
 
   context('Submit Enrolment Reports Card', () => {
+    it('should not display `Submit Enrolment Reports` card without proper permissions', () => {
+      const permWithoutViewER = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_ER);
+
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({ permissions: [permWithoutViewER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('not.exist');
+    });
+
+    it('should display `Submit Enrolment Reports` card (disabled) with proper permissions', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('exist');
+    });
+
     it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
       mountWithPinia({
         application: {
           applicationType: '',
           applicationMap: new Map(),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
@@ -505,7 +531,7 @@ describe('<LandingPage />', () => {
             ],
           ]),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
@@ -521,7 +547,7 @@ describe('<LandingPage />', () => {
           applicationType: 'RENEW',
           applicationMap: new Map(),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
@@ -537,7 +563,7 @@ describe('<LandingPage />', () => {
           applicationType: 'RENEW',
           applicationMap: new Map(),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
@@ -560,7 +586,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie').should('not.exist');
+      cy.contains('p', 'Manage Organization and Facilities').should('not.exist');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.exist',
       );
@@ -577,7 +603,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'have.css',
         'pointer-events',
@@ -599,7 +625,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.have.css',
         'pointer-events',
