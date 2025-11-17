@@ -147,8 +147,6 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
     .click() 
 })
 
-
-Cypress.Commands.add('startNewApp', (provider) => {
 Cypress.Commands.add('startNewApp', (provider) => {
   cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
   cy.contains('What would you like to do?').should('be.visible')
@@ -344,7 +342,7 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   })
 });
 
-Cypress.Commands.add('runCcfriApp', (appType, term) => {
+
 Cypress.Commands.add('runCcfriApp', (appType, term) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
@@ -378,7 +376,7 @@ Cypress.Commands.add('licenceUpload', () => {
     cy.then(()=>{
       ccofApp.licenceUpload()
   })
-})
+});
 
 
 Cypress.Commands.add('licenceUpload', () => {
@@ -386,4 +384,4 @@ Cypress.Commands.add('licenceUpload', () => {
     cy.then(()=>{
       ccofApp.licenceUpload()
   })
-})
+});
