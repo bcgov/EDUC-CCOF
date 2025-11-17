@@ -349,11 +349,3 @@ Cypress.Commands.add('licenceUpload', () => {
       ccofApp.licenceUpload()
   })
 });
-
-
-Cypress.Commands.add('licenceUpload', () => {
-  ccofApp.loadFixturesAndVariables()
-    cy.then(()=>{
-      ccofApp.licenceUpload()
-  })
-});
