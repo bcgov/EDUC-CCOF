@@ -1,6 +1,9 @@
 import LandingPage from '@/components/LandingPage.vue';
 import vuetify from '@/plugins/vuetify';
 import {
+  APPLICATION_CCOF_STATUSES,
+  APPLICATION_STATUSES,
+  APPLICATION_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
@@ -105,7 +108,7 @@ describe('<LandingPage />', () => {
   it('should display CCOF text when approved and no actions required', () => {
     mountWithPinia({
       application: {
-        applicationType: 'RENEW',
+        applicationType: APPLICATION_TYPES.RENEWAL,
         applicationMap: new Map(),
       },
       ...createAuthStore(),
@@ -130,8 +133,8 @@ describe('<LandingPage />', () => {
   it('should display only `new application text` titles when not approved and not new', () => {
     mountWithPinia({
       application: {
-        applicationType: 'NEW',
-        applicationStatus: 'SUBMITTED',
+        applicationType: APPLICATION_TYPES.NEW_ORG,
+        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
       },
     });
     cy.contains('CCOF Base Funding');
@@ -169,7 +172,7 @@ describe('<LandingPage />', () => {
   it('should not display `new application` data', () => {
     mountWithPinia({
       application: {
-        applicationType: 'RENEW',
+        applicationType: APPLICATION_TYPES.RENEWAL,
       },
       ...createAuthStore(),
     });
@@ -203,8 +206,8 @@ describe('<LandingPage />', () => {
   it('should display `Continue Application` and navigate to group organization', () => {
     mountWithPinia({
       application: {
-        applicationType: 'NEW',
-        applicationStatus: 'DRAFT',
+        applicationType: APPLICATION_TYPES.NEW_ORG,
+        applicationStatus: APPLICATION_STATUSES.DRAFT,
         programYearId,
       },
       organization: {
@@ -218,8 +221,8 @@ describe('<LandingPage />', () => {
   it('should display `Continue Application` and navigate to family organization', () => {
     mountWithPinia({
       application: {
-        applicationType: 'NEW',
-        applicationStatus: 'DRAFT',
+        applicationType: APPLICATION_TYPES.NEW_ORG,
+        applicationStatus: APPLICATION_STATUSES.DRAFT,
         programYearId,
       },
       organization: {
@@ -232,9 +235,9 @@ describe('<LandingPage />', () => {
   it('should display `Cancel Application`', () => {
     mountWithPinia({
       application: {
-        applicationType: 'NEW',
-        applicationStatus: 'DRAFT',
-        ccofApplicationStatus: 'NEW',
+        applicationType: APPLICATION_TYPES.NEW_ORG,
+        applicationStatus: APPLICATION_STATUSES.DRAFT,
+        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.NEW,
       },
     });
     cy.contains('button', 'Cancel Application');
@@ -245,7 +248,7 @@ describe('<LandingPage />', () => {
       application: {
         applicationType: 'N/A',
         latestProgramYearId: '1111',
-        ccofApplicationStatus: 'ACTIVE',
+        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
       },
     });
     cy.contains('Status of your funding agreement for the current fiscal year: Active');
@@ -265,8 +268,8 @@ describe('<LandingPage />', () => {
     mountWithPinia({
       ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
-        applicationType: 'NEW',
-        applicationStatus: 'SUBMITTED',
+        applicationType: APPLICATION_TYPES.NEW_ORG,
+        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
         programYearId,
       },
       organization: {
@@ -281,9 +284,9 @@ describe('<LandingPage />', () => {
     mountWithPinia({
       ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
       application: {
-        applicationType: 'RENEW',
-        applicationStatus: 'SUBMITTED',
-        ccofApplicationStatus: 'ACTIVE',
+        applicationType: APPLICATION_TYPES.RENEWAL,
+        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
+        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
         programYearId,
       },
       organization: {
@@ -302,9 +305,9 @@ describe('<LandingPage />', () => {
     mountWithPinia({
       ...createAuthStore({}, { isAuthenticated: true, permissions: [permWithoutViewSubmittedPCF] }),
       application: {
-        applicationType: 'RENEW',
-        applicationStatus: 'SUBMITTED',
-        ccofApplicationStatus: 'ACTIVE',
+        applicationType: APPLICATION_TYPES.RENEWAL,
+        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
+        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
         programYearId,
       },
       organization: {
@@ -317,8 +320,8 @@ describe('<LandingPage />', () => {
   it('should display `View submission history` button', () => {
     mountWithPinia({
       application: {
-        applicationType: 'RENEW',
-        applicationMap: new Map([['key', { applicationStatus: 'SUBMITTED' }]]),
+        applicationType: APPLICATION_TYPES.RENEWAL,
+        applicationMap: new Map([['key', { applicationStatus: APPLICATION_STATUSES.SUBMITTED }]]),
       },
       app: {
         programYearList: {
@@ -334,8 +337,8 @@ describe('<LandingPage />', () => {
     it('should disable `Renew my Funding Agreement` card', () => {
       mountWithPinia({
         application: {
-          applicationType: 'NEW',
-          applicationStatus: 'DRAFT',
+          applicationType: APPLICATION_TYPES.NEW_ORG,
+          applicationStatus: APPLICATION_STATUSES.DRAFT,
         },
       });
       cy.contains('p', 'Renew my Funding Agreement').should('have.css', 'pointer-events', 'none');
@@ -347,8 +350,8 @@ describe('<LandingPage />', () => {
     it('should enable `Renew my Funding Agreement` card', () => {
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
-          applicationStatus: 'DRAFT',
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationStatus: APPLICATION_STATUSES.DRAFT,
         },
       });
       cy.contains('p', 'Renew my Funding Agreement').should('not.have.css', 'pointer-events', 'none');
@@ -360,7 +363,7 @@ describe('<LandingPage />', () => {
     it('should render `We will contact you` message', () => {
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
+          applicationType: APPLICATION_TYPES.RENEWAL,
           applicationStatus: '',
         },
         ...createAuthStore(),
@@ -371,8 +374,8 @@ describe('<LandingPage />', () => {
     it('should render `Continue Renewal` button', () => {
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
-          applicationStatus: 'DRAFT',
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationStatus: APPLICATION_STATUSES.DRAFT,
           programYearId,
         },
       });
@@ -383,8 +386,8 @@ describe('<LandingPage />', () => {
     it('should render `Update Your PCF` button', () => {
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
-          applicationStatus: 'SUBMITTED',
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationStatus: APPLICATION_STATUSES.SUBMITTED,
           unlockDeclaration: true,
         },
         ...createAuthStore(),
@@ -411,7 +414,7 @@ describe('<LandingPage />', () => {
     it('should enable `Request a change` card when application type is renew and organizationAccountNumber exists', () => {
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
+          applicationType: APPLICATION_TYPES.RENEWAL,
         },
         organization: {
           organizationAccountNumber,
@@ -425,7 +428,7 @@ describe('<LandingPage />', () => {
       const expectedPath = `${PATHS.ROOT.CHANGE_LANDING}#change-request-history`;
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
+          applicationType: APPLICATION_TYPES.RENEWAL,
         },
         organization: {
           organizationAccountNumber,
@@ -440,7 +443,7 @@ describe('<LandingPage />', () => {
       const expectedPath = `${PATHS.ROOT.CHANGE_LANDING}#change-request-history`;
       mountWithPinia({
         application: {
-          applicationType: 'RENEW',
+          applicationType: APPLICATION_TYPES.RENEWAL,
         },
         organization: {
           organizationAccountNumber,
@@ -455,37 +458,119 @@ describe('<LandingPage />', () => {
     });
   });
 
-  it('should disable `Submit Enrolment Reports or monthly ECE reports` card', () => {
-    mountWithPinia({
-      application: {
-        applicationType: null,
-      },
+  context('Submit Enrolment Reports Card', () => {
+    it('should not display `Submit Enrolment Reports` card without proper permissions', () => {
+      const permWithoutViewER = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_ER);
+
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({ permissions: [permWithoutViewER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('not.exist');
     });
 
-    cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
-      'have.css',
-      'pointer-events',
-      'none',
-    );
+    it('should display `Submit Enrolment Reports` card (disabled) with proper permissions', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
 
-    cy.contains('button', 'Submit a report').should('have.css', 'pointer-events', 'none');
-  });
-
-  it('should redirect on clicking the `Submit a report` button', () => {
-    mountWithPinia({
-      application: {
-        applicationType: 'RENEW',
-      },
-      ...createAuthStore(),
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('exist');
     });
 
-    cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
-      'not.have.css',
-      'pointer-events',
-      'none',
-    );
+    it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
 
-    checkButtonAndNavigate('Submit a report', PATHS.ROOT.ENROLMENT_REPORTS);
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should disable `Submit Enrolment Reports` card when action required applications exist', () => {
+      mountWithPinia({
+        app: {
+          latestProgramYearId: '1111',
+          programYearList: {
+            list: [
+              {
+                programYearId: '1111',
+                name: '2024/2025 CCOF Program',
+                order: 5,
+              },
+              {
+                programYearId: '2222',
+                name: '2025/2026 CCOF Program',
+                order: 6,
+              },
+            ],
+          },
+        },
+        application: {
+          applicationType: 'NEW',
+          latestProgramYearId: '1111',
+          applicationMap: new Map([
+            [
+              '2222',
+              {
+                ccofProgramYearId: '2222',
+                applicationType: APPLICATION_TYPES.NEW_ORG,
+                unlockDeclaration: true,
+              },
+            ],
+          ]),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should enable `Submit Enrolment Reports` card when CCOF approved and no action required', () => {
+      mountWithPinia({
+        application: {
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'not.have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should redirect on clicking the `Manage Reports` button when enabled', () => {
+      mountWithPinia({
+        application: {
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
+    });
   });
 
   context('Manage Organization and Facilities card', () => {
@@ -504,7 +589,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie').should('not.exist');
+      cy.contains('p', 'Manage Organization and Facilities').should('not.exist');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.exist',
       );
@@ -521,7 +606,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'have.css',
         'pointer-events',
@@ -543,7 +628,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.have.css',
         'pointer-events',
@@ -817,7 +902,7 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockNmf: true }, { applicationStatus: 'SUBMITTED' }),
+          applicationMap: createApplicationMap({ unlockNmf: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
         },
         ...createAppStore(),
       });
@@ -832,7 +917,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap(
             { unlockCcfri: true },
-            { applicationStatus: 'SUBMITTED', isRenewal: true },
+            { applicationStatus: APPLICATION_STATUSES.SUBMITTED, isRenewal: true },
           ),
         },
         ...createAppStore(),
@@ -849,7 +934,7 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockCcfri: true }, { applicationStatus: 'SUBMITTED' }),
+          applicationMap: createApplicationMap({ unlockCcfri: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
         },
         ...createAppStore(),
       });
@@ -862,7 +947,7 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockRfi: true }, { applicationStatus: 'SUBMITTED' }),
+          applicationMap: createApplicationMap({ unlockRfi: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
         },
         ...createAppStore(),
       });
@@ -877,7 +962,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap(
             { unlockAfs: true, enableAfs: true },
-            { applicationStatus: 'SUBMITTED' },
+            { applicationStatus: APPLICATION_STATUSES.SUBMITTED },
           ),
         },
         ...createAppStore(),
@@ -893,7 +978,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap(
             { unlockAfs: true, enableAfs: true },
-            { applicationStatus: 'NOT_SUBMITTED' },
+            { applicationStatus: APPLICATION_STATUSES.DRAFT },
           ),
         },
         ...createAppStore(),

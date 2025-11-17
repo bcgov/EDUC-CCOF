@@ -39,10 +39,11 @@ import GroupOrganizationInformation from '@/components/ccofApplication/group/Org
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
-import EnrolmentReportDeclaration from '@/components/enrolmentReports/EnrolmentReportDeclaration.vue';
-import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
-import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
+import ManageReports from '@/components/manageReports/ManageReports.vue';
+import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
+import EnrolmentReportForm from '@/components/manageReports/enrolmentReports/EnrolmentReportForm.vue';
+import ViewEnrolmentReports from '@/components/manageReports/enrolmentReports/ViewEnrolmentReports.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -873,6 +874,17 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_CLOSURES,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_REPORTS,
+      name: 'manage-reports',
+      component: ManageReports,
+      meta: {
+        pageTitle: PAGE_TITLES.MANAGE_REPORTS,
+        showNavBar: false,
+        requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ER,
       },
     },
     {
