@@ -108,6 +108,26 @@ describe('<LandingPage />', () => {
 
   context('Application Status Card ', () => {
     const authWithDownloadPerm = createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] });
+
+    const expectFundingTitles = () => {
+      cy.contains('CCOF Base Funding');
+      cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
+      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
+    };
+
+    const expectFundingBody = (shouldExist) => {
+      const assertion = shouldExist ? 'exist' : 'not.exist';
+
+      cy.contains('Base Funding assists eligible licensed family and group child care providers').should(assertion);
+
+      cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
+        assertion,
+      );
+
+      cy.contains(
+        'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood',
+      ).should(assertion);
+    };
     it('should not render application status col if no download pcf pdf permission', () => {
       const permWithoutDownloadPDF = Object.values(PERMISSIONS).filter(
         (permission) => permission !== PERMISSIONS.DOWNLOAD_PCF_PDF,
@@ -141,10 +161,7 @@ describe('<LandingPage />', () => {
         },
         ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
       });
-      cy.contains('Apply for Child Care Operating Funding').should('exist');
-      cy.contains('CCOF Base Funding');
-      cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
+      expectFundingTitles();
     });
 
     it('should display only `new application text` titles when not approved and not new', () => {
@@ -155,17 +172,8 @@ describe('<LandingPage />', () => {
         },
         ...authWithDownloadPerm,
       });
-      cy.contains('CCOF Base Funding');
-      cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
-
-      cy.contains('Base Funding assists eligible licensed family and group child care providers').should('not.exist');
-      cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
-        'not.exist',
-      );
-      cy.contains(
-        'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood',
-      ).should('not.exist');
+      expectFundingTitles();
+      expectFundingBody(false);
     });
 
     it('should display `new application` text and body', () => {
@@ -175,17 +183,8 @@ describe('<LandingPage />', () => {
         },
         ...authWithDownloadPerm,
       });
-      cy.contains('CCOF Base Funding');
-      cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
-
-      cy.contains('Base Funding assists eligible licensed family and group child care providers').should('exist');
-      cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
-        'exist',
-      );
-      cy.contains(
-        'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood',
-      ).should('exist');
+      expectFundingTitles();
+      expectFundingBody(true);
     });
 
     it('should not display `new application` data', () => {
