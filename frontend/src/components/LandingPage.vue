@@ -216,7 +216,7 @@
         </SmallCard>
       </v-col>
       <v-col cols="12" lg="4">
-        <SmallCard :disable="!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0">
+        <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
             <p>
@@ -225,11 +225,7 @@
             </p>
           </template>
           <template #button>
-            <v-btn
-              :class="buttonColor(!isCCOFApproved || getActionRequiredApplicationsForCCOFCard?.length > 0)"
-              theme="dark"
-              @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)"
-            >
+            <v-btn :class="buttonColor(!isCCOFApproved)" theme="dark" @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)">
               Manage Reports
             </v-btn>
           </template>
