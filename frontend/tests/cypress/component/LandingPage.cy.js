@@ -455,21 +455,93 @@ describe('<LandingPage />', () => {
     });
   });
 
-  it('should redirect on clicking the `Manage Reports` button', () => {
-    mountWithPinia({
-      application: {
-        applicationType: 'RENEW',
-      },
-      ...createAuthStore(),
+  context('Submit Enrolment Reports Card', () => {
+    it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore(),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
     });
 
-    cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
-      'not.have.css',
-      'pointer-events',
-      'none',
-    );
+    it('should disable `Submit Enrolment Reports` card when action required applications exist', () => {
+      mountWithPinia({
+        app: {
+          latestProgramYearId: '1111',
+          programYearList: {
+            list: [
+              {
+                programYearId: '1111',
+                name: '2024/2025 CCOF Program',
+                order: 5,
+              },
+              {
+                programYearId: '2222',
+                name: '2025/2026 CCOF Program',
+                order: 6,
+              },
+            ],
+          },
+        },
+        application: {
+          applicationType: 'NEW',
+          latestProgramYearId: '1111',
+          applicationMap: new Map([
+            [
+              '2222',
+              {
+                ccofProgramYearId: '2222',
+                applicationType: 'NEW',
+                unlockDeclaration: true,
+              },
+            ],
+          ]),
+        },
+        ...createAuthStore(),
+      });
 
-    checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should enable `Submit Enrolment Reports` card when CCOF approved and no action required', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore(),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'not.have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should redirect on clicking the `Manage Reports` button when enabled', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore(),
+      });
+
+      checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
+    });
   });
 
   context('Manage Organization and Facilities card', () => {
