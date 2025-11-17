@@ -9,8 +9,6 @@ const { isFacilityAdmin } = require('../util/common');
 module.exports = function () {
   return async function (req, res, next) {
     log.verbose('validating facility');
-    // TODO (weskubo-cgi) Determine if this is required once Impersonate is confirmed
-    //if (isIdirUser(req)) return next();
 
     const facilityId = req.params.facilityId ?? req.query.facilityId ?? req.body.facilityId;
     if (!facilityId) {

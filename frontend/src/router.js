@@ -627,7 +627,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
       },
     },
     {
@@ -638,7 +638,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
       },
     },
     {
@@ -907,7 +907,7 @@ const router = createRouter({
         pageTitle: 'submission-history',
         showNavBar: false,
         requiresAuth: true,
-        permission: PERMISSIONS.DOWNLOAD_PCF_PDF,
+        permission: [PERMISSIONS.DOWNLOAD_PCF_PDF],
       },
     },
     {
@@ -1026,7 +1026,7 @@ router.beforeEach((to, _from, next) => {
                 //   return next('unauthorized');
                 // }
                 // Validate specific permission
-                if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
+                if (to.meta.permission && !authStore.hasPermission(...to.meta.permission)) {
                   return next({ name: 'unauthorized' });
                 }
                 // Block access to Impersonate

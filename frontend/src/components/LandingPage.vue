@@ -198,7 +198,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
             <p class="text-h6">Request a change</p>

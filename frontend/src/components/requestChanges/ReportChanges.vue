@@ -34,7 +34,12 @@
               </template>
             </SmallCard>
           </v-col>
-          <v-col cols="12" md="6" xl="4">
+          <v-col
+            v-if="hasPermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES)"
+            cols="12"
+            md="6"
+            xl="4"
+          >
             <SmallCard>
               <template #content>
                 <div class="px-10">
@@ -230,14 +235,16 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { CHANGE_TYPES, changeUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
 import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
+import { PERMISSIONS } from '../../utils/constants/permissions';
 
 export default {
   name: 'ReportChange',
   components: { SmallCard, AppButton, AppDialog, NavButton },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   beforeRouteLeave(_to, _from, next) {
     next();
   },
