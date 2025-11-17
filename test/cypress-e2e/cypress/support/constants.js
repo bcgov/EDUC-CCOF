@@ -1,9 +1,9 @@
 export const APP_TYPE = Object.freeze({
-    GROUP: 'group',
-    FAMILY: 'family',
+    GROUP_V2: 'group',
+    GROUP_V1: 'groupOld',
+    FAMILY_V2: 'family',
     GROUP_RENEWAL: 'groupRenewal',
-    FAMILY_RENEWAL: 'familyRenewal',
-    GROUP_OLD: "groupOld"
+    FAMILY_RENEWAL: 'familyRenewal'
 })
 
 export const PROGRAM_YEAR = Object.freeze({
@@ -16,9 +16,9 @@ export const ORG_TYPE = Object.freeze({
 })
 
 export const LICENCE_TYPE = Object.freeze({
-    GROUP: 'groupLicenceCategories',
-    FAMILY: 'familyChildCare',
-    GROUP_OLD: 'oldGroupLicenceCategories'
+    GROUP_V2: 'groupLicenceCategories',
+    GROUP_V1: 'oldGroupLicenceCategories',
+    FAMILY_V2: 'familyChildCare'
 })
 
 export const FUNDING_MODEL = Object.freeze({

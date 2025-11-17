@@ -12,9 +12,9 @@ class FundingAgreement {
 
         // Validate PDF & submit
         cy.contains('Carefully review your funding agreement.').should('be.visible')
-        cy.getByLabel('I agree, consent and certify').click({force: true})
-        cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy', {force: true})
-        cy.clickByText('Submit').click({force: true})
+        cy.getByLabel('I agree, consent and certify').click()
+        cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy')
+        cy.clickByText('Submit').click()
         cy.contains('Submission Complete').should('be.visible')
         cy.contains('Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates to your agreement.')
         cy.clickByText('Return to Funding Agreements')

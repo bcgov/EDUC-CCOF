@@ -9,13 +9,13 @@ describe('Group Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp(APP_TYPE.GROUP)
+        cy.startNewApp(APP_TYPE.GROUP_V2)
     
         cy.then(()=> {
-            cy.runCcofApp(APP_TYPE.GROUP, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.GROUP)
-            cy.runCcfriApp(APP_TYPE.GROUP, PROGRAM_YEAR.CURRENT)
-            cy.runEceWeApp(APP_TYPE.GROUP, PROGRAM_YEAR.CURRENT)
-            submitApp.summaryAndDeclaration(APP_TYPE.GROUP)
+            cy.runCcofApp(APP_TYPE.GROUP_V2, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.GROUP_V2)
+            cy.runCcfriApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.CURRENT)
+            cy.runEceWeApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.CURRENT)
+            submitApp.summaryAndDeclaration(APP_TYPE.GROUP_V2)
         })
     })
     
