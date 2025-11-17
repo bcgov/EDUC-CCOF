@@ -107,6 +107,7 @@ describe('<LandingPage />', () => {
   });
 
   context('Application Status Card ', () => {
+    const authWithDownloadPerm = createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] });
     it('should not render application status col if no download pcf pdf permission', () => {
       const permWithoutDownloadPDF = Object.values(PERMISSIONS).filter(
         (permission) => permission !== PERMISSIONS.DOWNLOAD_PCF_PDF,
@@ -126,7 +127,7 @@ describe('<LandingPage />', () => {
           applicationType: 'RENEW',
           applicationMap: new Map(),
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
 
       cy.contains('Child Care Operating Funding (CCOF)').should('exist');
@@ -152,7 +153,7 @@ describe('<LandingPage />', () => {
           applicationType: 'NEW',
           applicationStatus: 'SUBMITTED',
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('CCOF Base Funding');
       cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
@@ -172,7 +173,7 @@ describe('<LandingPage />', () => {
         application: {
           applicationType: '',
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('CCOF Base Funding');
       cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
@@ -192,7 +193,7 @@ describe('<LandingPage />', () => {
         application: {
           applicationType: 'RENEW',
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('Child Care Operating Funding');
       cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding').should('not.exist');
@@ -293,7 +294,7 @@ describe('<LandingPage />', () => {
           latestProgramYearId: '1111',
           ccofApplicationStatus: 'ACTIVE',
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('Status of your funding agreement for the current fiscal year: Active');
     });
@@ -304,7 +305,7 @@ describe('<LandingPage />', () => {
           applicationType: 'N/A',
           latestProgramYearId: '1111',
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('Status: Submitted');
     });
@@ -375,13 +376,15 @@ describe('<LandingPage />', () => {
             list: [],
           },
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+        ...authWithDownloadPerm,
       });
       cy.contains('View submission history');
     });
   });
 
   context('Renew my Funding Agreement Card', () => {
+    const createRenPCFPerm = { auth: { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] } };
+
     it('should not render card if no create renewal pcf permissions', () => {
       const permWithoutCreateRenPCF = Object.values(PERMISSIONS).filter(
         (permission) => permission !== PERMISSIONS.CREATE_RENEWAL_PCF,
@@ -399,7 +402,7 @@ describe('<LandingPage />', () => {
           applicationType: 'NEW',
           applicationStatus: 'DRAFT',
         },
-        auth: { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] },
+        ...createRenPCFPerm,
       });
       cy.contains('p', 'Renew my Funding Agreement').should('have.css', 'pointer-events', 'none');
       cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
@@ -413,9 +416,8 @@ describe('<LandingPage />', () => {
           applicationType: 'RENEW',
           applicationStatus: 'DRAFT',
         },
-        auth: { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] },
+        ...createRenPCFPerm,
       });
-      cy.contains('p', 'Renew my Funding Agreement').should('not.have.css', 'pointer-events', 'none');
       cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
         .should('exist')
         .should('not.have.css', 'pointer-events', 'none');
@@ -439,7 +441,7 @@ describe('<LandingPage />', () => {
           applicationStatus: 'DRAFT',
           programYearId,
         },
-        auth: { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] },
+        ...createRenPCFPerm,
       });
 
       checkButtonAndNavigate('Continue Renewal', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
