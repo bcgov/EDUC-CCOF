@@ -1,7 +1,9 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-container fluid class="pa-12">
+  <Spinner v-if="!isLoadingComplete" />
+  <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
+    <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
 
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
@@ -366,43 +368,63 @@
 <script>
 import { isEmpty, orderBy } from 'lodash';
 import { mapState, mapActions } from 'pinia';
-import { useAuthStore } from '@/store/auth.js';
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useMessageStore } from '@/store/message.js';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
+import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
+import Spinner from '@/components/common/Spinner.vue';
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import SmallCard from '@/components/guiComponents/SmallCard.vue';
-import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
+import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
+import SmallCard from '@/components/guiComponents/SmallCard.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
+import FundingAgreementService from '@/services/fundingAgreementService.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useEnrolmentReport } from '@/store/enrolmentReport';
+import { useMessageStore } from '@/store/message.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+
+import { checkApplicationUnlocked } from '@/utils/common.js';
 import {
+  APPLICATION_CCOF_STATUSES,
+  APPLICATION_STATUSES,
+  APPLICATION_TYPES,
+  CHANGE_REQUEST_EXTERNAL_STATUS,
+  FUNDING_AGREEMENT_INTERNAL_STATUS_CODES,
+  ORGANIZATION_GOOD_STANDING_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
   PATHS,
   pcfUrl,
   pcfUrlGuid,
-  CHANGE_REQUEST_EXTERNAL_STATUS,
-  ORGANIZATION_GOOD_STANDING_STATUSES,
-  ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import permissionsMixin from '@/mixins/permissionsMixin.js';
-import { checkApplicationUnlocked } from '@/utils/common.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export default {
   name: 'LandingPage',
-  components: { AppAlertBanner, AppButton, CancelApplicationDialog, SmallCard, MessagesToolbar, FiscalYearSlider },
+  components: {
+    AppAlertBanner,
+    AppButton,
+    CancelApplicationDialog,
+    EnrolmentReportDueDialog,
+    FiscalYearSlider,
+    MessagesToolbar,
+    SmallCard,
+    Spinner,
+  },
   mixins: [alertMixin, permissionsMixin],
   data() {
     return {
+      renewalYearHasDraftProviderActionRequiredFA: false,
       input: '',
       showCancelDialog: false,
       isLoadingComplete: false,
       selectedProgramYear: undefined,
+      showEnrolmentReportDialog: false,
     };
   },
   computed: {
@@ -427,6 +449,7 @@ export default {
       'applicationStatus',
       'applicationId',
     ]),
+    ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
@@ -436,7 +459,7 @@ export default {
       'organizationAccountNumber',
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
-    getNextProgramYear() {
+    nextProgramYear() {
       return this.programYearList?.list?.find((el) => el.previousYearId == this.latestProgramYearId);
     },
     getRenewYearLabel() {
@@ -446,7 +469,7 @@ export default {
       }
       //show the year ahead because we can't pull from application year YET
       else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW) {
-        let nameToReturn = this.getNextProgramYear?.name;
+        let nameToReturn = this.nextProgramYear?.name;
         return formatFiscalYearName(nameToReturn);
       } else if (
         this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE ||
@@ -490,33 +513,28 @@ export default {
       );
     },
     isWithinRenewDate() {
-      let isEnabled =
-        this.userInfo.serverTime > this.getNextProgramYear?.intakeStart &&
-        this.userInfo.serverTime < this.getNextProgramYear?.intakeEnd;
-      return isEnabled;
+      return (
+        this.userInfo.serverTime > this.nextProgramYear?.intakeStart &&
+        this.userInfo.serverTime < this.nextProgramYear?.intakeEnd
+      );
     },
     isRenewEnabled() {
-      //renew disabled because current NEW application is in progress
-      if (this.applicationType === 'NEW' && this.applicationStatus === 'DRAFT') {
-        return false;
+      if (this.applicationStatus === APPLICATION_STATUSES.DRAFT) {
+        return this.applicationType !== APPLICATION_TYPES.NEW_ORG;
       }
-      //continue renewal application
-      else if (this.applicationStatus === 'DRAFT') {
-        return true;
-      } else if (
-        (this.applicationStatus === 'SUBMITTED' || this.applicationStatus === 'APPROVED') &&
+      if (
+        (this.applicationStatus === APPLICATION_STATUSES.SUBMITTED ||
+          this.applicationStatus === APPLICATION_STATUSES.APPROVED) &&
         this.organizationAccountNumber &&
-        this.ccofApplicationStatus === 'ACTIVE'
+        this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE
       ) {
-        let isEnabled =
+        return (
           this.isWithinRenewDate &&
-          //&& this.programYearId == this.programYearList?.renewal?.previousYearId // can only renew if the last application was for the previous year
-          this.programYearId != this.programYearList?.renewal?.programYearId; // cannot renew if current application program year is the same as renewal program year
-        return isEnabled;
+          this.programYearId !== this.programYearList?.renewal?.programYearId &&
+          this.renewalYearHasDraftProviderActionRequiredFA
+        );
       }
-      //}
       return false;
-      //return (this.applicationType === 'RENEW');
     },
     ccofStatus() {
       if (!this.applicationType) {
@@ -671,17 +689,30 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
+    ...mapActions(useEnrolmentReport, ['checkDueReports']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     async loadData() {
       try {
         this.isLoadingComplete = false;
+
+        if (this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT) && this.hasDueReports === null) {
+          await this.checkDueReports(this.organizationId, this.latestProgramYearId);
+          this.showEnrolmentReportDialog = this.hasDueReports;
+        }
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
           this.getAllMessages(this.organizationId),
           this.getChangeRequestList(),
         ]);
+        if (this.hasPermission(this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
+          this.renewalYearHasDraftProviderActionRequiredFA = await FundingAgreementService.checkFundingAgreementExists({
+            organizationId: this.organizationId,
+            programYearId: this.programYearList?.renewal?.programYearId,
+            internalStatusCode: FUNDING_AGREEMENT_INTERNAL_STATUS_CODES.DRAFTED_PROVIDER_ACTION_REQUIRED,
+          });
+        }
         this.refreshNavBarList();
       } catch (error) {
         console.error('Failed to load data for Landing Page.', error);
@@ -699,7 +730,7 @@ export default {
     },
     renewApplication() {
       this.setIsRenewal(true);
-      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.getNextProgramYear?.programYearId));
+      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.nextProgramYear?.programYearId));
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');

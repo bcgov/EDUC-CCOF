@@ -70,6 +70,8 @@ class CcfriApplication{
             cy.clickByText('Save')
             cy.clickByText('Next')
         }
+        cy.clickByText('Save')
+        cy.clickByText('Next')
     }
 
     addClosures(appType, term) {

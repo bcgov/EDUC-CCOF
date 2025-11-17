@@ -33,13 +33,13 @@
           >
             <template #header.document="{ column }">
               <v-row align="center">
-                <v-col style="max-width: 40px">
+                <v-col v-if="!showApplicationTemplateV1" style="max-width: 40px">
                   <AppTooltip tooltip-content="Upload the licence issued by your Health Authority." />
                 </v-col>
                 <v-col>{{ column.title }}</v-col>
               </v-row>
             </template>
-            <template #item.healthAuthority="{ item }">
+            <template v-if="!showApplicationTemplateV1" #item.healthAuthority="{ item }">
               {{ getHealthAuthorityNameById(item.healthAuthority) }}
             </template>
             <template #item.document="{ item }">
@@ -111,7 +111,77 @@ export default {
       licenseUploadData: [],
       isValidForm: true,
       currentrow: null,
-      headers: [
+      fileMap: new Map(), // this is not reactive
+    };
+  },
+  computed: {
+    ...mapState(useAppStore, ['getHealthAuthorityNameById']),
+    ...mapState(useApplicationStore, [
+      'isApplicationProcessing',
+      'isRenewal',
+      'formattedProgramYear',
+      'applicationStatus',
+      'unlockLicenseUpload',
+      'applicationId',
+      'isLicenseUploadComplete',
+      'applicationMap',
+      'programYearId',
+      'showApplicationTemplateV1',
+    ]),
+    ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
+    ...mapState(useNavBarStore, [
+      'navBarList',
+      'changeRequestId',
+      'nextPath',
+      'previousPath',
+      'isChangeRequest',
+      'userProfileList',
+    ]),
+    ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
+    isLocked() {
+      if (this.isChangeRequest) {
+        if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
+          return false;
+        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
+          return true;
+        }
+        return false;
+      } else if (this.unlockLicenseUpload) {
+        return false;
+      } else if (this.applicationStatus === 'SUBMITTED') {
+        return true;
+      }
+      return false;
+    },
+    headers() {
+      const tableHeadersTemplateV1 = [
+        {
+          title: 'Facility Name',
+          value: 'facilityName',
+          sortable: true,
+          width: '30%',
+        },
+        {
+          title: 'Facility ID',
+          value: 'facilityAccountNumber',
+          sortable: false,
+          width: '20%',
+        },
+        {
+          title: 'Facility Licence Number',
+          value: 'licenseNumber',
+          sortable: false,
+          width: '20%',
+        },
+        {
+          id: 'document',
+          title: 'Upload Community Care and Assisted Living Act Licence',
+          value: 'document',
+          sortable: false,
+          width: '30%',
+        },
+      ];
+      const tableHeadersTemplateV2 = [
         {
           title: 'Facility Name',
           value: 'facilityName',
@@ -143,47 +213,8 @@ export default {
           sortable: false,
           width: '30%',
         },
-      ],
-      fileMap: new Map(), // this is not reactive
-    };
-  },
-  computed: {
-    ...mapState(useAppStore, ['getHealthAuthorityNameById']),
-    ...mapState(useApplicationStore, [
-      'isApplicationProcessing',
-      'isRenewal',
-      'formattedProgramYear',
-      'applicationStatus',
-      'unlockLicenseUpload',
-      'applicationId',
-      'isLicenseUploadComplete',
-      'applicationMap',
-      'programYearId',
-    ]),
-    ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
-    ...mapState(useNavBarStore, [
-      'navBarList',
-      'changeRequestId',
-      'nextPath',
-      'previousPath',
-      'isChangeRequest',
-      'userProfileList',
-    ]),
-    ...mapState(useReportChangesStore, ['changeRequestStore', 'isLicenseUploadUnlocked', 'changeRequestStatus']),
-    isLocked() {
-      if (this.isChangeRequest) {
-        if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
-          return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
-        return false;
-      } else if (this.unlockLicenseUpload) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
-      }
-      return false;
+      ];
+      return this.showApplicationTemplateV1 ? tableHeadersTemplateV1 : tableHeadersTemplateV2;
     },
     nextButtonDisabled() {
       let facilityList = this.navBarList;

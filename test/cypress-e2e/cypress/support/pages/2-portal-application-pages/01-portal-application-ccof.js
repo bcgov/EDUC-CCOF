@@ -42,6 +42,7 @@ class CcofApplication {
   }
 
   // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
+  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
   inputOrganizationInfo(typeName) {
     // Org Info
     cy.contains('Organization Information')

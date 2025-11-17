@@ -3,10 +3,11 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
+const { checkFundingAgreementExists, getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { param, query, validationResult } = require('express-validator');
+const { oneOf, param, query, validationResult } = require('express-validator');
 const validatePermission = require('../middlewares/validatePermission');
+
 /**
  * Get the list of Funding Agreements using OrgID
  */
@@ -19,6 +20,24 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getFundingAgreements(req, res);
+  },
+);
+
+/**
+ * Checks whether any funding agreement exists for the given query (e.g.: organization, program year, and internal status).
+ */
+router.get(
+  '/exists',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF),
+  query('organizationId').notEmpty().withMessage('URL query: [organizationId] is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
+  oneOf([query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('internalStatusCode').notEmpty()], {
+    message: 'URL query: [programYearId or internalStatusCode] is required',
+  }),
+  (req, res) => {
+    validationResult(req).throw();
+    return checkFundingAgreementExists(req, res);
   },
 );
 

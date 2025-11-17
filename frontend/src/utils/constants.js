@@ -59,6 +59,7 @@ export const ApiRoutes = Object.freeze({
   FUNDING_AGREEMENTS: baseRoot + '/fundingAgreements',
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
   LICENCES: baseRoot + '/licences',
+  PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -266,6 +267,24 @@ export const CCFRI_Categories = [
   'Group Before & After School (Kindergarten only)',
   'Family Before & After School (Kindergarten only)',
 ];
+
+export const APPLICATION_CCOF_STATUSES = {
+  ACTIVE: 'ACTIVE',
+};
+
+export const APPLICATION_STATUSES = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  WITHDRAWN: 'WITHDRAWN',
+  // Additional status codes not from Dynamics
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION REQUIRED',
+};
+
+export const APPLICATION_TYPES = {
+  NEW_ORG: 'NEW',
+  RENEWAL: 'RENEW',
+};
 
 export const CHANGE_REQUEST_TYPES = {
   LEGAL_ORG_NAME_CHANGE: 100000000,
@@ -539,11 +558,6 @@ export const TOOLTIP_TYPES = Object.freeze({
   WARNING: 'Warning',
 });
 
-export const APPLICATION_TEMPLATE_VERSIONS = [
-  { id: '1', isActive: false, note: 'Original application template' },
-  { id: '2', isActive: true, note: 'Mar 2025: CCFRI-4450, CCFRI-4568' },
-];
-
 export const EMPTY_PLACEHOLDER = '--';
 
 export const CCFRI_MAX_FEE = 9999;
@@ -569,6 +583,10 @@ export const FUNDING_AGREEMENTS_STATUS = Object.freeze({
   TERMINATED: 'Terminated',
   REPLACED: 'Replaced',
   EXPIRED: 'Expired',
+});
+
+export const FUNDING_AGREEMENT_INTERNAL_STATUS_CODES = Object.freeze({
+  DRAFTED_PROVIDER_ACTION_REQUIRED: 101510003,
 });
 
 export const FUNDING_AGREEMENT_EXTERNAL_STATUSES = Object.freeze({
@@ -614,3 +632,69 @@ export const LICENCE_STATUSES = Object.freeze({
   INACTIVE: 'Inactive',
   REPLACED: 'Replaced',
 });
+
+export const AGE_GROUPS = [
+  { label: '0-18 Months', value: 101510000 },
+  { label: '18-36 Months', value: 101510001 },
+  { label: '3 Years to Kindergarten', value: 101510002 },
+  { label: 'Kindergarten Before and After', value: 101510003 },
+  { label: 'Grade 1 to Age 12', value: 101510004 },
+  { label: 'Preschool', value: 101510005 },
+];
+
+export const DAYS_OPTIONS = [
+  { label: 'Weekdays', value: 101510000 },
+  { label: 'Weekdays After 7pm', value: 101510001 },
+  { label: 'Weekdays Before 6am', value: 101510002 },
+  { label: 'Weekends', value: 101510003 },
+  { label: 'Statutory Holidays', value: 101510004 },
+  { label: 'Overnights', value: 101510005 },
+];
+
+export const LANGUAGE_OPTIONS = [
+  { label: 'English', value: 101510000 },
+  { label: 'Indigenous (First Nations, Métis, Inuit) languages', value: 101510001 },
+  { label: 'ASL (American Sign Language)', value: 101510002 },
+  { label: 'Cantonese', value: 101510003 },
+  { label: 'Mandarin', value: 101510004 },
+  { label: 'Punjabi', value: 101510005 },
+  { label: 'French', value: 101510006 },
+  { label: 'Spanish', value: 101510007 },
+  { label: 'Other', value: 101510008 },
+];
+
+export const INDIGENOUS_LED_OPTIONS = [
+  { label: 'No', value: 101510000 },
+  { label: 'Yes, First Nation', value: 101510001 },
+  { label: 'Yes, Métis', value: 101510002 },
+  { label: 'Yes, Inuit', value: 101510003 },
+  { label: 'Prefer not to answer', value: 101510004 },
+];
+
+export const PRESCHOOL_OPTIONS = [
+  { label: 'Morning', value: 101510000 },
+  { label: 'Mid-day', value: 101510001 },
+  { label: 'Afternoon', value: 101510002 },
+  { label: 'Not offered', value: 101510003 },
+];
+
+export const MEAL_OPTIONS = [
+  { label: 'Included in fee', value: 101510000 },
+  { label: 'Not offered', value: 101510001 },
+  { label: 'Extra fee', value: 101510002 },
+];
+
+export const PICKUP_OPTIONS = [
+  { label: 'Included in fee', value: 101510000 },
+  { label: 'Not offered', value: 101510001 },
+  { label: 'Extra fee', value: 101510002 },
+];
+
+export const VACANCY_FIELDS = {
+  vacancies018Months: '0-18 Months',
+  vacancies1836Months: '18-36 Months',
+  vacancies3YearsToKindergarten: '3 Years to Kindergarten',
+  vacanciesKindergartenBeforeAndAfter: 'Kindergarten Before and After',
+  vacanciesGrade1ToAge12: 'Grade 1 to Age 12',
+  vacanciesPreschool: 'Preschool',
+};

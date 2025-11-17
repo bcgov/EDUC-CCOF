@@ -3,7 +3,6 @@ import { isEmpty } from 'lodash';
 import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
-  APPLICATION_TEMPLATE_VERSIONS,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_MAX_FEE,
   CCFRI_MIN_FEE,
@@ -727,9 +726,4 @@ export default {
   /*
    **** End of Summary Declaration validations
    */
-
-  getActiveApplicationTemplate() {
-    const activeApplicationTemplate = APPLICATION_TEMPLATE_VERSIONS.find((template) => template.isActive);
-    return activeApplicationTemplate?.id;
-  },
 };

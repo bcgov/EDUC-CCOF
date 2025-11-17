@@ -8,7 +8,14 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-tabs v-model="tab" bg-color="#ffffff" density="compact" color="#003366" show-arrows>
+          <v-tabs
+            v-model="tab"
+            bg-color="#ffffff"
+            density="compact"
+            color="#003366"
+            show-arrows
+            @update:model-value="updateTab"
+          >
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_ORG_INFORMATION)" value="organization-tab">
               Organization Information
             </v-tab>
@@ -52,7 +59,7 @@ export default {
   mixins: [permissionsMixin],
   data() {
     return {
-      tab: undefined,
+      tab: 'organization-tab',
       PATHS,
     };
   },
@@ -62,6 +69,11 @@ export default {
   async mounted() {
     await this.$router.isReady();
     this.tab = this.$route.query?.tab || 'organization-tab';
+  },
+  methods: {
+    updateTab() {
+      this.$router.replace({ query: { tab: this.tab } });
+    },
   },
 };
 </script>

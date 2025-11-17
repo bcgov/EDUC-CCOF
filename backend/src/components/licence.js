@@ -32,7 +32,7 @@ async function getLicencesByFundingAgreementId(req, res) {
       '&$expand=ccof_Funding_Agreement_ccof_license_ccof_license' +
       '($select=ccof_end_date,ccof_extended_days_per_week,ccof_extended_hours_offered,ccof_extended_weeks_per_year,ccof_facility_id,ccof_maximum_days_per_week,ccof_maximum_weeks_per_year,' +
       'ccof_name,ccof_record_end_date,ccof_record_start_date,ccof_start_date,_ccof_facility_value,ccof_licenseid,ccof_maximum_capacity,ccof_organization,statuscode;' +
-      '$filter=(statecode eq 0 and statuscode ne 100000001 and statuscode ne 1))' +
+      '$filter=(statecode eq 0 and statuscode ne 100000001))' +
       `&$filter=(ccof_funding_agreementid eq ${req.query.fundingAgreementId})`;
     const response = await getOperation(operation);
     let licences = [];
