@@ -459,17 +459,102 @@ describe('<LandingPage />', () => {
   });
 
   context('Submit Enrolment Reports Card', () => {
+    it('should not display `Submit Enrolment Reports` card without proper permissions', () => {
+      const permWithoutViewER = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_ER);
+
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({ permissions: [permWithoutViewER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('not.exist');
+    });
+
+    it('should display `Submit Enrolment Reports` card (disabled) with proper permissions', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('exist');
+    });
+
     it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
       mountWithPinia({
         application: {
           applicationType: '',
           applicationMap: new Map(),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
         'have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should disable `Submit Enrolment Reports` card when action required applications exist', () => {
+      mountWithPinia({
+        app: {
+          latestProgramYearId: '1111',
+          programYearList: {
+            list: [
+              {
+                programYearId: '1111',
+                name: '2024/2025 CCOF Program',
+                order: 5,
+              },
+              {
+                programYearId: '2222',
+                name: '2025/2026 CCOF Program',
+                order: 6,
+              },
+            ],
+          },
+        },
+        application: {
+          applicationType: 'NEW',
+          latestProgramYearId: '1111',
+          applicationMap: new Map([
+            [
+              '2222',
+              {
+                ccofProgramYearId: '2222',
+                applicationType: APPLICATION_TYPES.NEW_ORG,
+                unlockDeclaration: true,
+              },
+            ],
+          ]),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'have.css',
+        'pointer-events',
+        'none',
+      );
+    });
+
+    it('should enable `Submit Enrolment Reports` card when CCOF approved and no action required', () => {
+      mountWithPinia({
+        application: {
+          applicationType: APPLICATION_TYPES.RENEWAL,
+          applicationMap: new Map(),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
+      });
+
+      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+        'not.have.css',
         'pointer-events',
         'none',
       );
@@ -481,7 +566,7 @@ describe('<LandingPage />', () => {
           applicationType: APPLICATION_TYPES.RENEWAL,
           applicationMap: new Map(),
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
       checkButtonAndNavigate('Manage Reports', PATHS.ROOT.MANAGE_REPORTS);
@@ -504,7 +589,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie').should('not.exist');
+      cy.contains('p', 'Manage Organization and Facilities').should('not.exist');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.exist',
       );
@@ -521,7 +606,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'have.css',
         'pointer-events',
@@ -543,7 +628,7 @@ describe('<LandingPage />', () => {
         },
       });
 
-      cy.contains('p', 'Manage Organization and Facilitie');
+      cy.contains('p', 'Manage Organization and Facilities');
       cy.contains('p', 'View or update your organization, facility details, and funding agreement.').should(
         'not.have.css',
         'pointer-events',

@@ -215,7 +215,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" lg="4">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_ER)" cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
