@@ -22,7 +22,7 @@ public abstract class BaseTest {
 
 	protected ExtentReports extent;
 	protected ExtentTest test;
-	protected static WebDriver driver;
+	protected WebDriver driver;
 	public static final String CRM_USERNAME;
 	public static final String CRM_PASSWORD;
 	public static final String BROWSER;
@@ -30,13 +30,11 @@ public abstract class BaseTest {
 	protected static final Logger logger;
 	private static final Properties properties;
 
-	// Static initialization block
+	// Static initialization block for properties
 	static {
 		logger = Logger.getLogger("CCOFCRM");
 		properties = new Properties();
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(PROPERTY_FILE);
+		try (FileInputStream fileInputStream = new FileInputStream(PROPERTY_FILE)) {
 			properties.load(fileInputStream);
 		} catch (IOException e) {
 			logger.error("Failed to load properties file: " + e.getMessage());
@@ -47,14 +45,13 @@ public abstract class BaseTest {
 		BROWSER = properties.getProperty("browser");
 	}
 
-	public static void browserSetup(String browser) {
+	public WebDriver browserSetup(String browser) {
 		if (browser.equalsIgnoreCase("CHROME")) {
 			WebDriverManager.chromedriver().setup();
 			ChromeOptions options = new ChromeOptions();
 
-			// Check if headless mode is enabled in config.properties
 			String headless = properties.getProperty("headless");
-			logger.info("Launching browser in headless mode: " + headless);
+			logger.info("Launching Chrome browser in headless mode: " + headless);
 
 			if ("true".equalsIgnoreCase(headless)) {
 				options.addArguments("--headless");
@@ -64,6 +61,9 @@ public abstract class BaseTest {
 				options.addArguments("--disable-dev-shm-usage");
 			}
 
+			options.addArguments("--disable-notifications");
+			options.addArguments("--start-maximized");
+
 			driver = new ChromeDriver(options);
 
 		} else if (browser.equalsIgnoreCase("EDGE")) {
@@ -72,21 +72,32 @@ public abstract class BaseTest {
 		} else if (browser.equalsIgnoreCase("FIREFOX")) {
 			WebDriverManager.firefoxdriver().setup();
 			driver = new FirefoxDriver();
+		} else {
+			throw new IllegalArgumentException("Unsupported browser: " + browser);
 		}
+
 		driver.manage().window().maximize();
 		String env = properties.getProperty("env");
 		String url = properties.getProperty(env + ".url");
+		logger.info("Navigating to URL: " + url);
 		driver.get(url);
+
+		return driver;
+	}
+
+	public WebDriver getDriver() {
+		return driver;
 	}
 
 	@BeforeMethod
 	public void initDriver() {
-		browserSetup(BROWSER);
+		driver = browserSetup(BROWSER);
 	}
 
 	@AfterMethod
 	public void tearDown() {
-		driver.quit();
+		if (driver != null) {
+			driver.quit();
+		}
 	}
-
 }

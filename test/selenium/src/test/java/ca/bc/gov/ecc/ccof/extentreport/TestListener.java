@@ -47,7 +47,7 @@ public class TestListener extends BaseTest implements ITestListener {
 	@Override
 	public void onTestFailure(ITestResult iTestResult) {
 		logger.info(getTestMethodName(iTestResult) + " test is failed.");
-		WebDriver driver = BaseTest.driver;
+		WebDriver driver = ((BaseTest) iTestResult.getInstance()).getDriver();
 
 		TakesScreenshot scrShot = ((TakesScreenshot) driver);
 		// Call getScreenshotAs method to create image file

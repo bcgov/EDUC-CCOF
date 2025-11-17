@@ -8,10 +8,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class CcfriUnlockForm extends BaseTest {
+public class CcfriUnlockForm {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@data-container-name='Container CCFRI-container']//div[@data-control-name='tg_unlock_declaration']//button[contains(@id,'Toggle')]")
 	WebElement declarationUnlockBtn;
@@ -44,7 +43,7 @@ public class CcfriUnlockForm extends BaseTest {
 	WebElement confirmAndCloseBtn;
 
 	public CcfriUnlockForm(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

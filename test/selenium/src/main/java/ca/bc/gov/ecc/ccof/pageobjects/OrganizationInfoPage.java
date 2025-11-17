@@ -10,10 +10,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class OrganizationInfoPage extends BaseTest {
+public class OrganizationInfoPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@aria-label='New Org']")
 	WebElement openMainApplication;
@@ -40,7 +39,7 @@ public class OrganizationInfoPage extends BaseTest {
 	WebElement ignoreAndSaveBtn;
 
 	public OrganizationInfoPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

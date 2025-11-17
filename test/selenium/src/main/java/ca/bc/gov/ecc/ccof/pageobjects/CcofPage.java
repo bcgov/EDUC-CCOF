@@ -9,10 +9,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class CcofPage extends BaseTest {
+public class CcofPage {
 	WebDriverWait wait;
+	WebDriver driver;
 	// elements can be added here
 	@FindBy(xpath = "//*[@title='CCOF Adjudication']")
 	WebElement ccofAdjudicationLink;
@@ -67,7 +66,7 @@ public class CcofPage extends BaseTest {
 	WebElement allLicensesCorrectField;
 
 	public CcofPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

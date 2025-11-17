@@ -10,10 +10,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class ApplicationInfoPage extends BaseTest {
+public class ApplicationInfoPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@title='Related']")
 	WebElement relatedTab;
@@ -56,7 +55,7 @@ public class ApplicationInfoPage extends BaseTest {
 	List<WebElement> declarationBStatusOptions;
 
 	public ApplicationInfoPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}

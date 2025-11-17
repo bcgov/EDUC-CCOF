@@ -17,33 +17,33 @@ import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
+public class TestEfxAdjudicateApplicationCcfri extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(EfxAdjudicateRenewalCcfriTest.class);
+	private static final Logger logger = LogManager.getLogger(TestEfxAdjudicateApplicationCcfri.class);
 
 	@Test(priority = 1)
-	public void adjudicateRenewalsEfx(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateRenewalCcfriEfx");
-		logger.info("Starting the AdjudicateRenewalFullCcfriEfx  test...");
+	public void adjudicateApplicationsEfx(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcfriEfx");
+		logger.info("Starting the AdjudicateApplicationCcfriEfx  test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities ut = new Utilities(driver);
 
 		// login to application
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
+		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
+		Thread.sleep(3000);
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
@@ -51,7 +51,7 @@ public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 
 		// searching the contact
 		deleteapp.searchBox(ut.getDataFromJson("contact"));
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
 		deleteapp.fullName();
@@ -72,12 +72,14 @@ public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 		Thread.sleep(3000);
 
 		// selecting the application
-		orginfo.clickRenewalApplication();
+		orginfo.clickMainApplication();
 		Thread.sleep(5000);
 
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickDeclarationBStatus();
 		ut.selectDropdownValue(ut.getDataFromJson("declarationBStatus"), appinfo.getDeclarationBStatusOptions());
+		Thread.sleep(3000);
+		appinfo.clickSaveBtn();
 		Thread.sleep(3000);
 
 		// navigating to related tab
@@ -97,19 +99,18 @@ public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 		logger.info("System Recommendation is: {}", recommendation);
 		Thread.sleep(5000);
 		ccfriinfo.clickCcfriFacilityAdjudicationTitle();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 
 		// selecting the facility and changing the status to CCFRI Complete
 		ccfriinfo.clickOpenFacility();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 
 		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
 		facilityinfo.clickFacilityNameLink();
+		Thread.sleep(5000);
 
 		// adding Facility ID
 		facilityinfo.enterFacId(ut.generateDynamicValue("facilityId"));
-
-		Thread.sleep(5000);
 		facilityinfo.clickMyCcsTestDropdown();
 		Thread.sleep(5000);
 		facilityinfo.clickFacilityStatusField();
@@ -120,7 +121,7 @@ public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 
 		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityinfo.clickInitialDecisionLink();
@@ -155,7 +156,7 @@ public class EfxAdjudicateRenewalCcfriTest extends BaseTest {
 		ccfriinfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
-		logger.info("Ending the EfxAdjudicateRenewalCcfriTest  test...");
+		logger.info("Ending the EfxAdjudicateApplicationCcfriTest  test...");
 
 	}
 

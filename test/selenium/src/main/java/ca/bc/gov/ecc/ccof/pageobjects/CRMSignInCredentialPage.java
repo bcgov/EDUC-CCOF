@@ -9,11 +9,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class CRMSignInCredentialPage extends BaseTest {
+public class CRMSignInCredentialPage {
 
 	WebDriverWait wait;
+	WebDriver driver;
+
 	@FindBy(name = "loginfmt")
 	WebElement userIdField;
 
@@ -63,7 +63,7 @@ public class CRMSignInCredentialPage extends BaseTest {
 	WebElement invalidLoginErrorMessage;
 
 	public CRMSignInCredentialPage(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 

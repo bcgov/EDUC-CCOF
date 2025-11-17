@@ -25,11 +25,12 @@ import ca.bc.gov.ecc.ccof.base.BaseTest;
 public class Utilities extends BaseTest {
 	WebDriverWait wait;
 	JSONObject testData;
+	WebDriver driver;
 
 	private static final Logger logger = LogManager.getLogger(Utilities.class);
 
 	public Utilities(WebDriver driver) {
-		BaseTest.driver = driver;
+		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
 	}
