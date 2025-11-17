@@ -20,9 +20,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class Utilities extends BaseTest {
+public class Utilities {
 	WebDriverWait wait;
 	JSONObject testData;
 	WebDriver driver;
