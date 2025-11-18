@@ -27,6 +27,7 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
+import FundingAgreementConfirmation from '@/components/ccofApplication/FundingAgreementConfirmation.vue';
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
 import FamilyFacilityInformation from '@/components/ccofApplication/family/FacilityInformation.vue';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
@@ -300,13 +301,26 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrl(PATHS.RENEW_CONFIRM),
-      name: 'Renew Organization',
+      path: pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION),
+      name: 'Banking Information',
       component: RenewOrganization,
       meta: {
-        pageTitle: 'Renew Organization',
+        pageTitle: 'Banking Information',
         requiresAuth: true,
-        showNavBar: false,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+      },
+    },
+    {
+      path: pcfUrl(PATHS.CCOF_RENEWAL_FA),
+      name: 'Funding Agreement',
+      component: FundingAgreementConfirmation,
+      meta: {
+        pageTitle: 'Funding Agreement',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
       },
     },

@@ -25,6 +25,8 @@ export const useApplicationStore = defineStore('application', {
     unlockLicenseUpload: false,
     unlockSupportingDocuments: false,
 
+    isRenewalBankingInfoComplete: false,
+    isRenewalFAComplete: false,
     isEceweComplete: false,
     isLicenseUploadComplete: false,
 

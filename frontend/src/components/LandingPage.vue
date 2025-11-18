@@ -448,6 +448,7 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationId',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
@@ -730,13 +731,18 @@ export default {
     },
     renewApplication() {
       this.setIsRenewal(true);
-      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.nextProgramYear?.programYearId));
+      this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.nextProgramYear?.programYearId));
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
-      this.goToLicenseUpload();
+      console.log(this.showApplicationTemplateV1);
+      if (this.showApplicationTemplateV1) {
+        this.goToLicenseUpload();
+      } else {
+        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.programYearId));
+      }
     },
     newApplication() {
       this.setIsRenewal(false);

@@ -28,7 +28,7 @@
             v-else
             :id="stripWhitespace(item.title + `MenuBtn`)"
             :value="item.title"
-            class="groupMenu"
+            class="menuRow"
             @click="setActive(item)"
           >
             <template #activator="{ props }">
@@ -49,7 +49,7 @@
               :id="stripWhitespace(subItem.title) + `MenuBtn`"
               :key="subItem.navBarId"
               :disabled="!subItem.isAccessible"
-              class="subMenuRow pl-9 d-flex custom-item"
+              class="pl-9 d-flex custom-item"
               :style="{ '--v-list-item-prepend-max-width': '30px' }"
               @click="goTo(subItem)"
             >
@@ -57,13 +57,7 @@
                 <v-icon v-if="subItem.icon">{{ subItem.icon }}</v-icon>
               </template>
               <v-list-item-title class="text-wrap">
-                <div
-                  :class="[
-                    'menuItem',
-                    { 'font-weight-bold': subItem.isActive },
-                    { 'blue-grey--text': !subItem.isAccessible },
-                  ]"
-                >
+                <div :class="['menuItem', { 'font-weight-bold': subItem.isActive }]">
                   {{ subItem.title }}
                 </div>
                 <div>
@@ -154,6 +148,8 @@ export default {
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
+      'isRenewalBankingInfoComplete',
+      'isRenewalFAComplete',
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
@@ -326,22 +322,61 @@ export default {
         navBarId: navBarId++,
       });
     },
-    addLicenseUploadToNavbar() {
-      this.items.push({
-        title: 'Licence Upload',
-        link: { name: 'Licence Upload' },
-        isAccessible: true,
-        icon: this.getCheckbox(this.isLicenseUploadComplete),
-        isActive: 'Licence Upload' === this.$route.name,
+    createNavItem({ title, link, isComplete, isAccessible }) {
+      return {
+        title,
+        link,
+        isAccessible,
+        icon: this.getCheckbox(isComplete),
+        isActive: link.name === this.$route.name,
         position: positionIndex++,
         navBarId: navBarId++,
+      };
+    },
+    getRenewalCCOFNavigation() {
+      const licenceUpload = this.createNavItem({
+        title: 'Licence Upload',
+        link: { name: 'Licence Upload' },
+        isComplete: this.isLicenseUploadComplete,
+        isAccessible: true,
       });
+
+      if (this.showApplicationTemplateV1) {
+        return licenceUpload;
+      }
+
+      const bankingInfo = this.createNavItem({
+        title: 'Banking Information',
+        link: { name: 'Banking Information' },
+        isComplete: this.isRenewalBankingInfoComplete,
+        isAccessible: true,
+      });
+
+      const fundingAgreement = this.createNavItem({
+        title: 'Funding Agreement',
+        link: { name: 'Funding Agreement' },
+        isComplete: this.isRenewalFAComplete,
+        isAccessible: this.isRenewalBankingInfoComplete,
+      });
+
+      licenceUpload.isAccessible = this.isRenewalBankingInfoComplete && this.isRenewalFAComplete;
+      const items = [bankingInfo, fundingAgreement, licenceUpload];
+      isCCOFGroupComplete = this.areChildrenComplete(items);
+
+      return {
+        title: NAV_BAR_GROUPS.CCOF,
+        isAccessible: true,
+        icon: this.getCheckbox(isCCOFGroupComplete),
+        expanded: this.isExpanded(NAV_BAR_GROUPS.CCOF),
+        items: items,
+        navBarId: navBarId++,
+      };
     },
     addSupportingDocumentsToNavbar() {
       this.items.push({
         title: 'Supporting Document',
         link: { name: 'Supporting Document Upload' },
-        isAccessible: this.isRenewal ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewal && this.showApplicationTemplateV1 ? true : isCCOFGroupComplete,
         icon: 'mdi-information',
         isActive: 'Supporting Document Upload' === this.$route.name,
         expanded: false,
@@ -389,7 +424,7 @@ export default {
     buildApplicationNavBar() {
       this.addLandingPageToNavBar();
       if (this.isRenewal) {
-        this.addLicenseUploadToNavbar();
+        this.items.push(this.getRenewalCCOFNavigation());
       } else {
         if (this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.FAMILY) {
           this.items.push(this.getCCOFFamilyNavigation());
@@ -549,7 +584,7 @@ export default {
       items.push({
         title: 'Opt-In / Opt-Out',
         link: { name: 'ccfri-home' },
-        isAccessible: this.isRenewal ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewal && this.showApplicationTemplateV1 ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isCCFRIOptInComplete()),
         isActive: 'ccfri-home' === this.$route.name,
         position: positionIndex++,
@@ -1036,7 +1071,7 @@ export default {
       items.push({
         title: 'Eligibility',
         link: { name: 'ECEWE Eligibility' },
-        isAccessible: this.isRenewal ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewal && this.showApplicationTemplateV1 ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isEceweComplete),
         isActive: 'ECEWE Eligibility' === this.$route.name,
         position: positionIndex++,

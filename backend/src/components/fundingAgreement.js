@@ -42,6 +42,17 @@ async function getFundingAgreementPDF(req, res) {
   }
 }
 
+async function getFundingAgreementPDFByQuery(req, res) {
+  try {
+    const faResponse = await getOperation(`ccof_funding_agreements?$select=ccof_funding_agreementid&${buildFilterQuery(req.query, FundingAgreementMappings)}`);
+    const pdfResponse = await getOperation(`ccof_funding_agreements(${faResponse?.value?.fundingAgreementId})/ccof_funding_pdf`);
+    return res.status(HttpStatus.OK).json(pdfResponse.value);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function updateFundingAgreement(req, res) {
   try {
     const fundingAgreementPayload = new MappableObjectForBack(req.body, FundingAgreementMappings).toJSON();
@@ -68,5 +79,6 @@ module.exports = {
   getFundingAgreement,
   getFundingAgreements,
   getFundingAgreementPDF,
+  getFundingAgreementPDFByQuery,
   updateFundingAgreement,
 };

@@ -1,28 +1,18 @@
 <template>
   <v-container fluid>
     <div class="mx-4 mx-lg-12">
-      <div class="text-center">
-        <p class="text-h4">
-          Child Care Operating Funding Program - {{ formattedProgramYear }} Program Confirmation Form
-        </p>
-        <h2 class="my-2">Summary and Declaration</h2>
-        <p class="text-h5 text-primary">{{ userInfo.organizationName }}</p>
-      </div>
+      <ApplicationPCFHeader
+        page-title="Summary and Declaration"
+        :program-year="formattedProgramYear"
+        :organization-name="userInfo.organizationName"
+      />
 
       <!-- Do not allow PCF to be submitted if CR is active -->
-      <v-card v-if="isSomeChangeRequestActive && !isChangeRequest" elevation="4" class="my-8">
-        <v-card-title class="rounded-t-lg py-3 noticeAlert">
-          <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-          You have a change request for the {{ getChangeRequestYear }} funding term still in progress.
-        </v-card-title>
-        <div class="pa-4">
-          <p>
-            The {{ formattedProgramYear }} Program Confirmation Form cannot be submitted until the change is complete.
-          </p>
-          <AppButton class="mt-4" @click="goToChangeRequestHistory">View My Changes</AppButton>
-        </div>
-      </v-card>
-
+      <ApplicationChangeRequestInProgressAlert
+        v-if="hasActiveChangeRequest && !isChangeRequest"
+        :loading="isApplicationProcessing"
+        class="my-8"
+      />
       <!-- Do not allow CR New Fac to be submitted if PCF is unlocked -->
       <v-card v-if="isSomeApplicationUnlocked && isChangeRequest" elevation="4" class="my-8">
         <v-card-title class="rounded-t-lg py-3 noticeAlert">
@@ -34,7 +24,7 @@
         </p>
       </v-card>
 
-      <div v-if="!isSomeChangeRequestActive" class="text-center text-h5 text-primary">
+      <div v-if="!hasActiveChangeRequest" class="text-center text-h5 text-primary">
         To submit your application, review this summary of your information and scroll down to sign the declaration.
       </div>
       <v-card v-if="!isApplicationFormComplete && !isApplicationProcessing" elevation="4" class="my-8">
@@ -314,6 +304,8 @@ import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
+import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import FacilityInformationSummaryCard from '@/components/util/FacilityInformationSummaryCard.vue';
 import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
@@ -335,12 +327,14 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import { isAnyApplicationUnlocked, isAnyChangeRequestActive } from '@/utils/common.js';
+import { isAnyApplicationUnlocked } from '@/utils/common.js';
 
 export default {
   components: {
     AppButton,
     AppDialog,
+    ApplicationChangeRequestInProgressAlert,
+    ApplicationPCFHeader,
     ChangeNotificationFormSummary,
     ECEWESummary,
     FacilityInformationSummaryCard,
@@ -379,33 +373,13 @@ export default {
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['changeRequestId', 'isChangeRequest', 'navBarList', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
-    ...mapState(useReportChangesStore, ['changeRequestStore', 'isChangeNotificationFormComplete']),
+    ...mapState(useReportChangesStore, ['hasActiveChangeRequest', 'isChangeNotificationFormComplete']),
     ...mapState(useSummaryDeclarationStore, ['declarationModel', 'facilities', 'summaryModel']),
     languageYearLabel() {
       return this.getLanguageYearLabel;
     },
     getFundingAgreementNumber() {
       return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
-    },
-    getChangeRequestYear() {
-      const currProgramYear = this.programYearList?.list?.find((el) => el.programYearId == this.programYearId);
-      const prevProgramYear = this.programYearList?.list?.find(
-        (el) => el.programYearId == currProgramYear.previousYearId,
-      );
-      const changeReq = this.changeRequestStore?.find(
-        (el) =>
-          (el.externalStatus == 2 || el.externalStatus == 3) &&
-          el.changeActions[0].changeType != 'PARENT_FEE_CHANGE' &&
-          el.programYearId == prevProgramYear.programYearId,
-      );
-      //we can have CR's open for multiple years. Show older CR first if it exists.
-      if (!this.isSomeChangeRequestActive) {
-        //no change req active, so warning box is hidden. Return empty string so page doesn't break
-        return '';
-      } else if (changeReq) {
-        return prevProgramYear.name;
-      }
-      return currProgramYear.name;
     },
     isReadOnly() {
       if (this.isMinistryUser) {
@@ -480,10 +454,6 @@ export default {
     isGroup() {
       return this.summaryModel?.application?.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP;
     },
-    isSomeChangeRequestActive() {
-      //Status of : "Submitted" "Action Required";
-      return isAnyChangeRequestActive(this.changeRequestStore);
-    },
     areAllFacilitiesComplete() {
       return this.mappedFacilities?.every((facility) => facility.isComplete);
     },
@@ -509,7 +479,7 @@ export default {
     isSubmitDisabled() {
       return (
         this.isReadOnly ||
-        (!this.isChangeRequest && this.isSomeChangeRequestActive) ||
+        (!this.isChangeRequest && this.hasActiveChangeRequest) ||
         !this.model.agreeConsentCertify ||
         !this.model.orgContactName ||
         !this.isApplicationFormComplete

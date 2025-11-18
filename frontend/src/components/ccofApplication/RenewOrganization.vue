@@ -1,29 +1,15 @@
 <template>
-  <Spinner v-if="processing" />
-  <v-form v-else ref="form" v-model="isValidForm">
-    <v-container class="my-8 py-0">
-      <p class="text-h5 text-center">
-        Child Care Operating Funding Program - {{ renewalYearLabel }} Program Confirmation Form
-      </p>
-      <div class="d-flex flex-column align-center mt-12">
-        <v-card v-if="isSomeChangeRequestActive" rounded="0" width="85%" max-width="1200">
-          <v-card-title class="noticeAlert text-wrap">
-            <v-icon size="x-large" class="noticeAlertIcon"> mdi-alert-octagon </v-icon>
-            You have a change request for the {{ currentYearLabel }} funding term still in progress.
-          </v-card-title>
-          <p class="pa-8 pt-4">
-            The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.
-            <AppButton :loading="processing" class="mt-4" @click="goToChangeRequestHistory">
-              View My Changes
-            </AppButton>
-          </p>
-        </v-card>
-        <v-card class="my-8 pa-8 pb-4" width="85%" max-width="1200">
+  <v-skeleton-loader :loading="processing" type="table-tbody" class="mb-12">
+    <v-container fluid class="mx-lg-16">
+      <v-form ref="form" v-model="isValidForm">
+        <ApplicationPCFHeader :program-year="renewalYearLabel" />
+        <ApplicationChangeRequestInProgressAlert v-if="hasActiveChangeRequest" :loading="processing" class="my-8" />
+        <v-card class="my-8 pa-8 pb-4">
           <p>Has your banking information changed?</p>
           <v-radio-group
             v-model="hasBankingInfoChanged"
             inline
-            :disabled="isSomeChangeRequestActive"
+            :disabled="hasActiveChangeRequest"
             :rules="rules.required"
           >
             <v-radio label="Yes" :value="true" />
@@ -59,9 +45,9 @@
             </div>
           </v-card>
         </v-card>
-      </div>
+      </v-form>
     </v-container>
-  </v-form>
+  </v-skeleton-loader>
   <NavButton
     :is-next-displayed="true"
     :is-next-disabled="!isValidForm || hasBankingInfoChanged"
@@ -72,20 +58,19 @@
   />
 </template>
 <script>
-import { mapActions, mapState } from 'pinia';
-import AppButton from '@/components/guiComponents/AppButton.vue';
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import Spinner from '@/components/common/Spinner.vue';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { isAnyChangeRequestActive } from '@/utils/common.js';
 import { APPLICATION_STATUSES, APPLICATION_TYPES, PATHS, pcfUrl } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppButton, NavButton, Spinner },
+  components: { ApplicationChangeRequestInProgressAlert, ApplicationPCFHeader, NavButton },
   data() {
     return {
       processing: false,
@@ -94,12 +79,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['currentYearLabel', 'programYearList', 'renewalYearLabel']),
-    ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
-    ...mapState(useReportChangesStore, ['changeRequestStore']),
-    isSomeChangeRequestActive() {
-      return isAnyChangeRequestActive(this.changeRequestStore);
-    },
+    ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
+    ...mapState(useApplicationStore, [
+      'applicationStatus',
+      'applicationType',
+      'latestProgramYearId',
+      'showApplicationTemplateV1',
+    ]),
+    ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
+    ...mapWritableState(useApplicationStore, ['isRenewalBankingInfoComplete']),
     hasDraftRenewalApplication() {
       return (
         this.applicationStatus === APPLICATION_STATUSES.DRAFT && this.applicationType === APPLICATION_TYPES.RENEWAL
@@ -119,7 +107,7 @@ export default {
         this.processing = true;
         await this.getChangeRequestList();
         // Prevents users from creating a duplicate RENEWAL application if they click the browser's back arrow and try again.
-        if (this.hasDraftRenewalApplication) {
+        if (this.showApplicationTemplateV1 && this.hasDraftRenewalApplication) {
           this.back();
         }
       } catch (error) {
@@ -130,10 +118,18 @@ export default {
       }
     },
     async next() {
-      this.processing = true;
-      const nextProgramYear = this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
-      await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
+      if (this.showApplicationTemplateV1) {
+        this.processing = true;
+        const nextProgramYear = this.programYearList?.list?.find(
+          (el) => el.previousYearId === this.latestProgramYearId,
+        );
+        await this.renewApplication();
+        this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
+      } else {
+        // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalBankingInfoComplete field to Application entity
+        this.isRenewalBankingInfoComplete = true;
+        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_FA, this.latestProgramYearId));
+      }
     },
     validateForm() {
       this.$refs.form?.validate();

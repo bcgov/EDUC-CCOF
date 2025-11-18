@@ -118,7 +118,9 @@ export const PATHS = {
   //These are all suffixes.
   SELECT_APPLICATION_TYPE: '/select-application-type',
   NEW_APPLICATION_INTERMEDIATE: '/new-application',
-  RENEW_CONFIRM: '/group/renew',
+
+  CCOF_RENEWAL_BANKING_INFORMATION: '/banking-information',
+  CCOF_RENEWAL_FA: '/funding-agreement',
 
   CCOF_GROUP_ORG: '/group/organization',
   CCOF_GROUP_FACILITY: '/group/facility',
@@ -181,7 +183,7 @@ export function changeUrlGuid(
 }
 
 export const NAV_BAR_GROUPS = {
-  CCOF: 'CCOF',
+  CCOF: 'CCOF Base Funding',
   CCFRI: 'CCFRI',
   ECEWE: 'ECE-WE',
   MTFI: 'MTFI',
@@ -304,6 +306,10 @@ export const CHANGE_REQUEST_TYPES = {
   NEW_CLOSURE: 100000015,
   EDIT_EXISTING_CLOSURE: 100000016,
   REMOVE_A_CLOSURE: 100000017,
+};
+
+export const CHANGE_REQUEST_TYPE_TEXTS = {
+  MTFI: 'PARENT_FEE_CHANGE',
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
