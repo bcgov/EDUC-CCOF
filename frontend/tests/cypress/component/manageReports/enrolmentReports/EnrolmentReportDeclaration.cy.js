@@ -52,7 +52,7 @@ describe('<EnrolmentReportDeclaration />', () => {
     interceptAPI();
   });
 
-  it.only('should render enrolment report header', () => {
+  it('should render enrolment report header', () => {
     const facilityName = 'TEST-FAC-NAME';
     const facilityAccountNumber = '99999';
     const licenseNumber = 'LIC-1234';
