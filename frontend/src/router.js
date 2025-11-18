@@ -576,7 +576,7 @@ const router = createRouter({
         pageTitle: 'Report Changes',
         showNavBar: false,
         requiresAuth: true,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -587,7 +587,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
       },
     },
     {
@@ -604,7 +604,12 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {
@@ -638,7 +643,12 @@ const router = createRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
-        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {
@@ -873,6 +883,12 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {

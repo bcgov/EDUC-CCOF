@@ -121,6 +121,8 @@ router.get(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  // TODO What other Change Request permissions?
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.VIEW_A_CR),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -135,6 +137,8 @@ router.patch(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  // TODO What other Change Request permissions?
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -188,6 +192,7 @@ router.get(
   '/documents/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.VIEW_A_CR),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -196,17 +201,25 @@ router.get(
 );
 
 /**
- * Create the change request TODO: Rename this to something better
+ * Create the change request
  */
-router.post('/documents', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(documentChangeRequestSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createChangeRequest(req, res);
-});
+router.post(
+  '/documents',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
+  [checkSchema(documentChangeRequestSchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createChangeRequest(req, res);
+  },
+);
 
 router.post(
   '/:changeRequestId/documents',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.ADD_NEW_FACILITY),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -225,20 +238,6 @@ router.delete(
   (req, res) => {
     validationResult(req).throw();
     return deleteChangeAction(req, res);
-  },
-);
-
-/**
- * Delete a change request
- */
-router.delete(
-  '/:changeRequestId',
-  passport.authenticate('jwt', { session: false }),
-  isValidBackendToken,
-  [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
-  (req, res) => {
-    validationResult(req).throw();
-    return deleteChangeRequest(req, res);
   },
 );
 

@@ -23,7 +23,8 @@ router.post(
   '/change-action/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix - Implement with Change Request security
+  // TODO Are there others?
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
   scanFilePayload,
   createChangeActionDocuments,
 );
@@ -40,7 +41,13 @@ router.get(
   },
 );
 
-router.delete('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF), deleteDocuments);
+router.delete(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
+  deleteDocuments,
+);
 
 router.patch(
   '/:annotationId',
