@@ -1,6 +1,6 @@
 import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
 import vuetify from '@/plugins/vuetify';
-import { APPLICATION_STATUSES, ApiRoutes, PATHS } from '@/utils/constants.js';
+import { ApiRoutes, PATHS } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const programYearId = '1234';
@@ -52,14 +52,20 @@ describe('<EnrolmentReportDeclaration />', () => {
     interceptAPI();
   });
 
-  it('should render enrolment report header', () => {
+  it.only('should render enrolment report header', () => {
+    const facilityName = 'TEST-FAC-NAME';
+    const facilityAccountNumber = '99999';
+    const licenseNumber = 'LIC-1234';
     mountWithPinia({
       application: {
-        applicationMap: new Map([[programYearId, {}]]),
+        applicationMap: new Map([
+          [programYearId, { facilityList: [{ facilityId, facilityName, facilityAccountNumber, licenseNumber }] }],
+        ]),
       },
     });
-
-    cy.contains('Licence #:');
+    cy.contains(facilityName);
+    cy.contains(facilityAccountNumber);
+    cy.contains(`Licence #: ${licenseNumber}`);
     cy.contains('Reporting month: November 2025');
     cy.contains(`Version number: ${enrolmentReport.versionText}`);
   });
