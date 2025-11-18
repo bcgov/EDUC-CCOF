@@ -10,7 +10,6 @@ const {
   createChangeRequest,
   createChangeRequestFacility,
   createClosureChangeRequest,
-  deleteChangeRequest,
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,
@@ -122,7 +121,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   // TODO What other Change Request permissions?
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.VIEW_A_CR),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.VIEW_A_CR, PERMISSIONS.MTFI),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -207,7 +206,7 @@ router.post(
   '/documents',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI),
   [checkSchema(documentChangeRequestSchema)],
   (req, res) => {
     validationResult(req).throw();

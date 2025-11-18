@@ -836,6 +836,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: false,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {

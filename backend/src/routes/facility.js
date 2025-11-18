@@ -55,7 +55,7 @@ router.get(
   '/ccfri/:ccfriId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
   [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -70,7 +70,7 @@ router.get(
   '/fees/:facilityId/year/:programYearId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
   [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty(), param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
