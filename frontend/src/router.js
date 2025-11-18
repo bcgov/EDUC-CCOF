@@ -1026,7 +1026,7 @@ router.beforeEach((to, _from, next) => {
                 //   return next('unauthorized');
                 // }
                 // Validate specific permission
-                if (to.meta.permission && !authStore.hasPermission(...to.meta.permission)) {
+                if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
                   return next({ name: 'unauthorized' });
                 }
                 // Block access to Impersonate

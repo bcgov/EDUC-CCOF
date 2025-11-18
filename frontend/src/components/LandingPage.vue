@@ -302,11 +302,11 @@
       </v-row>
       <template
         v-if="
-          hasPermission(
+          hasPermission([
             PERMISSIONS.CREATE_NEW_APPLICATION,
             PERMISSIONS.CREATE_RENEWAL_PCF,
             PERMISSIONS.VIEW_SUBMITTED_PCF,
-          )
+          ])
         "
       >
         <v-row>
@@ -680,12 +680,12 @@ export default {
     showFacilitiesCard() {
       return (
         this.navBarList?.length > 0 &&
-        this.hasPermission(
+        this.hasPermission([
           this.PERMISSIONS.CREATE_NEW_APPLICATION,
           this.PERMISSIONS.CREATE_RENEWAL_PCF,
           this.PERMISSIONS.VIEW_SUBMITTED_PCF,
           this.PERMISSIONS.VIEW_CLOSURES,
-        )
+        ])
       );
     },
   },
@@ -873,7 +873,7 @@ export default {
       return isDisabled ? 'disabledButton' : 'blueButton';
     },
     showUpdateYourPCF(ccfriApplicationId) {
-      if (!this.hasPermission(this.PERMISSIONS.CREATE_NEW_APPLICATION, this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
+      if (!this.hasPermission([this.PERMISSIONS.CREATE_NEW_APPLICATION, this.PERMISSIONS.CREATE_RENEWAL_PCF])) {
         return false;
       }
       const application = this.applicationMap?.get(this.selectedProgramYearId);

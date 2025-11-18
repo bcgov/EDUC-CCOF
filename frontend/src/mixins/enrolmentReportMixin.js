@@ -25,7 +25,7 @@ export default {
         this.processing ||
         this.enrolmentReport?.externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT ||
         EnrolmentReportService.isSubmissionDeadlinePassed(this.enrolmentReport) ||
-        !this.hasPermission(this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER)
+        !this.hasPermission([this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER])
       );
     },
   },
