@@ -158,3 +158,14 @@ export function formatCurrency(value) {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+/**
+ * Converts a comma-separated string into an array of numbers.
+ * Example:
+ *   "1, 2, 3" => [1, 2, 3]
+ *   null or "" => []
+ */
+export function formatStringToNumberList(str) {
+  if (!str) return [];
+  return str.split(',').map((x) => Number(x.trim()));
+}

@@ -21,7 +21,9 @@
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facility-details">
               Facility Details
             </v-tab>
-            <v-tab value="programs-and-services">Programs and Services</v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_PROGRAMS_VACANCIES)" value="programs-and-services">
+              Programs and Vacancies
+            </v-tab>
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
               Licence and Service Details Record
             </v-tab>
@@ -36,7 +38,7 @@
                   @facility-updated="updateFacility"
                 />
               </v-window-item>
-              <v-window-item value="programs-and-services">Programs and Services</v-window-item>
+              <v-window-item value="programs-and-services"><ManageProgramsVacancies /></v-window-item>
               <v-window-item value="licences-details">
                 <ViewLicence />
               </v-window-item>
@@ -68,10 +70,11 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import ViewLicence from '@/components/licences/ViewLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import ManageProgramsVacancies from '../programsVacancies/ManageProgramsVacancies.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { AppButton, NavButton, ManageFacilityDetails, ViewLicence },
+  components: { AppButton, NavButton, ManageFacilityDetails, ManageProgramsVacancies, ViewLicence },
   mixins: [alertMixin, permissionsMixin],
   data() {
     return {
