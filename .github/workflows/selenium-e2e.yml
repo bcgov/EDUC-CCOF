@@ -1,4 +1,3 @@
-
 name: Selenium end-to-end tests
 
 on:
@@ -31,13 +30,18 @@ jobs:
           google-chrome --version
           
       - name: Create root-level config.properties (QA only)
+        env:
+          QA_CRM_URL: ${{ secrets.QA_CRM_URL }}
+          CRM_USERNAME: ${{ secrets.CRM_USERNAME }}
+          CRM_PASSWORD: ${{ secrets.CRM_PASSWORD }}
         run: |
+          set -eux
           cat > config.properties <<'EOL'
-          qa_crm_url=${{ secrets.QA_CRM_URL }}
-          crm_username=${{ secrets.CRM_USERNAME }}
-          crm_password=${{ secrets.CRM_PASSWORD }}
-          browser=chrome
-          headless=true
+          qa_crm_url='$QA_CRM_URL'
+          crm_username='$CRM_USERNAME'
+          crm_password='$CRM_PASSWORD'
+          browser='chrome'
+          headless='true'
           EOL
 
       - name: Build & run tests
