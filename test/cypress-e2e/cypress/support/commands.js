@@ -156,7 +156,7 @@ Cypress.Commands.add('startNewApp', (provider) => {
   cy.contains('Start Application').should('be.visible').click()
   cy.url().should('include', '/select-application-type')
 
-  if (provider === 'Family') {
+  if (provider === 'family' || provider === 'familyOld') {
       cy.contains('.v-card', 'Family Provider').should('be.visible').within(()=> {
       cy.contains('Start Application').click()
     })
@@ -293,10 +293,11 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
         ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
         break;
+      case 'oldFamilyChildCare':
       case 'oldGroupLicenceCategories':
-        ccofApp.inputOrganizationInfoOld(companyType)
-        ccofApp.inputFacilityInfoOld()
-        ccofApp.licenceAndServiceDeliveryDetailsOld()
+        ccofApp.inputOrganizationInfoOld(appType, companyType)
+        ccofApp.inputFacilityInfoOld(appType)
+        ccofApp.licenceAndServiceDeliveryDetailsOld(appType)
         ccofApp.groupLicensesOld()
         ccofApp.offerExtendedHoursOld()
         ccofApp.addAnotherFacility()
@@ -342,14 +343,6 @@ Cypress.Commands.add('runEceWeApp', (appType, term, {model = null} = {}) => {
     eceWeApp.supportingDocUpload()
   })
 }); 
-
-Cypress.Commands.add('licenceUpload', () => {
-  ccofApp.loadFixturesAndVariables()
-    cy.then(()=>{
-      ccofApp.licenceUpload()
-  })
-});
-
 
 Cypress.Commands.add('licenceUpload', () => {
   ccofApp.loadFixturesAndVariables()

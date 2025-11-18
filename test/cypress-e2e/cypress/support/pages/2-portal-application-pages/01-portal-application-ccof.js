@@ -18,6 +18,7 @@ class CcofApplication {
       this.groupLicenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
       this.oldGroupLicenceCategories = this.facilityLicenceDetailsData.oldGroupLicenceCategories
       this.familyLicenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
+      this.oldFamilyLicenceCategory = this.facilityLicenceDetailsData.oldFamilyLicenceCategories
       this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
       this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
       this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
@@ -41,7 +42,6 @@ class CcofApplication {
     cy.url().should('include', `/${path}/organization`)
   }
 
-  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
   // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
   inputOrganizationInfo(typeName) {
     // Org Info
@@ -71,7 +71,7 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  inputOrganizationInfoOld(typeName) {
+  inputOrganizationInfoOld(appType, typeName) {
     // Org Info
     cy.contains('Organization Information')
     cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
@@ -79,16 +79,26 @@ class CcofApplication {
     
     // Mailing & Street Address
     cy.contains('Organization Mailing Address').should('be.visible')
+    if(appType === 'familyOld') {
+      cy.getByLabel('Name of Care Provider(if registered company)').typeAndAssert('Luffy')
+      cy.contains('label', 'Province')
+      cy.get('input:disabled').should('have.value', 'BC')
+    } else {
+      cy.selectByLabel('Province', this.orgInfo.province)
+    }
     cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
     cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
-    cy.selectByLabel('Province', this.orgInfo.province)
     cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
     cy.contains('Organization Street Address same as Mailing Address').should('be.visible').click()
     
     // Org Contact
-    cy.contains('Contact Information').should('be.visible')
-    cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgInfo.facilityContact)
-    cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
+    if(appType === 'groupOld') {
+      cy.contains('Contact Information').should('be.visible')
+      cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgInfo.facilityContact)
+      cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
+    } else {
+      cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
+    }
     cy.contains('label', 'Business BCeID')
     cy.get('input:disabled').should('have.value', Cypress.env('PORTAL_USERNAME'))
     cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
@@ -132,20 +142,25 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  inputFacilityInfoOld() {
-    // Facility Info
-    cy.contains('Facility Information')
-    cy.getByLabel('Facility Name (as it appears on the Community Care and Assisted Living Act Licence)').typeAndAssert(this.facilityData.facilityName)
-    cy.getByLabel('Year Facility Began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
-    cy.getByLabel('Facility Street Address').typeAndAssert(this.orgInfo.streetAddress)
-    cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
-    cy.contains('Province')
-    cy.get('input:disabled').should('have.value', 'BC')
-    cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
-    cy.getByLabel('Facility Contact Name').typeAndAssert(this.orgInfo.facilityContact)
-    cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
-    cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
-    cy.getByLabel('Facility Email Address').typeAndAssert(this.orgInfo.email)
+  inputFacilityInfoOld(appType) {
+    if (appType === 'familyOld') {
+      cy.contains('Information to Determine Eligibility')
+      cy.getByLabel('Facility Name').typeAndAssert(this.facilityData.facilityName)
+    } else {
+      // Facility Info
+      cy.contains('Facility Information')
+      cy.getByLabel('Facility Name (as it appears on the Community Care and Assisted Living Act Licence)').typeAndAssert(this.facilityData.facilityName)
+      cy.getByLabel('Year Facility Began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
+      cy.getByLabel('Facility Street Address').typeAndAssert(this.orgInfo.streetAddress)
+      cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
+      cy.contains('Province')
+      cy.get('input:disabled').should('have.value', 'BC')
+      cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
+      cy.getByLabel('Facility Contact Name').typeAndAssert(this.orgInfo.facilityContact)
+      cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
+      cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
+      cy.getByLabel('Facility Email Address').typeAndAssert(this.orgInfo.email)
+    }
 
     // Licence info
     cy.getByLabel('Facility Licence Number').typeAndAssert(this.facilityData.facilityLicence)
@@ -236,6 +251,16 @@ class CcofApplication {
   }
 
   familyLicences(licenceType) {
+    if (licenceType === 'oldFamilyChildCare') {
+      cy.contains('Licence type')
+      Object.entries(this.oldFamilyLicenceCategory).forEach(([category, value]) => {
+        if (value.checked) {
+          cy.getByLabel(`${category}`).click()
+        }
+      });
+    } else {
+      // HEDIE ADD THE NEW LICENCE VERSION EDIT THE JSON
+    }
     // Licence Types & Capacities
     const familyLicence = this.familyLicenceCategory[licenceType]
     cy.getByLabel(familyLicence.name).click()

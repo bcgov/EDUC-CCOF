@@ -105,6 +105,26 @@
         "max": "20"
       }
     },
+    "oldFamilyLicenceCategories": {
+      "Family child care": {
+        "checked": true,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "In-Home Multi-Age Child Care": {
+        "checked": false,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      },
+      "Multi-Age Care": {
+        "checked": false,
+        "max": "20",
+        "maxUnderFourHours": "4",
+        "maxOverFourHours": 4
+      }
+    },
     "familyLicenceCategories": {
       "familyChildCare": {
         "name" : "Family Child Care",
@@ -121,7 +141,7 @@
         "maxOverFourHours": 4
       },
       "multiAge": {
-        "name": "Multi-Age Chilld Care",
+        "name": "Multi-Age Child Care",
         "checked": false,
         "max": "20",
         "maxUnderFourHours": "4",
