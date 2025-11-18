@@ -1153,8 +1153,8 @@ import { cloneDeep, isEmpty, isEqual, pick } from 'lodash';
 
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import BackConfirmationDialog from '@/components/enrolmentReports/BackConfirmationDialog.vue';
-import FullMonthClosureConfirmationDialog from '@/components/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
+import BackConfirmationDialog from '@/components/manageReports/enrolmentReports/BackConfirmationDialog.vue';
+import FullMonthClosureConfirmationDialog from '@/components/manageReports/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
@@ -1343,13 +1343,13 @@ export default {
     },
 
     normalizeRates() {
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         this.enrolmentReport[ccfriRateField] = this.enrolmentReport[ccfriRateField] || 0;
         this.enrolmentReport.baseFundingRates[category] = this.enrolmentReport.baseFundingRates[category] || 0;
         this.enrolmentReport.ccfriProviderPaymentRates[category] =
           this.enrolmentReport.ccfriProviderPaymentRates[category] || 0;
-      });
+      }
     },
 
     initializePaymentEligibleDaysCount() {
@@ -1388,46 +1388,46 @@ export default {
 
     calculateCurrentTotals() {
       const currentTotals = Object.fromEntries(this.categoryFields.map((category) => [category, 0]));
-      this.dailyEnrolments.forEach((dailyEnrolment) => {
-        this.categoryFields.forEach((category) => {
+      for (const dailyEnrolment of this.dailyEnrolments) {
+        for (const category of this.categoryFields) {
           currentTotals[category] += dailyEnrolment[category] || 0;
-        });
-      });
-      this.categoryFields.forEach((category) => {
+        }
+      }
+      for (const category of this.categoryFields) {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         this.enrolmentReport[currentTotalField] = currentTotals[category] || 0;
-      });
+      }
     },
 
     calculateBaseFundingAmounts() {
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         this.enrolmentReport[ccofBaseAmountField] = multiplyDecimal(
           this.paymentEligibleDaysCount.CCOF[category],
           this.enrolmentReport.baseFundingRates[category],
         );
-      });
+      }
     },
 
     calculateCcfriAmounts() {
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriRateField = this.buildCalculationFieldName('dailyCcfriRate', category);
         this.enrolmentReport[ccfriAmountField] = multiplyDecimal(
           this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport[ccfriRateField],
         );
-      });
+      }
     },
 
     calculateCcfriProviderAmounts() {
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
         this.enrolmentReport[ccfriProviderAmountField] = multiplyDecimal(
           this.paymentEligibleDaysCount.CCFRI[category],
           this.enrolmentReport.ccfriProviderPaymentRates[category],
         );
-      });
+      }
     },
 
     calculateGrantTotals() {
@@ -1436,7 +1436,7 @@ export default {
         ccfriAmount: 0,
         ccfriProviderAmount: 0,
       };
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
@@ -1446,14 +1446,14 @@ export default {
           grantTotals.ccfriProviderAmount,
           this.enrolmentReport[ccfriProviderAmountField],
         );
-      });
+      }
       this.enrolmentReport.grandTotalBase = grantTotals.ccofBaseAmount || 0;
       this.enrolmentReport.grandTotalCcfri = grantTotals.ccfriAmount || 0;
       this.enrolmentReport.grandTotalCcfriProvider = grantTotals.ccfriProviderAmount || 0;
     },
 
     calculateDifferences() {
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const diffCurrentTotalField = this.buildCalculationFieldName('diffCurrentTotal', category);
         this.enrolmentReport.differences[diffCurrentTotalField] = subtractDecimal(
@@ -1481,7 +1481,7 @@ export default {
           this.enrolmentReport[ccfriProviderAmountField],
           this.previousEnrolmentReport[ccfriProviderAmountField],
         );
-      });
+      }
 
       this.enrolmentReport.differences['diffGrandTotalBase'] = subtractDecimal(
         this.enrolmentReport.grandTotalBase,
@@ -1601,13 +1601,13 @@ export default {
         'grandTotalCcfriProvider',
         'isFullMonthClosure',
       ];
-      this.categoryFields.forEach((category) => {
+      for (const category of this.categoryFields) {
         const currentTotalField = this.buildCalculationFieldName('currentTotal', category);
         const ccofBaseAmountField = this.buildCalculationFieldName('ccofBaseAmount', category);
         const ccfriAmountField = this.buildCalculationFieldName('ccfriAmount', category);
         const ccfriProviderAmountField = this.buildCalculationFieldName('ccfriProviderAmount', category);
         keysForBackend.push(currentTotalField, ccofBaseAmountField, ccfriAmountField, ccfriProviderAmountField);
-      });
+      }
       if (this.isGroup) {
         keysForBackend.push(
           'totalEnrolledPre',
