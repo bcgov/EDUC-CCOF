@@ -7,7 +7,7 @@ jobs:
   selenium-run:
     name: Run Selenium E2E tests
     runs-on: ubuntu-24.04
-    environment: dev
+    environment: qa
 
     steps:
       - name: Checkout
@@ -23,26 +23,36 @@ jobs:
       - name: Install Chrome
         run: |
           set -eux
-          sudo apt-get update
-          sudo apt-get install -y wget fonts-liberation libasound2 libnss3 libgbm1 xdg-utils
+          echo "Updating package lists..."
+          sudo apt update
+          echo "Installing required dependencies..."
+          sudo apt install -y wget fonts-liberation libasound2 libnss3 libgbm1 xdg-utils
+          echo "Attempting to download google-chrome-stable..."
           wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i /tmp/chrome.deb || sudo apt-get -f install -y
+          echo "Installing google-chrome-stable..."
+          sudo dpkg -i /tmp/chrome.deb || sudo apt -f install -y
+          echo "Verifying Chrome installation..."
           google-chrome --version
-          
+
       - name: Create root-level config.properties (QA only)
         env:
-          QA_CRM_URL: ${{ secrets.QA_CRM_URL }}
+          CRM_URL: ${{ secrets.CRM_URL }}
           CRM_USERNAME: ${{ secrets.CRM_USERNAME }}
           CRM_PASSWORD: ${{ secrets.CRM_PASSWORD }}
         run: |
           set -eux
+          echo "Creating config.properties file with QA credentials..."
           cat > config.properties <<'EOL'
-          qa_crm_url='$QA_CRM_URL'
+          crm_url='$CRM_URL'
           crm_username='$CRM_USERNAME'
           crm_password='$CRM_PASSWORD'
           browser='chrome'
           headless='true'
           EOL
+          echo "config.properties created successfully."
 
       - name: Build & run tests
-        run: mvn -B -ntp clean test
+        run: |
+          echo "Starting Maven build and running Selenium tests..."
+          mvn -B -ntp clean test
+          echo "Maven build and tests completed."
