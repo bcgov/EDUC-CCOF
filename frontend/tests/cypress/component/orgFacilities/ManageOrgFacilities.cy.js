@@ -123,7 +123,7 @@ describe('<ManageOrgFacilities />', () => {
       });
 
       cy.contains('button', 'Funding Agreement').click();
-      cy.contains('View and manage the funding agreements for your organization');
+      cy.contains('Submit a change request to notify the Child Care Operating Funding Program.');
       cy.contains('Select a funding agreement term:');
     });
 
