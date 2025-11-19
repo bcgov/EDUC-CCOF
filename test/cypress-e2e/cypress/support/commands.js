@@ -283,35 +283,34 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
-    switch(licenceType) {
-      case 'groupLicenceCategories':
+    switch (appType) {
+      case 'group':
+      case 'family':
         ccofApp.inputOrganizationInfo(companyType)
         ccofApp.inputFacilityInfo()
         ccofApp.licenceAndServiceDeliveryDetails()
-        ccofApp.groupLicenses()
-        ccofApp.offerExtendedHours()
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
         break;
-      case 'oldFamilyChildCare':
-      case 'oldGroupLicenceCategories':
+      case 'groupOld':
+      case 'familyOld':
         ccofApp.inputOrganizationInfoOld(appType, companyType)
         ccofApp.inputFacilityInfoOld(appType)
-        ccofApp.licenceAndServiceDeliveryDetailsOld(appType)
-        ccofApp.groupLicensesOld()
-        ccofApp.offerExtendedHoursOld()
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
-        break;
-      case 'familyChildCare':
-        ccofApp.inputOrganizationInfo(companyType)
-        ccofApp.inputFacilityInfo()
-        ccofApp.licenceAndServiceDeliveryDetails()
-        ccofApp.familyLicences(licenceType)
-        ccofApp.offerExtendedHours()
-        ccofApp.licenceUpload()
+        ccofApp.licenceAndServiceDeliveryDetailsOld()
         break;
     }
+
+    if (appType.includes('group')) {
+      ccofApp.groupLicenses(licenceType)
+    } else {
+      ccofApp.familyLicences(licenceType)
+    }
+
+    ccofApp.offerExtendedHoursOld(appType)
+
+    if (appType.includes('group')) {
+      ccofApp.addAnotherFacility()
+    } 
+
+    ccofApp.licenceUpload()
   })
 });
 

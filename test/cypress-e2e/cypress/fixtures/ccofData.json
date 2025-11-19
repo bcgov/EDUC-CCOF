@@ -61,7 +61,7 @@
         "maxOverFourHours": 4
       },
       "Preschool": {
-        "checked": false,
+        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
@@ -82,69 +82,78 @@
     "groupLicenceCategories": {
       "Group Child Care (Under 36 Months)": {
         "checked": true,
-        "max": "16"
+        "max": 1,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
         "checked": true,
-        "max": "24"
+        "max": 24,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       },
       "Group Child Care (School Age)": {
         "checked": true,
-        "max": "20"
+        "max": 20,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       },
       "School Age Care on School Grounds": {
         "checked": true,
-        "max": "16"
+        "max": 16,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       },
       "Preschool": {
         "checked": true,
-        "max": "24"
+        "max": 24,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
         "checked": true,
-        "max": "20"
+        "max": 20,
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
       }
     },
     "oldFamilyLicenceCategories": {
       "Family child care": {
         "checked": true,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "In-Home Multi-Age Child Care": {
         "checked": false,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Care": {
         "checked": false,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
     },
     "familyLicenceCategories": {
-      "familyChildCare": {
-        "name" : "Family Child Care",
+      "Family Child Care": {
         "checked": true,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
-      "inHomeMultiAge": {
-        "name": "In-Home Multi-Age Child Care",
+      "In-Home Multi-Age Child Care": {
         "checked": false,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
-      "multiAge": {
-        "name": "Multi-Age Child Care",
+      "Multi-Age Child Care": {
         "checked": false,
-        "max": "20",
-        "maxUnderFourHours": "4",
+        "max": 20,
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
     },
@@ -167,30 +176,40 @@
     "offerExtendedHoursChildCare": "Yes",
     "maxDaysPerWeekExtendedHours": "3",
     "maxWeeksPerYearExtendedHours": "12",
-    "groupLicenceCategoriesExtendedHours": {
-      "Group Child Care (Under 36 Months)": {
-        "checked": true,
-        "maxUnderFourHours": "4",
+    "maxSpacesExtendedHours": "3",
+    "oldGroupLicenceCategoriesExtendedHours": {
+      "Group Child Care (under 36 Months)": {
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "checked": true,
-        "maxUnderFourHours": "4",
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
-      "Group Child Care (School Age)": {
-        "checked": true,
-        "maxUnderFourHours": "4",
-        "maxOverFourHours": 4
-      },
-      "School Age Care on School Grounds": {
-        "checked": true,
-        "maxUnderFourHours": "4",
+      "Group Child Care (School Age / School Age Care on School Grounds)": {
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
-        "checked": true,
-        "maxUnderFourHours": "4",
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
+      }
+    },
+    "oldFamilyLicenceCategoriesExtendedHours": {
+      "Family Child Care (under 36 months)": {
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
+      },
+      "Family Child Care (36 months to School Age)": {
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
+      },
+      "Family Child Care (School Age / School Age Care on School Grounds)": {
+        "maxUnderFourHours": 4,
+        "maxOverFourHours": 4
+      },
+      "Multi-Age Child Care": {
+        "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
     },
