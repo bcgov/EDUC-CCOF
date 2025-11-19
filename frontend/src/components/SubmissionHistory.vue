@@ -35,11 +35,11 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapState } from 'pinia';
 
 import NavButton from '@/components/util/NavButton.vue';
+import PDFService from '@/services/pdfService';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useDocumentStore } from '@/store/document.js';
 import { PATHS, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
 
@@ -63,7 +63,6 @@ export default {
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
-    ...mapState(useDocumentStore, ['pdfs']),
   },
   async mounted() {
     this.loading = true;
@@ -71,10 +70,9 @@ export default {
     this.loading = false;
   },
   methods: {
-    ...mapActions(useDocumentStore, ['getPDFs']),
     async loadSubmissions() {
-      await this.getPDFs(this.organizationId);
-      this.submissions = this.pdfs?.map((submission) => {
+      const pdfs = await PDFService.getPDFs(this.organizationId);
+      this.submissions = pdfs?.map((submission) => {
         return {
           annotationId: submission?.annotationId,
           appId: submission?.appId,

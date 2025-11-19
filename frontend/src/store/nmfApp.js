@@ -1,10 +1,10 @@
-import { defineStore } from 'pinia';
 import { isEqual } from 'lodash';
+import { defineStore } from 'pinia';
 
 import ApiService from '../common/apiService.js';
+import { deepCloneObject } from '../utils/common.js';
 import { ApiRoutes } from '../utils/constants.js';
 import { checkSession } from '../utils/session.js';
-import { deepCloneObject } from '../utils/common.js';
 
 export const useNmfAppStore = defineStore('nmfApp', {
   state: () => ({
@@ -32,7 +32,6 @@ export const useNmfAppStore = defineStore('nmfApp', {
     async loadNmf(ccfriId) {
       let nmfModel = this.getByCcfriId(ccfriId);
       if (nmfModel) {
-        console.log('found nmfmodel for ccfriId: ', ccfriId);
         this.setNmfModel(nmfModel);
         this.setLoadedModel(nmfModel);
       } else {

@@ -55,7 +55,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
     async loadECEWE() {
       checkSession();
       try {
-        const response = await ApiService.apiAxios.get('/api/application/ecewe/' + this.applicationId);
+        const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${this.applicationId}`);
         const payload = response?.data;
         this.setOptinECEWEChangeRequestReadonly(payload?.optInECEWE === 1);
         this.setBelongsToUnionChangeRequestReadonly(payload?.belongsToUnion === 1);

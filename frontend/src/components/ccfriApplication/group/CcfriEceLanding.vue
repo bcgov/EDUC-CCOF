@@ -117,6 +117,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ApiService from '@/common/apiService.js';
 import { PATHS, changeUrl, changeUrlGuid, pcfUrl, pcfUrlGuid } from '@/utils/constants.js';
 import { isChangeRequest } from '@/utils/common.js';
+import { ApiRoutes } from '@/utils/constants';
 
 let ccfriOptInOrOut = {};
 let textInput = '';
@@ -294,7 +295,7 @@ export default {
       this.refreshNavBarList();
       if (payload.length > 0) {
         try {
-          const response = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+          const response = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_CCFRI, payload);
           response.data.forEach((item) => {
             if (item.ccfriApplicationId) {
               this.userProfileList.find((facility) => {
