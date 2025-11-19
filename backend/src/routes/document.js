@@ -14,7 +14,8 @@ module.exports = router;
 router.post(
   '/application/',
   passport.authenticate('jwt', { session: false }),
-  isValidBackendToken, // TODO #securitymatrix - Implement with Applications security
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
   scanFilePayload,
   createApplicationDocuments,
 );

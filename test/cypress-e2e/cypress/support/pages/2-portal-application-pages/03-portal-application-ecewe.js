@@ -16,7 +16,6 @@ class EceWeApplication {
         })
     }
 
-    // QA: EDIT INPUTS HERE USING eceweData.json in "fixtures"----->
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
@@ -29,13 +28,12 @@ class EceWeApplication {
         })
     }
 
-    optInEceWe() {
+    optInEceWe(term) {
         cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE)').should('be.visible')
-        cy.contains('.v-card', 'For the 2025-26 funding term, would you like to opt-in to ECE-WE for any facility in your organization?').getByLabel(`${this.optInOrOut}`).click()
+        cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click()
     }
 
     groupEceWe() {
-        this.optInEceWe()
         cy.then(()=> {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
@@ -78,7 +76,6 @@ class EceWeApplication {
     }
 
     familyEceWe() {
-        this.optInEceWe()
         cy.then(()=> {
             cy.clickByText('Save')
             cy.contains('Success! ECEWE application has been saved').should('be.visible')

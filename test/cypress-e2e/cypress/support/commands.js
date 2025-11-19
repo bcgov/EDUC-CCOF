@@ -148,7 +148,7 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
 })
 
 
-Cypress.Commands.add('startNewApp', (input) => {
+Cypress.Commands.add('startNewApp', (provider) => {
   cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
   cy.contains('What would you like to do?').should('be.visible')
   cy.contains('Start Application').should('be.visible').click()
@@ -156,10 +156,34 @@ Cypress.Commands.add('startNewApp', (input) => {
   cy.contains('p', 'Welcome to Child Care Operating Funding (CCOF)').should('be.visible')
   cy.contains('Start Application').should('be.visible').click()
   cy.url().should('include', '/select-application-type')
-  cy.contains('.v-card', `${input}`).should('be.visible').within(()=> {
-    cy.contains('Start Application').click()
-  })
+
+  if (provider === 'Family') {
+      cy.contains('.v-card', 'Family Provider').should('be.visible').within(()=> {
+      cy.contains('Start Application').click()
+    })
+  } else {
+      cy.contains('.v-card', 'Group Provider').should('be.visible').within(()=> {
+      cy.contains('Start Application').click()
+    })
+  }
 });
+
+Cypress.Commands.add('startNewRenewalApp', () => {
+  cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
+  cy.contains('Status of your funding agreement for the current fiscal year: Active')
+  cy.contains('What would you like to do?').should('be.visible')
+  cy.contains('Renew my Funding Agreement 2026-27').clickByText('Renew my Funding Agreement')
+  cy.contains('Child Care Operating Funding Program - 2026-27 Program Confirmation Form')
+  cy.url().should('include', `/group/renew`)
+  cy.contains('.v-card','Do your current licence and service details match the information found in Schedule A of your most recent Funding Agreement?').within(()=> {
+      cy.getByLabel('Yes').click()
+  })
+  cy.contains('.v-card','Has your banking information changed?').within(()=> {
+      cy.getByLabel('No').click()
+  })
+  cy.clickByText('Next')
+});
+
 
 /*
 * Method to Cancel the application if the button is present
@@ -278,18 +302,23 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   })
 });
 
-Cypress.Commands.add('runCcfriApp', (appType) => {
+Cypress.Commands.add('runCcfriApp', (appType, term) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
-    ccfriApp.optInFacilities(appType)
-    ccfriApp.addClosures()
+    ccfriApp.optInFacilities()
+    if (appType === 'groupRenewal' || appType === 'familyRenewal') {
+      ccfriApp.parentFeesRenewal()
+    }
+    ccfriApp.addParentFees(appType)
+    ccfriApp.addClosures(appType, term)
   })
 }); 
 
-Cypress.Commands.add('runEceWeApp', (appType) => {
+Cypress.Commands.add('runEceWeApp', (appType, term) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
-    if (appType === 'group') {
+    eceWeApp.optInEceWe(term)
+    if (appType === 'group' || appType === 'groupRenewal') {
       eceWeApp.groupEceWe()
     } else {
       eceWeApp.familyEceWe()
@@ -297,3 +326,10 @@ Cypress.Commands.add('runEceWeApp', (appType) => {
     eceWeApp.supportingDocUpload()
   })
 }); 
+
+Cypress.Commands.add('licenceUpload', () => {
+  ccofApp.loadFixturesAndVariables()
+    cy.then(()=>{
+      ccofApp.licenceUpload()
+  })
+})

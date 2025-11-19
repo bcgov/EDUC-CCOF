@@ -412,7 +412,7 @@ export default {
       if (this.isMinistryUser) {
         return true;
       }
-      if (!this.hasPermission(this.PERMISSIONS.SUBMIT_NEW_APPLICATION, this.PERMISSIONS.SUBMIT_RENEWAL_PCF)) {
+      if (!this.hasPermission([this.PERMISSIONS.SUBMIT_NEW_APPLICATION, this.PERMISSIONS.SUBMIT_RENEWAL_PCF])) {
         return true;
       }
       if (

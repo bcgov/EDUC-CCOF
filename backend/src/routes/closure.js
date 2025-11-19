@@ -70,6 +70,7 @@ router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  // TODO #securitymatrix Update with Change Requests security
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
   [checkSchema(closureSchema)],
   (req, res) => {
