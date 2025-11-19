@@ -115,6 +115,7 @@ const router = createRouter({
       component: SearchFacility,
       meta: {
         pageTitle: PAGE_TITLES.SearchFacility,
+        // permission not needed. Public CCFRI Estimator
       },
     },
     {
@@ -123,6 +124,7 @@ const router = createRouter({
       component: CcfriEstimator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator,
+        // permission not needed. Public CCFRI Estimator
       },
     },
     {
