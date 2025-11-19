@@ -139,11 +139,7 @@
         </SmallCard>
       </v-col>
       <v-col v-if="hasPermission(PERMISSIONS.CREATE_RENEWAL_PCF)" cols="12" :lg="isCCOFStatusNew ? 3 : 4">
-<<<<<<< HEAD
-        <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)">
-=======
         <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS.ACTION_REQUIRED || isRenewEnabled)">
->>>>>>> main
           <template #content>
             <p class="text-h6">Renew my Funding Agreement {{ renewYearLabel }}</p>
 

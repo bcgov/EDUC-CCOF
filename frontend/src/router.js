@@ -929,11 +929,7 @@ const router = createRouter({
         pageTitle: 'submission-history',
         showNavBar: false,
         requiresAuth: true,
-<<<<<<< HEAD
-        permission: [PERMISSIONS.DOWNLOAD_PCF_PDF],
-=======
         permission: PERMISSIONS.DOWNLOAD_PCF_PDF,
->>>>>>> main
       },
     },
     {
