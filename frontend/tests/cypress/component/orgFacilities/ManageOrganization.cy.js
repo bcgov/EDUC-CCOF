@@ -24,6 +24,15 @@ const organizationResponse = {
   postalCode2: 'V11 111',
 };
 
+const createOrganizationStore = (extras) => {
+  return {
+    organization: {
+      organizationId,
+      ...extras,
+    },
+  };
+};
+
 function interceptRequests(response) {
   cy.intercept('GET', `${ApiRoutes.ORGANIZATION}/${organizationId}`, {
     statusCode: 200,
@@ -62,21 +71,32 @@ describe('<ManageOrganization />', () => {
   it('should render general component information', () => {
     interceptRequests(organizationResponse);
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
     });
     cy.contains('p', 'View and update your organization information.');
     cy.contains('h2', 'Organization Info');
-    cy.contains('button', 'Request a Change');
+  });
+
+  it('should not render `Request a Change Request` button if no view change request permissions', () => {
+    const permWithoutViewCR = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_A_CR);
+
+    interceptRequests(organizationResponse);
+    mountWithPinia({
+      ...createOrganizationStore(),
+      auth: {
+        permissions: permWithoutViewCR,
+      },
+    });
+    cy.contains('button', 'Request a Change').should('not.exist');
   });
 
   it('should navigate to change request', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
+      ...createOrganizationStore(),
+      auth: {
+        permissions: [PERMISSIONS.VIEW_A_CR],
       },
     });
     cy.contains('button', 'Request a Change').click();
@@ -87,9 +107,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.get('.v-card')
@@ -119,9 +137,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.get('.v-card')
@@ -137,9 +153,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests({ ...organizationResponse, organizationType: ORGANIZATION_TYPES.NON_PROFIT_SOCIETY });
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.get('.v-card')
@@ -158,9 +172,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -181,9 +193,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -205,9 +215,7 @@ describe('<ManageOrganization />', () => {
     interceptRequests(organizationResponse);
 
     mountWithPinia({
-      organization: {
-        organizationId,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.get('.v-card')

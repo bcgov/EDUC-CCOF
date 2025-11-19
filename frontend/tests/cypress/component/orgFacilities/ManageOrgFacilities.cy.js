@@ -6,7 +6,7 @@ import { PERMISSIONS } from '@/utils/constants/permissions';
 const organizationName = 'TEST-ORG-NAME';
 const organizationAccountNumber = 4356;
 
-function createAuth(permissions) {
+const createAuthStore = (permissions) => {
   return {
     auth: {
       userInfo: {
@@ -16,7 +16,17 @@ function createAuth(permissions) {
       permissions,
     },
   };
-}
+};
+
+const createOrganizationStore = (extras) => {
+  return {
+    organization: {
+      organizationName,
+      organizationAccountNumber,
+      ...extras,
+    },
+  };
+};
 
 function mountWithPinia(initialState = {}, tab = 'organization-tab') {
   cy.setupPinia({ initialState }).then((pinia) => {
@@ -51,10 +61,7 @@ function mountWithPinia(initialState = {}, tab = 'organization-tab') {
 describe('<ManageOrgFacilities />', () => {
   it('should render organization name and account number', () => {
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
     });
     cy.contains('h1', 'Organization and Facilities');
     cy.contains('b', organizationName);
@@ -64,11 +71,8 @@ describe('<ManageOrgFacilities />', () => {
   context('Tab Permissions - positive cases', () => {
     it('should contain only `Organization Information` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([PERMISSIONS.VIEW_ORG_INFORMATION]),
+        ...createOrganizationStore(),
+        ...createAuthStore([PERMISSIONS.VIEW_ORG_INFORMATION]),
       });
       cy.get('.v-tab').should('have.length', 1);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
@@ -76,11 +80,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should contain only `Facilities` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
+        ...createOrganizationStore(),
+        ...createAuthStore([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
       cy.get('.v-tab').should('have.length', 1);
       cy.get('.v-tab').eq(0).should('contain', 'Facilities');
@@ -88,11 +89,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should navigate and render the facilities content', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
+        ...createOrganizationStore(),
+        ...createAuthStore([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
 
       cy.contains('button', 'Facilities').click();
@@ -102,11 +100,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should contain only `Funding Agreement` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
+        ...createOrganizationStore(),
+        ...createAuthStore([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
       cy.get('.v-tab').should('have.length', 1);
@@ -115,11 +110,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should navigate and render the Funding Agreement content', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
+        ...createOrganizationStore(),
+        ...createAuthStore([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
       cy.contains('button', 'Funding Agreement').click();
@@ -129,11 +121,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should contain all tabs', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth([
+        ...createOrganizationStore(),
+        ...createAuthStore([
           PERMISSIONS.VIEW_ORG_INFORMATION,
           PERMISSIONS.VIEW_FUNDING_AGREEMENT,
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
@@ -149,10 +138,7 @@ describe('<ManageOrgFacilities />', () => {
   context('Tab Permissions - negative cases', () => {
     it('should contain no tabs without permissions', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
       });
       cy.get('.v-tab').should('have.length', 0);
     });
@@ -163,11 +149,8 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth(permWithoutViewOrg),
+        ...createOrganizationStore(),
+        ...createAuthStore(permWithoutViewOrg),
       });
       cy.get('.v-tab').should('have.length', 2);
       cy.get('.v-tab').should('not.contain', 'Organization Information');
@@ -179,11 +162,8 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth(permWithoutViewFac),
+        ...createOrganizationStore(),
+        ...createAuthStore(permWithoutViewFac),
       });
       cy.get('.v-tab').should('have.length', 2);
       cy.get('.v-tab').should('not.contain', 'Facilities');
@@ -195,11 +175,8 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
-        ...createAuth(permWithoutViewFundingAgreement),
+        ...createOrganizationStore(),
+        ...createAuthStore(permWithoutViewFundingAgreement),
       });
 
       cy.get('.v-tab').contains('Funding Agreement').should('not.exist');
@@ -208,23 +185,16 @@ describe('<ManageOrgFacilities />', () => {
 
   it('should render manage organization content', () => {
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.contains('View and update your organization information.');
     cy.contains('Organization Info');
-    cy.contains('button', 'Request a Change');
   });
 
   it('should navigate back to home page', () => {
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
     });
 
     cy.contains('Back').click();
