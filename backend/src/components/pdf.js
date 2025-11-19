@@ -1,9 +1,26 @@
 'use strict';
-const { getSubmissionPDFHistory } = require('./utils');
+const { getSubmissionPDFHistory, getDocument } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { PdfDocumentMappings } = require('../util/mapping/Mappings');
+
+async function getPdf(req, res) {
+  try {
+    const response = await getDocument(req.params.annotationId);
+
+    if (!response.value[0]) {
+      return res.status(HttpStatus.NOT_FOUND).json('Document not found');
+    }
+
+    res.setHeader('Content-disposition', 'inline; filename=' + response.value[0].filename);
+    res.setHeader('Content-type', 'application/pdf');
+    return res.status(HttpStatus.OK).send(Buffer.from(response.value[0].documentbody, 'base64'));
+  } catch (e) {
+    log.error('error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 async function getPdfs(req, res) {
   try {
@@ -20,5 +37,6 @@ async function getPdfs(req, res) {
 }
 
 module.exports = {
+  getPdf,
   getPdfs,
 };

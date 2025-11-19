@@ -31,7 +31,7 @@ router.get(
   '/ccfri/:ccfriId/afs',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Add with Applications security
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -100,6 +100,7 @@ router.delete(
 );
 
 router.patch('/ccfri', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF), (req, res) => {
+  validationResult(req).throw();
   return updateCCFRIApplication(req, res);
 });
 
@@ -122,6 +123,7 @@ router.delete(
   // TODO #securitymatrix Add with Change Request security
   [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return deleteCCFRIApplication(req, res);
   },
 );
@@ -184,6 +186,7 @@ router.get(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return getECEWEApplication(req, res);
   },
 );
@@ -196,6 +199,7 @@ router.patch(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return updateECEWEApplication(req, res);
   },
 );
@@ -208,6 +212,7 @@ router.post(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return updateECEWEFacilityApplication(req, res);
   },
 );
@@ -220,6 +225,7 @@ router.get(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return getDeclaration(req, res);
   },
 );
@@ -232,6 +238,7 @@ router.patch(
   validatePermission(PERMISSIONS.SUBMIT_NEW_APPLICATION, PERMISSIONS.SUBMIT_RENEWAL_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return submitApplication(req, res);
   },
 );
@@ -244,6 +251,7 @@ router.post(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), body('facilities').isArray(), body('facilities.*').isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return getApplicationSummary(req, res);
   },
 );
@@ -256,6 +264,7 @@ router.get(
   // TODO #securitymatrix Add with Change Requests security
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return getChangeRequest(req, res);
   },
 );
@@ -268,6 +277,7 @@ router.delete(
   validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
+    validationResult(req).throw();
     return deletePcfApplication(req, res);
   },
 );

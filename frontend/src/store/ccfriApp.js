@@ -323,7 +323,6 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
       return over3percentFacilities;
     },
     async loadCCFisCCRIMedian() {
-      console.log('Loading CCFRI RFI Median...');
       let ccfriMedian = this.getCCFRIMedianById(this.ccfriId);
       if (!ccfriMedian) {
         checkSession();
