@@ -10,10 +10,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class FundingAgreementPage extends BaseTest {
+public class FundingAgreementPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	// elements can be added here
 	@FindBy(xpath = "//*[@aria-label='Date of Start Date']")

@@ -151,7 +151,9 @@ export default {
         this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true });
         if (this.currentFacility?.unlockCcfri) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true });
-          await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, { unlockRfi: 1 });
+          await ApiService.apiAxios.patch(`${ApiRoutes.APPLICATION_CCFRI}/${this.$route.params.urlGuid}`, {
+            unlockRfi: 1,
+          });
         }
         this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
       } catch (error) {

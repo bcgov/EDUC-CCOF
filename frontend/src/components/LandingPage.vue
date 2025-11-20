@@ -19,7 +19,7 @@
     </AppAlertBanner>
 
     <v-row>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 6 : 4">
+      <v-col v-if="hasPermission(PERMISSIONS.DOWNLOAD_PCF_PDF)" cols="12" :lg="isCCOFStatusNew ? 6 : 4">
         <SmallCard>
           <template #content>
             <div class="pb-2 text-h6">
@@ -35,7 +35,7 @@
                     {{ item.title }}
                   </li>
                 </ul>
-                <v-card v-if="ccofStatus === CCOF_STATUS_NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
+                <v-card v-if="ccofStatus === CCOF_STATUS.NEW" color="#B3E5FF" class="mt-1 pa-1 py-2 mb-4" border="md">
                   <v-row align="center" no-gutters>
                     <v-col cols="2" sm="1" align="center">
                       <v-icon color="#003366" aria-hidden="false" size="40"> mdi-information </v-icon>
@@ -47,7 +47,7 @@
                 </v-card>
               </v-container>
             </div>
-            <p v-if="ccofStatus === CCOF_STATUS_NEW" class="pt-2">
+            <p v-if="ccofStatus === CCOF_STATUS.NEW" class="pt-2">
               For more information, visit the government website:
               <a
                 class="text-decoration-underline"
@@ -57,46 +57,55 @@
             </p>
           </template>
           <template #button>
-            <div v-if="ccofStatus === CCOF_STATUS_NEW">
-              <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()">
-                Start Application
-              </v-btn>
-              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+            <div v-if="ccofStatus === CCOF_STATUS.NEW">
+              <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                <v-btn theme="dark" class="blueButton" @click="newApplicationIntermediatePage()">
+                  Start Application
+                </v-btn>
+                <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+              </template>
             </div>
 
-            <div v-else-if="ccofStatus === CCOF_STATUS_CONTINUE">
-              <p class="text-h5 blueText">Status: Incomplete</p>
-              <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()"> Continue Application </v-btn>
-              <p class="mt-4">Fiscal year runs April 1 to March 31</p>
-              <v-btn
-                v-if="isLoadingComplete && isCancelPcfButtonEnabled"
-                class="red-button"
-                @click="toggleCancelApplicationDialog"
-              >
-                Cancel Application
-              </v-btn>
+            <div v-else-if="ccofStatus === CCOF_STATUS.CONTINUE">
+              <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                <p class="text-h5 blueText">Status: Incomplete</p>
+                <v-btn theme="dark" class="blueButton" @click="goToCCOFOrganizationInfo()">
+                  Continue Application
+                </v-btn>
+                <p class="mt-4">Fiscal year runs April 1 to March 31</p>
+                <v-btn
+                  v-if="isLoadingComplete && isCancelPcfButtonEnabled"
+                  class="red-button"
+                  @click="toggleCancelApplicationDialog"
+                >
+                  Cancel Application
+                </v-btn>
+              </template>
             </div>
 
             <div v-else>
               <div v-if="getActionRequiredApplicationsForCCOFCard?.length > 0">
-                <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
-                  <v-btn
-                    theme="dark"
-                    class="blueButton my-2"
-                    @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
-                  >
-                    Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
-                  </v-btn>
-                </div>
+                <template v-if="hasPermission(PERMISSIONS.CREATE_NEW_APPLICATION)">
+                  <p class="text-h5 blueText mb-0">Status: Action Required</p>
+                  <div v-for="item in getActionRequiredApplicationsForCCOFCard" :key="item.applicationId">
+                    <v-btn
+                      theme="dark"
+                      class="blueButton my-2"
+                      @click="actionRequiredOrganizationRoute(item.ccofProgramYearId)"
+                    >
+                      Update {{ item.ccofProgramYearName?.slice(0, -3) }} PCF
+                    </v-btn>
+                  </div>
+                </template>
               </div>
               <div v-else>
-                <p v-if="ccofApplicationStatus === 'ACTIVE'" class="text-h5 blueText mb-0">
+                <p v-if="ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE" class="text-h5 blueText mb-0">
                   Status of your funding agreement for the current fiscal year: Active
                 </p>
                 <p v-else class="text-h5 blueText mb-0">Status: Submitted</p>
                 <template v-if="hasPermission(PERMISSIONS.VIEW_SUBMITTED_PCF)">
                   <v-btn
-                    v-if="applicationType === 'NEW'"
+                    v-if="applicationType === APPLICATION_TYPES.NEW_ORG"
                     theme="dark"
                     class="blueButton mt-4"
                     @click="viewApplication('NEW')"
@@ -105,9 +114,9 @@
                   </v-btn>
                   <v-btn
                     v-else-if="
-                      applicationType === 'RENEW' &&
-                      applicationStatus === 'SUBMITTED' &&
-                      ccofRenewStatus != RENEW_STATUS_ACTION_REQUIRED
+                      applicationType === APPLICATION_TYPES.RENEWAL &&
+                      applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+                      ccofRenewStatus != RENEW_STATUS.ACTION_REQUIRED
                     "
                     theme="dark"
                     class="blueButton"
@@ -129,10 +138,10 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
-        <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED || isRenewEnabled)">
+      <v-col v-if="hasPermission(PERMISSIONS.CREATE_RENEWAL_PCF)" cols="12" :lg="isCCOFStatusNew ? 3 : 4">
+        <SmallCard :disable="!(ccofRenewStatus === RENEW_STATUS.ACTION_REQUIRED || isRenewEnabled)">
           <template #content>
-            <p class="text-h6">Renew my Funding Agreement {{ getRenewYearLabel }}</p>
+            <p class="text-h6">Renew my Funding Agreement {{ renewYearLabel }}</p>
 
             <p>
               Current providers must renew their Funding Agreement every year. For more information, visit the
@@ -147,8 +156,8 @@
                 gov.bc.ca/childcareoperatingfunding
               </a>
             </p>
-            <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS_APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
-            <div v-if="ccofRenewStatus === RENEW_STATUS_COMPLETE">
+            <!-- <div class="text-h5 blueText" v-if="ccofRenewStatus === RENEW_STATUS.APPROVED">Status of the {{formattedProgramYear}} PCF: Approved</div> -->
+            <div v-if="ccofRenewStatus === RENEW_STATUS.COMPLETE">
               <!-- <p class="text-h6 blueText">Status of the PCF: Submitted</p> -->
               <span>We will contact you if we require further information.</span>
             </div>
@@ -161,7 +170,7 @@
             <div v-else>
               <!-- {{ isRenewEnabled }} -->
               <v-btn
-                v-if="ccofRenewStatus === RENEW_STATUS_NEW"
+                v-if="ccofRenewStatus === RENEW_STATUS.NEW"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
                 @click="renewApplication()"
@@ -169,7 +178,7 @@
                 Renew my Funding Agreement
               </v-btn>
               <v-btn
-                v-else-if="ccofRenewStatus === RENEW_STATUS_CONTINUE"
+                v-else-if="ccofRenewStatus === RENEW_STATUS.CONTINUE"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
                 @click="continueRenewal()"
@@ -177,7 +186,7 @@
                 Continue Renewal
               </v-btn>
               <v-btn
-                v-else-if="ccofRenewStatus === RENEW_STATUS_ACTION_REQUIRED"
+                v-else-if="ccofRenewStatus === RENEW_STATUS.ACTION_REQUIRED"
                 :class="buttonColor(false)"
                 theme="dark"
                 @click="actionRequiredOrganizationRoute()"
@@ -215,7 +224,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" lg="4">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_ER)" cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
             <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
@@ -225,12 +234,8 @@
             </p>
           </template>
           <template #button>
-            <v-btn
-              :class="buttonColor(!isCCOFApproved)"
-              theme="dark"
-              @click="$router.push(PATHS.ROOT.ENROLMENT_REPORTS)"
-            >
-              Submit a report
+            <v-btn :class="buttonColor(!isCCOFApproved)" theme="dark" @click="$router.push(PATHS.ROOT.MANAGE_REPORTS)">
+              Manage Reports
             </v-btn>
           </template>
         </SmallCard>
@@ -277,7 +282,7 @@
       :loading="!isLoadingComplete"
       type="paragraph, text@3, text@3, paragraph"
     />
-    <v-card v-else-if="navBarList?.length > 0" class="rounded-lg elevation-0 pa-4 mt-8" border>
+    <v-card v-if="showFacilitiesCard" class="rounded-lg elevation-0 pa-4 mt-8" border>
       <v-row class="ml-2" no-gutters>
         <v-col cols="12" md="6">
           <div>
@@ -291,73 +296,83 @@
           <AppButton size="large" height="50" @click="goToOrganizationClosures">Organization Closures</AppButton>
         </v-col>
       </v-row>
-      <v-row>
-        <v-col cols="12" md="4" order="2" order-md="1">
-          <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+      <template
+        v-if="
+          hasPermission([
+            PERMISSIONS.CREATE_NEW_APPLICATION,
+            PERMISSIONS.CREATE_RENEWAL_PCF,
+            PERMISSIONS.VIEW_SUBMITTED_PCF,
+          ])
+        "
+      >
+        <v-row>
+          <v-col cols="12" md="4" order="2" order-md="1">
+            <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
-          <v-text-field
-            v-if="facilityListForFacilityCards?.length > 2"
-            v-model="input"
-            clearable
-            variant="filled"
-            label="Filter by Facility Name "
-            :bind="input"
-            class="mx-2"
-          />
-        </v-col>
-        <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
-          <v-row class="justify-md-end">
-            <h3 class="ml-5">Select fiscal year:</h3>
-            <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
-          </v-row>
-        </v-col>
-      </v-row>
-      <v-row no-gutters class="justify-space-around">
-        <v-col
-          v-for="facility in filteredFacilityListForFacilityCards"
-          :key="facility.facilityId"
-          class="pa-2"
-          cols="12"
-          md="6"
-        >
-          <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
-            <v-card-text>
-              <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
-                Facility ID: {{ facility?.facilityAccountNumber }}
-              </p>
-              <p v-if="facility?.facilityName" class="text-h5 text--primary text-center">
-                Facility Name: {{ facility?.facilityName }}
-              </p>
-              <p v-if="facility?.licenseNumber" class="text-h5 text--primary text-center">
-                Licence Number: {{ facility?.licenseNumber }}
-              </p>
-              <br />
-              <p class="blueText">
-                Child Care Fee Reduction Initiative (CCFRI) Status:
-                <strong> {{ getCcfriStatusForFacilityCard(facility) }}</strong>
-              </p>
-              <br />
-              <p class="blueText">
-                Early Childhood Educator Wage Enhancement (ECE-WE) Status:
-                <strong> {{ getEceweStatusForFacilityCard(facility) }}</strong>
-              </p>
-            </v-card-text>
-            <v-row v-if="isFacilityCardUnlock(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
-              <v-btn
-                class="blueButton"
-                theme="dark"
-                width="80%"
-                align="center"
-                @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
-              >
-                Update your PCF
-              </v-btn>
+            <v-text-field
+              v-if="facilityListForFacilityCards?.length > 1"
+              v-model="input"
+              clearable
+              variant="filled"
+              label="Filter by Facility Name "
+              :bind="input"
+              class="mx-2"
+            />
+          </v-col>
+          <v-col v-if="applicationIds?.length > 1" cols="12" md="8" order="1" order-md="2">
+            <v-row class="justify-md-end">
+              <h3 class="ml-5">Select fiscal year:</h3>
+              <FiscalYearSlider class="mx-4" @select-program-year="selectProgramYear" />
             </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
+          </v-col>
+        </v-row>
+        <v-row no-gutters class="justify-space-around">
+          <v-col
+            v-for="facility in filteredFacilityListForFacilityCards"
+            :key="facility.facilityId"
+            class="pa-2"
+            cols="12"
+            md="6"
+          >
+            <v-card class="blueBorder rounded-lg elevation-4 pb-2" min-height="230">
+              <v-card-text>
+                <p v-if="facility?.facilityAccountNumber" class="text-h5 text--primary text-center">
+                  Facility ID: {{ facility?.facilityAccountNumber }}
+                </p>
+                <p v-if="facility?.facilityName" class="text-h5 text--primary text-center">
+                  Facility Name: {{ facility?.facilityName }}
+                </p>
+                <p v-if="facility?.licenseNumber" class="text-h5 text--primary text-center">
+                  Licence Number: {{ facility?.licenseNumber }}
+                </p>
+                <br />
+                <p class="blueText">
+                  Child Care Fee Reduction Initiative (CCFRI) Status:
+                  <strong> {{ getCcfriStatusForFacilityCard(facility) }}</strong>
+                </p>
+                <br />
+                <p class="blueText">
+                  Early Childhood Educator Wage Enhancement (ECE-WE) Status:
+                  <strong> {{ getEceweStatusForFacilityCard(facility) }}</strong>
+                </p>
+              </v-card-text>
+              <v-row v-if="showUpdateYourPCF(facility?.ccfriApplicationId)" justify="center" no-gutters class="mb-4">
+                <v-btn
+                  class="blueButton"
+                  theme="dark"
+                  width="80%"
+                  align="center"
+                  @click="actionRequiredFacilityRoute(facility?.ccfriApplicationId)"
+                >
+                  Update your PCF
+                </v-btn>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
+      </template>
     </v-card>
     <CancelApplicationDialog :show="showCancelDialog" max-width="60%" @close="toggleCancelApplicationDialog" />
     <p class="text-center mt-4 font-weight-bold">
@@ -389,7 +404,6 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { checkApplicationUnlocked } from '@/utils/common.js';
 import {
   APPLICATION_CCOF_STATUSES,
   APPLICATION_STATUSES,
@@ -401,7 +415,20 @@ import {
   PATHS,
   pcfUrl,
   pcfUrlGuid,
+  CCOF_STATUS,
+  RENEW_STATUS,
 } from '@/utils/constants.js';
+
+import {
+  checkApplicationUnlocked,
+  getCcofStatus,
+  getUnlockCCFRIList,
+  getUnlockNMFList,
+  getUnlockRFIList,
+  getUnlockAFSList,
+  isOrganizationUnlocked,
+} from '@/utils/common.js';
+
 import { formatFiscalYearName } from '@/utils/format';
 
 export default {
@@ -462,18 +489,20 @@ export default {
     nextProgramYear() {
       return this.programYearList?.list?.find((el) => el.previousYearId == this.latestProgramYearId);
     },
-    getRenewYearLabel() {
-      if ((this.applicationType == 'NEW' && this.applicationStatus == 'DRAFT') || !this.applicationId) {
-        //console.log('no year');
+    renewYearLabel() {
+      if (
+        (this.applicationType == APPLICATION_TYPES.NEW_ORG && this.applicationStatus == APPLICATION_STATUSES.DRAFT) ||
+        !this.applicationId
+      ) {
         return '';
       }
       //show the year ahead because we can't pull from application year YET
-      else if (this.ccofRenewStatus === this.RENEW_STATUS_NEW) {
+      else if (this.ccofRenewStatus === this.RENEW_STATUS.NEW) {
         let nameToReturn = this.nextProgramYear?.name;
         return formatFiscalYearName(nameToReturn);
       } else if (
-        this.ccofRenewStatus === this.RENEW_STATUS_CONTINUE ||
-        this.ccofRenewStatus === this.RENEW_STATUS_ACTION_REQUIRED
+        this.ccofRenewStatus === this.RENEW_STATUS.CONTINUE ||
+        this.ccofRenewStatus === this.RENEW_STATUS.ACTION_REQUIRED
       ) {
         return this.formattedProgramYear;
       }
@@ -491,8 +520,8 @@ export default {
       return applicationList?.filter((application) => {
         const isLatestRenewApplication =
           application.ccofProgramYearId === this.latestProgramYearId &&
-          this.ccofRenewStatus !== this.RENEW_STATUS_NEW &&
-          application.applicationType === 'RENEW';
+          this.ccofRenewStatus !== this.RENEW_STATUS.NEW &&
+          application.applicationType === APPLICATION_TYPES.RENEWAL;
         const isApplicationUnlocked = checkApplicationUnlocked(application);
         return !isLatestRenewApplication && isApplicationUnlocked;
       });
@@ -537,70 +566,61 @@ export default {
       return false;
     },
     ccofStatus() {
-      if (!this.applicationType) {
-        return this.CCOF_STATUS_NEW;
-      }
-      if (this.applicationType === 'NEW') {
-        switch (this.applicationStatus) {
-          case 'DRAFT':
-            return this.CCOF_STATUS_CONTINUE;
-          case 'SUBMITTED':
-            if (this.isOrganizationUnlock) return this.CCOF_STATUS_ACTION_REQUIRED;
-            else return this.ccofApplicationStatus === 'ACTIVE' ? this.CCOF_STATUS_APPROVED : this.CCOF_STATUS_COMPLETE;
-          default:
-            return this.CCOF_STATUS_NEW;
-        }
-      } else {
-        return this.CCOF_STATUS_APPROVED;
-      }
+      return getCcofStatus(
+        this.applicationStatus,
+        this.applicationType,
+        this.isOrganizationUnlock,
+        this.ccofApplicationStatus,
+      );
     },
     ccofRenewStatus() {
-      if (this.applicationType === 'RENEW') {
-        if (this.applicationStatus === 'DRAFT') {
-          return this.RENEW_STATUS_CONTINUE;
+      if (this.applicationType === APPLICATION_TYPES.RENEWAL) {
+        if (this.applicationStatus === APPLICATION_STATUSES.DRAFT) {
+          return this.RENEW_STATUS.CONTINUE;
         } else if (this.isWithinRenewDate) {
-          return this.RENEW_STATUS_NEW;
+          return this.RENEW_STATUS.NEW;
         } else if (this.isOrganizationUnlock) {
-          return this.RENEW_STATUS_ACTION_REQUIRED;
-        } else if (this.applicationStatus === 'SUBMITTED' && this.ccofApplicationStatus === 'ACTIVE') {
-          return this.RENEW_STATUS_APPROVED;
+          return this.RENEW_STATUS.ACTION_REQUIRED;
+        } else if (
+          this.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+          this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE
+        ) {
+          return this.RENEW_STATUS.APPROVED;
         } else {
-          return this.RENEW_STATUS_COMPLETE;
+          return this.RENEW_STATUS.COMPLETE;
         }
       } else {
-        return this.RENEW_STATUS_NEW;
+        return this.RENEW_STATUS.NEW;
       }
     },
     isOrganizationUnlock() {
-      return (
-        (this.unlockBaseFunding && this.applicationType === 'NEW') ||
-        this.unlockDeclaration ||
-        this.unlockEcewe ||
-        this.unlockLicenseUpload ||
-        this.unlockSupportingDocuments ||
-        !isEmpty(this.unlockCCFRIList) ||
-        !isEmpty(this.unlockNMFList) ||
-        !isEmpty(this.unlockRFIList) ||
-        !isEmpty(this.unlockAFSList)
+      return isOrganizationUnlocked(
+        this.unlockBaseFunding,
+        this.applicationType,
+        this.unlockDeclaration,
+        this.unlockEcewe,
+        this.unlockLicenseUpload,
+        this.unlockSupportingDocuments,
+        this.navBarList,
       );
     },
     unlockCCFRIList() {
-      return this.getUnlockCCFRIList(this.navBarList);
+      return getUnlockCCFRIList(this.navBarList);
     },
     unlockNMFList() {
-      return this.getUnlockNMFList(this.navBarList);
+      return getUnlockNMFList(this.navBarList);
     },
     unlockRFIList() {
-      return this.getUnlockRFIList(this.navBarList);
+      return getUnlockRFIList(this.navBarList);
     },
     unlockAFSList() {
-      return this.getUnlockAFSList(this.navBarList);
+      return getUnlockAFSList(this.navBarList);
     },
     isCCOFApproved() {
-      return this.applicationType === 'RENEW' || this.ccofStatus === this.CCOF_STATUS_APPROVED;
+      return this.applicationType === APPLICATION_TYPES.RENEWAL || this.ccofStatus === this.CCOF_STATUS.APPROVED;
     },
     isReportChangeButtonEnabled() {
-      if (this.applicationType === 'RENEW' && this.organizationAccountNumber) {
+      if (this.applicationType === APPLICATION_TYPES.RENEWAL && this.organizationAccountNumber) {
         return true;
       }
       return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
@@ -612,8 +632,13 @@ export default {
       return index > -1;
     },
     isSubmissionHistoryDisplayed() {
+      if (!this.hasPermission(this.PERMISSIONS.DOWNLOAD_PCF_PDF)) {
+        return false;
+      }
       const applicationList = Array.from(this.applicationMap?.values());
-      const index = applicationList?.findIndex((application) => application.applicationStatus != 'DRAFT');
+      const index = applicationList?.findIndex(
+        (application) => application.applicationStatus != APPLICATION_STATUSES.DRAFT,
+      );
       return index > -1;
     },
     mtfiChangeRequestList() {
@@ -633,11 +658,13 @@ export default {
     },
     isCancelPcfButtonEnabled() {
       return (
-        this.applicationStatus === 'DRAFT' && this.applicationType === 'NEW' && this.ccofApplicationStatus === 'NEW'
+        this.applicationStatus === APPLICATION_STATUSES.DRAFT &&
+        this.applicationType === APPLICATION_TYPES.NEW_ORG &&
+        this.ccofApplicationStatus === APPLICATION_CCOF_STATUSES.NEW
       );
     },
     isCCOFStatusNew() {
-      return this.ccofStatus === this.CCOF_STATUS_NEW;
+      return this.ccofStatus === this.CCOF_STATUS.NEW;
     },
     showNotGoodStandingWarning() {
       return (
@@ -655,20 +682,25 @@ export default {
         ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
       );
     },
+    showFacilitiesCard() {
+      return (
+        this.navBarList?.length > 0 &&
+        this.hasPermission([
+          this.PERMISSIONS.CREATE_NEW_APPLICATION,
+          this.PERMISSIONS.CREATE_RENEWAL_PCF,
+          this.PERMISSIONS.VIEW_SUBMITTED_PCF,
+          this.PERMISSIONS.VIEW_CLOSURES,
+        ])
+      );
+    },
   },
   async created() {
-    this.CCOF_STATUS_NEW = 'NEW';
-    this.CCOF_STATUS_COMPLETE = 'COMPLETE';
-    this.CCOF_STATUS_CONTINUE = 'CONTINUE';
-    this.CCOF_STATUS_APPROVED = 'APPROVED';
-    this.CCOF_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
-
-    this.RENEW_STATUS_NEW = 'NEW';
-    this.RENEW_STATUS_COMPLETE = 'COMPLETE';
-    this.RENEW_STATUS_CONTINUE = 'CONTINUE';
-    this.RENEW_STATUS_APPROVED = 'APPROVED';
-    this.RENEW_STATUS_ACTION_REQUIRED = 'ACTION_REQUIRED';
+    this.APPLICATION_CCOF_STATUSES = APPLICATION_CCOF_STATUSES;
+    this.APPLICATION_STATUSES = APPLICATION_STATUSES;
+    this.APPLICATION_TYPES = APPLICATION_TYPES;
+    this.CCOF_STATUS = CCOF_STATUS;
     this.PATHS = PATHS;
+    this.RENEW_STATUS = RENEW_STATUS;
 
     this.CCOF_NEW_APPLICATION_TEXT = [
       {
@@ -737,10 +769,6 @@ export default {
     },
     continueRenewal() {
       this.goToLicenseUpload();
-    },
-    newApplication() {
-      this.setIsRenewal(false);
-      this.$router.push(pcfUrl(PATHS.SELECT_APPLICATION_TYPE, this.programYearList.newApp.programYearId));
     },
     goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);
@@ -813,12 +841,12 @@ export default {
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
       let application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
-      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
-      const unlockRFIList = this.getUnlockRFIList(facilityList);
-      const unlockNMFList = this.getUnlockNMFList(facilityList);
-      const unlockAFSList = this.getUnlockAFSList(facilityList);
+      const unlockCCFRIList = getUnlockCCFRIList(facilityList);
+      const unlockRFIList = getUnlockRFIList(facilityList);
+      const unlockNMFList = getUnlockNMFList(facilityList);
+      const unlockAFSList = getUnlockAFSList(facilityList);
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
-      else if (application?.unlockBaseFunding && application?.applicationType === 'NEW')
+      else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG)
         this.goToCCOFFunding(programYearId, facilityList);
       else if (application?.unlockEcewe) this.goToECEWE(programYearId);
       else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
@@ -843,7 +871,10 @@ export default {
     buttonColor(isDisabled) {
       return isDisabled ? 'disabledButton' : 'blueButton';
     },
-    isFacilityCardUnlock(ccfriApplicationId) {
+    showUpdateYourPCF(ccfriApplicationId) {
+      if (!this.hasPermission([this.PERMISSIONS.CREATE_NEW_APPLICATION, this.PERMISSIONS.CREATE_RENEWAL_PCF])) {
+        return false;
+      }
       const application = this.applicationMap?.get(this.selectedProgramYearId);
       return (
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
@@ -854,51 +885,32 @@ export default {
     },
     isCCFRIUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
-      const unlockCCFRIList = this.getUnlockCCFRIList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockCCFRIList.includes(ccfriApplicationId);
+      const unlockCCFRIList = getUnlockCCFRIList(facilityList);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+        unlockCCFRIList.includes(ccfriApplicationId)
+      );
     },
     isNMFUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
-      const unlockNMFList = this.getUnlockNMFList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockNMFList.includes(ccfriApplicationId);
+      const unlockNMFList = getUnlockNMFList(facilityList);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockNMFList.includes(ccfriApplicationId)
+      );
     },
     isRFIUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
-      const unlockRFIList = this.getUnlockRFIList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockRFIList.includes(ccfriApplicationId);
+      const unlockRFIList = getUnlockRFIList(facilityList);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockRFIList.includes(ccfriApplicationId)
+      );
     },
     isAFSUnlock(ccfriApplicationId, application) {
       const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
-      const unlockAFSList = this.getUnlockAFSList(facilityList);
-      return application?.applicationStatus === 'SUBMITTED' && unlockAFSList?.includes(ccfriApplicationId);
-    },
-    getUnlockCCFRIList(facilityList) {
-      const unlockList = [];
-      facilityList?.forEach((facility) => {
-        if (facility.unlockCcfri) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
-    },
-    getUnlockNMFList(facilityList) {
-      const unlockList = [];
-      facilityList?.forEach((facility) => {
-        if (facility.unlockNmf) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
-    },
-    getUnlockRFIList(facilityList) {
-      const unlockList = [];
-      facilityList?.forEach((facility) => {
-        if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
-    },
-    getUnlockAFSList(facilityList) {
-      const unlockList = [];
-      facilityList?.forEach((facility) => {
-        if (facility.unlockAfs && facility.enableAfs) unlockList.push(facility.ccfriApplicationId);
-      });
-      return unlockList;
+      const unlockAFSList = getUnlockAFSList(facilityList);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED && unlockAFSList?.includes(ccfriApplicationId)
+      );
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = programYear;

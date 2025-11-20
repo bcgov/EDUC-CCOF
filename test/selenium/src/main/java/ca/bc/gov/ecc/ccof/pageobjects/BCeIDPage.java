@@ -8,11 +8,10 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class BCeIDPage extends BaseTest {
+public class BCeIDPage {
 
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@data-id='parentcustomerid.fieldControl-LookupResultsDropdown_parentcustomerid_selected_tag_text']")
 	WebElement selectOrganization;

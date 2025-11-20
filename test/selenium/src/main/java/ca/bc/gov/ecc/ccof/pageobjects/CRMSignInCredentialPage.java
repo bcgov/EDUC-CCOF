@@ -9,11 +9,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class CRMSignInCredentialPage extends BaseTest {
+public class CRMSignInCredentialPage {
 
 	WebDriverWait wait;
+	WebDriver driver;
+
 	@FindBy(name = "loginfmt")
 	WebElement userIdField;
 
