@@ -45,7 +45,7 @@ public class TestDelinkApplication extends BaseTest {
 		Thread.sleep(5000);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);

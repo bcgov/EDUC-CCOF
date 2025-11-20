@@ -10,10 +10,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class OrganizationInfoPage extends BaseTest {
+public class OrganizationInfoPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@aria-label='New Org']")
 	WebElement openMainApplication;
@@ -29,6 +28,15 @@ public class OrganizationInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[contains(text(),'Funding Agreement History')]")
 	WebElement fundingAgreementHistory;
+
+	@FindBy(xpath = "//*[@aria-label='Organization ID']")
+	WebElement organizationID;
+
+	@FindBy(xpath = "//*[@aria-label='Save (CTRL+S)']")
+	WebElement saveBtn;
+
+	@FindBy(xpath = "//*[@title= 'Ignore and save']")
+	WebElement ignoreAndSaveBtn;
 
 	public OrganizationInfoPage(WebDriver driver) {
 		this.driver = driver;
@@ -61,6 +69,18 @@ public class OrganizationInfoPage extends BaseTest {
 
 	public List<WebElement> getOpenApplications() {
 		return openApplications;
+	}
+
+	public void enterOrgId(String orgId) {
+		organizationID.sendKeys(orgId);
+	}
+
+	public void clickSaveBtn() {
+		saveBtn.click();
+	}
+
+	public WebElement ignoreAndSaveButton() {
+		return ignoreAndSaveBtn;
 	}
 
 }

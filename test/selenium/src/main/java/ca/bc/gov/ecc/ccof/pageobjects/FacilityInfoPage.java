@@ -11,10 +11,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class FacilityInfoPage extends BaseTest {
+public class FacilityInfoPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[contains(@id,'headerControlsList_')]//div[3]//a")
 	WebElement facilityNameLink;
@@ -36,6 +35,9 @@ public class FacilityInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[@title='Initial Decision']")
 	WebElement initialDecisionlink;
+
+	@FindBy(xpath = "//*[@aria-label='ID']")
+	WebElement facilityID;
 
 	// initial decision tab elements can be added here
 
@@ -160,6 +162,10 @@ public class FacilityInfoPage extends BaseTest {
 
 	public void clickSaveAndCloseCcfriFacilityBtn() {
 		saveAndCloseCcfriFacilityBtn.click();
+	}
+
+	public void enterFacId(String facId) {
+		facilityID.sendKeys(facId);
 	}
 
 }
