@@ -2,6 +2,7 @@ import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import FacilityService from '@/services/facilityService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -74,9 +75,9 @@ export const useFacilityStore = defineStore('facility', {
       this.setLoadedModel(this.facilityModel);
 
       if (this.facilityId) {
-        // has an orgaization ID, so update the data
+        // has an factility ID, so update the data
         try {
-          const response = await ApiService.apiAxios.put(`${ApiRoutes.FACILITY}/${this.facilityId}`, payload);
+          const response = await FacilityService.updateFacility(this.facilityId, payload);
           this.addFacilityToStore({ facilityId: this.facilityId, facilityModel: this.facilityModel });
           // TODO: also find the existing value in the nav bar and update the facility Name and license number
           navBarStore.updateNavBar({
@@ -184,7 +185,7 @@ export const useFacilityStore = defineStore('facility', {
         }
       } else {
         try {
-          const response = await ApiService.apiAxios.post(ApiRoutes.FACILITY, payload);
+          const response = await FacilityService.createFacility(payload);
           this.setFacilityId(response.data?.facilityId);
           const navBarPayload = {
             facilityName: this.facilityModel.facilityName,
@@ -216,10 +217,10 @@ export const useFacilityStore = defineStore('facility', {
       } else {
         checkSession();
         try {
-          const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}`);
-          this.addFacilityToStore({ facilityId: facilityId, facilityModel: response.data });
-          this.setFacilityModel(response.data);
-          this.setLoadedModel(response.data);
+          const response = await FacilityService.getFacility(facilityId);
+          this.addFacilityToStore({ facilityId: facilityId, facilityModel: response });
+          this.setFacilityModel(response);
+          this.setLoadedModel(response);
           return response;
         } catch (e) {
           console.log(`Failed to get existing Facility with error - ${e}`);
@@ -231,8 +232,7 @@ export const useFacilityStore = defineStore('facility', {
       checkSession();
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-
-      await ApiService.apiAxios.delete(`${ApiRoutes.FACILITY}/${facilityObj.facilityId}`, { data: facilityObj });
+      await FacilityService.deleteFacility(facilityObj.facilityId, { data: facilityObj });
 
       this.deleteFromStore(facilityObj.facilityId);
       applicationStore.removeFacilityFromMap(facilityObj.facilityId);

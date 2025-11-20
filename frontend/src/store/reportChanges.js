@@ -316,7 +316,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
         changeType: changeType,
       };
       try {
-        let response = await ApiService.apiAxios.post('/api/changeRequest/documents', payload);
+        const response = await ApiService.apiAxios.post(ApiRoutes.CHANGE_REQUEST_DOCUMENTS, payload);
 
         this.setChangeRequestId(response?.data?.changeRequestId);
         this.setChangeActionId(response?.data?.changeActionId);
@@ -342,7 +342,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
     async createChangeAction({ changeRequestId, type }) {
       checkSession();
       try {
-        let response = await ApiService.apiAxios.post(`/api/changeRequest/${changeRequestId}/${type}`);
+        const response = await ApiService.apiAxios.post(`{$ApiRoutes.CHANGE_REQUEST}/${changeRequestId}/${type}`);
         return response.data;
       } catch (error) {
         console.info(`Failed to create a change request  - ${error}`);
@@ -409,7 +409,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
     async createChangeRequestMTFI(payload) {
       checkSession();
       try {
-        let ccfriResponse = await ApiService.apiAxios.patch('/api/application/ccfri/', payload);
+        let ccfriResponse = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_CCFRI, payload);
         await Promise.all(
           ccfriResponse?.data?.map(async (ccfri) => {
             let mtfiResponse = await ApiService.apiAxios.get(
@@ -429,7 +429,7 @@ export const useReportChangesStore = defineStore('reportChanges', {
         await Promise.all(
           payload.map(async (mtfiFacility) => {
             if (mtfiFacility.ccfriApplicationId)
-              await ApiService.apiAxios.delete('/api/application/ccfri/' + mtfiFacility.ccfriApplicationId);
+              await ApiService.apiAxios.delete(`${ApiRoutes.APPLICATION_CCFRI}/${mtfiFacility.ccfriApplicationId}`);
           }),
         );
         await Promise.all(

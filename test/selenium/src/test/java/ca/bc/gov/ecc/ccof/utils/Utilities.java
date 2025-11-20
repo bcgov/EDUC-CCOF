@@ -1,9 +1,15 @@
 package ca.bc.gov.ecc.ccof.utils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 
-import org.junit.jupiter.api.Assertions;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,16 +18,35 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class Utilities extends BaseTest {
+public class Utilities {
 	WebDriverWait wait;
+	JSONObject testData;
+	WebDriver driver;
+
+	private static final Logger logger = LogManager.getLogger(Utilities.class);
 
 	public Utilities(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+	}
+
+	public String generateDynamicValue(String jsonKey) throws IOException {
+		String prefix = getDataFromJson(jsonKey);
+		Random random = new Random();
+		int randomNumber = random.nextInt(10000) + 1;
+		String dynamicValue = prefix + randomNumber;
+		logger.info("Entered Org ID as : {}", dynamicValue);
+		return dynamicValue;
+	}
+
+	public String getDataFromJson(String jsonData) throws IOException {
+		String content = new String(
+				Files.readAllBytes(Paths.get(System.getProperty("user.dir") + "//data//testData.json")));
+		testData = new JSONObject(content);
+		return testData.getString(jsonData);
 	}
 
 	public void scrollToElement(WebElement ele) {
@@ -65,7 +90,7 @@ public class Utilities extends BaseTest {
 				element.click();
 			}
 		} catch (Exception e) {
-			logger.error("Unable to click element: " + e.getMessage());
+			logger.error("Unable to click element: {}", e.getMessage());
 		}
 
 	}
@@ -82,7 +107,7 @@ public class Utilities extends BaseTest {
 	}
 
 	public void assertElementDeleted(List<WebElement> elements) {
-		Assertions.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
+		Assert.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
 	}
 
 }

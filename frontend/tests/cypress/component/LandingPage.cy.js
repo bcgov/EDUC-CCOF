@@ -24,6 +24,10 @@ const navBar = {
   navBarList: [{ unlockCcfri: true, ccfriApplicationId }],
 };
 
+const permWithoutStartApp = Object.values(PERMISSIONS).filter(
+  (permission) => permission !== PERMISSIONS.CREATE_NEW_APPLICATION,
+);
+
 const createAuthStore = (userInfo = {}, authExtras = {}) => ({
   auth: {
     userInfo: {
@@ -105,241 +109,302 @@ describe('<LandingPage />', () => {
     cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should('exist');
   });
 
-  it('should display CCOF text when approved and no actions required', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.RENEWAL,
-        applicationMap: new Map(),
-      },
-      ...createAuthStore(),
+  context('Application Status Card ', () => {
+    const authWithDownloadPerm = createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] });
+
+    const expectFundingTitles = () => {
+      cy.contains('CCOF Base Funding');
+      cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
+      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
+    };
+
+    const expectFundingBody = (shouldExist) => {
+      const assertion = shouldExist ? 'exist' : 'not.exist';
+
+      cy.contains('Base Funding assists eligible licensed family and group child care providers').should(assertion);
+
+      cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
+        assertion,
+      );
+
+      cy.contains(
+        'Providers with licensed care facilities can apply for a wage enhancement for Early Childhood',
+      ).should(assertion);
+    };
+    it('should not render application status col if no download pcf pdf permission', () => {
+      const permWithoutDownloadPDF = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.DOWNLOAD_PCF_PDF,
+      );
+      mountWithPinia({
+        auth: {
+          isAuthenticated: true,
+          permissions: permWithoutDownloadPDF,
+        },
+      });
+      cy.contains('Apply for Child Care Operating Funding').should('not.exist');
     });
 
-    cy.contains('Child Care Operating Funding (CCOF)').should('exist');
-    cy.contains('Apply for Child Care Operating Funding (CCOF)').should('not.exist');
-  });
+    it('should display CCOF text when approved and no actions required', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationMap: new Map(),
+        },
+        ...authWithDownloadPerm,
+      });
 
-  it('should display `apply CCOF` when not approved', () => {
-    mountWithPinia({
-      application: {
-        applicationType: '',
-      },
+      cy.contains('Child Care Operating Funding (CCOF)').should('exist');
+      cy.contains('Apply for Child Care Operating Funding (CCOF)').should('not.exist');
     });
-    cy.contains('Apply for Child Care Operating Funding (CCOF)').should('exist');
-    cy.contains('CCOF Base Funding');
-    cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-    cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
-  });
 
-  it('should display only `new application text` titles when not approved and not new', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.NEW_ORG,
-        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
-      },
+    it('should display `apply CCOF` when not approved', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] }),
+      });
+      expectFundingTitles();
     });
-    cy.contains('CCOF Base Funding');
-    cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-    cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
 
-    cy.contains('Base Funding assists eligible licensed family and group child care providers').should('not.exist');
-    cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
-      'not.exist',
-    );
-    cy.contains('Providers with licensed care facilities can apply for a wage enhancement for Early Childhood').should(
-      'not.exist',
-    );
-  });
-
-  it('should display `new application` text and body', () => {
-    mountWithPinia({
-      application: {
-        applicationType: '',
-      },
+    it('should display only `new application text` titles when not approved and not new', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'SUBMITTED',
+        },
+        ...authWithDownloadPerm,
+      });
+      expectFundingTitles();
+      expectFundingBody(false);
     });
-    cy.contains('CCOF Base Funding');
-    cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding');
-    cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding');
 
-    cy.contains('Base Funding assists eligible licensed family and group child care providers').should('exist');
-    cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
-      'exist',
-    );
-    cy.contains('Providers with licensed care facilities can apply for a wage enhancement for Early Childhood').should(
-      'exist',
-    );
-  });
-
-  it('should not display `new application` data', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.RENEWAL,
-      },
-      ...createAuthStore(),
+    it('should display `new application` text and body', () => {
+      mountWithPinia({
+        application: {
+          applicationType: '',
+        },
+        ...authWithDownloadPerm,
+      });
+      expectFundingTitles();
+      expectFundingBody(true);
     });
-    cy.contains('CCOF Base Funding').should('not.exist');
-    cy.contains('Child Care Fee Reduction Initiative (CCFRI) Funding').should('not.exist');
-    cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding').should('not.exist');
 
-    cy.contains('Base Funding assists eligible licensed family and group child care providers').should('not.exist');
-    cy.contains('The CCFRI offers funding to eligible, licensed child care providers to reduce and stabilize').should(
-      'not.exist',
-    );
-    cy.contains('Providers with licensed care facilities can apply for a wage enhancement for Early Childhood').should(
-      'not.exist',
-    );
-  });
+    it('should not display `new application` data', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+        },
+        ...authWithDownloadPerm,
+      });
+      cy.contains('Child Care Operating Funding');
+      cy.contains('Early Childhood Educator Wage Enhancement (ECE-WE) Funding').should('not.exist');
+    });
 
-  it('should display `Start Application` button and navigate to intermediate page', () => {
-    mountWithPinia({
-      app: {
-        programYearList: {
-          newApp: {
-            programYearId,
+    it('should not display `Start Application` button if no create app permissions', () => {
+      mountWithPinia({
+        app: {
+          programYearList: {
+            newApp: {
+              programYearId,
+            },
           },
         },
-      },
+        ...createAuthStore({}, { permissions: permWithoutStartApp }),
+      });
+      cy.contains('button', 'Start Application').should('not.exist');
     });
 
-    checkButtonAndNavigate('Start Application', pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, programYearId));
-  });
-
-  it('should display `Continue Application` and navigate to group organization', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.NEW_ORG,
-        applicationStatus: APPLICATION_STATUSES.DRAFT,
-        programYearId,
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-    });
-    cy.contains('Status: Incomplete');
-    checkButtonAndNavigate('Continue Application', pcfUrl(PATHS.CCOF_GROUP_ORG, programYearId));
-  });
-
-  it('should display `Continue Application` and navigate to family organization', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.NEW_ORG,
-        applicationStatus: APPLICATION_STATUSES.DRAFT,
-        programYearId,
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-      },
-    });
-    checkButtonAndNavigate('Continue Application', pcfUrl(PATHS.CCOF_FAMILY_ORG, programYearId));
-  });
-
-  it('should display `Cancel Application`', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.NEW_ORG,
-        applicationStatus: APPLICATION_STATUSES.DRAFT,
-        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.NEW,
-      },
-    });
-    cy.contains('button', 'Cancel Application');
-  });
-
-  it('should display `active` status for active funding agreement', () => {
-    mountWithPinia({
-      application: {
-        applicationType: 'N/A',
-        latestProgramYearId: '1111',
-        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
-      },
-    });
-    cy.contains('Status of your funding agreement for the current fiscal year: Active');
-  });
-
-  it('should display `submit` status for submitted funding agreement', () => {
-    mountWithPinia({
-      application: {
-        applicationType: 'N/A',
-        latestProgramYearId: '1111',
-      },
-    });
-    cy.contains('Status: Submitted');
-  });
-
-  it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]', () => {
-    mountWithPinia({
-      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
-      application: {
-        applicationType: APPLICATION_TYPES.NEW_ORG,
-        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
-        programYearId,
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-    });
-
-    checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.CCOF_GROUP_ORG, programYearId));
-  });
-
-  it('should display `View Recent Application` button when clicked navigate to license upload', () => {
-    mountWithPinia({
-      ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
-      application: {
-        applicationType: APPLICATION_TYPES.RENEWAL,
-        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
-        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
-        programYearId,
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-    });
-
-    checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
-  });
-
-  it('should not display `View Recent Application` button with invalid permissions', () => {
-    const permWithoutViewSubmittedPCF = Object.values(PERMISSIONS).filter(
-      (permission) => permission !== PERMISSIONS.VIEW_SUBMITTED_PCF,
-    );
-
-    mountWithPinia({
-      ...createAuthStore({}, { isAuthenticated: true, permissions: [permWithoutViewSubmittedPCF] }),
-      application: {
-        applicationType: APPLICATION_TYPES.RENEWAL,
-        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
-        ccofApplicationStatus: APPLICATION_CCOF_STATUSES.ACTIVE,
-        programYearId,
-      },
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
-    });
-    cy.contains('button', 'View Recent Application').should('not.exist');
-  });
-
-  it('should display `View submission history` button', () => {
-    mountWithPinia({
-      application: {
-        applicationType: APPLICATION_TYPES.RENEWAL,
-        applicationMap: new Map([['key', { applicationStatus: APPLICATION_STATUSES.SUBMITTED }]]),
-      },
-      app: {
-        programYearList: {
-          list: [],
+    it('should display `Start Application` button and navigate to intermediate page', () => {
+      mountWithPinia({
+        app: {
+          programYearList: {
+            newApp: {
+              programYearId,
+            },
+          },
         },
-      },
-      ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.CREATE_NEW_APPLICATION] }),
+      });
+
+      checkButtonAndNavigate('Start Application', pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, programYearId));
     });
-    cy.contains('View submission history');
+
+    it('should not display `Continue Application` without create app permissions', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'DRAFT',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+        },
+        ...createAuthStore({}, { permissions: permWithoutStartApp }),
+      });
+      cy.contains('Status: Incomplete').should('not.exist');
+      cy.contains('button', 'Continue Application').should('not.exist');
+    });
+
+    it('should display `Continue Application` and navigate to group organization', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'DRAFT',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.CREATE_NEW_APPLICATION] }),
+      });
+      cy.contains('Status: Incomplete');
+      checkButtonAndNavigate('Continue Application', pcfUrl(PATHS.CCOF_GROUP_ORG, programYearId));
+    });
+
+    it('should display `Continue Application` and navigate to family organization', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'DRAFT',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.CREATE_NEW_APPLICATION] }),
+      });
+      checkButtonAndNavigate('Continue Application', pcfUrl(PATHS.CCOF_FAMILY_ORG, programYearId));
+    });
+
+    it('should display `Cancel Application`', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'DRAFT',
+          ccofApplicationStatus: 'NEW',
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.CREATE_NEW_APPLICATION] }),
+      });
+      cy.contains('button', 'Cancel Application');
+    });
+
+    it('should display `active` status for active funding agreement', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'N/A',
+          latestProgramYearId: '1111',
+          ccofApplicationStatus: 'ACTIVE',
+        },
+        ...authWithDownloadPerm,
+      });
+      cy.contains('Status of your funding agreement for the current fiscal year: Active');
+    });
+
+    it('should display `submit` status for submitted funding agreement', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'N/A',
+          latestProgramYearId: '1111',
+        },
+        ...authWithDownloadPerm,
+      });
+      cy.contains('Status: Submitted');
+    });
+
+    it('should display `View Recent Application` button when clicked navigate to organization info [GROUP]', () => {
+      mountWithPinia({
+        ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
+        application: {
+          applicationType: 'NEW',
+          applicationStatus: 'SUBMITTED',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.VIEW_SUBMITTED_PCF] }),
+      });
+
+      checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.CCOF_GROUP_ORG, programYearId));
+    });
+
+    it('should display `View Recent Application` button when clicked navigate to license upload', () => {
+      mountWithPinia({
+        ...createAuthStore({}, { isAuthenticated: true, permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: 'SUBMITTED',
+          ccofApplicationStatus: 'ACTIVE',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF, PERMISSIONS.VIEW_SUBMITTED_PCF] }),
+      });
+
+      checkButtonAndNavigate('View Recent Application', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
+    });
+
+    it('should not display `View Recent Application` button with invalid permissions', () => {
+      const permWithoutViewSubmittedPCF = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.VIEW_SUBMITTED_PCF,
+      );
+
+      mountWithPinia({
+        ...createAuthStore({}, { isAuthenticated: true, permissions: [permWithoutViewSubmittedPCF] }),
+        application: {
+          applicationType: 'RENEW',
+          applicationStatus: 'SUBMITTED',
+          ccofApplicationStatus: 'ACTIVE',
+          programYearId,
+        },
+        organization: {
+          organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
+        },
+      });
+      cy.contains('button', 'View Recent Application').should('not.exist');
+    });
+
+    it('should display `View submission history` button', () => {
+      mountWithPinia({
+        application: {
+          applicationType: 'RENEW',
+          applicationMap: new Map([['key', { applicationStatus: 'SUBMITTED' }]]),
+        },
+        app: {
+          programYearList: {
+            list: [],
+          },
+        },
+        ...authWithDownloadPerm,
+      });
+      cy.contains('View submission history');
+    });
   });
 
   context('Renew my Funding Agreement Card', () => {
+    const createRenPCFPerm = { auth: { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] } };
+
+    it('should not render card if no create renewal pcf permissions', () => {
+      const permWithoutCreateRenPCF = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.CREATE_RENEWAL_PCF,
+      );
+      mountWithPinia({
+        auth: {
+          permissions: permWithoutCreateRenPCF,
+        },
+      });
+      cy.contains('p', 'Renew my Funding Agreement').should('not.exist');
+    });
     it('should disable `Renew my Funding Agreement` card', () => {
       mountWithPinia({
         application: {
           applicationType: APPLICATION_TYPES.NEW_ORG,
           applicationStatus: APPLICATION_STATUSES.DRAFT,
         },
+        ...createRenPCFPerm,
       });
       cy.contains('p', 'Renew my Funding Agreement').should('have.css', 'pointer-events', 'none');
       cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
@@ -353,8 +418,8 @@ describe('<LandingPage />', () => {
           applicationType: APPLICATION_TYPES.RENEWAL,
           applicationStatus: APPLICATION_STATUSES.DRAFT,
         },
+        ...createRenPCFPerm,
       });
-      cy.contains('p', 'Renew my Funding Agreement').should('not.have.css', 'pointer-events', 'none');
       cy.contains('p', 'Current providers must renew their Funding Agreement every year.')
         .should('exist')
         .should('not.have.css', 'pointer-events', 'none');
@@ -366,7 +431,7 @@ describe('<LandingPage />', () => {
           applicationType: APPLICATION_TYPES.RENEWAL,
           applicationStatus: '',
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] }),
       });
       cy.contains('span', 'We will contact you if we require further information.');
     });
@@ -378,6 +443,7 @@ describe('<LandingPage />', () => {
           applicationStatus: APPLICATION_STATUSES.DRAFT,
           programYearId,
         },
+        ...createRenPCFPerm,
       });
 
       checkButtonAndNavigate('Continue Renewal', pcfUrl(PATHS.LICENSE_UPLOAD, programYearId));
@@ -390,7 +456,7 @@ describe('<LandingPage />', () => {
           applicationStatus: APPLICATION_STATUSES.SUBMITTED,
           unlockDeclaration: true,
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] }),
       });
       cy.contains('button', 'Update your PCF');
     });
@@ -703,9 +769,32 @@ describe('<LandingPage />', () => {
         programYearLabel,
         programYearId,
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_NEW_APPLICATION] }),
     });
 
     cy.contains('h2', `Fiscal Year: 2025`);
+  });
+
+  it('should not display program year name for facility cards funding agreement if no permissions', () => {
+    const permWithoutShowFacility = Object.values(PERMISSIONS).filter(
+      (permission) =>
+        permission !== PERMISSIONS.CREATE_NEW_APPLICATION &&
+        permission !== PERMISSIONS.CREATE_RENEWAL_PCF &&
+        permission !== PERMISSIONS.VIEW_SUBMITTED_PCF &&
+        permission !== PERMISSIONS.VIEW_CLOSURES,
+    );
+
+    const programYearLabel = '2025-XX';
+    mountWithPinia({
+      navBar,
+      application: {
+        programYearLabel,
+        programYearId,
+      },
+      ...createAuthStore({}, { permissions: permWithoutShowFacility }),
+    });
+
+    cy.contains('h2', `Fiscal Year: 2025`).should('not.exist');
   });
 
   it('should render funding agreement number when available', () => {
@@ -716,6 +805,7 @@ describe('<LandingPage />', () => {
         programYearId,
         applicationMap: new Map([[programYearId, { fundingAgreementNumber }]]),
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_CLOSURES] }),
     });
 
     cy.contains('h2', `Funding Agreement Number: ${fundingAgreementNumber}`);
@@ -727,6 +817,7 @@ describe('<LandingPage />', () => {
       application: {
         programYearId,
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_SUBMITTED_PCF] }),
     });
 
     cy.contains('h2', 'Funding Agreement Number:').should('not.exist');
@@ -739,6 +830,7 @@ describe('<LandingPage />', () => {
         applicationMap: new Map(),
         programYearId,
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_RENEWAL_PCF] }),
     });
 
     cy.contains('button', 'Organization Closures').should('not.exist');
@@ -751,6 +843,7 @@ describe('<LandingPage />', () => {
         programYearId,
         applicationMap: new Map(),
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_NEW_APPLICATION] }),
     });
 
     cy.contains('label', 'Filter by Facility Name').should('not.exist');
@@ -765,6 +858,7 @@ describe('<LandingPage />', () => {
           [programYearId, { ccofProgramYearId: programYearId, facilityList: [{ a: 'a' }, { b: 'b' }, { c: 'c' }] }],
         ]),
       },
+      ...createAuthStore({}, { permissions: [PERMISSIONS.CREATE_NEW_APPLICATION] }),
     });
 
     cy.contains('label', 'Filter by Facility Name');
@@ -785,6 +879,7 @@ describe('<LandingPage />', () => {
           ['c', { applicationId: '3', ccofProgramYearName: `${testName3}!!!` }],
         ]),
       },
+      auth: { permissions: [PERMISSIONS.CREATE_NEW_APPLICATION] },
     });
 
     cy.contains('h3', 'Select fiscal year:');
@@ -794,16 +889,13 @@ describe('<LandingPage />', () => {
   });
 
   context('Facility Card', () => {
-    const createAppStore = () => ({
-      app: {
-        programYearList: {
-          list: [
-            {
-              programYearId: '101',
-              order: 5,
-            },
-          ],
-        },
+    const createPermisions = () => ({
+      auth: {
+        permissions: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     });
 
@@ -831,6 +923,27 @@ describe('<LandingPage />', () => {
       ]);
     };
 
+    it('should not render facility details without the required permissions', () => {
+      const permWithoutRequired = Object.values(PERMISSIONS).filter(
+        (permission) =>
+          permission !== PERMISSIONS.CREATE_NEW_APPLICATION &&
+          permission !== PERMISSIONS.CREATE_RENEWAL_PCF &&
+          permission !== PERMISSIONS.VIEW_SUBMITTED_PCF,
+      );
+
+      mountWithPinia({
+        navBar,
+        application: {
+          programYearId,
+          applicationMap: createApplicationMap(),
+        },
+        auth: {
+          permissions: permWithoutRequired,
+        },
+      });
+      cy.contains('p', `Facility ID: ${facilityAccountNumber}`).should('not.exist');
+    });
+
     it('should render facility details', () => {
       mountWithPinia({
         navBar,
@@ -838,7 +951,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap(),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('p', `Facility ID: ${facilityAccountNumber}`);
       cy.contains('p', `Facility Name: ${facilityName}`);
@@ -852,7 +965,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap({ ccfriOptInStatus: 0 }),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('p', 'Child Care Fee Reduction Initiative (CCFRI) Status: OPTED OUT');
     });
@@ -866,7 +979,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap({ ccfriStatus }),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('p', `Child Care Fee Reduction Initiative (CCFRI) Status: ${ccfriStatus}`);
     });
@@ -878,7 +991,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap({ eceweOptInStatus: 0 }),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('p', `Early Childhood Educator Wage Enhancement (ECE-WE) Status: OPTED OUT`);
     });
@@ -892,7 +1005,7 @@ describe('<LandingPage />', () => {
           programYearId,
           applicationMap: createApplicationMap({ eceweStatus }),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('p', `Early Childhood Educator Wage Enhancement (ECE-WE) Status: ${eceweStatus}`);
     });
@@ -902,9 +1015,12 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockNmf: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
+          applicationMap: createApplicationMap(
+            { unlockNmf: true },
+            { applicationStatus: APPLICATION_STATUSES.SUBMITTED },
+          ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
 
       checkButtonAndNavigate(`Update your PCF`, pcfUrlGuid(PATHS.CCFRI_NMF, programYearId, ccfriApplicationId));
@@ -920,7 +1036,7 @@ describe('<LandingPage />', () => {
             { applicationStatus: APPLICATION_STATUSES.SUBMITTED, isRenewal: true },
           ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
 
       checkButtonAndNavigate(
@@ -934,9 +1050,12 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockCcfri: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
+          applicationMap: createApplicationMap(
+            { unlockCcfri: true },
+            { applicationStatus: APPLICATION_STATUSES.SUBMITTED },
+          ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
 
       checkButtonAndNavigate(`Update your PCF`, pcfUrlGuid(PATHS.CCFRI_NEW_FEES, programYearId, ccfriApplicationId));
@@ -947,9 +1066,12 @@ describe('<LandingPage />', () => {
         navBar,
         application: {
           programYearId,
-          applicationMap: createApplicationMap({ unlockRfi: true }, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }),
+          applicationMap: createApplicationMap(
+            { unlockRfi: true },
+            { applicationStatus: APPLICATION_STATUSES.SUBMITTED },
+          ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
 
       checkButtonAndNavigate(`Update your PCF`, pcfUrlGuid(PATHS.CCFRI_RFI, programYearId, ccfriApplicationId));
@@ -965,7 +1087,7 @@ describe('<LandingPage />', () => {
             { applicationStatus: APPLICATION_STATUSES.SUBMITTED },
           ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
 
       checkButtonAndNavigate(`Update your PCF`, pcfUrlGuid(PATHS.CCFRI_AFS, programYearId, ccfriApplicationId));
@@ -981,7 +1103,7 @@ describe('<LandingPage />', () => {
             { applicationStatus: APPLICATION_STATUSES.DRAFT },
           ),
         },
-        ...createAppStore(),
+        ...createPermisions(),
       });
       cy.contains('button', `Update your PCF`).should('not.exist');
     });

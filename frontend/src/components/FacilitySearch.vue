@@ -227,6 +227,8 @@
 <script>
 import axios from 'axios';
 
+import { ApiRoutes } from '@/utils/constants';
+
 export default {
   name: 'FacilitySearch',
   props: {},
@@ -284,7 +286,7 @@ export default {
           this.searchResults = [];
           this.dialog = true;
           this.searchResults = (
-            await axios.get('/api/public/facilities?criteria={' + urlEncodedCriteria + '}&pageindex={}')
+            await axios.get(`${ApiRoutes.FACILITY_PUBLIC}?criteria={'${urlEncodedCriteria}'}&pageindex={}`)
           ).data;
           this.loading = false;
         }
@@ -294,7 +296,7 @@ export default {
     },
     async getFacility(id) {
       try {
-        this.facilityResult = (await axios.get('/api/public/facilities/' + id)).data;
+        this.facilityResult = (await axios.get(`${ApiRoutes.FACILITY_PUBLIC}/${id}`)).data;
       } catch (error) {
         console.info(error);
       }
