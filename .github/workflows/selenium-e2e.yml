@@ -42,12 +42,12 @@ jobs:
         run: |
           set -eux
           echo "Creating config.properties file with QA credentials..."
-          cat > config.properties <<'EOL'
-          crm_url='$CRM_URL'
-          crm_username='$CRM_USERNAME'
-          crm_password='$CRM_PASSWORD'
-          browser='chrome'
-          headless='true'
+          cat > config.properties <<EOL
+          crm_url=$CRM_URL
+          crm_username=$CRM_USERNAME
+          crm_password=$CRM_PASSWORD
+          browser=chrome
+          headless=true
           EOL
           echo "config.properties created successfully."
 
