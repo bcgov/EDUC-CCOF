@@ -22,11 +22,11 @@ const facilityResponse = {
   statusCode: ORGANIZATION_FACILITY_STATUS_CODES.ACTIVE,
 };
 
-function createOrgStore(overrides = {}) {
+function createOrganizationStore(extras = {}) {
   return {
     organization: {
       organizationProviderType: 'org-1234',
-      ...overrides,
+      ...extras,
     },
   };
 }
@@ -84,28 +84,47 @@ describe('<ManageFacility />', () => {
 
   it('should render main header', () => {
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
     });
     cy.contains('h1', 'Facility Information');
   });
 
   it('should render facility details', () => {
-    mountWithPinia({ ...createOrgStore() });
+    mountWithPinia({ ...createOrganizationStore() });
 
     cy.contains('b', facilityResponse.facilityName);
     cy.contains(`ID: ${facilityResponse.facilityAccountNumber}`);
     cy.contains(`Licence #: ${facilityResponse.licenseNumber}`);
   });
 
+  it('should not display `Request a Change` button without proper permissions', () => {
+    const permWithoutLicChange = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.LICENCE_CHANGE,
+    );
+    mountWithPinia({
+      ...createOrganizationStore(),
+      auth: {
+        permissions: permWithoutLicChange,
+      },
+    });
+
+    cy.contains('Request a Change').should('not.exist');
+  });
+
   it('should disable `Request a Change` button', () => {
-    mountWithPinia({ ...createOrgStore() });
+    mountWithPinia({
+      ...createOrganizationStore(),
+      auth: {
+        permissions: [PERMISSIONS.LICENCE_CHANGE],
+      },
+    });
 
     cy.contains('Request a Change').should('exist').should('have.css', 'pointer-events', 'none');
   });
 
   it('should enable `Request a Change` button', () => {
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       application: {
         programYearId: '111',
         applicationMap: new Map([
@@ -118,6 +137,9 @@ describe('<ManageFacility />', () => {
           ],
         ]),
       },
+      auth: {
+        permissions: [PERMISSIONS.LICENCE_CHANGE],
+      },
     });
 
     cy.contains('Request a Change').should('exist').should('not.have.css', 'pointer-events', 'none').click();
@@ -125,7 +147,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should not render any tabs without any permissions', () => {
-    mountWithPinia({ ...createOrgStore() });
+    mountWithPinia({ ...createOrganizationStore() });
 
     cy.get('.v-tabs').find('button').should('have.length', 0);
   });
@@ -133,7 +155,7 @@ describe('<ManageFacility />', () => {
   it('should render `Facility Details` tab', () => {
     const expectedTexts = ['Facility Details'];
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -157,7 +179,7 @@ describe('<ManageFacility />', () => {
     );
 
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -174,7 +196,7 @@ describe('<ManageFacility />', () => {
   it('should render `Licence and Service Details Record` tab', () => {
     const expectedTexts = ['Licence and Service Details Record'];
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -198,7 +220,7 @@ describe('<ManageFacility />', () => {
     );
 
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -214,7 +236,7 @@ describe('<ManageFacility />', () => {
   it('should render all tabs with correct values', () => {
     const expectedTexts = ['Facility Details', 'Programs and Vacancies', 'Licence and Service Details Record'];
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: {
           serverTime: new Date(),
@@ -237,7 +259,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render facility details with correct values', () => {
-    mountWithPinia({ ...createOrgStore() });
+    mountWithPinia({ ...createOrganizationStore() });
 
     cy.contains('p', facilityResponse.facilityName);
     cy.contains('p', facilityResponse.facilityAccountNumber);
@@ -254,7 +276,7 @@ describe('<ManageFacility />', () => {
     cy.intercept('GET', `${ApiRoutes.LICENCES}?facilityId=${facilityId}`, { statusCode: 200, body: [] });
 
     mountWithPinia({
-      ...createOrgStore(),
+      ...createOrganizationStore(),
       auth: {
         userInfo: { serverTime: new Date(), organizationName: 'TEST_ORG' },
         isAuthenticated: true,
@@ -268,7 +290,7 @@ describe('<ManageFacility />', () => {
   });
 
   it('should navigate on clicking back button', () => {
-    mountWithPinia({ ...createOrgStore() });
+    mountWithPinia({ ...createOrganizationStore() });
     cy.contains('button', 'Back').click();
     cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=facilities-tab`);
   });
