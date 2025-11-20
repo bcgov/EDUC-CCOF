@@ -18,21 +18,19 @@ class CcfriApplication{
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.paymentFrequency = this.parentFees.frequency.monthly
-            this.closureCharges = this.closures.closureCharges.chargeForClosures
+            this.paymentFrequency = this.parentFees.frequency
+            this.closureCharges = this.closures.closureCharges
             this.closureReason = this.closures.closureReason
-            this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus.fullFacilityClosure
+            this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus
         })
     }
 
     optInFacilities() {
         cy.url().should('include', '/ccfri', {timeout: 10000})
-        //Opt-Out Path
         if (this.optInOrOut === 'Opt-Out') {
             cy.contains('Child Care Fee Reduction Initiative (CCFRI)').clickByText('Update')
             cy.getByLabel(this.optInOrOut).click()
         } else {
-            //Opt-In Path
             cy.clickByText('Opt-In All Facilities')
         }
         cy.clickByText('Save')

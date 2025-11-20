@@ -279,27 +279,29 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
   });
 });
 
-Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
+Cypress.Commands.add('runCcofApp', (appType) => {
   ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
-    ccofApp.inputOrganizationInfo(appType, companyType)
+    ccofApp.inputOrganizationInfo(appType)
     ccofApp.inputFacilityInfo(appType)
     ccofApp.licenceAndServiceDeliveryDetails(appType)
 
-    if (appType.includes('group')) {
-      ccofApp.groupLicenses(licenceType)
-    } else {
-      ccofApp.familyLicences(licenceType)
+    switch (appType) {
+      case 'group':
+      case 'groupOld': 
+        ccofApp.groupLicenses(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
+      case 'family':
+      case 'familyOld': 
+        ccofApp.familyLicences(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.licenceUpload()
+        break;
     }
-
-    ccofApp.offerExtendedHoursOld(appType)
-
-    if (appType.includes('group')) {
-      ccofApp.addAnotherFacility()
-    } 
-
-    ccofApp.licenceUpload()
   })
 });
 
@@ -322,14 +324,14 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
   })
 }); 
 
-Cypress.Commands.add('runEceWeApp', (appType, term, {model = null} = {}) => {
+Cypress.Commands.add('runEceWeApp', (appType, term) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
     if (appType.includes("family")) {
       eceWeApp.familyEceWe()
     } else {
-      eceWeApp.groupEceWe({model})
+      eceWeApp.groupEceWe()
     }
     eceWeApp.supportingDocUpload()
   })

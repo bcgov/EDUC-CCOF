@@ -18,7 +18,7 @@ class SubmitApplication {
         cy.url()
             .should('equal', Cypress.env('PORTAL_BASE_URL'))
 
-        if (appType === 'group' || appType === 'family') {
+        if (!appType.includes('Renewal')) {
             cy.contains('.v-card', 'Apply for Child Care Operating Funding (CCOF) including:')
                 .should('contain', 'Status: Submitted')
             cy.contains('.v-card', 'Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED')

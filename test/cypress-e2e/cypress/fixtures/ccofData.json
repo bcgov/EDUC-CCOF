@@ -1,6 +1,7 @@
 {
   "orgData": {
-    "typeOfOrganization": {
+    "typeOfOrganization": "Registered Company",
+    "_optionsTypeOfOrganization": {
       "nonProfitSociety": "Non-Profit Society",
       "publicInstitute": "Public Institution (college/university)",
       "registeredCompany": "Registered Company",
@@ -27,7 +28,14 @@
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
-    "healthAuthority": "Fraser Health"
+    "healthAuthority": "Fraser Health",
+    "_optionsHealthAuthority": {
+      "fraser": "Fraser Health",
+      "interior": "Interior Health",
+      "island": "Island Health",
+      "northern": "Northern Health",
+      "vancouverCoastal": "Vancouver Coastal Health"
+    }
   },
   "facilityLicenceDetailsData": {
     "licenceInfo": {
@@ -36,6 +44,10 @@
       "hoursFrom": "08:00",
       "hoursTo": "18:00",
       "closedEntireMonths": "Yes",
+      "_optionsClosedEntireMonths": {
+        "fullyClosed": "Yes",
+        "notFullyClosed": "No"
+      },
       "closedMonths": [
         "January",
         "September",
@@ -213,8 +225,10 @@
         "maxOverFourHours": 4
       }
     },
-    "addFacilityData": {
-      "addAnotherFacility": "No"
+    "addFacilityData": "No",
+    "_optionsAddAnotherFacilityData": {
+      "addAnother": "Yes",
+      "onlyOne": "No"
     }
   }
 }

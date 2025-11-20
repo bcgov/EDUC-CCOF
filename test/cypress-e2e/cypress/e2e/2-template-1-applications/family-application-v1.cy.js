@@ -1,6 +1,6 @@
 import { submitApp } from '../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js'
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
-import { APP_TYPE, PROGRAM_YEAR, LICENCE_TYPE, ORG_TYPE, FUNDING_MODEL  } from '../../support/constants.js'
+import { APP_TYPE, PROGRAM_YEAR} from '../../support/constants.js'
 
 describe('Group Application Test Template 1', () => {
     it('Should run through Template 1 Group Application, submit and logout', () => {
@@ -12,9 +12,9 @@ describe('Group Application Test Template 1', () => {
         cy.startNewApp(APP_TYPE.FAMILY_V1)
     
         cy.then(()=> {
-            cy.runCcofApp(APP_TYPE.FAMILY_V1, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.FAMILY_V1)
+            cy.runCcofApp(APP_TYPE.FAMILY_V1)
             cy.runCcfriApp(APP_TYPE.FAMILY_V1, PROGRAM_YEAR.CURRENT)
-            cy.runEceWeApp(APP_TYPE.FAMILY_V1, PROGRAM_YEAR.CURRENT, {model: FUNDING_MODEL.PROVINCIALLY_FUNDED})
+            cy.runEceWeApp(APP_TYPE.FAMILY_V1, PROGRAM_YEAR.CURRENT)
             submitApp.summaryAndDeclaration(APP_TYPE.FAMILY_V1)
         })
     })

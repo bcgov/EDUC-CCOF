@@ -15,8 +15,6 @@ class CcofApplication {
       this.orgType = this.orgData.typeOfOrganization
       this.orgInfo = this.orgData.orgInfo
       this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-      this.licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
-      this.monthsClosed = this.licenceInfo.closedMonths
       this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
       this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
       this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
@@ -26,7 +24,6 @@ class CcofApplication {
       this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
       this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
       this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
-      this.extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours
       this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData.addAnotherFacility
     })
   }
@@ -42,17 +39,15 @@ class CcofApplication {
   }
 
   // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
-  inputOrganizationInfo(appType, typeName) {
+  inputOrganizationInfo(appType) {
     switch (appType) {
       case 'group':
       case 'family':
         cy.contains('Organization Information').should('be.visible')
         cy.contains('Type of Organization').should('be.visible')
-        cy.getByLabel(this.orgType[typeName]).click()
+        cy.getByLabel(this.orgType).click()
         cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.legalOrgName)
         cy.getByLabel('Incorporation Number (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.incorporationNumber)
-        
-        // Mailing & Street Address
         cy.contains('Organization Mailing Address').should('be.visible')
         cy.getByLabel('Enter address manually').check().should('be.checked')
         cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
@@ -62,27 +57,20 @@ class CcofApplication {
         cy.contains('Organization Street Address same as Mailing Address').should('be.visible')
           .getByLabel('Yes').check()
           .should('be.checked')
-        
-        // Org Contact
         cy.contains('Organization Contact Information').should('be.visible')
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('Email Address').typeAndAssert(this.orgInfo.email)
         break;
 
       case 'groupOld':
-        // cy.contains('Organization Information').should('be.visible')
         cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
         cy.getByLabel('Incorporation Number (as it appears in BC Corporate Registry)').typeAndAssert(this.orgInfo.incorporationNumber)
-        
-        // Mailing & Street Address
         cy.contains('Organization Mailing Address').should('be.visible')
         cy.selectByLabel('Province', this.orgInfo.province)
-        
         cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
         cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
         cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
         cy.contains('Organization Street Address same as Mailing Address').should('be.visible').click()
-    
         cy.contains('Contact Information').should('be.visible')
         cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgInfo.facilityContact)
         cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
@@ -91,40 +79,32 @@ class CcofApplication {
         })
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('E-mail Address of Signing Authority').typeAndAssert(this.orgInfo.email)
-
-        // Org Type
         cy.contains('Type of Organization').should('be.visible')
-        cy.getByLabel(this.orgType[typeName]).click()
+        cy.getByLabel(this.orgType).click()
         break;
 
       case 'familyOld':
         cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
         cy.getByLabel('Incorporation Number (as it appears in BC Corporate Registry)').typeAndAssert(this.orgInfo.incorporationNumber)
-        
-        // Mailing & Street Address
         cy.contains('Organization Mailing Address').should('be.visible')
         cy.getByLabel('Name of Care Provider (if registered company)').typeAndAssert('Luffy')
         cy.contains('BC').should('be.visible')
-        
         cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
         cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
         cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
         cy.contains('Organization Street Address same as Mailing Address').should('be.visible').click()
         cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
-        
         cy.contains('div', 'BCeID') .within(()=> {
           cy.get('input:disabled').should('have.value', Cypress.env('PORTAL_USERNAME'))
         })
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('E-mail Address of Signing Authority').typeAndAssert(this.orgInfo.email)
-
-        // Org Type
         cy.contains('.v-col-md-6','Type of Organization').should('be.visible').within(()=> {
-          cy.getByLabel(this.orgType[typeName]).click()
+          cy.getByLabel(this.orgType).click()
         })
         break;
-
       } 
+
     cy.clickByText('Save')
     cy.contains('Success! Organization information has been saved.').should('be.visible')
     cy.clickByText('Next')
@@ -134,20 +114,15 @@ class CcofApplication {
     switch (appType) {
       case 'group':
       case 'family':
-        // Facility Info
         cy.contains('Facility Information')
         cy.getByLabel('Facility Name (as it appears on the Community Care and Assisted Living Act Licence)').typeAndAssert(this.facilityData.facilityName)
         cy.getByLabel('Year Facility Began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
         cy.contains('div', 'Is the Facility Street Address the same as the Organization Street Address?').within(()=> {
           cy.getByLabel('Yes').click()
         })
-
-        // Facility Contact
         cy.contains('div', 'Is the Facility Contact the same as the Organization Contact Information?').within(()=> {
           cy.getByLabel('Yes').click()
         })
-
-        // Licence info
         cy.getByLabel('Facility Licence Number').typeAndAssert(this.facilityData.facilityLicence)
         cy.getByLabel('Effective Date of Current Licence').typeAndAssert(this.facilityData.licenceEffectiveDate)
         cy.selectByLabel('Select Health Authority that Issued Licence', this.facilityData.healthAuthority)
@@ -176,9 +151,8 @@ class CcofApplication {
         cy.getByLabel('Facility Licence Number').typeAndAssert(this.facilityData.facilityLicence)
         cy.getByLabel('Effective Date of Current Licence').typeAndAssert(this.facilityData.licenceEffectiveDate)
         break;
-      
     } 
-    // Previous CCOF enrollment 
+
     cy.contains('div', 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?').within(()=> {
       cy.getByLabel('No').click()
     })
@@ -193,9 +167,14 @@ class CcofApplication {
   licenceAndServiceDeliveryDetails(appType) {
     switch (appType) {
       case 'groupOld':
-      case 'familyOld': this.monthsClosed = this.licenceInfo.closedMonthsOld; break;
-      case 'group':
-      case 'family':cy.contains('Facility Licence and Service Details')
+      case 'familyOld': 
+        this.monthsClosed = this.licenceInfo.closedMonthsOld
+        break;
+      case 'group': 
+      case 'family':
+        this.monthsClosed = this.licenceInfo.closedMonths
+        cy.contains('Facility Licence and Service Details')
+        break;
     }
     cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
     cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
@@ -207,135 +186,138 @@ class CcofApplication {
     cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
   }
 
-  groupLicenses(licenceType) {
-    // Licence Types & Capacities
-    switch (licenceType) {
-      case 'oldGroupLicenceCategories': this.licenceCategory = this.facilityLicenceDetailsData.oldGroupLicenceCategories; break; 
+  groupLicenses(appType) {
+    let licenceCategory
+    switch (appType) {
+      case 'group': 
+        licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
+        Object.entries(licenceCategory).forEach(([category, value]) => {
+          if (value.checked) {
+            cy.getByLabel(category).check().should('be.checked')
+            cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max)
+          }
+        });
+        break;
+
+      case 'groupOld': 
+        licenceCategory = this.facilityLicenceDetailsData.oldGroupLicenceCategories
+        Object.entries(licenceCategory).forEach(([category, value]) => {
+          if (value.checked) {
+            if (category === "Multi-Age Child Care") {
+              cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
+            } else {
+              cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
+            } 
+          }
+        });
+        break;
     };
-    
-    Object.entries(this.licenceCategory).forEach(([category, value]) => {
-      if (value.checked) {
-        if (licenceType === 'groupLicenceCategories') {
-          cy.getByLabel(category).check().should('be.checked');
-        }
-        if (licenceType === 'oldGroupLicenceCategories' && category === "Multi-Age Child Care") {
-          cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
-        } else {
-          cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
-        } 
-      }
-    });
 
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    if (this.licenceCategory.Preschool?.checked) {
+    if (licenceCategory.Preschool?.checked) {
       Object.entries(this.preschoolSessions).forEach(([day, value]) => {
         cy.getByLabel(day).typeAndAssert(value);
       });
     }
 
-     // School Property
     cy.contains('div', 'Is the facility located on school property?').within(()=> {
       cy.getByLabel('Yes').click()
     })
+
     this.schoolAgedCare.forEach(label => {
       cy.getByLabel(label).check().should('be.checked');
     });
   }
 
-  familyLicences(licenceType) {
-    switch (licenceType) {
-      case 'familyLicenceCategories': this.licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories; break;
-      case 'oldFamilyLicenceCategories': this.licenceCategory = this.facilityLicenceDetailsData.oldFamilyLicenceCategories; break;
+  familyLicences(appType) {
+    let licenceCategory
+    switch (appType) {
+      case 'family': 
+        licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
+        Object.entries(licenceCategory).forEach(([category, value]) => {
+          if (value.checked) {
+            cy.getByLabel(`${category}`).click()
+            cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(value.max)
+            cy.contains('div', 'Enter maximum number of child care spaces you offer')
+              .getByLabel('Maximum Number of Child Care Spaces')
+              .typeAndAssert(this.maxChildCareSpaces)
+          }
+        });
+        break;
+
+      case 'familyOld': 
+        licenceCategory = this.facilityLicenceDetailsData.oldFamilyLicenceCategories
+        Object.entries(licenceCategory).forEach(([category, value]) => {
+          if (value.checked) {
+            cy.getByLabel(`${category}`).click()
+            cy.contains('Licence type')
+            cy.getByLabel("Maximum licensed capacity").typeAndAssert(value.max)
+            cy.getByLabel('Maximum number of child care spaces you offer').typeAndAssert(this.maxChildCareSpaces)
+          }
+        });
+        break;
     }
-    Object.entries(this.licenceCategory).forEach(([category, value]) => {
-      if (value.checked) {
-        cy.getByLabel(`${category}`).click()
-        if (licenceType === 'familyLicenceCategories') {
-          cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(value.max)
-          cy.contains('div', 'Enter maximum number of child care spaces you offer')
-            .getByLabel('Maximum Number of Child Care Spaces')
-            .typeAndAssert(this.maxChildCareSpaces)
-        } else {
-          cy.log(`${value.max}`)
-          cy.contains('Licence type')
-          cy.getByLabel("Maximum licensed capacity").typeAndAssert(value.max)
-          cy.getByLabel('Maximum number of child care spaces you offer').typeAndAssert(this.maxChildCareSpaces)
-        }
-      }
-    });
   }
 
-  // HEDIE -> I don't think we ever tested this properly for the original applications, we always selected "No" by default
-
-  // offerExtendedHours(licenceType) {
-  //   if (this.extendedHours === "Yes") {
-  //     cy.getByLabel("Maximum number of days per week you offer extended hours of child care?").typeAndAssert(this.extendedMaxDays)
-  //     cy.getByLabel("Maximum number of weeks per year you offer extended hours of child care?").typeAndAssert(this.extendedMaxWeeks)
-
-  //     // Group Application - Extended Hours (uses group licences)
-  //     if (this.groupExtendedHours){
-  //       Object.entries(this.groupExtendedHours).forEach(([category, value]) => {
-  //         if (value.checked) {
-  //           cy.getByLabel(category).check().should('be.checked');
-  //           cy.getByLabel(`Maximum number for ${category}`).typeAndAssert(value.max);
-  //         }
-  //       });
-  //     } else {
-  //       // Family Application - Extended Hours (uses family licence)
-  //       cy.contains('Enter the number of spaces for which you offer extended hours (care before 6:00 AM, after 7:00 PM or overnight service regularly offered')
-  //       cy.getByLabel(category).should('be.checked')
-  //       cy.contains('div', '4 hous or less extended child care').within(()=> {
-  //         cy.getByLabel('Maximum Spaces Offered').typeAndAssert(category.maxUnderFourHours);
-  //       })
-  //       cy.contains('div', 'Over 4 hours extended child care').within(()=> {
-  //         cy.getByLabel('Maximum Spaces Offered').typeAndAssert(category.maxOverFourHours)
-  //       })
-  //     }
-  //   }
-  //   cy.clickByText('Save')
-  //   cy.contains('Application saved successfully.').should('be.visible')
-  //   cy.clickByText('Next')
-  // }
-
-  offerExtendedHoursOld(appType) {
+  // NOTE: please implement offerExtendedHours for the new template. 
+  offerExtendedHours(appType) {
+    let extendedHoursLicence
     switch (appType) {
-      case 'group':
-      case 'groupOld': this.extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours; break
-      case 'family':
-      case 'familyOld': this.extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours; break
-    }
-    cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
-      cy.getByLabel(this.extendedHours).click()
-    })
+      case 'groupOld': 
+        extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours
 
-    if (this.extendedHours === "Yes") {
-      if (appType === "familyOld") {
-        cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
-      }
-      cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
-      cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
-
-      cy.contains('Write the maximum number of spaces you offer extended hours of child care for each type of service')
-      cy.contains('.v-col-md-6','4 hours or less extended child care').within(()=> {
-        Object.entries(this.extendedHoursLicence).forEach(([category, value]) => {
-          cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
-        });
-      })
-
-      cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
-        // Group Application - Extended Hours (uses group licences)
-        Object.entries(this.extendedHoursLicence).forEach(([category, value]) => {
-          if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
-            category = "Group Child Care (School Age/ School Age Care on School Grounds)"
-          }
-          if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
-            category = "Family Child Care (School Age/ School Age Care on School Grounds)"
-          }
-
-          cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+        cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
+          cy.getByLabel(this.extendedHours).click()
         })
-      })
+
+        cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
+        cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
+        cy.contains('Write the maximum number of spaces you offer extended hours of child care for each type of service')
+        cy.contains('.v-col-md-6','4 hours or less extended child care').within(()=> {
+          Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+            cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
+          });
+        })
+
+        cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+          Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+            // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
+            if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
+              category = "Group Child Care (School Age/ School Age Care on School Grounds)"
+            }
+            cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+          })
+        })
+        break;
+
+      case 'familyOld': 
+        extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours
+
+        cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
+          cy.getByLabel(this.extendedHours).click()
+        })
+        cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
+        cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
+        cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
+        cy.contains('Write the maximum number of spaces you offer extended hours of child care for each type of service')
+        cy.contains('.v-col-md-6','4 hours or less extended child care').within(()=> {
+          Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+            cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
+          });
+        })
+
+        cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+          Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+            // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
+            if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
+              category = "Family Child Care (School Age/ School Age Care on School Grounds)"
+            }
+            cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+          })
+        })
+        break;
     }
+  
     cy.clickByText('Save')
     cy.contains('Application saved successfully.').should('be.visible')
     cy.clickByText('Next')
