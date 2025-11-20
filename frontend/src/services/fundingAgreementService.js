@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
@@ -34,6 +36,17 @@ export default {
     try {
       if (!fundingAgreementId) return;
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}/${fundingAgreementId}/pdf`);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to get the funding PDF by funding id - ${error}`);
+      throw error;
+    }
+  },
+
+  async getFundingAgreementPDFByQuery(query) {
+    try {
+      if (isEmpty(query)) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}/pdf${buildQueryString(query)}`);
       return response.data;
     } catch (error) {
       console.log(`Failed to get the funding PDF by funding id - ${error}`);

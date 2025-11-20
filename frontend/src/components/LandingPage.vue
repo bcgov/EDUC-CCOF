@@ -164,7 +164,7 @@
                 v-if="ccofRenewStatus === RENEW_STATUS.NEW"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
-                @click="renewApplication()"
+                @click="renew"
               >
                 Renew my Funding Agreement
               </v-btn>
@@ -692,6 +692,7 @@ export default {
     ...mapActions(useEnrolmentReport, ['checkDueReports']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    ...mapActions(useOrganizationStore, ['renewApplication']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     async loadData() {
       try {
@@ -728,15 +729,21 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));
     },
-    renewApplication() {
-      this.setIsRenewal(true);
-      this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.nextProgramYear?.programYearId));
+    async renew() {
+      try {
+        this.isLoadingComplete = false;
+        await this.renewApplication();
+        this.setIsRenewal(true);
+        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.nextProgramYear?.programYearId));
+      } catch (error) {
+        console.error('Failed to renew application.', error);
+        this.setFailureAlert('An error occurred while processing. Please try again later.');
+      }
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     continueRenewal() {
-      console.log(this.showApplicationTemplateV1);
       if (this.showApplicationTemplateV1) {
         this.goToLicenseUpload();
       } else {

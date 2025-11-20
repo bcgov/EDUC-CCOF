@@ -334,35 +334,36 @@ export default {
       };
     },
     getRenewalCCOFNavigation() {
+      if (this.showApplicationTemplateV1) {
+        return this.createNavItem({
+          title: 'Licence Upload',
+          link: { name: 'Licence Upload' },
+          isComplete: this.isLicenseUploadComplete,
+          isAccessible: true,
+        });
+      }
+
+      const bankingInfo = this.createNavItem({
+        title: 'Banking Information',
+        link: { name: 'renewal-banking-information' },
+        isComplete: this.isRenewalBankingInfoComplete,
+        isAccessible: true,
+      });
+      const fundingAgreement = this.createNavItem({
+        title: 'Funding Agreement',
+        link: { name: 'renewal-funding-agreement' },
+        isComplete: this.isRenewalFAComplete,
+        isAccessible: this.isRenewalBankingInfoComplete,
+      });
       const licenceUpload = this.createNavItem({
         title: 'Licence Upload',
         link: { name: 'Licence Upload' },
         isComplete: this.isLicenseUploadComplete,
         isAccessible: true,
       });
-
-      if (this.showApplicationTemplateV1) {
-        return licenceUpload;
-      }
-
-      const bankingInfo = this.createNavItem({
-        title: 'Banking Information',
-        link: { name: 'Banking Information' },
-        isComplete: this.isRenewalBankingInfoComplete,
-        isAccessible: true,
-      });
-
-      const fundingAgreement = this.createNavItem({
-        title: 'Funding Agreement',
-        link: { name: 'Funding Agreement' },
-        isComplete: this.isRenewalFAComplete,
-        isAccessible: this.isRenewalBankingInfoComplete,
-      });
-
       licenceUpload.isAccessible = this.isRenewalBankingInfoComplete && this.isRenewalFAComplete;
       const items = [bankingInfo, fundingAgreement, licenceUpload];
       isCCOFGroupComplete = this.areChildrenComplete(items);
-
       return {
         title: NAV_BAR_GROUPS.CCOF,
         isAccessible: true,

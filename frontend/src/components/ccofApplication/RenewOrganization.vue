@@ -1,9 +1,13 @@
 <template>
-  <v-skeleton-loader :loading="processing" type="table-tbody" class="mb-12">
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
     <v-container fluid class="mx-lg-16">
       <v-form ref="form" v-model="isValidForm">
         <ApplicationPCFHeader :program-year="renewalYearLabel" />
-        <ApplicationChangeRequestInProgressAlert v-if="hasActiveChangeRequest" :loading="processing" class="my-8" />
+        <ApplicationChangeRequestInProgressAlert
+          v-if="hasActiveChangeRequest"
+          :loading="isApplicationProcessing"
+          class="my-8"
+        />
         <v-card class="my-8 pa-8 pb-4">
           <p>Has your banking information changed?</p>
           <v-radio-group
@@ -50,10 +54,13 @@
   </v-skeleton-loader>
   <NavButton
     :is-next-displayed="true"
-    :is-next-disabled="!isValidForm || hasBankingInfoChanged"
-    :is-processing="processing"
+    :is-save-displayed="true"
+    :is-next-disabled="isNextDisabled"
+    :is-save-disabled="readonly"
+    :is-processing="isApplicationProcessing"
     @previous="back"
     @next="next"
+    @save="save(true)"
     @validate-form="validateForm"
   />
 </template>
@@ -62,83 +69,79 @@ import { mapActions, mapState, mapWritableState } from 'pinia';
 import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { APPLICATION_STATUSES, APPLICATION_TYPES, PATHS, pcfUrl } from '@/utils/constants.js';
+import { PATHS } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
   components: { ApplicationChangeRequestInProgressAlert, ApplicationPCFHeader, NavButton },
+  mixins: [alertMixin, permissionsMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.readonly) {
+      this.save(false);
+    }
+    next();
+  },
   data() {
     return {
-      processing: false,
-      isValidForm: true,
+      isValidForm: false,
       hasBankingInfoChanged: null,
     };
   },
   computed: {
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
-    ...mapState(useApplicationStore, [
-      'applicationStatus',
-      'applicationType',
-      'latestProgramYearId',
-      'showApplicationTemplateV1',
-    ]),
+    ...mapState(useApplicationStore, ['isApplicationProcessing', 'isApplicationSubmitted']),
+    ...mapState(useNavBarStore, ['nextPath']),
     ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
     ...mapWritableState(useApplicationStore, ['isRenewalBankingInfoComplete']),
-    hasDraftRenewalApplication() {
-      return (
-        this.applicationStatus === APPLICATION_STATUSES.DRAFT && this.applicationType === APPLICATION_TYPES.RENEWAL
-      );
+    readonly() {
+      return this.isApplicationSubmitted || this.hasActiveChangeRequest;
+    },
+    isNextDisabled() {
+      // TODO (vietle-cgi) - update this line after we add Banking Info to this page
+      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged;
     },
   },
   async created() {
-    this.PATHS = PATHS;
     this.rules = rules;
-    await this.init();
+    await this.loadData();
   },
   methods: {
-    ...mapActions(useOrganizationStore, ['renewApplication']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
-    async init() {
+    async loadData() {
       try {
-        this.processing = true;
+        this.setIsApplicationProcessing(true);
         await this.getChangeRequestList();
-        // Prevents users from creating a duplicate RENEWAL application if they click the browser's back arrow and try again.
-        if (this.showApplicationTemplateV1 && this.hasDraftRenewalApplication) {
-          this.back();
-        }
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
       } finally {
-        this.processing = false;
+        this.setIsApplicationProcessing(false);
       }
-    },
-    async next() {
-      if (this.showApplicationTemplateV1) {
-        this.processing = true;
-        const nextProgramYear = this.programYearList?.list?.find(
-          (el) => el.previousYearId === this.latestProgramYearId,
-        );
-        await this.renewApplication();
-        this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
-      } else {
-        // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalBankingInfoComplete field to Application entity
-        this.isRenewalBankingInfoComplete = true;
-        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_FA, this.latestProgramYearId));
-      }
-    },
-    validateForm() {
-      this.$refs.form?.validate();
     },
     back() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    goToChangeRequestHistory() {
-      this.$router.push(`${PATHS.ROOT.CHANGE_LANDING}#change-request-history`);
+    next() {
+      this.$router.push(this.nextPath);
+    },
+    save(showNotification) {
+      this.setIsApplicationProcessing(true);
+      // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalBankingInfoComplete field to Application entity
+      this.isRenewalBankingInfoComplete = true;
+      if (showNotification) {
+        this.setSuccessAlert('Application saved successfully.');
+      }
+      this.setIsApplicationProcessing(false);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
   },
 };

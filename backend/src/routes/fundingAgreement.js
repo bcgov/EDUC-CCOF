@@ -3,7 +3,14 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { checkFundingAgreementExists, getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
+const {
+  checkFundingAgreementExists,
+  getFundingAgreement,
+  getFundingAgreements,
+  getFundingAgreementPDF,
+  getFundingAgreementPDFByQuery,
+  updateFundingAgreement,
+} = require('../components/fundingAgreement');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { oneOf, param, query, validationResult } = require('express-validator');
 const validatePermission = require('../middlewares/validatePermission');
@@ -38,6 +45,25 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return checkFundingAgreementExists(req, res);
+  },
+);
+
+/**
+ * Get the funding agreement PDF using query
+ */
+router.get(
+  '/pdf',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.DOWNLOAD_FUNDING_AGREEMENT),
+  [
+    query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
+    query('programYearId').notEmpty().withMessage('programYearId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('programYearId must be a valid UUID'),
+    query('fundingAgreementOrderNumber').notEmpty().withMessage('fundingAgreementOrderNumber is required'),
+  ],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFundingAgreementPDFByQuery(req, res);
   },
 );
 

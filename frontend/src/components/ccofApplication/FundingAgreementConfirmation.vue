@@ -1,9 +1,8 @@
 <template>
-  <v-skeleton-loader :loading="loading" type="table-tbody" class="mb-12">
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
     <v-container fluid class="mx-lg-16">
       <v-form ref="form" v-model="isValidForm">
         <ApplicationPCFHeader :program-year="formattedProgramYear" :organization-name="organizationName" />
-        <ApplicationChangeRequestInProgressAlert v-if="hasActiveChangeRequest" :loading="isProcessing" class="my-8" />
         <div class="my-8">
           <p>
             The Funding Agreement outlines the legal obligations you are agreeing to if you enter into this agreement
@@ -26,7 +25,9 @@
           </p>
         </div>
         <div class="d-flex justify-end align-end my-4">
-          <AppButton :loading="isProcessing" size="medium" @click="goToChangeRequest"> Request a Change </AppButton>
+          <AppButton :loading="isApplicationProcessing" size="medium" @click="goToChangeRequest">
+            Request a Change
+          </AppButton>
         </div>
         <v-card v-if="pdfFile" class="px-8 px-lg-12 py-4">
           <AppPDFViewer :pdf-file="pdfFile" />
@@ -39,7 +40,7 @@
                 <li>the information in each Schedule A is correct.</li>
               </ul>
             </div>
-            <v-radio-group v-model="isScheduleACorrect" :disabled="hasActiveChangeRequest" :rules="rules.required">
+            <v-radio-group v-model="isScheduleACorrect" :disabled="readonly" :rules="rules.required">
               <v-radio label="Yes" :value="true" />
               <v-radio label="No" :value="false" />
             </v-radio-group>
@@ -65,9 +66,11 @@
     :is-next-displayed="true"
     :is-save-displayed="true"
     :is-next-disabled="isNextDisabled"
-    :is-processing="isProcessing"
+    :is-save-disabled="readonly"
+    :is-processing="isApplicationProcessing"
     @previous="back"
     @next="next"
+    @save="save(true)"
     @validate-form="validateForm"
   />
 </template>
@@ -76,25 +79,30 @@ import { isEmpty } from 'lodash';
 import { mapActions, mapState, mapWritableState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
-import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { PATHS } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppButton, AppPDFViewer, ApplicationChangeRequestInProgressAlert, ApplicationPCFHeader, NavButton },
+  components: { AppButton, AppPDFViewer, ApplicationPCFHeader, NavButton },
+  mixins: [alertMixin, permissionsMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    if (!this.readonly) {
+      this.save(false);
+    }
+    next();
+  },
   data() {
     return {
-      loading: false,
-      processing: false,
-      isValidForm: true,
+      isValidForm: false,
       isScheduleACorrect: null,
       pdfFile: null,
     };
@@ -107,21 +115,18 @@ export default {
       'applicationType',
       'formattedProgramYear',
       'isApplicationProcessing',
+      'isApplicationSubmitted',
       'latestProgramYearId',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
-    ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
-    ...mapState(useOrganizationStore, ['organizationName']),
+    ...mapState(useOrganizationStore, ['organizationId', 'organizationName']),
     ...mapWritableState(useApplicationStore, ['isRenewalFAComplete']),
-    isProcessing() {
-      return this.loading || this.processing || this.isApplicationProcessing;
-    },
-    isDataComplete() {
-      return !isEmpty(this.pdfFile);
+    readonly() {
+      return this.isApplicationSubmitted || isEmpty(this.pdfFile);
     },
     isNextDisabled() {
       // TODO (vietle-cgi) - update this line after we add Licence Info to this page
-      return this.isProcessing || !this.isDataComplete || !this.isValidForm || !this.isScheduleACorrect;
+      return this.readonly || !this.isValidForm || !this.isScheduleACorrect;
     },
   },
   async created() {
@@ -130,43 +135,43 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions(useOrganizationStore, ['renewApplication']),
-    ...mapActions(useReportChangesStore, ['getChangeRequestList']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
     async loadData() {
       try {
-        this.loading = true;
+        this.setIsApplicationProcessing(true);
         await this.loadFundingAgreementPDF();
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
       } finally {
-        this.loading = false;
+        this.setIsApplicationProcessing(false);
       }
     },
     async loadFundingAgreementPDF() {
-      try {
-        console.log(this.applicationMap?.get(this.$route.params.programYearGuid));
-        // TODO (vietle-cgi) - update this line after we confirm with Danna which FA to display
-        // const fundingAgreementId = this.applicationMap?.get(this.$route.params.programYearGuid)?.fundingAgreementId;
-        const fundingAgreementId = '5602dc56-3e6e-f011-b4cb-7ced8d05e0a9';
-        const pdfFile = await FundingAgreementService.getFundingAgreementPDF(fundingAgreementId);
-        this.pdfFile = `data:application/pdf;base64,${pdfFile}`;
-      } catch (error) {
-        console.error('Failed to load PDF', error);
-      }
-    },
-    async next() {
-      this.processing = true;
-      // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalFAComplete field to Application entity
-      this.isRenewalFAComplete = true;
-      this.$router.push(this.nextPath);
-      console.log('NEXT');
-    },
-    validateForm() {
-      this.$refs.form?.validate();
+      const pdfFile = await FundingAgreementService.getFundingAgreementPDFByQuery({
+        organizationId: this.organizationId,
+        programYearId: this.$route.params.programYearGuid,
+        fundingAgreementOrderNumber: 0,
+      });
+      this.pdfFile = `data:application/pdf;base64,${pdfFile}`;
     },
     back() {
       this.$router.push(this.previousPath);
+    },
+    next() {
+      this.$router.push(this.nextPath);
+    },
+    save(showNotification) {
+      this.setIsApplicationProcessing(true);
+      // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalFAComplete field to Application entity
+      this.isRenewalFAComplete = true;
+      if (showNotification) {
+        this.setSuccessAlert('Application saved successfully.');
+      }
+      this.setIsApplicationProcessing(false);
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
     goToChangeRequest() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);

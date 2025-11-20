@@ -5,7 +5,7 @@ import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { ApiRoutes } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
@@ -179,7 +179,8 @@ export const useApplicationStore = defineStore('application', {
     },
   },
   getters: {
-    isApplicationSubmitted: (state) => state.applicationStatus !== 'INCOMPLETE',
+    // TODO (vietle-cgi) - check if AFS still work as expected
+    isApplicationSubmitted: (state) => state.applicationStatus !== APPLICATION_STATUSES.DRAFT,
     formattedProgramYear: (state) => formatFiscalYearName(state.programYearLabel),
     fiscalStartAndEndDates: (state) => {
       //set fiscal year dates to prevent user from choosing dates outside the current FY

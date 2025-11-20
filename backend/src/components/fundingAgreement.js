@@ -45,7 +45,8 @@ async function getFundingAgreementPDF(req, res) {
 async function getFundingAgreementPDFByQuery(req, res) {
   try {
     const faResponse = await getOperation(`ccof_funding_agreements?$select=ccof_funding_agreementid&${buildFilterQuery(req.query, FundingAgreementMappings)}`);
-    const pdfResponse = await getOperation(`ccof_funding_agreements(${faResponse?.value?.fundingAgreementId})/ccof_funding_pdf`);
+    const fundingAgreementId = faResponse?.value[0]?.ccof_funding_agreementid;
+    const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreementId})/ccof_funding_pdf`);
     return res.status(HttpStatus.OK).json(pdfResponse.value);
   } catch (e) {
     log.error(e);

@@ -303,7 +303,7 @@ const router = createRouter({
     },
     {
       path: pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION),
-      name: 'Banking Information',
+      name: 'renewal-banking-information',
       component: RenewOrganization,
       meta: {
         pageTitle: 'Banking Information',
@@ -315,7 +315,7 @@ const router = createRouter({
     },
     {
       path: pcfUrl(PATHS.CCOF_RENEWAL_FA),
-      name: 'Funding Agreement',
+      name: 'renewal-funding-agreement',
       component: FundingAgreementConfirmation,
       meta: {
         pageTitle: 'Funding Agreement',
