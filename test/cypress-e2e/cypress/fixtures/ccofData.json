@@ -112,7 +112,7 @@
       },
       "Multi-Age Child Care": {
         "checked": true,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
@@ -120,7 +120,7 @@
     "oldFamilyLicenceCategories": {
       "Family child care": {
         "checked": true,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
@@ -132,7 +132,7 @@
       },
       "Multi-Age Care": {
         "checked": false,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
@@ -140,25 +140,25 @@
     "familyLicenceCategories": {
       "Family Child Care": {
         "checked": true,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "In-Home Multi-Age Child Care": {
         "checked": false,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
         "checked": false,
-        "max": 20,
+        "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
     },
     "maximumLicensedCapacity": "50",
-    "maxChildCareSpaces": "10",
+    "maxChildCareSpaces": "20",
     "PreschoolSessions": {
       "Monday": 1,
       "Tuesday": 1,

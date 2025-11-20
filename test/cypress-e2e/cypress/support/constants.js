@@ -19,8 +19,8 @@ export const ORG_TYPE = Object.freeze({
 export const LICENCE_TYPE = Object.freeze({
     GROUP_V2: 'groupLicenceCategories',
     GROUP_V1: 'oldGroupLicenceCategories',
-    FAMILY_V1: 'oldFamilyChildCare',
-    FAMILY_V2: 'familyChildCare'
+    FAMILY_V1: 'oldFamilyLicenceCategories',
+    FAMILY_V2: 'familyLicenceCategories'
 })
 
 export const FUNDING_MODEL = Object.freeze({

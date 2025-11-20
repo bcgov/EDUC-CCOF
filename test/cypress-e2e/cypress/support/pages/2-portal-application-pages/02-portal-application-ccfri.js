@@ -50,7 +50,8 @@ class CcfriApplication{
         switch (appType) {
             case 'group': 
             case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
-            case 'family': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
+            case 'family': 
+            case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
             case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
             case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
         }
@@ -64,7 +65,7 @@ class CcfriApplication{
                 .then(() => handleCardWithin(card, this.parentFees.months))
         })
 
-        if (appType === "groupOld"){
+        if (appType === "groupOld" || appType === 'familyOld'){
             this.addClosures(appType, term)
         } else {
             cy.clickByText('Save')
@@ -80,6 +81,7 @@ class CcfriApplication{
         switch (appType) {
             case 'group':
             case 'family': 
+            case 'familyOld':
             case 'groupOld':
                 startDate = this.closures.startDate
                 endDate = this.closures.endDate
@@ -90,7 +92,7 @@ class CcfriApplication{
                 endDate = this.closures.renewalEndDate
         }
 
-        if (appType != "groupOld"){
+        if (appType != "groupOld" && appType != "familyOld"){
             cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         }
         cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
@@ -107,7 +109,7 @@ class CcfriApplication{
         cy.getByLabel('End Date').typeAndAssert(endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
 
-        if (appType === "groupOld"){
+        if (appType === "groupOld" || appType === "familyOld"){
             cy.contains('div','Did parents pay for this closure?').within(()=> {
                 cy.getByLabel('Yes').click()
             })

@@ -283,20 +283,9 @@ Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
   ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
-    switch (appType) {
-      case 'group':
-      case 'family':
-        ccofApp.inputOrganizationInfo(companyType)
-        ccofApp.inputFacilityInfo()
-        ccofApp.licenceAndServiceDeliveryDetails()
-        break;
-      case 'groupOld':
-      case 'familyOld':
-        ccofApp.inputOrganizationInfoOld(appType, companyType)
-        ccofApp.inputFacilityInfoOld(appType)
-        ccofApp.licenceAndServiceDeliveryDetailsOld()
-        break;
-    }
+    ccofApp.inputOrganizationInfo(appType, companyType)
+    ccofApp.inputFacilityInfo(appType)
+    ccofApp.licenceAndServiceDeliveryDetails(appType)
 
     if (appType.includes('group')) {
       ccofApp.groupLicenses(licenceType)
@@ -319,13 +308,16 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
     ccfriApp.optInFacilities()
-    if (appType === 'groupRenewal' || appType === 'familyRenewal') {
-      ccfriApp.parentFeesRenewal()
-    }
-    ccfriApp.addParentFees(appType, term)
-
-    if (appType != "groupOld") {
-      ccfriApp.addClosures(appType, term)
+    switch(appType) {
+      case 'group':
+      case 'family': 
+        ccfriApp.addParentFees(appType, term)
+        ccfriApp.addClosures(appType, term)
+        break;
+      case 'groupRenewal':
+      case 'familyRenewal':ccfriApp.parentFeesRenewal(); break;
+      case 'groupOld':
+      case 'familyOld':ccfriApp.addParentFees(appType, term); break;
     }
   })
 }); 
@@ -334,7 +326,7 @@ Cypress.Commands.add('runEceWeApp', (appType, term, {model = null} = {}) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
-    if (appType === "family" || appType === "familyRenewal") {
+    if (appType.includes("family")) {
       eceWeApp.familyEceWe()
     } else {
       eceWeApp.groupEceWe({model})

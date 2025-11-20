@@ -4,12 +4,11 @@ class SubmitApplication {
 
         // Submit App
         cy.contains('Summary and Declaration').should('be.visible')
-        if (appType === 'group' || appType === 'family' || appType === 'groupOld') {
-            cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
-                .click()
-        }
-        else {
+        if (appType.includes('Renewal')) {
             cy.getByLabel('I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.')
+                .click()
+        } else {
+            cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
                 .click()
         }
         cy.getByLabel('Your Organization\'s Authorized Signing Authority').typeAndAssert('Luffy')
