@@ -66,6 +66,9 @@ class CcofApplication {
         cy.getByLabel('Name of Care Provider (if registered company)').typeAndAssert('Luffy')
         cy.contains('BC').should('be.visible')
         cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
+        cy.contains('.v-col-md-6','Type of Organization').should('be.visible').within(()=> {
+          cy.getByLabel(this.orgType).click()
+        })
 
       case 'groupOld':
         cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
@@ -91,9 +94,9 @@ class CcofApplication {
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('E-mail Address of Signing Authority').typeAndAssert(this.orgInfo.email)
         cy.contains('Type of Organization').should('be.visible')
-        cy.contains('.v-col-md-6','Type of Organization').should('be.visible').within(()=> {
+        if (appType === 'groupOld') {
           cy.getByLabel(this.orgType).click()
-        })
+        }
         break;
       } 
 
@@ -261,7 +264,6 @@ class CcofApplication {
     switch (appType) {
       case 'familyOld':
         extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours
-
         cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
         break;
       case 'groupOld': 
