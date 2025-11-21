@@ -15,7 +15,7 @@ router.post(
   '/application/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.ADD_NEW_FACILITY),
   scanFilePayload,
   createApplicationDocuments,
 );
@@ -24,7 +24,6 @@ router.post(
   '/change-action/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO Are there others?
   validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
   scanFilePayload,
   createChangeActionDocuments,
@@ -34,7 +33,7 @@ router.get(
   '/application/:applicationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -46,7 +45,14 @@ router.delete(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
+  validatePermission(
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.LICENCE_CHANGE,
+    PERMISSIONS.ORGANIZATION_CHANGE,
+    PERMISSIONS.OTHER_CHANGES,
+    PERMISSIONS.ADD_NEW_FACILITY,
+  ),
   deleteDocuments,
 );
 
@@ -54,7 +60,7 @@ router.patch(
   '/:annotationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix - Implement with Applications/Change Request security
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
   [param('annotationId', 'URL param: [annotationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   scanFilePayload,
   (req, res) => {

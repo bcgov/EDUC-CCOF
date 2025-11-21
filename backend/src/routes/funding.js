@@ -24,7 +24,7 @@ router.put(
   '/:fundId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.ADD_NEW_FACILITY),
   [[param('fundId', 'URL param: [fundId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)], checkSchema(fundingSchema)],
   (req, res) => {
     validationResult(req).throw();

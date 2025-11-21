@@ -120,8 +120,7 @@ router.get(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO What other Change Request permissions?
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -136,8 +135,7 @@ router.patch(
   '/:changeRequestId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO What other Change Request permissions?
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -241,6 +239,7 @@ router.delete(
   '/changeAction/:changeActionId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.ADD_NEW_FACILITY),
   [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -255,6 +254,7 @@ router.get(
   '/mtfi/:ccfriId/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
   [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getChangeRequestMTFIByCcfriId(req, res);
@@ -268,6 +268,7 @@ router.delete(
   '/mtfi/:mtfiId/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.MTFI),
   [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return deleteChangeRequestMTFI(req, res);
@@ -282,6 +283,7 @@ router.patch(
   '/mtfi/:mtfiId/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.MTFI),
   [param('mtfiId', 'URL param: [mtfiId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();

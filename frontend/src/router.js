@@ -746,7 +746,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -785,7 +785,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -798,6 +798,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -810,6 +811,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -821,6 +823,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -832,6 +835,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
