@@ -1,0 +1,51 @@
+{
+  "folders": [
+    {
+      "name": "Frontend",
+      "path": "frontend"
+    },
+    {
+      "name": "Backend",
+      "path": "backend"
+    },
+    {
+      "name": "Tests/Cypress E2E",
+      "path": "test/cypress-e2e"
+    },
+    {
+      "name": "Tests/Cypress Component",
+      "path": "frontend/tests/cypress"
+    },
+    {
+      "name": "Tests/Selenium",
+      "path": "test/selenium"
+    },
+    {
+      "name": "Devops/Github",
+      "path": ".github"
+    },
+    {
+      "name": "Devops/OpenShift",
+      "path": "tools"
+    },
+    {
+      "name": "All",
+      "path": "."
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "eamodio.gitlens",
+      "sonarsource.sonarlint-vscode",
+      "Vue.volar",
+      "dbaeumer.vscode-eslint",
+      "github.copilot",
+      "esbenp.prettier-vscode",
+      "soramatiasq.sort-imports"
+    ]
+  },
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}
