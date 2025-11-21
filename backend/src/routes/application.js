@@ -103,7 +103,7 @@ router.patch(
   '/ccfri',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.MTFI),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY),
   (req, res) => {
     validationResult(req).throw();
     return updateCCFRIApplication(req, res);
@@ -177,7 +177,7 @@ router.patch(
   '/parentfee',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.MTFI),
   [],
   (req, res) => {
     return upsertParentFees(req, res);

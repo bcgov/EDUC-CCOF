@@ -121,7 +121,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   // TODO What other Change Request permissions?
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.VIEW_A_CR, PERMISSIONS.MTFI),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -137,7 +137,7 @@ router.patch(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   // TODO What other Change Request permissions?
-  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES),
+  validatePermission(PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES, PERMISSIONS.MTFI),
   [param('changeRequestId', 'URL param: [changeRequestId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -148,10 +148,17 @@ router.patch(
 /**
  * Create the change Request new facility
  */
-router.post('/newFacility', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(newFacilityChangeRequestSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createChangeRequest(req, res);
-});
+router.post(
+  '/newFacility',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.ADD_NEW_FACILITY),
+  [checkSchema(newFacilityChangeRequestSchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createChangeRequest(req, res);
+  },
+);
 
 /**
  * Create the change Request
@@ -160,6 +167,7 @@ router.post(
   '/newFacility/:changeActionId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.ADD_NEW_FACILITY),
   [param('changeActionId', 'URL param: [changeActionId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
