@@ -50,7 +50,7 @@ export const ApiRoutes = Object.freeze({
   CHANGE_REQUEST_CLOSURE: baseRoot + '/changeRequest/closure',
   CHANGE_REQUEST_DOCUMENTS: baseRoot + '/changeRequest/documents',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
-  CHANGE_REQUEST: baseRoot + '/changeRequest/',
+  CHANGE_REQUEST: baseRoot + '/changeRequest',
   PDFS: baseRoot + '/pdf',
   PDF: baseRoot + '/pdf/getDocument/',
   DOCUMENT: baseRoot + '/document',

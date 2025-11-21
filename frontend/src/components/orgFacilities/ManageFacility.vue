@@ -10,7 +10,7 @@
           Licence #: {{ facility.licenseNumber }}
         </p>
       </v-col>
-      <v-col cols="4" sm="5" class="d-flex justify-end align-end">
+      <v-col v-if="hasPermission(PERMISSIONS.LICENCE_CHANGE)" cols="4" sm="5" class="d-flex justify-end align-end">
         <AppButton size="small" :disabled="!facilityIsActive" @click="goToChangeRequest">Request a Change</AppButton>
       </v-col>
     </v-row>

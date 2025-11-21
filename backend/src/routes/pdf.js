@@ -13,6 +13,7 @@ router.get(
   '/getDocument/:annotationId',
   auth.refreshJWT,
   isValidBackendToken,
+  validatePermission(PERMISSIONS.DOWNLOAD_PCF_PDF),
   [param('annotationId', 'URL param: [annotationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     return getPdf(req, res);

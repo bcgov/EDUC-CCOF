@@ -14,7 +14,7 @@ router.get(
   '/:queryUserName',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Add with Usre security
+  // TODO #securitymatrix Validate that the caller is a Ministry user
   getUserInfo,
 );
 

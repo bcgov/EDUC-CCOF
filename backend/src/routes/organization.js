@@ -57,7 +57,14 @@ router.get(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION, PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  validatePermission(
+    PERMISSIONS.VIEW_ORG_INFORMATION,
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.VIEW_SUBMITTED_PCF,
+    PERMISSIONS.ADD_NEW_FACILITY,
+    PERMISSIONS.VIEW_A_CR,
+  ),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
