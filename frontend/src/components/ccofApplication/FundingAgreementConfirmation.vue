@@ -24,13 +24,13 @@
             Schedule A information.
           </p>
         </div>
-        <div class="d-flex justify-end align-end my-4">
+        <div class="d-flex justify-end my-4">
           <AppButton :loading="isApplicationProcessing" size="medium" @click="goToChangeRequest">
             Request a Change
           </AppButton>
         </div>
-        <v-card v-if="pdfFile" class="px-8 px-lg-12 py-4">
-          <AppPDFViewer :pdf-file="pdfFile" />
+        <v-card v-if="fundingAgreement" class="px-8 px-lg-12 py-4 mb-8">
+          <AppPDFViewer :pdf-file="fundingAgreement.pdfFile" />
           <v-card class="card-top-border-primary my-8 px-8 py-6">
             <div class="mb-2">
               <p class="mb-2">I confirm I have read the Funding Agreement and:</p>
@@ -40,24 +40,66 @@
                 <li>the information in each Schedule A is correct.</li>
               </ul>
             </div>
-            <v-radio-group v-model="isScheduleACorrect" :disabled="readonly" :rules="rules.required">
+            <v-radio-group v-model="isFundingAgreementConfirmed" :disabled="readonly" :rules="rules.required">
               <v-radio label="Yes" :value="true" />
               <v-radio label="No" :value="false" />
             </v-radio-group>
 
-            <v-card v-if="isScheduleACorrect === false" rounded="0" class="mb-4">
+            <v-card v-if="isFundingAgreementConfirmed === false" rounded="0" class="mb-4">
               <v-card-title class="noticeAlert">
                 <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
                 Do not continue.
               </v-card-title>
-              <div class="px-8 py-4">
-                <p class="pb-2">Submit a change request using the link below:</p>
-                <router-link :to="PATHS.ROOT.CHANGE_LANDING">
-                  Go to Request a Change. This will bring you to a different page.
-                </router-link>
-              </div>
+              <p class="px-8 py-4">
+                Submit a <router-link :to="PATHS.ROOT.CHANGE_LANDING">change request</router-link>. This will bring you
+                to a different page.
+              </p>
             </v-card>
           </v-card>
+        </v-card>
+        <v-card v-if="isFundingAgreementConfirmed">
+          <p class="px-6 py-3 card-title font-weight-bold">Licence and Service Details Record(s)</p>
+          <div class="px-8 px-lg-12 pt-6">
+            <p>
+              Click each licence to expand and review the Licence and Service Details Record. Notify the Child Care
+              Operating Funding Program of a change to your Facility Licence or Child Care Service Details by submitting
+              a change request.
+            </p>
+            <div class="d-flex justify-end my-4">
+              <AppButton :loading="isApplicationProcessing" size="medium" @click="goToChangeRequest">
+                Request a Change
+              </AppButton>
+            </div>
+            <v-expansion-panels multiple class="mb-6">
+              <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
+                <v-expansion-panel-title>
+                  <strong>
+                    {{ licence.serviceDeliveryDetails[0].facilityName }} - {{ licence.facilityAccountNumber }}
+                  </strong>
+                </v-expansion-panel-title>
+                <v-expansion-panel-text>
+                  <ServiceDetails :licence="licence" />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <v-card class="card-top-border-primary mb-8 px-8 py-6">
+              <p class="mb-2">I confirm all Licence and Service Details Records are correct.</p>
+              <v-radio-group v-model="areLicenceDetailsConfirmed" :disabled="readonly" :rules="rules.required">
+                <v-radio label="Yes" :value="true" />
+                <v-radio label="No" :value="false" />
+              </v-radio-group>
+              <v-card v-if="areLicenceDetailsConfirmed === false" rounded="0" class="mb-4">
+                <v-card-title class="noticeAlert">
+                  <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
+                  Do not continue.
+                </v-card-title>
+                <p class="px-8 py-4">
+                  Submit a <router-link :to="PATHS.ROOT.CHANGE_LANDING">change request</router-link>. This will bring
+                  you to a different page.
+                </p>
+              </v-card>
+            </v-card>
+          </div>
         </v-card>
       </v-form>
     </v-container>
@@ -76,7 +118,8 @@
 </template>
 <script>
 import { isEmpty } from 'lodash';
-import { mapActions, mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
+import ServiceDetails from '@/components/licences/ServiceDetails.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
@@ -84,6 +127,7 @@ import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
+import LicenceService from '@/services/licenceService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
@@ -92,7 +136,7 @@ import { PATHS } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppButton, AppPDFViewer, ApplicationPCFHeader, NavButton },
+  components: { AppButton, AppPDFViewer, ApplicationPCFHeader, NavButton, ServiceDetails },
   mixins: [alertMixin, permissionsMixin],
   async beforeRouteLeave(_to, _from, next) {
     if (!this.readonly) {
@@ -103,8 +147,10 @@ export default {
   data() {
     return {
       isValidForm: false,
-      isScheduleACorrect: null,
-      pdfFile: null,
+      isFundingAgreementConfirmed: null,
+      areLicenceDetailsConfirmed: null,
+      fundingAgreement: null,
+      licences: [],
     };
   },
   computed: {
@@ -117,16 +163,20 @@ export default {
       'isApplicationProcessing',
       'isApplicationSubmitted',
       'latestProgramYearId',
+      'renewalApplicationCCOF',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName']),
-    ...mapWritableState(useApplicationStore, ['isRenewalFAComplete']),
     readonly() {
-      return this.isApplicationSubmitted || isEmpty(this.pdfFile);
+      return this.isApplicationSubmitted || isEmpty(this.fundingAgreement) || isEmpty(this.licences);
     },
     isNextDisabled() {
-      // TODO (vietle-cgi) - update this line after we add Licence Info to this page
-      return this.readonly || !this.isValidForm || !this.isScheduleACorrect;
+      return (
+        this.readonly || !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed
+      );
+    },
+    licenceToDisplay() {
+      return [this.licences.find((l) => !l.recordEndDate) || this.licences[0]];
     },
   },
   async created() {
@@ -139,7 +189,10 @@ export default {
     async loadData() {
       try {
         this.setIsApplicationProcessing(true);
+        this.isFundingAgreementConfirmed = this.renewalApplicationCCOF?.isFundingAgreementConfirmed;
+        this.areLicenceDetailsConfirmed = this.renewalApplicationCCOF?.areLicenceDetailsConfirmed;
         await this.loadFundingAgreementPDF();
+        await this.loadLicences();
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -148,12 +201,28 @@ export default {
       }
     },
     async loadFundingAgreementPDF() {
-      const pdfFile = await FundingAgreementService.getFundingAgreementPDFByQuery({
-        organizationId: this.organizationId,
-        programYearId: this.$route.params.programYearGuid,
-        fundingAgreementOrderNumber: 0,
+      try {
+        this.fundingAgreement = await FundingAgreementService.getFundingAgreementPDFByQuery({
+          organizationId: this.organizationId,
+          programYearId: this.$route.params.programYearGuid,
+          fundingAgreementOrderNumber: 0,
+        });
+        this.fundingAgreement.pdfFile = `data:application/pdf;base64,${this.fundingAgreement.pdfFile}`;
+      } catch (error) {
+        if (error.response?.status === 404) {
+          this.setFailureAlert('Funding Agreement not found for this application.');
+        } else {
+          throw error;
+        }
+      }
+    },
+    async loadLicences() {
+      this.licences = await LicenceService.getLicences({
+        fundingAgreementId: this.fundingAgreement?.fundingAgreementId,
       });
-      this.pdfFile = `data:application/pdf;base64,${pdfFile}`;
+      if (isEmpty(this.licences)) {
+        this.setFailureAlert('Licence not found for this application.');
+      }
     },
     back() {
       this.$router.push(this.previousPath);
@@ -163,8 +232,8 @@ export default {
     },
     save(showNotification) {
       this.setIsApplicationProcessing(true);
-      // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalFAComplete field to Application entity
-      this.isRenewalFAComplete = true;
+      this.renewalApplicationCCOF.isFundingAgreementConfirmed = this.isFundingAgreementConfirmed;
+      this.renewalApplicationCCOF.areLicenceDetailsConfirmed = this.areLicenceDetailsConfirmed;
       if (showNotification) {
         this.setSuccessAlert('Application saved successfully.');
       }

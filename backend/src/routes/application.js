@@ -12,6 +12,7 @@ const {
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
   getDeclaration,
+  getRenewalApplicationCCOF,
   submitApplication,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
@@ -19,9 +20,21 @@ const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { param, validationResult, body } = require('express-validator');
 
-router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
+router.post('/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, [], (req, res) => {
   return renewCCOFApplication(req, res);
 });
+
+router.get(
+  '/renew/:applicationId/ccof',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getRenewalApplicationCCOF(req, res);
+  },
+);
 
 /* CREATE or UPDATE an existing CCFRI application for opt-in and out
   CCOF application guid and facility guid are defined in the payload

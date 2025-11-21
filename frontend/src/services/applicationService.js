@@ -1,8 +1,10 @@
 import { isEmpty } from 'lodash';
 
+import ApiService from '@/common/apiService';
 import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
+  ApiRoutes,
   CCFRI_HAS_CLOSURE_FEE_TYPES,
   CCFRI_MAX_FEE,
   CCFRI_MIN_FEE,
@@ -723,7 +725,27 @@ export default {
     );
   },
 
+  isBankingInformationComplete(application) {
+    return application?.hasBankingInfoChanged === false;
+  },
+
+  isFundingAgreementComplete(application) {
+    return application?.isFundingAgreementConfirmed && application?.areLicenceDetailsConfirmed;
+  },
+
   /*
    **** End of Summary Declaration validations
    */
+
+  async getRenewalApplicationCCOF(applicationId) {
+    try {
+      if (!applicationId) return {};
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RENEW}/${applicationId}/ccof`);
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get application closures - ${error}`);
+      throw error;
+    }
+  },
 };

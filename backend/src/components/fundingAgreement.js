@@ -42,12 +42,23 @@ async function getFundingAgreementPDF(req, res) {
   }
 }
 
+// TODO (vietle-cgi): Review this function name later
 async function getFundingAgreementPDFByQuery(req, res) {
   try {
-    const faResponse = await getOperation(`ccof_funding_agreements?$select=ccof_funding_agreementid&${buildFilterQuery(req.query, FundingAgreementMappings)}`);
-    const fundingAgreementId = faResponse?.value[0]?.ccof_funding_agreementid;
+    const query = buildFilterQuery(req.query, FundingAgreementMappings);
+    const faResponse = await getOperation(`ccof_funding_agreements?$select=ccof_funding_agreementid&${query}`);
+    if (isEmpty(faResponse?.value)) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Funding agreement not found' });
+    }
+    const fundingAgreementId = faResponse.value[0].ccof_funding_agreementid;
     const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreementId})/ccof_funding_pdf`);
-    return res.status(HttpStatus.OK).json(pdfResponse.value);
+    if (isEmpty(pdfResponse?.value)) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Funding agreement PDF not found' });
+    }
+    return res.status(HttpStatus.OK).json({
+      fundingAgreementId,
+      pdfFile: pdfResponse.value,
+    });
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);

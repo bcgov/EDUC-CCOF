@@ -477,10 +477,10 @@ const ApplicationSummaryMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' }, //"ad483720-e1a7-ed11-aad0-000d3a09c3a2",
   { back: 'ccof_name', front: 'name' }, //"APP-23005239",
   { back: 'ccof_providertype', front: 'organizationProviderType' }, //100000001,
-  // Unsure if this is needed
-  // { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
-  // { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
-  // { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
+  { back: 'ccof_has_banking_information_changed', front: 'hasBankingInfoChanged' }, //100000001,
+  { back: 'ccof_is_funding_agreement_confirmed', front: 'isFundingAgreementConfirmed' }, //100000001,
+  { back: 'ccof_are_licence_details_confirmed', front: 'areLicenceDetailsConfirmed' }, //100000001,
+
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,

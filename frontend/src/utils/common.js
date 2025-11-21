@@ -1,15 +1,14 @@
 'use strict';
 
 import Decimal from 'decimal.js';
+import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
-import { LocalDate } from '@js-joda/core';
-import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
-import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
+
 import {
   APPLICATION_CCOF_STATUSES,
-  APPLICATION_TYPES,
   APPLICATION_STATUSES,
+  APPLICATION_TYPES,
   BCSSA_REGION_LINKS,
   CCOF_STATUS,
   LICENCE_STATUSES,
@@ -18,6 +17,8 @@ import {
   PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
+import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
+import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
@@ -416,7 +417,9 @@ export function buildQueryString(query) {
   if (isEmpty(query)) return '';
   let queryString = '';
   for (const [key, value] of Object.entries(query)) {
-    queryString += queryString ? `&${key}=${value}` : `?${key}=${value}`;
+    if (value != null) {
+      queryString += queryString ? `&${key}=${value}` : `?${key}=${value}`;
+    }
   }
   return queryString;
 }

@@ -1,11 +1,13 @@
+import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
+import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { APPLICATION_STATUSES, ApiRoutes } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, APPLICATION_TYPES, ApiRoutes } from '@/utils/constants.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
@@ -25,13 +27,11 @@ export const useApplicationStore = defineStore('application', {
     unlockLicenseUpload: false,
     unlockSupportingDocuments: false,
 
-    isRenewalBankingInfoComplete: false,
-    isRenewalFAComplete: false,
     isEceweComplete: false,
     isLicenseUploadComplete: false,
 
     applicationMap: new Map(),
-
+    renewalApplicationCCOF: {},
     applicationUploadedDocuments: [],
     isApplicationDocumentsLoading: false,
 
@@ -129,8 +129,8 @@ export const useApplicationStore = defineStore('application', {
       const appStore = useAppStore();
       const applicationStore = useApplicationStore();
       const navBarStore = useNavBarStore();
-
       if (application) {
+        const isRenewal = application.applicationType === APPLICATION_TYPES.RENEWAL;
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
         this.setApplicationTemplateVersion(application.applicationTemplateVersion);
@@ -138,17 +138,18 @@ export const useApplicationStore = defineStore('application', {
         this.setCcofApplicationStatus(application.ccofApplicationStatus);
         this.setProgramYearId(application.ccofProgramYearId);
         this.setProgramYearLabel(application.ccofProgramYearName);
-        this.setIsRenewal(application.applicationType === 'RENEW');
+        this.setIsRenewal(isRenewal);
         this.setUnlockBaseFunding(application.unlockBaseFunding);
         this.setUnlockDeclaration(application.unlockDeclaration);
         this.setUnlockEcewe(application.unlockEcewe);
         this.setUnlockLicenseUpload(application.unlockLicenseUpload);
         this.setUnlockSupportingDocuments(application.unlockSupportingDocuments);
-
         this.setIsEceweComplete(application.isEceweComplete);
         this.setIsLicenseUploadComplete(application.isLicenseUploadComplete);
-
-        navBarStore.setIsRenewal(application.applicationType === 'RENEW');
+        if (isRenewal && isEmpty(this.renewalApplicationCcof)) {
+          this.renewalApplicationCcof = await ApplicationService.getRenewalApplicationCCOF(application.applicationId);
+        }
+        navBarStore.setIsRenewal(isRenewal);
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);
       } else {
         const applicationTemplateVersion = appStore.getApplicationTemplateVersion(programYearId);

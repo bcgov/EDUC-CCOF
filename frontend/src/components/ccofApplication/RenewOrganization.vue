@@ -95,10 +95,9 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
-    ...mapState(useApplicationStore, ['isApplicationProcessing', 'isApplicationSubmitted']),
+    ...mapState(useApplicationStore, ['isApplicationProcessing', 'isApplicationSubmitted', 'renewalApplicationCCOF']),
     ...mapState(useNavBarStore, ['nextPath']),
     ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
-    ...mapWritableState(useApplicationStore, ['isRenewalBankingInfoComplete']),
     readonly() {
       return this.isApplicationSubmitted || this.hasActiveChangeRequest;
     },
@@ -117,6 +116,7 @@ export default {
     async loadData() {
       try {
         this.setIsApplicationProcessing(true);
+        this.hasBankingInfoChanged = this.renewalApplicationCCOF?.hasBankingInfoChanged;
         await this.getChangeRequestList();
       } catch (error) {
         console.error(error);
@@ -133,8 +133,7 @@ export default {
     },
     save(showNotification) {
       this.setIsApplicationProcessing(true);
-      // TODO (vietle-cgi) - update this line whenever CMS add the isRenewalBankingInfoComplete field to Application entity
-      this.isRenewalBankingInfoComplete = true;
+      this.renewalApplicationCCOF.hasBankingInfoChanged = this.hasBankingInfoChanged;
       if (showNotification) {
         this.setSuccessAlert('Application saved successfully.');
       }

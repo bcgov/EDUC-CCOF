@@ -99,6 +99,7 @@
 <script>
 import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'pinia';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -148,11 +149,10 @@ export default {
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
-      'isRenewalBankingInfoComplete',
-      'isRenewalFAComplete',
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
+      'renewalApplicationCCOF',
       'showApplicationTemplateV1',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
@@ -342,26 +342,26 @@ export default {
           isAccessible: true,
         });
       }
-
+      const isBankingInformationComplete = ApplicationService.isBankingInformationComplete(this.renewalApplicationCCOF);
+      const isFundingAgreementComplete = ApplicationService.isFundingAgreementComplete(this.renewalApplicationCCOF);
       const bankingInfo = this.createNavItem({
         title: 'Banking Information',
         link: { name: 'renewal-banking-information' },
-        isComplete: this.isRenewalBankingInfoComplete,
+        isComplete: isBankingInformationComplete,
         isAccessible: true,
       });
       const fundingAgreement = this.createNavItem({
         title: 'Funding Agreement',
         link: { name: 'renewal-funding-agreement' },
-        isComplete: this.isRenewalFAComplete,
-        isAccessible: this.isRenewalBankingInfoComplete,
+        isComplete: isFundingAgreementComplete,
+        isAccessible: isBankingInformationComplete,
       });
       const licenceUpload = this.createNavItem({
         title: 'Licence Upload',
         link: { name: 'Licence Upload' },
         isComplete: this.isLicenseUploadComplete,
-        isAccessible: true,
+        isAccessible: isBankingInformationComplete && isFundingAgreementComplete,
       });
-      licenceUpload.isAccessible = this.isRenewalBankingInfoComplete && this.isRenewalFAComplete;
       const items = [bankingInfo, fundingAgreement, licenceUpload];
       isCCOFGroupComplete = this.areChildrenComplete(items);
       return {
