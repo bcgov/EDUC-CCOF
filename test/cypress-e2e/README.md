@@ -2,7 +2,7 @@
 
    ```bash
    git clone https://github.com/bcgov/EDUC-CCOF.git
-   cd cypress-e2e
+   cd /test/cypress-e2e
    ```
 
 ## Project Structure
@@ -16,7 +16,7 @@ fixtures/ # test data files
 reports/ # HTML/JSON reports (e.g., mochawesome) (gitignored)
 screenshots/ # failure screenshots (gitignored)
 scripts/ # helper scripts/utilities used by tests or CI
-support/ # custom commands & global setup
+support/ # custom commands & global setup and constants
 videos/ # test run videos (gitignored)
 .gitignore # repo-level ignore rules
 cypress.config.js # Cypress configuration
@@ -47,7 +47,7 @@ Test files are located in the `cypress/e2e/` directory. Each test file should fo
 
 Currently, we have organized tests such that large e2e flows are broken down into respective page objects and added under "support > pages". This allows us to reuse these page components to minimize code duplication. 
 
-These components can then be called in the e2e tests to replicate a full user flow (refer to group-application-full-e2e.cy.js for an example).
+These components can then be called in the e2e tests to replicate a full user flow. Refer to any of the cy.js files for an example.
 
 ## Run tests:
 
@@ -58,19 +58,40 @@ or for headless mode:
 
       npx cypress run
 
-### Group Application:
-To run the full E2E automation, navigate to "e2e > 2-group-application-full-e2e".
+NOTE: Headless mode run in the method above will run ALL the tests consecutively and this WILL fail. Due to the nature of these e2e tests, certain data will need to be setup in CMS for the flow to work properly.
 
-Ensure your environmental BCeID has no organization currently attached to it and has the appropriate role assigned. 
+To resolve the issue above, run headless mode as written below (file path uses test/cypress-e2e as root):
+      npx cypress run --spec path/to/file
 
-There are 3 areas requiring future contribution for added automation functionality:
-1) Adding Multiple Facilities to a single group application
-2) Adding Multiple Closures to a facility
-3) Adding a Partial Closure affecting specific Care Categories in a facility
+### Tailoring Data to Test Cases
+Running different test cases is a matter of editing the data files in cypress/e2e/fixtures. Currently there are 3 files that correspond to the different parts of the Application:
+1) CCOF (org info, facility info, licence & SDD, other facilities)
+2) CCFRI (parent fees & closures)
+3) ECE-WE
 
-These functions are more challenging to implement due to the structure of their respective pages in the Portal. Each area has been marked with "TODO" in terms of where they would likely need to be added in their respective scripts (located under pages > 2-group-application-pages).
+The data in these files is represented as JSON which has a "Key": "Value" pair. When editing the data, ensure you ONLY edit the VALUE (right side of the colon). 
 
-If you choose to work on them, please update the comment with your github username.
+For example, you can change the type of organization for an application by going to fixtures/ccofData.json -> and updating the key to "typeOfOrganization" from "Registered Company" to "Non-Profit Society".
+
+All possible values for different keys are indicated by the wording "_options". Please ensure you NEVER change the values listed under this key. 
+
+### Creating Applications (Template 1/2):
+Each Application script requires your BCeID (assigned in .env) to have NO organization tied to it & a Portal Role assigned. This must be set up in CMS before running any of these scripts.
+
+The 2025-26 FY uses Template 1, while anything past Feburary 15th, 2026 will use Template 2. Please be aware of this when running the scripts.
+
+### Signing Funding Agreements 
+This script requires an application to have been submitted AND adjudicated on the CMS side. The Funding Agreement must also have been updated to "Pending Signing" as its status on CMS.
+
+NOTE: This will NOT work in EFX as of November 21st, 2025. Funding Agreement signing as a functionality has not yet been implemented in that environment. 
+
+### Renewals (Template 2 only)
+This script requires an application to have been submitted, adjudicated, and Funding Agreement signed in order to open the "Renewal" button on the portal. 
+
+NOTE: Current program year setup will NOT show the renewal button until January 2026. If wanting to run the renewal script, please ensure you update the program years accordingly.
+
+### Automation Bugs & Enhancements
+If you find any issues with the automation scripts and/or ideas on how to improve the scripts, please feel free to reach out! 
 
 ## Contributing
 
