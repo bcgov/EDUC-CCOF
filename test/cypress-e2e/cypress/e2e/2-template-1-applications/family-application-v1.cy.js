@@ -2,8 +2,8 @@ import { submitApp } from '../../support/pages/2-portal-application-pages/04-por
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
 import { APP_TYPE, PROGRAM_YEAR} from '../../support/constants.js'
 
-describe('Group Application Test Template 1', () => {
-    it('Should run through Template 1 Group Application, submit and logout', () => {
+describe('Family Application Test Template 1', () => {
+    it('Should run through Template 1 Family Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
         loginPage.loginThroughExternalProvider(

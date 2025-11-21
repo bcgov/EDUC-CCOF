@@ -63,40 +63,45 @@ class CcofApplication {
         break;
       
       case 'familyOld':
-        cy.getByLabel('Name of Care Provider (if registered company)').typeAndAssert('Luffy')
-        cy.contains('BC').should('be.visible')
-        cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
-        cy.contains('.v-col-md-6','Type of Organization').should('be.visible').within(()=> {
-          cy.getByLabel(this.orgType).click()
-        })
-
-      case 'groupOld':
         cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
         cy.getByLabel('Incorporation Number (as it appears in BC Corporate Registry)').typeAndAssert(this.orgInfo.incorporationNumber)
         cy.contains('Organization Mailing Address').should('be.visible')
-        if (appType === 'familyOld') {
-          cy.getByLabel('Name of Care Provider (if registered company)').typeAndAssert('Luffy')
-          cy.contains('BC').should('be.visible')
-          cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
-        }
         cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
         cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
         cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
         cy.contains('Organization Street Address same as Mailing Address').should('be.visible').click()
-        if (appType === 'groupOld') {
-          cy.contains('Contact Information').should('be.visible')
-          cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgInfo.facilityContact)
-          cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
-        }
+        cy.getByLabel('Name of Care Provider (if registered company)').typeAndAssert('Luffy')
+        cy.contains('BC').should('be.visible')
+        cy.getByLabel('Year Facility began Operation (YYYY)').typeAndAssert(this.facilityData.yearFacilityBegan)
         cy.contains('div', 'BCeID') .within(()=> {
           cy.get('input:disabled').should('have.value', Cypress.env('PORTAL_USERNAME'))
         })
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('E-mail Address of Signing Authority').typeAndAssert(this.orgInfo.email)
         cy.contains('Type of Organization').should('be.visible')
-        if (appType === 'groupOld') {
+        cy.contains('.v-col-md-6','Type of Organization').should('be.visible').within(()=> {
           cy.getByLabel(this.orgType).click()
-        }
+        })
+        break;
+
+      case 'groupOld':
+        cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
+        cy.getByLabel('Incorporation Number (as it appears in BC Corporate Registry)').typeAndAssert(this.orgInfo.incorporationNumber)
+        cy.contains('Organization Mailing Address').should('be.visible')
+        cy.getByLabel('Mailing Address').typeAndAssert(this.orgInfo.streetAddress)
+        cy.getByLabel('City/Town').typeAndAssert(this.orgInfo.city)
+        cy.getByLabel('Postal Code').typeAndAssert(this.orgInfo.postalCode)
+        cy.contains('Organization Street Address same as Mailing Address').should('be.visible').click()
+        cy.contains('Contact Information').should('be.visible')
+        cy.getByLabel('Organization Contact Name').typeAndAssert(this.orgInfo.facilityContact)
+        cy.getByLabel('Position').typeAndAssert(this.orgInfo.position)
+        cy.contains('div', 'BCeID') .within(()=> {
+          cy.get('input:disabled').should('have.value', Cypress.env('PORTAL_USERNAME'))
+        })
+        cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
+        cy.getByLabel('E-mail Address of Signing Authority').typeAndAssert(this.orgInfo.email)
+        cy.contains('Type of Organization').should('be.visible')
+        cy.getByLabel(this.orgType).click()
         break;
       } 
 
