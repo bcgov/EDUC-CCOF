@@ -192,11 +192,12 @@ export default {
           this.setSuccessAlert('Success! Facility information has been saved.');
         }
         if (!this.$route.params.urlGuid && isSave) {
-          this.$router.push(
-            isChangeRequest(this)
-              ? changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId)
-              : pcfUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.programYearId, this.facilityId),
-          );
+          if (isChangeRequest(this)) {
+            this.$router.push(changeUrlGuid(PATHS.CCOF_GROUP_FACILITY, this.changeRequestId, this.facilityId));
+          } else {
+            const facilityPath = this.isGroup ? PATHS.CCOF_GROUP_FACILITY : PATHS.CCOF_FAMILY_FACILITY;
+            this.$router.push(pcfUrlGuid(facilityPath, this.programYearId, this.facilityId));
+          }
         }
         this.setNavBarFacilityComplete({
           facilityId: this.facilityId,
