@@ -46,6 +46,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           facilityId: facility.facilityId,
           facilityName: facility.facilityName,
           facilityAccountNumber: facility.facilityAccountNumber,
+          healthAuthority: facility.healthAuthority,
           isFacilityComplete: facility.isFacilityComplete,
           licenseNumber: facility.licenseNumber,
           facilityStatus: facility.facilityStatus,
