@@ -65,9 +65,6 @@ class CcfriApplication{
 
         if (appType === "groupOld" || appType === 'familyOld'){
             this.addClosures(appType, term)
-        } else {
-            cy.clickByText('Save')
-            cy.clickByText('Next')
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
