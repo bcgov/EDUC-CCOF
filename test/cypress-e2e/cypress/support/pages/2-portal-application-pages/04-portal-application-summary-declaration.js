@@ -4,7 +4,7 @@ class SubmitApplication {
 
         // Submit App
         cy.contains('Summary and Declaration').should('be.visible')
-        if (appType === 'group' || appType === 'family') {
+        if (appType === 'group' || appType === 'family' || appType === 'groupOld') {
             cy.getByLabel('I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.')
                 .click()
         }

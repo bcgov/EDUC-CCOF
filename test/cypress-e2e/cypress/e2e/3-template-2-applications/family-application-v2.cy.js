@@ -10,13 +10,13 @@ describe('Family Application Test', () => {
         loginPage.loginThroughExternalProvider(
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
-        cy.startNewApp(APP_TYPE.FAMILY)
+        cy.startNewApp(APP_TYPE.FAMILY_V2)
     
         cy.then(()=> {
-            cy.runCcofApp(APP_TYPE.FAMILY, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.FAMILY)
-            cy.runCcfriApp(APP_TYPE.FAMILY, PROGRAM_YEAR.CURRENT)
-            cy.runEceWeApp(APP_TYPE.FAMILY, PROGRAM_YEAR.CURRENT)
-            submitApp.summaryAndDeclaration(APP_TYPE.FAMILY)
+            cy.runCcofApp(APP_TYPE.FAMILY_V2, ORG_TYPE.REGISTERED_COMPANY, LICENCE_TYPE.FAMILY_V2)
+            cy.runCcfriApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.CURRENT)
+            cy.runEceWeApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.CURRENT)
+            submitApp.summaryAndDeclaration(APP_TYPE.FAMILY_V2)
         })
     })
 })
