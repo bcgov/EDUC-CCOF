@@ -1,13 +1,9 @@
 {
-    "optInOrOut": {
-        "optIn": "Opt-In",
-        "optOut": "Opt-Out"
-    },
+    "optInOrOut": "Opt-In",
+    "_optionsOptInOrOut": "Opt-In OR Opt-Out",
     "parentFees": {
-        "frequency": {
-            "monthly": "Monthly",
-            "daily": "Daily"
-        },
+        "frequency": "Monthly",
+        "_optionsFrequency": "Monthly OR Daily",
         "familyParentFeeCategories": [
             " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
             " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
@@ -76,14 +72,10 @@
         }
     },
     "closures": {
-        "closureCharges": {
-            "chargeForClosures": "Yes",
-            "noChargeForClosures": "No"
-        },
-        "fullFacilityClosureStatus" : {
-            "fullFacilityClosure": "Yes",
-            "notFullFacilityClosure": "No"
-        },
+        "closureCharges": "Yes",
+        "_optionsClosureCharges": "Yes OR No",
+        "fullFacilityClosureStatus" : "Yes",
+        "_optionsFullFacilityClosureStatus": "Yes OR No",
         "careCategoriesAffected": [
             "0 to 18 months",
             "18 to 36 months",
