@@ -743,7 +743,7 @@ export default {
         if (this.hasPermission(this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
           this.renewalYearHasDraftProviderActionRequiredFA = await FundingAgreementService.checkFundingAgreementExists({
             organizationId: this.organizationId,
-            programYearId: this.programYearList?.renewal?.programYearId,
+            programYearId: this.nextProgramYear?.programYearId,
             internalStatusCode: FUNDING_AGREEMENT_INTERNAL_STATUS_CODES.DRAFTED_PROVIDER_ACTION_REQUIRED,
           });
         }
