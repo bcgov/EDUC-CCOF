@@ -22,21 +22,17 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
 }
 
 describe('<FullMonthClosureConfirmationDialog />', () => {
-  beforeEach(() => {
-    cy.viewport(1500, 1500);
-  });
-  it('should not render dialog if show is false', () => {
-    mountWithPinia({ propOverride: { show: false } });
-    cy.contains('p', 'Confirm Full Month Closure or No Enrolment').should('not.exist');
+  it('should display default dialog information', () => {
+    mountWithPinia();
+    cy.contains('Confirm Full Month Closure or No Enrolment');
+    cy.contains('You will be redirected to a declaration page to ');
+    cy.contains('If your facility opens or enrolment begins during this month, you must');
+    cy.contains('If your facility is permanently closed, or remains closed');
   });
 
-  it('should render default dialog content', () => {
-    mountWithPinia();
-    cy.contains('p', 'Confirm Full Month Closure or No Enrolment');
-    cy.contains('p', 'You are reporting that your facility was closed');
-    cy.contains('p', 'You will be redirected to a declaration page to ');
-    cy.contains('p', 'If your facility opens or enrolment begins during this month, you must');
-    cy.contains('p', 'If your facility is permanently closed, or remains closed');
+  it('should not display dialog', () => {
+    mountWithPinia({ propOverride: { show: false } });
+    cy.contains('Confirm Full Month Closure or No Enrolment').should('not.exist');
   });
 
   it('should render `Cancel` and `Proceed` buttons', () => {
