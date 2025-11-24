@@ -39,7 +39,7 @@ describe('<FullMonthClosureConfirmationDialog />', () => {
     cy.contains('p', 'If your facility is permanently closed, or remains closed');
   });
 
-  it('should render dialog buttons', () => {
+  it('should render `Cancel` and `Proceed` buttons', () => {
     mountWithPinia();
     cy.contains('button', 'Cancel');
     cy.contains('button', 'Proceed');

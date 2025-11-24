@@ -31,7 +31,7 @@ describe('<SubmitConfirmationDialog />', () => {
     cy.contains('p', 'Submission Successful').should('not.exist');
   });
 
-  it('should render dialog default content', () => {
+  it('should render default content', () => {
     mountWithPinia();
     cy.contains('p', 'Submission Successful');
     cy.contains('p', 'Your Enrolment Report has been submitted successfully.');
