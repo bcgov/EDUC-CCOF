@@ -82,16 +82,14 @@ const dailyReport = {
   year: '2025',
   programYearId,
   facilityId,
-  less0To18: '44',
 };
 
 const dailyReportPrev = {
-  versionText: 'TEST-VERSION-TEXT',
+  versionText: 'TEST-VERSION-TEXT_PREV',
   month: '10',
   year: '2025',
   programYearId,
   facilityId,
-  less0To18: '12',
 };
 
 function interceptAPI(enrolReport = enrolmentReport) {
@@ -117,6 +115,15 @@ function interceptAPIPrevEnrol() {
     body: [dailyReportPrev],
   }).as('getPrevDailyReport');
 }
+
+const createApplicationStore = (extras) => {
+  return {
+    application: {
+      applicationMap: new Map([[programYearId, { facilityList }]]),
+      ...extras,
+    },
+  };
+};
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -144,9 +151,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI();
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
 
     cy.contains('span', 'Report full month closure or no enrolment');
@@ -179,9 +184,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportGroup);
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
 
     cy.contains('.v-col', '0 - 18 Months')
@@ -196,9 +199,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportGroup);
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.wait('@getEnrolmentReport');
     cy.wait('@getDailyReport');
@@ -211,9 +212,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI();
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.wait('@getEnrolmentReport');
     cy.wait('@getDailyReport');
@@ -228,9 +227,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportGroup);
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.wait('@getEnrolmentReport');
     cy.wait('@getDailyReport');
@@ -245,9 +242,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI();
 
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.wait('@getEnrolmentReport');
     cy.wait('@getDailyReport');
@@ -275,9 +270,7 @@ describe('<EnrolmentReportForm />', () => {
     const enrolmentReportCurTotal = { ...enrolmentReport, ...curTotalValues };
     interceptAPI(enrolmentReportCurTotal);
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
 
     cy.contains('Current Total')
@@ -293,9 +286,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportAdjustment);
     interceptAPIPrevEnrol();
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
 
     cy.contains('Prev Approved')
@@ -317,9 +308,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportAdjustment);
     interceptAPIPrevEnrol();
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.contains('Prev Approved');
     cy.contains('Prev CCOF Base $');
@@ -333,9 +322,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReport);
     interceptAPIPrevEnrol();
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
 
     cy.contains('Prev Approved').should('not.exist');
@@ -350,9 +337,7 @@ describe('<EnrolmentReportForm />', () => {
     interceptAPI(enrolmentReportAdjustment);
     interceptAPIPrevEnrol();
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.contains('Grand Totals');
     cy.contains('CCFRI Provider Payment');
@@ -367,9 +352,7 @@ describe('<EnrolmentReportForm />', () => {
   it('should render legend', () => {
     interceptAPI(enrolmentReport);
     mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
+      ...createApplicationStore(),
     });
     cy.get('.legend').within(() => {
       cy.get('div').should('have.length', 2);
@@ -378,30 +361,75 @@ describe('<EnrolmentReportForm />', () => {
     });
   });
 
-  it('should render `Back` button', () => {
-    interceptAPI(enrolmentReport);
-    mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
-    });
-    cy.contains('button', 'Back').click();
-    cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ENROLMENT_REPORTS);
-  });
-
-  it('should render `Save` button', () => {
+  context('Navigation Button Tests', () => {
     const draftER = {
       ...enrolmentReport,
       externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
     };
-    interceptAPI(draftER);
-    mountWithPinia({
-      application: {
-        applicationMap: new Map([[programYearId, { facilityList }]]),
-      },
-      auth: {
-        permissions: [PERMISSIONS.EDIT_DRAFT_ER, PERMISSIONS.ADJUST_EXISTING_ER],
-      },
+    beforeEach(() => {
+      interceptAPI(draftER);
+      cy.intercept('PATCH', '**', { statusCode: 200 }).as('patchAll');
+    });
+
+    it('should render `Back` button', () => {
+      mountWithPinia({
+        ...createApplicationStore(),
+      });
+      cy.contains('button', 'Back').click();
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ENROLMENT_REPORTS);
+    });
+
+    it('should render `Save and Calculate` button', () => {
+      mountWithPinia({
+        ...createApplicationStore(),
+        auth: {
+          permissions: [PERMISSIONS.EDIT_DRAFT_ER],
+        },
+      });
+      cy.contains('button', 'Save and Calculate');
+    });
+
+    it('should not render `Save and Calculate` button with edit/adjust draft ER permissions', () => {
+      const permWithoutEditANDAdjustER = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.EDIT_DRAFT_ER && permission !== PERMISSIONS.ADJUST_EXISTING_ER,
+      );
+
+      mountWithPinia({
+        ...createApplicationStore(),
+        auth: {
+          permissions: permWithoutEditANDAdjustER,
+        },
+      });
+      cy.contains('button', 'Save and Calculate').should('not.exist');
+    });
+
+    it('should render `Next` button', () => {
+      mountWithPinia({
+        ...createApplicationStore(),
+        auth: {
+          permissions: [PERMISSIONS.SUBMIT_ENROLMENT_REPORT, PERMISSIONS.ADJUST_EXISTING_ER],
+        },
+      });
+      cy.contains('button', 'Next').click();
+      cy.get('@routerPush').should(
+        'have.been.calledWith',
+        `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}/declaration`,
+      );
+    });
+
+    it('should not render `Next` button if no submit/adjust ER permissiions ', () => {
+      const permWithoutSubmitANDAdjustER = Object.values(PERMISSIONS).filter(
+        (permission) =>
+          permission !== PERMISSIONS.SUBMIT_ENROLMENT_REPORT && permission !== PERMISSIONS.ADJUST_EXISTING_ER,
+      );
+
+      mountWithPinia({
+        ...createApplicationStore(),
+        auth: {
+          permissions: permWithoutSubmitANDAdjustER,
+        },
+      });
+      cy.contains('button', 'Next').should('not.exist');
     });
   });
 });
