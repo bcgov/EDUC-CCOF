@@ -149,6 +149,8 @@ export const useAppStore = defineStore('app', {
           return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
         case 6:
           return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+        case 7:
+          return PROGRAM_YEAR_LANGUAGE_TYPES.FY2026_27;
         default:
           return latestProgramYear;
       }
