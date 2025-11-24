@@ -1,6 +1,5 @@
 import FullMonthClosureConfirmationDialog from '@/components/manageReports/enrolmentReports/FullMonthClosureConfirmationDialog.vue';
 import vuetify from '@/plugins/vuetify';
-import { PATHS } from '@/utils/constants.js';
 
 function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {

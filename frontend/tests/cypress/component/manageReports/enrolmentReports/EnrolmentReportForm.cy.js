@@ -17,7 +17,7 @@ const facilityList = [
   },
 ];
 
-const enrolmentReport = {
+const baseReport = (overrides = {}) => ({
   versionText: 'TEST-VERSION-TEXT',
   month: '11',
   year: '2025',
@@ -25,45 +25,20 @@ const enrolmentReport = {
   facilityId,
   baseFundingRates: {},
   ccfriProviderPaymentRates: {},
-  ccfriProviderPaymentRates: {},
-};
+  ...overrides,
+});
 
-const enrolmentReportGroup = {
-  versionText: 'TEST-VERSION-TEXT',
-  month: '11',
-  year: '2025',
-  programYearId,
-  facilityId,
-  baseFundingRates: {},
+const enrolmentReport = baseReport({});
+const enrolmentReportGroup = baseReport({
   organizationProviderType: ORGANIZATION_PROVIDER_TYPES_IDS.GROUP,
-  ccfriProviderPaymentRates: {},
-  ccfriProviderPaymentRates: {},
-};
-
-const enrolmentReportAdjustment = {
-  versionText: 'TEST-VERSION-TEXT',
-  month: '11',
-  year: '2025',
+});
+const enrolmentReportAdjustment = baseReport({
   isAdjustment: true,
   prevEnrolmentReportId,
-  programYearId,
-  facilityId,
-  baseFundingRates: {},
-  ccfriProviderPaymentRates: {},
-  ccfriProviderPaymentRates: {},
-};
-
-const enrolmentReportPrev = {
-  versionText: 'TEST-VERSION-TEXT',
-  month: '11',
-  year: '2025',
+});
+const enrolmentReportPrev = baseReport({
   isAdjustment: true,
   enrolmentReportId: prevEnrolmentReportId,
-  programYearId,
-  facilityId,
-  baseFundingRates: {},
-  ccfriProviderPaymentRates: {},
-  ccfriProviderPaymentRates: {},
   currentTotalLess0To18: '22',
   currentTotalOver0To18: '33',
   currentTotalLess18To36: '44',
@@ -74,7 +49,7 @@ const enrolmentReportPrev = {
   currentTotalOverOOSCK: '55',
   currentTotalLessOOSCG: '94',
   currentTotalOverOOSCG: '321',
-};
+});
 
 const dailyReport = {
   versionText: 'TEST-VERSION-TEXT',
