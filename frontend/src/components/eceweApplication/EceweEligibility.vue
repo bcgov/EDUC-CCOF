@@ -71,14 +71,15 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import {
-  PATHS,
-  changeUrl,
-  pcfUrl,
-  ORGANIZATION_PROVIDER_TYPES,
+  CHANGE_REQUEST_EXTERNAL_STATUS_TEXTS,
+  ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_SECTOR_TYPES,
   OPT_STATUSES,
+  ORGANIZATION_PROVIDER_TYPES,
+  PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
-  ECEWE_DESCRIBE_ORG_TYPES,
+  changeUrl,
+  pcfUrl,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import rules from '@/utils/rules.js';
@@ -109,7 +110,7 @@ export default {
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
       'programYearId',
-      'applicationStatus',
+      'isApplicationSubmitted',
       'unlockEcewe',
       'applicationId',
       'showApplicationTemplateV1',
@@ -142,17 +143,10 @@ export default {
 
     //isEceweUnlocked is for change requests - unlockEcewe is for the core application
     isReadOnly() {
-      if (
-        this.isEceweUnlocked ||
-        this.unlockEcewe ||
-        this.changeRequestStatus === 'INCOMPLETE' ||
-        this.changeRequestStatus === 'ACTION_REQUIRED'
-      ) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
+      if (this.isChangeRequest) {
+        return this.changeRequestStatus !== CHANGE_REQUEST_EXTERNAL_STATUS_TEXTS.INCOMPLETE && !this.isEceweUnlocked;
       }
-      return false;
+      return this.isApplicationSubmitted && !this.unlockEcewe;
     },
   },
   async mounted() {

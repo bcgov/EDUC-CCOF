@@ -411,6 +411,28 @@ export default {
       }
       return this.isReadOnly;
     },
+
+    /**
+     * Determines if a question should be read-only.
+     *
+     * For Change Requests:
+     * - The 'optInECEWE' question becomes read-only if providers have previously selected "opt-in" in the Application,
+     * - The 'belongsToUnion' question becomes read-only if providers have previously selected "Yes" in the Application,
+     * - All other questions use the read-only state passed from the parent component.
+     *
+     * For Applications:
+     * - All questions use the read-only state passed from the parent component.
+     */
+    tisQuestionReadOnly(question = null) {
+      if (this.isChangeRequest) {
+        return (
+          this.isReadOnly ||
+          (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
+          (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
+        );
+      }
+      return this.isReadOnly;
+    },
   },
 };
 </script>

@@ -16,7 +16,7 @@
     >
       <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
         <p class="pa-2">Are you a public sector employer, as defined in the Public Sector Employers Act?</p>
-        <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
+        <v-radio-group v-model="model.publicSector" :disabled="isQuestionReadOnly()" :rules="rules.required">
           <v-radio label="Yes" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES" />
           <v-radio label="No" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO" @click="model.applicableSector = null" />
         </v-radio-group>
@@ -25,7 +25,7 @@
       <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
         <div>
           <p class="pa-2">Which of the following describes your organization?</p>
-          <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly" :rules="rules.required">
+          <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isQuestionReadOnly()" :rules="rules.required">
             <v-radio
               label="We are not a member of the Community Social Services Employers' Association (CSSEA)."
               :value="ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA"
@@ -52,14 +52,14 @@
             :true-value="ECEWE_UNION_AGREEMENT_REACHED"
             :false-value="null"
             label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-            :disabled="isReadOnly"
+            :disabled="isQuestionReadOnly()"
             :rules="rules.required"
           />
         </template>
 
         <template v-else-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
           <p class="pa-2">Please select a response</p>
-          <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
+          <v-radio-group v-model="model.applicableSector" :disabled="isQuestionReadOnly()" :rules="rules.required">
             <v-radio
               label="None of our facilities are unionized."
               :value="ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED"
@@ -78,7 +78,7 @@
               :true-value="ECEWE_UNION_AGREEMENT_REACHED"
               :false-value="null"
               label="I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
-              :disabled="isReadOnly"
+              :disabled="isQuestionReadOnly()"
               :rules="rules.required"
             />
           </template>
@@ -140,7 +140,7 @@ export default {
   },
   computed: {
     ...mapState(useApplicationStore, ['formattedProgramYear']),
-    ...mapState(useEceweAppStore, ['optinECEWEChangeRequestReadonly', 'belongsToUnionChangeRequestReadonly']),
+    ...mapState(useEceweAppStore, ['optinECEWEChangeRequestReadonly']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
@@ -164,19 +164,19 @@ export default {
       return this.model;
     },
 
-    //For change requests - if a facility has previously opted-in or said yes to having a union on their CORE application
-    //they are not allowed to change that response, so question becomes read only.
-    //if not a change request- default to the prop calculated by the parent.
-    isQuestionReadOnly(question) {
+    /**
+     * Determines if a question should be read-only.
+     *
+     * For Change Requests:
+     * - The 'optInECEWE' question becomes read-only if providers have previously selected "opt-in" in the Application,
+     * - All other questions use the read-only state passed from the parent component.
+     *
+     * For Applications:
+     * - All questions use the read-only state passed from the parent component.
+     */
+    isQuestionReadOnly(question = null) {
       if (this.isChangeRequest) {
-        if (this.isEceweUnlocked || !this.changeRequestStatus || this.changeRequestStatus === 'INCOMPLETE') {
-          return (
-            (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly) ||
-            (question === 'belongsToUnion' && this.belongsToUnionChangeRequestReadonly)
-          );
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
-        }
+        return this.isReadOnly || (question === 'optInECEWE' && this.optinECEWEChangeRequestReadonly);
       }
       return this.isReadOnly;
     },
