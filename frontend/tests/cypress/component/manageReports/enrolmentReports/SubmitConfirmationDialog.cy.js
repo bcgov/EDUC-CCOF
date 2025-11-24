@@ -24,20 +24,20 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
 
 describe('<SubmitConfirmationDialog />', () => {
   beforeEach(() => {
-    cy.viewport(1500, 1500);
+    cy.viewport(1250, 1250);
   });
   it('should not render dialog if show is false', () => {
     mountWithPinia({ propOverride: { show: false } });
     cy.contains('p', 'Submission Successful').should('not.exist');
   });
 
-  it('should render default dialog content', () => {
+  it('should render dialog default content', () => {
     mountWithPinia();
     cy.contains('p', 'Submission Successful');
     cy.contains('p', 'Your Enrolment Report has been submitted successfully.');
   });
 
-  it('should render dialog buttons', () => {
+  it('should render `Go back to Dashboard` button', () => {
     mountWithPinia();
     cy.contains('button', 'Go back to Dashboard');
   });
