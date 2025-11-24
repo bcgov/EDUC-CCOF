@@ -724,7 +724,13 @@ export default {
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStatus']),
     BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
+      try {
+        const link = getBCSSALink(this.getLanguageYearLabel);
+        return link;
+      } catch (e) {
+        console.error(e);
+        return '';
+      }
     },
     languageYearLabel() {
       return this.getLanguageYearLabel;

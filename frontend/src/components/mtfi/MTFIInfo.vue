@@ -81,7 +81,13 @@ export default {
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),
     BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
+      try {
+        const link = getBCSSALink(this.getLanguageYearLabel);
+        return link;
+      } catch (e) {
+        console.error(e);
+        return '';
+      }
     },
   },
   async beforeMount() {
