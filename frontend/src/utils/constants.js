@@ -62,6 +62,7 @@ export const ApiRoutes = Object.freeze({
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
+  PAYMENTS: baseRoot + '/payments',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -719,4 +720,24 @@ export const VACANCY_FIELDS = {
   vacanciesKindergartenBeforeAndAfter: 'Kindergarten Before and After',
   vacanciesGrade1ToAge12: 'Grade 1 to Age 12',
   vacanciesPreschool: 'Preschool',
+};
+
+export const PAYMENTS = Object.freeze({
+  PAID: 2,
+  APPROVED_PAYMENT: 4,
+  PROCESSING_PAYMENT: 5,
+  PROCESSING_ERROR: 6,
+  CANCELLED: 7,
+  HOLD: 101510001,
+});
+
+export const PAYMENT_DISPLAY_STATUSES = Object.freeze({
+  APPROVED: 'Approved',
+  PENDING: 'Pending',
+  PAID: 'Paid',
+  CANCELLED: 'Cancelled',
+});
+
+export const PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES = {
+  'CCFRI PROVIDER PAYMENT': 'CCFRI Provider Payment',
 };
