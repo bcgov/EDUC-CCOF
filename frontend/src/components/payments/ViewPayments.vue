@@ -135,11 +135,11 @@ export default {
 
       switch (displayStatus) {
         case PAYMENTS_DISPLAY_STATUSES.APPROVED:
-          return 'status-green';
+          return 'status-mint';
         case PAYMENTS_DISPLAY_STATUSES.PENDING:
           return 'status-yellow';
         case PAYMENTS_DISPLAY_STATUSES.PAID:
-          return 'status-blue';
+          return 'status-green';
         case PAYMENTS_DISPLAY_STATUSES.CANCELLED:
           return 'status-red';
         default:
