@@ -741,10 +741,9 @@ export default {
     try {
       if (!applicationId) return {};
       const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RENEW}/${applicationId}/ccof`);
-      console.log(response);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get application closures - ${error}`);
+      console.log(`Failed to get renewal application CCOF - ${error}`);
       throw error;
     }
   },

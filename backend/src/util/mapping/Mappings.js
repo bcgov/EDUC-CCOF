@@ -789,6 +789,7 @@ const LicenceMappings = [
   { back: 'ccof_organization', front: 'ccofOrganization' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_facility_id', front: 'facilityAccountNumber' },
+  { back: '_ccof_organization_name_value', front: 'organizationId' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
   { back: 'ccof_record_start_date', front: 'recordStartDate' },

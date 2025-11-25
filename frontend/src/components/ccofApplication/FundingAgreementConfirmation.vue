@@ -73,9 +73,8 @@
             <v-expansion-panels multiple class="mb-6">
               <v-expansion-panel v-for="licence in licences" :key="licence.licenceId">
                 <v-expansion-panel-title>
-                  <strong>
-                    {{ licence.serviceDeliveryDetails[0].facilityName }} - {{ licence.facilityAccountNumber }}
-                  </strong>
+                  <strong class="mr-8"> Licence #: {{ licence.licenceNumber }} </strong>
+                  <strong> Facility ID: {{ licence.facilityAccountNumber }} </strong>
                 </v-expansion-panel-title>
                 <v-expansion-panel-text>
                   <ServiceDetails :licence="licence" />
@@ -191,8 +190,10 @@ export default {
         this.setIsApplicationProcessing(true);
         this.isFundingAgreementConfirmed = this.renewalApplicationCCOF?.isFundingAgreementConfirmed;
         this.areLicenceDetailsConfirmed = this.renewalApplicationCCOF?.areLicenceDetailsConfirmed;
-        await this.loadFundingAgreementPDF();
+        await this.loadFundingAgreement();
         await this.loadLicences();
+        console.log(this.fundingAgreement);
+        console.log(this.licences);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -200,13 +201,15 @@ export default {
         this.setIsApplicationProcessing(false);
       }
     },
-    async loadFundingAgreementPDF() {
+    async loadFundingAgreement() {
       try {
-        this.fundingAgreement = await FundingAgreementService.getFundingAgreementPDFByQuery({
+        const response = await FundingAgreementService.getFundingAgreements({
           organizationId: this.organizationId,
           programYearId: this.$route.params.programYearGuid,
           fundingAgreementOrderNumber: 0,
+          includePdf: true,
         });
+        this.fundingAgreement = response[0];
         this.fundingAgreement.pdfFile = `data:application/pdf;base64,${this.fundingAgreement.pdfFile}`;
       } catch (error) {
         if (error.response?.status === 404) {
@@ -218,7 +221,8 @@ export default {
     },
     async loadLicences() {
       this.licences = await LicenceService.getLicences({
-        fundingAgreementId: this.fundingAgreement?.fundingAgreementId,
+        useCustomQuery: true,
+        organizationId: this.organizationId,
       });
       if (isEmpty(this.licences)) {
         this.setFailureAlert('Licence not found for this application.');

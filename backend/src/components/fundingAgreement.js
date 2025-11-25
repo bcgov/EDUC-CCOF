@@ -12,6 +12,14 @@ async function getFundingAgreements(req, res) {
     const query = `${buildFilterQuery(req.query, FundingAgreementMappings)} and statuscode ne 101510002`; // 101510002 = 'Drafted'
     const response = await getOperation(`ccof_funding_agreements?${query}`);
     const fundingAgreements = response?.value?.map((item) => new MappableObjectForFront(item, FundingAgreementMappings).toJSON());
+    if (req.query.includePdf) {
+      await Promise.all(
+        fundingAgreements.map(async (fundingAgreement) => {
+          const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreement.fundingAgreementId})/ccof_funding_pdf`);
+          fundingAgreement.pdfFile = pdfResponse?.value;
+        }),
+      );
+    }
     return res.status(HttpStatus.OK).json(fundingAgreements);
   } catch (e) {
     log.error(e);
@@ -36,29 +44,6 @@ async function getFundingAgreementPDF(req, res) {
     const operation = `ccof_funding_agreements(${req.params.fundingAgreementId})/ccof_funding_pdf`;
     const response = await getOperation(operation);
     return res.status(HttpStatus.OK).json(response.value);
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-// TODO (vietle-cgi): Review this function name later
-async function getFundingAgreementPDFByQuery(req, res) {
-  try {
-    const query = buildFilterQuery(req.query, FundingAgreementMappings);
-    const faResponse = await getOperation(`ccof_funding_agreements?$select=ccof_funding_agreementid&${query}`);
-    if (isEmpty(faResponse?.value)) {
-      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Funding agreement not found' });
-    }
-    const fundingAgreementId = faResponse.value[0].ccof_funding_agreementid;
-    const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreementId})/ccof_funding_pdf`);
-    if (isEmpty(pdfResponse?.value)) {
-      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Funding agreement PDF not found' });
-    }
-    return res.status(HttpStatus.OK).json({
-      fundingAgreementId,
-      pdfFile: pdfResponse.value,
-    });
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -91,6 +76,5 @@ module.exports = {
   getFundingAgreement,
   getFundingAgreements,
   getFundingAgreementPDF,
-  getFundingAgreementPDFByQuery,
   updateFundingAgreement,
 };
