@@ -156,7 +156,7 @@ class CcofApplication {
     cy.contains('div', 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?').within(()=> {
       cy.getByLabel('No').click()
     })
-    // TODO [CCFRI-6673] - Uncomment the line below once this bug is resolved 
+    
     cy.clickByText('Save')
     cy.contains('Success! Facility information has been saved.').should('be.visible')
     cy.clickByText('Next')
