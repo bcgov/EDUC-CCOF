@@ -33,7 +33,7 @@ class EceWeApplication {
         cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click()
     }
 
-    groupEceWe() {
+    groupEceWe(appType) {
         cy.then(()=> {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
@@ -50,7 +50,9 @@ class EceWeApplication {
                         cy.clickByText(this.cssea.confirmation) 
                     } 
                 } else {
-                    cy.contains(this.fundingType).click()
+                    if (appType.includes('Old')) {
+                        cy.contains(this.fundingType).click()
+                    }
                     cy.getByLabel(this.cssea.confirmation).click()
                 }
 

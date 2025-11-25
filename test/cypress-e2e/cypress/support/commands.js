@@ -291,14 +291,14 @@ Cypress.Commands.add('runCcofApp', (appType) => {
       case 'group':
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
-        ccofApp.offerExtendedHours(appType)
+        ccofApp.oldOfferExtendedHours(appType)
         ccofApp.addAnotherFacility()
         ccofApp.licenceUpload()
         break;
       case 'family':
       case 'familyOld': 
         ccofApp.familyLicences(appType)
-        ccofApp.offerExtendedHours(appType)
+        ccofApp.oldOfferExtendedHours(appType)
         ccofApp.licenceUpload()
         break;
     }
@@ -317,7 +317,11 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
         ccfriApp.addClosures(appType, term)
         break;
       case 'groupRenewal':
-      case 'familyRenewal':ccfriApp.parentFeesRenewal(); break;
+      case 'familyRenewal':
+        ccfriApp.parentFeesRenewal()
+        ccfriApp.addParentFees(appType, term)
+        ccfriApp.addClosures(appType, term)
+        break;
       case 'groupOld':
       case 'familyOld':ccfriApp.addParentFees(appType, term); break;
     }
@@ -331,7 +335,7 @@ Cypress.Commands.add('runEceWeApp', (appType, term) => {
     if (appType.includes("family")) {
       eceWeApp.familyEceWe()
     } else {
-      eceWeApp.groupEceWe()
+      eceWeApp.groupEceWe(appType)
     }
     eceWeApp.supportingDocUpload()
   })

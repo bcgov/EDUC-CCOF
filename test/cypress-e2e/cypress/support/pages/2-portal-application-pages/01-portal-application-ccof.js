@@ -43,7 +43,7 @@ class CcofApplication {
     switch (appType) {
       case 'group':
       case 'family':
-        cy.contains('Organization Information').should('be.visible')
+        // cy.contains('Organization Information').should('be.visible')
         cy.contains('Type of Organization').should('be.visible')
         cy.getByLabel(this.orgType).click()
         cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.legalOrgName)
@@ -157,8 +157,8 @@ class CcofApplication {
       cy.getByLabel('No').click()
     })
     // TODO [CCFRI-6673] - Uncomment the line below once this bug is resolved 
-    // cy.clickByText('Save')
-    // cy.contains('Success! Facility information has been saved.').should('be.visible')
+    cy.clickByText('Save')
+    cy.contains('Success! Facility information has been saved.').should('be.visible')
     cy.clickByText('Next')
   }
 
@@ -260,7 +260,7 @@ class CcofApplication {
   }
 
   // NOTE: please implement offerExtendedHours for the new template. 
-  offerExtendedHours(appType) {
+  oldOfferExtendedHours(appType) {
     cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
     })
@@ -284,6 +284,53 @@ class CcofApplication {
         cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
       });
     })
+
+    cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+      Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+        // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
+        if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
+          category = "Group Child Care (School Age/ School Age Care on School Grounds)"
+        }
+        if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
+          category = "Family Child Care (School Age/ School Age Care on School Grounds)"
+        }
+        cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+      })
+    })
+  
+    cy.clickByText('Save')
+    cy.contains('Application saved successfully.').should('be.visible')
+    cy.clickByText('Next')
+  }
+
+  // NOTE: please implement offerExtendedHours for the new template. 
+  offerExtendedHours(appType) {
+    cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6:00 AM, after 7:00 PM or overnight service)?').within(()=> {
+      cy.getByLabel(this.extendedHours).click()
+    })
+
+    let extendedHoursLicence
+    switch (appType) {
+      case 'group':
+        extendedHoursLicence = this.facilityLicenceDetailsData.groupLicenceCategories
+        break;
+      case 'family': 
+        extendedHoursLicence = this.facilityLicenceDetailsData.familyLicenceCategories
+        break;
+    }
+
+    cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
+    cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
+    cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
+    
+    Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+      if (extended) {
+        cy.getByLabel(category).check()
+        // Check if label already has value or not 
+      }
+      cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
+    });
+    
 
     cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {

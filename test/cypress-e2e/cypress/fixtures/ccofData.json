@@ -95,36 +95,40 @@
       "Group Child Care (Under 36 Months)": {
         "checked": true,
         "max": 1,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
         "checked": true,
         "max": 24,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age)": {
         "checked": true,
         "max": 20,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "School Age Care on School Grounds": {
         "checked": true,
         "max": 16,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Preschool": {
         "checked": true,
         "max": 24,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "extended": false
       },
       "Multi-Age Child Care": {
         "checked": true,
         "max": 50,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
