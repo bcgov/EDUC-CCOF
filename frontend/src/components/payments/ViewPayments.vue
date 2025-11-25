@@ -57,7 +57,7 @@ import PaymentService from '@/services/paymentService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PAYMENTS, PAYMENT_DISPLAY_STATUSES, PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES } from '@/utils/constants.js';
+import { PAYMENTS, PAYMENTS_DISPLAY_STATUSES, PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES } from '@/utils/constants.js';
 import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/format';
 
 export default {
@@ -118,13 +118,13 @@ export default {
         case PAYMENTS.APPROVED_PAYMENT:
         case PAYMENTS.PROCESSING_PAYMENT:
         case PAYMENTS.PROCESSING_ERROR:
-          return PAYMENT_DISPLAY_STATUSES.APPROVED;
+          return PAYMENTS_DISPLAY_STATUSES.APPROVED;
         case PAYMENTS.HOLD:
-          return PAYMENT_DISPLAY_STATUSES.PENDING;
+          return PAYMENTS_DISPLAY_STATUSES.PENDING;
         case PAYMENTS.PAID:
-          return PAYMENT_DISPLAY_STATUSES.PAID;
+          return PAYMENTS_DISPLAY_STATUSES.PAID;
         case PAYMENTS.CANCELLED:
-          return PAYMENT_DISPLAY_STATUSES.CANCELLED;
+          return PAYMENTS_DISPLAY_STATUSES.CANCELLED;
         default:
           return null;
       }
@@ -134,13 +134,13 @@ export default {
       const displayStatus = this.getDisplayStatus(statusCode);
 
       switch (displayStatus) {
-        case PAYMENT_DISPLAY_STATUSES.APPROVED:
+        case PAYMENTS_DISPLAY_STATUSES.APPROVED:
           return 'status-green';
-        case PAYMENT_DISPLAY_STATUSES.PENDING:
+        case PAYMENTS_DISPLAY_STATUSES.PENDING:
           return 'status-yellow';
-        case PAYMENT_DISPLAY_STATUSES.PAID:
+        case PAYMENTS_DISPLAY_STATUSES.PAID:
           return 'status-blue';
-        case PAYMENT_DISPLAY_STATUSES.CANCELLED:
+        case PAYMENTS_DISPLAY_STATUSES.CANCELLED:
           return 'status-red';
         default:
           return null;

@@ -731,7 +731,7 @@ export const PAYMENTS = Object.freeze({
   HOLD: 101510001,
 });
 
-export const PAYMENT_DISPLAY_STATUSES = Object.freeze({
+export const PAYMENTS_DISPLAY_STATUSES = Object.freeze({
   APPROVED: 'Approved',
   PENDING: 'Pending',
   PAID: 'Paid',
