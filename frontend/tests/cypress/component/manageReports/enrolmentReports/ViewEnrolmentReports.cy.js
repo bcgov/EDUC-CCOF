@@ -135,6 +135,7 @@ describe('<ViewEnrolmentReports />', () => {
   });
 
   it('should render enrolment report info', () => {
+    const facility = facilityList[0];
     interceptAPI(enrolmentReportDraft);
 
     mountWithPinia({
@@ -147,9 +148,9 @@ describe('<ViewEnrolmentReports />', () => {
 
     cy.get('table').within(() => {
       cy.get('td').eq(0).should('contain.text', 'Version Number').and('contain.text', enrolmentReportDraft.versionText);
-      cy.get('td').eq(1).should('contain.text', facilityList[0].facilityAccountNumber);
-      cy.get('td').eq(2).should('contain.text', 'Facility Name').and('contain.text', facilityList[0].facilityName);
-      cy.get('td').eq(3).should('contain.text', 'Licence Number').and('contain.text', facilityList[0].licenseNumber);
+      cy.get('td').eq(1).should('contain.text', facility.facilityAccountNumber);
+      cy.get('td').eq(2).should('contain.text', 'Facility Name').and('contain.text', facility.facilityName);
+      cy.get('td').eq(3).should('contain.text', 'Licence Number').and('contain.text', facility.licenseNumber);
       cy.get('td').eq(4).should('contain.text', 'Reporting Month').and('contain.text', 'November 2025');
       cy.get('td')
         .eq(5)

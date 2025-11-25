@@ -36,15 +36,16 @@ function mountWithPinia(initialState = {}) {
 
 describe('<EnrolmentReportHeader />', () => {
   it('should render header content', () => {
+    const facility = facilityList[0];
     mountWithPinia({
       application: {
         applicationMap: new Map([[programYearId, { facilityList }]]),
       },
     });
     cy.contains('p', 'Enrolment Report');
-    cy.contains(facilityList[0].facilityName);
-    cy.contains(facilityList[0].facilityAccountNumber);
-    cy.contains(`Licence #: ${facilityList[0].licenseNumber}`);
+    cy.contains(facility.facilityName);
+    cy.contains(facility.facilityAccountNumber);
+    cy.contains(`Licence #: ${facility.licenseNumber}`);
     cy.contains('Reporting month: November 2025');
     cy.contains(`Version number: ${enrolmentReport.versionText}`);
   });
