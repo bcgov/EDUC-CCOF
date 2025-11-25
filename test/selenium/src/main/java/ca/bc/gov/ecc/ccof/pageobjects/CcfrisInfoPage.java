@@ -10,10 +10,9 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class CcfrisInfoPage extends BaseTest {
+public class CcfrisInfoPage {
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@data-id='ccof_systemrecommendation.fieldControl-text-box-text']")
 	WebElement systemRecommendation;
@@ -26,6 +25,9 @@ public class CcfrisInfoPage extends BaseTest {
 
 	@FindBy(xpath = "//*[contains(text(),'Save & Close')]")
 	WebElement saveAndCloseBtn;
+
+	@FindBy(xpath = "//span[contains(text(),'Unlock')]")
+	WebElement unlockBtn;
 
 	public CcfrisInfoPage(WebDriver driver) {
 		this.driver = driver;
@@ -48,5 +50,9 @@ public class CcfrisInfoPage extends BaseTest {
 
 	public void clickSaveAndCloseBtn() {
 		saveAndCloseBtn.click();
+	}
+
+	public void clickUnlockBtn() {
+		unlockBtn.click();
 	}
 }
