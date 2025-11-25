@@ -424,16 +424,17 @@ const UserProfileChangeRequestNewFacilityMappings = [
 ];
 
 const ProgramYearMappings = [
-  { back: 'ccof_program_yearid', front: 'programYearId' },
-  { back: 'ccof_name', front: 'name' },
-  { back: 'statuscode', front: 'status' },
-  { back: 'ccof_programyearnumber', front: 'order' },
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
-  { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
-  { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
-  { back: 'ccof_declarationbstart', front: 'declarationbStart' },
+  { back: 'ccof_bcssa_link', front: 'bcssaUrl' },
   { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
   { back: 'ccof_ccof_application_template_version', front: 'applicationTemplateVersion' },
+  { back: 'ccof_declarationbstart', front: 'declarationbStart' },
+  { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
+  { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
+  { back: 'ccof_name', front: 'name' },
+  { back: 'ccof_programyearnumber', front: 'order' },
+  { back: 'statuscode', front: 'status' },
+  { back: 'ccof_program_yearid', front: 'programYearId' },
 ];
 
 const MessageMappings = [

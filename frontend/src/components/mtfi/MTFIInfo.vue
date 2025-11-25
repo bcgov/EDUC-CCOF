@@ -51,7 +51,6 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useAppStore } from '@/store/app.js';
 
-import { getBCSSALink } from '@/utils/common.js';
 import {
   PATHS,
   changeUrlGuid,
@@ -75,19 +74,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getLanguageYearLabel']),
+    ...mapState(useAppStore, ['getBcssaUrl']),
     ...mapState(useApplicationStore, ['programYearId', 'applicationId', 'formattedProgramYear']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName', 'organizationProviderType']),
     ...mapState(useNavBarStore, ['userProfileList']),
     ...mapState(useReportChangesStore, ['changeActionId', 'mtfiFacilities', 'changeRequestStore']),
     BCSSALink() {
-      try {
-        const link = getBCSSALink(this.getLanguageYearLabel);
-        return link;
-      } catch (e) {
-        console.error(e);
-        return '';
-      }
+      return this.getBcssaUrl(this.programYearId);
     },
   },
   async beforeMount() {

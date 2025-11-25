@@ -217,8 +217,7 @@ export const useEceweAppStore = defineStore('eceweApp', {
       return index >= 0 ? this.facilities[index].eceweApplicationId : null;
     },
     getOptInOrOut(facilityId) {
-      const appStore = useAppStore();
-      console.log(appStore.getLanguageYearLabel);
+      const appStore = useAppStore(); // Access the other store
       if (
         appStore.getLanguageYearLabel !== PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26 &&
         this.eceweModel.fundingModel == this.fundingModelTypes[0].id

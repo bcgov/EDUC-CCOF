@@ -326,7 +326,6 @@ export const PROGRAM_YEAR_LANGUAGE_TYPES = {
   HISTORICAL: 'HISTORICAL',
   FY2024_25: 'FY2024_25',
   FY2025_26: 'FY2025_26',
-  FY2026_27: 'FY2026_27',
 };
 
 export const PROVINCES = Object.freeze([
@@ -444,12 +443,6 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xls',
   '.xlsx',
 ]);
-
-export const BCSSA_REGION_LINKS = Object.freeze({
-  [PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25]: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
-  [PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26]: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
-  [PROGRAM_YEAR_LANGUAGE_TYPES.FY2026_27]: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_0OOqvvDiTtH5ZB4',
-});
 
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
