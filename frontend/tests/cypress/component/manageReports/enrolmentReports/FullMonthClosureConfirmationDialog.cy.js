@@ -22,6 +22,9 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
 }
 
 describe('<FullMonthClosureConfirmationDialog />', () => {
+  beforeEach(() => {
+    cy.viewport(1500, 1500);
+  });
   it('should display default dialog information', () => {
     mountWithPinia();
     cy.contains('Confirm Full Month Closure or No Enrolment');
