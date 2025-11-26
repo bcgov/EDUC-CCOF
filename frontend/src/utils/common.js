@@ -156,7 +156,7 @@ export function getBCSSALink(languageYearLabel) {
   const bcssaRegionLink = BCSSA_REGION_LINKS[programYearLanguageType];
 
   if (isEmpty(bcssaRegionLink)) {
-    throw Error('Could not ascertain BCSSA Region Link');
+    throw new Error('Could not ascertain BCSSA Region Link');
   }
 
   return bcssaRegionLink;
