@@ -737,7 +737,3 @@ export const PAYMENTS_DISPLAY_STATUSES = Object.freeze({
   PAID: 'Paid',
   CANCELLED: 'Cancelled',
 });
-
-export const PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES = {
-  'CCFRI PROVIDER PAYMENT': 'CCFRI Provider Payment',
-};

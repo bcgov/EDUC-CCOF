@@ -22,10 +22,6 @@
             {{ formatMonthYearToString(item.paymentMonth, item.paymentYear) }}
           </template>
 
-          <template #item.fundingTypeText="{ item }">
-            {{ displayFundingType(item.fundingTypeText) }}
-          </template>
-
           <template #item.paymentAmount="{ item }"> {{ formatCurrency(item.paymentAmount) }} </template>
 
           <template #[`item.approvedDate`]="{ item }">
@@ -57,7 +53,7 @@ import PaymentService from '@/services/paymentService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PAYMENTS, PAYMENTS_DISPLAY_STATUSES, PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES } from '@/utils/constants.js';
+import { PAYMENTS, PAYMENTS_DISPLAY_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/format';
 
 export default {
@@ -107,10 +103,6 @@ export default {
       } finally {
         this.isLoading = false;
       }
-    },
-
-    displayFundingType(type) {
-      return PAYMENTS_FUNDING_TYPE_DISPLAY_NAMES[type] || type;
     },
 
     getDisplayStatus(statusCode) {
