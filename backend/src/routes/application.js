@@ -14,6 +14,7 @@ const {
   getDeclaration,
   getRenewalApplicationCCOF,
   submitApplication,
+  updateApplication,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const validatePermission = require('../middlewares/validatePermission');
@@ -278,6 +279,18 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequest(req, res);
+  },
+);
+
+router.patch(
+  '/:applicationId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateApplication(req, res);
   },
 );
 

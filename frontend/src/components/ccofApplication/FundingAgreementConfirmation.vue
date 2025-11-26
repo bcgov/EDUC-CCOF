@@ -41,11 +41,11 @@
               </ul>
             </div>
             <v-radio-group v-model="isFundingAgreementConfirmed" :disabled="readonly" :rules="rules.required">
-              <v-radio label="Yes" :value="true" />
-              <v-radio label="No" :value="false" />
+              <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+              <v-radio label="No" :value="YES_NO_VALUES.NO" />
             </v-radio-group>
 
-            <v-card v-if="isFundingAgreementConfirmed === false" rounded="0" class="mb-4">
+            <v-card v-if="isFundingAgreementConfirmed === YES_NO_VALUES.NO" rounded="0" class="mb-4">
               <v-card-title class="noticeAlert">
                 <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
                 Do not continue.
@@ -84,10 +84,10 @@
             <v-card class="card-top-border-primary mb-8 px-8 py-6">
               <p class="mb-2">I confirm all Licence and Service Details Records are correct.</p>
               <v-radio-group v-model="areLicenceDetailsConfirmed" :disabled="readonly" :rules="rules.required">
-                <v-radio label="Yes" :value="true" />
-                <v-radio label="No" :value="false" />
+                <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+                <v-radio label="No" :value="YES_NO_VALUES.NO" />
               </v-radio-group>
-              <v-card v-if="areLicenceDetailsConfirmed === false" rounded="0" class="mb-4">
+              <v-card v-if="areLicenceDetailsConfirmed === YES_NO_VALUES.NO" rounded="0" class="mb-4">
                 <v-card-title class="noticeAlert">
                   <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
                   Do not continue.
@@ -125,22 +125,21 @@ import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
+import ApplicationService from '@/services/applicationService';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import LicenceService from '@/services/licenceService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { PATHS } from '@/utils/constants.js';
+import { PATHS, YES_NO_VALUES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
   components: { AppButton, AppPDFViewer, ApplicationPCFHeader, NavButton, ServiceDetails },
   mixins: [alertMixin, permissionsMixin],
   async beforeRouteLeave(_to, _from, next) {
-    if (!this.readonly) {
-      this.save(false);
-    }
+    await this.save(false);
     next();
   },
   data() {
@@ -155,6 +154,7 @@ export default {
   computed: {
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
     ...mapState(useApplicationStore, [
+      'applicationId',
       'applicationMap',
       'applicationStatus',
       'applicationType',
@@ -167,7 +167,7 @@ export default {
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName']),
     readonly() {
-      return this.isApplicationSubmitted || isEmpty(this.fundingAgreement) || isEmpty(this.licences);
+      return this.isApplicationSubmitted || isEmpty(this.fundingAgreement?.pdfFile) || isEmpty(this.licences);
     },
     isNextDisabled() {
       return (
@@ -180,6 +180,7 @@ export default {
   },
   async created() {
     this.PATHS = PATHS;
+    this.YES_NO_VALUES = YES_NO_VALUES;
     this.rules = rules;
     await this.loadData();
   },
@@ -202,21 +203,17 @@ export default {
       }
     },
     async loadFundingAgreement() {
-      try {
-        const response = await FundingAgreementService.getFundingAgreements({
-          organizationId: this.organizationId,
-          programYearId: this.$route.params.programYearGuid,
-          fundingAgreementOrderNumber: 0,
-          includePdf: true,
-        });
-        this.fundingAgreement = response[0];
+      const response = await FundingAgreementService.getFundingAgreements({
+        organizationId: this.organizationId,
+        programYearId: this.$route.params.programYearGuid,
+        fundingAgreementOrderNumber: 0,
+        includePdf: true,
+      });
+      this.fundingAgreement = response[0];
+      if (!isEmpty(this.fundingAgreement?.pdfFile)) {
         this.fundingAgreement.pdfFile = `data:application/pdf;base64,${this.fundingAgreement.pdfFile}`;
-      } catch (error) {
-        if (error.response?.status === 404) {
-          this.setFailureAlert('Funding Agreement not found for this application.');
-        } else {
-          throw error;
-        }
+      } else {
+        this.setWarningAlert('Funding Agreement not found for this application.');
       }
     },
     async loadLicences() {
@@ -225,7 +222,7 @@ export default {
         organizationId: this.organizationId,
       });
       if (isEmpty(this.licences)) {
-        this.setFailureAlert('Licence not found for this application.');
+        this.setWarningAlert('Licence not found for this application.');
       }
     },
     back() {
@@ -234,14 +231,30 @@ export default {
     next() {
       this.$router.push(this.nextPath);
     },
-    save(showNotification) {
-      this.setIsApplicationProcessing(true);
-      this.renewalApplicationCCOF.isFundingAgreementConfirmed = this.isFundingAgreementConfirmed;
-      this.renewalApplicationCCOF.areLicenceDetailsConfirmed = this.areLicenceDetailsConfirmed;
-      if (showNotification) {
-        this.setSuccessAlert('Application saved successfully.');
+    async save(showNotification) {
+      try {
+        if (this.readonly) return;
+        this.setIsApplicationProcessing(true);
+        const payload = {
+          isFundingAgreementConfirmed: this.isFundingAgreementConfirmed,
+          areLicenceDetailsConfirmed: this.areLicenceDetailsConfirmed,
+        };
+        const hasChanges =
+          this.renewalApplicationCCOF.isFundingAgreementConfirmed !== payload.isFundingAgreementConfirmed ||
+          this.renewalApplicationCCOF.areLicenceDetailsConfirmed !== payload.areLicenceDetailsConfirmed;
+        if (hasChanges) {
+          Object.assign(this.renewalApplicationCCOF, payload);
+          await ApplicationService.updateApplication(this.applicationId, payload);
+        }
+        if (showNotification) {
+          this.setSuccessAlert('Application saved successfully.');
+        }
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
       }
-      this.setIsApplicationProcessing(false);
     },
     validateForm() {
       this.$refs.form?.validate();

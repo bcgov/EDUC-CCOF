@@ -726,11 +726,14 @@ export default {
   },
 
   isBankingInformationComplete(application) {
-    return application?.hasBankingInfoChanged === false;
+    return application?.hasBankingInfoChanged === YES_NO_VALUES.NO;
   },
 
   isFundingAgreementComplete(application) {
-    return application?.isFundingAgreementConfirmed && application?.areLicenceDetailsConfirmed;
+    return (
+      application?.isFundingAgreementConfirmed === YES_NO_VALUES.YES &&
+      application?.areLicenceDetailsConfirmed === YES_NO_VALUES.YES
+    );
   },
 
   /*
@@ -743,7 +746,18 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_RENEW}/${applicationId}/ccof`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get renewal application CCOF - ${error}`);
+      console.error(`Failed to get renewal application CCOF - ${error}`);
+      throw error;
+    }
+  },
+
+  async updateApplication(applicationId, payload) {
+    try {
+      if (!applicationId || isEmpty(payload)) return;
+      const response = await ApiService.apiAxios.patch(`${ApiRoutes.APPLICATION}/${applicationId}`, payload);
+      return response;
+    } catch (error) {
+      console.error(`Failed to update the application - ${error}`);
       throw error;
     }
   },

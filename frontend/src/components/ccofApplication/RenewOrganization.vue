@@ -16,8 +16,8 @@
             :disabled="hasActiveChangeRequest"
             :rules="rules.required"
           >
-            <v-radio label="Yes" :value="true" />
-            <v-radio label="No" :value="false" />
+            <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+            <v-radio label="No" :value="YES_NO_VALUES.NO" />
           </v-radio-group>
           <v-card v-if="hasBankingInfoChanged" rounded="0" class="mb-4">
             <v-card-title class="noticeAlert">
@@ -65,26 +65,25 @@
   />
 </template>
 <script>
-import { mapActions, mapState, mapWritableState } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
 import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { PATHS } from '@/utils/constants.js';
+import { PATHS, YES_NO_VALUES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
   components: { ApplicationChangeRequestInProgressAlert, ApplicationPCFHeader, NavButton },
   mixins: [alertMixin, permissionsMixin],
   async beforeRouteLeave(_to, _from, next) {
-    if (!this.readonly) {
-      this.save(false);
-    }
+    await this.save(false);
     next();
   },
   data() {
@@ -95,18 +94,23 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
-    ...mapState(useApplicationStore, ['isApplicationProcessing', 'isApplicationSubmitted', 'renewalApplicationCCOF']),
+    ...mapState(useApplicationStore, [
+      'applicationId',
+      'isApplicationProcessing',
+      'isApplicationSubmitted',
+      'renewalApplicationCCOF',
+    ]),
     ...mapState(useNavBarStore, ['nextPath']),
     ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
     readonly() {
       return this.isApplicationSubmitted || this.hasActiveChangeRequest;
     },
     isNextDisabled() {
-      // TODO (vietle-cgi) - update this line after we add Banking Info to this page
-      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged;
+      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged === YES_NO_VALUES.YES;
     },
   },
   async created() {
+    this.YES_NO_VALUES = YES_NO_VALUES;
     this.rules = rules;
     await this.loadData();
   },
@@ -131,13 +135,25 @@ export default {
     next() {
       this.$router.push(this.nextPath);
     },
-    save(showNotification) {
-      this.setIsApplicationProcessing(true);
-      this.renewalApplicationCCOF.hasBankingInfoChanged = this.hasBankingInfoChanged;
-      if (showNotification) {
-        this.setSuccessAlert('Application saved successfully.');
+    async save(showNotification) {
+      try {
+        if (this.readonly) return;
+        this.setIsApplicationProcessing(true);
+        if (this.renewalApplicationCCOF.hasBankingInfoChanged !== this.hasBankingInfoChanged) {
+          this.renewalApplicationCCOF.hasBankingInfoChanged = this.hasBankingInfoChanged;
+          await ApplicationService.updateApplication(this.applicationId, {
+            hasBankingInfoChanged: this.hasBankingInfoChanged,
+          });
+        }
+        if (showNotification) {
+          this.setSuccessAlert('Application saved successfully.');
+        }
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
       }
-      this.setIsApplicationProcessing(false);
     },
     validateForm() {
       this.$refs.form?.validate();
