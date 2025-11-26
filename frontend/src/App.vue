@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import HttpStatus from 'http-status-codes';
 import { mapActions, mapState } from 'pinia';
 import { useAppStore } from '@/store/app.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -57,17 +56,7 @@ export default {
   },
   async created() {
     this.setLoading(true);
-    this.getJwtToken()
-      .then(() => Promise.all([this.getLookupInfo()]))
-      .catch((e) => {
-        if (!e.response || e.response.status !== HttpStatus.UNAUTHORIZED) {
-          this.logout();
-          this.$router.replace({ name: 'error', query: { message: `500_${e.data || 'ServerError'}` } });
-        }
-      })
-      .finally(() => {
-        this.setLoading(false);
-      });
+    this.getJwtToken();
     this.setLoading(false);
   },
   methods: {

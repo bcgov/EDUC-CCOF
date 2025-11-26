@@ -1022,13 +1022,17 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
+    const appStore = useAppStore();
     const authStore = useAuthStore();
     authStore
       .getJwtToken()
-      .then(() => {
+      .then(async () => {
         if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
+          if (isEmpty(appStore.programYearList)) {
+            await appStore.getLookupInfo();
+          }
           authStore
             .getUserInfo(to)
             .then(async () => {
