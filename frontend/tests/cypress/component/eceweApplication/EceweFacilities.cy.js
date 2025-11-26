@@ -35,7 +35,7 @@ const getAppState = () => ({
   app: {
     programYearId,
     programYearList: {
-      list: [{ programYearId: '1234', order: 6 }],
+      list: [],
     },
     fundingModelTypeList,
   },
@@ -218,7 +218,6 @@ describe('<EceweFacilities />', () => {
     mountWithPinia({
       ...getAuthState(),
       ...getAppState(),
-      ...getApplicationState(),
       ...getNavBarState(),
       ...getEceweAppState(),
     });
@@ -231,7 +230,6 @@ describe('<EceweFacilities />', () => {
     mountWithPinia({
       ...getAuthState(),
       ...getAppState(),
-      ...getApplicationState(),
       ...getNavBarState(),
       ...getEceweAppState({
         eceweModel: {
