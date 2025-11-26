@@ -80,7 +80,13 @@ export default {
       return this.getLanguageYearLabel;
     },
     BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
+      try {
+        const link = getBCSSALink(this.getLanguageYearLabel);
+        return link;
+      } catch (e) {
+        console.error(e);
+        return '';
+      }
     },
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;

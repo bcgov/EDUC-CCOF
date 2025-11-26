@@ -139,6 +139,8 @@ export const useAppStore = defineStore('app', {
       const orderNumber = state?.programYearList.list.find(
         (el) => el.programYearId == applicationStore?.programYearId,
       )?.order;
+      const latestProgramYear = PROGRAM_YEAR_LANGUAGE_TYPES.FY2026_27;
+
       switch (orderNumber) {
         case 1:
         case 2:
@@ -149,11 +151,10 @@ export const useAppStore = defineStore('app', {
           return PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25;
         case 6:
           return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
+        case 7:
+          return PROGRAM_YEAR_LANGUAGE_TYPES.FY2026_27;
         default:
-          return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
-
-        //default to last updated year for wording so pages like ECE-WE don't break.
-        //Ministry may come back to add new wording for the upcoming fiscal year
+          return latestProgramYear;
       }
     },
     getProgramYearNameById: (state) => {

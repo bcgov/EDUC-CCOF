@@ -151,16 +151,15 @@ export function isAnyChangeRequestActive(changeRequestList) {
 }
 
 export function getBCSSALink(languageYearLabel) {
-  switch (languageYearLabel) {
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25:
-      return BCSSA_REGION_LINKS.FY2024_25;
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26:
-      return BCSSA_REGION_LINKS.FY2025_26;
-    default:
-      return BCSSA_REGION_LINKS.FY2025_26; //if future years are added but this link is not updated - default to the newest link we have
+  const latestYearLabel = PROGRAM_YEAR_LANGUAGE_TYPES.FY2026_27;
+  const programYearLanguageType = PROGRAM_YEAR_LANGUAGE_TYPES[languageYearLabel] || latestYearLabel;
+  const bcssaRegionLink = BCSSA_REGION_LINKS[programYearLanguageType];
+
+  if (isEmpty(bcssaRegionLink)) {
+    throw Error('Could not ascertain BCSSA Region Link');
   }
 
-  //todo- more links will need to be added for future program years when provided by the buisness
+  return bcssaRegionLink;
 }
 
 export function hasEmptyFields(obj, requiredFields) {
