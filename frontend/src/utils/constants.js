@@ -419,11 +419,6 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xlsx',
 ]);
 
-export const BCSSA_REGION_LINKS = Object.freeze({
-  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
-  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
-});
-
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',

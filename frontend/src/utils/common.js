@@ -6,11 +6,9 @@ import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import {
-  BCSSA_REGION_LINKS,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
@@ -148,19 +146,6 @@ export function isAnyChangeRequestActive(changeRequestList) {
   return changeRequestList?.some(
     (el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE',
   );
-}
-
-export function getBCSSALink(languageYearLabel) {
-  switch (languageYearLabel) {
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25:
-      return BCSSA_REGION_LINKS.FY2024_25;
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26:
-      return BCSSA_REGION_LINKS.FY2025_26;
-    default:
-      return BCSSA_REGION_LINKS.FY2025_26; //if future years are added but this link is not updated - default to the newest link we have
-  }
-
-  //todo- more links will need to be added for future program years when provided by the buisness
 }
 
 export function hasEmptyFields(obj, requiredFields) {
