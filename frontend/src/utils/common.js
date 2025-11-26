@@ -10,13 +10,11 @@ import {
   APPLICATION_CCOF_STATUSES,
   APPLICATION_TYPES,
   APPLICATION_STATUSES,
-  BCSSA_REGION_LINKS,
   CCOF_STATUS,
   LICENCE_STATUSES,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 
 const clone = useRfdc();
@@ -152,19 +150,6 @@ export function isAnyChangeRequestActive(changeRequestList) {
   return changeRequestList?.some(
     (el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE',
   );
-}
-
-export function getBCSSALink(languageYearLabel) {
-  switch (languageYearLabel) {
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25:
-      return BCSSA_REGION_LINKS.FY2024_25;
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26:
-      return BCSSA_REGION_LINKS.FY2025_26;
-    default:
-      return BCSSA_REGION_LINKS.FY2025_26; //if future years are added but this link is not updated - default to the newest link we have
-  }
-
-  //todo- more links will need to be added for future program years when provided by the buisness
 }
 
 export function hasEmptyFields(obj, requiredFields) {
