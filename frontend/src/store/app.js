@@ -130,10 +130,10 @@ export const useAppStore = defineStore('app', {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
     },
     getFundingUrl: (state) => (programYearId) => {
-      return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;
+      return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.fundingGuidelinesUrl;
     },
     getBcssaUrl: (state) => (programYearId) => {
-      return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.bcssaUrl;
+      return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.bcssaUrl;
     },
     getLanguageYearLabel: (state) => {
       const applicationStore = useApplicationStore();
