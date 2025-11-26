@@ -13,13 +13,12 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import ca.bc.gov.ecc.ccof.base.BaseTest;
-
-public class DeleteApplicationPage extends BaseTest {
+public class DeleteApplicationPage {
 
 	String getV;
 	Actions action;
 	WebDriverWait wait;
+	WebDriver driver;
 
 	@FindBy(xpath = "//*[@id='GlobalSearchBox']")
 	WebElement searchBox;

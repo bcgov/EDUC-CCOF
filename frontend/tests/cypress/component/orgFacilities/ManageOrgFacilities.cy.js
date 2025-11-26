@@ -62,7 +62,7 @@ describe('<ManageOrgFacilities />', () => {
   });
 
   context('Tab Permissions - positive cases', () => {
-    it('should contain only `Organization Information` tab', () => {
+    it('should contain `Organization Information` tab', () => {
       mountWithPinia({
         organization: {
           organizationName,
@@ -70,7 +70,7 @@ describe('<ManageOrgFacilities />', () => {
         },
         ...createAuth([PERMISSIONS.VIEW_ORG_INFORMATION]),
       });
-      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').should('have.length', 2);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
     });
 
@@ -82,7 +82,7 @@ describe('<ManageOrgFacilities />', () => {
         },
         ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
-      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').should('have.length', 2);
       cy.get('.v-tab').eq(0).should('contain', 'Facilities');
     });
 
@@ -109,7 +109,7 @@ describe('<ManageOrgFacilities />', () => {
         ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
-      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').should('have.length', 2);
       cy.get('.v-tab').eq(0).should('contain', 'Funding Agreement');
     });
 
@@ -139,22 +139,24 @@ describe('<ManageOrgFacilities />', () => {
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
         ]),
       });
-      cy.get('.v-tab').should('have.length', 3);
+      cy.get('.v-tab').should('have.length', 4);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
       cy.get('.v-tab').eq(1).should('contain', 'Funding Agreement');
       cy.get('.v-tab').eq(2).should('contain', 'Facilities');
+      cy.get('.v-tab').eq(3).should('contain', 'Payment Information');
     });
   });
 
   context('Tab Permissions - negative cases', () => {
-    it('should contain no tabs without permissions', () => {
+    it('should contain only `Payment Information` tab without permissions', () => {
       mountWithPinia({
         organization: {
           organizationName,
           organizationAccountNumber,
         },
       });
-      cy.get('.v-tab').should('have.length', 0);
+      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').should('contain', 'Payment Information');
     });
 
     it('should not contain `Organization Information` tab', () => {
@@ -169,7 +171,7 @@ describe('<ManageOrgFacilities />', () => {
         },
         ...createAuth(permWithoutViewOrg),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Organization Information');
     });
 
@@ -185,7 +187,7 @@ describe('<ManageOrgFacilities />', () => {
         },
         ...createAuth(permWithoutViewFac),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Facilities');
     });
 
