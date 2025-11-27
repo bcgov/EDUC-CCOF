@@ -238,7 +238,7 @@ const CCOFApplicationFundingMapping = [
   { back: 'ccof_preschoolsessionwed', front: 'wednesday' },
   { back: 'ccof_preschoolsessionthurs', front: 'thursday' },
   { back: 'ccof_preschoolsessionfri', front: 'friday' },
-  { back: 'ccof_preschoolsessiontotal', front: 'total' },
+  { back: 'ccof_preschoolsessiontotal', front: 'preschoolSessionsTotal' },
   { back: 'ccof_isthefacilitylocatedonschoolproperty', front: 'isSchoolProperty' },
   { back: 'ccof_beforeschool', front: 'beforeSchool' },
   { back: 'ccof_beforekindergarten', front: 'beforeKindergarten' },
