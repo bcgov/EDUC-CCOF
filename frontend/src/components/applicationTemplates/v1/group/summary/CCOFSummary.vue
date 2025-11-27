@@ -469,7 +469,7 @@
 
                 <v-text-field
                   placeholder="Required"
-                  :model-value="funding?.total"
+                  :model-value="funding?.preschoolSessionsTotal"
                   class="summary-value"
                   density="compact"
                   flat

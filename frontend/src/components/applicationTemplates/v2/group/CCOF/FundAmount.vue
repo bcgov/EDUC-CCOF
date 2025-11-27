@@ -435,7 +435,7 @@
           </v-col>
           <v-col cols="12" md="2">
             <v-text-field
-              v-model.number="fundingModel.total"
+              v-model.number="fundingModel.preschoolSessionsTotal"
               disabled
               type="number"
               variant="outlined"

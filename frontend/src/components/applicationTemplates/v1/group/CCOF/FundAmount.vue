@@ -381,7 +381,7 @@
             </v-col>
             <v-col>
               <v-text-field
-                v-model.number="fundingModel.total"
+                v-model.number="fundingModel.preschoolSessionsTotal"
                 disabled
                 variant="outlined"
                 :model-value="preschoolSessionsTotal"

@@ -457,7 +457,7 @@
             <v-row no-gutters class="summary-label">Total</v-row>
             <v-text-field
               placeholder="Required"
-              :model-value="funding?.total"
+              :model-value="funding?.preschoolSessionsTotal"
               density="compact"
               flat
               variant="solo"

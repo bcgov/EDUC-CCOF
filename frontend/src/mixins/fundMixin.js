@@ -138,7 +138,7 @@ export default {
       immediate: true,
       handler(val) {
         if (!this.fundingModel) return;
-        this.fundingModel.total = val;
+        this.fundingModel.preschoolSessionsTotal = val;
       },
     },
   },
