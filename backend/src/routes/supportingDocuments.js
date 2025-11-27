@@ -15,7 +15,7 @@ router.post(
   '',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.ADD_NEW_FACILITY),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY),
   scanFilePayload,
   saveDocument,
 );

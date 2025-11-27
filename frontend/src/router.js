@@ -886,6 +886,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -915,6 +916,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -927,6 +929,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
