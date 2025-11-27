@@ -50,6 +50,10 @@ export default {
       'getChangeActionNewFacByFacilityId',
     ]),
     ...mapState(useReportChangesStore, ['isCCOFUnlocked', 'changeRequestStatus']),
+    preschoolSessionsTotal() {
+      const f = this.fundingModel || {};
+      return (f.monday || 0) + (f.tusday || 0) + (f.wednesday || 0) + (f.thursday || 0) + (f.friday || 0);
+    },
     isLocked() {
       if (this.isChangeRequest) {
         if (this.isCCOFUnlocked || !this.changeRequestStatus) {
@@ -128,6 +132,15 @@ export default {
     this.rules = rules;
     this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FAMILY_LICENCE_CATEGORIES = FAMILY_LICENCE_CATEGORIES;
+  },
+  watch: {
+    preschoolSessionsTotal: {
+      immediate: true,
+      handler(val) {
+        if (!this.fundingModel) return;
+        this.fundingModel.total = val;
+      },
+    },
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),

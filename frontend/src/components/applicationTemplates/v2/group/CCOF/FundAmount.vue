@@ -436,20 +436,11 @@
           <v-col cols="12" md="2">
             <v-text-field
               v-model.number="fundingModel.total"
-              :readonly="!isLocked"
-              :disabled="isLocked"
+              disabled
               type="number"
               variant="outlined"
-              :model-value="
-                (fundingModel.total =
-                  (fundingModel.monday || 0) +
-                  (fundingModel.tusday || 0) +
-                  (fundingModel.wednesday || 0) +
-                  (fundingModel.thursday || 0) +
-                  (fundingModel.friday || 0))
-              "
+              :model-value="preschoolSessionsTotal"
               label="Total"
-              @wheel="$event.target.blur()"
             />
           </v-col>
         </v-row>
