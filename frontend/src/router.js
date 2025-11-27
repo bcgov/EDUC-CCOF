@@ -628,7 +628,7 @@ const router = createRouter({
         showNavBar: true,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -659,7 +659,7 @@ const router = createRouter({
       },
     },
     {
-      path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
+      path: PATHS.ROOT.CHANGE_NEW_FACILITY,
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -759,7 +759,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -772,7 +772,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        // TODO #securitymatrix - Implement with Change Request security
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -860,6 +860,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -872,6 +873,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
