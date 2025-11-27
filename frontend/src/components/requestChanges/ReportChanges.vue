@@ -10,7 +10,7 @@
       <v-container>
         <p class="text-h6 text-center">What changes do you want to request?</p>
         <v-row>
-          <v-col v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP" cols="12" md="6" xl="4">
+          <v-col v-if="showAddNewFacility" cols="12" md="6" xl="4">
             <SmallCard>
               <template #content>
                 <div class="px-10">
@@ -59,7 +59,7 @@
               </template>
             </SmallCard>
           </v-col>
-          <v-col cols="12" md="6" xl="4">
+          <v-col v-if="hasPermission(PERMISSIONS.MTFI)" cols="12" md="6" xl="4">
             <SmallCard :disable="!isMtfiEnabled()">
               <template #content>
                 <div class="px-10">
@@ -132,7 +132,7 @@
           </template>
           <template #item.actions="{ item }">
             <v-btn
-              v-if="isContinueButtonDisplayed(item.externalStatus)"
+              v-if="isContinueButtonDisplayed(item)"
               class="blueOutlinedButton mr-3 my-2"
               variant="outlined"
               :width="changeHistoryButtonWidth"
@@ -150,7 +150,7 @@
               View
             </v-btn>
             <v-btn
-              v-if="isUpdateButtonDisplayed(item.externalStatus)"
+              v-if="isUpdateButtonDisplayed(item)"
               class="blueOutlinedButton mr-3 my-2"
               variant="outlined"
               :width="changeHistoryButtonWidth"
@@ -159,7 +159,7 @@
               Update
             </v-btn>
             <v-btn
-              v-if="isCancelButtonDisplayed(item.externalStatus)"
+              v-if="isCancelButtonDisplayed(item)"
               class="blueOutlinedButton my-2"
               variant="outlined"
               :width="changeHistoryButtonWidth"
@@ -239,6 +239,7 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { CHANGE_TYPES, changeUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
 import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
+import { get } from 'lodash';
 
 export default {
   name: 'ReportChange',
@@ -382,6 +383,12 @@ export default {
         if (facility.unlockRfi) unlockList.push(facility.ccfriApplicationId);
       });
       return unlockList;
+    },
+    showAddNewFacility() {
+      return (
+        this.hasPermission(this.PERMISSIONS.ADD_NEW_FACILITY) &&
+        this.organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP
+      );
     },
   },
   async mounted() {
@@ -687,17 +694,44 @@ export default {
       this.dialog = false;
     },
     isViewButtonDisplayed(externalStatus) {
-      return ['Submitted', 'Approved', 'Cancelled'].includes(externalStatus);
+      return (
+        this.hasPermission(this.PERMISSIONS.VIEW_A_CR) &&
+        ['Submitted', 'Approved', 'Cancelled'].includes(externalStatus)
+      );
     },
-    isContinueButtonDisplayed(externalStatus) {
-      return ['In Progress'].includes(externalStatus);
+    isContinueButtonDisplayed(item) {
+      return (
+        this.hasPermission(this.getChangeRequestPermission(item.changeType)) &&
+        ['In Progress'].includes(item.externalStatus)
+      );
     },
-    isCancelButtonDisplayed(externalStatus) {
-      // return (['Incomplete','Submitted','WITH_PROVIDER'].includes(internalStatus));
-      return ['In Progress'].includes(externalStatus);
+    isCancelButtonDisplayed(item) {
+      return (
+        this.hasPermission(this.getChangeRequestPermission(item.changeType)) &&
+        ['In Progress'].includes(item.externalStatus)
+      );
     },
-    isUpdateButtonDisplayed(externalStatus) {
-      return ['Action Required'].includes(externalStatus);
+    isUpdateButtonDisplayed(item) {
+      return (
+        this.hasPermission(this.getChangeRequestPermission(item.changeType)) &&
+        ['Action Required'].includes(item.externalStatus)
+      );
+    },
+    getChangeRequestPermission(changeType) {
+      switch (changeType) {
+        case 'PDF_CHANGE':
+          return [
+            this.PERMISSIONS.ORGANIZATION_CHANGE,
+            this.PERMISSIONS.LICENCE_CHANGE,
+            this.PERMISSIONS.OTHER_CHANGES,
+          ];
+        case 'NEW_FACILITY':
+          return [this.PERMISSIONS.ADD_NEW_FACILITY];
+        case 'PARENT_FEE_CHANGE':
+          return [this.PERMISSIONS.MTFI];
+        default:
+          return [this.PERMISSIONS.VIEW_A_CR];
+      }
     },
     sortChangeActions(changeRequest, order) {
       return _.sortBy(changeRequest.changeActions, 'createdOn', order);

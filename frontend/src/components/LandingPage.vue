@@ -626,6 +626,17 @@ export default {
       return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
+      if (
+        !this.hasPermission([
+          this.PERMISSIONS.MTFI,
+          this.PERMISSIONS.ORGANIZATION_CHANGE,
+          this.PERMISSIONS.ADD_NEW_FACILITY,
+          this.PERMISSIONS.LICENCE_CHANGE,
+          this.PERMISSIONS.OTHER_CHANGES,
+        ])
+      ) {
+        return false;
+      }
       const index = this.changeRequestStore?.findIndex(
         (changeRequest) => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED,
       );
@@ -736,8 +747,10 @@ export default {
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
           this.getAllMessages(this.organizationId),
-          this.getChangeRequestList(),
         ]);
+        if (this.hasPermission(this.PERMISSIONS.VIEW_A_CR)) {
+          await this.getChangeRequestList(this.organizationId);
+        }
         if (this.hasPermission(this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
           this.renewalYearHasDraftProviderActionRequiredFA = await FundingAgreementService.checkFundingAgreementExists({
             organizationId: this.organizationId,
