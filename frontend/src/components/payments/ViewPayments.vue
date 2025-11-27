@@ -12,7 +12,7 @@
         mobile-breakpoint="md"
         class="elevation-2"
       >
-        <template #item.paymentMonth="{ item }">
+        <template #item.reportingMonth="{ item }">
           {{ formatMonthYearToString(item.paymentMonth, item.paymentYear) }}
         </template>
 
@@ -60,7 +60,7 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Facility ID', sortable: true, value: 'facilityId' },
         { title: 'Licence Number', sortable: true, value: 'licenceNumber' },
-        { title: 'Month of Service', sortable: true, value: 'paymentMonth', width: '200px' },
+        { title: 'Month of Service', sortable: true, value: 'reportingMonth', width: '200px' },
         { title: 'Funding Type', sortable: true, value: 'fundingTypeText' },
         { title: 'Base/Adjustment Report', sortable: true, value: 'reportTypeText' },
         { title: 'Amount($)', sortable: true, value: 'paymentAmount' },
@@ -92,6 +92,9 @@ export default {
         this.payments = await PaymentService.getPayments({
           organizationId: this.organizationId,
           programYearId: this.programYearId,
+        });
+        this.payments.forEach((payment) => {
+          payment.reportingMonth = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
         });
         this.sortPayments();
       } catch {
@@ -137,18 +140,14 @@ export default {
 
     sortPayments() {
       this.payments.sort((a, b) => {
-        // 1. Sort by paymentYear DESC
-        if (b.paymentYear !== a.paymentYear) {
-          return b.paymentYear - a.paymentYear;
+        // 1. Sort by reportingMonth DESC (newest first)
+        if (b.reportingMonth !== a.reportingMonth) {
+          return b.reportingMonth.localeCompare(a.reportingMonth);
         }
-        // 2. Sort by paymentMonth DESC
-        if (b.paymentMonth !== a.paymentMonth) {
-          return b.paymentMonth - a.paymentMonth;
-        }
-        // 3. Sort by facilityName ASC
+        // 2. Sort by facilityName ASC
         const facilityCompare = a.facilityName.localeCompare(b.facilityName);
         if (facilityCompare !== 0) return facilityCompare;
-        // 4. Sort by fundingTypeText ASC
+        // 3. Sort by fundingTypeText ASC
         return a.fundingTypeText.localeCompare(b.fundingTypeText);
       });
     },
