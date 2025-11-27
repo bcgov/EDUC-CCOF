@@ -242,6 +242,7 @@ export default {
       this.fundingModel.wednesday = null;
       this.fundingModel.thursday = null;
       this.fundingModel.friday = null;
+      this.fundingModel.total = null;
     },
     resetExtendedHoursFields() {
       if (isEmpty(this.fundingModel)) return;

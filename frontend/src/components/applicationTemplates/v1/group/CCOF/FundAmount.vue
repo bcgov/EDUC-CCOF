@@ -381,16 +381,18 @@
             </v-col>
             <v-col>
               <v-text-field
+                v-model.number="fundingModel.total"
                 :readonly="!isLocked"
                 :disabled="isLocked"
                 type="number"
                 variant="outlined"
                 :model-value="
-                  (fundingModel.monday || 0) +
-                  (fundingModel.tusday || 0) +
-                  (fundingModel.wednesday || 0) +
-                  (fundingModel.thursday || 0) +
-                  (fundingModel.friday || 0)
+                  (fundingModel.total =
+                    (fundingModel.monday || 0) +
+                    (fundingModel.tusday || 0) +
+                    (fundingModel.wednesday || 0) +
+                    (fundingModel.thursday || 0) +
+                    (fundingModel.friday || 0))
                 "
                 label="Total"
                 @wheel="$event.target.blur()"
