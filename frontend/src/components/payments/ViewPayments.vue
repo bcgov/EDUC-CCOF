@@ -12,7 +12,7 @@
         mobile-breakpoint="md"
         class="elevation-2"
       >
-        <template #item.reportingMonth="{ item }">
+        <template #item.paymentPeriod="{ item }">
           {{ formatMonthYearToString(item.paymentMonth, item.paymentYear) }}
         </template>
 
@@ -60,7 +60,7 @@ export default {
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
         { title: 'Facility ID', sortable: true, value: 'facilityId' },
         { title: 'Licence Number', sortable: true, value: 'licenceNumber' },
-        { title: 'Month of Service', sortable: true, value: 'reportingMonth', width: '200px' },
+        { title: 'Month of Service', sortable: true, value: 'paymentPeriod', width: '200px' },
         { title: 'Funding Type', sortable: true, value: 'fundingTypeText' },
         { title: 'Base/Adjustment Report', sortable: true, value: 'reportTypeText' },
         { title: 'Amount($)', sortable: true, value: 'paymentAmount' },
@@ -94,7 +94,7 @@ export default {
           programYearId: this.programYearId,
         });
         this.payments.forEach((payment) => {
-          payment.reportingMonth = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
+          payment.paymentPeriod = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
         });
         this.sortPayments();
       } catch {
@@ -140,9 +140,9 @@ export default {
 
     sortPayments() {
       this.payments.sort((a, b) => {
-        // 1. Sort by reportingMonth DESC (newest first)
-        if (b.reportingMonth !== a.reportingMonth) {
-          return b.reportingMonth.localeCompare(a.reportingMonth);
+        // 1. Sort by paymentPeriod DESC (newest first)
+        if (b.paymentPeriod !== a.paymentPeriod) {
+          return b.paymentPeriod.localeCompare(a.paymentPeriod);
         }
         // 2. Sort by facilityName ASC
         const facilityCompare = a.facilityName.localeCompare(b.facilityName);
