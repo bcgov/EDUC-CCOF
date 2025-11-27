@@ -327,9 +327,10 @@ class CcofApplication {
       cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
       
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-        if (extended) {
+        if (value.extended) {
           cy.getByLabel(category).check()
-          // TODO
+          // TODO [Hedie-cgi]: Add Extended Hours for Template 2 whenever program year is flipped
+          // NOTE - There is no DIV that wraps around each licence category for extended hours - you will need to check if the input already has a value
         }
         cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
       });

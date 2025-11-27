@@ -190,6 +190,10 @@
       "After Kindergarten"
     ],
     "offerExtendedHoursChildCare": "No",
+    "_optionsOfferExtendedHoursChildCare": {
+      "optIn": "Yes",
+      "optOut": "No"
+    },
     "maxDaysPerWeekExtendedHours": "3",
     "maxWeeksPerYearExtendedHours": "12",
     "maxSpacesExtendedHours": "3",
