@@ -265,38 +265,40 @@ class CcofApplication {
       cy.getByLabel(this.extendedHours).click()
     })
 
-    let extendedHoursLicence
-    switch (appType) {
-      case 'familyOld':
-        extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours
-        cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
-        break;
-      case 'groupOld': 
-        extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours
-        break;
-    }
+    if (this.extendedHours === 'Yes') {
+      let extendedHoursLicence
+      switch (appType) {
+        case 'familyOld':
+          extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours
+          cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
+          break;
+        case 'groupOld': 
+          extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours
+          break;
+      }
 
-    cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
-    cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
-    cy.contains('Write the maximum number of spaces you offer extended hours of child care for each type of service')
-    cy.contains('.v-col-md-6','4 hours or less extended child care').within(()=> {
-      Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-        cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
-      });
-    })
-
-    cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
-      Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-        // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
-        if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
-          category = "Group Child Care (School Age/ School Age Care on School Grounds)"
-        }
-        if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
-          category = "Family Child Care (School Age/ School Age Care on School Grounds)"
-        }
-        cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+      cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
+      cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
+      cy.contains('Write the maximum number of spaces you offer extended hours of child care for each type of service')
+      cy.contains('.v-col-md-6','4 hours or less extended child care').within(()=> {
+        Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+          cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
+        });
       })
-    })
+
+      cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+        Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+          // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
+          if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
+            category = "Group Child Care (School Age/ School Age Care on School Grounds)"
+          }
+          if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
+            category = "Family Child Care (School Age/ School Age Care on School Grounds)"
+          }
+          cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+        })
+      })
+    }
   
     cy.clickByText('Save')
     cy.contains('Application saved successfully.').should('be.visible')
@@ -305,45 +307,47 @@ class CcofApplication {
 
   // NOTE: please implement offerExtendedHours for the new template. 
   offerExtendedHours(appType) {
-    cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6:00 AM, after 7:00 PM or overnight service)?').within(()=> {
+    cy.contains('div', 'Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
     })
 
-    let extendedHoursLicence
-    switch (appType) {
-      case 'group':
-        extendedHoursLicence = this.facilityLicenceDetailsData.groupLicenceCategories
-        break;
-      case 'family': 
-        extendedHoursLicence = this.facilityLicenceDetailsData.familyLicenceCategories
-        break;
-    }
-
-    cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
-    cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
-    cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
-    
-    Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-      if (extended) {
-        cy.getByLabel(category).check()
-        // Check if label already has value or not 
+    if (this.extendedHours === 'Yes') {
+      let extendedHoursLicence
+      switch (appType) {
+        case 'group':
+          extendedHoursLicence = this.facilityLicenceDetailsData.groupLicenceCategories
+          break;
+        case 'family': 
+          extendedHoursLicence = this.facilityLicenceDetailsData.familyLicenceCategories
+          break;
       }
-      cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
-    });
-    
 
-    cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+      cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
+      cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
+      cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
+      
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-        // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
-        if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
-          category = "Group Child Care (School Age/ School Age Care on School Grounds)"
+        if (extended) {
+          cy.getByLabel(category).check()
+          // TODO
         }
-        if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
-          category = "Family Child Care (School Age/ School Age Care on School Grounds)"
-        }
-        cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+        cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
+      });
+      
+
+      cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
+        Object.entries(extendedHoursLicence).forEach(([category, value]) => {
+          // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
+          if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
+            category = "Group Child Care (School Age/ School Age Care on School Grounds)"
+          }
+          if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
+            category = "Family Child Care (School Age/ School Age Care on School Grounds)"
+          }
+          cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
+        })
       })
-    })
+    }
   
     cy.clickByText('Save')
     cy.contains('Application saved successfully.').should('be.visible')

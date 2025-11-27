@@ -189,7 +189,7 @@
       "Before Kindergarten",
       "After Kindergarten"
     ],
-    "offerExtendedHoursChildCare": "Yes",
+    "offerExtendedHoursChildCare": "No",
     "maxDaysPerWeekExtendedHours": "3",
     "maxWeeksPerYearExtendedHours": "12",
     "maxSpacesExtendedHours": "3",

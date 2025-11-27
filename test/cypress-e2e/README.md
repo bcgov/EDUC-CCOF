@@ -80,6 +80,8 @@ Each Application script requires your BCeID (assigned in .env) to have NO organi
 
 The 2025-26 FY uses Template 1, while anything past Feburary 15th, 2026 will use Template 2. Please be aware of this when running the scripts.
 
+If updating the Program Year in CMS, please ensure you update the *ccfriData* fixture file Parent Fee Dates to 2025-26 & 2026-27 AND update the closure dates to be between 05/01/2026 - 04/30/2027.
+
 ### Signing Funding Agreements 
 This script requires an application to have been submitted AND adjudicated on the CMS side. The Funding Agreement must also have been updated to "Pending Signing" as its status on CMS.
 

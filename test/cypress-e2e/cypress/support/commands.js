@@ -289,6 +289,11 @@ Cypress.Commands.add('runCcofApp', (appType) => {
 
     switch (appType) {
       case 'group':
+        ccofApp.groupLicenses(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
         ccofApp.oldOfferExtendedHours(appType)
@@ -296,6 +301,10 @@ Cypress.Commands.add('runCcofApp', (appType) => {
         ccofApp.licenceUpload()
         break;
       case 'family':
+        ccofApp.familyLicences(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.licenceUpload()
+        break;
       case 'familyOld': 
         ccofApp.familyLicences(appType)
         ccofApp.oldOfferExtendedHours(appType)

@@ -19,17 +19,16 @@ class SubmitApplication {
             .should('equal', Cypress.env('PORTAL_BASE_URL'))
 
         const isRenewal = appType.includes('Renewal')    
-        if (!isRenewal) {
+        if (isRenewal) {
+            cy.contains('Renew my Funding Agreement').wrap(()=> {
+                cy.get('.smallCardDisabled').should('exist')
+            })
+        } else {
             cy.contains('.v-card', 'Apply for Child Care Operating Funding (CCOF) including:')
                 .should('contain', 'Status: Submitted')
             cy.contains('.v-card', 'Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED')
                 .should('contain', 'Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED')
-        } else {
-            cy.contains('Renew my Funding Agreement').wrap(()=> {
-                cy.get('.smallCardDisabled').should('exist')
-            })
         }
-
         cy.contains(Cypress.env('PORTAL_USERNAME')).click()
         cy.contains('Logout').click()
     }

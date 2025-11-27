@@ -13,8 +13,8 @@ describe('Group Application Test', () => {
     
         cy.then(()=> {
             cy.runCcofApp(APP_TYPE.GROUP_V2)
-            cy.runCcfriApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.CURRENT)
-            cy.runEceWeApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.CURRENT)
+            cy.runCcfriApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.FUTURE)
+            cy.runEceWeApp(APP_TYPE.GROUP_V2, PROGRAM_YEAR.FUTURE)
             submitApp.summaryAndDeclaration(APP_TYPE.GROUP_V2)
         })
     })
