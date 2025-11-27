@@ -19,12 +19,12 @@ class EceWeApplication {
     loadFixturesAndVariables() {
         this.loadFixtures()
         cy.then(()=> {
-            this.optInOrOut = this.optInOrOut.optIn
-            this.publicSectorEmployer = this.publicSectorEmployer.isEmployer
-            this.csseaSelection = this.cssea.csseaMember.status
-            this.unionStatus = this.cssea.csseaNonMember.response.someOrAllUnionized
-            this.facilityOptInOrOut = this.facility.facilityOptInOrOut.optIn
-            this.facilityUnionStatus = this.facility.facilityUnionStatus.unionized
+            this.csseaMember = this.cssea.csseaMember
+            this.csseaSelection = this.cssea.status
+            this.fundingType = this.cssea.fundingModel
+            this.unionStatus = this.cssea.unionStatus
+            this.facilityOptInOrOut = this.facility.facilityOptInOrOut
+            this.facilityUnionStatus = this.facility.facilityUnionStatus
         })
     }
 
@@ -33,7 +33,7 @@ class EceWeApplication {
         cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click()
     }
 
-    groupEceWe() {
+    groupEceWe(appType) {
         cy.then(()=> {
             // Opt-In Path
             if (this.optInOrOut === 'Yes') {
@@ -43,14 +43,16 @@ class EceWeApplication {
                 cy.contains('Which of the following describes your organization?').should('be.visible')
                 cy.getByLabel(this.csseaSelection).click()
                 // CSSEA Non-Member
-                if (this.csseaSelection === this.cssea.csseaNonMember.status) {
+                if (this.csseaMember === 'No') {
                     cy.getByLabel(this.unionStatus).click()
                     // CSSEA Non-Member + Union
-                    if (this.unionStatus === this.cssea.csseaNonMember.someOrAllUnionizedUnionized) {
+                    if (this.unionStatus === "Some or all of our facilities are unionized.") {
                         cy.clickByText(this.cssea.confirmation) 
                     } 
                 } else {
-                    // CSSEA Member
+                    if (appType.includes('Old')) {
+                        cy.contains(this.fundingType).click()
+                    }
                     cy.getByLabel(this.cssea.confirmation).click()
                 }
 
@@ -59,11 +61,11 @@ class EceWeApplication {
                 cy.clickByText('Next')
 
                 // Opt In Facilities
-                if (this.facilityOptInOrOut === this.facility.facilityOptInOrOut.optIn) {
+                if (this.facilityOptInOrOut === 'Opt-In All Facilities') {
                     cy.contains(' Opt-In All Facilities ').should('be.visible')
                     cy.clickByText(this.facilityOptInOrOut)
                     cy.clickByText(' Update ')
-                    if (this.unionStatus === this.cssea.csseaNonMember.response.someOrAllUnionized || this.csseaSelection === this.cssea.csseaMember) {
+                    if (this.unionStatus === "Some or all of our facilities are unionized." || this.csseaMember === 'Yes') {
                         allFacilitiesUnionized('.v-card', this.facilityUnionStatus)
                     }
                 }
