@@ -139,7 +139,7 @@ export default {
       try {
         if (this.readonly) return;
         this.setIsApplicationProcessing(true);
-        if (this.renewalApplicationCCOF.hasBankingInfoChanged !== this.hasBankingInfoChanged) {
+        if (this.renewalApplicationCCOF?.hasBankingInfoChanged !== this.hasBankingInfoChanged) {
           this.renewalApplicationCCOF.hasBankingInfoChanged = this.hasBankingInfoChanged;
           await ApplicationService.updateApplication(this.applicationId, {
             hasBankingInfoChanged: this.hasBankingInfoChanged,

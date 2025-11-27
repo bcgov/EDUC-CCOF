@@ -1,4 +1,3 @@
-import { isEmpty } from 'lodash';
 import { defineStore } from 'pinia';
 
 import ApiService from '@/common/apiService.js';
@@ -31,7 +30,7 @@ export const useApplicationStore = defineStore('application', {
     isLicenseUploadComplete: false,
 
     applicationMap: new Map(),
-    renewalApplicationCCOF: {},
+    renewalApplicationCCOF: null,
     applicationUploadedDocuments: [],
     isApplicationDocumentsLoading: false,
 
@@ -146,8 +145,8 @@ export const useApplicationStore = defineStore('application', {
         this.setUnlockSupportingDocuments(application.unlockSupportingDocuments);
         this.setIsEceweComplete(application.isEceweComplete);
         this.setIsLicenseUploadComplete(application.isLicenseUploadComplete);
-        if (isRenewal && isEmpty(this.renewalApplicationCcof)) {
-          this.renewalApplicationCcof = await ApplicationService.getRenewalApplicationCCOF(application.applicationId);
+        if (isRenewal && !this.renewalApplicationCCOF) {
+          this.renewalApplicationCCOF = await ApplicationService.getRenewalApplicationCCOF(application.applicationId);
         }
         navBarStore.setIsRenewal(isRenewal);
         navBarStore.setUserProfileList(applicationStore?.applicationMap?.get(programYearId).facilityList);

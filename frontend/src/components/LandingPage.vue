@@ -108,7 +108,7 @@
                     v-if="applicationType === APPLICATION_TYPES.NEW_ORG"
                     theme="dark"
                     class="blueButton mt-4"
-                    @click="viewApplication('NEW')"
+                    @click="goToCCOFOrganizationInfo()"
                   >
                     View Recent Application
                   </v-btn>
@@ -120,7 +120,7 @@
                     "
                     theme="dark"
                     class="blueButton"
-                    @click="viewApplication('RENEW')"
+                    @click="goToRenewalApplication()"
                   >
                     View Recent Application
                   </v-btn>
@@ -168,7 +168,6 @@
               <v-skeleton-loader class="ma-0 pa-0" type="chip" />
             </div>
             <div v-else>
-              <!-- {{ isRenewEnabled }} -->
               <v-btn
                 v-if="ccofRenewStatus === RENEW_STATUS.NEW"
                 :class="buttonColor(!isRenewEnabled)"
@@ -181,7 +180,7 @@
                 v-else-if="ccofRenewStatus === RENEW_STATUS.CONTINUE"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
-                @click="continueRenewal()"
+                @click="goToRenewalApplication()"
               >
                 Continue Renewal
               </v-btn>
@@ -776,7 +775,7 @@ export default {
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
-    continueRenewal() {
+    goToRenewalApplication() {
       if (this.showApplicationTemplateV1) {
         this.goToLicenseUpload();
       } else {
@@ -840,13 +839,6 @@ export default {
     },
     goToMaintainUsers() {
       this.$router.push(PATHS.ROOT.MANAGE_USERS);
-    },
-    viewApplication(type) {
-      if (type === 'NEW') {
-        this.goToCCOFOrganizationInfo();
-      } else {
-        this.goToLicenseUpload();
-      }
     },
     goToOrganizationClosures() {
       this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.selectedProgramYearId}`);
