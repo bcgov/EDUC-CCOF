@@ -1,45 +1,38 @@
 <template>
-  <v-container class="pa-0 text-body-1" fluid>
-    <v-row no-gutters>
-      <v-col cols="12">
-        <p class="mb-4">View and manage the payment records of your organization.</p>
-      </v-col>
-    </v-row>
+  <v-container class="pa-2 text-body-1" fluid>
+    <p class="mb-4">View and manage the payment records of your organization.</p>
 
-    <div class="my-4"></div>
+    <v-skeleton-loader :loading="isLoading" type="table-tbody">
+      <v-data-table
+        :headers="paymentTableHeaders"
+        :items="displayedPayments"
+        :items-per-page="20"
+        :items-per-page-options="[10, 20, 50]"
+        :mobile="null"
+        mobile-breakpoint="md"
+        class="elevation-2"
+      >
+        <template #item.paymentMonth="{ item }">
+          {{ formatMonthYearToString(item.paymentMonth, item.paymentYear) }}
+        </template>
 
-    <v-card variant="outlined" class="soft-outline fill-height px-2 py-1">
-      <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-data-table
-          :headers="paymentTableHeaders"
-          :items="displayedPayments"
-          :items-per-page="20"
-          :items-per-page-options="[10, 20, 50]"
-          :mobile="null"
-          mobile-breakpoint="md"
-        >
-          <template #item.paymentMonth="{ item }">
-            {{ formatMonthYearToString(item.paymentMonth, item.paymentYear) }}
-          </template>
+        <template #item.paymentAmount="{ item }"> {{ formatCurrency(item.paymentAmount) }} </template>
 
-          <template #item.paymentAmount="{ item }"> {{ formatCurrency(item.paymentAmount) }} </template>
+        <template #[`item.approvedDate`]="{ item }">
+          {{ formatUTCDate(item.approvedDate) }}
+        </template>
 
-          <template #[`item.approvedDate`]="{ item }">
-            {{ formatUTCDate(item.approvedDate) }}
-          </template>
+        <template #[`item.paidDate`]="{ item }">
+          {{ formatUTCDate(item.paidDate) }}
+        </template>
 
-          <template #[`item.paidDate`]="{ item }">
-            {{ formatUTCDate(item.paidDate) }}
-          </template>
-
-          <template #[`item.paymentStatusCode`]="{ item }">
-            <span :class="getStatusClass(item.paymentStatusCode)">
-              {{ getDisplayStatus(item.paymentStatusCode) }}
-            </span>
-          </template>
-        </v-data-table>
-      </v-skeleton-loader>
-    </v-card>
+        <template #[`item.paymentStatusCode`]="{ item }">
+          <span :class="getStatusClass(item.paymentStatusCode)">
+            {{ getDisplayStatus(item.paymentStatusCode) }}
+          </span>
+        </template>
+      </v-data-table>
+    </v-skeleton-loader>
   </v-container>
 </template>
 
@@ -53,7 +46,7 @@ import PaymentService from '@/services/paymentService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { PAYMENTS, PAYMENTS_DISPLAY_STATUSES } from '@/utils/constants.js';
+import { PAYMENT_STATUSES, PAYMENT_STATUS_TEXTS } from '@/utils/constants.js';
 import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/format';
 
 export default {
@@ -96,7 +89,10 @@ export default {
     async loadPayments() {
       try {
         this.isLoading = true;
-        this.payments = await PaymentService.getPayments(this.organizationId, this.programYearId);
+        this.payments = await PaymentService.getPayments({
+          organizationId: this.organizationId,
+          programYearId: this.programYearId,
+        });
         this.sortPayments();
       } catch {
         this.setFailureAlert('Failed to load Payments');
@@ -107,16 +103,16 @@ export default {
 
     getDisplayStatus(statusCode) {
       switch (statusCode) {
-        case PAYMENTS.APPROVED_PAYMENT:
-        case PAYMENTS.PROCESSING_PAYMENT:
-        case PAYMENTS.PROCESSING_ERROR:
-          return PAYMENTS_DISPLAY_STATUSES.APPROVED;
-        case PAYMENTS.HOLD:
-          return PAYMENTS_DISPLAY_STATUSES.PENDING;
-        case PAYMENTS.PAID:
-          return PAYMENTS_DISPLAY_STATUSES.PAID;
-        case PAYMENTS.CANCELLED:
-          return PAYMENTS_DISPLAY_STATUSES.CANCELLED;
+        case PAYMENT_STATUSES.APPROVED_PAYMENT:
+        case PAYMENT_STATUSES.PROCESSING_PAYMENT:
+        case PAYMENT_STATUSES.PROCESSING_ERROR:
+          return PAYMENT_STATUS_TEXTS.APPROVED;
+        case PAYMENT_STATUSES.HOLD:
+          return PAYMENT_STATUS_TEXTS.PENDING;
+        case PAYMENT_STATUSES.PAID:
+          return PAYMENT_STATUS_TEXTS.PAID;
+        case PAYMENT_STATUSES.CANCELLED:
+          return PAYMENT_STATUS_TEXTS.CANCELLED;
         default:
           return null;
       }
@@ -126,13 +122,13 @@ export default {
       const displayStatus = this.getDisplayStatus(statusCode);
 
       switch (displayStatus) {
-        case PAYMENTS_DISPLAY_STATUSES.APPROVED:
+        case PAYMENT_STATUS_TEXTS.APPROVED:
           return 'status-mint';
-        case PAYMENTS_DISPLAY_STATUSES.PENDING:
+        case PAYMENT_STATUS_TEXTS.PENDING:
           return 'status-yellow';
-        case PAYMENTS_DISPLAY_STATUSES.PAID:
+        case PAYMENT_STATUS_TEXTS.PAID:
           return 'status-green';
-        case PAYMENTS_DISPLAY_STATUSES.CANCELLED:
+        case PAYMENT_STATUS_TEXTS.CANCELLED:
           return 'status-red';
         default:
           return null;
@@ -141,14 +137,18 @@ export default {
 
     sortPayments() {
       this.payments.sort((a, b) => {
-        // 1. Sort by paymentMonth DESC
+        // 1. Sort by paymentYear DESC
+        if (b.paymentYear !== a.paymentYear) {
+          return b.paymentYear - a.paymentYear;
+        }
+        // 2. Sort by paymentMonth DESC
         if (b.paymentMonth !== a.paymentMonth) {
           return b.paymentMonth - a.paymentMonth;
         }
-        // 2. Sort by facilityName ASC
+        // 3. Sort by facilityName ASC
         const facilityCompare = a.facilityName.localeCompare(b.facilityName);
         if (facilityCompare !== 0) return facilityCompare;
-        // 3. Sort by fundingTypeText ASC
+        // 4. Sort by fundingTypeText ASC
         return a.fundingTypeText.localeCompare(b.fundingTypeText);
       });
     },

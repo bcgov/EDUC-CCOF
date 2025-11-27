@@ -722,7 +722,7 @@ export const VACANCY_FIELDS = {
   vacanciesPreschool: 'Preschool',
 };
 
-export const PAYMENTS = Object.freeze({
+export const PAYMENT_STATUSES = Object.freeze({
   PAID: 2,
   APPROVED_PAYMENT: 4,
   PROCESSING_PAYMENT: 5,
@@ -731,7 +731,7 @@ export const PAYMENTS = Object.freeze({
   HOLD: 101510001,
 });
 
-export const PAYMENTS_DISPLAY_STATUSES = Object.freeze({
+export const PAYMENT_STATUS_TEXTS = Object.freeze({
   APPROVED: 'Approved',
   PENDING: 'Pending',
   PAID: 'Paid',

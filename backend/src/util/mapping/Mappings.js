@@ -855,6 +855,8 @@ const ProgramsVacanciesMappings = [
 ];
 
 const PaymentMappings = [
+  { back: '_ofm_organization_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
   { back: '_ofm_facility_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
   { back: 'ccof_facilityid', front: 'facilityId' },
   { back: 'ccof_facilitylicencenumber', front: 'licenceNumber' },

@@ -1,13 +1,12 @@
 import ApiService from '@/common/apiService';
+import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
-  async getPayments(organizationId, programYearId) {
+  async getPayments(query) {
     try {
-      if (!organizationId || !programYearId) return [];
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.PAYMENTS}?organizationId=${organizationId}&programYearId=${programYearId}`,
-      );
+      if (!query?.organizationId) return false;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.PAYMENTS}${buildQueryString(query)}`);
       return response?.data;
     } catch (error) {
       console.log(`Failed to get payment records - ${error}`);
