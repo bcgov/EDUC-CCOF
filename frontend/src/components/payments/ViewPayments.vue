@@ -89,10 +89,12 @@ export default {
           organizationId: this.organizationId,
           programYearId: this.programYearId,
         });
-        this.payments = payments.filter((payment) => payment.paymentAmount !== 0);
-        this.payments.forEach((payment) => {
-          payment.paymentPeriod = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
-        });
+        this.payments = payments
+          .filter((payment) => payment.paymentAmount !== 0)
+          .map((payment) => ({
+            ...payment,
+            paymentPeriod: `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`,
+          }));
         this.sortPayments();
       } catch {
         this.setFailureAlert('Failed to load Payments');
