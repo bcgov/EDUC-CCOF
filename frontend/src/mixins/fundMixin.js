@@ -1,3 +1,18 @@
+import { isEmpty } from 'lodash';
+import { mapActions, mapState } from 'pinia';
+
+import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
+import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useFundingStore } from '@/store/ccof/funding.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useNavBarStore } from '@/store/navBar.js';
+import { useReportChangesStore } from '@/store/reportChanges.js';
+import { isNullOrBlank } from '@/utils/common.js';
 import {
   CHANGE_TYPES,
   ERROR_MESSAGES,
@@ -5,22 +20,7 @@ import {
   GROUP_LICENCE_CATEGORIES,
   ORGANIZATION_PROVIDER_TYPES,
 } from '@/utils/constants.js';
-import { mapActions, mapState } from 'pinia';
-
-import AppTimeInput from '@/components/guiComponents/AppTimeInput.vue';
-import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
-import ApplicationService from '@/services/applicationService';
-import NavButton from '@/components/util/NavButton.vue';
-import alertMixin from '@/mixins/alertMixin.js';
-import { isEmpty } from 'lodash';
-import { isNullOrBlank } from '@/utils/common.js';
 import rules from '@/utils/rules.js';
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { useFundingStore } from '@/store/ccof/funding.js';
-import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useReportChangesStore } from '@/store/reportChanges.js';
 
 export default {
   components: { AppTimeInput, AppTooltip, NavButton },
@@ -133,15 +133,6 @@ export default {
     this.ERROR_MESSAGES = ERROR_MESSAGES;
     this.FAMILY_LICENCE_CATEGORIES = FAMILY_LICENCE_CATEGORIES;
   },
-  watch: {
-    preschoolSessionsTotal: {
-      immediate: true,
-      handler(val) {
-        if (!this.fundingModel) return;
-        this.fundingModel.preschoolSessionsTotal = val;
-      },
-    },
-  },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
     ...mapActions(useFundingStore, ['saveFunding', 'loadFunding', 'fundingId', 'setFundingModel', 'addModelToStore']),
@@ -170,6 +161,7 @@ export default {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
         this.fundingModel.isCCOFComplete = this.isFormComplete;
+        this.fundingModel.preschoolSessionsTotal = this.preschoolSessionsTotal;
         this.setNavBarFundingComplete({
           fundingId: this.$route.params.urlGuid,
           complete: this.fundingModel.isCCOFComplete,
