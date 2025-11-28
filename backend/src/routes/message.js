@@ -15,7 +15,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Add with User security
+  // TODO #securitymatrix Validate that the user has a role
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -30,7 +30,7 @@ router.put(
   '/:messageId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Add with User security
+  // TODO #securitymatrix Validate that the user has a role
   [param('messageId', 'URL param: [messageId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();

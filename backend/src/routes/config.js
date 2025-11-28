@@ -9,7 +9,7 @@ router.get(
   '/lookup',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Add with Usre security
+  // TODO #securitymatrix Validate that the user has a role
   (req, res) => {
     getLookupInfo(req, res);
   },
