@@ -528,10 +528,35 @@ describe('<LandingPage />', () => {
         reportChanges: {
           changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
         },
-        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR] }),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR, PERMISSIONS.ORGANIZATION_CHANGE] }),
       });
 
       checkButtonAndNavigate('Update change request', expectedPath);
+    });
+
+    it('should not render `Update change request` button without proper permissions', () => {
+      const perms = Object.values(PERMISSIONS).filter(
+        (permission) =>
+          permission !== PERMISSIONS.MTFI &&
+          permission !== PERMISSIONS.ORGANIZATION_CHANGE &&
+          permission !== PERMISSIONS.ADD_NEW_FACILITY &&
+          permission !== PERMISSIONS.LICENCE_CHANGE &&
+          permission !== PERMISSIONS.OTHER_CHANGES,
+      );
+
+      mountWithPinia({
+        application: {
+          applicationType: APPLICATION_TYPES.RENEWAL,
+        },
+        organization: {
+          organizationAccountNumber,
+        },
+        reportChanges: {
+          changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
+        },
+        ...createAuthStore({}, { permissions: perms }),
+      });
+      cy.contains('button', 'Update change request').should('not.exist');
     });
   });
 
