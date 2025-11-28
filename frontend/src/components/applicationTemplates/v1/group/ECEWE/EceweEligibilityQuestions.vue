@@ -18,7 +18,7 @@
           <p class="pa-2">Are you a public sector employer, as defined in the Public Sector Employers Act?</p>
           <v-radio-group v-model="model.publicSector" :disabled="isReadOnly" :rules="rules.required">
             <v-radio label="Yes" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES" />
-            <v-radio label="No" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO" @click="model.applicableSector = null" />
+            <v-radio label="No" :value="ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO" />
           </v-radio-group>
         </v-card>
 
