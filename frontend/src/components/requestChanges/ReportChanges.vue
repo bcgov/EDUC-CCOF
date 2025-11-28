@@ -239,7 +239,6 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { isFacilityAvailable } from '@/utils/common.js';
 import { CHANGE_TYPES, changeUrl, changeUrlGuid, ORGANIZATION_PROVIDER_TYPES, PATHS } from '@/utils/constants.js';
 import { formatFiscalYearName, formatUTCDateToLocal } from '@/utils/format';
-import { get } from 'lodash';
 
 export default {
   name: 'ReportChange',
