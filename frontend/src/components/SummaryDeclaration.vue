@@ -56,7 +56,7 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         />
         <v-expansion-panels v-else multiple>
-          <v-expansion-panel v-if="!isRenewal && !isChangeRequest" value="organization-summary">
+          <v-expansion-panel v-if="showOrganizationSummary" value="organization-summary">
             <OrganizationSummary />
           </v-expansion-panel>
           <v-expansion-panel value="facility-information-summary">
@@ -495,8 +495,7 @@ export default {
       const isChangeNotificationFormComplete =
         !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
       const isOrganizationComplete =
-        this.isRenewal ||
-        this.isChangeRequest ||
+        !this.showOrganizationSummary ||
         ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.applicationTemplateVersion);
       const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
         this.summaryModel?.ecewe,
@@ -519,6 +518,9 @@ export default {
         !this.model.orgContactName ||
         !this.isApplicationFormComplete
       );
+    },
+    showOrganizationSummary() {
+      return !this.isRenewal && !this.isChangeRequest;
     },
   },
   async created() {
