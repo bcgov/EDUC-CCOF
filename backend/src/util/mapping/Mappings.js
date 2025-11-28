@@ -856,6 +856,23 @@ const ProgramsVacanciesMappings = [
   { back: 'modifiedon', front: 'updatedOn' },
 ];
 
+const PaymentMappings = [
+  { back: '_ofm_organization_value', front: 'organizationId' },
+  { back: '_ccof_program_year_value', front: 'programYearId' },
+  { back: '_ofm_facility_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_facilityid', front: 'facilityId' },
+  { back: 'ccof_facilitylicencenumber', front: 'licenceNumber' },
+  { back: 'ccof_month', front: 'paymentMonth' },
+  { back: 'ccof_year', front: 'paymentYear' },
+  { back: 'ofm_payment_type@OData.Community.Display.V1.FormattedValue', front: 'fundingTypeText' },
+  { back: 'ccof_base_or_adjustment@OData.Community.Display.V1.FormattedValue', front: 'reportTypeText' },
+  { back: 'ofm_amount', front: 'paymentAmount' },
+  { back: 'ofm_invoice_received_date', front: 'paidDate' },
+  { back: 'ofm_invoice_date', front: 'approvedDate' },
+  { back: 'statuscode', front: 'paymentStatusCode' },
+  { back: 'ofm_invoice_number', front: 'invoiceNumber' },
+];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -906,4 +923,5 @@ module.exports = {
   UserProfileMappings,
   ContactFacilityMappings,
   ProgramsVacanciesMappings,
+  PaymentMappings,
 };
