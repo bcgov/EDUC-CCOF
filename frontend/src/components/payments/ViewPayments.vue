@@ -2,10 +2,98 @@
   <v-container class="pa-2 text-body-1" fluid>
     <p class="mb-4">View and manage the payment records of your organization.</p>
 
+    <div class="mb-8">
+      <v-row dense>
+        <v-col cols="12" md="6" class="custom-vcol">
+          <p>Select fiscal year:</p>
+          <FiscalYearSlider
+            :always-display="true"
+            :readonly="isLoading"
+            class="flex-grow-1"
+            @select-program-year="selectProgramYear"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6" class="custom-vcol">
+          <p>Month of service:</p>
+          <AppMultiSelectInput
+            v-model.lazy="selectedPaymentMonths"
+            :loading="isLoading"
+            :disabled="isLoading"
+            :items="allPaymentsMonths"
+            item-title="label"
+            item-value="value"
+            label="Month of service"
+            hide-details
+            clearable
+            class="flex-grow-1"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6" class="custom-vcol">
+          <p>Facility name:</p>
+          <AppMultiSelectInput
+            v-model.lazy="selectedFacilities"
+            :loading="isLoading"
+            :disabled="isLoading"
+            :items="facilityList"
+            item-value="facilityId"
+            item-title="facilityName"
+            label="Facility name"
+            clearable
+            hide-details
+            class="flex-grow-1"
+          />
+        </v-col>
+
+        <v-col cols="12" md="6" class="custom-vcol">
+          <p>Funding type:</p>
+          <AppMultiSelectInput
+            v-model.lazy="selectedFundingTypes"
+            :loading="isLoading"
+            :disabled="isLoading"
+            :items="allFundingTypes"
+            item-value="value"
+            item-title="label"
+            label="Funding type"
+            clearable
+            hide-details
+            class="flex-grow-1"
+          />
+        </v-col>
+
+        <v-col cols="12" md="4" class="d-flex flex-column flex-md-row align-md-center mb-4 mr-md-4">
+          <p class="font-weight-bold mb-1 mb-md-0 mr-md-4" style="min-width: 150px">Invoice number:</p>
+          <v-text-field
+            v-model="invoiceNumberSearch"
+            label="Invoice number"
+            clearable
+            hide-details
+            class="flex-grow-1"
+          />
+        </v-col>
+
+        <v-spacer />
+
+        <v-col cols="12" md="6" class="custom-vcol">
+          <p>Select paid date(s):</p>
+          <div class="d-flex flex-column flex-md-row flex-grow-1">
+            <AppDateInput
+              v-model="paidStartDate"
+              hide-details
+              placeholder="Paid Start Date"
+              :label="null"
+              class="flex-1 mr-md-2 mb-2 mb-md-0"
+            />
+            <AppDateInput v-model="paidEndDate" hide-details placeholder="Paid End Date" :label="null" class="flex-1" />
+          </div>
+        </v-col>
+      </v-row>
+    </div>
     <v-skeleton-loader :loading="isLoading" type="table-tbody">
       <v-data-table
         :headers="paymentTableHeaders"
-        :items="payments"
+        :items="filteredPayments"
         :items-per-page="20"
         :items-per-page-options="[10, 20, 50]"
         :mobile="null"
@@ -37,12 +125,19 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
+import moment from 'moment';
 import { mapState } from 'pinia';
+
+import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
+import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 
 import PaymentService from '@/services/paymentService.js';
 
+import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
@@ -51,14 +146,22 @@ import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/
 
 export default {
   name: 'ViewPayments',
+  components: { AppDateInput, AppMultiSelectInput, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
       payments: [],
+      selectedFacilities: [],
+      selectedFundingTypes: [],
+      selectedPaymentMonths: [],
+      selectedProgramYear: null,
+      invoiceNumberSearch: '',
+      paidStartDate: null,
+      paidEndDate: null,
       paymentTableHeaders: [
         { title: 'Facility Name', sortable: true, value: 'facilityName' },
-        { title: 'Facility ID', sortable: true, value: 'facilityId' },
+        { title: 'Facility ID', sortable: true, value: 'facilityAccountNumber' },
         { title: 'Licence Number', sortable: true, value: 'licenceNumber' },
         { title: 'Month of Service', sortable: true, value: 'paymentPeriod', width: '200px' },
         { title: 'Funding Type', sortable: true, value: 'fundingTypeText' },
@@ -72,35 +175,126 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useOrganizationStore, ['organizationId']),
-    ...mapState(useApplicationStore, ['programYearId']),
+    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+
+    facilityList() {
+      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      return facilityList;
+    },
+
+    allPaymentsMonths() {
+      const reportingPaymentMonths = [];
+      const programYear = this.lookupInfo?.programYear?.list?.find(
+        (year) => year.programYearId === this.selectedProgramYearId,
+      );
+      const startYear = moment(programYear?.intakeStart).year();
+      const endYear = moment(programYear?.intakeEnd).year();
+      for (let month = 4; month < 13; month++) {
+        reportingPaymentMonths.push({
+          label: `${formatMonthYearToString(month, startYear)}`,
+          value: {
+            month: month,
+            year: startYear,
+          },
+        });
+      }
+      for (let month = 1; month < 4; month++) {
+        reportingPaymentMonths.push({
+          label: `${formatMonthYearToString(month, endYear)}`,
+          value: {
+            month: month,
+            year: endYear,
+          },
+        });
+      }
+      return reportingPaymentMonths;
+    },
+
+    selectedProgramYearId() {
+      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.programYearId;
+    },
+
+    allFundingTypes() {
+      const fundingSet = new Set(this.payments.map((p) => p.fundingTypeText));
+      return Array.from(fundingSet).map((f) => ({ label: f, value: f }));
+    },
+
+    filteredPayments() {
+      if (isEmpty(this.payments)) return [];
+
+      return this.payments.filter((payment) => {
+        const isMonthSelected = this.selectedPaymentMonths?.some(
+          (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
+        );
+
+        const isFacilitySelected = this.selectedFacilities?.includes(payment.facilityId);
+
+        const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
+
+        const invoiceMatch = payment.invoiceNumber?.toLowerCase().includes(this.invoiceNumberSearch.toLowerCase());
+
+        const paidStartMatch = !this.paidStartDate || new Date(payment.paidDate) >= new Date(this.paidStartDate);
+
+        const paidEndMatch = !this.paidEndDate || new Date(payment.paidDate) <= new Date(this.paidEndDate);
+
+        return (
+          isMonthSelected && isFacilitySelected && fundingSelected && invoiceMatch && paidStartMatch && paidEndMatch
+        );
+      });
+    },
   },
+
+  watch: {
+    selectedProgramYearId: {
+      async handler() {
+        await this.loadData();
+      },
+    },
+  },
+
   async created() {
-    await this.loadPayments();
+    await this.loadData();
   },
+
   methods: {
     formatCurrency,
     formatMonthYearToString,
     formatUTCDate,
+    async loadData() {
+      this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
+      this.selectedPaymentMonths = this.allPaymentsMonths?.map((report) => report.value);
+      await this.loadPayments();
+      this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
+    },
+
     async loadPayments() {
       try {
         this.isLoading = true;
-        let payments = await PaymentService.getPayments({
-          organizationId: this.organizationId,
-          programYearId: this.programYearId,
+        this.payments = (
+          await PaymentService.getPayments({
+            organizationId: this.organizationId,
+            programYearId: this.selectedProgramYearId,
+          })
+        ).filter((payment) => payment.paymentAmount !== 0);
+
+        this.payments.forEach((payment) => {
+          const facility = this.facilityList?.find((item) => item.facilityId === payment.facilityId);
+          payment.facilityAccountNumber = facility?.facilityAccountNumber;
+          payment.facilityName = facility?.facilityName;
+          payment.paymentPeriod = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
         });
-        this.payments = payments
-          .filter((payment) => payment.paymentAmount !== 0)
-          .map((payment) => ({
-            ...payment,
-            paymentPeriod: `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`,
-          }));
         this.sortPayments();
       } catch {
         this.setFailureAlert('Failed to load Payments');
       } finally {
         this.isLoading = false;
       }
+    },
+
+    selectProgramYear(programYear) {
+      this.selectedProgramYear = programYear;
     },
 
     getDisplayStatus(statusCode) {
@@ -153,3 +347,27 @@ export default {
   },
 };
 </script>
+<style scoped>
+.custom-vcol {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.custom-vcol p {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  min-width: 150px;
+}
+
+@media (min-width: 960px) {
+  .custom-vcol {
+    flex-direction: row;
+    align-items: center;
+  }
+  .custom-vcol p {
+    margin-bottom: 0;
+    margin-right: 1rem;
+  }
+}
+</style>
