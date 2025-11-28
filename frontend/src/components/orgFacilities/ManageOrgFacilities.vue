@@ -23,6 +23,7 @@
               Funding Agreement
             </v-tab>
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facilities-tab">Facilities</v-tab>
+            <!-- TODO: Add permissions here to secure this tab-->
             <v-tab value="payments-tab">Payment Information</v-tab>
           </v-tabs>
           <v-card-text>

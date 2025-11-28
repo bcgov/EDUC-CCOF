@@ -11,6 +11,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  // TODO: Add permission checks here.
   oneOf([query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('programYearId').notEmpty().isUUID(UUID_VALIDATOR_VERSION)], {
     message: 'URL query: [organizationId or programYearId] is required',
   }),

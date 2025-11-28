@@ -5,7 +5,7 @@
     <v-skeleton-loader :loading="isLoading" type="table-tbody">
       <v-data-table
         :headers="paymentTableHeaders"
-        :items="displayedPayments"
+        :items="payments"
         :items-per-page="20"
         :items-per-page-options="[10, 20, 50]"
         :mobile="null"
@@ -74,10 +74,6 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useApplicationStore, ['programYearId']),
-
-    displayedPayments() {
-      return this.payments.filter((payment) => payment.paymentAmount !== 0);
-    },
   },
   async created() {
     await this.loadPayments();
@@ -89,10 +85,11 @@ export default {
     async loadPayments() {
       try {
         this.isLoading = true;
-        this.payments = await PaymentService.getPayments({
+        let payments = await PaymentService.getPayments({
           organizationId: this.organizationId,
           programYearId: this.programYearId,
         });
+        this.payments = payments.filter((payment) => payment.paymentAmount !== 0);
         this.payments.forEach((payment) => {
           payment.paymentPeriod = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
         });
