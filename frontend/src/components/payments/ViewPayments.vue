@@ -4,7 +4,7 @@
 
     <div class="mb-8">
       <v-row dense>
-        <v-col cols="12" md="6" class="custom-vcol">
+        <v-col cols="12" md="5" class="custom-vcol">
           <p>Select fiscal year:</p>
           <FiscalYearSlider
             :always-display="true"
@@ -185,14 +185,14 @@ export default {
     },
 
     allPaymentsMonths() {
-      const reportingPaymentMonths = [];
+      const availablePaymentMonths = [];
       const programYear = this.lookupInfo?.programYear?.list?.find(
         (year) => year.programYearId === this.selectedProgramYearId,
       );
       const startYear = moment(programYear?.intakeStart).year();
       const endYear = moment(programYear?.intakeEnd).year();
       for (let month = 4; month < 13; month++) {
-        reportingPaymentMonths.push({
+        availablePaymentMonths.push({
           label: `${formatMonthYearToString(month, startYear)}`,
           value: {
             month: month,
@@ -201,7 +201,7 @@ export default {
         });
       }
       for (let month = 1; month < 4; month++) {
-        reportingPaymentMonths.push({
+        availablePaymentMonths.push({
           label: `${formatMonthYearToString(month, endYear)}`,
           value: {
             month: month,
@@ -209,7 +209,7 @@ export default {
           },
         });
       }
-      return reportingPaymentMonths;
+      return availablePaymentMonths;
     },
 
     selectedProgramYearId() {
