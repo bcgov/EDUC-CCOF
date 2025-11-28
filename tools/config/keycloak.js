@@ -69,6 +69,34 @@ function getKcBaseClientMap(envVars) {
     publicClient: false,
     protocolMappers: [
       {
+        name: "guid",
+        protocol: "openid-connect",
+        protocolMapper: "oidc-usermodel-attribute-mapper",
+        consentRequired: false,
+        config: {
+          "user.attribute": "guid",
+          "id.token.claim": true,
+          "access.token.claim": true,
+          "claim.name": "guid",
+          "jsonType.label": "String",
+          "userinfo.token.claim": true,
+        },
+      },
+      {
+        name: "identity_provider",
+        protocol: "openid-connect",
+        protocolMapper: "oidc-usermodel-attribute-mapper",
+        consentRequired: false,
+        config: {
+          "user.attribute": "identity_provider",
+          "id.token.claim": true,
+          "access.token.claim": true,
+          "claim.name": "identity_provider",
+          "jsonType.label": "String",
+          "userinfo.token.claim": true,
+        },
+      },
+      {
         name: "idir_username",
         protocol: "openid-connect",
         protocolMapper: "oidc-usermodel-attribute-mapper",
