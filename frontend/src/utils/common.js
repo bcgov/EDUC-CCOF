@@ -5,11 +5,7 @@ import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
 
-import {
-  OPT_STATUSES,
-  ORGANIZATION_TYPES,
-  PATHS,
-} from '@/utils/constants.js';
+import { OLD_TO_NEW_CC_CATEGORY_LABEL_MAP, OPT_STATUSES, ORGANIZATION_TYPES, PATHS } from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
@@ -282,4 +278,14 @@ export function multiplyDecimal(a, b, decimals = 4) {
   const safeA = a || 0;
   const safeB = b || 0;
   return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+// Starting from 2024/25 onward, the Ministry updated the childcare category labels for OOSC-K and OOSC-G,
+// but we cannot modify them in CMS because historical applications must retain their original values.
+// This helper updates the childcare category labels to reflect the new business naming.
+export function replaceChildCareLabel(childCareTypes = []) {
+  return childCareTypes.map((category) => ({
+    ...category,
+    childCareCategory: OLD_TO_NEW_CC_CATEGORY_LABEL_MAP[category.childCareCategory] ?? category.childCareCategory,
+  }));
 }
