@@ -50,12 +50,12 @@ function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
 
 describe('<ReportChanges />', () => {
   beforeEach(() => {
-    globalThis.localStorage.setItem('jwtToken', 'mocked-jwt-token');
+    cy.mockJwt();
     cy.viewport(1050, 1050);
   });
 
   afterEach(() => {
-    globalThis.localStorage.removeItem('jwtToken');
+    cy.clearJwt();
   });
 
   it('should render group provider specific column', () => {

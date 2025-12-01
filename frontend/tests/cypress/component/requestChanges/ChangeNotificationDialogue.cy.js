@@ -27,7 +27,7 @@ function interceptAPI() {
 
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub();
+    const pushStub = cy.stub().as('routerPush');
     cy.mount(ChangeNotificationDialogue, {
       global: {
         plugins: [pinia, vuetify],
@@ -38,17 +38,16 @@ function mountWithPinia(initialState = {}) {
         },
       },
     });
-    cy.wrap(pushStub).as('routerPush');
   });
 }
 
 describe('<ChangeNotificationDialogue />', () => {
   beforeEach(() => {
-    globalThis.localStorage.setItem('jwtToken', 'mocked-jwt-token');
+    cy.mockJwt();
   });
 
   afterEach(() => {
-    globalThis.localStorage.removeItem('jwtToken');
+    cy.clearJwt();
   });
   it('should render default component content', () => {
     mountWithPinia({
