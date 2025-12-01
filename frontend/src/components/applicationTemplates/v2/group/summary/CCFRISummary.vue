@@ -290,6 +290,7 @@
   </v-form>
 </template>
 <script>
+import { isEmpty } from 'lodash';
 import { isChangeRequest } from '@/utils/common.js';
 import { PATHS, pcfUrlGuid, pcfUrl, changeUrl, changeUrlGuid } from '@/utils/constants.js';
 import summaryMixin from '@/mixins/summaryMixin.js';
@@ -317,7 +318,7 @@ export default {
   },
   computed: {
     routingPath() {
-      if (!this.ccfri) {
+      if (isEmpty(this.ccfri)) {
         return isChangeRequest(this)
           ? changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid)
           : pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
