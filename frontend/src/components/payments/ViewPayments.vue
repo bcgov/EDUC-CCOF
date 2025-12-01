@@ -4,15 +4,17 @@
 
     <div class="mb-8">
       <v-row dense>
-        <v-col cols="12" md="5" class="custom-vcol">
-          <p>Select fiscal year:</p>
-          <FiscalYearSlider
-            :always-display="true"
-            :readonly="isLoading"
-            class="flex-grow-1"
-            @select-program-year="selectProgramYear"
-          />
-        </v-col>
+        <v-row no-gutters class="py-2 align-center">
+          <v-col cols="12" class="d-flex align-center flex-wrap">
+            <p class="font-weight-bold py-1 mr-2 mb-0" style="white-space: nowrap">Select fiscal year:</p>
+            <FiscalYearSlider
+              :always-display="true"
+              :readonly="isLoading"
+              class="ml-4"
+              @select-program-year="selectProgramYear"
+            />
+          </v-col>
+        </v-row>
 
         <v-col cols="12" md="6" class="custom-vcol">
           <p>Month of service:</p>
@@ -76,17 +78,26 @@
         <v-spacer />
 
         <v-col cols="12" md="6" class="custom-vcol">
-          <p>Select paid date(s):</p>
-          <div class="d-flex flex-column flex-md-row flex-grow-1">
+          <p class="d-flex flex-column flex-md-row align-md-center">
+            <span class="mr-md-2 mb-1 mb-md-0">Select paid date(s):</span>
             <AppDateInput
               v-model="paidStartDate"
               hide-details
-              placeholder="Paid Start Date"
-              :label="null"
+              placeholder="Paid start date"
+              label="Paid start date"
               class="flex-1 mr-md-2 mb-2 mb-md-0"
             />
-            <AppDateInput v-model="paidEndDate" hide-details placeholder="Paid End Date" :label="null" class="flex-1" />
-          </div>
+            <AppDateInput
+              v-model="paidEndDate"
+              hide-details
+              placeholder="Paid end date"
+              label="Paid end date"
+              class="flex-1"
+            />
+          </p>
+        </v-col>
+        <v-col cols="12" class="d-flex justify-end mt-n4">
+          <AppButton size="small" color="primary" @click="resetFilters"> Reset </AppButton>
         </v-col>
       </v-row>
     </div>
@@ -129,6 +140,7 @@ import { isEmpty } from 'lodash';
 import moment from 'moment';
 import { mapState } from 'pinia';
 
+import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDateInput from '@/components/guiComponents/AppDateInput.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -146,7 +158,7 @@ import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/
 
 export default {
   name: 'ViewPayments',
-  components: { AppDateInput, AppMultiSelectInput, FiscalYearSlider },
+  components: { AppButton, AppDateInput, AppMultiSelectInput, FiscalYearSlider },
   mixins: [alertMixin],
   data() {
     return {
@@ -180,8 +192,7 @@ export default {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
 
     facilityList() {
-      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
-      return facilityList;
+      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
 
     allPaymentsMonths() {
@@ -343,6 +354,16 @@ export default {
         // 3. Sort by fundingTypeText ASC
         return a.fundingTypeText.localeCompare(b.fundingTypeText);
       });
+    },
+
+    async resetFilters() {
+      this.selectedFacilities = this.facilityList?.map((f) => f.facilityId);
+      this.selectedPaymentMonths = this.allPaymentsMonths?.map((m) => m.value);
+      this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
+      this.invoiceNumberSearch = '';
+      this.paidStartDate = null;
+      this.paidEndDate = null;
+      await this.loadData();
     },
   },
 };
