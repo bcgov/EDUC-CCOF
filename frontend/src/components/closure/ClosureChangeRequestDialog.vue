@@ -277,7 +277,6 @@ import alertMixin from '@/mixins/alertMixin';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
-import { replaceChildCareLabel } from '@/utils/common.js';
 
 export default {
   name: 'ClosureChangeRequestDialog',
@@ -318,7 +317,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['childCareCategoryList', 'getFundingUrl', 'getProgramYearNameById']),
+    ...mapState(useAppStore, ['getProgramYearNameById', 'getFundingUrl']),
     ...mapState(useApplicationStore, ['fiscalStartAndEndDates', 'getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     title() {
@@ -440,8 +439,7 @@ export default {
     },
     async getLicenseCategories(facilityId) {
       const ageGroups = [];
-      const response = await FacilityService.getLicenseCategories(facilityId);
-      const facilityAgeGroups = replaceChildCareLabel(response);
+      const facilityAgeGroups = await FacilityService.getLicenseCategories(facilityId);
       facilityAgeGroups.forEach((ageGroup) => {
         ageGroups.push({
           label: ageGroup.childCareCategory,
