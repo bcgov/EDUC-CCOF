@@ -1,4 +1,5 @@
 import ApiService from '@/common/apiService';
+import { replaceChildCareLabel } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
@@ -6,7 +7,8 @@ export default {
     try {
       if (!facilityId) return [];
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FACILITY}/${facilityId}/licenseCategories`);
-      return response?.data;
+      // This helper updates the childcare category labels to reflect the new business naming.
+      return replaceChildCareLabel(response?.data);
     } catch (error) {
       console.log(`Failed to get facility licence categories - ${error}`);
       throw error;

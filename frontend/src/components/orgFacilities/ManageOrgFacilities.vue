@@ -23,12 +23,15 @@
               Funding Agreement
             </v-tab>
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_FACILITY_INFORMATION)" value="facilities-tab">Facilities</v-tab>
+            <!-- TODO: Add permissions here to secure this tab-->
+            <v-tab value="payments-tab">Payment Information</v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="tab">
               <v-tabs-window-item value="organization-tab"><ManageOrganization /></v-tabs-window-item>
               <v-tabs-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-tabs-window-item>
               <v-tabs-window-item value="facilities-tab"><ManageFacilities /></v-tabs-window-item>
+              <v-tabs-window-item value="payments-tab"><ViewPayments /></v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
         </v-card>
@@ -49,13 +52,14 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
 import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
+import ViewPayments from '@/components/payments/ViewPayments.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreements },
+  components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreements, ViewPayments },
   mixins: [permissionsMixin],
   data() {
     return {

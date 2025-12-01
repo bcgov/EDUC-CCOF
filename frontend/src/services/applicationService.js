@@ -359,14 +359,16 @@ export default {
     );
   },
   hasValidLicenceCategory(funding) {
+    const isValidCategory = (selected, count) => !selected || Number(count) > 0;
     return (
       funding?.maxLicensesCapacity > 0 &&
-      ((funding?.hasUnder36Months && funding?.maxGroupChildCareUnder36 > 0) ||
-        (funding?.has30MonthToSchoolAge && funding?.maxGroupChildCare36 > 0) ||
-        (funding?.hasSchoolAge && funding?.maxGroupChildCareSchool > 0) ||
-        (funding?.hasSchoolAgeCareOnSchoolGrounds && funding?.maxSchoolAgeCareOnSchoolGrounds > 0) ||
-        (funding?.hasPreschool && funding?.maxPreschool > 0) ||
-        (funding?.hasMultiAge && funding?.maxGroupChildCareMultiAge > 0))
+      this.hasLicenceCategory(funding) &&
+      isValidCategory(funding?.hasUnder36Months, funding?.maxGroupChildCareUnder36) &&
+      isValidCategory(funding?.has30MonthToSchoolAge, funding?.maxGroupChildCare36) &&
+      isValidCategory(funding?.hasSchoolAge, funding?.maxGroupChildCareSchool) &&
+      isValidCategory(funding?.hasSchoolAgeCareOnSchoolGrounds, funding?.maxSchoolAgeCareOnSchoolGrounds) &&
+      isValidCategory(funding?.hasPreschool, funding?.maxPreschool) &&
+      isValidCategory(funding?.hasMultiAge, funding?.maxGroupChildCareMultiAge)
     );
   },
   hasSchoolAgeCareLicenceCategory(funding) {
