@@ -11,6 +11,7 @@ import {
   APPLICATION_TYPES,
   CCOF_STATUS,
   LICENCE_STATUSES,
+  OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
@@ -320,13 +321,9 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
 // but we cannot modify them in CMS because historical applications must retain their original values.
 // This helper updates the childcare category labels to reflect the new business naming.
 export function replaceChildCareLabel(childCareTypes = []) {
-  const categoryLabelMap = {
-    'Out of School Care - Kindergarten': 'Kindergarten',
-    'Out of School Care - Grade 1+': 'Grade 1 to Age 12',
-  };
   return childCareTypes.map((category) => ({
     ...category,
-    childCareCategory: categoryLabelMap[category.childCareCategory] ?? category.childCareCategory,
+    childCareCategory: OLD_TO_NEW_CC_CATEGORY_LABEL_MAP[category.childCareCategory] ?? category.childCareCategory,
   }));
 }
 

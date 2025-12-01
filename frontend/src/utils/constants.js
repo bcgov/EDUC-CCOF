@@ -522,6 +522,11 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   Preschool: 100000005,
 });
 
+export const OLD_TO_NEW_CC_CATEGORY_LABEL_MAP = Object.freeze({
+  'Out of School Care - Kindergarten': 'Kindergarten',
+  'Out of School Care - Grade 1+': 'Grade 1 to Age 12',
+});
+
 export const CLOSURE_TYPES = Object.freeze({
   KNOWN_CLOSURES: 100000000,
   EMERGENCY_CLOSURES: 100000001,
