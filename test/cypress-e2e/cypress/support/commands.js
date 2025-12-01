@@ -280,7 +280,19 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
 });
 
 Cypress.Commands.add('runCcofApp', (appType) => {
-  ccofApp.loadFixturesAndVariables()
+  cy.task('countFiles', 'cypress/fixtures/ccof-data').then((files) => {
+    files.forEach(file => {
+      cy.log(file)
+      ccofApp.loadFixturesAndVariables(file)
+      cy.then(()=> {
+        ccofApp.validateGroupUrl(appType)
+        ccofApp.inputOrganizationInfo(appType)
+        ccofApp.inputFacilityInfo(appType)
+        ccofApp.licenceAndServiceDeliveryDetails(appType)
+      })
+    })
+  })
+  // ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
     ccofApp.inputOrganizationInfo(appType)

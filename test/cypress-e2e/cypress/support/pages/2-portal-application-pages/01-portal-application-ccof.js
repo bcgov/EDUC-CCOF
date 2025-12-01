@@ -2,16 +2,16 @@ import 'cypress-file-upload';
 import fs from 'fs';
 
 class CcofApplication {
-  loadFixtures() {
-    return cy.fixture('/ccof-data/ccofData').then((data) => {
+  loadFixtures(file) {
+    return cy.fixture(`/ccof-data/${file}`).then((data) => {
       this.orgData = data.orgData
       this.facilityData = data.facilityData
       this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
     })
   }
   
-  loadFixturesAndVariables() {
-    this.loadFixtures()
+  loadFixturesAndVariables(file) {
+    this.loadFixtures(file)
     cy.then(()=> {
       this.orgType = this.orgData.typeOfOrganization
       this.orgInfo = this.orgData.orgInfo
@@ -365,7 +365,7 @@ class CcofApplication {
 
   licenceUpload() {
     cy.contains('Licence Upload')
-    const fileName = '/ccof-data/Sample500kb.pdf';
+    const fileName = '/ccof-data/licence-files/Sample500kb.pdf';
     cy.get('input[placeholder="Select your file"]')
       .attachFile(fileName)
     cy.contains('div', 'Sample500kb.pdf')
