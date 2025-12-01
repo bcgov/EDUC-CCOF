@@ -1,8 +1,9 @@
 import 'cypress-file-upload';
+import fs from 'fs';
 
 class CcofApplication {
   loadFixtures() {
-    return cy.fixture('ccofData').then((data) => {
+    return cy.fixture('/ccof-data/ccofData').then((data) => {
       this.orgData = data.orgData
       this.facilityData = data.facilityData
       this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
@@ -364,10 +365,10 @@ class CcofApplication {
 
   licenceUpload() {
     cy.contains('Licence Upload')
-    const fileName = 'Sample500kb.pdf';
+    const fileName = '/ccof-data/Sample500kb.pdf';
     cy.get('input[placeholder="Select your file"]')
       .attachFile(fileName)
-    cy.contains('div', fileName)
+    cy.contains('div', 'Sample500kb.pdf')
     cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
       cy.contains('button', 'Save').should('have.class', 'blueButton')
       .clickByText('Save')

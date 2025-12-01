@@ -8,7 +8,7 @@ function handleCardWithin(card, data) {
 
 class CcfriApplication{
     loadFixtures() {
-        return cy.fixture('ccfriData').then((data)=> {
+        return cy.fixture('/ccfri-data/ccfriData').then((data)=> {
             this.optInOrOut = data.optInOrOut
             this.parentFees = data.parentFees
             this.closures = data.closures

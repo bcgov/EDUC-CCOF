@@ -8,7 +8,7 @@ function allFacilitiesUnionized(attr, data) {
 
 class EceWeApplication {
     loadFixtures() {
-        return cy.fixture('eceweData').then((data)=> {
+        return cy.fixture('/ecewe-data/eceweData').then((data)=> {
             this.cssea = data.cssea
             this.publicSectorEmployer = data.publicSectorEmployer
             this.optInOrOut = data.optInOrOut
