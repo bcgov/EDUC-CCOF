@@ -873,9 +873,7 @@
             </v-radio-group>
             <p>
               As outlined in the
-              <a href="https://www2.gov.bc.ca/assets/download/3013BFFE26E24901A2EE764FC17FD05E" target="_blank">
-                Funding Guidelines</a
-              >, this may include:
+              <a :href="fundingUrl" target="_blank"> Funding Guidelines</a>, this may include:
             </p>
 
             <ul class="ml-10">
