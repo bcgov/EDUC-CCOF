@@ -16,7 +16,7 @@
           </v-col>
         </v-row>
 
-        <v-col cols="12" md="6" class="custom-vcol">
+        <v-col cols="12" md="5" class="custom-vcol">
           <p>Month of service:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedPaymentMonths"
@@ -32,7 +32,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="6" class="custom-vcol">
+        <v-col cols="12" md="7" class="custom-vcol">
           <p>Facility name:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedFacilities"
@@ -45,10 +45,11 @@
             clearable
             hide-details
             class="flex-grow-1"
+            style="max-width: 600px"
           />
         </v-col>
 
-        <v-col cols="12" md="6" class="custom-vcol">
+        <v-col cols="12" md="5" class="custom-vcol">
           <p>Funding type:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedFundingTypes"
@@ -64,11 +65,12 @@
           />
         </v-col>
 
-        <v-col cols="12" md="4" class="d-flex flex-column flex-md-row align-md-center mb-4 mr-md-4">
+        <v-col cols="12" md="5" class="d-flex flex-column flex-md-row align-md-center mb-4 mr-md-4">
           <p class="font-weight-bold mb-1 mb-md-0 mr-md-4" style="min-width: 150px">Invoice number:</p>
           <v-text-field
             v-model="invoiceNumberSearch"
             label="Invoice number"
+            variant="outlined"
             clearable
             hide-details
             class="flex-grow-1"
@@ -77,7 +79,7 @@
 
         <v-spacer />
 
-        <v-col cols="12" md="6" class="custom-vcol">
+        <v-col cols="12" md="5" class="custom-vcol">
           <p class="d-flex flex-column flex-md-row align-md-center">
             <span class="mr-md-2 mb-1 mb-md-0">Select paid date(s):</span>
             <AppDateInput
@@ -192,6 +194,7 @@ export default {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
 
     facilityList() {
+      //TODO add permissions for facility
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
 
@@ -363,7 +366,6 @@ export default {
       this.invoiceNumberSearch = '';
       this.paidStartDate = null;
       this.paidEndDate = null;
-      await this.loadData();
     },
   },
 };
