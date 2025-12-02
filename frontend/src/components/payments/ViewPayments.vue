@@ -249,7 +249,9 @@ export default {
 
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
 
-        const invoiceMatch = payment.invoiceNumber?.toLowerCase().includes(this.invoiceNumberSearch.toLowerCase());
+        const invoiceMatch = payment.invoiceNumber
+          .toLowerCase()
+          .includes((this.invoiceNumberSearch || '').toLowerCase());
 
         const paidStartMatch = !this.paidStartDate || new Date(payment.paidDate) >= new Date(this.paidStartDate);
 
