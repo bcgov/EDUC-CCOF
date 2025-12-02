@@ -10,12 +10,7 @@
         />
         <v-card class="my-8 pa-8 pb-4">
           <p>Has your banking information changed?</p>
-          <v-radio-group
-            v-model="hasBankingInfoChanged"
-            inline
-            :disabled="hasActiveChangeRequest"
-            :rules="rules.required"
-          >
+          <v-radio-group v-model="hasBankingInfoChanged" inline :disabled="readonly" :rules="rules.required">
             <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
             <v-radio label="No" :value="YES_NO_VALUES.NO" />
           </v-radio-group>
@@ -93,7 +88,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
+    ...mapState(useAppStore, ['renewalYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationId',
       'isApplicationProcessing',

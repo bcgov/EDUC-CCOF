@@ -128,7 +128,6 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import LicenceService from '@/services/licenceService.js';
-import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -152,16 +151,11 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['programYearList', 'renewalYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationId',
-      'applicationMap',
-      'applicationStatus',
-      'applicationType',
       'formattedProgramYear',
       'isApplicationProcessing',
       'isApplicationSubmitted',
-      'latestProgramYearId',
       'renewalApplicationCCOF',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
@@ -174,6 +168,7 @@ export default {
         this.readonly || !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed
       );
     },
+    // TODO (viele-cgi) - update this computed to only show licence active in FA periods
     licenceToDisplay() {
       return [this.licences.find((l) => !l.recordEndDate) || this.licences[0]];
     },
@@ -239,10 +234,10 @@ export default {
           isFundingAgreementConfirmed: this.isFundingAgreementConfirmed,
           areLicenceDetailsConfirmed: this.areLicenceDetailsConfirmed,
         };
-        const hasChanges =
+        if (
           this.renewalApplicationCCOF.isFundingAgreementConfirmed !== payload.isFundingAgreementConfirmed ||
-          this.renewalApplicationCCOF.areLicenceDetailsConfirmed !== payload.areLicenceDetailsConfirmed;
-        if (hasChanges) {
+          this.renewalApplicationCCOF.areLicenceDetailsConfirmed !== payload.areLicenceDetailsConfirmed
+        ) {
           Object.assign(this.renewalApplicationCCOF, payload);
           await ApplicationService.updateApplication(this.applicationId, payload);
         }

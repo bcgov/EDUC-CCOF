@@ -330,6 +330,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -342,7 +343,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        permission: [PERMISSIONS.CREATE_RENEWAL_PCF],
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
