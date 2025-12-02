@@ -65,8 +65,8 @@
           />
         </v-col>
 
-        <v-col cols="12" md="5" class="d-flex flex-column flex-md-row align-md-center mb-4 mr-md-4">
-          <p class="font-weight-bold mb-1 mb-md-0 mr-md-4" style="min-width: 150px">Invoice number:</p>
+        <v-col cols="12" md="5" class="custom-vcol">
+          <p>Invoice number:</p>
           <v-text-field
             v-model="invoiceNumberSearch"
             label="Invoice number"
@@ -80,23 +80,21 @@
         <v-spacer />
 
         <v-col cols="12" md="5" class="custom-vcol">
-          <p class="d-flex flex-column flex-md-row align-md-center">
-            <span class="mr-md-2 mb-1 mb-md-0">Select paid date(s):</span>
-            <AppDateInput
-              v-model="paidStartDate"
-              hide-details
-              placeholder="Paid start date"
-              label="Paid start date"
-              class="flex-1 mr-md-2 mb-2 mb-md-0"
-            />
-            <AppDateInput
-              v-model="paidEndDate"
-              hide-details
-              placeholder="Paid end date"
-              label="Paid end date"
-              class="flex-1"
-            />
-          </p>
+          <p class="mr-md-2">Select paid date(s):</p>
+          <AppDateInput
+            v-model="paidStartDate"
+            hide-details
+            placeholder="Paid start date"
+            label="Paid start date"
+            class="flex-1 mr-md-2 mb-2 mb-md-0"
+          />
+          <AppDateInput
+            v-model="paidEndDate"
+            hide-details
+            placeholder="Paid end date"
+            label="Paid end date"
+            class="flex-1"
+          />
         </v-col>
         <v-col cols="12" class="d-flex justify-end mt-n4">
           <AppButton size="small" color="primary" @click="resetFilters"> Reset </AppButton>
