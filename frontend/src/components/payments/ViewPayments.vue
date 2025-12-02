@@ -29,7 +29,6 @@
             hide-details
             clearable
             class="flex-grow-1"
-            style="max-width: 400px"
           />
         </v-col>
 
@@ -64,7 +63,6 @@
             clearable
             hide-details
             class="flex-grow-1"
-            style="max-width: 400px"
           />
         </v-col>
 
@@ -82,23 +80,28 @@
 
         <v-spacer />
 
-        <v-col cols="12" md="5" class="custom-vcol">
-          <p class="mr-md-2">Select paid date(s):</p>
-          <AppDateInput
-            v-model="paidStartDate"
-            hide-details
-            placeholder="Paid start date"
-            label="Paid start date"
-            class="mr-md-2 mb-2 mb-md-0"
-            style="max-width: 200px"
-          />
-          <AppDateInput
-            v-model="paidEndDate"
-            hide-details
-            placeholder="Paid end date"
-            label="Paid end date"
-            style="max-width: 200px"
-          />
+        <v-col cols="12" lg="5" class="custom-vcol">
+          <p class="mr-lg-2">Select paid date(s):</p>
+          <v-row dense no-gutters>
+            <v-col cols="12" md="6" class="pr-md-2 mb-2 mb-md-0">
+              <AppDateInput
+                v-model="paidStartDate"
+                hide-details
+                placeholder="Paid start date"
+                label="Paid start date"
+                class="w-100"
+              />
+            </v-col>
+            <v-col cols="12" md="6">
+              <AppDateInput
+                v-model="paidEndDate"
+                hide-details
+                placeholder="Paid end date"
+                label="Paid end date"
+                class="w-100"
+              />
+            </v-col>
+          </v-row>
         </v-col>
         <v-col cols="12" class="d-flex justify-end mt-n4">
           <AppButton size="small" color="primary" @click="resetFilters"> Reset </AppButton>
@@ -192,8 +195,8 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
-    ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useOrganizationStore, ['organizationId']),
 
     facilityList() {
       //TODO add permissions for facility
@@ -250,7 +253,7 @@ export default {
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
 
         const invoiceMatch = payment.invoiceNumber
-          .toLowerCase()
+          ?.toLowerCase()
           .includes((this.invoiceNumberSearch || '').toLowerCase());
 
         const paidStartMatch = !this.paidStartDate || new Date(payment.paidDate) >= new Date(this.paidStartDate);
@@ -363,7 +366,7 @@ export default {
       });
     },
 
-    async resetFilters() {
+    resetFilters() {
       this.selectedFacilities = this.facilityList?.map((f) => f.facilityId);
       this.selectedPaymentMonths = this.allPaymentsMonths?.map((m) => m.value);
       this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
