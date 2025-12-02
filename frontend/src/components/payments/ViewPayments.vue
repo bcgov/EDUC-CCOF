@@ -29,10 +29,11 @@
             hide-details
             clearable
             class="flex-grow-1"
+            style="max-width: 400px"
           />
         </v-col>
 
-        <v-col cols="12" md="7" class="custom-vcol">
+        <v-col cols="12" md="6" class="custom-vcol">
           <p>Facility name:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedFacilities"
@@ -45,9 +46,10 @@
             clearable
             hide-details
             class="flex-grow-1"
-            style="max-width: 600px"
           />
         </v-col>
+
+        <v-col md="1"></v-col>
 
         <v-col cols="12" md="5" class="custom-vcol">
           <p>Funding type:</p>
@@ -62,6 +64,7 @@
             clearable
             hide-details
             class="flex-grow-1"
+            style="max-width: 400px"
           />
         </v-col>
 
@@ -86,14 +89,15 @@
             hide-details
             placeholder="Paid start date"
             label="Paid start date"
-            class="flex-1 mr-md-2 mb-2 mb-md-0"
+            class="mr-md-2 mb-2 mb-md-0"
+            style="max-width: 200px"
           />
           <AppDateInput
             v-model="paidEndDate"
             hide-details
             placeholder="Paid end date"
             label="Paid end date"
-            class="flex-1"
+            style="max-width: 200px"
           />
         </v-col>
         <v-col cols="12" class="d-flex justify-end mt-n4">
