@@ -179,7 +179,6 @@ export const useApplicationStore = defineStore('application', {
     },
   },
   getters: {
-    // TODO (vietle-cgi) - check if AFS still work as expected
     isApplicationSubmitted: (state) => state.applicationStatus !== APPLICATION_STATUSES.DRAFT,
     formattedProgramYear: (state) => formatFiscalYearName(state.programYearLabel),
     fiscalStartAndEndDates: (state) => {

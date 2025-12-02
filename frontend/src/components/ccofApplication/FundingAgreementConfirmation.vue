@@ -210,10 +210,10 @@ export default {
         includePdf: true,
       });
       this.fundingAgreement = response[0];
-      if (!isEmpty(this.fundingAgreement?.pdfFile)) {
-        this.fundingAgreement.pdfFile = `data:application/pdf;base64,${this.fundingAgreement.pdfFile}`;
-      } else {
+      if (isEmpty(this.fundingAgreement?.pdfFile)) {
         this.setWarningAlert('Funding Agreement not found for this application.');
+      } else {
+        this.fundingAgreement.pdfFile = `data:application/pdf;base64,${this.fundingAgreement.pdfFile}`;
       }
     },
     async loadLicences() {
