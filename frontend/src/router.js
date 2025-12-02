@@ -1022,13 +1022,24 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
+    const appStore = useAppStore();
     const authStore = useAuthStore();
     authStore
       .getJwtToken()
-      .then(() => {
+      .then(async () => {
         if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
+          /* 
+            Ensures lookupInfo is initialized before continuing.
+            getLookupInfo() is triggered in App.vue, but because it runs
+            asynchronously, router.js could execute first and attempt to access programYear
+            data before it was loaded - causing errors for NEW users.
+            This check guarantees lookupInfo is fully initialized before any dependent logic runs.
+          */
+          if (!appStore.lookupInfo) {
+            await appStore.getLookupInfo();
+          }
           authStore
             .getUserInfo(to)
             .then(async () => {
