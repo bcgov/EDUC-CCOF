@@ -469,7 +469,7 @@
 
                 <v-text-field
                   placeholder="Required"
-                  :model-value="funding?.preschoolSessionsTotal"
+                  :model-value="totalPreschoolSessions"
                   class="summary-value"
                   density="compact"
                   flat
@@ -785,6 +785,11 @@ export default {
         arr.push('AFTER KINDERGARTEN');
       }
       return String(arr);
+    },
+    totalPreschoolSessions() {
+      return (
+        this.funding.monday + this.funding.tusday + this.funding.wednesday + this.funding.thursday + this.funding.friday
+      );
     },
     routingPath() {
       if (this.isChangeRequest) {
