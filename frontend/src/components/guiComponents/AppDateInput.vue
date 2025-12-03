@@ -19,14 +19,20 @@ export default {
     };
   },
   watch: {
-    updatedDate: {
-      handler(value) {
-        this.$emit('update:modelValue', value);
-      },
+    updatedDate(value) {
+      this.$emit('update:modelValue', value);
+    },
+    modelValue(value) {
+      this.updatedDate = this.formatDate(value);
     },
   },
   created() {
-    this.updatedDate = this.modelValue ? new Date(this.modelValue)?.toISOString()?.split('T')[0] : null;
+    this.updatedDate = this.formatDate(this.modelValue);
+  },
+  methods: {
+    formatDate(value) {
+      return value ? new Date(value).toISOString().split('T')[0] : null;
+    },
   },
 };
 </script>

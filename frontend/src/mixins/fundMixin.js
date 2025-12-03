@@ -50,6 +50,10 @@ export default {
       'getChangeActionNewFacByFacilityId',
     ]),
     ...mapState(useReportChangesStore, ['isCCOFUnlocked', 'changeRequestStatus']),
+    preschoolSessionsTotal() {
+      const f = this.fundingModel || {};
+      return (f.monday || 0) + (f.tusday || 0) + (f.wednesday || 0) + (f.thursday || 0) + (f.friday || 0);
+    },
     isLocked() {
       if (this.isChangeRequest) {
         if (this.isCCOFUnlocked || !this.changeRequestStatus) {
@@ -157,6 +161,7 @@ export default {
         if (this.isLocked || this.isApplicationProcessing) return;
         this.setIsApplicationProcessing(true);
         this.fundingModel.isCCOFComplete = this.isFormComplete;
+        this.fundingModel.preschoolSessionsTotal = this.preschoolSessionsTotal;
         this.setNavBarFundingComplete({
           fundingId: this.$route.params.urlGuid,
           complete: this.fundingModel.isCCOFComplete,
@@ -242,6 +247,7 @@ export default {
       this.fundingModel.wednesday = null;
       this.fundingModel.thursday = null;
       this.fundingModel.friday = null;
+      this.fundingModel.preschoolSessionsTotal = null;
     },
     resetExtendedHoursFields() {
       if (isEmpty(this.fundingModel)) return;

@@ -1,23 +1,23 @@
 'use strict';
 
 import Decimal from 'decimal.js';
+import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
-import { LocalDate } from '@js-joda/core';
-import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
-import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
+
 import {
   APPLICATION_CCOF_STATUSES,
-  APPLICATION_TYPES,
   APPLICATION_STATUSES,
-  BCSSA_REGION_LINKS,
+  APPLICATION_TYPES,
   CCOF_STATUS,
   LICENCE_STATUSES,
+  OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
+import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
+import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
 export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
@@ -152,19 +152,6 @@ export function isAnyChangeRequestActive(changeRequestList) {
   return changeRequestList?.some(
     (el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE',
   );
-}
-
-export function getBCSSALink(languageYearLabel) {
-  switch (languageYearLabel) {
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25:
-      return BCSSA_REGION_LINKS.FY2024_25;
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26:
-      return BCSSA_REGION_LINKS.FY2025_26;
-    default:
-      return BCSSA_REGION_LINKS.FY2025_26; //if future years are added but this link is not updated - default to the newest link we have
-  }
-
-  //todo- more links will need to be added for future program years when provided by the buisness
 }
 
 export function hasEmptyFields(obj, requiredFields) {
@@ -328,6 +315,16 @@ export function getCcofStatus(applicationStatus, applicationType, isOrganization
     }
   }
   return CCOF_STATUS.APPROVED;
+}
+
+// Starting from 2024/25 onward, the Ministry updated the childcare category labels for OOSC-K and OOSC-G,
+// but we cannot modify them in CMS because historical applications must retain their original values.
+// This helper updates the childcare category labels to reflect the new business naming.
+export function replaceChildCareLabel(childCareTypes = []) {
+  return childCareTypes.map((category) => ({
+    ...category,
+    childCareCategory: OLD_TO_NEW_CC_CATEGORY_LABEL_MAP[category.childCareCategory] ?? category.childCareCategory,
+  }));
 }
 
 function getUnlockList(facilityList = [], facilityProperty = '') {

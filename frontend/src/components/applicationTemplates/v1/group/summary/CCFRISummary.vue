@@ -438,7 +438,7 @@ export default {
       });
     },
     routingPath() {
-      if (!this.ccfri) {
+      if (isEmpty(this.ccfri)) {
         return isChangeRequest(this)
           ? changeUrl(PATHS.CCFRI_HOME, this.changeRecGuid)
           : pcfUrl(PATHS.CCFRI_HOME, this.programYearId);
@@ -459,7 +459,6 @@ export default {
     this.$refs.ccfriSummaryForm.validate();
   },
   methods: {
-    isEmpty,
     generateProgYearText(programYear, childCareCategory) {
       return programYear && childCareCategory ? `Parent Fees ${programYear}: ${childCareCategory}:` : null;
     },
