@@ -117,6 +117,7 @@
 </template>
 <script>
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 import { mapActions, mapState } from 'pinia';
 import ServiceDetails from '@/components/licences/ServiceDetails.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -168,10 +169,6 @@ export default {
         this.readonly || !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed
       );
     },
-    // TODO (viele-cgi) - update this computed to only show licence active in FA periods
-    licenceToDisplay() {
-      return [this.licences.find((l) => !l.recordEndDate) || this.licences[0]];
-    },
   },
   async created() {
     this.PATHS = PATHS;
@@ -188,8 +185,6 @@ export default {
         this.areLicenceDetailsConfirmed = this.renewalApplicationCCOF?.areLicenceDetailsConfirmed;
         await this.loadFundingAgreement();
         await this.loadLicences();
-        console.log(this.fundingAgreement);
-        console.log(this.licences);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -216,9 +211,21 @@ export default {
         useCustomQuery: true,
         organizationId: this.organizationId,
       });
+      const fundingAgreementStartDate = this.formatDate(this.fundingAgreement?.fundingAgreementStartDate);
+      this.licences = this.licences.filter((licence) => {
+        const licenceStartDate = this.formatDate(licence.recordStartDate);
+        const licenceEndDate = this.formatDate(licence.recordEndDate);
+        return (
+          licenceStartDate?.isSameOrBefore(fundingAgreementStartDate) &&
+          (!licenceEndDate || licenceEndDate.isAfter(fundingAgreementStartDate))
+        );
+      });
       if (isEmpty(this.licences)) {
         this.setWarningAlert('Licence not found for this application.');
       }
+    },
+    formatDate(date) {
+      return date ? moment.utc(date, 'YYYY-MM-DD') : null;
     },
     back() {
       this.$router.push(this.previousPath);
