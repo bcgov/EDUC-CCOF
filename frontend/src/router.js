@@ -1127,13 +1127,13 @@ router.afterEach((to) => {
   }
   if (to?.meta?.subtitleBanner) {
     if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {
-      if (!applicationStore.formattedProgramYear) {
+      if (applicationStore.formattedProgramYear) {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', applicationStore.formattedProgramYear),
         );
       } else {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', applicationStore.formattedProgramYear),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
         );
       }
     } else {
