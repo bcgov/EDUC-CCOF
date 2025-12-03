@@ -46,7 +46,15 @@ router.get(
   '/:facilityId/licenseCategories',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.REQUEST_CLOSURE, PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR, PERMISSIONS.ADD_NEW_FACILITY),
+  validatePermission(
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.VIEW_SUBMITTED_PCF,
+    PERMISSIONS.REQUEST_CLOSURE,
+    PERMISSIONS.MTFI,
+    PERMISSIONS.VIEW_A_CR,
+    PERMISSIONS.ADD_NEW_FACILITY,
+  ),
   validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
