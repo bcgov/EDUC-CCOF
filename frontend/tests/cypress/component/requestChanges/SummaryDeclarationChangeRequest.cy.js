@@ -261,7 +261,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     });
   });
 
-  it.only('should render app dialog for submission receival', () => {
+  it('should render app dialog for submission receival', () => {
     mountWithPinia({
       initialState: {
         auth: {
