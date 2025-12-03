@@ -928,7 +928,7 @@
           </template>
           <v-row v-if="hasClosureDays" no-gutters class="background-light-grey border-top-blue">
             <v-col class="border-right first-column font-weight-bold cell-text-left">
-              CCFRI Provider Enrolment Counts
+              CCFRI Provider Eligible Enrolment Counts
             </v-col>
             <v-col class="border-right">
               <v-row no-gutters>
@@ -1841,8 +1841,8 @@ export default {
 }
 
 .first-column {
-  min-width: 310px;
-  max-width: 310px;
+  min-width: 345px;
+  max-width: 345px;
   position: relative;
   overflow: hidden;
 }
