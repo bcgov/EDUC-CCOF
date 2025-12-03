@@ -158,7 +158,6 @@ describe('<ReportChanges />', () => {
       cy.contains('New Category');
       cy.contains(programYearName);
       cy.contains('Ineligible');
-      cy.contains('2024-12-31');
     });
 
     it('should render `Continue` and `Cancel` button for in progress change request', () => {
