@@ -147,7 +147,6 @@ Cypress.Commands.add('clickByText', (text, selector = 'button') => {
     .click() 
 })
 
-
 Cypress.Commands.add('startNewApp', (provider) => {
   cy.url().should('eq', Cypress.env('PORTAL_BASE_URL'))
   cy.contains('What would you like to do?').should('be.visible')
@@ -157,7 +156,7 @@ Cypress.Commands.add('startNewApp', (provider) => {
   cy.contains('Start Application').should('be.visible').click()
   cy.url().should('include', '/select-application-type')
 
-  if (provider === 'Family') {
+  if (provider === 'family' || provider === 'familyOld') {
       cy.contains('.v-card', 'Family Provider').should('be.visible').within(()=> {
       cy.contains('Start Application').click()
     })
@@ -183,7 +182,6 @@ Cypress.Commands.add('startNewRenewalApp', () => {
   })
   cy.clickByText('Next')
 });
-
 
 /*
 * Method to Cancel the application if the button is present
@@ -281,36 +279,61 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
   });
 });
 
-Cypress.Commands.add('runCcofApp', (appType, companyType, licenceType) => {
+Cypress.Commands.add('runCcofApp', (appType) => {
   ccofApp.loadFixturesAndVariables()
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
-    ccofApp.inputOrganizationInfo(companyType)
-    ccofApp.inputFacilityInfo()
-    ccofApp.licenceAndServiceDeliveryDetails()
+    ccofApp.inputOrganizationInfo(appType)
+    ccofApp.inputFacilityInfo(appType)
+    ccofApp.licenceAndServiceDeliveryDetails(appType)
 
-    if (licenceType === 'groupLicenceCategories') {
-      ccofApp.groupLicenses()
-      ccofApp.offerExtendedHours()
-      ccofApp.addAnotherFacility()
-      ccofApp.licenceUpload()
-    } else {
-      ccofApp.familyLicences(licenceType)
-      ccofApp.offerExtendedHours()
-      ccofApp.licenceUpload()
+    switch (appType) {
+      case 'group':
+        ccofApp.groupLicenses(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
+      case 'groupOld': 
+        ccofApp.groupLicenses(appType)
+        ccofApp.oldOfferExtendedHours(appType)
+        ccofApp.addAnotherFacility()
+        ccofApp.licenceUpload()
+        break;
+      case 'family':
+        ccofApp.familyLicences(appType)
+        ccofApp.offerExtendedHours(appType)
+        ccofApp.licenceUpload()
+        break;
+      case 'familyOld': 
+        ccofApp.familyLicences(appType)
+        ccofApp.oldOfferExtendedHours(appType)
+        ccofApp.licenceUpload()
+        break;
     }
   })
 });
+
 
 Cypress.Commands.add('runCcfriApp', (appType, term) => {
   ccfriApp.loadFixturesAndVariables()
   cy.then(()=> {
     ccfriApp.optInFacilities()
-    if (appType === 'groupRenewal' || appType === 'familyRenewal') {
-      ccfriApp.parentFeesRenewal()
+    switch(appType) {
+      case 'group':
+      case 'family': 
+        ccfriApp.addParentFees(appType, term)
+        ccfriApp.addClosures(appType, term)
+        break;
+      case 'groupRenewal':
+      case 'familyRenewal':
+        ccfriApp.parentFeesRenewal()
+        ccfriApp.addParentFees(appType, term)
+        ccfriApp.addClosures(appType, term)
+        break;
+      case 'groupOld':
+      case 'familyOld':ccfriApp.addParentFees(appType, term); break;
     }
-    ccfriApp.addParentFees(appType)
-    ccfriApp.addClosures(appType, term)
   })
 }); 
 
@@ -318,10 +341,10 @@ Cypress.Commands.add('runEceWeApp', (appType, term) => {
   eceWeApp.loadFixturesAndVariables()
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
-    if (appType === 'group' || appType === 'groupRenewal') {
-      eceWeApp.groupEceWe()
-    } else {
+    if (appType.includes("family")) {
       eceWeApp.familyEceWe()
+    } else {
+      eceWeApp.groupEceWe(appType)
     }
     eceWeApp.supportingDocUpload()
   })
@@ -332,4 +355,4 @@ Cypress.Commands.add('licenceUpload', () => {
     cy.then(()=>{
       ccofApp.licenceUpload()
   })
-})
+});

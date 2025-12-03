@@ -9,6 +9,6 @@ describe("Portal Login and Navigation", () => {
       Cypress.env("PORTAL_USERNAME"),
       Cypress.env("PORTAL_PASSWORD")
     );
-    cy.startNewApp(APP_TYPE.GROUP)
+    cy.startNewApp(APP_TYPE.GROUP_V1)
   })
 });

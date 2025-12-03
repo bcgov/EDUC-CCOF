@@ -232,8 +232,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       let payload = {
         agreeConsentCertify: this.declarationModel?.agreeConsentCertify,
         orgContactName: this.declarationModel?.orgContactName,
-        declarationAStatus: this.declarationModel?.declarationAStatus,
-        declarationBStatus: this.declarationModel?.declarationBStatus,
+        declarationAStatus: this.declarationModel?.declarationAStatus ?? null,
+        declarationBStatus: this.declarationModel?.declarationBStatus ?? null,
         summaryDeclarationApplicationName: this.summaryModel?.application?.name,
       };
       try {

@@ -50,7 +50,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(3000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
@@ -69,7 +69,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
 		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
 		appinfo.clickDeclarationBStatus();
-		ut.selectDropdownValue("Yes", appinfo.getDeclarationBStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("declarationBStatus"), appinfo.getDeclarationBStatusOptions());
 		Thread.sleep(3000);
 
 		// navigating to related tab
@@ -115,17 +115,19 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriRecommendationField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Stage 1 (NRC)", facilityinfo.getCCFRIAdjudicatorRecommendation());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriAdjudicatorRecommendation"),
+				facilityinfo.getCCFRIAdjudicatorRecommendation());
 		Thread.sleep(5000);
 		facilityinfo.switchToCcfriStartDateIFrame();
 		ut = new Utilities(driver);
-		ut.selectvalue(facilityinfo.getCCFRIPaymentEligibilityStartDate(), "Jul");
+		ut.selectvalue(facilityinfo.getCCFRIPaymentEligibilityStartDate(),
+				ut.getDataFromJson("ccfriPaymentEligibilityStartDate"));
 		Thread.sleep(2000);
 		facilityinfo.switchToDefaultContent();
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriQcDecisionField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Stage 1 (NRC)", facilityinfo.getCCFRIQCDecision());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriQcDecision"), facilityinfo.getCCFRIQCDecision());
 		Thread.sleep(5000);
 		facilityinfo.clickSaveBtn();
 		Thread.sleep(5000);
@@ -133,7 +135,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 		Thread.sleep(5000);
 		facilityinfo.clickCcfriStatusField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Complete - Approved", facilityinfo.getCcfriStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("ccfriStatusOptions"), facilityinfo.getCcfriStatusOptions());
 		Thread.sleep(5000);
 		logger.info("Complete-Approved option is selected from CCFRI Status dropdown");
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();

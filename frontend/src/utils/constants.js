@@ -62,6 +62,7 @@ export const ApiRoutes = Object.freeze({
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
+  PAYMENTS: baseRoot + '/payments',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -444,11 +445,6 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xlsx',
 ]);
 
-export const BCSSA_REGION_LINKS = Object.freeze({
-  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
-  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
-});
-
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
@@ -512,8 +508,8 @@ export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
   100000000: '0 to 18 months',
   100000001: '18 to 36 months',
   100000002: '3 Years to Kindergarten',
-  100000003: 'Out of School Care - Kindergarten',
-  100000004: 'Out of School Care - Grade 1+',
+  100000003: 'Kindergarten',
+  100000004: 'Grade 1 to Age 12',
   100000005: 'Preschool',
 });
 
@@ -521,9 +517,14 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   '0 to 18 months': 100000000,
   '18 to 36 months': 100000001,
   '3 Years to Kindergarten': 100000002,
-  'Out of School Care - Kindergarten': 100000003,
-  'Out of School Care - Grade 1+': 100000004,
+  Kindergarten: 100000003,
+  'Grade 1 to Age 12': 100000004,
   Preschool: 100000005,
+});
+
+export const OLD_TO_NEW_CC_CATEGORY_LABEL_MAP = Object.freeze({
+  'Out of School Care - Kindergarten': 'Kindergarten',
+  'Out of School Care - Grade 1+': 'Grade 1 to Age 12',
 });
 
 export const CLOSURE_TYPES = Object.freeze({
@@ -720,3 +721,19 @@ export const VACANCY_FIELDS = {
   vacanciesGrade1ToAge12: 'Grade 1 to Age 12',
   vacanciesPreschool: 'Preschool',
 };
+
+export const PAYMENT_STATUSES = Object.freeze({
+  PAID: 2,
+  APPROVED_PAYMENT: 4,
+  PROCESSING_PAYMENT: 5,
+  PROCESSING_ERROR: 6,
+  CANCELLED: 7,
+  HOLD: 101510001,
+});
+
+export const PAYMENT_STATUS_TEXTS = Object.freeze({
+  APPROVED: 'Approved',
+  PENDING: 'Pending',
+  PAID: 'Paid',
+  CANCELLED: 'Cancelled',
+});
