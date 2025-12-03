@@ -71,6 +71,7 @@ export default {
       'applicationStatus',
       'applicationType',
       'ccofApplicationStatus',
+      'unlockBaseFunding',
       'unlockDeclaration',
       'unlockEcewe',
       'unlockLicenseUpload',
