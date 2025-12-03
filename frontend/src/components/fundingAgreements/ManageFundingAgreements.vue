@@ -10,7 +10,7 @@
       <v-col cols="12" sm="9">
         <p class="mb-2">Submit a change request to notify the Child Care Operating Funding Program.</p>
       </v-col>
-      <v-col cols="12" sm="3" class="d-flex justify-end align-end">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" sm="3" class="d-flex justify-end align-end">
         <div>
           <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
         </div>

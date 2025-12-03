@@ -94,7 +94,11 @@
               />
             </v-col>
           </v-row>
-          <v-row no-gutters class="background-light-grey border-bottom border-right px-8 py-2">
+          <v-row
+            v-if="hasPermission(PERMISSIONS.VIEW_A_CR)"
+            no-gutters
+            class="background-light-grey border-bottom border-right px-8 py-2"
+          >
             <p>
               Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect, click
               <router-link :to="PATHS.ROOT.CHANGE_LANDING">

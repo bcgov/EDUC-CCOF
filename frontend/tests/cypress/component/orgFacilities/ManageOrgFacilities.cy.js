@@ -228,7 +228,6 @@ describe('<ManageOrgFacilities />', () => {
 
     cy.contains('View and update your organization information.');
     cy.contains('Organization Info');
-    cy.contains('button', 'Request a Change');
   });
 
   it('should navigate back to home page', () => {

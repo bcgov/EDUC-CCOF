@@ -1,7 +1,6 @@
 import LandingPage from '@/components/LandingPage.vue';
 import vuetify from '@/plugins/vuetify';
 import {
-  APPLICATION_CCOF_STATUSES,
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
@@ -463,6 +462,18 @@ describe('<LandingPage />', () => {
   });
 
   context('Request a Change Card', () => {
+    it('should not render `Request a change` card without view change req permissions', () => {
+      const permWithoutViewCR = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_A_CR);
+
+      mountWithPinia({
+        reportChanges: {
+          changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
+        },
+        ...createAuthStore({}, { permissions: permWithoutViewCR }),
+      });
+
+      cy.contains('p', 'Request a change').should('not.exist');
+    });
     it('should disable `Request a change` card', () => {
       mountWithPinia({
         application: {
@@ -471,7 +482,7 @@ describe('<LandingPage />', () => {
         reportChanges: {
           changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR] }),
       });
 
       cy.contains('p', 'Request a change').should('exist').should('have.css', 'pointer-events', 'none');
@@ -485,7 +496,7 @@ describe('<LandingPage />', () => {
         organization: {
           organizationAccountNumber,
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR] }),
       });
       cy.contains('p', 'Request a change').should('not.have.css', 'pointer-events', 'none');
     });
@@ -499,7 +510,7 @@ describe('<LandingPage />', () => {
         organization: {
           organizationAccountNumber,
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR] }),
       });
 
       checkButtonAndNavigate('Request a change', expectedPath);
@@ -517,10 +528,35 @@ describe('<LandingPage />', () => {
         reportChanges: {
           changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
         },
-        ...createAuthStore(),
+        ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_A_CR, PERMISSIONS.ORGANIZATION_CHANGE] }),
       });
 
       checkButtonAndNavigate('Update change request', expectedPath);
+    });
+
+    it('should not render `Update change request` button without proper permissions', () => {
+      const perms = Object.values(PERMISSIONS).filter(
+        (permission) =>
+          permission !== PERMISSIONS.MTFI &&
+          permission !== PERMISSIONS.ORGANIZATION_CHANGE &&
+          permission !== PERMISSIONS.ADD_NEW_FACILITY &&
+          permission !== PERMISSIONS.LICENCE_CHANGE &&
+          permission !== PERMISSIONS.OTHER_CHANGES,
+      );
+
+      mountWithPinia({
+        application: {
+          applicationType: APPLICATION_TYPES.RENEWAL,
+        },
+        organization: {
+          organizationAccountNumber,
+        },
+        reportChanges: {
+          changeRequestStore: [{ externalStatus: CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED }],
+        },
+        ...createAuthStore({}, { permissions: perms }),
+      });
+      cy.contains('button', 'Update change request').should('not.exist');
     });
   });
 

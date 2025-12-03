@@ -11,6 +11,13 @@ export const PERMISSIONS = Object.freeze({
   SUBMIT_RENEWAL_PCF: '27',
   VIEW_SUBMITTED_PCF: '28',
   DOWNLOAD_PCF_PDF: '29',
+  // Change Requests
+  MTFI: '30',
+  ORGANIZATION_CHANGE: '31',
+  ADD_NEW_FACILITY: '32',
+  LICENCE_CHANGE: '33',
+  OTHER_CHANGES: '34',
+  VIEW_A_CR: '35',
   // View Funding Agreements
   SIGN_FUNDING_AGREEMENT: '36',
   VIEW_FUNDING_AGREEMENT: '37',

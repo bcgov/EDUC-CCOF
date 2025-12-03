@@ -7,7 +7,7 @@
     </v-row>
     <v-row>
       <v-col cols="12" sm="7"><h2>Organization Info</h2></v-col>
-      <v-col cols="12" sm="5" class="d-flex justify-end align-end">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" sm="5" class="d-flex justify-end align-end">
         <div>
           <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
         </div>
