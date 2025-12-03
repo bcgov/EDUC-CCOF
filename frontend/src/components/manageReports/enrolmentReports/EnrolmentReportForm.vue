@@ -420,7 +420,45 @@
               </v-col>
             </v-row>
           </template>
-          <v-row no-gutters class="background-light-grey border-top-blue">
+          <v-row v-if="hasClosureDays" no-gutters class="background-light-grey border-top-blue">
+            <v-col class="border-right first-column font-weight-bold cell-text-left">
+              CCOF Base Eligible Enrolment Counts
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['less0To18'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['over0To18'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['less18To36'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['over18To36'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['less3YK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['over3YK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['lessOOSCK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['overOOSCK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['lessOOSCG'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['overOOSCG'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
+              {{ paymentEligibleDaysCount.CCOF['lessPre'] }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="background-light-grey border-top">
             <v-col class="border-right first-column font-weight-bold cell-text-left">CCOF Base Rate $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
@@ -634,7 +672,45 @@
               </v-col>
             </v-row>
           </template>
-          <v-row no-gutters class="background-light-grey border-top-blue">
+          <v-row v-if="hasClosureDays" no-gutters class="background-light-grey border-top-blue">
+            <v-col class="border-right first-column font-weight-bold cell-text-left">
+              CCFRI Eligible Enrolment Counts
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less0To18'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over0To18'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less18To36'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over18To36'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less3YK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over3YK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCG'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCG'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
+              {{ paymentEligibleDaysCount.CCFRI['lessPre'] }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="background-light-grey border-top">
             <v-col class="border-right first-column font-weight-bold cell-text-left">Daily CCFRI Rate $</v-col>
             <v-col class="border-right">
               <v-row no-gutters>
@@ -850,7 +926,45 @@
               </v-col>
             </v-row>
           </template>
-          <v-row no-gutters class="background-light-grey border-top-blue">
+          <v-row v-if="hasClosureDays" no-gutters class="background-light-grey border-top-blue">
+            <v-col class="border-right first-column font-weight-bold cell-text-left">
+              CCFRI Provider Enrolment Counts
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less0To18'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over0To18'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less18To36'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over18To36'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less3YK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over3YK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCK'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCK'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col class="border-right">
+              <v-row no-gutters>
+                <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCG'] }}</v-col>
+                <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCG'] }}</v-col>
+              </v-row>
+            </v-col>
+            <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
+              {{ paymentEligibleDaysCount.CCFRI['lessPre'] }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="background-light-grey border-top">
             <v-col class="border-right first-column font-weight-bold cell-text-left">
               CCFRI Provider Payment Rate $
             </v-col>
@@ -1230,6 +1344,16 @@ export default {
     isSaveDisplayed() {
       return (
         !this.readonly && this.hasPermission([this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER])
+      );
+    },
+    hasClosureDays() {
+      return this.dailyEnrolments?.some((item) =>
+        [
+          CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE,
+          CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF,
+          CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI,
+          CLOSURE_PAYMENT_ELIGIBILITIES.CCOF,
+        ].includes(item.paymentEligibility),
       );
     },
   },
@@ -1717,7 +1841,8 @@ export default {
 }
 
 .first-column {
-  max-width: 270px;
+  min-width: 310px;
+  max-width: 310px;
   position: relative;
   overflow: hidden;
 }
