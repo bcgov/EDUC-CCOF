@@ -1125,16 +1125,9 @@ router.afterEach((to) => {
   } else {
     appStore.setPageTitle('');
   }
-  let nextApp = appStore?.programYearList?.list?.find(
-    (el) => el.previousYearId === applicationStore.latestProgramYearId,
-  );
   if (to?.meta?.subtitleBanner) {
     if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {
-      if (to?.meta?.pageTitle === 'Renew Organization') {
-        appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(nextApp?.name)),
-        );
-      } else if (!applicationStore.formattedProgramYear) {
+      if (!applicationStore.formattedProgramYear) {
         appStore.setSubtitleBanner(
           to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
         );

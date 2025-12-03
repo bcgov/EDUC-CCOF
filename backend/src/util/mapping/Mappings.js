@@ -479,9 +479,9 @@ const ApplicationSummaryMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' }, //"ad483720-e1a7-ed11-aad0-000d3a09c3a2",
   { back: 'ccof_name', front: 'name' }, //"APP-23005239",
   { back: 'ccof_providertype', front: 'organizationProviderType' }, //100000001,
-  { back: 'ccof_has_banking_information_changed', front: 'hasBankingInfoChanged' }, //100000001,
-  { back: 'ccof_is_funding_agreement_confirmed', front: 'isFundingAgreementConfirmed' }, //100000001,
-  { back: 'ccof_are_licence_details_confirmed', front: 'areLicenceDetailsConfirmed' }, //100000001,
+  { back: 'ccof_has_banking_information_changed', front: 'hasBankingInfoChanged' },
+  { back: 'ccof_is_funding_agreement_confirmed', front: 'isFundingAgreementConfirmed' },
+  { back: 'ccof_are_licence_details_confirmed', front: 'areLicenceDetailsConfirmed' },
 
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,

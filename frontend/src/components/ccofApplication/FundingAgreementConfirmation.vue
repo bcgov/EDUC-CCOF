@@ -5,15 +5,16 @@
         <ApplicationPCFHeader :program-year="formattedProgramYear" :organization-name="organizationName" />
         <div class="my-8">
           <p>
-            The Funding Agreement outlines the legal obligations you are agreeing to if you enter into this agreement
-            with the Province to receive Child Care Operating Funding Base Funding Payments and, if applicable, to
-            participate in the Child Care Fee Reduction Initiative and Early Childhood Educator Wage Enhancement.
+            The Funding Agreement outlines the legal terms and conditions to participate in and receive Child Care
+            Operating Funding (CCOF) Base Payment and if applicable, Child Care Fee Reduction Initiative (CCFRI) and
+            Early Childhood Educator Wage Enhancement (ECE-WE).
           </p>
           <p class="my-4">
-            Review the Funding Agreement below to ensure you understand your obligations. Each licence eligible to
-            receive funding under this organization is shown as a separate Schedule A in the agreement.
+            Review the Funding Agreement below in full to understand the requirements, payments, and obligations of both
+            you and the Province before proceeding with your CCOF, CCFRI and/or ECE-WE renewal. Each licence eligible to
+            receive funding under this organization is shown as a separate Schedule A in the Funding Agreement.
           </p>
-          <p>Check that:</p>
+          <p>Also, check that:</p>
           <ul class="ml-5">
             <li>the organization information on the first page is correct;</li>
             <li>no licence needs to be added to, or removed from, the Funding Agreement; and</li>
@@ -51,8 +52,10 @@
                 Do not continue.
               </v-card-title>
               <p class="px-8 py-4">
-                Submit a <router-link :to="PATHS.ROOT.CHANGE_LANDING">change request</router-link>. This will bring you
-                to a different page.
+                Submit a
+                <router-link class="text-decoration-underline" :to="PATHS.ROOT.CHANGE_LANDING"
+                  >change request</router-link
+                >. This will bring you to a different page.
               </p>
             </v-card>
           </v-card>
@@ -93,8 +96,10 @@
                   Do not continue.
                 </v-card-title>
                 <p class="px-8 py-4">
-                  Submit a <router-link :to="PATHS.ROOT.CHANGE_LANDING">change request</router-link>. This will bring
-                  you to a different page.
+                  Submit a
+                  <router-link class="text-decoration-underline" :to="PATHS.ROOT.CHANGE_LANDING">
+                    change request</router-link
+                  >. This will bring you to a different page.
                 </p>
               </v-card>
             </v-card>
