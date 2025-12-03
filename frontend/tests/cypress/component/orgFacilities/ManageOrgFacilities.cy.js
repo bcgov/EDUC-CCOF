@@ -11,10 +11,9 @@ const organizationId = '543543';
 const programYearId = '1234';
 
 function interceptGetPaymentAPI() {
-  console.log('ppp');
   cy.intercept('GET', `${ApiRoutes.PAYMENTS}${buildQueryString({ organizationId, programYearId })}`, {
     statusCode: 200,
-    body: [{}],
+    body: [{ invoiceNumber: '' }],
   }).as('getPaymentAPI');
 }
 
@@ -233,6 +232,7 @@ describe('<ManageOrgFacilities />', () => {
   });
 
   it('should navigate back to home page', () => {
+    interceptGetPaymentAPI();
     mountWithPinia({
       ...createOrganizationStore(),
       ...createApplicationStore(),
