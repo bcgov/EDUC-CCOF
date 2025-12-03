@@ -75,7 +75,6 @@ export default {
       } catch (error) {
         this.processing = false;
         this.setImpersonateId(null);
-
         if (error.response?.status == '404') {
           this.setFailureAlert(`Unable to find BCeID: [ ${this.businessBCeId} ]`);
         } else if (error.response?.status == '409') {
