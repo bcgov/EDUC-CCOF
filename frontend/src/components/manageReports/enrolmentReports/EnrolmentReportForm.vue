@@ -1369,6 +1369,7 @@ export default {
           switch (eligibility) {
             case null:
             case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
               this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
               this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
