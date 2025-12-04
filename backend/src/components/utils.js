@@ -100,12 +100,7 @@ function getUserGuid(req) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
 
-  return splitUsername(userInfo._json.preferred_username).guid;
-}
-
-function splitUsername(username) {
-  const [guid, idp] = username.split('@');
-  return { guid: guid.toUpperCase(), idp };
+  return userInfo._json.guid;
 }
 
 function isIdirUser(req) {
@@ -441,7 +436,6 @@ const utils = {
   getChangeActionDetails,
   postAdjustmentERGeneration,
   padString,
-  splitUsername,
 };
 
 module.exports = utils;

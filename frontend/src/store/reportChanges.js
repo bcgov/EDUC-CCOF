@@ -327,18 +327,6 @@ export const useReportChangesStore = defineStore('reportChanges', {
         throw error;
       }
     },
-    async deleteChangeRequest(changeRequestId) {
-      checkSession();
-      try {
-        await ApiService.apiAxios.delete(ApiRoutes.CHANGE_REQUEST + '/' + changeRequestId);
-        let index = this.changeRequestStore.findIndex((changeRec) => changeRec.changeRequestId === changeRequestId);
-        if (index > -1) this.changeRequestStore.splice(index, 1);
-        this.setChangeRequestStore(this.changeRequestStore);
-      } catch (e) {
-        console.log(`Failed to delete change req with error - ${e}`);
-        throw e;
-      }
-    },
     async createChangeAction({ changeRequestId, type }) {
       checkSession();
       try {
