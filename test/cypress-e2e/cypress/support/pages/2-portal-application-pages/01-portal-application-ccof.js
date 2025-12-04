@@ -1,5 +1,4 @@
 import 'cypress-file-upload';
-import fs from 'fs';
 
 class CcofApplication {
   loadFixtures(file) {
@@ -25,7 +24,7 @@ class CcofApplication {
       this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
       this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
       this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
-      this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData.addAnotherFacility
+      this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData
     })
   }
 
@@ -177,14 +176,16 @@ class CcofApplication {
         cy.contains('Facility Licence and Service Details')
         break;
     }
-    cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
-    cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
-    cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
-    cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
-    cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
+      cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
+      cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
+      cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
+      cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
+      cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
+      if (this.monthsClosed === "Yes") {
+        cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
+        cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
+        cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
+      }
   }
 
   groupLicenses(appType) {
@@ -357,10 +358,27 @@ class CcofApplication {
   }
 
   //TODO [CCFRI-6110] (Hedie-cgi) Add functionality to add multiple facilities
-  addAnotherFacility() {
+  addAnotherFacility(appType, file = null) {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
-    cy.contains('button', 'No').click();
+    cy.contains('Do you want to add another facility to your application?')
+    cy.clickByText(this.addFacilityData)
+    if (file) {
+      this.loadFixturesAndVariables(`/additional-facilities/${file}`)
+      cy.then(()=> {
+        this.inputFacilityInfo(appType)
+        this.licenceAndServiceDeliveryDetails(appType)
+        this.groupLicenses(appType)
+        switch(appType) {
+          case "group": this.offerExtendedHours(appType); break;
+          case "groupOld": this.oldOfferExtendedHours(appType); break;
+        }
+        cy.contains('You have successfully applied for CCOF for the following facilities:')
+        cy.contains(this.facilityData.facilityName)
+        cy.contains('Do you want to add another facility to your application?')
+        cy.clickByText(this.addFacilityData)
+      })
+    }
   }
 
   licenceUpload() {

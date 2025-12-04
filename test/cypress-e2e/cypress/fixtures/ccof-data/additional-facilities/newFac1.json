@@ -24,7 +24,7 @@
     }
   },
   "facilityData": {
-    "facilityName": "Hedies Demo Facility",
+    "facilityName": "Hedie Really Hopes This Works",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -233,9 +233,9 @@
         "maxOverFourHours": 4
       }
     },
-    "addFacilityData": "Yes",
+    "addFacilityData": "No",
     "_optionsAddAnotherFacilityData": {
-      "NOTE": "If this is your last/only facility, please put 'No'",
+      "NOTE": "If this is your last/only facility, please put 'No'",  
       "addAnother": "Yes",
       "onlyOne": "No"
     }

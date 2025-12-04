@@ -280,19 +280,8 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
 });
 
 Cypress.Commands.add('runCcofApp', (appType) => {
-  cy.task('countFiles', 'cypress/fixtures/ccof-data').then((files) => {
-    files.forEach(file => {
-      cy.log(file)
-      ccofApp.loadFixturesAndVariables(file)
-      cy.then(()=> {
-        ccofApp.validateGroupUrl(appType)
-        ccofApp.inputOrganizationInfo(appType)
-        ccofApp.inputFacilityInfo(appType)
-        ccofApp.licenceAndServiceDeliveryDetails(appType)
-      })
-    })
-  })
-  // ccofApp.loadFixturesAndVariables()
+
+  ccofApp.loadFixturesAndVariables('ccofData')
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
     ccofApp.inputOrganizationInfo(appType)
@@ -303,26 +292,38 @@ Cypress.Commands.add('runCcofApp', (appType) => {
       case 'group':
         ccofApp.groupLicenses(appType)
         ccofApp.offerExtendedHours(appType)
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
+        cy.task('countFiles', 'cypress/fixtures/ccof-data/additional-facilities').then((files) => {
+          cy.log(files)
+          if (!files) {
+            ccofApp.addAnotherFacility(appType)
+          } else {
+            files.forEach((file) => {
+              ccofApp.addAnotherFacility(appType, file)
+            })
+          }
+        })
         break;
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
         ccofApp.oldOfferExtendedHours(appType)
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
+        cy.task('countFiles', 'cypress/fixtures/ccof-data/additional-facilities').then((files) => {
+          if (!files) {
+            ccofApp.addAnotherFacility(appType)
+          } else {
+            ccofApp.addAnotherFacility(appType, files)
+          }
+        })
         break;
       case 'family':
         ccofApp.familyLicences(appType)
         ccofApp.offerExtendedHours(appType)
-        ccofApp.licenceUpload()
         break;
       case 'familyOld': 
         ccofApp.familyLicences(appType)
         ccofApp.oldOfferExtendedHours(appType)
-        ccofApp.licenceUpload()
         break;
     }
+    ccofApp.licenceUpload()
   })
 });
 
