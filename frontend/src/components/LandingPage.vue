@@ -227,10 +227,11 @@
       <v-col v-if="hasPermission(PERMISSIONS.VIEW_ER)" cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
-            <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
+            <p class="text-h6">Submit and Manage Facility Reports</p>
             <p>
-              If you are expecting a new licence or change to your licence or service details, contact the Child Care
-              Operating Funding program before submitting your next enrolment report or monthly ECE report.
+              Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care
+              Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator
+              Wage Enhancement (ECE-WE).
             </p>
           </template>
           <template #button>

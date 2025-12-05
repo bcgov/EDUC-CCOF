@@ -1,8 +1,9 @@
 <template>
   <v-container fluid class="pa-12">
     <v-alert class="mb-4 text-center" density="compact" type="info" color="#fff9c4" :icon="false">
-      REMINDER: Please review and update your User Contacts, Organization Information, Facility Details, and Programs
-      and Vacancies questionnaire to ensure accurate and up-to-date information.
+      REMINDER: As part of your month end activities please review and update your User Contacts, Organization
+      Information, Facility Details and Program and Vacancies information to ensure your information is kept accurate
+      and up-to-date.
     </v-alert>
     <h1>Submit and Manage Facility Reports</h1>
     <p class="mb-6">
