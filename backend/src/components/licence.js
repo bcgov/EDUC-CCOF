@@ -1,10 +1,30 @@
 'use strict';
-const { getOperation } = require('./utils');
+const { getOperation, buildFilterQuery } = require('./utils');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { LicenceMappings, ServiceDeliveryMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
+
+async function getLicencesByQuery(req, res) {
+  try {
+    const operation =
+      'ccof_licenses?$select=_ccof_facility_value,ccof_facility_id,ccof_licenseid,ccof_name,ccof_organization,ccof_start_date,ccof_end_date,statuscode,ccof_record_start_date,ccof_record_end_date,ccof_maximum_capacity,ccof_maximum_days_per_week,ccof_maximum_weeks_per_year,ccof_extended_hours_offered,ccof_extended_days_per_week,ccof_extended_weeks_per_year' +
+      '&$expand=ccof_service_delivery_details_license_ccof_license($select=ccof_after_school,ccof_before_school,ccof_afternoon_kindercare,ccof_morning_kindercare,' +
+      'ccof_care_type,ccof_licenced_spaces,_ccof_license_categories_lookup_value,ccof_max_4_or_less,ccof_max_over_4,ccof_number_of_preschool_sessions)' +
+      `&${buildFilterQuery(req.query, LicenceMappings)}`;
+    const response = await getOperation(operation);
+    let licences = response.value.map((item) => ({
+      ...new MappableObjectForFront(item, LicenceMappings).toJSON(),
+      serviceDeliveryDetails: item.ccof_service_delivery_details_license_ccof_license.map((detail) => new MappableObjectForFront(detail, ServiceDeliveryMappings).toJSON()),
+    }));
+    licences = restrictFacilities(req, licences);
+    return res.status(HttpStatus.OK).json(licences);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
 
 async function getLicencesByFacilityId(req, res) {
   try {
@@ -69,6 +89,9 @@ async function getRawServiceDetails(licenceId) {
 
 async function getLicences(req, res) {
   try {
+    if (req.query.useCustomQuery) {
+      return await getLicencesByQuery(req, res);
+    }
     const { facilityId, fundingAgreementId } = req.query;
     if (facilityId) {
       return await getLicencesByFacilityId(req, res);
@@ -77,7 +100,7 @@ async function getLicences(req, res) {
     }
   } catch (e) {
     log.error(e);
-    return res.status(500).json(e.data ? e.data : e?.status);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 module.exports = {

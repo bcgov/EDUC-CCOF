@@ -413,7 +413,9 @@ export function buildQueryString(query) {
   if (isEmpty(query)) return '';
   let queryString = '';
   for (const [key, value] of Object.entries(query)) {
-    queryString += queryString ? `&${key}=${value}` : `?${key}=${value}`;
+    if (value != null) {
+      queryString += queryString ? `&${key}=${value}` : `?${key}=${value}`;
+    }
   }
   return queryString;
 }

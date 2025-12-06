@@ -136,10 +136,13 @@ export default {
     async loadFundingAgreements() {
       try {
         this.isLoading = true;
-        this.fundingAgreements = (await FundingAgreementService.getFundingAgreements(this.organizationId)) || [];
+        this.fundingAgreements = await FundingAgreementService.getFundingAgreements({
+          organizationId: this.organizationId,
+        });
         this.sortFundingAgreements();
-      } catch {
+      } catch (error) {
         this.setFailureAlert('Failed to load Funding Agreements');
+        console.error(error);
       } finally {
         this.isLoading = false;
       }

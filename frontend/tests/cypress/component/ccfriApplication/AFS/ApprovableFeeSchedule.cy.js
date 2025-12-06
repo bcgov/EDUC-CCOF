@@ -1,6 +1,6 @@
 import ApprovableFeeSchedule from '@/components/ccfriApplication/AFS/ApprovableFeeSchedule.vue';
 import vuetify from '@/plugins/vuetify';
-import { AFS_STATUSES } from '@/utils/constants.js';
+import { AFS_STATUSES, APPLICATION_STATUSES } from '@/utils/constants.js';
 
 const ccfriApplicationId = '1234';
 const fundingGuidelinesUrl = 'www.test-123.ca';
@@ -133,7 +133,7 @@ describe('<ApprovableFeeSchedule />', () => {
   it('should render AfsDecisionCard as editable', () => {
     mountWithPinia(
       buildInitialState({
-        applicationOverrides: { applicationStatus: 'INCOMPLETE' },
+        applicationOverrides: { applicationStatus: APPLICATION_STATUSES.DRAFT },
         approvableFeeSchedules: [
           {
             ccfriApplicationId,
@@ -150,7 +150,7 @@ describe('<ApprovableFeeSchedule />', () => {
   it('should render document upload', () => {
     mountWithPinia(
       buildInitialState({
-        applicationOverrides: { applicationStatus: 'INCOMPLETE' },
+        applicationOverrides: { applicationStatus: APPLICATION_STATUSES.DRAFT },
         approvableFeeSchedules: [
           {
             ccfriApplicationId,

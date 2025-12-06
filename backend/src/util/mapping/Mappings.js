@@ -479,10 +479,10 @@ const ApplicationSummaryMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' }, //"ad483720-e1a7-ed11-aad0-000d3a09c3a2",
   { back: 'ccof_name', front: 'name' }, //"APP-23005239",
   { back: 'ccof_providertype', front: 'organizationProviderType' }, //100000001,
-  // Unsure if this is needed
-  // { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
-  // { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
-  // { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
+  { back: 'ccof_has_banking_information_changed', front: 'hasBankingInfoChanged' },
+  { back: 'ccof_is_funding_agreement_confirmed', front: 'isFundingAgreementConfirmed' },
+  { back: 'ccof_are_licence_details_confirmed', front: 'areLicenceDetailsConfirmed' },
+
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,
@@ -791,6 +791,7 @@ const LicenceMappings = [
   { back: 'ccof_organization', front: 'ccofOrganization' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_facility_id', front: 'facilityAccountNumber' },
+  { back: '_ccof_organization_name_value', front: 'organizationId' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
   { back: 'ccof_record_start_date', front: 'recordStartDate' },

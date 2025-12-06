@@ -5,8 +5,8 @@ import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { ApiRoutes } from '@/utils/constants.js';
-import { CHANGE_REQUEST_TYPES, CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
+import { isAnyChangeRequestActive } from '@/utils/common.js';
+import { ApiRoutes, CHANGE_REQUEST_TYPES, CHANGE_TYPES, DOCUMENT_TYPES } from '@/utils/constants.js';
 import { checkSession } from '@/utils/session.js';
 
 /*
@@ -77,6 +77,9 @@ export const useReportChangesStore = defineStore('reportChanges', {
       return state.changeRequestMap
         .get(useNavBarStore().changeRequestId)
         ?.changeActions?.find((el) => el.changeType == CHANGE_REQUEST_TYPES.PDF_CHANGE)?.changeActionId;
+    },
+    hasActiveChangeRequest: (state) => {
+      return isAnyChangeRequestActive(state.changeRequestStore);
     },
   },
   actions: {

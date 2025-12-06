@@ -65,6 +65,7 @@ describe('<SummaryDeclaration />', () => {
   context('Change Request Notice Card', () => {
     it('should render the change request notice card when a change request is active', () => {
       const curProgramYearName = 'ProgramYearListName';
+      const programYearLabel = '2024-2025';
       mountWithPinia({
         ...createAuthStore(),
         app: {
@@ -83,6 +84,7 @@ describe('<SummaryDeclaration />', () => {
         },
         application: {
           programYearId,
+          programYearLabel,
         },
         reportChanges: {
           changeRequestStore: [
@@ -100,8 +102,10 @@ describe('<SummaryDeclaration />', () => {
           currentUrl: '',
         },
       });
-      cy.contains(`You have a change request for the ${curProgramYearName} funding term still in progress.`);
-      cy.contains('The Program Confirmation Form cannot be submitted until the change is complete.');
+      cy.contains(`You have a change request for the ${programYearLabel} funding term still in progress.`);
+      cy.contains(
+        `The ${programYearLabel} Program Confirmation Form cannot be submitted until the change is complete.`,
+      );
       cy.contains('button', 'View My Changes').click();
       cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     });

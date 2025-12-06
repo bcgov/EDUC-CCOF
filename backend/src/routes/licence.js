@@ -10,18 +10,25 @@ const { oneOf, query, validationResult } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 
 /**
- * Get Licence details for a facility or funding agreement
+ * Get Licence details based on query params
  *
  */
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION, PERMISSIONS.VIEW_FUNDING_AGREEMENT),
+  validatePermission(PERMISSIONS.VIEW_LICENCE_INFORMATION, PERMISSIONS.VIEW_FUNDING_AGREEMENT, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   validateFacility(),
-  oneOf([query('facilityId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('fundingAgreementId').notEmpty().isUUID(UUID_VALIDATOR_VERSION)], {
-    message: 'URL query: [facilityId or fundingAgreementId] is required',
-  }),
+  oneOf(
+    [
+      query('facilityId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('fundingAgreementId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+      query('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    ],
+    {
+      message: 'URL query: [facilityId or fundingAgreementId or organizationId] is required',
+    },
+  ),
   (req, res) => {
     validationResult(req).throw();
     getLicences(req, res);

@@ -147,6 +147,12 @@ input[type='number'] {
   background-color: #e5e4e4;
 }
 
+.card-top-border-primary {
+  border-top: 5px solid #003366 !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
 .pointer-events-none {
   pointer-events: none;
 }

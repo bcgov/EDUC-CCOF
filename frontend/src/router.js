@@ -27,6 +27,7 @@ import AddNewFees from '@/components/ccfriApplication/group/AddNewFees.vue';
 import CcfriEceLandingPage from '@/components/ccfriApplication/group/CcfriEceLanding.vue';
 import currentFees from '@/components/ccfriApplication/group/ExistingFacilityFees.vue';
 import CcofApplicationTypeSelector from '@/components/ccofApplication/CcofApplicationTypeSelector.vue';
+import FundingAgreementConfirmation from '@/components/ccofApplication/FundingAgreementConfirmation.vue';
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
 import FamilyFacilityInformation from '@/components/ccofApplication/family/FacilityInformation.vue';
 import FamilyFunding from '@/components/ccofApplication/family/FamilyFunding.vue';
@@ -322,15 +323,29 @@ const router = createRouter({
       },
     },
     {
-      path: pcfUrl(PATHS.RENEW_CONFIRM),
-      name: 'Renew Organization',
+      path: pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION),
+      name: 'renewal-banking-information',
       component: RenewOrganization,
       meta: {
-        pageTitle: 'Renew Organization',
+        pageTitle: 'Banking Information',
         requiresAuth: true,
-        showNavBar: false,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        permission: [PERMISSIONS.CREATE_RENEWAL_PCF],
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
+      },
+    },
+    {
+      path: pcfUrl(PATHS.CCOF_RENEWAL_FA),
+      name: 'renewal-funding-agreement',
+      component: FundingAgreementConfirmation,
+      meta: {
+        pageTitle: 'Funding Agreement',
+        requiresAuth: true,
+        showNavBar: true,
+        navBarGroup: NAV_BAR_GROUPS.CCOF,
+        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -1138,22 +1153,15 @@ router.afterEach((to) => {
   } else {
     appStore.setPageTitle('');
   }
-  let nextApp = appStore?.programYearList?.list?.find(
-    (el) => el.previousYearId === applicationStore.latestProgramYearId,
-  );
   if (to?.meta?.subtitleBanner) {
     if (to?.meta?.subtitleBanner?.startsWith('%PROGRAMYEAR%')) {
-      if (to?.meta?.pageTitle === 'Renew Organization') {
+      if (applicationStore.formattedProgramYear) {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(nextApp?.name)),
-        );
-      } else if (!applicationStore.formattedProgramYear) {
-        appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', applicationStore.formattedProgramYear),
         );
       } else {
         appStore.setSubtitleBanner(
-          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', applicationStore.formattedProgramYear),
+          to.meta.subtitleBanner.replace('%PROGRAMYEAR%', formatFiscalYearName(appStore.programYearList?.newApp?.name)),
         );
       }
     } else {
