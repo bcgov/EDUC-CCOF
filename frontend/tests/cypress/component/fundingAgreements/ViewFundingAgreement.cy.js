@@ -72,13 +72,13 @@ describe('<ViewFundingAgreement />', () => {
     cy.contains('h4', 'Declaration').should('exist');
   });
 
-  it('should render declrationB content', () => {
+  it('should render declarationB content', () => {
     interceptAPI();
     mountWithPinia();
     cy.contains('I do hereby certify that I am the authorized signing authority').should('exist');
   });
 
-  it('should not render declrationB content if fundingAgreementOrderNumber is < 0', () => {
+  it('should not render declarationB content if fundingAgreementOrderNumber is < 0', () => {
     const FA = { ...fundingAgreement, fundingAgreementOrderNumber: -1 };
     interceptAPI(FA);
     mountWithPinia();
