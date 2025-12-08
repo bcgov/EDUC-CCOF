@@ -88,7 +88,7 @@ describe('<ManageReports />', () => {
     });
 
     cy.contains(
-      'REMINDER: Please review and update your User Contacts, Organization Information, Facility Details, and Programs and Vacancies questionnaire to ensure accurate and up-to-date information.',
+      'REMINDER: As part of your month end activities please review and update your User Contacts, Organization Information, Facility Details and Program and Vacancies information to ensure your information is kept accurate and up-to-date.',
     ).should('exist');
   });
 
