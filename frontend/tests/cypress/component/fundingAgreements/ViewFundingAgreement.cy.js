@@ -36,20 +36,22 @@ function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
 }
 
 function interceptAPI(FA = fundingAgreement) {
-  cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}/${fundingAgreement.fundingAgreementId}`, {
+  const faId = fundingAgreement.fundingAgreementId;
+
+  cy.intercept('GET', ApiRoutes.FUNDING_AGREEMENTS + '/' + faId, {
     statusCode: 200,
     body: FA,
   }).as('getFundingAgreement');
 
-  cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}/${fundingAgreement.fundingAgreementId}/pdf`, {
+  cy.intercept('GET', ApiRoutes.FUNDING_AGREEMENTS + '/' + faId + '/pdf', {
     statusCode: 200,
     body: [],
   }).as('getFundingAgreementPDF');
 
-  cy.intercept('GET', `${ApiRoutes.LICENCES}?${`fundingAgreementId=${fundingAgreement.fundingAgreementId}`}`, {
+  cy.intercept('GET', ApiRoutes.LICENCES + '?fundingAgreementId=' + faId, {
     statusCode: 200,
     body: [],
-  }).as('getFundingAgreementPDF');
+  }).as('getLicences');
 }
 
 describe('<ViewFundingAgreement />', () => {
