@@ -339,6 +339,48 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-col cols="12" sm="7">
+    <h2>Child Care Free Reduction (CCFRI) Information</h2>
+  </v-col>
+  <v-row class="justify-md-end">
+    <h3 class="ml-5">Select fiscal year:</h3>
+    <FiscalYearSlider class="mx-4" />
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <v-card variant="outlined" class="soft-outline px-2 py-4">
+        <v-data-table
+          :headers="ccfriHeaders"
+          :items="ccfriItems"
+          density="compact"
+          :items-per-page="10"
+          class="soft-outline"
+        />
+      </v-card>
+    </v-col>
+  </v-row>
+  <v-col cols="12" sm="7">
+    <h2>Early Childhood Educator Wage Enhancement (ECE-WE) Information</h2>
+  </v-col>
+  <v-row class="justify-md-end">
+    <h3 class="ml-5">Select fiscal year:</h3>
+    <FiscalYearSlider class="mx-4" />
+  </v-row>
+
+  <v-row>
+    <v-col cols="12">
+      <v-card variant="outlined" class="soft-outline px-2 py-4">
+        <v-data-table
+          :headers="eceweHeaders"
+          :items="eceweItems"
+          density="compact"
+          :items-per-page="10"
+          class="soft-outline"
+        />
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 <script>
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -352,12 +394,14 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
-
+import facilityService from '@/services/facilityService';
+import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 export default {
   name: 'ManageOrganization',
   components: {
     AppButton,
     AppLabel,
+    FiscalYearSlider,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
@@ -380,6 +424,7 @@ export default {
       },
       isProcessing: false,
       rules,
+      facilities: [],
     };
   },
   computed: {
@@ -393,12 +438,64 @@ export default {
     workingFieldInUse() {
       return Object.values(this.editing).some((value) => value);
     },
+    ccfriHeaders() {
+      return [
+        { title: 'Facility Name', key: 'facilityName' },
+        { title: 'Facility ID', key: 'facilityAccountNumber' },
+        { title: 'Licence #', key: 'licenseNumber' },
+        { title: 'Opt-In/Out Status', key: 'ccfriStatus' },
+        { title: 'Start Date', key: 'ccfriStartDate' },
+      ];
+    },
+
+    eceweHeaders() {
+      return [
+        { title: 'Facility Name', key: 'facilityName' },
+        { title: 'Facility ID', key: 'facilityAccountNumber' },
+        { title: 'Licence #', key: 'licenseNumber' },
+        { title: 'Public Sector Employer', key: 'isPublicSector' },
+        { title: 'CSSEA Member', key: 'isCsseaMember' },
+        { title: 'Unionized', key: 'isUnionized' },
+        { title: 'Opt-In/Out Status', key: 'eceweStatus' },
+        { title: 'Application Status', key: 'eceweApplicationStatus' },
+        { title: 'ECE-WE Start Date', key: 'eceweStartDate' },
+      ];
+    },
+
+    // if your API puts data in loadedModel
+    ccfriItems() {
+      return this.facilities.map((f) => ({
+        facilityName: f.facilityName,
+        facilityAccountNumber: f.facilityAccountNumber,
+        licenseNumber: f.licenseNumber,
+        ccfriStatus: f.ccfriOptStatus,
+        ccfriStartDate: f.ccfriStartDate,
+      }));
+    },
+
+    eceweItems() {
+      return this.facilities.map((f) => ({
+        facilityName: f.facilityName,
+        facilityAccountNumber: f.facilityAccountNumber,
+        licenseNumber: f.licenseNumber,
+        isPublicSector: f.isPublicSector,
+        isCsseaMember: f.isCsseaMember,
+        isUnionized: f.isUnionized,
+        eceweStatus: f.eceweOptStatus,
+        eceweApplicationStatus: f.eceweApplicationStatus,
+        eceweStartDate: f.eceweStartDate,
+      }));
+    },
   },
+
   async mounted() {
     try {
       if (isEmpty(this.loadedModel)) {
         this.orgLoading = true;
+        console.log(this.organizationId);
         await this.loadOrganization(this.organizationId);
+        const facilities = await facilityService.getEceweCcfriFacilities(this.organizationId);
+        console.log('Facilities fetched:', facilities);
       }
     } catch (error) {
       this.setFailureAlert('There was an error loading the organization.');

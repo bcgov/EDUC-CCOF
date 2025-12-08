@@ -54,4 +54,13 @@ export default {
       throw error;
     }
   },
+  async getEceweCcfriFacilities(organizationId) {
+    try {
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_ECEWE_FACILITIES}?orgId=${organizationId}`);
+      return response.data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  },
 };
