@@ -38,10 +38,9 @@ export default {
     ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
     changeRequestYearLabel() {
-      const currProgramYear = this.programYearList?.list?.find((year) => year.programYearId === this.programYearId);
-      const prevProgramYear = this.programYearList?.list?.find(
-        (year) => year.programYearId === currProgramYear.previousYearId,
-      );
+      const programYearList = this.programYearList?.list;
+      const currProgramYear = programYearList?.find((year) => year.programYearId === this.programYearId);
+      const prevProgramYear = programYearList?.find((year) => year.programYearId === currProgramYear.previousYearId);
       const previousYearCR = this.changeRequestStore?.find(
         (cr) =>
           (cr.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.SUBMITTED ||

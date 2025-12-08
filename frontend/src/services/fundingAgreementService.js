@@ -1,5 +1,3 @@
-import { isEmpty } from 'lodash';
-
 import ApiService from '@/common/apiService';
 import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
@@ -9,7 +7,7 @@ export default {
   async getFundingAgreements(query) {
     try {
       const queryString = buildQueryString(query);
-      if (isEmpty(queryString)) {
+      if (!queryString) {
         return [];
       }
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}${queryString}`);

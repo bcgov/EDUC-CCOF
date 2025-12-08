@@ -188,8 +188,8 @@ export default {
         this.setIsApplicationProcessing(true);
         this.isFundingAgreementConfirmed = this.renewalApplicationCCOF?.isFundingAgreementConfirmed;
         this.areLicenceDetailsConfirmed = this.renewalApplicationCCOF?.areLicenceDetailsConfirmed;
-        await this.loadFundingAgreement();
-        await this.loadLicences();
+        await Promise.all([this.loadFundingAgreement(), this.loadLicences()]);
+        this.filterActiveLicencesForFundingAgreement();
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -216,14 +216,15 @@ export default {
         useCustomQuery: true,
         organizationId: this.organizationId,
       });
+    },
+    filterActiveLicencesForFundingAgreement() {
       const fundingAgreementStartDate = this.formatDate(this.fundingAgreement?.fundingAgreementStartDate);
       this.licences = this.licences.filter((licence) => {
         const licenceStartDate = this.formatDate(licence.recordStartDate);
         const licenceEndDate = this.formatDate(licence.recordEndDate);
-        return (
-          licenceStartDate?.isSameOrBefore(fundingAgreementStartDate) &&
-          (!licenceEndDate || licenceEndDate.isAfter(fundingAgreementStartDate))
-        );
+        const validStart = licenceStartDate?.isSameOrBefore(fundingAgreementStartDate);
+        const validEnd = !licenceEndDate || licenceEndDate.isAfter(fundingAgreementStartDate);
+        return validStart && validEnd;
       });
       if (isEmpty(this.licences)) {
         this.setWarningAlert('Licence not found for this application.');
@@ -246,10 +247,10 @@ export default {
           isFundingAgreementConfirmed: this.isFundingAgreementConfirmed,
           areLicenceDetailsConfirmed: this.areLicenceDetailsConfirmed,
         };
-        if (
+        const isUpdated =
           this.renewalApplicationCCOF.isFundingAgreementConfirmed !== payload.isFundingAgreementConfirmed ||
-          this.renewalApplicationCCOF.areLicenceDetailsConfirmed !== payload.areLicenceDetailsConfirmed
-        ) {
+          this.renewalApplicationCCOF.areLicenceDetailsConfirmed !== payload.areLicenceDetailsConfirmed;
+        if (isUpdated) {
           Object.assign(this.renewalApplicationCCOF, payload);
           await ApplicationService.updateApplication(this.applicationId, payload);
         }
