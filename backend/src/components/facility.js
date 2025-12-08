@@ -32,9 +32,6 @@ function buildNewFacilityPayload(req) {
 function mapFacilityObjectForBack(data) {
   const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
   facilityForBack.ccof_facilitystartdate = facilityForBack.ccof_facilitystartdate ? `${facilityForBack.ccof_facilitystartdate}-01-01` : null;
-  if (facilityForBack.ccof_licensestartdate) {
-    facilityForBack.ccof_licensestartdate = facilityForBack.ccof_licensestartdate + 'T12:00:00-07:00';
-  }
   return facilityForBack;
 }
 
@@ -42,9 +39,6 @@ function mapFacilityObjectForFront(data) {
   if (data.ccof_facilitystartdate) {
     const year = data.ccof_facilitystartdate.split('-')[0];
     data.ccof_facilitystartdate = year;
-  }
-  if (data.ccof_licensestartdate) {
-    data.ccof_licensestartdate = data.ccof_licensestartdate.split('T')[0];
   }
   const obj = new MappableObjectForFront(data, FacilityMappings).toJSON();
   return obj;
