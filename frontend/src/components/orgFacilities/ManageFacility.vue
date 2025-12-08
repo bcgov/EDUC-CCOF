@@ -27,6 +27,8 @@
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
               Licence and Service Details Record
             </v-tab>
+            <!-- TODO: Add permissions here to secure this tab-->
+            <v-tab value="ecestaff"> Manage ECE Staff </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
@@ -42,6 +44,7 @@
               <v-window-item value="licences-details">
                 <ViewLicence />
               </v-window-item>
+              <v-window-item value="ecestaff"><ManageECEStaff /></v-window-item>
             </v-window>
           </v-card-text>
         </v-card>
@@ -66,15 +69,16 @@ import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { isFacilityActive } from '@/utils/facility.js';
 
+import ManageECEStaff from '@/components/eceStaff/ManageECEStaff.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import ViewLicence from '@/components/licences/ViewLicence.vue';
 import ManageFacilityDetails from '@/components/orgFacilities/ManageFacilityDetails.vue';
+import ManageProgramsVacancies from '@/components/programsVacancies/ManageProgramsVacancies.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import ManageProgramsVacancies from '../programsVacancies/ManageProgramsVacancies.vue';
 
 export default {
   name: 'ManageFacility',
-  components: { AppButton, NavButton, ManageFacilityDetails, ManageProgramsVacancies, ViewLicence },
+  components: { AppButton, NavButton, ManageECEStaff, ManageFacilityDetails, ManageProgramsVacancies, ViewLicence },
   mixins: [alertMixin, permissionsMixin],
   data() {
     return {
