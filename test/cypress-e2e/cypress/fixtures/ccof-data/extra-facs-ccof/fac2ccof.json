@@ -24,7 +24,7 @@
     }
   },
   "facilityData": {
-    "facilityName": "Hedie Really Hopes This Works",
+    "facilityName": "Hedies Facility 2",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -182,7 +182,6 @@
       "Thursday": 1,
       "Friday": 1
     },
-    "isOnSchoolProperty": "No",
     "schoolAgedCareServiceDetails": [
       "Before School",
       "After School",
@@ -235,7 +234,7 @@
     },
     "addFacilityData": "No",
     "_optionsAddAnotherFacilityData": {
-      "NOTE": "If this is your last/only facility, please put 'No'",  
+      "NOTE": "If this is your last/only facility, please put 'No'",
       "addAnother": "Yes",
       "onlyOne": "No"
     }

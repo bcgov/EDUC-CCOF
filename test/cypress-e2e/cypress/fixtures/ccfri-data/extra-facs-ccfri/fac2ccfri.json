@@ -1,5 +1,5 @@
 {
-    "facilityName": "Hedies Facility 1",
+    "facilityName": "Hedies Facility 2",
     "optInOrOut": "Opt-In",
     "_optionsOptInOrOut": "Opt-In OR Opt-Out",
     "parentFees": {
@@ -20,8 +20,16 @@
         "groupParentFeeCategories": [
             " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
             " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Kindergarten",
+            " Parent Fees 2024-25 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2024-25 FY: Full-Time Preschool",
             " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months"
+            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees 2025-26 FY: Full-Time Preschool"
         ],
         "groupRenewalParentFeeCategories": [
             " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
@@ -71,7 +79,11 @@
         "_optionsFullFacilityClosureStatus": "Yes OR No",
         "careCategoriesAffected": [
             "0 to 18 months",
-            "18 to 36 months"
+            "18 to 36 months",
+            "3 Years to Kindergarten",
+            "Kindergarten",
+            "Grade 1 to Age 12",
+            "Preschool"
         ],
         "startDate": "2025-12-01",
         "endDate": "2025-12-06",

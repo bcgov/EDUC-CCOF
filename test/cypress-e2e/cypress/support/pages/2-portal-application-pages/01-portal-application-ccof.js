@@ -181,7 +181,7 @@ class CcofApplication {
       cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
       cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
       cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
-      if (this.monthsClosed === "Yes") {
+      if (this.licenceInfo.closedEntireMonths === "Yes") {
         cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
         cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
         cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
@@ -204,31 +204,32 @@ class CcofApplication {
       case 'groupOld': 
         licenceCategory = this.facilityLicenceDetailsData.oldGroupLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
-          if (value.checked) {
-            if (category === "Multi-Age Child Care") {
-              cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
-            } else {
-              cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
-            } 
-          }
+          if (category === "Multi-Age Child Care") {
+            cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
+          } else {
+            cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
+          } 
         });
         break;
     };
 
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    if (licenceCategory.Preschool?.checked) {
+    if (licenceCategory.Preschool?.max > 0) {
       Object.entries(this.preschoolSessions).forEach(([day, value]) => {
         cy.getByLabel(day).typeAndAssert(value);
       });
     }
 
-    cy.contains('div', 'Is the facility located on school property?').within(()=> {
-      cy.getByLabel('Yes').click()
-    })
+    if (licenceCategory["Group Child Care (School Age / School Age Care on School Grounds)"].max > 0) {
+      cy.contains('div', 'Is the facility located on school property?').within(()=> {
+        cy.getByLabel('Yes').click()
+      })
+      this.schoolAgedCare.forEach(label => {
+        cy.contains(label).click()
+        // cy.getByLabel(label).check().should('be.checked');
+      })
+    }
 
-    this.schoolAgedCare.forEach(label => {
-      cy.getByLabel(label).check().should('be.checked');
-    });
   }
 
   familyLicences(appType) {
@@ -363,8 +364,8 @@ class CcofApplication {
     cy.contains(this.facilityData.facilityName)
     cy.contains('Do you want to add another facility to your application?')
     cy.clickByText(this.addFacilityData)
-    if (file) {
-      this.loadFixturesAndVariables(`/additional-facilities/${file}`)
+    if (this.addFacilityData === 'Yes') {
+      this.loadFixturesAndVariables(`/extra-facs-ccof/${file}`)
       cy.then(()=> {
         this.inputFacilityInfo(appType)
         this.licenceAndServiceDeliveryDetails(appType)
@@ -373,6 +374,8 @@ class CcofApplication {
           case "group": this.offerExtendedHours(appType); break;
           case "groupOld": this.oldOfferExtendedHours(appType); break;
         }
+
+        // For last facility
         cy.contains('You have successfully applied for CCOF for the following facilities:')
         cy.contains(this.facilityData.facilityName)
         cy.contains('Do you want to add another facility to your application?')
@@ -382,17 +385,23 @@ class CcofApplication {
   }
 
   licenceUpload() {
+    let licenceFiles;
     cy.contains('Licence Upload')
-    const fileName = '/ccof-data/licence-files/Sample500kb.pdf';
-    cy.get('input[placeholder="Select your file"]')
-      .attachFile(fileName)
-    cy.contains('div', 'Sample500kb.pdf')
+    cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
+      licenceFiles = files
+    })
+    cy.get('input[placeholder="Select your file"]').each((input, index) => {
+      let currFile = `/ccof-data/licence-files/${licenceFiles[index]}`
+      cy.wrap(input)
+        .attachFile(currFile)
+      cy.contains(`${licenceFiles[index]}`)
+    })
     cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
       cy.contains('button', 'Save').should('have.class', 'blueButton')
       .clickByText('Save')
-    })
-    cy.contains('Changes Successfully Saved')
-      .clickByText('Next')
+      cy.contains('Changes Successfully Saved')
+    }) 
+    cy.clickByText('Next')
   }
 }
 

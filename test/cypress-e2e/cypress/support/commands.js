@@ -279,7 +279,7 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
   });
 });
 
-Cypress.Commands.add('runCcofApp', (appType) => {
+Cypress.Commands.add('runCcofApp', (appType, files) => {
 
   ccofApp.loadFixturesAndVariables('ccofData')
   cy.then(()=>{
@@ -292,27 +292,22 @@ Cypress.Commands.add('runCcofApp', (appType) => {
       case 'group':
         ccofApp.groupLicenses(appType)
         ccofApp.offerExtendedHours(appType)
-        cy.task('countFiles', 'cypress/fixtures/ccof-data/additional-facilities').then((files) => {
-          cy.log(files)
-          if (!files) {
-            ccofApp.addAnotherFacility(appType)
-          } else {
-            files.forEach((file) => {
-              ccofApp.addAnotherFacility(appType, file)
-            })
-          }
-        })
+        if (!files) {
+          ccofApp.addAnotherFacility(appType)
+        } else {
+          files.forEach((file) => {
+            ccofApp.addAnotherFacility(appType, file)
+          })
+        }
         break;
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
         ccofApp.oldOfferExtendedHours(appType)
-        cy.task('countFiles', 'cypress/fixtures/ccof-data/additional-facilities').then((files) => {
-          if (!files) {
-            ccofApp.addAnotherFacility(appType)
-          } else {
-            ccofApp.addAnotherFacility(appType, files)
-          }
-        })
+        if (!files) {
+          ccofApp.addAnotherFacility(appType)
+        } else {
+          ccofApp.addAnotherFacility(appType, files)
+        }
         break;
       case 'family':
         ccofApp.familyLicences(appType)
@@ -328,10 +323,10 @@ Cypress.Commands.add('runCcofApp', (appType) => {
 });
 
 
-Cypress.Commands.add('runCcfriApp', (appType, term) => {
-  ccfriApp.loadFixturesAndVariables()
+Cypress.Commands.add('runCcfriApp', (appType, term, files) => {
+  ccfriApp.loadFixturesAndVariables('ccfriData')
   cy.then(()=> {
-    ccfriApp.optInFacilities()
+    ccfriApp.optInFacilities(files)
     switch(appType) {
       case 'group':
       case 'family': 
@@ -345,7 +340,15 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
         ccfriApp.addClosures(appType, term)
         break;
       case 'groupOld':
-      case 'familyOld':ccfriApp.addParentFees(appType, term); break;
+      case 'familyOld':
+        if (files) {
+          files.forEach((file)=> {
+            ccfriApp.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
+            cy.then(()=> {
+              ccfriApp.addParentFees(appType, term)
+            })
+          })
+        }
     }
   })
 }); 

@@ -24,7 +24,7 @@
     }
   },
   "facilityData": {
-    "facilityName": "Hedies Demo Facility",
+    "facilityName": "Hedies Facility 1",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -61,32 +61,27 @@
     },
     "oldGroupLicenceCategories": {
       "Group Child Care (under 36 Months)": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Preschool": {
-        "checked": true,
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
-        "checked": true,
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
-        "checked": true,
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
@@ -182,7 +177,6 @@
       "Thursday": 1,
       "Friday": 1
     },
-    "isOnSchoolProperty": "No",
     "schoolAgedCareServiceDetails": [
       "Before School",
       "After School",

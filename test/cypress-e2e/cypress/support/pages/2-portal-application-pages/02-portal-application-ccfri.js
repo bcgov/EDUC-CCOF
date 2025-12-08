@@ -7,16 +7,17 @@ function handleCardWithin(card, data) {
 }
 
 class CcfriApplication{
-    loadFixtures() {
-        return cy.fixture('/ccfri-data/ccfriData').then((data)=> {
+    loadFixtures(file) {
+        return cy.fixture(`/ccfri-data/${file}`).then((data)=> {
             this.optInOrOut = data.optInOrOut
             this.parentFees = data.parentFees
             this.closures = data.closures
+            this.facilityName = data.facilityName
         })
     }
 
-    loadFixturesAndVariables() {
-        this.loadFixtures()
+    loadFixturesAndVariables(file) {
+        this.loadFixtures(file)
         cy.then(()=> {
             this.paymentFrequency = this.parentFees.frequency
             this.closureCharges = this.closures.closureCharges
@@ -25,13 +26,25 @@ class CcfriApplication{
         })
     }
 
-    optInFacilities() {
+    optInFacilities(files) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
-        if (this.optInOrOut === 'Opt-Out') {
-            cy.contains('Child Care Fee Reduction Initiative (CCFRI)').clickByText('Update')
-            cy.getByLabel(this.optInOrOut).click()
-        } else {
-            cy.clickByText('Opt-In All Facilities')
+        cy.contains('Child Care Fee Reduction Initiative (CCFRI)')
+        cy.then(()=> {
+            cy.contains('.v-card', this.facilityName).within(()=> {
+                cy.clickByText('UPDATE')
+                cy.contains('.v-row',this.optInOrOut).click()
+            })
+        })
+        if (files) {
+            files.forEach((file)=> {
+                this.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
+                cy.then(()=> {
+                    cy.contains('.v-card', this.facilityName).within(()=> {
+                        cy.clickByText('UPDATE')
+                        cy.contains('.v-row', this.optInOrOut).click()
+                    })
+                })
+            })
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
@@ -53,7 +66,9 @@ class CcfriApplication{
             case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
             case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
         }
+        cy.contains(this.facilityName)
         cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+        this.loadFixturesAndVariables('ccfriData')
         cy.get('.v-card.my-10').each((card, index) => {
             const category = parentFeeCategories[index]
             cy.wrap(card)
