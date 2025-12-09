@@ -13,7 +13,8 @@ const {
   deleteFacility,
   getLicenseCategories,
   getApprovedParentFees,
-  getEceweCcfriFacilities,
+  getCcfriFacilities,
+  getEceweFacilities,
 } = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
@@ -26,13 +27,14 @@ const facilitySchema = {
 module.exports = router;
 
 /**
- * Get Facility details
+ * Get CCFRI facility details
  */
-router.get('/ecewe-ccfri-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), (req, res) => {
-  const orgId = req.query.orgId;
-  const selectedFY = req.query.selectedFY;
-  return getEceweCcfriFacilities(req, res, orgId, selectedFY);
-});
+router.get('/ccfri-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getCcfriFacilities);
+
+/**
+ * Get ECE-WE facility details
+ */
+router.get('/ecewe-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getEceweFacilities);
 /**
  * Get Facility details
  */

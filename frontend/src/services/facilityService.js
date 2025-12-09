@@ -54,10 +54,10 @@ export default {
       throw error;
     }
   },
-  async getEceweCcfriFacilities(organizationId, selectedFY) {
+  async getCcfriFacilities(organizationId, selectedFY) {
     try {
       const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.CCFRI_ECEWE_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
+        `${ApiRoutes.CCFRI_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
       );
       return response.data;
     } catch (err) {
@@ -65,4 +65,16 @@ export default {
       throw err;
     }
   },
+  async getEceweFacilities(organizationId, selectedFY) {
+    try {
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ECEWE_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
+      );
+      return response.data;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  },
+
 };

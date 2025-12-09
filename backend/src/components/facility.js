@@ -351,66 +351,7 @@ async function getApprovedParentFees(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
-// Transform Dynamics response into structured Program Year → { ccfri:[], ecewe:[] } for Accounts Management tables.
-function transformFacilities(rawResponse) {
-  const applicationFiscalYears = {};
-
-  rawResponse.forEach((app) => {
-    const year = app?.ccof_ProgramYear?.ccof_name || 'Unknown';
-
-    if (!applicationFiscalYears[year]) {
-      applicationFiscalYears[year] = {
-        ccfri: [],
-        ecewe: [],
-      };
-    }
-    // group ccfri facility application records
-    app.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
-      const f = ccfri.ccof_Facility;
-      if (!f) return;
-
-      applicationFiscalYears[year].ccfri.push({
-        //Facility info
-        name: f.name,
-        accountnumber: f.accountnumber,
-        license: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
-        //fields specific to ccfri record
-        ccof_ccfrioptin: ccfri.ccof_ccfrioptin,
-        ccfri_start_date: ccfri.ccof_opt_in_date ?? null,
-      });
-    });
-    // group ece-we facility application records
-    app.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ece) => {
-      const f = ece.ccof_Facility;
-      if (!f) return;
-
-      //get ece-we start date
-      //Match ece-we adjudication record by facility ID to get ece-we start date
-      const adj = ece.ccof_adj_ecewe_facility_App_ecewe?.[0];
-      const eceweStartDate = adj?.ccof_optinstartdate ?? null;
-
-      applicationFiscalYears[year].ecewe.push({
-        //Facility Info
-        name: f.name,
-        accountnumber: f.accountnumber,
-        license: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
-
-        //fields specific to ece-we record
-        ccof_optintoecewe: ece.ccof_optintoecewe,
-        ecewe_application_status: ece.statuscode,
-        ccof_facilityunionstatus: ece.ccof_facilityunionstatus,
-        ccof_optinstartdate: eceweStartDate,
-
-        // Flags (from the parent ccof-application record)
-        ccof_public_sector_employer: app.ccof_public_sector_employer,
-        ccof_describe_your_org: app.ccof_describe_your_org,
-      });
-    });
-  });
-
-  return applicationFiscalYears;
-}
-async function getEceweCcfriFacilities(req, res) {
+async function getCcfriFacilities(req, res) {
   try {
     const organizationId = req.query.orgId;
     const programYear = req.query.selectedFY;
@@ -419,12 +360,12 @@ async function getEceweCcfriFacilities(req, res) {
       return res.status(400).json({ message: 'Missing orgId query parameter' });
     }
 
-    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
+    const query = `ccof_applications?$select=ccof_describe_your_org&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
     const response = await getOperation(query);
     const raw = response?.value ?? [];
 
     //response needs to be transformed,required values are nested in.
-    const transformed = transformFacilities(raw);
+    const transformed = transformCcfri(raw);
 
     //Add a Map statement map back to front.
 
@@ -433,6 +374,79 @@ async function getEceweCcfriFacilities(req, res) {
     log.error('ECEWE/CCFRI error:', e);
     return res.status(500).json(e?.data ?? e?.status ?? { message: 'Server error' });
   }
+}
+function transformCcfri(applications) {
+  const results = [];
+
+  applications.forEach((app) => {
+    app.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
+      const f = ccfri.ccof_Facility;
+      if (!f) return;
+
+      results.push({
+        facilityName: f.name,
+        facilityAccountNumber: f.accountnumber,
+        licenseNumber: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
+        ccfriOptStatus: ccfri.ccof_ccfrioptin,
+        ccfriStartDate: ccfri.ccof_opt_in_date ?? null,
+      });
+    });
+  });
+
+  return results;
+}
+async function getEceweFacilities(req, res) {
+  try {
+    const organizationId = req.query.orgId;
+    const programYear = req.query.selectedFY;
+
+    if (!organizationId) {
+      return res.status(400).json({ message: 'Missing orgId query parameter' });
+    }
+
+    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
+
+    const response = await getOperation(query);
+    const raw = response?.value ?? [];
+
+    //response needs to be transformed,required values are nested in.
+    const transformed = transformEcewe(raw);
+
+    //Add a Map statement map back to front.
+
+    return res.status(200).json(transformed);
+  } catch (e) {
+    log.error('ECEWE/CCFRI error:', e);
+    return res.status(500).json(e?.data ?? e?.status ?? { message: 'Server error' });
+  }
+}
+function transformEcewe(applications) {
+  const results = [];
+
+  applications.forEach((app) => {
+    app.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ece) => {
+      const f = ece.ccof_Facility;
+      if (!f) return;
+
+      const adj = ece.ccof_adj_ecewe_facility_App_ecewe?.[0];
+
+      results.push({
+        facilityName: f.name,
+        facilityAccountNumber: f.accountnumber,
+        licenseNumber: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
+
+        eceweOptStatus: ece.ccof_optintoecewe,
+        eceweApplicationStatus: ece.statuscode,
+        unionStatus: ece.ccof_facilityunionstatus,
+        eceweStartDate: adj?.ccof_optinstartdate ?? null,
+
+        isPublicSectorEmployer: app.ccof_public_sector_employer,
+        describeOrg: app.ccof_describe_your_org,
+      });
+    });
+  });
+
+  return results;
 }
 
 module.exports = {
@@ -448,5 +462,6 @@ module.exports = {
   getLicenseCategoriesByFacilityId,
   getFacilityChildCareTypesByCcfriId,
   getFacilityByFacilityId,
-  getEceweCcfriFacilities,
+  getEceweFacilities,
+  getCcfriFacilities,
 };
