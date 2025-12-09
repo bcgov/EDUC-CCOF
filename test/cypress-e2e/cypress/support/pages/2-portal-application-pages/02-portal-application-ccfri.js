@@ -29,25 +29,25 @@ class CcfriApplication{
     optInFacilities(files) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         cy.contains('Child Care Fee Reduction Initiative (CCFRI)')
-        cy.then(()=> {
-            cy.contains('.v-card', this.facilityName).within(()=> {
-                cy.clickByText('UPDATE')
-                cy.contains('.v-row',this.optInOrOut).click()
-            })
+        cy.contains('.v-card', this.facilityName).within(()=> {
+            cy.clickByText('UPDATE')
+            cy.contains('label',this.optInOrOut).click()
         })
+        
         if (files) {
             files.forEach((file)=> {
                 this.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
                 cy.then(()=> {
                     cy.contains('.v-card', this.facilityName).within(()=> {
                         cy.clickByText('UPDATE')
-                        cy.contains('.v-row', this.optInOrOut).click()
+                        cy.contains('label', this.optInOrOut).click()
                     })
                 })
             })
         }
         cy.clickByText('Save')
         cy.clickByText('Next')
+        
     }
 
     parentFeesRenewal() {
@@ -56,33 +56,37 @@ class CcfriApplication{
         cy.clickByText('Next')
     }
 
-    addParentFees(appType, term) {
-        let parentFeeCategories
-        switch (appType) {
-            case 'group': 
-            case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
-            case 'family': 
-            case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
-            case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
-            case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
-        }
-        cy.contains(this.facilityName)
-        cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
-        this.loadFixturesAndVariables('ccfriData')
-        cy.get('.v-card.my-10').each((card, index) => {
-            const category = parentFeeCategories[index]
-            cy.wrap(card)
-                .should('contain', `${category}`)
-                .contains('label', `${this.paymentFrequency}`)
-                .click()
-                .then(() => handleCardWithin(card, this.parentFees.months))
-        })
+    addParentFees(appType, term, file) {
+        this.loadFixturesAndVariables(file)
+        cy.then(()=> {
+            let parentFeeCategories
+            switch (appType) {
+                case 'group': 
+                case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
+                case 'family': 
+                case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
+                case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
+                case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
+            }
+            cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+            cy.contains(this.facilityName)
+            cy.then(()=> {
+                cy.get('.v-card.my-10').each((card, index) => {
+                    const category = parentFeeCategories[index]
+                    cy.wrap(card)
+                        .should('contain', `${category}`)
+                        .contains('label', `${this.paymentFrequency}`)
+                        .click()
+                        .then(() => handleCardWithin(card, this.parentFees.months))
+                })
 
-        if (appType === "groupOld" || appType === 'familyOld'){
-            this.addClosures(appType, term)
-        }
-        cy.clickByText('Save')
-        cy.clickByText('Next')
+                if (appType === "groupOld" || appType === 'familyOld'){
+                    this.addClosures(appType, term)
+                }
+                cy.clickByText('Save')
+                cy.clickByText('Next')
+            })
+        })
     }
 
     addClosures(appType, term) {

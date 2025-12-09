@@ -34,8 +34,8 @@
         "confirmation": "I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
     },
     "facility": {
-        "facilityName": "Hedies Facility 1",
-        "facilityOptInOrOut": "Opt-In",
+        "facilityName": "Hedies Facility 2",
+        "facilityOptInOrOut": "Opt-Out",
         "_optionsFacilityOptInOrOut": {
             "optIn": " Opt-In",
             "optOut": "Opt-Out"

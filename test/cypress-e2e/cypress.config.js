@@ -3,6 +3,7 @@ const fs = require('fs')
 
 module.exports = defineConfig({
   defaultCommandTimeout: 60000,
+  numTestsKeptInMemory: 0,
   reporter: "cypress-mochawesome-reporter",
   reporterOptions: {
     reportDir: "cypress/reports/mocha",

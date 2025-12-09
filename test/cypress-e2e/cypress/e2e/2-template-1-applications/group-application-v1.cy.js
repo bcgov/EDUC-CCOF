@@ -10,12 +10,18 @@ describe('Group Application Test Template 1', () => {
             Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
         cy.startNewApp(APP_TYPE.GROUP_V1)
+
         cy.task('countFiles', 'cypress/fixtures/ccof-data/extra-facs-ccof').then((files)=> {
             cy.runCcofApp(APP_TYPE.GROUP_V1, files)
         })
+
         cy.task('countFiles', 'cypress/fixtures/ccfri-data/extra-facs-ccfri').then((files) => {
             cy.runCcfriApp(APP_TYPE.GROUP_V1, PROGRAM_YEAR.CURRENT, files)
-            cy.runEceWeApp(APP_TYPE.GROUP_V1, PROGRAM_YEAR.CURRENT)
+            
+        })
+        
+        cy.task('countFiles', 'cypress/fixtures/ecewe-data/extra-facs-ecewe').then((files)=> {
+            cy.runEceWeApp(APP_TYPE.GROUP_V1, PROGRAM_YEAR.CURRENT, files)
             submitApp.summaryAndDeclaration(APP_TYPE.GROUP_V1)
         })
     })
