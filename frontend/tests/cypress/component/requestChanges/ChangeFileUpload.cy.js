@@ -1,26 +1,25 @@
 import ChangeFileUpload from '@/components/requestChanges/ChangeFileUpload.vue';
 import vuetify from '@/plugins/vuetify';
-import { FILE_REQUIREMENTS_TEXT } from '@/utils/constants.js';
 
-const urlGuid = '134591';
-const changeType = 'DUMMY_CHANGE_TYPE';
-const changeRecGuid = '423321';
+const URL_GUID = '134591';
+const CHANGE_TYPE = 'DUMMY_CHANGE_TYPE';
+const CHANGE_REC_GUID = '423321';
 
-const uploadedDocuments = [
+const UPLOADED_DOCUMENTS = [
   {
     annotationid: '424542',
     filename: 'TEST_FILE_NAME.txt',
     document: '',
     notetext: 'TEST_NOTE_TEXT',
     actions: '',
-    subject: changeType,
+    subject: CHANGE_TYPE,
   },
   {
     filename: '',
     document: '',
     notetext: '',
     actions: '',
-    subject: changeType,
+    subject: CHANGE_TYPE,
   },
 ];
 
@@ -36,8 +35,8 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
           },
           $route: {
             params: {
-              urlGuid,
-              changeRecGuid,
+              urlGuid: URL_GUID,
+              changeRecGuid: CHANGE_REC_GUID,
             },
           },
         },
@@ -53,40 +52,42 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
 describe('<ChangeFileUpload />', () => {
   it('should render file requirement text', () => {
     mountWithPinia();
-    cy.contains(FILE_REQUIREMENTS_TEXT);
+    cy.contains(
+      'The maximum file size is 2MB for each document. Accepted file types are jpg, jpeg, heic, png, pdf, docx, doc, xls, and xlsx.',
+    );
   });
 
   it('should render uploaded file details', () => {
-    const uploadedDoc = uploadedDocuments[0];
+    const uploadedDoc = UPLOADED_DOCUMENTS[0];
     mountWithPinia({
       initialState: {
         reportChanges: {
           uploadedDocuments: [uploadedDoc],
         },
       },
-      propOverride: { changeType },
+      propOverride: { changeType: CHANGE_TYPE },
     });
     cy.contains(uploadedDoc.filename);
     cy.contains(uploadedDoc.notetext);
   });
 
   it('should render add file and description inputs if no file uploaded', () => {
-    const nonUploadedDoc = uploadedDocuments[1];
+    const nonUploadedDoc = UPLOADED_DOCUMENTS[1];
     mountWithPinia({
       initialState: {
         reportChanges: {
           uploadedDocuments: [nonUploadedDoc],
-          changeRequestMap: new Map([[changeRecGuid, { externalStatus: 'NOT_INCOMPLETE' }]]),
+          changeRequestMap: new Map([[CHANGE_REC_GUID, { externalStatus: 'NOT_INCOMPLETE' }]]),
         },
       },
-      propOverride: { changeType },
+      propOverride: { changeType: CHANGE_TYPE },
     });
     cy.get('input[type="file"]').should('exist');
     cy.get('input[placeholder="Enter a description (Optional)"]').should('exist');
   });
 
   it('should render `upload the change notification form` error message', () => {
-    const nonUploadedDoc = uploadedDocuments[1];
+    const nonUploadedDoc = UPLOADED_DOCUMENTS[1];
     mountWithPinia({
       initialState: {
         reportChanges: {

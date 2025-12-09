@@ -1,16 +1,18 @@
+import { StatusCodes } from 'http-status-codes';
+
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import vuetify from '@/plugins/vuetify';
 import { ApiRoutes, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
 
-const organizationName = 'TEST_ORG_NAME';
-const changeRequestId = '000';
-const changeActionId = '111';
+const ORGANIZATION_NAME = 'TEST_ORG_NAME';
+const CHANGE_REQUEST_ID = '000';
+const CHANGE_ACTION_ID = '111';
 
 const createAuthStore = (extras) => {
   return {
     auth: {
       userInfo: {
-        organizationName,
+        organizationName: ORGANIZATION_NAME,
       },
       ...extras,
     },
@@ -19,9 +21,9 @@ const createAuthStore = (extras) => {
 
 function interceptAPI() {
   cy.intercept('POST', `${ApiRoutes.CHANGE_REQUEST_DOCUMENTS}`, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     payload: [],
-    body: { changeRequestId, changeActionId },
+    body: { changeRequestId: CHANGE_REQUEST_ID, changeActionId: CHANGE_ACTION_ID },
   }).as('postChangeRequest');
 }
 
@@ -56,7 +58,7 @@ describe('<ChangeNotificationDialogue />', () => {
 
     cy.contains('div', 'Child Care Operating Funding Program');
     cy.contains('h2', 'Funding Agreement Change Notification');
-    cy.contains(organizationName);
+    cy.contains(ORGANIZATION_NAME);
   });
 
   it('should render link to CCOF website', () => {
@@ -103,7 +105,12 @@ describe('<ChangeNotificationDialogue />', () => {
     cy.wait('@postChangeRequest');
     cy.get('@routerPush').should(
       'have.been.calledWith',
-      changeUrlGuid(PATHS.CHANGE_NOTIFICATION_FORM, changeRequestId, changeActionId, CHANGE_TYPES.CHANGE_NOTIFICATION),
+      changeUrlGuid(
+        PATHS.CHANGE_NOTIFICATION_FORM,
+        CHANGE_REQUEST_ID,
+        CHANGE_ACTION_ID,
+        CHANGE_TYPES.CHANGE_NOTIFICATION,
+      ),
     );
   });
 

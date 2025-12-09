@@ -2,7 +2,7 @@ import ChangeNotificationForm from '@/components/requestChanges/ChangeNotificati
 import vuetify from '@/plugins/vuetify';
 import { CHANGE_TYPES, PATHS, changeUrl } from '@/utils/constants.js';
 
-const changeRecGuid = '01010';
+const CHANGE_REQ_GUID = '01010';
 
 function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -16,7 +16,7 @@ function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
           },
           $route: {
             params: {
-              changeRecGuid,
+              changeRecGuid: CHANGE_REQ_GUID,
             },
           },
         },
@@ -69,7 +69,7 @@ describe('<ChangeNotificationForm />', () => {
     cy.contains('button', 'Next').click();
     cy.get('@routerPush').should(
       'have.been.calledWith',
-      changeUrl(PATHS.SUMMARY_DECLARATION, changeRecGuid, CHANGE_TYPES.CHANGE_NOTIFICATION),
+      changeUrl(PATHS.SUMMARY_DECLARATION, CHANGE_REQ_GUID, CHANGE_TYPES.CHANGE_NOTIFICATION),
     );
   });
 });

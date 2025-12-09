@@ -1,17 +1,19 @@
+import { StatusCodes } from 'http-status-codes';
+
 import ReportChanges from '@/components/requestChanges/ReportChanges.vue';
 import vuetify from '@/plugins/vuetify';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import { ApiRoutes, PATHS } from '@/utils/constants.js';
 
-const programYearId = '1234';
-const programYearName = '2023-2024';
-const applicationIds = ['1'];
+const PROGRAM_YEAR_ID = '1234';
+const PROGRAM_YEAR_NAME = '2023-2024';
+const APPLICATION_IDS = ['1'];
 
-const changeRequest = {
+const CHANGE_REQUEST = {
   changeRequestId: '000001',
   changeActionId: '100001',
   changeActions: [],
-  programYearId,
+  programYearId: PROGRAM_YEAR_ID,
   changeTypeString: 'changeTypeString',
   fiscalYear: '2025',
   firstSubmissionDate: '2025-01-01T01:01:01Z',
@@ -19,8 +21,8 @@ const changeRequest = {
 };
 
 function fetchChangeReq(changeRequest) {
-  cy.intercept('GET', ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + applicationIds, {
-    statusCode: 200,
+  cy.intercept('GET', ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + APPLICATION_IDS, {
+    statusCode: StatusCodes.OK,
     body: [changeRequest],
   }).as('fetchChangeReq');
 }
@@ -138,30 +140,30 @@ describe('<ReportChanges />', () => {
         initialState: {
           app: {
             programYearList: {
-              list: [{ programYearId, name: programYearName }],
+              list: [{ programYearId: PROGRAM_YEAR_ID, name: PROGRAM_YEAR_NAME }],
             },
           },
           application: {
-            programYearId,
+            programYearId: PROGRAM_YEAR_ID,
             applicationMap: new Map([['key', { applicationId: '1' }]]),
           },
         },
       });
     };
     it('should render change request content', () => {
-      const inEligibleCR = { ...changeRequest, externalStatus: 4 };
+      const inEligibleCR = { ...CHANGE_REQUEST, externalStatus: 4 };
       fetchChangeReq(inEligibleCR);
       setUpDefaultState();
 
       cy.wait('@fetchChangeReq');
 
       cy.contains('New Category');
-      cy.contains(programYearName);
+      cy.contains(PROGRAM_YEAR_NAME);
       cy.contains('Ineligible');
     });
 
     it('should render `Continue` and `Cancel` button for in progress change request', () => {
-      const inProgressCR = { ...changeRequest, externalStatus: 1 };
+      const inProgressCR = { ...CHANGE_REQUEST, externalStatus: 1 };
       fetchChangeReq(inProgressCR);
       setUpDefaultState();
 
@@ -171,7 +173,7 @@ describe('<ReportChanges />', () => {
     });
 
     it('should render `View` button', () => {
-      const inProgressCR = { ...changeRequest, externalStatus: 2 };
+      const inProgressCR = { ...CHANGE_REQUEST, externalStatus: 2 };
       fetchChangeReq(inProgressCR);
       setUpDefaultState();
 
@@ -180,7 +182,7 @@ describe('<ReportChanges />', () => {
     });
 
     it('should render `Update` button for action required change request', () => {
-      const inProgressCR = { ...changeRequest, externalStatus: 3 };
+      const inProgressCR = { ...CHANGE_REQUEST, externalStatus: 3 };
       fetchChangeReq(inProgressCR);
       setUpDefaultState();
 

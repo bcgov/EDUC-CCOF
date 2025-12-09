@@ -2,14 +2,25 @@ import SummaryDeclarationChangeRequest from '@/components/requestChanges/Summary
 import vuetify from '@/plugins/vuetify';
 import { CHANGE_REQUEST_TYPES, CHANGE_TYPES, DOCUMENT_TYPES, PATHS } from '@/utils/constants';
 
-const organizationName = 'TEST_ORG_NAME';
-const changeRecGuid = '43220';
+const ORGANIZATION_NAME = 'TEST_ORG_NAME';
+const CHANGE_REC_GUID = '43220';
 
-const mtfiFacility = {
+const MTFI_FACILITY = {
   facilityId: '432411',
   facilityName: 'TEST_FAC_NAME',
   facilityAccountNumber: '000112',
   licenseNumber: '111122',
+};
+
+const createAuthState = (extras) => {
+  return {
+    auth: {
+      userInfo: {
+        organizationName: ORGANIZATION_NAME,
+      },
+      ...extras,
+    },
+  };
 };
 
 function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
@@ -24,7 +35,7 @@ function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
           },
           $route: {
             params: {
-              changeRecGuid,
+              changeRecGuid: CHANGE_REC_GUID,
             },
           },
         },
@@ -45,11 +56,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
   it('should render component headings', () => {
     mountWithPinia({
       initialState: {
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthState(),
       },
     });
     cy.contains('p', 'Child Care Operating Funding Program');
@@ -59,11 +66,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
   it('should render `Incomplete Form` card', () => {
     mountWithPinia({
       initialState: {
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthState(),
       },
     });
     cy.contains('Incomplete Form');
@@ -73,11 +76,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
   it('should not render `Incomplete Form` card if summary complete', () => {
     mountWithPinia({
       initialState: {
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthState(),
         navBar: {
           changeType: CHANGE_TYPES.CHANGE_NOTIFICATION,
         },
@@ -92,11 +91,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
   it('should render `PCF unlocked` card', () => {
     mountWithPinia({
       initialState: {
-        auth: {
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthState(),
         application: {
           applicationMap: new Map([['key', { unlockEcewe: true }]]),
         },
@@ -110,11 +105,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     it('should render change notification form summary component', () => {
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           summaryDeclaration: {
             summaryModel: { changeRequestTypes: [CHANGE_REQUEST_TYPES.PDF_CHANGE] },
           },
@@ -126,33 +117,25 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     it('should render MTFI summary component', () => {
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           summaryDeclaration: {
             summaryModel: {
               changeRequestTypes: [CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE],
-              mtfiFacilities: [mtfiFacility],
+              mtfiFacilities: [MTFI_FACILITY],
             },
           },
         },
       });
-      cy.contains(mtfiFacility.facilityName);
-      cy.contains(mtfiFacility.facilityAccountNumber);
-      cy.contains(mtfiFacility.licenseNumber);
+      cy.contains(MTFI_FACILITY.facilityName);
+      cy.contains(MTFI_FACILITY.facilityAccountNumber);
+      cy.contains(MTFI_FACILITY.licenseNumber);
     });
 
     it('should render RFI summary component if hasRfi', () => {
-      const RFISummaryFac = { ...mtfiFacility, hasRfi: true };
+      const RFISummaryFac = { ...MTFI_FACILITY, hasRfi: true };
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           summaryDeclaration: {
             summaryModel: {
               changeRequestTypes: [CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE],
@@ -165,14 +148,10 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     });
 
     it('should render AFS summary component if enableAfs', () => {
-      const AfsSummaryFac = { ...mtfiFacility, enableAfs: true };
+      const AfsSummaryFac = { ...MTFI_FACILITY, enableAfs: true };
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           summaryDeclaration: {
             summaryModel: {
               changeRequestTypes: [CHANGE_REQUEST_TYPES.PARENT_FEE_CHANGE],
@@ -189,11 +168,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     it('should render long checkbox text when not a renewal', () => {
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           application: {
             isRenewal: false,
           },
@@ -208,11 +183,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     it('should render shortened checkbox text when a renewal', () => {
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           application: {
             isRenewal: true,
           },
@@ -224,11 +195,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
     it('should render signature field', () => {
       mountWithPinia({
         initialState: {
-          auth: {
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState(),
           application: {
             isRenewal: true,
           },
@@ -241,12 +208,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
       const latestSubmissionDate = '2025-11-27 01:01';
       mountWithPinia({
         initialState: {
-          auth: {
-            isMinistryUser: true,
-            userInfo: {
-              organizationName,
-            },
-          },
+          ...createAuthState({ isMinistryUser: true }),
           application: {
             isRenewal: true,
           },
@@ -264,12 +226,7 @@ describe('<SummaryDeclarationChangeRequest />', () => {
   it('should render app dialog for submission receival', () => {
     mountWithPinia({
       initialState: {
-        auth: {
-          isMinistryUser: true,
-          userInfo: {
-            organizationName,
-          },
-        },
+        ...createAuthState({ isMinistryUser: true }),
       },
       dataOverride: { dialog: true },
     });
