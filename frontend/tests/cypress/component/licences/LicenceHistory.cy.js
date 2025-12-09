@@ -33,6 +33,7 @@ describe('<LicenceHistory />', () => {
   beforeEach(() => {
     mountWithPinia({ propOverride: { licences: LICENCES } });
   });
+
   it('should render table headers', () => {
     cy.get('th').should('have.length', 6);
     cy.contains('th', 'Status');

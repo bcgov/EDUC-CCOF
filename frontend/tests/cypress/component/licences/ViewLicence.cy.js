@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import ViewLicence from '@/components/licences/ViewLicence.vue';
 import vuetify from '@/plugins/vuetify';
 import { ApiRoutes, LICENCE_STATUSES } from '@/utils/constants.js';
@@ -12,7 +14,7 @@ const LICENCE = {
   recordEndDate: null,
 };
 
-function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
+function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ViewLicence, {
       global: {
@@ -25,17 +27,14 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
           },
         },
       },
-      props: {
-        ...propOverride,
-      },
     });
   });
 }
 
-function interceptAPI(LIC = {}) {
+function interceptAPI(lic = {}) {
   cy.intercept('GET', `${ApiRoutes.LICENCES}?facilityId=${FACILITY_ID}`, {
-    statusCode: 200,
-    body: [LIC],
+    statusCode: StatusCodes.OK,
+    body: [lic],
   });
 }
 

@@ -41,6 +41,7 @@ describe('<ServiceDetails />', () => {
   beforeEach(() => {
     cy.viewport(1080, 1080);
   });
+
   it('should render licence information', () => {
     mountWithPinia({ propOverride: { licence: LICENCE } });
     cy.contains('Licence Number:').siblings('span').should('include.text', LICENCE.licenceNumber);
