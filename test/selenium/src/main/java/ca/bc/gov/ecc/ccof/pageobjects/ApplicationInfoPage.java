@@ -47,6 +47,12 @@ public class ApplicationInfoPage {
 	@FindBy(xpath = "//*[@data-id='confirmButton']")
 	WebElement deleteConfirmBtn;
 
+	@FindBy(xpath = "//*[@aria-label='Change Requests']")
+	WebElement changeRequests;
+
+	@FindBy(xpath = "//div[@col-id='ccof_externalstatus']//label[@aria-label='Submitted']")
+	WebElement changeRequestSelected;
+
 	// declaration B status
 	@FindBy(xpath = "//*[@aria-label='Declaration B Status']")
 	WebElement declarationBStatus;
@@ -136,4 +142,14 @@ public class ApplicationInfoPage {
 	public List<WebElement> getDeclarationBStatusOptions() {
 		return declarationBStatusOptions;
 	}
+
+	public void clickChangeRequests() {
+		changeRequests.click();
+	}
+
+	public void clickChangeRequestSelected() {
+		Actions action = new Actions(driver);
+		action.moveToElement(changeRequestSelected).doubleClick().build().perform();
+	}
+
 }

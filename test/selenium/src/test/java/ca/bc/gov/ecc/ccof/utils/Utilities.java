@@ -38,7 +38,7 @@ public class Utilities {
 		Random random = new Random();
 		int randomNumber = random.nextInt(10000) + 1;
 		String dynamicValue = prefix + randomNumber;
-		logger.info("Entered Org ID as : {}", dynamicValue);
+		logger.info("Entered ID as : {}", dynamicValue);
 		return dynamicValue;
 	}
 
@@ -108,6 +108,10 @@ public class Utilities {
 
 	public void assertElementDeleted(List<WebElement> elements) {
 		Assert.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
+	}
+
+	public void compareValues(String expected, String actual) {
+		Assert.assertEquals(actual, expected, "Actual value: " + actual + "Expected value: " + expected);
 	}
 
 }

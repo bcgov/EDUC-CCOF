@@ -1,5 +1,5 @@
 {
-  "contact": "",
+  "contact": "QA218 OFM",
   "declarationBStatus": "Yes",
   "ccfriAdjudicatorRecommendation": "Stage 1 (NRC)",
   "ccfriPaymentEligibilityStartDate":"Jul",
@@ -10,4 +10,8 @@
   "fundingAgreementStartDate": "04/01/2025",
   "organizationId": "EFXORG_",
   "facilityId": "EFXFAC_",
+  "closureAdjudicatorRecommendation": "Recommended Approved",
+  "adjudicatorRecommendation": "Stage 3 (AFC)",
+  "mtfiQCDecision": "Stage 3 (AFC)",
+  "mtfiStatusReasonOptions": "Complete - Approved",
 }
