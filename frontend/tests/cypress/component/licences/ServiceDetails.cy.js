@@ -52,15 +52,14 @@ describe('<ServiceDetails />', () => {
   });
 
   it('should render general service delivery details', () => {
-    const serviceDelivery = SERVICE_DELIVERY_DETAIL;
     mountWithPinia({ propOverride: { licence: LICENCE } });
 
     cy.contains('Maximum Capacity:').siblings('span').should('include.text', LICENCE.licenceMaxCapacity);
-    cy.contains('Licence Category:').siblings('span').should('include.text', serviceDelivery.licenceCategory);
+    cy.contains('Licence Category:').siblings('span').should('include.text', SERVICE_DELIVERY_DETAIL.licenceCategory);
 
     cy.contains('Maximum Capacity by Care Type:')
       .siblings('span')
-      .should('include.text', serviceDelivery.licencedSpaces);
+      .should('include.text', SERVICE_DELIVERY_DETAIL.licencedSpaces);
 
     cy.contains('Max number of days per week you provide child care:')
       .siblings('span')
@@ -72,12 +71,11 @@ describe('<ServiceDetails />', () => {
   });
 
   it('should render preschool specific sessions', () => {
-    const serviceDelivery = SERVICE_DELIVERY_DETAIL;
     mountWithPinia({ propOverride: { licence: LICENCE } });
 
     cy.contains('Number of preschool sessions per week:')
       .siblings('span')
-      .should('include.text', serviceDelivery.preschoolSessions);
+      .should('include.text', SERVICE_DELIVERY_DETAIL.preschoolSessions);
   });
 
   it('should not render preschool sessions if not a preschool category', () => {
