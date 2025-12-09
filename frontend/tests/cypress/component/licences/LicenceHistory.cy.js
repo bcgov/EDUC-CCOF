@@ -14,16 +14,10 @@ const LICENCES = [
 
 function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const pushStub = cy.stub().as('routerPush');
     const onViewServiceDetails = cy.spy().as('viewServiceDetailsSpy');
     cy.mount(LicenceHistory, {
       global: {
         plugins: [pinia, vuetify],
-        mocks: {
-          $router: {
-            push: pushStub,
-          },
-        },
       },
       attrs: {
         'onView-service-details': onViewServiceDetails,
