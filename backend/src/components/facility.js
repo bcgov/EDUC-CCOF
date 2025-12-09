@@ -413,12 +413,13 @@ function transformFacilities(rawResponse) {
 async function getEceweCcfriFacilities(req, res) {
   try {
     const organizationId = req.query.orgId;
+    const programYear = req.query.selectedFY;
 
     if (!organizationId) {
       return res.status(400).json({ message: 'Missing orgId query parameter' });
     }
 
-    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq 2a09c320-7ada-ef11-8eea-000d3af44815)`;
+    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
     const response = await getOperation(query);
     const raw = response?.value ?? [];
 
