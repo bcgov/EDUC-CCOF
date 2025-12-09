@@ -44,6 +44,7 @@ describe('<ServiceDetails />', () => {
 
   it('should render licence information', () => {
     mountWithPinia({ propOverride: { licence: LICENCE } });
+
     cy.contains('Licence Number:').siblings('span').should('include.text', LICENCE.licenceNumber);
     cy.contains('Licence Effective Date:').siblings('span').should('have.text', LICENCE.licenceStartDate);
     cy.contains('Record Start Date:').siblings('span').should('have.text', LICENCE.recordStartDate);
