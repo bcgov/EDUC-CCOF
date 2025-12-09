@@ -111,6 +111,7 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     async loadData() {
       try {
@@ -139,6 +140,7 @@ export default {
           await ApplicationService.updateApplication(this.applicationId, {
             hasBankingInfoChanged: this.hasBankingInfoChanged,
           });
+          this.refreshNavBarList();
         }
         if (showNotification) {
           this.setSuccessAlert('Application saved successfully.');
