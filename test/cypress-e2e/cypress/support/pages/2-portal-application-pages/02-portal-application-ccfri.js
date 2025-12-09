@@ -46,6 +46,7 @@ class CcfriApplication{
             })
         }
         cy.clickByText('Save')
+        cy.contains('Success! CCFRI Opt-In status has been saved.').should('be.visible')
         cy.clickByText('Next')
         
     }
@@ -84,6 +85,7 @@ class CcfriApplication{
                     this.addClosures(appType, term)
                 }
                 cy.clickByText('Save')
+                cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
                 cy.clickByText('Next')
             })
         })

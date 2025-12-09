@@ -365,7 +365,7 @@ class CcofApplication {
     cy.contains('Do you want to add another facility to your application?')
     cy.clickByText(this.addFacilityData)
     if (this.addFacilityData === 'Yes') {
-      this.loadFixturesAndVariables(`/extra-facs-ccof/${file}`)
+      this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
       cy.then(()=> {
         this.inputFacilityInfo(appType)
         this.licenceAndServiceDeliveryDetails(appType)

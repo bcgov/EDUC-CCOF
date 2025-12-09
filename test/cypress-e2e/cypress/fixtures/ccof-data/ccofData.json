@@ -227,7 +227,7 @@
         "maxOverFourHours": 4
       }
     },
-    "addFacilityData": "Yes",
+    "addFacilityData": "No",
     "_optionsAddAnotherFacilityData": {
       "NOTE": "If this is your last/only facility, please put 'No'",
       "addAnother": "Yes",

@@ -346,7 +346,7 @@ Cypress.Commands.add('runCcfriApp', (appType, term, files) => {
         if (files) {
           files.forEach((file)=> {
             cy.then(()=> {
-              ccfriApp.addParentFees(appType, term, `/extra-facs-ccfri/${file}`)
+              ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`)
             })
           })
         }
