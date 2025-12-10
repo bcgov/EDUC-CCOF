@@ -4,6 +4,7 @@ import ReportChanges from '@/components/requestChanges/ReportChanges.vue';
 import vuetify from '@/plugins/vuetify';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants';
 import { ApiRoutes, PATHS } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const PROGRAM_YEAR_ID = '1234';
 const PROGRAM_YEAR_NAME = '2023-2024';
@@ -20,8 +21,16 @@ const CHANGE_REQUEST = {
   facilityNames: 'TESt_FAC_NAME',
 };
 
+const createAuthStore = (extras) => {
+  return {
+    auth: {
+      ...extras,
+    },
+  };
+};
+
 function fetchChangeReq(changeRequest) {
-  cy.intercept('GET', ApiRoutes.APPLICATION_CHANGE_REQUEST + '/' + APPLICATION_IDS, {
+  cy.intercept('GET', `${ApiRoutes.APPLICATION_CHANGE_REQUEST}/${APPLICATION_IDS}`, {
     statusCode: StatusCodes.OK,
     body: [changeRequest],
   }).as('fetchChangeReq');
@@ -66,6 +75,7 @@ describe('<ReportChanges />', () => {
         organization: {
           organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
         },
+        ...createAuthStore({ permissions: [PERMISSIONS.ADD_NEW_FACILITY] }),
       },
     });
 
@@ -80,6 +90,7 @@ describe('<ReportChanges />', () => {
         organization: {
           organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
         },
+        ...createAuthStore({ permissions: [PERMISSIONS.ADD_NEW_FACILITY] }),
       },
     });
 
@@ -88,14 +99,37 @@ describe('<ReportChanges />', () => {
   });
 
   it('should render `Upload a Change Notification Form` button', () => {
-    mountWithPinia();
+    mountWithPinia({
+      initialState: {
+        ...createAuthStore({ permissions: [PERMISSIONS.LICENCE_CHANGE] }),
+      },
+    });
     cy.contains('Report changes to your Licence or service');
     cy.contains('button', 'Upload a Change Notification Form').click();
     cy.get('@routerPush').should('have.been.calledWith', PATHS.CHANGE_NOTIFICATION_DIALOGUE);
   });
 
+  it('should not render `Upload a Change Notification Form` without proper permissions', () => {
+    const perm = Object.values(PERMISSIONS).filter(
+      (permission) =>
+        permission !== PERMISSIONS.LICENCE_CHANGE &&
+        permission !== PERMISSIONS.ORGANIZATION_CHANGE &&
+        permission !== PERMISSIONS.OTHER_CHANGES,
+    );
+    mountWithPinia({
+      initialState: {
+        ...createAuthStore({ permissions: perm }),
+      },
+    });
+    cy.contains('Report changes to your Licence or service').should('not.exist');
+  });
+
   it('should render `Mtfi` column as disabled', () => {
-    mountWithPinia();
+    mountWithPinia({
+      initialState: {
+        ...createAuthStore({ permissions: [PERMISSIONS.MTFI] }),
+      },
+    });
     cy.contains('Mid-Term Fee Increase (MTFI)').should('have.css', 'pointer-events', 'none');
   });
 
@@ -110,11 +144,23 @@ describe('<ReportChanges />', () => {
             },
           ],
         },
+        ...createAuthStore({ permissions: [PERMISSIONS.MTFI] }),
       },
     });
     cy.contains('Mid-Term Fee Increase (MTFI)').should('have.css', 'pointer-events', 'auto');
     cy.contains('Request a parent fee increase for a facility after you have received approval for the CCFRI.');
     cy.contains('You may need to provide details about your expenses.');
+  });
+
+  it('should not render `Mtfi` column without MTFI permissions', () => {
+    const permWithoutMTFI = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.MTFI);
+
+    mountWithPinia({
+      initialState: {
+        ...createAuthStore({ permissions: permWithoutMTFI }),
+      },
+    });
+    cy.contains('Mid-Term Fee Increase (MTFI)').should('not.exist');
   });
 
   it('should render `Request change to parent fees` button', () => {
@@ -128,6 +174,7 @@ describe('<ReportChanges />', () => {
             },
           ],
         },
+        ...createAuthStore({ permissions: [PERMISSIONS.MTFI] }),
       },
     });
     cy.contains('button', 'Request change to parent fees').click();
@@ -147,6 +194,7 @@ describe('<ReportChanges />', () => {
             programYearId: PROGRAM_YEAR_ID,
             applicationMap: new Map([['key', { applicationId: '1' }]]),
           },
+          ...createAuthStore({ permissions: [PERMISSIONS.VIEW_A_CR] }),
         },
       });
     };
