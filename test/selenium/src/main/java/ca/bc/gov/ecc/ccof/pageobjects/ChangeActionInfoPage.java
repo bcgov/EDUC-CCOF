@@ -38,6 +38,10 @@ public class ChangeActionInfoPage {
 		action.moveToElement(selectNewFacilityRow).doubleClick().build().perform();
 	}
 
+	public WebElement waitBeforeClickNewFacilityRow() {
+		return selectNewFacilityRow;
+	}
+
 	public void clickMTFIRow() {
 		Actions action = new Actions(driver);
 		action.moveToElement(selectMTFIRow).doubleClick().build().perform();

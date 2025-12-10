@@ -29,6 +29,10 @@ public class ChangeActionNewFacilityPage {
 		newFacilityField.click();
 	}
 
+	public WebElement waitBeforeClickNewFacilityField() {
+		return newFacilityField;
+	}
+
 	public void clickSaveAndCloseBtn() {
 		saveAndCloseBtn.click();
 	}

@@ -60,8 +60,16 @@ public class ChangeActionMTFIInfoPage {
 		newMTFIDecisionTab.click();
 	}
 
+	public WebElement waitBeforeClickMTFIDecisionTab() {
+		return newMTFIDecisionTab;
+	}
+
 	public void clickClosureAdjudicatorRecommendationField() {
 		closureAdjudicatorRecommendationField.click();
+	}
+
+	public WebElement waitBeforeClickClosureAdjudicatorRecommendationField() {
+		return closureAdjudicatorRecommendationField;
 	}
 
 	public List<WebElement> getClosureAdjudicatorRecommendation() {
@@ -72,6 +80,10 @@ public class ChangeActionMTFIInfoPage {
 		adjudicatorRecommendationField.click();
 	}
 
+	public WebElement waitBeforeClickAdjudicatorRecommendationField() {
+		return adjudicatorRecommendationField;
+	}
+
 	public List<WebElement> getAdjudicatorRecommendation() {
 		return adjudicatorRecommendation;
 	}
@@ -80,12 +92,20 @@ public class ChangeActionMTFIInfoPage {
 		selectMTFIQCDecisionField.click();
 	}
 
+	public WebElement waitBeforeClickMTFIQCDecisionField() {
+		return selectMTFIQCDecisionField;
+	}
+
 	public List<WebElement> getMTFIQCDecisionOptions() {
 		return enterMTFIQCDecisionOptions;
 	}
 
 	public void clickSaveButton() {
 		saveButton.click();
+	}
+
+	public WebElement waitBeforeClickSaveButton() {
+		return saveButton;
 	}
 
 	public void clickExpandIcon() {

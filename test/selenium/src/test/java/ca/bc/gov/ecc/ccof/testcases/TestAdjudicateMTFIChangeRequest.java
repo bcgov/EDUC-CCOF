@@ -60,11 +60,11 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
-		Thread.sleep(5000);
 
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
+		ut.waitForElement(orginfo.waitBeforeClickMainApplication());
 		orginfo.clickMainApplication();
 		Thread.sleep(5000);
 
@@ -72,21 +72,24 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// navigating to related tab
 		appinfo.clickRelatedTab();
-		Thread.sleep(5000);
 
 		// navigating to Change Requests in related Tab
+		ut.waitForElement(appinfo.waitBeforeChangeRequests());
 		appinfo.clickChangeRequests();
-		Thread.sleep(5000);
+
 		// selecting the submitted MTFI Change Request
+		ut.waitForElement(appinfo.waitBeforeClickChangeRequestSelected());
 		appinfo.clickChangeRequestSelected();
 		Thread.sleep(8000);
 
 		ChangeRequestInfoPage changeRequestInfo = new ChangeRequestInfoPage(driver);
 
 		// navigating to Change Request Adjudication tab
+		ut.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
 		changeRequestInfo.clickChangeRequestAdjudicationTab();
-		Thread.sleep(5000);
+
 		// clicking on Parent Fee Change(MTFI) Change Actions
+		ut.waitForElement(changeRequestInfo.waitBeforeClickParentFeeMTFIChangeActions());
 		changeRequestInfo.clickParentFeeMTFIChangeActions();
 		Thread.sleep(5000);
 
@@ -94,31 +97,31 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// navigating to Parent Fee Change(MTFI) Change Action Page
 		changeActionInfo.clickMTFIRow();
-		Thread.sleep(5000);
 
 		ChangeActionMTFIInfoPage mtfiinfo = new ChangeActionMTFIInfoPage(driver);
 
 		// entering MTFI decision tab and changing Adjudicator Recommendation and
 		// MTFI-QC Decision
+		ut.waitForElement(mtfiinfo.waitBeforeClickMTFIDecisionTab());
 		mtfiinfo.clickMTFIDecisionTab();
-		Thread.sleep(5000);
+		ut.waitForElement(mtfiinfo.waitBeforeClickClosureAdjudicatorRecommendationField());
 		mtfiinfo.clickClosureAdjudicatorRecommendationField();
 		Thread.sleep(5000);
 		ut.selectDropdownValue(ut.getDataFromJson("closureAdjudicatorRecommendation"),
 				mtfiinfo.getClosureAdjudicatorRecommendation());
 		logger.info("Closure Adjudicator Recommendation option is selected");
-		Thread.sleep(5000);
+		ut.waitForElement(mtfiinfo.waitBeforeClickAdjudicatorRecommendationField());
 		mtfiinfo.clickAdjudicatorRecommendationField();
 		Thread.sleep(5000);
 		ut.selectDropdownValue(ut.getDataFromJson("adjudicatorRecommendation"),
 				mtfiinfo.getAdjudicatorRecommendation());
-		Thread.sleep(5000);
 		logger.info("Adjudicator Recommendation option is selected from Adjudicator Recommendation dropdown");
+		ut.waitForElement(mtfiinfo.waitBeforeClickMTFIQCDecisionField());
 		mtfiinfo.clickMTFIQCDecisionField();
 		Thread.sleep(3000);
 		ut.selectDropdownValue(ut.getDataFromJson("mtfiQCDecision"), mtfiinfo.getMTFIQCDecisionOptions());
-		Thread.sleep(5000);
 		logger.info("MTFI-QC Decision option is selected from MTFI-QC Decision dropdown");
+		ut.waitForElement(mtfiinfo.waitBeforeClickSaveButton());
 		mtfiinfo.clickSaveButton();
 		Thread.sleep(5000);
 		mtfiinfo.clickExpandIcon();
@@ -138,11 +141,11 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// changing Internal Status to Complete
 		changeRequestInfo.clickMoreHeaderEditableFields();
-		Thread.sleep(3000);
+		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
 		changeRequestInfo.clickInternalStatusField();
 		Thread.sleep(5000);
 		changeRequestInfo.mouseOverInternalStatusCompleteOption();
-		Thread.sleep(5000);
+		ut.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
 		logger.info("Internal Status Complete option is selected from Internal Status dropdown");
 		String internalstatus = changeRequestInfo.getInternalStatus();
 		logger.info("Internal Status is: {}", internalstatus);
@@ -151,7 +154,7 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// validating the internal status and external status changed and are same
 		changeRequestInfo.clickOverviewTab();
-		Thread.sleep(5000);
+		ut.waitForElement(changeRequestInfo.waitForExternalStatusField());
 		String externalstatus = changeRequestInfo.getExternalStatus();
 		logger.info("External Status is: {}", externalstatus);
 

@@ -147,9 +147,17 @@ public class ApplicationInfoPage {
 		changeRequests.click();
 	}
 
+	public WebElement waitBeforeChangeRequests() {
+		return changeRequests;
+	}
+
 	public void clickChangeRequestSelected() {
 		Actions action = new Actions(driver);
 		action.moveToElement(changeRequestSelected).doubleClick().build().perform();
+	}
+
+	public WebElement waitBeforeClickChangeRequestSelected() {
+		return changeRequestSelected;
 	}
 
 }

@@ -61,11 +61,11 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 
 		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
-		Thread.sleep(5000);
 
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
+		ut.waitForElement(orginfo.waitBeforeClickMainApplication());
 		orginfo.clickMainApplication();
 		Thread.sleep(5000);
 
@@ -73,21 +73,23 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 
 		// navigating to related tab
 		appinfo.clickRelatedTab();
-		Thread.sleep(5000);
 
 		// navigating to Change Requests in related Tab
+		ut.waitForElement(appinfo.waitBeforeChangeRequests());
 		appinfo.clickChangeRequests();
-		Thread.sleep(5000);
+
 		// selecting the submitted Add new Facility Change Request
+		ut.waitForElement(appinfo.waitBeforeClickChangeRequestSelected());
 		appinfo.clickChangeRequestSelected();
-		Thread.sleep(8000);
 
 		ChangeRequestInfoPage changeRequestInfo = new ChangeRequestInfoPage(driver);
 
 		// navigating to Change Request Adjudication tab
+		ut.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
 		changeRequestInfo.clickChangeRequestAdjudicationTab();
-		Thread.sleep(5000);
+
 		// clicking on Add New Facility Change Actions
+		ut.waitForElement(changeRequestInfo.waitBeforeClickAddNewFacilityChangeActions());
 		changeRequestInfo.clickAddNewFacilityChangeActions();
 		Thread.sleep(5000);
 
@@ -95,10 +97,11 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 
 		// navigating to New Facility Change Action Page
 		changeActionInfo.clickNewFacilityRow();
-		Thread.sleep(5000);
 
 		ChangeActionNewFacilityPage changeActionNewFacility = new ChangeActionNewFacilityPage(driver);
+
 		// adjudicating Add Facility Change Request
+		ut.waitForElement(changeActionNewFacility.waitBeforeClickNewFacilityField());
 		changeActionNewFacility.clickNewFacilityField();
 		Thread.sleep(5000);
 
@@ -107,12 +110,14 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 		// adding Facility ID
 		facilityinfo.enterFacId(ut.generateDynamicValue("facilityId"));
 		facilityinfo.clickMyCcsTestDropdown();
-		Thread.sleep(5000);
+
+		// changing Facility Status to CCFRI Complete
+		ut.waitForElement(facilityinfo.waitBeforeClickFacilityStatusField());
 		facilityinfo.clickFacilityStatusField();
 		Thread.sleep(5000);
 		facilityinfo.mouseOverCcfriComplete();
-		Thread.sleep(5000);
 		logger.info("CCFRI Complete option is selected from Facility Status dropdown");
+		ut.waitForElement(facilityinfo.waitBeforeClickSaveAndCloseCcfriFacilityBtn());
 		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
 		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
@@ -128,18 +133,19 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 
 		// changing Internal Status to Complete
 		changeRequestInfo.clickMoreHeaderEditableFields();
-		Thread.sleep(3000);
+		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
 		changeRequestInfo.clickInternalStatusField();
-		Thread.sleep(5000);
+		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusCompleteOption());
 		changeRequestInfo.mouseOverInternalStatusCompleteOption();
-		Thread.sleep(5000);
+		ut.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
 		logger.info("Internal Status Complete option is selected from Internal Status dropdown");
 		String internalstatus = changeRequestInfo.getInternalStatus();
-
 		changeRequestInfo.clickSaveBtn();
 		Thread.sleep(5000);
 		changeRequestInfo.clickOverviewTab();
-		Thread.sleep(5000);
+
+		// getting External Status value
+		ut.waitForElement(changeRequestInfo.waitForExternalStatusField());
 		String externalstatus = changeRequestInfo.getExternalStatus();
 		logger.info("External Status is: {}", externalstatus);
 

@@ -55,9 +55,17 @@ public class ChangeRequestInfoPage {
 		changeRequestAdjudicationTab.click();
 	}
 
+	public WebElement waitBeforeClickChangeRequestAdjudicationTab() {
+		return changeRequestAdjudicationTab;
+	}
+
 	public void clickAddNewFacilityChangeActions() {
 		Actions action = new Actions(driver);
 		action.moveToElement(addNewFacilityChangeActions).doubleClick().build().perform();
+	}
+
+	public WebElement waitBeforeClickAddNewFacilityChangeActions() {
+		return addNewFacilityChangeActions;
 	}
 
 	public void clickOtherChangesChangeActions() {
@@ -65,17 +73,33 @@ public class ChangeRequestInfoPage {
 		action.moveToElement(otherChangesChangeActions).doubleClick().build().perform();
 	}
 
+	public WebElement waitBeforeClickOtherChangesChangeActions() {
+		return otherChangesChangeActions;
+	}
+
 	public void clickParentFeeMTFIChangeActions() {
 		Actions action = new Actions(driver);
 		action.moveToElement(parentFeeMTFIChangeActions).doubleClick().build().perform();
+	}
+
+	public WebElement waitBeforeClickParentFeeMTFIChangeActions() {
+		return parentFeeMTFIChangeActions;
 	}
 
 	public void clickMoreHeaderEditableFields() {
 		moreHeaderEditableFields.click();
 	}
 
+	public WebElement waitBeforeClickMoreHeaderEditableFields() {
+		return moreHeaderEditableFields;
+	}
+
 	public void clickInternalStatusField() {
 		internalStatusField.click();
+	}
+
+	public WebElement waitBeforeClickInternalStatusField() {
+		return internalStatusField;
 	}
 
 	public void mouseOverInternalStatusCompleteOption() {
@@ -83,12 +107,24 @@ public class ChangeRequestInfoPage {
 		action.moveToElement(internalStatusCompleteOption).click().build().perform();
 	}
 
+	public WebElement waitBeforeClickInternalStatusCompleteOption() {
+		return internalStatusCompleteOption;
+	}
+
 	public void clickSaveBtn() {
 		saveBtn.click();
 	}
 
+	public WebElement waitBeforeClickSaveBtn() {
+		return saveBtn;
+	}
+
 	public void clickOverviewTab() {
 		overviewTab.click();
+	}
+
+	public WebElement waitBeforeClickOverviewTab() {
+		return overviewTab;
 	}
 
 	public String getInternalStatus() {
@@ -97,5 +133,9 @@ public class ChangeRequestInfoPage {
 
 	public String getExternalStatus() {
 		return wait.until(ExpectedConditions.visibilityOf(externalStatusField)).getAttribute("value");
+	}
+
+	public WebElement waitForExternalStatusField() {
+		return externalStatusField;
 	}
 }

@@ -59,7 +59,7 @@ public class TestEfxAdjudicateApplicationCcfri extends BaseTest {
 
 		BCeIDPage bceidpage = new BCeIDPage(driver);
 		bceidpage.clickSelectOrganization();
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 
 		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
 
