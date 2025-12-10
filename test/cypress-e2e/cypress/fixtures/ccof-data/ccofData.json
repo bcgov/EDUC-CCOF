@@ -53,12 +53,41 @@
         "September",
         "December"
       ],
+      "_optionsClosedMonths": [
+        "January", 
+        "February",
+        "March", 
+        "April", 
+        "May", 
+        "June",
+        "July", 
+        "August", 
+        "September",
+        "October",
+        "November", 
+        "December"
+      ],
       "closedMonthsOld": [
         "Jan",
         "Sep",
         "Dec"
+      ],
+      "_optionsClosedMonthsOld": [
+        "Jan", 
+        "Feb",
+        "Mar", 
+        "Apr", 
+        "May", 
+        "Jun",
+        "Jul", 
+        "Aug", 
+        "Sep",
+        "Oct",
+        "Nov", 
+        "Dec"
       ]
     },
+    "_NOTE": "For oldGroup categories, put max=0 if NOT using that licence, all other categories change 'checked' to 'false'.",
     "oldGroupLicenceCategories": {
       "Group Child Care (under 36 Months)": {
         "max": 1,
@@ -178,6 +207,12 @@
       "Friday": 1
     },
     "schoolAgedCareServiceDetails": [
+      "Before School",
+      "After School",
+      "Before Kindergarten",
+      "After Kindergarten"
+    ],
+    "_optionsSchoolAgedCareServiceDetails": [
       "Before School",
       "After School",
       "Before Kindergarten",

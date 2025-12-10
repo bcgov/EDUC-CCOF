@@ -23,6 +23,7 @@
       "position": "owner"
     }
   },
+  "_NOTE": "If adding additional facilities, copy-paste the content of this file into a new file under extra-facs-ccof and change values below this line according to your test case",
   "facilityData": {
     "facilityName": "Hedies Facility 2",
     "yearFacilityBegan": "2018",
@@ -53,39 +54,63 @@
         "September",
         "December"
       ],
+      "_optionsClosedMonths": [
+        "January", 
+        "February",
+        "March", 
+        "April", 
+        "May", 
+        "June",
+        "July", 
+        "August", 
+        "September",
+        "October",
+        "November", 
+        "December"
+      ],
       "closedMonthsOld": [
         "Jan",
         "Sep",
         "Dec"
+      ],
+      "_optionsClosedMonthsOld": [
+        "Jan", 
+        "Feb",
+        "Mar", 
+        "Apr", 
+        "May", 
+        "Jun",
+        "Jul", 
+        "Aug", 
+        "Sep",
+        "Oct",
+        "Nov", 
+        "Dec"
       ]
     },
+    "_NOTE":"To edit licence types for OLD",
     "oldGroupLicenceCategories": {
       "Group Child Care (under 36 Months)": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Preschool": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
-        "checked": true,
         "max": 1,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4

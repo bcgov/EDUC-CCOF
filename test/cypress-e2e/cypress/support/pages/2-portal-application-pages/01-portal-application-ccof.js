@@ -38,12 +38,11 @@ class CcofApplication {
     cy.url().should('include', `/${path}/organization`)
   }
 
-  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
+  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship) ; only for Template 2
   inputOrganizationInfo(appType) {
     switch (appType) {
       case 'group':
       case 'family':
-        // cy.contains('Organization Information').should('be.visible')
         cy.contains('Type of Organization').should('be.visible')
         cy.getByLabel(this.orgType).click()
         cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.legalOrgName)
@@ -226,7 +225,6 @@ class CcofApplication {
       })
       this.schoolAgedCare.forEach(label => {
         cy.contains(label).click()
-        // cy.getByLabel(label).check().should('be.checked');
       })
     }
 
@@ -262,7 +260,7 @@ class CcofApplication {
     }
   }
 
-  // NOTE: please implement offerExtendedHours for the new template. 
+  // TODO  [CCFRI-6767] - (Hedie-cgi) implement offerExtendedHours for the new template. 
   oldOfferExtendedHours(appType) {
     cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
@@ -332,7 +330,6 @@ class CcofApplication {
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {
         if (value.extended) {
           cy.getByLabel(category).check()
-          // TODO [Hedie-cgi]: Add Extended Hours for Template 2 whenever program year is flipped
           // NOTE - There is no DIV that wraps around each licence category for extended hours - you will need to check if the input already has a value
         }
         cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
@@ -358,11 +355,36 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  //TODO [CCFRI-6110] (Hedie-cgi) Add functionality to add multiple facilities
-  addAnotherFacility(appType, file = null) {
+  addAnotherFacility(appType, files = null) {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
     cy.contains('Do you want to add another facility to your application?')
+    if (files) {
+      cy.clickByText('Yes')
+      files.forEach((file, index) => {
+        this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
+        cy.then(()=> {
+          this.inputFacilityInfo(appType)
+          this.licenceAndServiceDeliveryDetails(appType)
+          this.groupLicenses(appType)
+          switch(appType) {
+            case "group": this.offerExtendedHours(appType); break;
+            case "groupOld": this.oldOfferExtendedHours(appType); break;
+          }
+
+          if (index < files.length - 1) {
+            cy.clickByText('Yes')
+          } else {
+            cy.clickByText('No')
+          }
+          // // For last facility
+          // cy.contains('You have successfully applied for CCOF for the following facilities:')
+          // cy.contains(this.facilityData.facilityName)
+          // cy.contains('Do you want to add another facility to your application?')
+          // cy.clickByText(this.addFacilityData)
+        })
+      })
+    }
     cy.clickByText(this.addFacilityData)
     if (this.addFacilityData === 'Yes') {
       this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)

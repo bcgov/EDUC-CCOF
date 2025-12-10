@@ -57,6 +57,22 @@
             " Parent Fees 2026-27 FY: Full-Time Kindergarten",
             " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12"
         ],
+        "_NOTE": "FAMILY applications (original/renewal) do NOT have 'Full-Time Preschool' as an option on the portal so ensure you do NOT add that category to your tests",
+        "_optionsParentFeeCategories": [
+            "Prev-yr = last year range e.g. 2024-25 vs. Curr-yr = this year range 2025-26  -> If renewals, ensure Prev-yr  = this year range & Curr-yr = next year range",
+            " Parent Fees Prev-yr FY: Full-Time 0 to 18 months",
+            " Parent Fees Prev-yr FY: Full-Time 18 to 36 months",
+            " Parent Fees Prev-yr FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees Prev-yr FY: Full-Time Kindergarten",
+            " Parent Fees Prev-yr FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees Prev-yr FY: Full-Time Preschool",
+            " Parent Fees Curr-yr FY: Full-Time 0 to 18 months",
+            " Parent Fees Curr-yr FY: Full-Time 18 to 36 months",
+            " Parent Fees Curr-yr FY: Full-Time 3 Years to Kindergarten",
+            " Parent Fees Curr-yr FY: Full-Time Kindergarten",
+            " Parent Fees Curr-yr FY: Full-Time Grade 1 to Age 12",
+            " Parent Fees Curr-yr FY: Full-Time Preschool"
+        ],
         "months": {
             "Apr": "1",
             "May": "1",
