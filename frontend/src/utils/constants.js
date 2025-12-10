@@ -253,6 +253,14 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   YES: 1,
   NO: 0,
 };
+export const ECEWE_APPLICATION_STATUS = {
+  SUBMITTED: 1,
+  APPROVED: 3,
+  INELIGIBLE: 4,
+  ACTION_REQUIRED: 5,
+  OPT_OUT: 6,
+  NEW: 7,
+};
 
 //these are used at the facility level - other codes are at ORG level
 export const ECEWE_FACILITY_UNION_TYPES = {

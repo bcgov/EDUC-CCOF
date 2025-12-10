@@ -441,7 +441,7 @@ function transformEcewe(applications) {
         eceweStartDate: adj?.ccof_optinstartdate ?? null,
 
         isPublicSectorEmployer: app.ccof_public_sector_employer,
-        describeOrg: app.ccof_describe_your_org,
+        isCsseaMember: app.ccof_describe_your_org,
       });
     });
   });
