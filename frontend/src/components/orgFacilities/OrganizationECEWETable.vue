@@ -9,14 +9,14 @@
         </v-row>
       </v-card-text>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-      <v-data-table
+        <v-data-table
           :headers="headers"
           :items="mappedItems"
           :loading="isLoading"
           density="compact"
           :items-per-page="10"
         />
-    </v-skeleton-loader>
+      </v-skeleton-loader>
     </v-card>
   </v-col>
 </template>
