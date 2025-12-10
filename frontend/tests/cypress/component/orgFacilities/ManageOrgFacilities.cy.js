@@ -87,7 +87,6 @@ describe('<ManageOrgFacilities />', () => {
       ...createApplicationStore(),
     });
 
-    cy.wait('@getPaymentAPI');
     cy.contains('h1', 'Organization and Facilities');
     cy.contains('b', organizationName);
     cy.contains(`ID: ${organizationAccountNumber}`);
@@ -100,7 +99,7 @@ describe('<ManageOrgFacilities />', () => {
         ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_ORG_INFORMATION]),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 1);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
     });
 
@@ -110,7 +109,7 @@ describe('<ManageOrgFacilities />', () => {
         ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 1);
       cy.get('.v-tab').eq(0).should('contain', 'Facilities');
     });
 
@@ -133,7 +132,7 @@ describe('<ManageOrgFacilities />', () => {
         ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 1);
       cy.get('.v-tab').eq(0).should('contain', 'Funding Agreement');
     });
 
@@ -149,6 +148,28 @@ describe('<ManageOrgFacilities />', () => {
       cy.contains('Select a funding agreement term:');
     });
 
+    it('should contain only `Payment Information` tab', () => {
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth([PERMISSIONS.VIEW_PAYMENT_INFORMATION]),
+      });
+
+      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').eq(0).should('contain', 'Payment Information');
+    });
+
+    it('should navigate and render the Payment Information content', () => {
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth([PERMISSIONS.VIEW_PAYMENT_INFORMATION]),
+      });
+
+      cy.contains('button', 'Payment Information').click();
+      cy.contains('View and manage the payment records of your organization.');
+    });
+
     it('should contain all tabs', () => {
       mountWithPinia({
         ...createOrganizationStore(),
@@ -157,6 +178,7 @@ describe('<ManageOrgFacilities />', () => {
           PERMISSIONS.VIEW_ORG_INFORMATION,
           PERMISSIONS.VIEW_FUNDING_AGREEMENT,
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
+          PERMISSIONS.VIEW_PAYMENT_INFORMATION,
         ]),
       });
       cy.get('.v-tab').should('have.length', 4);
@@ -168,13 +190,12 @@ describe('<ManageOrgFacilities />', () => {
   });
 
   context('Tab Permissions - negative cases', () => {
-    it('should contain only `Payment Information` tab without permissions', () => {
+    it('should contain only no tabs without permissions', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore(),
       });
-      cy.get('.v-tab').should('have.length', 1);
-      cy.get('.v-tab').should('contain', 'Payment Information');
+      cy.get('.v-tab').should('have.length', 0);
     });
 
     it('should not contain `Organization Information` tab', () => {
@@ -218,6 +239,20 @@ describe('<ManageOrgFacilities />', () => {
 
       cy.get('.v-tab').contains('Funding Agreement').should('not.exist');
     });
+
+    it('should not contain `Payment Information` button', () => {
+      const permWithoutViewPmntInfo = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.VIEW_PAYMENT_INFORMATION,
+      );
+
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth(permWithoutViewPmntInfo),
+      });
+
+      cy.get('.v-tab').contains('Payment Information').should('not.exist');
+    });
   });
 
   it('should render manage organization content', () => {
@@ -228,7 +263,6 @@ describe('<ManageOrgFacilities />', () => {
 
     cy.contains('View and update your organization information.');
     cy.contains('Organization Info');
-    cy.contains('button', 'Request a Change');
   });
 
   it('should navigate back to home page', () => {

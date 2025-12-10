@@ -198,7 +198,7 @@
           </template>
         </SmallCard>
       </v-col>
-      <v-col cols="12" :lg="isCCOFStatusNew ? 3 : 4">
+      <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" :lg="isCCOFStatusNew ? 3 : 4">
         <SmallCard :disable="!isReportChangeButtonEnabled">
           <template #content>
             <p class="text-h6">Request a change</p>
@@ -227,10 +227,11 @@
       <v-col v-if="hasPermission(PERMISSIONS.VIEW_ER)" cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
-            <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
+            <p class="text-h6">Submit and Manage Facility Reports</p>
             <p>
-              If you are expecting a new licence or change to your licence or service details, contact the Child Care
-              Operating Funding program before submitting your next enrolment report or monthly ECE report.
+              Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care
+              Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator
+              Wage Enhancement (ECE-WE).
             </p>
           </template>
           <template #button>
@@ -626,6 +627,17 @@ export default {
       return !!(this.organizationAccountNumber && this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber);
     },
     isUpdateChangeRequestDisplayed() {
+      if (
+        !this.hasPermission([
+          this.PERMISSIONS.MTFI,
+          this.PERMISSIONS.ORGANIZATION_CHANGE,
+          this.PERMISSIONS.ADD_NEW_FACILITY,
+          this.PERMISSIONS.LICENCE_CHANGE,
+          this.PERMISSIONS.OTHER_CHANGES,
+        ])
+      ) {
+        return false;
+      }
       const index = this.changeRequestStore?.findIndex(
         (changeRequest) => changeRequest.externalStatus === CHANGE_REQUEST_EXTERNAL_STATUS.ACTION_REQUIRED,
       );
@@ -736,8 +748,10 @@ export default {
         await Promise.all([
           this.loadApplicationFromStore(this.latestProgramYearId),
           this.getAllMessages(this.organizationId),
-          this.getChangeRequestList(),
         ]);
+        if (this.hasPermission(this.PERMISSIONS.VIEW_A_CR)) {
+          await this.getChangeRequestList(this.organizationId);
+        }
         if (this.hasPermission(this.PERMISSIONS.CREATE_RENEWAL_PCF)) {
           this.renewalYearHasDraftProviderActionRequiredFA = await FundingAgreementService.checkFundingAgreementExists({
             organizationId: this.organizationId,

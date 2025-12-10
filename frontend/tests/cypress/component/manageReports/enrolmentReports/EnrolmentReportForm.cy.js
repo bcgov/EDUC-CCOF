@@ -170,17 +170,37 @@ describe('<EnrolmentReportForm />', () => {
       });
   });
 
-  it('should render link to request a change for frees', () => {
+  it('should render link to request a change for fees', () => {
     interceptAPI(enrolmentReportGroup);
 
     mountWithPinia({
       ...createApplicationStore(),
+      auth: {
+        permissions: [PERMISSIONS.VIEW_A_CR],
+      },
     });
     cy.wait('@getEnrolmentReport');
     cy.wait('@getDailyReport');
     cy.contains(
       'Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect, click here to request a change.',
     );
+  });
+
+  it('should not render link to request a change for fees if no view CR permission', () => {
+    const permWithoutViewCR = Object.values(PERMISSIONS).filter((permission) => permission !== PERMISSIONS.VIEW_A_CR);
+    interceptAPI(enrolmentReportGroup);
+
+    mountWithPinia({
+      ...createApplicationStore(),
+      auth: {
+        permissions: permWithoutViewCR,
+      },
+    });
+    cy.wait('@getEnrolmentReport');
+    cy.wait('@getDailyReport');
+    cy.contains(
+      'Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect.',
+    ).should('not.exist');
   });
 
   it('should render `Approved Parent Fees`', () => {

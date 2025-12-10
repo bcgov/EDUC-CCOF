@@ -153,11 +153,13 @@ import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import PaymentService from '@/services/paymentService.js';
 
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
 import { PAYMENT_STATUSES, PAYMENT_STATUS_TEXTS } from '@/utils/constants.js';
@@ -166,7 +168,7 @@ import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/
 export default {
   name: 'ViewPayments',
   components: { AppButton, AppDateInput, AppMultiSelectInput, FiscalYearSlider },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
@@ -196,11 +198,17 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
     ...mapState(useOrganizationStore, ['organizationId']),
 
     facilityList() {
-      //TODO add permissions for facility
-      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      if (this.isFacilityAdmin) {
+        facilityList = facilityList.filter((facility) => {
+          return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+      return facilityList;
     },
 
     allPaymentsMonths() {
