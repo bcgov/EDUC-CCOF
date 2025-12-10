@@ -183,6 +183,7 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList']),
     async loadData() {
       try {
         this.setIsApplicationProcessing(true);
@@ -253,6 +254,7 @@ export default {
         if (isUpdated) {
           Object.assign(this.renewalApplicationCCOF, payload);
           await ApplicationService.updateApplication(this.applicationId, payload);
+          this.refreshNavBarList();
         }
         if (showNotification) {
           this.setSuccessAlert('Application saved successfully.');

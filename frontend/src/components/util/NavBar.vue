@@ -1069,10 +1069,11 @@ export default {
     },
     getECEWENavigation() {
       let items = [];
+      const isRenewalV1 = this.isRenewal && this.showApplicationTemplateV1;
       items.push({
         title: 'Eligibility',
         link: { name: 'ECEWE Eligibility' },
-        isAccessible: this.isRenewal && this.showApplicationTemplateV1 ? true : isCCOFGroupComplete,
+        isAccessible: isRenewalV1 ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isEceweComplete),
         isActive: 'ECEWE Eligibility' === this.$route.name,
         position: positionIndex++,
@@ -1081,7 +1082,7 @@ export default {
       items.push({
         title: 'Facility',
         link: { name: 'ECEWE Facilities' },
-        isAccessible: this.isEceweComplete,
+        isAccessible: isRenewalV1 ? this.isEceweComplete : isCCOFGroupComplete && this.isEceweComplete,
         icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
         isActive: 'ECEWE Facilities' === this.$route.name,
         position: positionIndex++,
