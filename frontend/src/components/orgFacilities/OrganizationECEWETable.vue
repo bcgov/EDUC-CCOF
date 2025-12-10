@@ -20,10 +20,8 @@
     </v-card>
   </v-col>
 </template>
-
 <script>
 import { mapState } from 'pinia';
-
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import facilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
@@ -38,16 +36,13 @@ import {
 } from '@/utils/constants.js';
 export default {
   name: 'OrganizationECEWETable',
-
   components: { FiscalYearSlider },
-
   props: {
     organizationId: {
       type: String,
       required: true,
     },
   },
-
   data() {
     return {
       selectedProgramYearIdLocal: null,
@@ -55,10 +50,8 @@ export default {
       isLoading: false,
     };
   },
-
   computed: {
     ...mapState(useApplicationStore, ['programYearId']),
-
     selectedProgramYearId() {
       return this.selectedProgramYearIdLocal || this.programYearId;
     },
@@ -96,16 +89,13 @@ export default {
       ];
     },
   },
-
   methods: {
     async onProgramYearChange(programYear) {
       this.selectedProgramYearIdLocal = programYear.programYearId;
       await this.fetchData();
     },
-
     async fetchData() {
       if (!this.organizationId || !this.selectedProgramYearId) return;
-
       try {
         this.isLoading = true;
         this.items = await facilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
@@ -120,19 +110,16 @@ export default {
       if (value === YES_NO_VALUES.NO) return 'No';
       return '';
     },
-
     mapOptStatus(value) {
       if (value === OPT_STATUSES.OPT_IN) return 'Opt-In';
       if (value === OPT_STATUSES.OPT_OUT) return 'Opt-Out';
       return '';
     },
-
     mapUnion(value) {
       if (value === ECEWE_FACILITY_UNION_TYPES.UNIONIZED) return 'Yes';
       if (value === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED) return 'No';
       return '';
     },
-
     mapCssea(value) {
       if (value === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) return 'Yes';
       if (value === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) return 'No';

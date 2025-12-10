@@ -1,7 +1,6 @@
 <template>
   <v-col cols="12">
     <h2>Child Care Fee Reduction Initiative (CCFRI)</h2>
-
     <v-card variant="outlined" class="mt-3">
       <v-card-text>
         <v-row class="align-center">
@@ -15,10 +14,8 @@
     </v-card>
   </v-col>
 </template>
-
 <script>
 import { mapState } from 'pinia';
-
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import facilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
@@ -27,14 +24,12 @@ import { formatUTCDateToMonthYear } from '@/utils/format.js';
 
 export default {
   components: { FiscalYearSlider },
-
   props: {
     organizationId: {
       type: String,
       required: true,
     },
   },
-
   data() {
     return {
       selectedProgramYearIdLocal: null,
@@ -42,10 +37,8 @@ export default {
       isLoading: false,
     };
   },
-
   computed: {
     ...mapState(useApplicationStore, ['programYearId']),
-
     selectedProgramYearId() {
       return this.selectedProgramYearIdLocal ?? this.programYearId;
     },
@@ -75,13 +68,11 @@ export default {
       ];
     },
   },
-
   methods: {
     async selectProgramYear(programYear) {
       this.selectedProgramYearIdLocal = programYear.programYearId;
       await this.fetchData();
     },
-
     async fetchData() {
       if (!this.organizationId || !this.selectedProgramYearId) return;
 

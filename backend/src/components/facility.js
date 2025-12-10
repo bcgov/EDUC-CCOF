@@ -359,16 +359,10 @@ async function getCcfriFacilities(req, res) {
     if (!organizationId) {
       return res.status(400).json({ message: 'Missing orgId query parameter' });
     }
-
     const query = `ccof_applications?$select=ccof_describe_your_org&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
     const response = await getOperation(query);
     const raw = response?.value ?? [];
-
-    //response needs to be transformed,required values are nested in.
     const transformed = transformCcfri(raw);
-
-    //Add a Map statement map back to front.
-
     return res.status(200).json(transformed);
   } catch (e) {
     log.error('ECEWE/CCFRI error:', e);
@@ -377,7 +371,6 @@ async function getCcfriFacilities(req, res) {
 }
 function transformCcfri(applications) {
   const results = [];
-
   applications.forEach((app) => {
     app.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
       const f = ccfri.ccof_Facility;
@@ -392,7 +385,6 @@ function transformCcfri(applications) {
       });
     });
   });
-
   return results;
 }
 async function getEceweFacilities(req, res) {
@@ -403,17 +395,10 @@ async function getEceweFacilities(req, res) {
     if (!organizationId) {
       return res.status(400).json({ message: 'Missing orgId query parameter' });
     }
-
     const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
-
     const response = await getOperation(query);
     const raw = response?.value ?? [];
-
-    //response needs to be transformed,required values are nested in.
     const transformed = transformEcewe(raw);
-
-    //Add a Map statement map back to front.
-
     return res.status(200).json(transformed);
   } catch (e) {
     log.error('ECEWE/CCFRI error:', e);
@@ -434,12 +419,10 @@ function transformEcewe(applications) {
         facilityName: f.name,
         facilityAccountNumber: f.accountnumber,
         licenseNumber: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
-
         eceweOptStatus: ece.ccof_optintoecewe,
         eceweApplicationStatus: ece.statuscode,
         unionStatus: ece.ccof_facilityunionstatus,
         eceweStartDate: adj?.ccof_optinstartdate ?? null,
-
         isPublicSectorEmployer: app.ccof_public_sector_employer,
         isCsseaMember: app.ccof_describe_your_org,
       });

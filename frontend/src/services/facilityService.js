@@ -61,7 +61,7 @@ export default {
       );
       return response.data;
     } catch (err) {
-      console.error(err);
+      console.log(`Failed to fetch ccfri facilities - ${err}`);
       throw err;
     }
   },
@@ -72,9 +72,8 @@ export default {
       );
       return response.data;
     } catch (err) {
-      console.error(err);
+      console.log(`Failed to fetch ece-we facilities - ${err}`);
       throw err;
     }
   },
-
 };
