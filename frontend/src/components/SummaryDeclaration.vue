@@ -46,6 +46,9 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         />
         <v-expansion-panels v-else multiple>
+          <v-expansion-panel v-if="showCCOFBaseFundingSummary" value="ccof-base-funding-summary">
+            <CCOFBaseFundingSummary />
+          </v-expansion-panel>
           <v-expansion-panel v-if="showOrganizationSummary" value="organization-summary">
             <OrganizationSummary />
           </v-expansion-panel>
@@ -300,6 +303,7 @@ import { cloneDeep, isEmpty } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { formatSubmissionTimestamp } from '@/utils/format';
 import ChangeNotificationFormSummary from '@/components/summary/changeRequest/ChangeNotificationFormSummary.vue';
+import CCOFBaseFundingSummary from '@/components/summary/group/CCOFBaseFundingSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -336,6 +340,7 @@ export default {
     AppDialog,
     ApplicationChangeRequestInProgressAlert,
     ApplicationPCFHeader,
+    CCOFBaseFundingSummary,
     ChangeNotificationFormSummary,
     ECEWESummary,
     FacilityInformationSummaryCard,
@@ -364,6 +369,7 @@ export default {
       'isApplicationProcessing',
       'isRenewal',
       'programYearId',
+      'showApplicationTemplateV1',
       'unlockBaseFunding',
       'unlockDeclaration',
       'unlockEcewe',
@@ -467,6 +473,10 @@ export default {
       const isOrganizationComplete =
         !this.showOrganizationSummary ||
         ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.applicationTemplateVersion);
+      const isCCOFBaseFundingComplete =
+        !this.showCCOFBaseFundingSummary ||
+        (ApplicationService.isBankingInformationComplete(this.summaryModel?.application) &&
+          ApplicationService.isFundingAgreementComplete(this.summaryModel?.application));
       const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
         this.summaryModel?.ecewe,
         this.isGroup,
@@ -475,6 +485,7 @@ export default {
       );
       return (
         isOrganizationComplete &&
+        isCCOFBaseFundingComplete &&
         isECEWEOrganizationComplete &&
         this.areAllFacilitiesComplete &&
         isChangeNotificationFormComplete
@@ -488,6 +499,9 @@ export default {
         !this.model.orgContactName ||
         !this.isApplicationFormComplete
       );
+    },
+    showCCOFBaseFundingSummary() {
+      return !this.showApplicationTemplateV1 && this.isRenewal && !this.isChangeRequest;
     },
     showOrganizationSummary() {
       return !this.isRenewal && !this.isChangeRequest;
