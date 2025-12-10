@@ -24,7 +24,6 @@ class CcofApplication {
       this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
       this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
       this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
-      this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData
     })
   }
 
@@ -355,10 +354,12 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
+  // NOTE: Currently only setup for Template 1
   addAnotherFacility(appType, files = null) {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
     cy.contains('Do you want to add another facility to your application?')
+    cy.log(files.length)
     if (files) {
       cy.clickByText('Yes')
       files.forEach((file, index) => {
@@ -377,31 +378,7 @@ class CcofApplication {
           } else {
             cy.clickByText('No')
           }
-          // // For last facility
-          // cy.contains('You have successfully applied for CCOF for the following facilities:')
-          // cy.contains(this.facilityData.facilityName)
-          // cy.contains('Do you want to add another facility to your application?')
-          // cy.clickByText(this.addFacilityData)
         })
-      })
-    }
-    cy.clickByText(this.addFacilityData)
-    if (this.addFacilityData === 'Yes') {
-      this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
-      cy.then(()=> {
-        this.inputFacilityInfo(appType)
-        this.licenceAndServiceDeliveryDetails(appType)
-        this.groupLicenses(appType)
-        switch(appType) {
-          case "group": this.offerExtendedHours(appType); break;
-          case "groupOld": this.oldOfferExtendedHours(appType); break;
-        }
-
-        // For last facility
-        cy.contains('You have successfully applied for CCOF for the following facilities:')
-        cy.contains(this.facilityData.facilityName)
-        cy.contains('Do you want to add another facility to your application?')
-        cy.clickByText(this.addFacilityData)
       })
     }
   }

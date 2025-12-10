@@ -293,24 +293,11 @@ Cypress.Commands.add('runCcofApp', (appType, files) => {
         ccofApp.groupLicenses(appType)
         ccofApp.offerExtendedHours(appType)
         ccofApp.addAnotherFacility(appType, files)
-
-        // if (!files) {
-        //   ccofApp.addAnotherFacility(appType)
-        // } else {
-        //   files.forEach((file) => {
-        //     ccofApp.addAnotherFacility(appType, file)
-        //   })
-        // }
         break;
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
         ccofApp.oldOfferExtendedHours(appType)
         ccofApp.addAnotherFacility(appType, files)
-        // if (!files) {
-        //   ccofApp.addAnotherFacility(appType)
-        // } else {
-        //   ccofApp.addAnotherFacility(appType, files)
-        // }
         break;
       case 'family':
         ccofApp.familyLicences(appType)
