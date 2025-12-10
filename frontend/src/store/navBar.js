@@ -46,6 +46,7 @@ function getFacilityListFromNewFacilityCR(userProfileList, changeAction) {
           facilityId: facility.facilityId,
           facilityName: facility.facilityName,
           facilityAccountNumber: facility.facilityAccountNumber,
+          healthAuthority: facility.healthAuthority,
           isFacilityComplete: facility.isFacilityComplete,
           licenseNumber: facility.licenseNumber,
           facilityStatus: facility.facilityStatus,
@@ -325,9 +326,9 @@ export const useNavBarStore = defineStore('navBar', {
         applicationStore.setProgramYearLabel(
           appStore.programYearList.list.find((el) => el.programYearId === changeRequest.programYearId).name,
         );
-        applicationStore.setApplicationId(
-          applicationStore?.applicationMap?.get(changeRequest?.programYearId).applicationId,
-        );
+        const applicationForChangeRequest = applicationStore?.applicationMap?.get(changeRequest.programYearId);
+        applicationStore.setApplicationId(applicationForChangeRequest?.applicationId);
+        applicationStore.setApplicationTemplateVersion(applicationForChangeRequest?.applicationTemplateVersion);
       }
       const changeNotificationAction = changeRequest?.changeActions?.find(
         (item) => item.changeType === CHANGE_REQUEST_TYPES.PDF_CHANGE,

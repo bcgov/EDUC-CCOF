@@ -105,7 +105,10 @@ export default {
         try {
           this.setIsApplicationProcessing(true);
           await this.loadCCFRIFacility(this.$route.params.urlGuid);
-          await this.loadClosures(this.$route.params.urlGuid);
+          await Promise.all([
+            this.decorateWithCareTypes(this.currentFacility?.facilityId),
+            this.loadClosures(this.$route.params.urlGuid),
+          ]);
         } catch (error) {
           console.log(error);
           this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -124,7 +127,7 @@ export default {
   },
   methods: {
     ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'validateApplicationForm']),
-    ...mapActions(useCcfriAppStore, ['loadCCFRIFacility', 'updateApplicationCCFRI']),
+    ...mapActions(useCcfriAppStore, ['decorateWithCareTypes', 'loadCCFRIFacility', 'updateApplicationCCFRI']),
     ...mapActions(useNavBarStore, ['refreshNavBarList', 'setNavBarCCFRIClosuresComplete']),
     previous() {
       this.$router.push(this.previousPath);

@@ -15,6 +15,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  // TODO #securitymatrix Validate that the user has a role
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -25,9 +26,16 @@ router.get(
 /**
  * Update Last Opened Time of an existing Message
  */
-router.put('/:messageId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('messageId', 'URL param: [messageId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return updateMessageLastOpenedTime(req, res);
-});
+router.put(
+  '/:messageId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  // TODO #securitymatrix Validate that the user has a role
+  [param('messageId', 'URL param: [messageId] is required').not().isEmpty()],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateMessageLastOpenedTime(req, res);
+  },
+);
 
 module.exports = router;

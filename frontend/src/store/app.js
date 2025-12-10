@@ -130,7 +130,10 @@ export const useAppStore = defineStore('app', {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
     },
     getFundingUrl: (state) => (programYearId) => {
-      return state?.programYearList.list.find((el) => el.programYearId == programYearId)?.fundingGuidelinesUrl;
+      return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.fundingGuidelinesUrl;
+    },
+    getBcssaUrl: (state) => (programYearId) => {
+      return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.bcssaUrl;
     },
     getLanguageYearLabel: (state) => {
       const applicationStore = useApplicationStore();
@@ -150,6 +153,7 @@ export const useAppStore = defineStore('app', {
         default:
           return PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26;
 
+        // FIXME: Hard coded program year codes
         //default to last updated year for wording so pages like ECE-WE don't break.
         //Ministry may come back to add new wording for the upcoming fiscal year
       }

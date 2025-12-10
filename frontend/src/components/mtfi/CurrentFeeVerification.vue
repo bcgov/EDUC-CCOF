@@ -660,7 +660,7 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
-import { deepCloneObject, getBCSSALink } from '@/utils/common.js';
+import { deepCloneObject } from '@/utils/common.js';
 import {
   CCFRI_MAX_FEE,
   CCFRI_MIN_FEE,
@@ -712,7 +712,7 @@ export default {
       'applicationId',
       'applicationMap',
     ]),
-    ...mapState(useAppStore, ['programYearList', 'getFundingUrl', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['programYearList', 'getBcssaUrl', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useApplicationStore, ['programYearId', 'isRenewal', 'fiscalStartAndEndDates']),
     ...mapState(useNavBarStore, [
       'navBarList',
@@ -724,7 +724,7 @@ export default {
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStatus']),
     BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
+      return this.getBcssaUrl(this.programYearId);
     },
     languageYearLabel() {
       return this.getLanguageYearLabel;

@@ -1,10 +1,39 @@
 import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import vuetify from '@/plugins/vuetify';
-import { PATHS } from '@/utils/constants.js';
+import { buildQueryString } from '@/utils/common.js';
+import { ApiRoutes, PATHS } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions';
 
 const organizationName = 'TEST-ORG-NAME';
-const organizationAccountNumber = 4356;
+const organizationAccountNumber = '4356';
+const organizationId = '543543';
+
+const programYearId = '1234';
+
+function interceptGetPaymentAPI() {
+  cy.intercept('GET', `${ApiRoutes.PAYMENTS}${buildQueryString({ organizationId, programYearId })}`, {
+    statusCode: 200,
+    body: [{ invoiceNumber: '' }],
+  }).as('getPaymentAPI');
+}
+
+function createOrganizationStore(extras) {
+  return {
+    organization: {
+      organizationName,
+      organizationAccountNumber,
+      organizationId,
+    },
+  };
+}
+
+function createApplicationStore(extras) {
+  return {
+    application: {
+      programYearId,
+    },
+  };
+}
 
 function createAuth(permissions) {
   return {
@@ -49,25 +78,25 @@ function mountWithPinia(initialState = {}, tab = 'organization-tab') {
 }
 
 describe('<ManageOrgFacilities />', () => {
+  beforeEach(() => {
+    interceptGetPaymentAPI();
+  });
   it('should render organization name and account number', () => {
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
+      ...createApplicationStore(),
     });
+
     cy.contains('h1', 'Organization and Facilities');
     cy.contains('b', organizationName);
     cy.contains(`ID: ${organizationAccountNumber}`);
   });
 
   context('Tab Permissions - positive cases', () => {
-    it('should contain only `Organization Information` tab', () => {
+    it('should contain `Organization Information` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_ORG_INFORMATION]),
       });
       cy.get('.v-tab').should('have.length', 1);
@@ -76,10 +105,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should contain only `Facilities` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
       cy.get('.v-tab').should('have.length', 1);
@@ -88,10 +115,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should navigate and render the facilities content', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_FACILITY_INFORMATION]),
       });
 
@@ -102,10 +127,8 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should contain only `Funding Agreement` tab', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
@@ -115,44 +138,62 @@ describe('<ManageOrgFacilities />', () => {
 
     it('should navigate and render the Funding Agreement content', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([PERMISSIONS.VIEW_FUNDING_AGREEMENT]),
       });
 
       cy.contains('button', 'Funding Agreement').click();
-      cy.contains('View and manage the funding agreements for your organization');
+      cy.contains('Submit a change request to notify the Child Care Operating Funding Program.');
       cy.contains('Select a funding agreement term:');
+    });
+
+    it('should contain only `Payment Information` tab', () => {
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth([PERMISSIONS.VIEW_PAYMENT_INFORMATION]),
+      });
+
+      cy.get('.v-tab').should('have.length', 1);
+      cy.get('.v-tab').eq(0).should('contain', 'Payment Information');
+    });
+
+    it('should navigate and render the Payment Information content', () => {
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth([PERMISSIONS.VIEW_PAYMENT_INFORMATION]),
+      });
+
+      cy.contains('button', 'Payment Information').click();
+      cy.contains('View and manage the payment records of your organization.');
     });
 
     it('should contain all tabs', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth([
           PERMISSIONS.VIEW_ORG_INFORMATION,
           PERMISSIONS.VIEW_FUNDING_AGREEMENT,
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
+          PERMISSIONS.VIEW_PAYMENT_INFORMATION,
         ]),
       });
-      cy.get('.v-tab').should('have.length', 3);
+      cy.get('.v-tab').should('have.length', 4);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
       cy.get('.v-tab').eq(1).should('contain', 'Funding Agreement');
       cy.get('.v-tab').eq(2).should('contain', 'Facilities');
+      cy.get('.v-tab').eq(3).should('contain', 'Payment Information');
     });
   });
 
   context('Tab Permissions - negative cases', () => {
-    it('should contain no tabs without permissions', () => {
+    it('should contain only no tabs without permissions', () => {
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
       });
       cy.get('.v-tab').should('have.length', 0);
     });
@@ -163,13 +204,11 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth(permWithoutViewOrg),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Organization Information');
     });
 
@@ -179,13 +218,11 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth(permWithoutViewFac),
       });
-      cy.get('.v-tab').should('have.length', 2);
+      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Facilities');
     });
 
@@ -195,36 +232,44 @@ describe('<ManageOrgFacilities />', () => {
       );
 
       mountWithPinia({
-        organization: {
-          organizationName,
-          organizationAccountNumber,
-        },
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
         ...createAuth(permWithoutViewFundingAgreement),
       });
 
       cy.get('.v-tab').contains('Funding Agreement').should('not.exist');
     });
+
+    it('should not contain `Payment Information` button', () => {
+      const permWithoutViewPmntInfo = Object.values(PERMISSIONS).filter(
+        (permission) => permission !== PERMISSIONS.VIEW_PAYMENT_INFORMATION,
+      );
+
+      mountWithPinia({
+        ...createOrganizationStore(),
+        ...createApplicationStore(),
+        ...createAuth(permWithoutViewPmntInfo),
+      });
+
+      cy.get('.v-tab').contains('Payment Information').should('not.exist');
+    });
   });
 
   it('should render manage organization content', () => {
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
+      ...createApplicationStore(),
     });
 
     cy.contains('View and update your organization information.');
     cy.contains('Organization Info');
-    cy.contains('button', 'Request a Change');
   });
 
   it('should navigate back to home page', () => {
+    interceptGetPaymentAPI();
     mountWithPinia({
-      organization: {
-        organizationName,
-        organizationAccountNumber,
-      },
+      ...createOrganizationStore(),
+      ...createApplicationStore(),
     });
 
     cy.contains('Back').click();

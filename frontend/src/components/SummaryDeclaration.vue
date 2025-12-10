@@ -56,7 +56,7 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         />
         <v-expansion-panels v-else multiple>
-          <v-expansion-panel v-if="!isRenewal" value="organization-summary">
+          <v-expansion-panel v-if="showOrganizationSummary" value="organization-summary">
             <OrganizationSummary />
           </v-expansion-panel>
           <v-expansion-panel value="facility-information-summary">
@@ -318,6 +318,7 @@ import FacilityInformationSummaryCard from '@/components/util/FacilityInformatio
 import FacilityInformationSummaryDialog from '@/components/util/FacilityInformationSummaryDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
@@ -348,7 +349,7 @@ export default {
     NavButton,
     OrganizationSummary,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       model: {},
@@ -409,6 +410,9 @@ export default {
     },
     isReadOnly() {
       if (this.isMinistryUser) {
+        return true;
+      }
+      if (!this.hasPermission([this.PERMISSIONS.SUBMIT_NEW_APPLICATION, this.PERMISSIONS.SUBMIT_RENEWAL_PCF])) {
         return true;
       }
       if (
@@ -491,7 +495,7 @@ export default {
       const isChangeNotificationFormComplete =
         !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
       const isOrganizationComplete =
-        this.isRenewal ||
+        !this.showOrganizationSummary ||
         ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.applicationTemplateVersion);
       const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
         this.summaryModel?.ecewe,
@@ -514,6 +518,9 @@ export default {
         !this.model.orgContactName ||
         !this.isApplicationFormComplete
       );
+    },
+    showOrganizationSummary() {
+      return !this.isRenewal && !this.isChangeRequest;
     },
   },
   async created() {

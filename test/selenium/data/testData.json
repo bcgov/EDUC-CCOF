@@ -1,0 +1,13 @@
+{
+  "contact": "",
+  "declarationBStatus": "Yes",
+  "ccfriAdjudicatorRecommendation": "Stage 1 (NRC)",
+  "ccfriPaymentEligibilityStartDate":"Jul",
+  "ccfriQcDecision":"Stage 1 (NRC)",
+  "ccfriStatusOptions": "Complete - Approved",
+  "baseFundingProgressStatusOptions": "Confirmed - Active",
+  "ccofStatusOptions":"Active", 
+  "fundingAgreementStartDate": "04/01/2025",
+  "organizationId": "EFXORG_",
+  "facilityId": "EFXFAC_",
+}

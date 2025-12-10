@@ -317,19 +317,6 @@ async function createChangeRequestFacility(req, res) {
   }
 }
 
-async function deleteChangeRequest(req, res) {
-  const { changeRequestId } = req.params;
-  log.verbose(changeRequestId);
-
-  try {
-    await deleteOperationWithObjectId('ccof_change_requests', changeRequestId);
-    return res.status(HttpStatus.OK).end();
-  } catch (e) {
-    log.info(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
 async function getChangeRequestDocs(req, res) {
   const { changeRequestId } = req.params;
   log.verbose(changeRequestId);
@@ -418,7 +405,6 @@ module.exports = {
   createChangeRequest,
   createChangeRequestFacility,
   createClosureChangeRequest,
-  deleteChangeRequest,
   getChangeRequestDocs,
   getChangeActionClosure,
   getChangeActionClosures,

@@ -32,8 +32,9 @@ export const useAuthStore = defineStore('auth', {
   }),
   getters: {
     hasPermission: (state) => {
-      return (...permissions) => {
-        return state.permissions?.some((p) => permissions.includes(p));
+      return (permissions) => {
+        const requiredPermissions = Array.isArray(permissions) ? permissions : [permissions];
+        return state.permissions?.some((p) => requiredPermissions.includes(p));
       };
     },
     isFacilityAdmin: (state) => {

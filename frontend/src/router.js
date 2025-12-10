@@ -39,10 +39,11 @@ import GroupOrganizationInformation from '@/components/ccofApplication/group/Org
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
-import EnrolmentReportDeclaration from '@/components/enrolmentReports/EnrolmentReportDeclaration.vue';
-import EnrolmentReportForm from '@/components/enrolmentReports/EnrolmentReportForm.vue';
-import ViewEnrolmentReports from '@/components/enrolmentReports/ViewEnrolmentReports.vue';
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
+import ManageReports from '@/components/manageReports/ManageReports.vue';
+import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
+import EnrolmentReportForm from '@/components/manageReports/enrolmentReports/EnrolmentReportForm.vue';
+import ViewEnrolmentReports from '@/components/manageReports/enrolmentReports/ViewEnrolmentReports.vue';
 import MtfiFeeVerification from '@/components/mtfi/CurrentFeeVerification.vue';
 import MtfiInfo from '@/components/mtfi/MTFIInfo.vue';
 import MtfiSelectFacility from '@/components/mtfi/MtfiSelectFacility.vue';
@@ -114,6 +115,7 @@ const router = createRouter({
       component: SearchFacility,
       meta: {
         pageTitle: PAGE_TITLES.SearchFacility,
+        // permission: Not needed. CCFRI Estimator is publicly accessible
       },
     },
     {
@@ -122,6 +124,7 @@ const router = createRouter({
       component: CcfriEstimator,
       meta: {
         pageTitle: PAGE_TITLES.FRICalculator,
+        // permission: Not needed. CCFRI Estimator is publicly accessible
       },
     },
     {
@@ -131,6 +134,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.CREATE_NEW_APPLICATION,
       },
     },
     {
@@ -140,6 +144,7 @@ const router = createRouter({
       meta: {
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: PERMISSIONS.CREATE_NEW_APPLICATION,
       },
     },
     {
@@ -152,6 +157,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -164,6 +170,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
 
@@ -177,6 +184,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION],
       },
     },
     {
@@ -189,6 +197,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -201,6 +210,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION],
       },
     },
     {
@@ -213,6 +223,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -225,6 +236,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION],
       },
     },
     {
@@ -237,6 +249,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -249,6 +262,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION],
       },
     },
     {
@@ -261,6 +275,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -273,6 +288,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -285,6 +301,11 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -297,6 +318,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -308,6 +330,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: false,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF],
       },
     },
     {
@@ -320,6 +343,11 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -332,6 +360,11 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -343,6 +376,11 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -354,6 +392,11 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -366,6 +409,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -378,6 +426,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION],
       },
     },
     {
@@ -390,6 +439,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -402,6 +456,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -414,6 +473,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -426,6 +490,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -438,6 +503,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -450,6 +516,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_SUBMITTED_PCF],
       },
     },
     {
@@ -462,6 +529,11 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
+        permission: [
+          PERMISSIONS.CREATE_NEW_APPLICATION,
+          PERMISSIONS.CREATE_RENEWAL_PCF,
+          PERMISSIONS.VIEW_SUBMITTED_PCF,
+        ],
       },
     },
     {
@@ -511,6 +583,7 @@ const router = createRouter({
         pageTitle: 'Report Changes',
         showNavBar: false,
         requiresAuth: true,
+        permission: [PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -521,6 +594,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Form',
         showNavBar: false,
         requiresAuth: true,
+        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
       },
     },
     {
@@ -537,6 +611,12 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {
@@ -548,6 +628,7 @@ const router = createRouter({
         showNavBar: true,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -558,6 +639,7 @@ const router = createRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
+        permission: [PERMISSIONS.LICENCE_CHANGE, PERMISSIONS.ORGANIZATION_CHANGE, PERMISSIONS.OTHER_CHANGES],
       },
     },
     {
@@ -568,10 +650,16 @@ const router = createRouter({
         pageTitle: 'Change Notification Dialogue',
         showNavBar: false,
         requiresAuth: true,
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {
-      path: PATHS.ROOT.CHANGE_NEW_FACILITY, //TODO. there is no change request here.
+      path: PATHS.ROOT.CHANGE_NEW_FACILITY,
       name: 'change-request-facility-information',
       component: FacilityInformation,
       meta: {
@@ -580,6 +668,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -592,6 +681,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -604,6 +694,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -616,6 +707,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -628,6 +720,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.CCOF,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -640,6 +733,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -652,6 +746,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -664,6 +759,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -676,6 +772,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -688,6 +785,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.CCFRI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -700,6 +798,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -712,6 +811,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.ECEWE,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -723,6 +823,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -734,6 +835,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: true,
         subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
+        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -745,6 +847,7 @@ const router = createRouter({
         requiresAuth: true,
         showNavBar: false,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -757,6 +860,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -769,6 +873,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -781,6 +886,7 @@ const router = createRouter({
         showNavBar: true,
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -792,6 +898,12 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.CHANGENOTIFICATION,
+        permission: [
+          PERMISSIONS.LICENCE_CHANGE,
+          PERMISSIONS.ORGANIZATION_CHANGE,
+          PERMISSIONS.OTHER_CHANGES,
+          PERMISSIONS.VIEW_A_CR,
+        ],
       },
     },
     {
@@ -804,6 +916,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -816,6 +929,7 @@ const router = createRouter({
         navBarGroup: NAV_BAR_GROUPS.MTFI,
         requiresAuth: true,
         subtitleBanner: SUBTITLE_BANNERS.MTFI,
+        permission: [PERMISSIONS.MTFI, PERMISSIONS.VIEW_A_CR],
       },
     },
     {
@@ -826,6 +940,7 @@ const router = createRouter({
         pageTitle: 'submission-history',
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.DOWNLOAD_PCF_PDF,
       },
     },
     {
@@ -873,6 +988,17 @@ const router = createRouter({
         showNavBar: false,
         requiresAuth: true,
         permission: PERMISSIONS.VIEW_CLOSURES,
+      },
+    },
+    {
+      path: PATHS.ROOT.MANAGE_REPORTS,
+      name: 'manage-reports',
+      component: ManageReports,
+      meta: {
+        pageTitle: PAGE_TITLES.MANAGE_REPORTS,
+        showNavBar: false,
+        requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ER,
       },
     },
     {
@@ -924,20 +1050,31 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
+    const appStore = useAppStore();
     const authStore = useAuthStore();
     authStore
       .getJwtToken()
-      .then(() => {
+      .then(async () => {
         if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
+          /* 
+            Ensures lookupInfo is initialized before continuing.
+            getLookupInfo() is triggered in App.vue, but because it runs
+            asynchronously, router.js could execute first and attempt to access programYear
+            data before it was loaded - causing errors for NEW users.
+            This check guarantees lookupInfo is fully initialized before any dependent logic runs.
+          */
+          if (!appStore.lookupInfo) {
+            await appStore.getLookupInfo();
+          }
           authStore
             .getUserInfo(to)
             .then(async () => {
               if (!authStore.isMinistryUser) {
                 // Validate Provider roles
                 if (isEmpty(authStore.userInfo?.role)) {
-                  return next('unauthorized');
+                  return next({ name: 'unauthorized' });
                 }
                 // TODO: Validate Facilities for Facility Admin
                 // if (!authStore.hasFacilities) {
@@ -945,11 +1082,11 @@ router.beforeEach((to, _from, next) => {
                 // }
                 // Validate specific permission
                 if (to.meta.permission && !authStore.hasPermission(to.meta.permission)) {
-                  return next('unauthorized');
+                  return next({ name: 'unauthorized' });
                 }
                 // Block access to Impersonate
                 if (to.name === 'impersonate') {
-                  return next('unauthorized');
+                  return next({ name: 'unauthorized' });
                 }
               }
 
@@ -964,7 +1101,7 @@ router.beforeEach((to, _from, next) => {
             .catch((error) => {
               console.log('error', error);
               if (error.response?.status == '401') {
-                next('unauthorized');
+                return next({ name: 'unauthorized' });
               } else {
                 console.log('An error occurred.', error);
                 next('error');

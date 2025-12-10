@@ -23,7 +23,14 @@ router.get(
   '/:facilityId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.VIEW_FACILITY_INFORMATION),
+  validatePermission(
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.VIEW_SUBMITTED_PCF,
+    PERMISSIONS.VIEW_FACILITY_INFORMATION,
+    PERMISSIONS.ADD_NEW_FACILITY,
+    PERMISSIONS.VIEW_A_CR,
+  ),
   validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
@@ -32,11 +39,22 @@ router.get(
   },
 );
 
+/**
+ * Get Facility License Categories
+ */
 router.get(
   '/:facilityId/licenseCategories',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.REQUEST_CLOSURE),
+  validatePermission(
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.VIEW_SUBMITTED_PCF,
+    PERMISSIONS.REQUEST_CLOSURE,
+    PERMISSIONS.MTFI,
+    PERMISSIONS.VIEW_A_CR,
+    PERMISSIONS.ADD_NEW_FACILITY,
+  ),
   validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
@@ -48,23 +66,30 @@ router.get(
 /**
  * Get Facility details for CCFRI Application (less detailed)
  */
-//i think i want ccfri guid here ?? passing in CCFRI application GUID now - trying it out
-// TODO #securitymatrix - Implement with Applications security
-router.get('/ccfri/:ccfriId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('ccfriId', 'URL param: [ccfriId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return getFacilityChildCareTypes(req, res);
-});
+router.get(
+  '/ccfri/:ccfriId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR),
+  [param('ccfriId', 'URL param: [ccfriId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getFacilityChildCareTypes(req, res);
+  },
+);
 
 /**
  * Get Parent Fees for a facility
- *
  */
-// TODO #securitymatrix - Implement with Applications security
 router.get(
   '/fees/:facilityId/year/:programYearId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty(), param('programYearId', 'URL param: [programYearId] is required').not().isEmpty()],
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF, PERMISSIONS.MTFI, PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR),
+  [
+    param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    param('programYearId', 'URL param: [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
   (req, res) => {
     validationResult(req).throw();
     return getApprovedParentFees(req, res);
@@ -74,11 +99,17 @@ router.get(
 /**
  * Create a new Facility
  */
-// TODO #securitymatrix - Implement with Applications security
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
-  validationResult(req).throw();
-  return createFacility(req, res);
-});
+router.post(
+  '/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.ADD_NEW_FACILITY),
+  [checkSchema(facilitySchema)],
+  (req, res) => {
+    validationResult(req).throw();
+    return createFacility(req, res);
+  },
+);
 
 /**
  * Update an existing Facility
@@ -87,7 +118,7 @@ router.put(
   '/:facilityId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.UPDATE_FACILITY_INFORMATION),
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.UPDATE_FACILITY_INFORMATION, PERMISSIONS.ADD_NEW_FACILITY),
   validateFacility(),
   [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
@@ -96,19 +127,19 @@ router.put(
   },
 );
 
-// TODO #securitymatrix - Implement with Applications security
-router.delete('/:facilityId', passport.authenticate('jwt', { session: false }), isValidBackendToken, [param('facilityId', 'URL param: [facilityId] is required').not().isEmpty()], (req, res) => {
-  validationResult(req).throw();
-  return deleteFacility(req, res);
-});
-
 /**
- * Submit a complete application
+ * Delete a Facility
  */
-// TODO #securitymatrix - Implement with Applications security
-router.post('/:facilityId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(facilitySchema)], (req, res) => {
-  validationResult(req).throw();
-  return createFacility(req, res);
-});
+router.delete(
+  '/:facilityId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.ADD_NEW_FACILITY),
+  [param('facilityId', 'URL param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return deleteFacility(req, res);
+  },
+);
 
 module.exports = router;

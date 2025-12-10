@@ -1,8 +1,7 @@
 import { isEmpty, isEqual } from 'lodash';
 import { defineStore } from 'pinia';
 
-import ApiService from '@/common/apiService.js';
-import { ApiRoutes } from '@/utils/constants.js';
+import FundingService from '@/services/fundingService';
 import { checkSession } from '@/utils/session.js';
 
 export const useFundingStore = defineStore('funding', {
@@ -26,13 +25,13 @@ export const useFundingStore = defineStore('funding', {
       this.setLoadedModel(this.fundingModel);
       const payload = { ...this.fundingModel };
       delete payload.licenceCategoryId;
-      const response = await ApiService.apiAxios.put(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`, payload);
+      const response = await FundingService.updateFunding(fundingId, payload);
       return response;
     },
     async loadFunding(fundingId) {
       try {
         checkSession();
-        const model = (await ApiService.apiAxios.get(`${ApiRoutes.GROUP_FUND_AMOUNT}/${fundingId}`))?.data;
+        const model = await FundingService.getFunding(fundingId);
         model.licenceCategoryNumber = model.licenceCategoryNumber ? Number(model.licenceCategoryNumber) : null;
         this.setFundingModel(model);
         this.setLoadedModel(model);

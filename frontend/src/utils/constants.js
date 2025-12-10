@@ -39,16 +39,18 @@ export const ApiRoutes = Object.freeze({
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
   APPLICATION_CHANGE_REQUEST: baseRoot + '/application/changeRequest',
-  APPLICATION_STATUS: baseRoot + '/application/status',
+  APPLICATION_PARENT_FEE: baseRoot + '/application/parentfee',
   SUPPORTING_DOCUMENT_UPLOAD: baseRoot + '/supportingDocument',
   APPLICATION_DECLARATION: baseRoot + '/application/declaration',
   APPLICATION_DECLARATION_SUBMIT: baseRoot + '/application/declaration/submit',
   APPLICATION_SUMMARY: baseRoot + '/application/summary',
   SYSTEM_MESSAGES: baseRoot + '/public/systemMessages',
+  FACILITY_PUBLIC: baseRoot + '/public/facilities',
   CHANGE_REQUEST_NEW_FAC: baseRoot + '/changeRequest/newFacility',
   CHANGE_REQUEST_CLOSURE: baseRoot + '/changeRequest/closure',
+  CHANGE_REQUEST_DOCUMENTS: baseRoot + '/changeRequest/documents',
   CHANGE_REQUEST_MTFI: baseRoot + '/changeRequest/mtfi',
-  CHANGE_REQUEST: baseRoot + '/changeRequest/',
+  CHANGE_REQUEST: baseRoot + '/changeRequest',
   PDFS: baseRoot + '/pdf',
   PDF: baseRoot + '/pdf/getDocument/',
   DOCUMENT: baseRoot + '/document',
@@ -60,6 +62,7 @@ export const ApiRoutes = Object.freeze({
   ENROLMENT_REPORTS: baseRoot + '/enrolmentReports',
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
+  PAYMENTS: baseRoot + '/payments',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -73,6 +76,7 @@ export const PAGE_TITLES = Object.freeze({
   ECEWE_APPLICATION: 'ECE-WE Application',
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
+  MANAGE_REPORTS: 'Manage Reports',
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
@@ -110,6 +114,7 @@ export const PATHS = {
     SUBMISSION_HISTORY: '/submission-history',
     FUNDING_AGREEMENTS: '/funding-agreements',
     CLOSURES: '/closures',
+    MANAGE_REPORTS: '/manage-reports',
     ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {
@@ -270,6 +275,8 @@ export const CCFRI_Categories = [
 
 export const APPLICATION_CCOF_STATUSES = {
   ACTIVE: 'ACTIVE',
+  NEW: 'NEW',
+  PENDING: 'PENDING',
 };
 
 export const APPLICATION_STATUSES = {
@@ -438,11 +445,6 @@ export const FILE_TYPES_ACCEPT = Object.freeze([
   '.xlsx',
 ]);
 
-export const BCSSA_REGION_LINKS = Object.freeze({
-  FY2024_25: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_eVcEWJC8HTelRCS',
-  FY2025_26: 'https://bcmcf.ca1.qualtrics.com/jfe/form/SV_8GpPXz0CRc7aaXA',
-});
-
 export const ERROR_MESSAGES = Object.freeze({
   REQUIRED: 'This field is required',
   LICENCE_CATEGORY_REQUIRED: 'At least one licence category must be selected',
@@ -506,8 +508,8 @@ export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
   100000000: '0 to 18 months',
   100000001: '18 to 36 months',
   100000002: '3 Years to Kindergarten',
-  100000003: 'Out of School Care - Kindergarten',
-  100000004: 'Out of School Care - Grade 1+',
+  100000003: 'Kindergarten',
+  100000004: 'Grade 1 to Age 12',
   100000005: 'Preschool',
 });
 
@@ -515,9 +517,14 @@ export const CLOSURE_AFFECTED_AGE_GROUPS = Object.freeze({
   '0 to 18 months': 100000000,
   '18 to 36 months': 100000001,
   '3 Years to Kindergarten': 100000002,
-  'Out of School Care - Kindergarten': 100000003,
-  'Out of School Care - Grade 1+': 100000004,
+  Kindergarten: 100000003,
+  'Grade 1 to Age 12': 100000004,
   Preschool: 100000005,
+});
+
+export const OLD_TO_NEW_CC_CATEGORY_LABEL_MAP = Object.freeze({
+  'Out of School Care - Kindergarten': 'Kindergarten',
+  'Out of School Care - Grade 1+': 'Grade 1 to Age 12',
 });
 
 export const CLOSURE_TYPES = Object.freeze({
@@ -609,6 +616,22 @@ export const DAYS_OF_WEEK = {
   7: 'Sunday',
 };
 
+export const CCOF_STATUS = Object.freeze({
+  NEW: 'NEW',
+  COMPLETE: 'COMPLETE',
+  CONTINUE: 'CONTINUE',
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION_REQUIRED',
+});
+
+export const RENEW_STATUS = Object.freeze({
+  NEW: 'NEW',
+  COMPLETE: 'COMPLETE',
+  CONTINUE: 'CONTINUE',
+  APPROVED: 'APPROVED',
+  ACTION_REQUIRED: 'ACTION_REQUIRED',
+});
+
 export const ENROLMENT_REPORT_STATUSES = Object.freeze({
   DRAFT: 1,
   SUBMITTED: 2,
@@ -698,3 +721,19 @@ export const VACANCY_FIELDS = {
   vacanciesGrade1ToAge12: 'Grade 1 to Age 12',
   vacanciesPreschool: 'Preschool',
 };
+
+export const PAYMENT_STATUSES = Object.freeze({
+  PAID: 2,
+  APPROVED_PAYMENT: 4,
+  PROCESSING_PAYMENT: 5,
+  PROCESSING_ERROR: 6,
+  CANCELLED: 7,
+  HOLD: 101510001,
+});
+
+export const PAYMENT_STATUS_TEXTS = Object.freeze({
+  APPROVED: 'Approved',
+  PENDING: 'Pending',
+  PAID: 'Paid',
+  CANCELLED: 'Cancelled',
+});

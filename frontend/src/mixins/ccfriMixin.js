@@ -17,7 +17,6 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { getBCSSALink } from '@/utils/common.js';
 import {
   ApiRoutes,
   CCFRI_FEE_CORRECT_TYPES,
@@ -52,7 +51,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['getFundingUrl', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['getBcssaUrl', 'getFundingUrl', 'getLanguageYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationId',
       'applicationStatus',
@@ -80,7 +79,7 @@ export default {
       return this.getLanguageYearLabel;
     },
     BCSSALink() {
-      return getBCSSALink(this.getLanguageYearLabel);
+      return this.getBcssaUrl(this.programYearId);
     },
     programYearTypes() {
       return PROGRAM_YEAR_LANGUAGE_TYPES;
@@ -151,7 +150,9 @@ export default {
         this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'hasRfi', value: true });
         if (this.currentFacility?.unlockCcfri) {
           this.setNavBarValue({ facilityId: this.currentFacility.facilityId, property: 'unlockRfi', value: true });
-          await ApiService.apiAxios.patch(`/api/application/ccfri/${this.$route.params.urlGuid}`, { unlockRfi: 1 });
+          await ApiService.apiAxios.patch(`${ApiRoutes.APPLICATION_CCFRI}/${this.$route.params.urlGuid}`, {
+            unlockRfi: 1,
+          });
         }
         this.$router.push(pcfUrlGuid(PATHS.CCFRI_RFI, this.programYearId, this.$route.params.urlGuid));
       } catch (error) {

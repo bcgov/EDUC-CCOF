@@ -49,7 +49,7 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox("QA218 OFM");
+		deleteapp.searchBox(ut.getDataFromJson("contact"));
 		Thread.sleep(5000);
 		deleteapp.pressEnter();
 		Thread.sleep(5000);
@@ -95,7 +95,8 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		Thread.sleep(5000);
 
 		// selecting Confirmed - Active from dropdown
-		ut.selectDropdownValue("Confirmed - Active", ccofinfo.getBaseFundingProgressStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("baseFundingProgressStatusOptions"),
+				ccofinfo.getBaseFundingProgressStatusOptions());
 		ut.waitForElementToLoad(ccofinfo.waitBeforeSaveAndCloseBtn());
 		ccofinfo.clickSaveAndCloseBtn();
 		ut.waitForElementToLoad(appinfo.waitBeforeCcofTab());
@@ -105,7 +106,7 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		ut.waitForElementToLoad(appinfo.waitBeforeCcofStatus());
 		appinfo.clickCcofStatus();
 		Thread.sleep(5000);
-		ut.selectDropdownValue("Active", appinfo.getCcofStatusOptions());
+		ut.selectDropdownValue(ut.getDataFromJson("ccofStatusOptions"), appinfo.getCcofStatusOptions());
 		ut.waitForElementToLoad(appinfo.waitBeforeSaveBtn());
 		appinfo.clickSaveBtn();
 		Thread.sleep(2000);

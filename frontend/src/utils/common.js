@@ -6,12 +6,15 @@ import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import {
-  BCSSA_REGION_LINKS,
+  APPLICATION_CCOF_STATUSES,
+  APPLICATION_STATUSES,
+  APPLICATION_TYPES,
+  CCOF_STATUS,
   LICENCE_STATUSES,
+  OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
-  PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
 import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
@@ -27,7 +30,7 @@ export const getLocalDateFromString = (date, pattern = 'uuuu-MM-dd') => {
 };
 
 export function setEmptyInputParams(params, ...excludedParams) {
-  Object.keys(params).forEach((key) => {
+  for (const key of Object.keys(params)) {
     if (!excludedParams.includes(key)) {
       if (isPlainObject(params[key])) {
         setEmptyInputParams(params[key], ...excludedParams);
@@ -35,7 +38,7 @@ export function setEmptyInputParams(params, ...excludedParams) {
         params[key] = null;
       }
     }
-  });
+  }
 }
 export function deepCloneObject(objectToBeCloned) {
   return clone(objectToBeCloned);
@@ -149,19 +152,6 @@ export function isAnyChangeRequestActive(changeRequestList) {
   return changeRequestList?.some(
     (el) => (el.externalStatus == 2 || el.externalStatus == 3) && el.changeActions[0].changeType != 'PARENT_FEE_CHANGE',
   );
-}
-
-export function getBCSSALink(languageYearLabel) {
-  switch (languageYearLabel) {
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2024_25:
-      return BCSSA_REGION_LINKS.FY2024_25;
-    case PROGRAM_YEAR_LANGUAGE_TYPES.FY2025_26:
-      return BCSSA_REGION_LINKS.FY2025_26;
-    default:
-      return BCSSA_REGION_LINKS.FY2025_26; //if future years are added but this link is not updated - default to the newest link we have
-  }
-
-  //todo- more links will need to be added for future program years when provided by the buisness
 }
 
 export function hasEmptyFields(obj, requiredFields) {
@@ -298,6 +288,97 @@ export function multiplyDecimal(a, b, decimals = 4) {
   const safeA = a || 0;
   const safeB = b || 0;
   return new Decimal(safeA).times(safeB).toDecimalPlaces(decimals).toNumber();
+}
+
+/**
+ * Derive the CCOF Status from the global application and organization state.
+ *
+ * @param {string} applicationStatus - applicationStore.applicationStatus
+ * @param {string} applicationType - applicationSTore.applicationType
+ * @param {boolean} isOrganizationUnlock - is the organization unlocked in Dynamics?
+ * @param {string} ccofApplicationStatus - applicationStore.ccofApplicationStatus
+ */
+export function getCcofStatus(applicationStatus, applicationType, isOrganizationUnlock, ccofApplicationStatus) {
+  if (!applicationType) {
+    return CCOF_STATUS.NEW;
+  }
+  if (applicationType === APPLICATION_TYPES.NEW_ORG) {
+    switch (applicationStatus) {
+      case APPLICATION_STATUSES.DRAFT:
+        return CCOF_STATUS.CONTINUE;
+      case APPLICATION_STATUSES.SUBMITTED:
+        if (isOrganizationUnlock) return CCOF_STATUS.ACTION_REQUIRED;
+        if (ccofApplicationStatus === APPLICATION_CCOF_STATUSES.ACTIVE) return CCOF_STATUS.APPROVED;
+        return CCOF_STATUS.COMPLETE;
+      default:
+        return CCOF_STATUS.NEW;
+    }
+  }
+  return CCOF_STATUS.APPROVED;
+}
+
+// Starting from 2024/25 onward, the Ministry updated the childcare category labels for OOSC-K and OOSC-G,
+// but we cannot modify them in CMS because historical applications must retain their original values.
+// This helper updates the childcare category labels to reflect the new business naming.
+export function replaceChildCareLabel(childCareTypes = []) {
+  return childCareTypes.map((category) => ({
+    ...category,
+    childCareCategory: OLD_TO_NEW_CC_CATEGORY_LABEL_MAP[category.childCareCategory] ?? category.childCareCategory,
+  }));
+}
+
+function getUnlockList(facilityList = [], facilityProperty = '') {
+  if (isEmpty(facilityList)) return [];
+  return facilityList.filter((f) => !!f[facilityProperty]).map((f) => f.ccfriApplicationId);
+}
+
+export function getUnlockCCFRIList(facilityList) {
+  return getUnlockList(facilityList, 'unlockCcfri');
+}
+
+export function getUnlockNMFList(facilityList) {
+  return getUnlockList(facilityList, 'unlockNmf');
+}
+
+export function getUnlockRFIList(facilityList) {
+  return getUnlockList(facilityList, 'unlockRfi');
+}
+
+export function getUnlockAFSList(facilityList) {
+  return getUnlockList(facilityList, 'unlockAfs');
+}
+
+/**
+ * Figure out if the organization is unlocked
+ *
+ * @param unlockBaseFunding - applicationStore.unlockBaseFunding
+ * @param applicationType - applicationStore.applicationType
+ * @paran unlockDeclaration - applicationStore.unlockDeclaration
+ * @param unlockEcewe - applicationStore.unlockEcewe
+ * @param unlockLicenseUpload - applicationStore.unlockLicenseUpload
+ * @param unlockSupportingDocuments - applicationStore.unlockSupportingDocuments
+ * @param facilityList - navBarStore.navBarList
+ */
+export function isOrganizationUnlocked(
+  unlockBaseFunding,
+  applicationType,
+  unlockDeclaration,
+  unlockEcewe,
+  unlockLicenseUpload,
+  unlockSupportingDocuments,
+  facilityList,
+) {
+  return (
+    (unlockBaseFunding && applicationType === APPLICATION_TYPES.NEW_ORG) ||
+    unlockDeclaration ||
+    unlockEcewe ||
+    unlockLicenseUpload ||
+    unlockSupportingDocuments ||
+    !isEmpty(getUnlockCCFRIList(facilityList)) ||
+    !isEmpty(getUnlockNMFList(facilityList)) ||
+    !isEmpty(getUnlockRFIList(facilityList)) ||
+    !isEmpty(getUnlockAFSList(facilityList))
+  );
 }
 
 /**

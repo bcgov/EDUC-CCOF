@@ -57,7 +57,14 @@ router.get(
   '/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  validatePermission(
+    PERMISSIONS.VIEW_ORG_INFORMATION,
+    PERMISSIONS.CREATE_NEW_APPLICATION,
+    PERMISSIONS.CREATE_RENEWAL_PCF,
+    PERMISSIONS.VIEW_SUBMITTED_PCF,
+    PERMISSIONS.ADD_NEW_FACILITY,
+    PERMISSIONS.VIEW_A_CR,
+  ),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
@@ -87,22 +94,6 @@ router.put(
     return updateOrganization(req, res);
   },
 );
-
-/**
- * Submit a complete application
- */
-router.post('/:organizationId/submit', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createOrganization(req, res);
-});
-
-/**
- * Renew an application for an organization.
- */
-router.post('/:organizationId/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(organizationSchema)], (req, res) => {
-  validationResult(req).throw();
-  return createOrganization(req, res);
-});
 
 router.get(
   '/:organizationId/facilities',

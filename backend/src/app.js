@@ -46,6 +46,7 @@ const enrolmentReportRouter = require('./routes/enrolmentReport');
 const licenceRouter = require('./routes/licence');
 const contactRouter = require('./routes/contact');
 const programsVacanciesRouter = require('./routes/programsVacancies');
+const paymentRouter = require('./routes/payment');
 
 const connectRedis = require('connect-redis');
 const { RedisStore } = require('rate-limit-redis');
@@ -161,14 +162,14 @@ function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, 
 }
 
 async function populateUserInfo(profile) {
-  const username = utils.splitUsername(profile.username);
+  const { guid, identity_provider } = profile._json;
 
   // Get UserProfile for BCeID users
-  if (username.idp === config.get('oidc:idpHintBceid')) {
+  if (identity_provider === config.get('oidc:idpHintBceid')) {
     // If the userGuid cannot be found in Dynamics, then Dynamics will check if the userName exists,
     // If userName exists but has a null userGuid, the system will update the user record with the GUID and return that user profile.
     // In CCOF this would only happen for new users added through the portal
-    const user = await getUserProfile(username.guid, profile._json.bceid_username);
+    const user = await getUserProfile(guid, profile._json.bceid_username);
 
     if (!isEmpty(user)) {
       profile.contactId = user.contactid;
@@ -189,7 +190,7 @@ async function populateUserInfo(profile) {
         roleNumber: ROLES.ORG_ADMIN,
       };
     }
-  } else if (username.idp === config.get('oidc:idpHintIdir')) {
+  } else if (identity_provider === config.get('oidc:idpHintIdir')) {
     // TODO (weskubo-cgi) Add role logic for IDIR users
   }
 }
@@ -280,6 +281,7 @@ apiRouter.use('/enrolmentReports', enrolmentReportRouter);
 apiRouter.use('/licences', licenceRouter);
 apiRouter.use('/contacts', contactRouter);
 apiRouter.use('/programsVacancies', programsVacanciesRouter);
+apiRouter.use('/payments', paymentRouter);
 
 //Handle 500 error
 app.use((err, _req, res, next) => {
