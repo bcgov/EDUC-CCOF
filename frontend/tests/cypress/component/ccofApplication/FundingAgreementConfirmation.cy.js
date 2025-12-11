@@ -1,12 +1,30 @@
+import { StatusCodes } from 'http-status-codes';
+
 import FundingAgreementConfirmation from '@/components/ccofApplication/FundingAgreementConfirmation.vue';
 import vuetify from '@/plugins/vuetify';
-import { APPLICATION_STATUSES, PATHS, YES_NO_VALUES } from '@/utils/constants.js';
+import { buildQueryString } from '@/utils/common.js';
+import { APPLICATION_STATUSES, ApiRoutes, PATHS, YES_NO_VALUES } from '@/utils/constants.js';
+
+const ORGANIZATION_ID = '12435';
+const PROGRAM_YEAR_GUID = '44432';
 
 const defaultOrgState = {
-  organization: { organizationName: 'TEST_ORG_NAME' },
+  organization: { organizationName: 'TEST_ORG_NAME', organizationId: ORGANIZATION_ID },
 };
 
-function mountWithPinia(initialState = {}, data = {}) {
+function interceptAPI() {
+  const query = buildQueryString({ organizationId: ORGANIZATION_ID });
+  cy.intercept('GET', `${ApiRoutes.LICENCES}${query}`, {
+    statusCode: StatusCodes.OK,
+    body: [
+      {
+        TEST_FIELD: 'TESTING123',
+      },
+    ],
+  });
+}
+
+function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
   cy.setupPinia({
     initialState: { ...defaultOrgState, ...initialState },
     stubActions: false,
@@ -18,9 +36,10 @@ function mountWithPinia(initialState = {}, data = {}) {
         plugins: [pinia, vuetify],
         mocks: {
           $router: { push: pushStub },
+          $route: { params: { programYearGuid: PROGRAM_YEAR_GUID } },
         },
       },
-      data: () => ({ ...data }),
+      data: () => ({ ...dataOverride }),
     });
   });
 }
@@ -29,6 +48,9 @@ const radioGroup = (index = 0) => cy.get('.v-radio-group').eq(index);
 const clickRadio = (label) => cy.contains('label', label).click();
 
 describe('<FundingAgreementConfirmation />', () => {
+  beforeEach(() => {
+    interceptAPI();
+  });
   it('should render header with organization name', () => {
     mountWithPinia();
 
@@ -53,7 +75,7 @@ describe('<FundingAgreementConfirmation />', () => {
 
   context('Funding Agreement Card', () => {
     it('should render confirmation list items', () => {
-      mountWithPinia({}, { fundingAgreement: {} });
+      mountWithPinia({ dataOverride: { fundingAgreement: {} } });
 
       cy.contains('I confirm I have read the Funding Agreement');
       cy.contains('li', 'the organization information on the first page is correct;');
@@ -62,10 +84,10 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should disable radio group when application is SUBMITTED', () => {
-      mountWithPinia(
-        { application: { applicationStatus: APPLICATION_STATUSES.SUBMITTED } },
-        { fundingAgreement: { pdfFile: '' }, licences: [] },
-      );
+      mountWithPinia({
+        initialState: { application: { applicationStatus: APPLICATION_STATUSES.SUBMITTED } },
+        dataOverride: { fundingAgreement: { pdfFile: '' }, licences: [] },
+      });
 
       radioGroup().within(() => {
         cy.get('.v-radio').should('have.length', 2);
@@ -75,10 +97,14 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should show alert when selecting No', () => {
-      mountWithPinia(
-        { application: { applicationStatus: APPLICATION_STATUSES.DRAFT } },
-        { fundingAgreement: { pdfFile: 'test' }, licences: ['test'] },
-      );
+      interceptAPI();
+
+      mountWithPinia({
+        initialState: {
+          application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
+        },
+        dataOverride: { fundingAgreement: { pdfFile: 'test' } },
+      });
 
       radioGroup().within(() => clickRadio('No'));
 
@@ -86,10 +112,14 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should show licence records when selecting `Yes`', () => {
-      mountWithPinia(
-        { application: { applicationStatus: APPLICATION_STATUSES.DRAFT } },
-        { fundingAgreement: { pdfFile: 'test' }, licences: ['test'] },
-      );
+      interceptAPI();
+
+      mountWithPinia({
+        initialState: {
+          application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
+        },
+        dataOverride: { fundingAgreement: { pdfFile: 'test' } },
+      });
 
       radioGroup().within(() => clickRadio('Yes'));
 
@@ -99,17 +129,17 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should render licence confirmation radio group', () => {
-      mountWithPinia(
-        {
+      interceptAPI();
+      mountWithPinia({
+        initialState: {
           application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
         },
-        {
+        dataOverride: {
           isFundingAgreementConfirmed: YES_NO_VALUES.YES,
           areLicenceDetailsConfirmed: YES_NO_VALUES.NO,
           fundingAgreement: { pdfFile: 'test' },
-          licences: ['test'],
         },
-      );
+      });
 
       radioGroup().within(() => clickRadio('Yes'));
       cy.contains('I confirm all Licence and Service Details Records are correct.');
