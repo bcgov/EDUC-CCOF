@@ -108,7 +108,7 @@
                     v-if="applicationType === APPLICATION_TYPES.NEW_ORG"
                     theme="dark"
                     class="blueButton mt-4"
-                    @click="viewApplication('NEW')"
+                    @click="goToCCOFOrganizationInfo()"
                   >
                     View Recent Application
                   </v-btn>
@@ -120,7 +120,7 @@
                     "
                     theme="dark"
                     class="blueButton"
-                    @click="viewApplication('RENEW')"
+                    @click="goToRenewalApplication()"
                   >
                     View Recent Application
                   </v-btn>
@@ -168,12 +168,11 @@
               <v-skeleton-loader class="ma-0 pa-0" type="chip" />
             </div>
             <div v-else>
-              <!-- {{ isRenewEnabled }} -->
               <v-btn
                 v-if="ccofRenewStatus === RENEW_STATUS.NEW"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
-                @click="renewApplication()"
+                @click="renew"
               >
                 Renew my Funding Agreement
               </v-btn>
@@ -181,7 +180,7 @@
                 v-else-if="ccofRenewStatus === RENEW_STATUS.CONTINUE"
                 :class="buttonColor(!isRenewEnabled)"
                 theme="dark"
-                @click="continueRenewal()"
+                @click="goToRenewalApplication()"
               >
                 Continue Renewal
               </v-btn>
@@ -227,10 +226,11 @@
       <v-col v-if="hasPermission(PERMISSIONS.VIEW_ER)" cols="12" lg="4">
         <SmallCard :disable="!isCCOFApproved">
           <template #content>
-            <p class="text-h6">Submit Enrolment Reports or monthly ECE reports to receive funding</p>
+            <p class="text-h6">Submit and Manage Facility Reports</p>
             <p>
-              If you are expecting a new licence or change to your licence or service details, contact the Child Care
-              Operating Funding program before submitting your next enrolment report or monthly ECE report.
+              Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care
+              Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator
+              Wage Enhancement (ECE-WE).
             </p>
           </template>
           <template #button>
@@ -475,6 +475,7 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationId',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
@@ -735,6 +736,7 @@ export default {
     ...mapActions(useEnrolmentReport, ['checkDueReports']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
+    ...mapActions(useOrganizationStore, ['renewApplication']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     async loadData() {
       try {
@@ -773,15 +775,26 @@ export default {
       this.setIsRenewal(false);
       this.$router.push(pcfUrl(PATHS.NEW_APPLICATION_INTERMEDIATE, this.programYearList.newApp.programYearId));
     },
-    renewApplication() {
-      this.setIsRenewal(true);
-      this.$router.push(pcfUrl(PATHS.RENEW_CONFIRM, this.nextProgramYear?.programYearId));
+    async renew() {
+      try {
+        this.isLoadingComplete = false;
+        await this.renewApplication();
+        this.setIsRenewal(true);
+        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.nextProgramYear?.programYearId));
+      } catch (error) {
+        console.error('Failed to renew application.', error);
+        this.setFailureAlert('An error occurred while processing. Please try again later.');
+      }
     },
     goToChangeRequestHistory() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
-    continueRenewal() {
-      this.goToLicenseUpload();
+    goToRenewalApplication() {
+      if (this.showApplicationTemplateV1) {
+        this.goToLicenseUpload();
+      } else {
+        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.programYearId));
+      }
     },
     goToCCOFOrganizationInfo() {
       this.setIsRenewal(false);
@@ -840,13 +853,6 @@ export default {
     },
     goToMaintainUsers() {
       this.$router.push(PATHS.ROOT.MANAGE_USERS);
-    },
-    viewApplication(type) {
-      if (type === 'NEW') {
-        this.goToCCOFOrganizationInfo();
-      } else {
-        this.goToLicenseUpload();
-      }
     },
     goToOrganizationClosures() {
       this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.selectedProgramYearId}`);

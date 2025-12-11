@@ -22,6 +22,7 @@ import {
   ORGANIZATION_TYPES,
   PATHS,
   PROGRAM_YEAR_LANGUAGE_TYPES,
+  YES_NO_VALUES,
 } from '@/utils/constants.js';
 import { formatTime24to12 } from '@/utils/format';
 import rules from '@/utils/rules.js';
@@ -107,6 +108,7 @@ export default {
     this.ORGANIZATION_TYPES = ORGANIZATION_TYPES;
     this.PATHS = PATHS;
     this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
+    this.YES_NO_VALUES = YES_NO_VALUES;
   },
   methods: {
     getOptInOptOut,

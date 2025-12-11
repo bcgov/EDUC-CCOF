@@ -50,3 +50,11 @@ Cypress.Commands.add('setupPinia', ({ initialState = {}, createSpy = cy.spy, stu
   setActivePinia(pinia);
   return cy.wrap(pinia);
 });
+
+Cypress.Commands.add('mockJwt', () => {
+  globalThis.localStorage.setItem('jwtToken', 'mocked-jwt-token');
+});
+
+Cypress.Commands.add('clearJwt', () => {
+  globalThis.localStorage.removeItem('jwtToken');
+});
