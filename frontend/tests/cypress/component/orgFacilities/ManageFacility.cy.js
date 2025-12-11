@@ -146,14 +146,15 @@ describe('<ManageFacility />', () => {
     cy.get('@routerPush').should('have.been.calledWith', { name: 'Report Change' });
   });
 
-  it('should not render any tabs without any permissions', () => {
+  it('should render only `Manage ECE Staff` tab without any permissions', () => {
     mountWithPinia({ ...createOrganizationStore() });
 
-    cy.get('.v-tabs').find('button').should('have.length', 0);
+    cy.get('.v-tabs').find('button').should('have.length', 1);
+    cy.get('.v-tab').contains('Manage ECE Staff').should('exist');
   });
 
   it('should render `Facility Details` tab', () => {
-    const expectedTexts = ['Facility Details'];
+    const expectedTexts = ['Facility Details', 'Manage ECE Staff'];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
@@ -167,7 +168,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 1)
+      .should('have.length', 2)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -189,12 +190,12 @@ describe('<ManageFacility />', () => {
       },
     });
 
-    cy.get('.v-tabs').find('button').should('have.length', 2);
+    cy.get('.v-tabs').find('button').should('have.length', 3);
     cy.get('.v-tab').contains('Facility Detail').should('not.exist');
   });
 
   it('should render `Licence and Service Details Record` tab', () => {
-    const expectedTexts = ['Licence and Service Details Record'];
+    const expectedTexts = ['Licence and Service Details Record', 'Manage ECE Staff'];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
@@ -208,7 +209,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 1)
+      .should('have.length', 2)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -234,7 +235,12 @@ describe('<ManageFacility />', () => {
   });
 
   it('should render all tabs with correct values', () => {
-    const expectedTexts = ['Facility Details', 'Programs and Vacancies', 'Licence and Service Details Record'];
+    const expectedTexts = [
+      'Facility Details',
+      'Programs and Vacancies',
+      'Licence and Service Details Record',
+      'Manage ECE Staff',
+    ];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
@@ -252,7 +258,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 3)
+      .should('have.length', 4)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
