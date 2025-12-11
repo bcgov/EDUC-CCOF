@@ -111,7 +111,8 @@ export default {
         const staffRecords = await ECEStaffService.getECEStaff({
           facilityId: this.$route.params.facilityId,
         });
-        this.eceStaff = staffRecords.map((item) => (this.formatWage(item), item));
+        staffRecords.forEach(this.formatWage);
+        this.eceStaff = staffRecords;
         this.sortECEStaff();
       } catch {
         this.setFailureAlert('Failed to load ECE Staff records');
