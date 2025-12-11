@@ -19,7 +19,7 @@ import { mapState } from 'pinia';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import facilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
-import { OPT_STATUSES } from '@/utils/constants.js';
+import { OPT_STATUSES, BASE_FACILITY_HEADERS } from '@/utils/constants.js';
 import { formatUTCDateToMonthYear } from '@/utils/format.js';
 
 export default {
@@ -60,9 +60,7 @@ export default {
     },
     headers() {
       return [
-        { title: 'Facility Name', key: 'facilityName' },
-        { title: 'Facility ID', key: 'facilityAccountNumber' },
-        { title: 'Licence #', key: 'licenseNumber' },
+        ...BASE_FACILITY_HEADERS,
         { title: 'Opt-In/Out Status', key: 'ccfriOptStatus' },
         { title: 'CCFRI Start Date', key: 'ccfriStartDate' },
       ];

@@ -262,6 +262,12 @@ export const ECEWE_APPLICATION_STATUS = {
   OPT_OUT: 6,
   NEW: 7,
 };
+// these are common table headers used in both CCFRI and ECEWE tables under Accounts Management
+export const BASE_FACILITY_HEADERS = [
+  { title: 'Facility Name', key: 'facilityName' },
+  { title: 'Facility ID', key: 'facilityAccountNumber' },
+  { title: 'Licence #', key: 'licenseNumber' },
+];
 
 //these are used at the facility level - other codes are at ORG level
 export const ECEWE_FACILITY_UNION_TYPES = {

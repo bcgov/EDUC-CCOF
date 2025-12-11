@@ -26,6 +26,7 @@ import {
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_APPLICATION_STATUS,
+  BASE_FACILITY_HEADERS,
 } from '@/utils/constants.js';
 const LOOKUP = {
   OPT_STATUS: {
@@ -97,9 +98,7 @@ export default {
     },
     headers() {
       return [
-        { title: 'Facility Name', key: 'facilityName' },
-        { title: 'Facility ID', key: 'facilityAccountNumber' },
-        { title: 'Licence #', key: 'licenseNumber' },
+        ...BASE_FACILITY_HEADERS,
         { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
         { title: 'CSSEA Member', key: 'isCsseaMember' },
         { title: 'Unionized', key: 'unionStatus' },
