@@ -9,7 +9,7 @@
         </v-row>
       </v-card-text>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-data-table :headers="headers" :items="mappedItems" :loading="isLoading" density="compact" />
+        <v-data-table :headers="headers" :items="mappedItems" density="compact" />
       </v-skeleton-loader>
     </v-card>
   </v-col>

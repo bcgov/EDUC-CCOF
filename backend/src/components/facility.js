@@ -351,85 +351,88 @@ async function getApprovedParentFees(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
+// Fetches CCFRI applications for the given organizationID and program year and returns a list of facilities with their CCFRI info.
 async function getCcfriFacilities(req, res) {
   try {
     const organizationId = req.query.orgId;
     const programYear = req.query.selectedFY;
 
     if (!organizationId) {
-      return res.status(400).json({ message: 'Missing orgId query parameter' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Missing orgId query parameter' });
     }
     const query = `ccof_applications?$select=ccof_describe_your_org&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
     const response = await getOperation(query);
     const raw = response?.value ?? [];
     const transformed = transformCcfri(raw);
-    return res.status(200).json(transformed);
+    return res.status(HttpStatus.OK).json(transformed);
   } catch (e) {
-    log.error('ECEWE/CCFRI error:', e);
-    return res.status(500).json(e?.data ?? e?.status ?? { message: 'Server error' });
+    log.error('CCFRI facilities data error:', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
+// Converts raw CCFRI application records into a list of facility-level summaries.
 function transformCcfri(applications) {
-  const results = [];
+  const ccfriFacilities = [];
+  if (!applications?.length) return [];
   applications.forEach((app) => {
     app.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
-      const f = ccfri.ccof_Facility;
-      if (!f) return;
+      const facility = ccfri.ccof_Facility;
+      if (!facility) return;
 
-      results.push({
-        facilityName: f.name,
-        facilityAccountNumber: f.accountnumber,
-        licenseNumber: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
+      ccfriFacilities.push({
+        facilityName: facility.name,
+        facilityAccountNumber: facility.accountnumber,
+        licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         ccfriOptStatus: ccfri.ccof_ccfrioptin,
         ccfriStartDate: ccfri.ccof_opt_in_date ?? null,
       });
     });
   });
-  return results;
+  return ccfriFacilities;
 }
+// Fetches ECE-WE Applications for the given organizationID and program year and returns a list of facilities with their ECE-WE info.
 async function getEceweFacilities(req, res) {
   try {
     const organizationId = req.query.orgId;
     const programYear = req.query.selectedFY;
 
     if (!organizationId) {
-      return res.status(400).json({ message: 'Missing orgId query parameter' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Missing orgId query parameter' });
     }
     const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_optinstartdate)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
     const response = await getOperation(query);
     const raw = response?.value ?? [];
     const transformed = transformEcewe(raw);
-    return res.status(200).json(transformed);
+    return res.status(HttpStatus.OK).json(transformed);
   } catch (e) {
-    log.error('ECEWE/CCFRI error:', e);
-    return res.status(500).json(e?.data ?? e?.status ?? { message: 'Server error' });
+    log.error('ECEWE facilities data error:', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
+// Converts raw ECE-WE application records into a list of facility-level summaries.
 function transformEcewe(applications) {
-  const results = [];
-
+  const eceweFacilities = [];
+  if (!applications?.length) return [];
   applications.forEach((app) => {
     app.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ece) => {
-      const f = ece.ccof_Facility;
-      if (!f) return;
+      const facility = ece.ccof_Facility;
+      if (!facility) return;
 
-      const adj = ece.ccof_adj_ecewe_facility_App_ecewe?.[0];
-
-      results.push({
-        facilityName: f.name,
-        facilityAccountNumber: f.accountnumber,
-        licenseNumber: f.ccof_license_facility_account?.[0]?.ccof_name ?? null,
+      const eceweAdj = ece.ccof_adj_ecewe_facility_App_ecewe?.[0];
+      eceweFacilities.push({
+        facilityName: facility.name,
+        facilityAccountNumber: facility.accountnumber,
+        licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         eceweOptStatus: ece.ccof_optintoecewe,
         eceweApplicationStatus: ece.statuscode,
         unionStatus: ece.ccof_facilityunionstatus,
-        eceweStartDate: adj?.ccof_optinstartdate ?? null,
+        eceweStartDate: eceweAdj?.ccof_optinstartdate ?? null,
         isPublicSectorEmployer: app.ccof_public_sector_employer,
         isCsseaMember: app.ccof_describe_your_org,
       });
     });
   });
-
-  return results;
+  return eceweFacilities;
 }
 
 module.exports = {

@@ -9,13 +9,7 @@
         </v-row>
       </v-card-text>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-data-table
-          :headers="headers"
-          :items="mappedItems"
-          :loading="isLoading"
-          density="compact"
-          :items-per-page="10"
-        />
+        <v-data-table :headers="headers" :items="mappedItems" density="compact" :items-per-page="10" />
       </v-skeleton-loader>
     </v-card>
   </v-col>
@@ -27,13 +21,39 @@ import facilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
 import { formatUTCDateToMonthYear } from '@/utils/format.js';
 import {
-  YES_NO_VALUES,
   OPT_STATUSES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_FACILITY_UNION_TYPES,
   ECEWE_APPLICATION_STATUS,
 } from '@/utils/constants.js';
+const LOOKUP = {
+  OPT_STATUS: {
+    [OPT_STATUSES.OPT_IN]: 'Opt-In',
+    [OPT_STATUSES.OPT_OUT]: 'Opt-Out',
+  },
+  UNION: {
+    [ECEWE_FACILITY_UNION_TYPES.UNIONIZED]: 'Yes',
+    [ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED]: 'No',
+  },
+  CSSEA: {
+    [ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA]: 'Yes',
+    [ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA]: 'No',
+  },
+  PSE: {
+    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES]: 'Yes',
+    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO]: 'No',
+  },
+  APPLICATION_STATUS: {
+    [ECEWE_APPLICATION_STATUS.NEW]: 'New',
+    [ECEWE_APPLICATION_STATUS.SUBMITTED]: 'Submitted',
+    [ECEWE_APPLICATION_STATUS.INACTIVE]: 'Inactive',
+    [ECEWE_APPLICATION_STATUS.APPROVED]: 'Approved',
+    [ECEWE_APPLICATION_STATUS.INELIGIBLE]: 'Ineligible',
+    [ECEWE_APPLICATION_STATUS.ACTION_REQUIRED]: 'Action Required',
+    [ECEWE_APPLICATION_STATUS.OPT_OUT]: 'Opted Out',
+  },
+};
 export default {
   name: 'OrganizationECEWETable',
   components: { FiscalYearSlider },
@@ -67,11 +87,11 @@ export default {
         })
         .map((item) => ({
           ...item,
-          isPublicSectorEmployer: this.mapYesNo(item.isPublicSectorEmployer),
-          isCsseaMember: this.mapCssea(item.isCsseaMember),
-          unionStatus: this.mapUnion(item.unionStatus),
-          eceweOptStatus: this.mapOptStatus(item.eceweOptStatus),
-          eceweApplicationStatus: this.mapEceweApplicationStatus(item.eceweApplicationStatus),
+          isPublicSectorEmployer: this.mapValue('PSE', item.isPublicSectorEmployer),
+          isCsseaMember: this.mapValue('CSSEA', item.isCsseaMember),
+          unionStatus: this.mapValue('UNION', item.unionStatus),
+          eceweOptStatus: this.mapValue('OPT_STATUS', item.eceweOptStatus),
+          eceweApplicationStatus: this.mapValue('APPLICATION_STATUS', item.eceweApplicationStatus),
           eceweStartDate: formatUTCDateToMonthYear(item.eceweStartDate),
         }));
     },
@@ -105,48 +125,8 @@ export default {
         this.isLoading = false;
       }
     },
-    mapYesNo(value) {
-      if (value === YES_NO_VALUES.YES) return 'Yes';
-      if (value === YES_NO_VALUES.NO) return 'No';
-      return '';
-    },
-    mapOptStatus(value) {
-      if (value === OPT_STATUSES.OPT_IN) return 'Opt-In';
-      if (value === OPT_STATUSES.OPT_OUT) return 'Opt-Out';
-      return '';
-    },
-    mapUnion(value) {
-      if (value === ECEWE_FACILITY_UNION_TYPES.UNIONIZED) return 'Yes';
-      if (value === ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED) return 'No';
-      return '';
-    },
-    mapCssea(value) {
-      if (value === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) return 'Yes';
-      if (value === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA) return 'No';
-      return '';
-    },
-    mapPsa(value) {
-      if (value === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES) return 'Yes';
-      if (value === ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO) return 'No';
-      return '';
-    },
-    mapEceweApplicationStatus(status) {
-      switch (status) {
-        case ECEWE_APPLICATION_STATUS.NEW:
-          return 'New';
-        case ECEWE_APPLICATION_STATUS.SUBMITTED:
-          return 'Submitted';
-        case ECEWE_APPLICATION_STATUS.APPROVED:
-          return 'Approved';
-        case ECEWE_APPLICATION_STATUS.INELIGIBLE:
-          return 'Ineligible';
-        case ECEWE_APPLICATION_STATUS.ACTION_REQUIRED:
-          return 'Action Required';
-        case ECEWE_APPLICATION_STATUS.OPT_OUT:
-          return 'Opted Out';
-        default:
-          return '';
-      }
+    mapValue(mapKey, value) {
+      return LOOKUP[mapKey][value] ?? '';
     },
   },
 };
