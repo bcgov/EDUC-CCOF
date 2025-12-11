@@ -67,7 +67,7 @@
 import alertMixin from '@/mixins/alertMixin.js';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import ECEStaffService from '@/services/ECEStaffService.js';
+import ECEStaffService from '@/services/eceStaffService.js';
 
 import { ECESTAFF_STATUSES } from '@/utils/constants';
 import { formatWage } from '@/utils/format';
