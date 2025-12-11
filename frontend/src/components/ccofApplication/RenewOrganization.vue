@@ -1,33 +1,18 @@
 <template>
-  <Spinner v-if="processing" />
-  <v-form v-else ref="form" v-model="isValidForm">
-    <v-container class="my-8 py-0">
-      <p class="text-h5 text-center">
-        Child Care Operating Funding Program - {{ renewalYearLabel }} Program Confirmation Form
-      </p>
-      <div class="d-flex flex-column align-center mt-12">
-        <v-card v-if="isSomeChangeRequestActive" rounded="0" width="85%" max-width="1200">
-          <v-card-title class="noticeAlert text-wrap">
-            <v-icon size="x-large" class="noticeAlertIcon"> mdi-alert-octagon </v-icon>
-            You have a change request for the {{ currentYearLabel }} funding term still in progress.
-          </v-card-title>
-          <p class="pa-8 pt-4">
-            The {{ renewalYearLabel }} Program Confirmation Form cannot be submitted until the change is complete.
-            <AppButton :loading="processing" class="mt-4" @click="goToChangeRequestHistory">
-              View My Changes
-            </AppButton>
-          </p>
-        </v-card>
-        <v-card class="my-8 pa-8 pb-4" width="85%" max-width="1200">
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
+    <v-container fluid class="mx-lg-16">
+      <v-form ref="form" v-model="isValidForm">
+        <ApplicationPCFHeader :program-year="renewalYearLabel" />
+        <ApplicationChangeRequestInProgressAlert
+          v-if="hasActiveChangeRequest"
+          :loading="isApplicationProcessing"
+          class="my-8"
+        />
+        <v-card class="my-8 pa-8 pb-4">
           <p>Has your banking information changed?</p>
-          <v-radio-group
-            v-model="hasBankingInfoChanged"
-            inline
-            :disabled="isSomeChangeRequestActive"
-            :rules="rules.required"
-          >
-            <v-radio label="Yes" :value="true" />
-            <v-radio label="No" :value="false" />
+          <v-radio-group v-model="hasBankingInfoChanged" inline :disabled="readonly" :rules="rules.required">
+            <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+            <v-radio label="No" :value="YES_NO_VALUES.NO" />
           </v-radio-group>
           <v-card v-if="hasBankingInfoChanged" rounded="0" class="mb-4">
             <v-card-title class="noticeAlert">
@@ -59,90 +44,116 @@
             </div>
           </v-card>
         </v-card>
-      </div>
+      </v-form>
     </v-container>
-  </v-form>
+  </v-skeleton-loader>
   <NavButton
     :is-next-displayed="true"
-    :is-next-disabled="!isValidForm || hasBankingInfoChanged"
-    :is-processing="processing"
+    :is-save-displayed="true"
+    :is-next-disabled="isNextDisabled"
+    :is-save-disabled="readonly"
+    :is-processing="isApplicationProcessing"
     @previous="back"
     @next="next"
+    @save="save(true)"
     @validate-form="validateForm"
   />
 </template>
 <script>
 import { mapActions, mapState } from 'pinia';
-import AppButton from '@/components/guiComponents/AppButton.vue';
+import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
+import ApplicationPCFHeader from '@/components/util/ApplicationPCFHeader.vue';
 import NavButton from '@/components/util/NavButton.vue';
-import Spinner from '@/components/common/Spinner.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
+import ApplicationService from '@/services/applicationService';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
+import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { isAnyChangeRequestActive } from '@/utils/common.js';
-import { APPLICATION_STATUSES, APPLICATION_TYPES, PATHS, pcfUrl } from '@/utils/constants.js';
+import { PATHS, YES_NO_VALUES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
 
 export default {
-  components: { AppButton, NavButton, Spinner },
+  components: { ApplicationChangeRequestInProgressAlert, ApplicationPCFHeader, NavButton },
+  mixins: [alertMixin, permissionsMixin],
+  async beforeRouteLeave(_to, _from, next) {
+    await this.save(false);
+    next();
+  },
   data() {
     return {
-      processing: false,
-      isValidForm: true,
+      isValidForm: false,
       hasBankingInfoChanged: null,
     };
   },
   computed: {
-    ...mapState(useAppStore, ['currentYearLabel', 'programYearList', 'renewalYearLabel']),
-    ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
-    ...mapState(useReportChangesStore, ['changeRequestStore']),
-    isSomeChangeRequestActive() {
-      return isAnyChangeRequestActive(this.changeRequestStore);
+    ...mapState(useAppStore, ['renewalYearLabel']),
+    ...mapState(useApplicationStore, [
+      'applicationId',
+      'isApplicationProcessing',
+      'isApplicationSubmitted',
+      'renewalApplicationCCOF',
+    ]),
+    ...mapState(useNavBarStore, ['nextPath']),
+    ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
+    readonly() {
+      return this.isApplicationSubmitted || this.hasActiveChangeRequest;
     },
-    hasDraftRenewalApplication() {
-      return (
-        this.applicationStatus === APPLICATION_STATUSES.DRAFT && this.applicationType === APPLICATION_TYPES.RENEWAL
-      );
+    isNextDisabled() {
+      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged === YES_NO_VALUES.YES;
     },
   },
   async created() {
-    this.PATHS = PATHS;
+    this.YES_NO_VALUES = YES_NO_VALUES;
     this.rules = rules;
-    await this.init();
+    await this.loadData();
   },
   methods: {
-    ...mapActions(useOrganizationStore, ['renewApplication']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
-    async init() {
+    async loadData() {
       try {
-        this.processing = true;
+        this.setIsApplicationProcessing(true);
+        this.hasBankingInfoChanged = this.renewalApplicationCCOF?.hasBankingInfoChanged;
         await this.getChangeRequestList();
-        // Prevents users from creating a duplicate RENEWAL application if they click the browser's back arrow and try again.
-        if (this.hasDraftRenewalApplication) {
-          this.back();
-        }
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
       } finally {
-        this.processing = false;
+        this.setIsApplicationProcessing(false);
       }
-    },
-    async next() {
-      this.processing = true;
-      const nextProgramYear = this.programYearList?.list?.find((el) => el.previousYearId === this.latestProgramYearId);
-      await this.renewApplication();
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, nextProgramYear?.programYearId));
-    },
-    validateForm() {
-      this.$refs.form?.validate();
     },
     back() {
       this.$router.push(PATHS.ROOT.HOME);
     },
-    goToChangeRequestHistory() {
-      this.$router.push(`${PATHS.ROOT.CHANGE_LANDING}#change-request-history`);
+    next() {
+      this.$router.push(this.nextPath);
+    },
+    async save(showNotification) {
+      try {
+        if (this.readonly) return;
+        this.setIsApplicationProcessing(true);
+        if (this.renewalApplicationCCOF?.hasBankingInfoChanged !== this.hasBankingInfoChanged) {
+          this.renewalApplicationCCOF.hasBankingInfoChanged = this.hasBankingInfoChanged;
+          await ApplicationService.updateApplication(this.applicationId, {
+            hasBankingInfoChanged: this.hasBankingInfoChanged,
+          });
+          this.refreshNavBarList();
+        }
+        if (showNotification) {
+          this.setSuccessAlert('Application saved successfully.');
+        }
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while saving. Please try again later.');
+      } finally {
+        this.setIsApplicationProcessing(false);
+      }
+    },
+    validateForm() {
+      this.$refs.form?.validate();
     },
   },
 };

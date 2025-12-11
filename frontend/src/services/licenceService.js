@@ -1,18 +1,15 @@
 import ApiService from '@/common/apiService';
+import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
-  async getLicences({ facilityId, fundingAgreementId } = {}) {
+  async getLicences(query) {
     try {
-      let queryParam = null;
-      if (facilityId) {
-        queryParam = `facilityId=${facilityId}`;
-      } else if (fundingAgreementId) {
-        queryParam = `fundingAgreementId=${fundingAgreementId}`;
+      const queryString = buildQueryString(query);
+      if (!queryString) {
+        return [];
       }
-
-      if (!queryParam) return [];
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.LICENCES}?${queryParam}`);
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.LICENCES}${queryString}`);
       return response?.data;
     } catch (error) {
       console.log(`Failed to get licences - ${error}`);
