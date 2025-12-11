@@ -169,3 +169,13 @@ export function formatStringToNumberList(str) {
   if (!str) return [];
   return str.split(',').map((x) => Number(x.trim()));
 }
+
+/**
+ * Formats an hourly wage to always have two decimal places.
+ * If the value is null, undefined, or empty, defaults to 0.00.
+ *
+ * @param {object} record - An object with an `hourlyWage` property
+ */
+export function formatWage(record) {
+  record.hourlyWage = Number(record.hourlyWage || 0).toFixed(2);
+}

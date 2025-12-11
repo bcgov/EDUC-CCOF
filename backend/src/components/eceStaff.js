@@ -3,12 +3,13 @@
 const { getOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
+const { buildFilterQuery } = require('./utils');
 const { ECEStaffMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getECEStaff(req, res) {
   try {
-    const response = await getOperation(`ccof_ece_provider_employees?$filter=_ccof_facility_id_value eq ${req.query.facilityId}`);
+    const response = await getOperation(`ccof_ece_provider_employees?${buildFilterQuery(req.query, ECEStaffMappings)}`);
     const eceStaff = response?.value?.map((record) => new MappableObjectForFront(record, ECEStaffMappings).toJSON());
     return res.status(HttpStatus.OK).json(eceStaff);
   } catch (e) {
