@@ -468,8 +468,17 @@ export default {
       return this.mappedFacilities?.every((facility) => facility.isComplete);
     },
     isApplicationFormComplete() {
-      const isChangeNotificationFormComplete =
-        !this.isChangeRequest || !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
+      const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
+        this.summaryModel?.ecewe,
+        this.isGroup,
+        this.languageYearLabel,
+        this.applicationTemplateVersion,
+      );
+      if (this.isChangeRequest) {
+        const isChangeNotificationFormComplete =
+          !this.hasChangeNotificationFormDocuments || this.isChangeNotificationFormComplete;
+        return this.areAllFacilitiesComplete && isECEWEOrganizationComplete && isChangeNotificationFormComplete;
+      }
       const isOrganizationComplete =
         !this.showOrganizationSummary ||
         ApplicationService.isOrganizationComplete(this.summaryModel?.organization, this.applicationTemplateVersion);
@@ -477,18 +486,11 @@ export default {
         !this.showCCOFBaseFundingSummary ||
         (ApplicationService.isBankingInformationComplete(this.summaryModel?.application) &&
           ApplicationService.isFundingAgreementComplete(this.summaryModel?.application));
-      const isECEWEOrganizationComplete = ApplicationService.isECEWEOrganizationComplete(
-        this.summaryModel?.ecewe,
-        this.isGroup,
-        this.languageYearLabel,
-        this.applicationTemplateVersion,
-      );
       return (
         isOrganizationComplete &&
         isCCOFBaseFundingComplete &&
         isECEWEOrganizationComplete &&
-        this.areAllFacilitiesComplete &&
-        isChangeNotificationFormComplete
+        this.areAllFacilitiesComplete
       );
     },
     isSubmitDisabled() {
