@@ -11,13 +11,9 @@
           <v-icon color="primary" size="x-large">mdi-information</v-icon>
         </template>
         <strong>Note:</strong> Please read and understand the full eligibility requirements in the
-        <a
-          href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/wage-enhancement"
-          target="_blank"
-          class="text-decoration-underline"
-        >
-          ECE-WE Funding Guidelines</a
-        >. All CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
+
+        <a :href="eceweUrl" target="_blank" class="text-decoration-underline"> ECE-WE Funding Guidelines</a>. All
+        CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
       </v-alert>
 
       <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="table-tbody" class="my-2"></v-skeleton-loader>
@@ -104,7 +100,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel']),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel', 'getEceweUrl']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
@@ -117,6 +113,9 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
 
+    eceweUrl() {
+      return this.getEceweUrl(this.programYearId);
+    },
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
       if (this.isChangeRequest) {
