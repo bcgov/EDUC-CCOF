@@ -582,6 +582,7 @@ export default {
     },
     async submit() {
       try {
+        if (this.isSubmitDisabled) return;
         this.setIsApplicationProcessing(true);
         this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
