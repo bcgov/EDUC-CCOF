@@ -584,7 +584,7 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should('exist');
+      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should('exist');
     });
 
     it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
@@ -596,7 +596,7 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
         'have.css',
         'pointer-events',
         'none',
@@ -639,7 +639,7 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
         'have.css',
         'pointer-events',
         'none',
@@ -655,7 +655,7 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Submit Enrolment Reports or monthly ECE reports to receive funding').should(
+      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
         'not.have.css',
         'pointer-events',
         'none',

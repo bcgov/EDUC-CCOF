@@ -214,7 +214,6 @@ export default {
     },
     async loadLicences() {
       this.licences = await LicenceService.getLicences({
-        useCustomQuery: true,
         organizationId: this.organizationId,
       });
     },
