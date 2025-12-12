@@ -1,5 +1,5 @@
 const { defineConfig } = require('cypress');
-const fs = require('fs')
+const fs = require('node:fs')
 
 module.exports = defineConfig({
   defaultCommandTimeout: 60000,
