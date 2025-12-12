@@ -129,7 +129,7 @@ export const useAppStore = defineStore('app', {
     getApplicationTemplateVersion: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
     },
-    getEceweUrl: (state) => (programYearId) => {
+    getEceweFundingUrl: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.eceweFundingGuidelinesUrl;
     },
     getFundingUrl: (state) => (programYearId) => {
