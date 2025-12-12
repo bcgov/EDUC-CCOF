@@ -26,89 +26,89 @@ public class TestAdjudicateRenewalFullCcof extends BaseTest {
 		logger.info("Starting the AdjudicateRenewalCcof test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 
 		// login to application
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(5000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		deleteApp.searchBox(utils.getDataFromJson("contact"));
 		Thread.sleep(5000);
-		deleteapp.pressEnter();
+		deleteApp.pressEnter();
 		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.fullName();
 		Thread.sleep(5000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		ut.waitForElementToLoad(orginfo.getOpenRenewalApplication());
-		orginfo.clickRenewalApplication();
+		utils.waitForElementToLoad(orgInfo.getOpenRenewalApplication());
+		orgInfo.clickRenewalApplication();
 		Thread.sleep(3000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// start of CCOF Adjudication
-		appinfo.clickRelatedTab();
-		ut.waitForElementToLoad(appinfo.waitBeforeCCFOSLink());
-		appinfo.clickCCFOSLink();
-		ut.waitForElementToLoad(appinfo.waitBeforeClickCcfos());
-		appinfo.clickCcfos();
+		appInfo.clickRelatedTab();
+		utils.waitForElementToLoad(appInfo.waitBeforeCCFOSLink());
+		appInfo.clickCCFOSLink();
+		utils.waitForElementToLoad(appInfo.waitBeforeClickCcfos());
+		appInfo.clickCcfos();
 
-		CcofPage ccofinfo = new CcofPage(driver);
-		ut.waitForElementToLoad(ccofinfo.waitBeforeCcofAdjudicationLink());
-		ccofinfo.clickCcofAdjudicationLink();
+		CcofPage ccofInfo = new CcofPage(driver);
+		utils.waitForElementToLoad(ccofInfo.waitBeforeCcofAdjudicationLink());
+		ccofInfo.clickCcofAdjudicationLink();
 		Thread.sleep(2000);
-		ut.javaScriptExecutorAction(ccofinfo.clickSigningAuthorityBtn());
+		utils.javaScriptExecutorAction(ccofInfo.clickSigningAuthorityBtn());
 		Thread.sleep(2000);
-		ut.javaScriptExecutorAction(ccofinfo.clickAllLicensesCorrectBtn());
+		utils.javaScriptExecutorAction(ccofInfo.clickAllLicensesCorrectBtn());
 		Thread.sleep(2000);
-		ut.javaScriptExecutorAction(ccofinfo.clickBasePayEligibleBtn());
+		utils.javaScriptExecutorAction(ccofInfo.clickBasePayEligibleBtn());
 		Thread.sleep(2000);
-		ut.javaScriptExecutorAction(ccofinfo.clickBasePayActivatedBtn());
-		ut.waitForElementToLoad(ccofinfo.waitBeforeClickSaveBtn());
-		ccofinfo.clickSaveBtn();
-		ut.waitForElementToLoad(ccofinfo.waitBeforeDashboardLink());
-		ccofinfo.clickDashboardLink();
-		ut.waitForElementToLoad(ccofinfo.waitBeforeBaseFundingProgressStatusField());
-		ccofinfo.clickBaseFundingProgressStatusField();
+		utils.javaScriptExecutorAction(ccofInfo.clickBasePayActivatedBtn());
+		utils.waitForElementToLoad(ccofInfo.waitBeforeClickSaveBtn());
+		ccofInfo.clickSaveBtn();
+		utils.waitForElementToLoad(ccofInfo.waitBeforeDashboardLink());
+		ccofInfo.clickDashboardLink();
+		utils.waitForElementToLoad(ccofInfo.waitBeforeBaseFundingProgressStatusField());
+		ccofInfo.clickBaseFundingProgressStatusField();
 		Thread.sleep(5000);
 
 		// selecting Confirmed - Active from dropdown
-		ut.selectDropdownValue(ut.getDataFromJson("baseFundingProgressStatusOptions"),
-				ccofinfo.getBaseFundingProgressStatusOptions());
-		ut.waitForElementToLoad(ccofinfo.waitBeforeSaveAndCloseBtn());
-		ccofinfo.clickSaveAndCloseBtn();
-		ut.waitForElementToLoad(appinfo.waitBeforeCcofTab());
-		appinfo.clickCcofTab();
+		utils.selectDropdownValue(utils.getDataFromJson("baseFundingProgressStatusOptions"),
+				ccofInfo.getBaseFundingProgressStatusOptions());
+		utils.waitForElementToLoad(ccofInfo.waitBeforeSaveAndCloseBtn());
+		ccofInfo.clickSaveAndCloseBtn();
+		utils.waitForElementToLoad(appInfo.waitBeforeCcofTab());
+		appInfo.clickCcofTab();
 
 		// changing the CCOF status to Active
-		ut.waitForElementToLoad(appinfo.waitBeforeCcofStatus());
-		appinfo.clickCcofStatus();
+		utils.waitForElementToLoad(appInfo.waitBeforeCcofStatus());
+		appInfo.clickCcofStatus();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("ccofStatusOptions"), appinfo.getCcofStatusOptions());
-		ut.waitForElementToLoad(appinfo.waitBeforeSaveBtn());
-		appinfo.clickSaveBtn();
+		utils.selectDropdownValue(utils.getDataFromJson("ccofStatusOptions"), appInfo.getCcofStatusOptions());
+		utils.waitForElementToLoad(appInfo.waitBeforeSaveBtn());
+		appInfo.clickSaveBtn();
 		Thread.sleep(2000);
 
 		logger.info("Ending the TestAdjudicateRenewalFullCcof test...");

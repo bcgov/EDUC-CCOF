@@ -27,67 +27,67 @@ public class TestAdjudicateOtherChangesChangeRequest extends BaseTest {
 		logger.info("Starting the TestAdjudicateOtherChangesChangeRequest test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 
 		// login to application
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		deleteApp.searchBox(utils.getDataFromJson("contact"));
 		Thread.sleep(5000);
-		deleteapp.pressEnter();
+		deleteApp.pressEnter();
 		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.fullName();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		ut.waitForElement(orginfo.waitBeforeClickMainApplication());
-		orginfo.clickMainApplication();
+		utils.waitForElement(orgInfo.waitBeforeClickMainApplication());
+		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// navigating to related tab
-		appinfo.clickRelatedTab();
+		appInfo.clickRelatedTab();
 
 		// navigating to Change Requests in related Tab
-		ut.waitForElement(appinfo.waitBeforeChangeRequests());
-		appinfo.clickChangeRequests();
+		utils.waitForElement(appInfo.waitBeforeChangeRequests());
+		appInfo.clickChangeRequests();
 
 		// selecting the submitted Other changes Change Request
-		ut.waitForElement(appinfo.waitBeforeClickChangeRequestSelected());
-		appinfo.clickChangeRequestSelected();
+		utils.waitForElement(appInfo.waitBeforeClickChangeRequestSelected());
+		appInfo.clickChangeRequestSelected();
 
 		ChangeRequestInfoPage changeRequestInfo = new ChangeRequestInfoPage(driver);
 
 		// navigating to Change Request Adjudication tab
-		ut.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
 		changeRequestInfo.clickChangeRequestAdjudicationTab();
 
 		// clicking on Other Changes Change Actions
-		ut.waitForElement(changeRequestInfo.waitBeforeClickOtherChangesChangeActions());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickOtherChangesChangeActions());
 		changeRequestInfo.clickOtherChangesChangeActions();
 		Thread.sleep(5000);
 
@@ -100,11 +100,11 @@ public class TestAdjudicateOtherChangesChangeRequest extends BaseTest {
 
 		// changing Internal Status to Complete
 		changeRequestInfo.clickMoreHeaderEditableFields();
-		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
 		changeRequestInfo.clickInternalStatusField();
-		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusCompleteOption());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusCompleteOption());
 		changeRequestInfo.mouseOverInternalStatusCompleteOption();
-		ut.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
 		logger.info("Internal Status Complete option is selected from Internal Status dropdown");
 		String internalstatus = changeRequestInfo.getInternalStatus();
 		changeRequestInfo.clickSaveBtn();
@@ -112,12 +112,12 @@ public class TestAdjudicateOtherChangesChangeRequest extends BaseTest {
 		changeRequestInfo.clickOverviewTab();
 
 		// getting External Status value
-		ut.waitForElement(changeRequestInfo.waitForExternalStatusField());
+		utils.waitForElement(changeRequestInfo.waitForExternalStatusField());
 		String externalstatus = changeRequestInfo.getExternalStatus();
 		logger.info("External Status is: {}", externalstatus);
 
 		// Assert they are equal
-		ut.compareValues(internalstatus, externalstatus);
+		utils.compareValues(internalstatus, externalstatus);
 
 		logger.info("Ending the TestAdjudicateOtherChangesChangeRequest test...");
 

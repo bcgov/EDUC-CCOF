@@ -28,68 +28,68 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 		logger.info("Starting the TestAdjudicateMTFIChangeRequest test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 
 		// login to application
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		deleteApp.searchBox(utils.getDataFromJson("contact"));
 		Thread.sleep(5000);
-		deleteapp.pressEnter();
+		deleteApp.pressEnter();
 		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.fullName();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		ut.waitForElement(orginfo.waitBeforeClickMainApplication());
-		orginfo.clickMainApplication();
+		utils.waitForElement(orgInfo.waitBeforeClickMainApplication());
+		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// navigating to related tab
-		appinfo.clickRelatedTab();
+		appInfo.clickRelatedTab();
 
 		// navigating to Change Requests in related Tab
-		ut.waitForElement(appinfo.waitBeforeChangeRequests());
-		appinfo.clickChangeRequests();
+		utils.waitForElement(appInfo.waitBeforeChangeRequests());
+		appInfo.clickChangeRequests();
 
 		// selecting the submitted MTFI Change Request
-		ut.waitForElement(appinfo.waitBeforeClickChangeRequestSelected());
-		appinfo.clickChangeRequestSelected();
+		utils.waitForElement(appInfo.waitBeforeClickChangeRequestSelected());
+		appInfo.clickChangeRequestSelected();
 		Thread.sleep(8000);
 
 		ChangeRequestInfoPage changeRequestInfo = new ChangeRequestInfoPage(driver);
 
 		// navigating to Change Request Adjudication tab
-		ut.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickChangeRequestAdjudicationTab());
 		changeRequestInfo.clickChangeRequestAdjudicationTab();
 
 		// clicking on Parent Fee Change(MTFI) Change Actions
-		ut.waitForElement(changeRequestInfo.waitBeforeClickParentFeeMTFIChangeActions());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickParentFeeMTFIChangeActions());
 		changeRequestInfo.clickParentFeeMTFIChangeActions();
 		Thread.sleep(5000);
 
@@ -98,40 +98,40 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 		// navigating to Parent Fee Change(MTFI) Change Action Page
 		changeActionInfo.clickMTFIRow();
 
-		ChangeActionMTFIInfoPage mtfiinfo = new ChangeActionMTFIInfoPage(driver);
+		ChangeActionMTFIInfoPage mtfiInfo = new ChangeActionMTFIInfoPage(driver);
 
 		// entering MTFI decision tab and changing Adjudicator Recommendation and
 		// MTFI-QC Decision
-		ut.waitForElement(mtfiinfo.waitBeforeClickMTFIDecisionTab());
-		mtfiinfo.clickMTFIDecisionTab();
-		ut.waitForElement(mtfiinfo.waitBeforeClickClosureAdjudicatorRecommendationField());
-		mtfiinfo.clickClosureAdjudicatorRecommendationField();
+		utils.waitForElement(mtfiInfo.waitBeforeClickMTFIDecisionTab());
+		mtfiInfo.clickMTFIDecisionTab();
+		utils.waitForElement(mtfiInfo.waitBeforeClickClosureAdjudicatorRecommendationField());
+		mtfiInfo.clickClosureAdjudicatorRecommendationField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("closureAdjudicatorRecommendation"),
-				mtfiinfo.getClosureAdjudicatorRecommendation());
+		utils.selectDropdownValue(utils.getDataFromJson("closureAdjudicatorRecommendation"),
+				mtfiInfo.getClosureAdjudicatorRecommendation());
 		logger.info("Closure Adjudicator Recommendation option is selected");
-		ut.waitForElement(mtfiinfo.waitBeforeClickAdjudicatorRecommendationField());
-		mtfiinfo.clickAdjudicatorRecommendationField();
+		utils.waitForElement(mtfiInfo.waitBeforeClickAdjudicatorRecommendationField());
+		mtfiInfo.clickAdjudicatorRecommendationField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("adjudicatorRecommendation"),
-				mtfiinfo.getAdjudicatorRecommendation());
+		utils.selectDropdownValue(utils.getDataFromJson("adjudicatorRecommendation"),
+				mtfiInfo.getAdjudicatorRecommendation());
 		logger.info("Adjudicator Recommendation option is selected from Adjudicator Recommendation dropdown");
-		ut.waitForElement(mtfiinfo.waitBeforeClickMTFIQCDecisionField());
-		mtfiinfo.clickMTFIQCDecisionField();
+		utils.waitForElement(mtfiInfo.waitBeforeClickMTFIQCDecisionField());
+		mtfiInfo.clickMTFIQCDecisionField();
 		Thread.sleep(3000);
-		ut.selectDropdownValue(ut.getDataFromJson("mtfiQCDecision"), mtfiinfo.getMTFIQCDecisionOptions());
+		utils.selectDropdownValue(utils.getDataFromJson("mtfiQCDecision"), mtfiInfo.getMTFIQCDecisionOptions());
 		logger.info("MTFI-QC Decision option is selected from MTFI-QC Decision dropdown");
-		ut.waitForElement(mtfiinfo.waitBeforeClickSaveButton());
-		mtfiinfo.clickSaveButton();
+		utils.waitForElement(mtfiInfo.waitBeforeClickSaveButton());
+		mtfiInfo.clickSaveButton();
 		Thread.sleep(5000);
-		mtfiinfo.clickExpandIcon();
+		mtfiInfo.clickExpandIcon();
 		Thread.sleep(5000);
-		mtfiinfo.clickStatusReasonField();
+		mtfiInfo.clickStatusReasonField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("mtfiStatusReasonOptions"), mtfiinfo.getStatusReasonOptions());
+		utils.selectDropdownValue(utils.getDataFromJson("mtfiStatusReasonOptions"), mtfiInfo.getStatusReasonOptions());
 		Thread.sleep(5000);
 		logger.info("Complete-Approved option is selected from MTFI Status dropdown");
-		mtfiinfo.clickSaveAndCloseBtn();
+		mtfiInfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 		logger.info("MTFI Change Action is saved and closed successfully");
 
@@ -141,11 +141,11 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// changing Internal Status to Complete
 		changeRequestInfo.clickMoreHeaderEditableFields();
-		ut.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickInternalStatusField());
 		changeRequestInfo.clickInternalStatusField();
 		Thread.sleep(5000);
 		changeRequestInfo.mouseOverInternalStatusCompleteOption();
-		ut.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
+		utils.waitForElement(changeRequestInfo.waitBeforeClickSaveBtn());
 		logger.info("Internal Status Complete option is selected from Internal Status dropdown");
 		String internalstatus = changeRequestInfo.getInternalStatus();
 		logger.info("Internal Status is: {}", internalstatus);
@@ -154,12 +154,12 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// validating the internal status and external status changed and are same
 		changeRequestInfo.clickOverviewTab();
-		ut.waitForElement(changeRequestInfo.waitForExternalStatusField());
+		utils.waitForElement(changeRequestInfo.waitForExternalStatusField());
 		String externalstatus = changeRequestInfo.getExternalStatus();
 		logger.info("External Status is: {}", externalstatus);
 
 		// Assert they are equal
-		ut.compareValues(internalstatus, externalstatus);
+		utils.compareValues(internalstatus, externalstatus);
 
 		logger.info("Ending the TestAdjudicateMTFIChangeRequest test...");
 
