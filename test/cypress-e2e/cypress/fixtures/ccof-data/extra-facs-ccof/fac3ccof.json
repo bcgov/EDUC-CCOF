@@ -25,7 +25,7 @@
   },
   "_NOTE": "If adding additional facilities, copy-paste the content of this file into a new file under extra-facs-ccof and change values below this line according to your test case",
   "facilityData": {
-    "facilityName": "Hedies Facility 2",
+    "facilityName": "Hedies Facility 3",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -44,7 +44,7 @@
       "maxWeeksPerYear": "52",
       "hoursFrom": "08:00",
       "hoursTo": "18:00",
-      "closedEntireMonths": "Yes",
+      "closedEntireMonths": "No",
       "_optionsClosedEntireMonths": {
         "fullyClosed": "Yes",
         "notFullyClosed": "No"
@@ -90,12 +90,12 @@
     },
     "oldGroupLicenceCategories": {
       "Group Child Care (under 36 Months)": {
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
@@ -105,12 +105,12 @@
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Multi-Age Child Care": {
-        "max": 1,
+        "max": 0,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }

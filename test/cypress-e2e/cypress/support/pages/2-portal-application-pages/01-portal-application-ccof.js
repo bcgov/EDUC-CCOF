@@ -355,12 +355,12 @@ class CcofApplication {
   }
 
   // NOTE: Currently only setup for Template 1
-  addAnotherFacility(appType, files = null) {
+  addAnotherFacility(appType, files) {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
     cy.contains('Do you want to add another facility to your application?')
     cy.log(files.length)
-    if (files) {
+    if (files.length > 0) {
       cy.clickByText('Yes')
       files.forEach((file, index) => {
         this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
@@ -380,24 +380,29 @@ class CcofApplication {
           }
         })
       })
+    } else {
+      cy.clickByText('No')
     }
   }
 
   licenceUpload() {
     let licenceFiles;
     cy.contains('Licence Upload')
+    
     cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
       licenceFiles = files
     })
+
     cy.get('input[placeholder="Select your file"]').each((input, index) => {
       let currFile = `/ccof-data/licence-files/${licenceFiles[index]}`
       cy.wrap(input)
         .attachFile(currFile)
       cy.contains(`${licenceFiles[index]}`)
     })
+    
     cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
       cy.contains('button', 'Save').should('have.class', 'blueButton')
-      .clickByText('Save')
+        .clickByText('Save')
       cy.contains('Changes Successfully Saved')
     }) 
     cy.clickByText('Next')

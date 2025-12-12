@@ -1,0 +1,50 @@
+{
+    "optInOrOut": "Yes",
+    "_optionsOptInOrOut": {
+        "optIn": "Yes",
+        "optOut": "No"
+    },
+    "publicSectorEmployer": "Yes",
+    "_optionsPublicSectorEmployer": {
+        "employer": "Yes",
+        "nonEmployer": "No"
+    },
+    "cssea": {
+        "csseaMember": "Yes",
+        "_optionsCsseaMember": {
+            "member": "Yes",
+            "nonMember": "No"
+        },
+        "status": "We are a member of the Community Social Services Employers' Association (CSSEA).",
+        "_optionsStatus": {
+            "csseaMemberStatus": "We are a member of the Community Social Services Employers' Association (CSSEA).",
+            "nonMemberStatus": "We are not a member of the Community Social Services Employers' Association (CSSEA)."
+        },
+        "fundingModel": "All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.",
+        "_optionsFundingModel": {
+            "provinciallyFunded": "All of our facilities have provincially funded ECEs and receive Low-Wage Redress Funding.",
+            "nonProvinciallyFunded": "All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.",
+            "mixedFunding": "Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non -provincially funded ECEs that do not receive Low - Wage Redress Funding."
+        },
+        "unionStatus": "Some or all of our facilities are unionized.",
+        "_optionsUnionStatus": {
+            "noneUnionized": "None of our facilities are unionized.",
+            "someOrAllUnionized": "Some or all of our facilities are unionized."
+        },
+        "confirmation": "I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
+    },
+    "facility": {
+        "facilityName": "Hedies Facility 3",
+        "facilityOptInOrOut": "Opt-In",
+        "_optionsFacilityOptInOrOut": {
+            "optIn": " Opt-In",
+            "optOut": "Opt-Out"
+        },
+        "facilityUnionStatus": "Non-Unionized",
+        "_optionsFacilityUnionStatus": {
+            "unionized": "Unionized",
+            "nonUnionized": "Non-Unionized"
+        }
+    }
+    
+}
