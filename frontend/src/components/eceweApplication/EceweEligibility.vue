@@ -12,7 +12,7 @@
         </template>
         <strong>Note:</strong> Please read and understand the full eligibility requirements in the
 
-        <a :href="eceweUrl" target="_blank" class="text-decoration-underline"> ECE-WE Funding Guidelines</a>. All
+        <a :href="eceweFundingUrl" target="_blank" class="text-decoration-underline"> ECE-WE Funding Guidelines</a>. All
         CCFRI-eligible facilities must opt-in to CCFRI <strong>to be eligible for ECE-WE.</strong>
       </v-alert>
 
@@ -100,7 +100,7 @@ export default {
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useEceweAppStore, ['isStarted', 'eceweModel']),
-    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel', 'getEceweUrl']),
+    ...mapState(useAppStore, ['fundingModelTypeList', 'getLanguageYearLabel', 'getEceweFundingUrl']),
     ...mapState(useNavBarStore, ['navBarList', 'changeRequestId', 'previousPath', 'isChangeRequest']),
     ...mapState(useApplicationStore, [
       'formattedProgramYear',
@@ -113,8 +113,8 @@ export default {
     ...mapState(useOrganizationStore, ['organizationProviderType']),
     ...mapState(useReportChangesStore, ['loadedChangeRequest', 'isEceweUnlocked', 'changeRequestStatus']),
 
-    eceweUrl() {
-      return this.getEceweUrl(this.programYearId);
+    eceweFundingUrl() {
+      return this.getEceweFundingUrl(this.programYearId);
     },
     filteredECEWEFacilityList() {
       const eceweAppStore = useEceweAppStore();
