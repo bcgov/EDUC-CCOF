@@ -1,12 +1,48 @@
 import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue';
 import vuetify from '@/plugins/vuetify';
 
-const organizationName = 'Test-Org-Name';
-const changeRecGuid = '44434';
+const PROGRAM_YEAR_ID = '1234';
+const ORGANIZATION_NAME = 'Test-Org-Name';
+const CHANGE_REC_GUID = '44434';
+
+const createApplicationStore = (extras) => {
+  return {
+    application: {
+      programYearLabel: 'Test 2025',
+      programYearId: PROGRAM_YEAR_ID,
+    },
+  };
+};
+
+const createAppStore = (extras) => {
+  return {
+    app: {
+      programYearList: {
+        list: [
+          {
+            programYearId: PROGRAM_YEAR_ID,
+            eceweFundingGuidelinesUrl: 'www.ecewe-test.com',
+          },
+        ],
+      },
+      ...extras,
+    },
+  };
+};
+
+const createAuthStore = () => {
+  return {
+    auth: {
+      userInfo: {
+        organizationName: ORGANIZATION_NAME,
+      },
+    },
+  };
+};
 
 function mountWithPinia(initialState, routeParams) {
   initialState = initialState || {};
-  routeParams = routeParams || { urlGuid: changeRecGuid };
+  routeParams = routeParams || { urlGuid: CHANGE_REC_GUID };
 
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(EceweEligibility, {
@@ -25,26 +61,19 @@ function mountWithPinia(initialState, routeParams) {
 describe('<EceweEligibility />', () => {
   it('should render  component header information', () => {
     mountWithPinia({
-      application: {
-        programYearLabel: 'Test 2025',
-      },
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createApplicationStore(),
+      ...createAppStore(),
+      ...createAuthStore(),
     });
     cy.contains('div', 'Child Care Operating Funding Program - 2025 Program Confirmation Form');
-    cy.contains('div', organizationName);
+    cy.contains('div', ORGANIZATION_NAME);
   });
 
   it('should render alert', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
+      ...createApplicationStore(),
+      ...createAppStore(),
     });
 
     cy.get('.v-alert').within(() => {
@@ -55,14 +84,12 @@ describe('<EceweEligibility />', () => {
 
   it('should render ecewe eligibility questions', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
+      ...createApplicationStore(),
+      ...createAppStore(),
       eceweApp: {
         isStarted: true,
-        facilities: [{ changeReqestId: changeRecGuid }, {}],
+        facilities: [{ changeReqestId: CHANGE_REC_GUID }, {}],
         eceweModel: {
           applicationId: '3333',
           optInECEWE: 'yes',
@@ -71,7 +98,7 @@ describe('<EceweEligibility />', () => {
       },
     });
 
-    cy.contains('For the funding term, would you like to opt-in to ECE-WE for any facility in your organization?');
+    cy.contains('For the 2025 funding term, would you like to opt-in to ECE-WE for any facility in your organization?');
     cy.get('.v-radio-group').within(() => {
       cy.get('.v-radio').should('have.length', 2);
       cy.contains('label', 'Yes');
@@ -81,11 +108,9 @@ describe('<EceweEligibility />', () => {
 
   it('should render navigation buttons', () => {
     mountWithPinia({
-      auth: {
-        userInfo: {
-          organizationName,
-        },
-      },
+      ...createAuthStore(),
+      ...createApplicationStore(),
+      ...createAppStore(),
     });
     cy.contains('button', 'Back');
     cy.contains('button', 'Next');
