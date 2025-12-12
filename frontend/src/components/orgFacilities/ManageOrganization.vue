@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="7"><h2>Organization Info</h2></v-col>
+      <v-col cols="12" sm="7"><h2>Organization Information</h2></v-col>
       <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" sm="5" class="d-flex justify-end align-end">
         <div>
           <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
@@ -339,6 +339,8 @@
       </v-col>
     </v-row>
   </v-container>
+  <OrganizationCCFRITable :organization-id="organizationId" />
+  <OrganizationECEWETable :organization-id="organizationId" />
 </template>
 <script>
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -352,12 +354,16 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
+import OrganizationCCFRITable from './OrganizationCCFRITable.vue';
+import OrganizationECEWETable from './OrganizationECEWETable.vue';
 
 export default {
   name: 'ManageOrganization',
   components: {
     AppButton,
     AppLabel,
+    OrganizationCCFRITable,
+    OrganizationECEWETable,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {

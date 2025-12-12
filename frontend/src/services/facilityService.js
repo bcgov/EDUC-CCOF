@@ -54,4 +54,26 @@ export default {
       throw error;
     }
   },
+  async getCcfriFacilities(organizationId, selectedFY) {
+    try {
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.CCFRI_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
+      );
+      return response.data;
+    } catch (err) {
+      console.log(`Failed to fetch ccfri facilities - ${err}`);
+      throw err;
+    }
+  },
+  async getEceweFacilities(organizationId, selectedFY) {
+    try {
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ECEWE_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
+      );
+      return response.data;
+    } catch (err) {
+      console.log(`Failed to fetch ece-we facilities - ${err}`);
+      throw err;
+    }
+  },
 };

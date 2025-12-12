@@ -5,7 +5,17 @@ const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
+const {
+  getFacility,
+  getFacilityChildCareTypes,
+  createFacility,
+  updateFacility,
+  deleteFacility,
+  getLicenseCategories,
+  getApprovedParentFees,
+  getCcfriFacilities,
+  getEceweFacilities,
+} = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 
@@ -16,6 +26,15 @@ const facilitySchema = {
 
 module.exports = router;
 
+/**
+ * Get CCFRI facility details
+ */
+router.get('/ccfri-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getCcfriFacilities);
+
+/**
+ * Get ECE-WE facility details
+ */
+router.get('/ecewe-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getEceweFacilities);
 /**
  * Get Facility details
  */
