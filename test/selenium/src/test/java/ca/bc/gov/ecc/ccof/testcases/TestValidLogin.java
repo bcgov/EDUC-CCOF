@@ -21,24 +21,24 @@ public class TestValidLogin extends BaseTest {
 		logger.info("Starting the test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
 		Thread.sleep(2000);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
 		Thread.sleep(2000);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
 		Thread.sleep(2000);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 	}
 

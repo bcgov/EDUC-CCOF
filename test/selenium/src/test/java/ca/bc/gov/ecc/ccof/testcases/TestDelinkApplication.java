@@ -19,59 +19,59 @@ public class TestDelinkApplication extends BaseTest {
 	@Test(priority = 1)
 	public void delinkapplication(Method method) throws Throwable {
 		ExtentTestManager.startTest(method.getName(), "TestDelinkApplication ");
-		logger.info("Starting the DeleteApplication test...");
+		logger.info("Starting the deleteApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 
 		// login to application
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 		Thread.sleep(5000);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		deleteApp.searchBox(utils.getDataFromJson("contact"));
 		Thread.sleep(5000);
-		deleteapp.pressEnter();
+		deleteApp.pressEnter();
 		Thread.sleep(5000);
 
 		// selecting the contact
-		deleteapp.fullName();
+		deleteApp.fullName();
 
 		// delinking the Main Organization
-		ut.waitForElement(deleteapp.waitBeforeCancelBtn());
-		deleteapp.cancelBtn();
+		utils.waitForElement(deleteApp.waitBeforeCancelBtn());
+		deleteApp.cancelBtn();
 		Thread.sleep(2000);
-		deleteapp.selectIdCheckBox();
-		ut.waitForElement(deleteapp.waitBeforeThreeDotsBtn());
-		deleteapp.threeDotsBtn();
+		deleteApp.selectIdCheckBox();
+		utils.waitForElement(deleteApp.waitBeforeThreeDotsBtn());
+		deleteApp.threeDotsBtn();
 
 		// delete the BCeID Organization
-		ut.mouseOverAction(deleteapp.mouseOverDelete());
+		utils.mouseOverAction(deleteApp.mouseOverDelete());
 		Thread.sleep(5000);
-		deleteapp.deleteBtnPopup();
+		deleteApp.deleteBtnPopup();
 		Thread.sleep(5000);
-		deleteapp.saveAndCloseBtn();
+		deleteApp.saveAndCloseBtn();
 
 		// Handles Ignore and Save pop up if appears
-		ut.clickIfPresent(deleteapp.ignoreAndSaveButton());
+		utils.clickIfPresent(deleteApp.ignoreAndSaveButton());
 
-		logger.info("Ending the DeleteApplication test...");
+		logger.info("Ending the deleteApplication test...");
 
 	}
 

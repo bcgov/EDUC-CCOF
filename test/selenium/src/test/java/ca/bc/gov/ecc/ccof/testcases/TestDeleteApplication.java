@@ -25,56 +25,56 @@ public class TestDeleteApplication extends BaseTest {
 		logger.info("Starting the TestDeleteApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
 
 		// login to application
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
+		deleteApp.searchBox(utils.getDataFromJson("contact"));
 		Thread.sleep(3000);
-		deleteapp.pressEnter();
+		deleteApp.pressEnter();
 		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.fullName();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 		Thread.sleep(3000);
 
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		orginfo.clickMainApplication();
+		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// deleting the application
-		appinfo.clickDeleteBtn();
+		appInfo.clickDeleteBtn();
 		Thread.sleep(3000);
-		appinfo.clickDeleteConfirmBtn();
+		appInfo.clickDeleteConfirmBtn();
 		Thread.sleep(5000);
 
 		// verifying the application is deleted
-		ut.assertElementDeleted(orginfo.getOpenApplications());
+		utils.assertElementDeleted(orgInfo.getOpenApplications());
 		logger.info("Ending the TestDeleteApplication test...");
 
 	}

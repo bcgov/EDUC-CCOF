@@ -94,6 +94,10 @@ public class FacilityInfoPage {
 		facilityStatusField.click();
 	}
 
+	public WebElement waitBeforeClickFacilityStatusField() {
+		return facilityStatusField;
+	}
+
 	public void mouseOverCcfriComplete() {
 		Actions action = new Actions(driver);
 		action.moveToElement(ccfriCompleteOption).click().build().perform();
@@ -162,6 +166,10 @@ public class FacilityInfoPage {
 
 	public void clickSaveAndCloseCcfriFacilityBtn() {
 		saveAndCloseCcfriFacilityBtn.click();
+	}
+
+	public WebElement waitBeforeClickSaveAndCloseCcfriFacilityBtn() {
+		return saveAndCloseCcfriFacilityBtn;
 	}
 
 	public void enterFacId(String facId) {
