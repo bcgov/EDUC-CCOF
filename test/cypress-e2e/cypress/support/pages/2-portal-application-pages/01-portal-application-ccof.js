@@ -1,16 +1,16 @@
 import 'cypress-file-upload';
 
 class CcofApplication {
-  loadFixtures() {
-    return cy.fixture('ccofData').then((data) => {
+  loadFixtures(file) {
+    return cy.fixture(`/ccof-data/${file}`).then((data) => {
       this.orgData = data.orgData
       this.facilityData = data.facilityData
       this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
     })
   }
   
-  loadFixturesAndVariables() {
-    this.loadFixtures()
+  loadFixturesAndVariables(file) {
+    this.loadFixtures(file)
     cy.then(()=> {
       this.orgType = this.orgData.typeOfOrganization
       this.orgInfo = this.orgData.orgInfo
@@ -24,7 +24,6 @@ class CcofApplication {
       this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
       this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
       this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
-      this.addFacilityData = this.facilityLicenceDetailsData.addFacilityData.addAnotherFacility
     })
   }
 
@@ -38,12 +37,11 @@ class CcofApplication {
     cy.url().should('include', `/${path}/organization`)
   }
 
-  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship)
+  // TODO [CCFRI-6301] (Hedie-cgi) - Add paths for selecting other Organization Types (e.g. Sole Proprietorship) ; only for Template 2
   inputOrganizationInfo(appType) {
     switch (appType) {
       case 'group':
       case 'family':
-        // cy.contains('Organization Information').should('be.visible')
         cy.contains('Type of Organization').should('be.visible')
         cy.getByLabel(this.orgType).click()
         cy.getByLabel('Legal Organization Name (as it appears in BC Registries and Online Services)').typeAndAssert(this.orgInfo.legalOrgName)
@@ -176,14 +174,16 @@ class CcofApplication {
         cy.contains('Facility Licence and Service Details')
         break;
     }
-    cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
-    cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
-    cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
-    cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
-    cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
-    cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
+      cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
+      cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
+      cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
+      cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
+      cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
+      if (this.licenceInfo.closedEntireMonths === "Yes") {
+        cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
+        cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
+        cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
+      }
   }
 
   groupLicenses(appType) {
@@ -202,31 +202,31 @@ class CcofApplication {
       case 'groupOld': 
         licenceCategory = this.facilityLicenceDetailsData.oldGroupLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
-          if (value.checked) {
-            if (category === "Multi-Age Child Care") {
-              cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
-            } else {
-              cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
-            } 
-          }
+          if (category === "Multi-Age Child Care") {
+            cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
+          } else {
+            cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
+          } 
         });
         break;
     };
 
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    if (licenceCategory.Preschool?.checked) {
+    if (Number(licenceCategory.Preschool?.max) > 0) {
       Object.entries(this.preschoolSessions).forEach(([day, value]) => {
         cy.getByLabel(day).typeAndAssert(value);
       });
     }
 
-    cy.contains('div', 'Is the facility located on school property?').within(()=> {
-      cy.getByLabel('Yes').click()
-    })
+    if (Number(licenceCategory["Group Child Care (School Age / School Age Care on School Grounds)"]).max > 0) {
+      cy.contains('div', 'Is the facility located on school property?').within(()=> {
+        cy.getByLabel('Yes').click()
+      })
+      this.schoolAgedCare.forEach(label => {
+        cy.contains(label).click()
+      })
+    }
 
-    this.schoolAgedCare.forEach(label => {
-      cy.getByLabel(label).check().should('be.checked');
-    });
   }
 
   familyLicences(appType) {
@@ -259,7 +259,7 @@ class CcofApplication {
     }
   }
 
-  // NOTE: please implement offerExtendedHours for the new template. 
+  // TODO  [CCFRI-6767] - (Hedie-cgi) implement offerExtendedHours for the new template. 
   oldOfferExtendedHours(appType) {
     cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
@@ -329,7 +329,6 @@ class CcofApplication {
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {
         if (value.extended) {
           cy.getByLabel(category).check()
-          // TODO [Hedie-cgi]: Add Extended Hours for Template 2 whenever program year is flipped
           // NOTE - There is no DIV that wraps around each licence category for extended hours - you will need to check if the input already has a value
         }
         cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
@@ -355,25 +354,61 @@ class CcofApplication {
     cy.clickByText('Next')
   }
 
-  //TODO [CCFRI-6110] (Hedie-cgi) Add functionality to add multiple facilities
-  addAnotherFacility() {
+  // NOTE: Currently only setup for Template 1
+  addAnotherFacility(appType, files) {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
-    cy.contains('button', 'No').click();
+    cy.contains('Do you want to add another facility to your application?')
+    if (files.length > 0) {
+      cy.clickByText('Yes')
+      cy.wrap(files).each((file, index)=> {
+        
+        this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
+        cy.then(()=> {
+          this.inputFacilityInfo(appType)
+          this.licenceAndServiceDeliveryDetails(appType)
+          this.groupLicenses(appType)
+          switch(appType) {
+            case "group": this.offerExtendedHours(appType); break;
+            case "groupOld": this.oldOfferExtendedHours(appType); break;
+          }
+
+          if (index < files.length - 1) {
+            cy.clickByText('Yes')
+          } else {
+            cy.clickByText('No')
+          }
+        })
+      })
+    } else {
+      cy.clickByText('No')
+    }
   }
 
   licenceUpload() {
+    let licenceFiles = [];
     cy.contains('Licence Upload')
-    const fileName = 'Sample500kb.pdf';
-    cy.get('input[placeholder="Select your file"]')
-      .attachFile(fileName)
-    cy.contains('div', fileName)
-    cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
-      cy.contains('button', 'Save').should('have.class', 'blueButton')
-      .clickByText('Save')
+
+    cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
+      licenceFiles = files
+
+      cy.get('input[placeholder="Select your file"]').should('have.length', licenceFiles.length).each((input, index) => {
+        cy.log(licenceFiles.length)
+        let currFile = `ccof-data/licence-files/${licenceFiles[index]}`
+        cy.wrap(input)
+          .attachFile(currFile)
+        cy.contains(`${licenceFiles[index]}`)
+      })
+    
+      cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
+        cy.contains('button', 'Save').should('have.class', 'blueButton')
+          .clickByText('Save')
+        cy.contains('Changes Successfully Saved')
+      }) 
+      cy.clickByText('Next')
     })
-    cy.contains('Changes Successfully Saved')
-      .clickByText('Next')
+
+    
   }
 }
 

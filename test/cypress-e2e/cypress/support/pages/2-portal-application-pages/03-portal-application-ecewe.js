@@ -1,14 +1,15 @@
-function allFacilitiesUnionized(attr, data) {
-    cy.get(attr).each((card, index, $list) => {
-        cy.wrap(card).within(() => {
-            cy.getByLabel(data).click()
-        })
+function optInAndUnionize(attr, opt, union, csseaMember, facilityName) {
+    cy.contains(attr, facilityName).within(()=> {
+        cy.contains('label', opt).click()
+        if (opt === 'Opt-In' && csseaMember === 'Yes') {
+            cy.contains('label', union).click()
+        }
     })
 }
 
 class EceWeApplication {
-    loadFixtures() {
-        return cy.fixture('eceweData').then((data)=> {
+    loadFixtures(file) {
+        return cy.fixture(`/ecewe-data/${file}`).then((data)=> {
             this.cssea = data.cssea
             this.publicSectorEmployer = data.publicSectorEmployer
             this.optInOrOut = data.optInOrOut
@@ -16,14 +17,15 @@ class EceWeApplication {
         })
     }
 
-    loadFixturesAndVariables() {
-        this.loadFixtures()
+    loadFixturesAndVariables(file) {
+        this.loadFixtures(file)
         cy.then(()=> {
             this.csseaMember = this.cssea.csseaMember
             this.csseaSelection = this.cssea.status
             this.fundingType = this.cssea.fundingModel
             this.unionStatus = this.cssea.unionStatus
-            this.facilityOptInOrOut = this.facility.facilityOptInOrOut
+            this.facilityName = this.facility.facilityName
+            this.facilityOpt = this.facility.facilityOptInOrOut
             this.facilityUnionStatus = this.facility.facilityUnionStatus
         })
     }
@@ -33,47 +35,49 @@ class EceWeApplication {
         cy.contains('.v-card', `For the ${term} funding term, would you like to opt-in to ECE-WE for any facility in your organization?`).getByLabel(`${this.optInOrOut}`).click()
     }
 
-    groupEceWe(appType) {
-        cy.then(()=> {
-            // Opt-In Path
-            if (this.optInOrOut === 'Yes') {
-                cy.contains('.v-card', 'Are you a public sector employer, as defined in the Public Sector Employers Act?').within(()=> {
-                    cy.getByLabel(this.publicSectorEmployer).click()
-                })
-                cy.contains('Which of the following describes your organization?').should('be.visible')
-                cy.getByLabel(this.csseaSelection).click()
-                // CSSEA Non-Member
-                if (this.csseaMember === 'No') {
-                    cy.getByLabel(this.unionStatus).click()
-                    // CSSEA Non-Member + Union
-                    if (this.unionStatus === "Some or all of our facilities are unionized.") {
-                        cy.clickByText(this.cssea.confirmation) 
-                    } 
-                } else {
-                    if (appType.includes('Old')) {
-                        cy.contains(this.fundingType).click()
-                    }
-                    cy.getByLabel(this.cssea.confirmation).click()
+    groupEceWe(appType, files) {
+        // Opt-In Path
+        if (this.optInOrOut === 'Yes') {
+            cy.contains('.v-card', 'Are you a public sector employer, as defined in the Public Sector Employers Act?').within(()=> {
+                cy.getByLabel(this.publicSectorEmployer).click()
+            })
+            cy.contains('Which of the following describes your organization?').should('be.visible')
+            cy.getByLabel(this.csseaSelection).click()
+            // CSSEA Non-Member
+            if (this.csseaMember === 'No') {
+                cy.getByLabel(this.unionStatus).click()
+                // CSSEA Non-Member + Union
+                if (this.unionStatus === "Some or all of our facilities are unionized.") {
+                    cy.clickByText(this.cssea.confirmation) 
+                } 
+            } else {
+                if (appType.includes('Old')) {
+                    cy.contains(this.fundingType).click()
                 }
-
-                cy.clickByText('Save')
-                cy.contains('Success! ECEWE application has been saved.').should('be.visible')
-                cy.clickByText('Next')
-
-                // Opt In Facilities
-                if (this.facilityOptInOrOut === 'Opt-In All Facilities') {
-                    cy.contains(' Opt-In All Facilities ').should('be.visible')
-                    cy.clickByText(this.facilityOptInOrOut)
-                    cy.clickByText(' Update ')
-                    if (this.unionStatus === "Some or all of our facilities are unionized." || this.csseaMember === 'Yes') {
-                        allFacilitiesUnionized('.v-card', this.facilityUnionStatus)
-                    }
-                }
+                cy.getByLabel(this.cssea.confirmation).click()
             }
-            // Opt-Out Path
+
             cy.clickByText('Save')
+            cy.contains('Success! ECEWE application has been saved.').should('be.visible')
             cy.clickByText('Next')
-        })
+
+
+            // Opt In Facilities
+            optInAndUnionize('.v-card', this.facilityOpt, this.facilityUnionStatus, this.csseaMember, this.facilityName) 
+            if (files) {
+                cy.wrap(files).each((file)=> {
+                    this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`)
+                    cy.then(()=> {
+                        optInAndUnionize('.v-card', this.facilityOpt, this.facilityUnionStatus, this.csseaMember, this.facilityName)
+                    })
+                })
+            }
+            
+        }
+        // Opt-Out Path
+        cy.clickByText('Save')
+        cy.clickByText('Next')
+        
          
     }
 

@@ -80,7 +80,17 @@ Each Application script requires your BCeID (assigned in .env) to have NO organi
 
 The 2025-26 FY uses Template 1, while anything past Feburary 15th, 2026 will use Template 2. Please be aware of this when running the scripts.
 
-If updating the Program Year in CMS, please ensure you update the *ccfriData* fixture file Parent Fee Dates to 2025-26 & 2026-27 AND update the closure dates to be between 05/01/2026 - 04/30/2027.
+If updating the Program Year in CMS, please ensure you update the *ccfriData* fixture file Parent Fee Dates to 2025-26 & 2026-27 AND update the closure dates to be between 05/01/2026 - 04/30/2027. These changes are also described as a comment in the fixture file.
+
+### Adding Multiple Facilities
+Currently, Multiple Facilities only works for Group Applications in Template 1. To create additional facilities, please do the following:
+1) Create additional fixture .json files for EACH FACILITY under ccof-data/extra-facs-ccof, ccfri-data/extra-facs-ccfri, and ecewe-data/extra-facs-ecewe. This means, each facility needs 3 additional fixture files.
+2) Each facility will need its own file under ccof-data/licence-files for the Licence Upload. If your organization has 3 facilities, you  should have 3 files under ccof-data/licence-files.
+3) The data edited for new facilities in ccof/ccfri/ecewe corresponds directly to the data you can edit in the portal. For example, new facilities may have different names, licence categories, etc. BUT they *cannot* be under a different organization if this facility is being added onto an existing application. Therefore, you do NOT need to change anything under the 'orgData' key in your fixture file.
+
+Please ensure ANY added files do NOT contain spaces within the name. Add dashes (-) to connect words if necessary.
+
+For additional information on how to run a test with multiple facilities, please review the QA Automation Confluence page.
 
 ### Signing Funding Agreements 
 This script requires an application to have been submitted AND adjudicated on the CMS side. The Funding Agreement must also have been updated to "Pending Signing" as its status on CMS.
