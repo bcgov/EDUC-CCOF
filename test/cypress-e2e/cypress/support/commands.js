@@ -334,10 +334,8 @@ Cypress.Commands.add('runCcfriApp', (appType, term, files) => {
         // Reload original data to prepare for parentFees
         ccfriApp.addParentFees(appType, term, 'ccfriData')
         if (files) {
-          files.forEach((file)=> {
-            cy.then(()=> {
-              ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`)
-            })
+          cy.wrap(files).each((file) => {
+            ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`)
           })
         }
     }

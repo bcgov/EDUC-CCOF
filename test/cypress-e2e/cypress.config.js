@@ -23,11 +23,8 @@ module.exports = defineConfig({
               if (err) {
                 return reject(err)
               }
-              let names = []
-              files.forEach(fileName => {
-                names.push(fileName)
-              })
-              resolve(names)
+              // Removed forEach as the resolved promise already returns a list of files
+              resolve(files)
             })
           })
         },

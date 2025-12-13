@@ -65,7 +65,7 @@ class EceWeApplication {
             // Opt In Facilities
             optInAndUnionize('.v-card', this.facilityOpt, this.facilityUnionStatus, this.csseaMember, this.facilityName) 
             if (files) {
-                files.forEach((file)=> {
+                cy.wrap(files).each((file)=> {
                     this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`)
                     cy.then(()=> {
                         optInAndUnionize('.v-card', this.facilityOpt, this.facilityUnionStatus, this.csseaMember, this.facilityName)

@@ -35,7 +35,7 @@ class CcfriApplication{
         })
         
         if (files) {
-            files.forEach((file)=> {
+            cy.wrap(files).each((file)=>  {
                 this.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
                 cy.then(()=> {
                     cy.contains('.v-card', this.facilityName).within(()=> {
@@ -78,7 +78,7 @@ class CcfriApplication{
                         .should('contain', `${category}`)
                         .contains('label', `${this.paymentFrequency}`)
                         .click()
-                        .then(() => handleCardWithin(card, this.parentFees.months))
+                    handleCardWithin(card, this.parentFees.months)
                 })
 
                 if (appType === "groupOld" || appType === 'familyOld'){

@@ -212,13 +212,13 @@ class CcofApplication {
     };
 
     cy.getByLabel("Maximum Licensed Capacity").typeAndAssert(this.maxLicensedCap)
-    if (licenceCategory.Preschool?.max > 0) {
+    if (Number(licenceCategory.Preschool?.max) > 0) {
       Object.entries(this.preschoolSessions).forEach(([day, value]) => {
         cy.getByLabel(day).typeAndAssert(value);
       });
     }
 
-    if (licenceCategory["Group Child Care (School Age / School Age Care on School Grounds)"].max > 0) {
+    if (Number(licenceCategory["Group Child Care (School Age / School Age Care on School Grounds)"]).max > 0) {
       cy.contains('div', 'Is the facility located on school property?').within(()=> {
         cy.getByLabel('Yes').click()
       })
@@ -359,10 +359,10 @@ class CcofApplication {
     cy.contains('You have successfully applied for CCOF for the following facilities:')
     cy.contains(this.facilityData.facilityName)
     cy.contains('Do you want to add another facility to your application?')
-    cy.log(files.length)
     if (files.length > 0) {
       cy.clickByText('Yes')
-      files.forEach((file, index) => {
+      cy.wrap(files).each((file, index)=> {
+        
         this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
         cy.then(()=> {
           this.inputFacilityInfo(appType)
@@ -386,26 +386,29 @@ class CcofApplication {
   }
 
   licenceUpload() {
-    let licenceFiles;
+    let licenceFiles = [];
     cy.contains('Licence Upload')
-    
+
     cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
       licenceFiles = files
+
+      cy.get('input[placeholder="Select your file"]').should('have.length', licenceFiles.length).each((input, index) => {
+        cy.log(licenceFiles.length)
+        let currFile = `ccof-data/licence-files/${licenceFiles[index]}`
+        cy.wrap(input)
+          .attachFile(currFile)
+        cy.contains(`${licenceFiles[index]}`)
+      })
+    
+      cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
+        cy.contains('button', 'Save').should('have.class', 'blueButton')
+          .clickByText('Save')
+        cy.contains('Changes Successfully Saved')
+      }) 
+      cy.clickByText('Next')
     })
 
-    cy.get('input[placeholder="Select your file"]').each((input, index) => {
-      let currFile = `/ccof-data/licence-files/${licenceFiles[index]}`
-      cy.wrap(input)
-        .attachFile(currFile)
-      cy.contains(`${licenceFiles[index]}`)
-    })
     
-    cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
-      cy.contains('button', 'Save').should('have.class', 'blueButton')
-        .clickByText('Save')
-      cy.contains('Changes Successfully Saved')
-    }) 
-    cy.clickByText('Next')
   }
 }
 

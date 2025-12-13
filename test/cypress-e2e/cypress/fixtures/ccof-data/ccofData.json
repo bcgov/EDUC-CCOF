@@ -23,6 +23,7 @@
       "position": "owner"
     }
   },
+  "_NOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccof and change values below this line according to your test case",
   "facilityData": {
     "facilityName": "Hedies Facility 1",
     "yearFacilityBegan": "2018",
