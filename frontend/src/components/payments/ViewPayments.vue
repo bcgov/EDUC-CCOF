@@ -33,15 +33,11 @@
         </v-col>
 
         <v-col cols="12" md="6" class="custom-vcol">
-          <p>Facility name:</p>
-          <AppMultiSelectInput
-            v-model.lazy="selectedFacilities"
-            :loading="isLoading"
-            :disabled="isLoading"
-            :items="facilityList"
-            item-value="facilityId"
-            item-title="facilityName"
-            label="Facility name"
+          <p>Facility search:</p>
+          <v-text-field
+            v-model="facilitySearch"
+            label="Facility Name or Facility ID"
+            variant="outlined"
             clearable
             hide-details
             class="flex-grow-1"
@@ -173,7 +169,7 @@ export default {
     return {
       isLoading: false,
       payments: [],
-      selectedFacilities: [],
+      facilitySearch: '',
       selectedFundingTypes: [],
       selectedPaymentMonths: [],
       selectedProgramYear: null,
@@ -256,7 +252,10 @@ export default {
           (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
         );
 
-        const isFacilitySelected = this.selectedFacilities?.includes(payment.facilityId);
+        const facilitySearchLower = (this.facilitySearch || '').toLowerCase();
+        const facilityMatch =
+          payment.facilityName?.toLowerCase().includes(facilitySearchLower) ||
+          payment.facilityAccountNumber?.toLowerCase().includes(facilitySearchLower);
 
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
 
@@ -268,9 +267,7 @@ export default {
 
         const paidEndMatch = !this.paidEndDate || new Date(payment.paidDate) <= new Date(this.paidEndDate);
 
-        return (
-          isMonthSelected && isFacilitySelected && fundingSelected && invoiceMatch && paidStartMatch && paidEndMatch
-        );
+        return isMonthSelected && facilityMatch && fundingSelected && invoiceMatch && paidStartMatch && paidEndMatch;
       });
     },
   },
@@ -292,7 +289,6 @@ export default {
     formatMonthYearToString,
     formatUTCDate,
     async loadData() {
-      this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedPaymentMonths = this.allPaymentsMonths?.map((report) => report.value);
       await this.loadPayments();
       this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
@@ -375,7 +371,7 @@ export default {
     },
 
     resetFilters() {
-      this.selectedFacilities = this.facilityList?.map((f) => f.facilityId);
+      this.facilitySearch = '';
       this.selectedPaymentMonths = this.allPaymentsMonths?.map((m) => m.value);
       this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
       this.invoiceNumberSearch = '';
