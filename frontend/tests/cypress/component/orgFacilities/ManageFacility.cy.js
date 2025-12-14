@@ -146,28 +146,25 @@ describe('<ManageFacility />', () => {
     cy.get('@routerPush').should('have.been.calledWith', { name: 'Report Change' });
   });
 
-  it('should not render any tabs without any permissions', () => {
+  // TODO: Remove .skip below once the permission is added for `Manage ECE Staff` tab
+  it.skip('should not render any tabs without any permissions', () => {
     mountWithPinia({ ...createOrganizationStore() });
 
     cy.get('.v-tabs').find('button').should('have.length', 0);
   });
 
   it('should render `Facility Details` tab', () => {
-    const expectedTexts = ['Facility Details'];
+    const expectedTexts = ['Facility Details', 'Manage ECE Staff'];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: {
-          serverTime: new Date(),
-        },
-        isAuthenticated: true,
         permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION],
       },
     });
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 1)
+      .should('have.length', 2)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -181,34 +178,26 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: {
-          serverTime: new Date(),
-        },
-        isAuthenticated: true,
         permissions: permWithoutViewFac,
       },
     });
 
-    cy.get('.v-tabs').find('button').should('have.length', 2);
+    cy.get('.v-tabs').find('button').should('have.length', 3);
     cy.get('.v-tab').contains('Facility Detail').should('not.exist');
   });
 
   it('should render `Licence and Service Details Record` tab', () => {
-    const expectedTexts = ['Licence and Service Details Record'];
+    const expectedTexts = ['Licence and Service Details Record', 'Manage ECE Staff'];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: {
-          serverTime: new Date(),
-        },
-        isAuthenticated: true,
         permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION],
       },
     });
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 1)
+      .should('have.length', 2)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -222,10 +211,6 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: {
-          serverTime: new Date(),
-        },
-        isAuthenticated: true,
         permissions: permWithoutViewLicInfo,
       },
     });
@@ -233,15 +218,35 @@ describe('<ManageFacility />', () => {
     cy.get('.v-tab').contains('Licence and Service Details Record').should('not.exist');
   });
 
-  it('should render all tabs with correct values', () => {
-    const expectedTexts = ['Facility Details', 'Programs and Vacancies', 'Licence and Service Details Record'];
+  it('should render `Manage ECE Staff` tab', () => {
+    const expectedTexts = ['Manage ECE Staff'];
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: {
-          serverTime: new Date(),
-        },
-        isAuthenticated: true,
+        permissions: [], // TODO: Add permission for 'Manage ECE Staff' tab here when implemented in component
+      },
+    });
+
+    cy.get('.v-tabs')
+      .find('button')
+      .should('have.length', 1)
+      .each((button, index) => {
+        cy.wrap(button).should('include.text', expectedTexts[index]);
+      });
+  });
+
+  // TODO: Add test for negative permission scenario for `Manage ECE Staff` tab when implemented in component
+
+  it('should render all tabs with the correct tab names', () => {
+    const expectedTexts = [
+      'Facility Details',
+      'Programs and Vacancies',
+      'Licence and Service Details Record',
+      'Manage ECE Staff',
+    ];
+    mountWithPinia({
+      ...createOrganizationStore(),
+      auth: {
         permissions: [
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
           PERMISSIONS.VIEW_PROGRAMS_VACANCIES,
@@ -252,7 +257,7 @@ describe('<ManageFacility />', () => {
 
     cy.get('.v-tabs')
       .find('button')
-      .should('have.length', 3)
+      .should('have.length', 4)
       .each((button, index) => {
         cy.wrap(button).should('include.text', expectedTexts[index]);
       });
@@ -278,8 +283,7 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        userInfo: { serverTime: new Date(), organizationName: 'TEST_ORG' },
-        isAuthenticated: true,
+        userInfo: { organizationName: 'TEST_ORG' },
         permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION],
       },
     });
