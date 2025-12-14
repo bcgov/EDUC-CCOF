@@ -15,10 +15,7 @@
       <v-col cols="auto">
         <v-row class="g-2" justify="end">
           <v-col cols="auto">
-            <AppButton size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
-          </v-col>
-          <v-col cols="auto">
-            <AppButton size="small" @click="addECE"> Add ECE </AppButton>
+            <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
           </v-col>
         </v-row>
       </v-col>
@@ -35,28 +32,30 @@
         class="elevation-2"
       >
         <template #item.hourlyWage="{ item }">
-          <v-text-field
-            v-model.number="item.hourlyWage"
-            type="number"
-            variant="outlined"
-            density="compact"
-            hide-details
-            prefix="$"
-            style="max-width: 100px"
-            @blur="formatWage(item)"
-          />
+          <v-row no-gutters class="justify-end justify-md-start">
+            <v-text-field
+              v-model.number="item.hourlyWage"
+              type="number"
+              variant="outlined"
+              density="compact"
+              hide-details
+              prefix="$"
+              max-width="100"
+              :disabled="!isEditing"
+            />
+          </v-row>
         </template>
 
         <template #[`item.certifications`]="{ item }">
-          <AppButton :primary="false" size="small" style="min-width: 100px" @click="goToViewCertification(item)">
-            View
-          </AppButton>
+          <v-row no-gutters class="justify-end justify-md-start">
+            <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)"> View </AppButton>
+          </v-row>
         </template>
 
-        <template #[`item.eceStaffStatus`]="{ item }">
-          <v-radio-group v-model="item.eceStaffStatus" inline hide-details>
-            <v-radio :value="statuses.ACTIVE" label="Active" />
-            <v-radio :value="statuses.INACTIVE" label="Inactive" />
+        <template #[`item.status`]="{ item }">
+          <v-radio-group v-model="item.status" inline hide-details :disabled="!isEditing">
+            <v-radio :value="ECE_STAFF_STATUSES.ACTIVE" label="Active" />
+            <v-radio :value="ECE_STAFF_STATUSES.INACTIVE" label="Inactive" />
           </v-radio-group>
         </template>
       </v-data-table>
@@ -64,13 +63,14 @@
   </v-container>
 </template>
 <script>
+import AppButton from '@/components/guiComponents/AppButton.vue';
+
 import alertMixin from '@/mixins/alertMixin.js';
 
-import AppButton from '@/components/guiComponents/AppButton.vue';
 import ECEStaffService from '@/services/eceStaffService.js';
 
-import { ECESTAFF_STATUSES } from '@/utils/constants';
-import { formatWage } from '@/utils/format';
+import { ECE_STAFF_STATUSES } from '@/utils/constants';
+import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'ManageECEStaff',
@@ -79,6 +79,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      isEditing: false,
       eceSearch: '',
       eceStaff: [],
       eceStaffTableHeaders: [
@@ -88,30 +89,27 @@ export default {
         { title: 'Registration Number', sortable: true, value: 'registrationNumber' },
         { title: 'Hourly Wage', sortable: true, value: 'hourlyWage' },
         { title: 'Certifications', sortable: true, value: 'certifications' },
-        { title: 'Status', sortable: true, value: 'eceStaffStatus' },
+        { title: 'Status', value: 'status' },
       ],
     };
   },
 
-  computed: {
-    statuses() {
-      return ECESTAFF_STATUSES;
-    },
-  },
-
   async created() {
-    await this.loadeceStaff();
+    this.ECE_STAFF_STATUSES = ECE_STAFF_STATUSES;
+    await this.loadEceStaff();
   },
 
   methods: {
-    formatWage,
-    async loadeceStaff() {
+    formatDecimalNumber,
+    async loadEceStaff() {
       try {
         this.isLoading = true;
         const staffRecords = await ECEStaffService.getECEStaff({
           facilityId: this.$route.params.facilityId,
         });
-        staffRecords.forEach(this.formatWage);
+        staffRecords.forEach((record) => {
+          record.hourlyWage = formatDecimalNumber(record.hourlyWage);
+        });
         this.eceStaff = staffRecords;
         this.sortECEStaff();
       } catch {
@@ -122,22 +120,15 @@ export default {
     },
 
     async refreshECEStaff() {
-      try {
-        this.isLoading = true;
-        await this.loadeceStaff();
-        this.setSuccessAlert('ECE Staff information has been updated');
-      } catch {
-        this.setFailureAlert('Failed to refresh ECE staff information');
-      } finally {
-        this.isLoading = false;
-      }
+      await this.loadEceStaff();
+      this.setSuccessAlert('ECE Staff information has been refreshed');
     },
 
     sortECEStaff() {
       this.eceStaff?.sort((a, b) => {
         // 1. Status priority (Active first)
-        if (a.eceStaffStatus !== b.eceStaffStatus) {
-          return a.eceStaffStatus - b.eceStaffStatus;
+        if (a.status !== b.status) {
+          return a.status - b.status;
         }
 
         // Last name (A-Z)
@@ -149,11 +140,9 @@ export default {
       });
     },
 
-    addECE() {
-      //TODO: will be added as a part of CCFRI-6263
-    },
     goToViewCertification() {
       //TODO: will be added as a part of CCFRI-6259
+      alert('View Certification');
     },
   },
 };

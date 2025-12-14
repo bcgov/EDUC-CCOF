@@ -28,7 +28,7 @@
               Licence and Service Details Record
             </v-tab>
             <!-- TODO: Add permissions here to secure this tab-->
-            <v-tab value="ecestaff"> Manage ECE Staff </v-tab>
+            <v-tab value="ece-staff"> Manage ECE Staff </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
@@ -44,7 +44,7 @@
               <v-window-item value="licences-details">
                 <ViewLicence />
               </v-window-item>
-              <v-window-item value="ecestaff"><ManageECEStaff /></v-window-item>
+              <v-window-item value="ece-staff"><ManageECEStaff /></v-window-item>
             </v-window>
           </v-card-text>
         </v-card>

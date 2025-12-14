@@ -63,7 +63,7 @@ export const ApiRoutes = Object.freeze({
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
   PAYMENTS: baseRoot + '/payments',
-  ECESTAFF: baseRoot + '/eceStaff',
+  ECE_STAFF: baseRoot + '/eceStaff',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -745,7 +745,7 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
   CANCELLED: 'Cancelled',
 });
 
-export const ECESTAFF_STATUSES = Object.freeze({
+export const ECE_STAFF_STATUSES = Object.freeze({
   ACTIVE: 0,
   INACTIVE: 1,
 });

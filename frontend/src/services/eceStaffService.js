@@ -9,7 +9,7 @@ export default {
       if (!queryString) {
         return [];
       }
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECESTAFF}${queryString}`);
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}${queryString}`);
       return response?.data;
     } catch (error) {
       console.log(`Failed to get ECE Staff by facilityId - ${error}`);
