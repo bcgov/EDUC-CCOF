@@ -43,9 +43,14 @@
         </template>
       </div>
       <div class="my-4">
-        <p class="summary-label">
+        <p v-if="showApplicationTemplateV1" class="summary-label">
           Does your facility provide additional services (such as meals or other wrap-around services), to support
           families experiencing vulnerability and/or underserved populations, such as Indigenous or low-income families?
+        </p>
+        <p v-else class="summary-label">
+          Does your facility provide additional services (such as meals or other wrap-around services), to support
+          families experiencing vulnerability and/or underserved populations, such as First Nations, Métis, Inuit,
+          Indigenous or low-income families?"
         </p>
         <v-text-field
           placeholder="Required"
@@ -109,9 +114,14 @@
         </template>
       </div>
       <div class="my-4">
-        <p class="summary-label">
+        <p v-if="showApplicationTemplateV1" class="summary-label">
           Please tell us anything else you'd like us to know about how your facility's business case supports setting
           fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
+          <a :href="getFundingUrl(programYearId)" target="_blank">Funding Guidelines.</a>
+        </p>
+        <p v-else class="summary-label">
+          Please tell us anything else you'd like us to know about how your facility's business case supports setting
+          fees higher than the Affordability Benchmarks outlined in the
           <a :href="getFundingUrl(programYearId)" target="_blank">Funding Guidelines.</a>
         </p>
         <p class="break-word pt-2">{{ nmfApp?.otherComments ?? EMPTY_PLACEHOLDER }}</p>
@@ -153,7 +163,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getFundingUrl']),
-    ...mapState(useApplicationStore, ['formattedProgramYear']),
+    ...mapState(useApplicationStore, ['formattedProgramYear', 'showApplicationTemplateV1']),
     routingPath() {
       return pcfUrlGuid(PATHS.CCFRI_NMF, this.programYearId, this.ccfriId);
     },
