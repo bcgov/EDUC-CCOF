@@ -27,7 +27,7 @@
         :search="eceSearch"
         :headers="eceStaffTableHeaders"
         :items-per-page="10"
-        mobile-breakpoint="md"
+        mobile-breakpoint="lg"
         :mobile="null"
         class="elevation-2"
       >
