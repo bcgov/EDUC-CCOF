@@ -228,8 +228,8 @@
       </div>
 
       <div class="my-8">
-        <h4 class="my-2">Direct Care staff Wages Increases</h4>
-        <p class="summary-label">Is your fee increase due to a wage increase for Direct Care staff?</p>
+        <h4 class="my-2">Direct Care Staff Wages Increases</h4>
+        <p class="summary-label">Is your fee increase due to a wage increase for Direct Care Staff?</p>
         <v-text-field
           placeholder="Required"
           class="summary-value"
@@ -262,7 +262,7 @@
 
             <div>
               <p class="summary-label">
-                Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?
+                Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?
               </p>
               <v-text-field
                 placeholder="Required"
@@ -277,8 +277,11 @@
             </div>
 
             <div>
-              <p class="summary-label">
+              <p v-if="showApplicationTemplateV1" class="summary-label">
                 Has the facility been unable to hire and/or retain Direct Care staff due to wages?
+              </p>
+              <p v-else class="summary-label">
+                Has the facility been unable to hire or retain Direct Care Staff due to wages?
               </p>
               <v-text-field
                 placeholder="Required"
@@ -408,7 +411,7 @@
             <div
               v-for="(label, index) in [
                 'When did your facility\'s challenges with hiring and keeping staff begin?',
-                'How many Direct Care staff have left your facility due to wages?',
+                'How many Direct Care Staff have left your facility due to wages?',
                 'What have you done to try to recruit staff?',
                 'Have you had to adjust your hours/days of operation?',
                 'Is your facility unable to fill spaces due to insufficient staffing?',
@@ -435,7 +438,10 @@
       </div>
 
       <div class="my-8">
-        <h4 class="my-2">Priority Service Expansion: Increase in Hours of Operation</h4>
+        <h4 v-if="showApplicationTemplateV1" class="my-2">
+          Priority Service Expansion: Increase in Hours of Operation
+        </h4>
+        <h4 v-else class="my-2">Priority Service Expansion: Increase in Hours</h4>
         <p class="summary-label">
           Is your fee increase due to expenses related to expanding or extending the hours of child care service
           available for all enrolled children?
@@ -562,9 +568,14 @@
         <h4 class="my-2">
           Priority Service Expansion: Increasing Connection to Indigenous Community, Culture, and/or Language
         </h4>
-        <p class="summary-label">
+        <p v-if="showApplicationTemplateV1" class="summary-label">
           Is your fee increase due to an increased connection to Indigenous community, culture, or language for all
           enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?
+        </p>
+        <p v-else class="summary-label">
+          Is your fee increase due to increasing opportunities for all enrolled children in a facility majority owned,
+          managed or governed by First Nations, Métis, Inuit or Indigenous organizations to connect with Indigenous
+          languages, cultures, and communities?
         </p>
         <v-text-field
           placeholder="Required"
@@ -679,9 +690,13 @@
 
         <template v-if="rfiApp?.underservedPop">
           <div>
-            <p class="summary-label">
+            <p v-if="showApplicationTemplateV1" class="summary-label">
               Please describe how the majority of children you provide care for represent an underserved population
               (e.g., Indigenous children, low-income families).
+            </p>
+            <p v-else class="summary-label">
+              Please describe how the majority of children you provide care for represent an underserved population
+              (e.g. First Nations, Métis, Inuit, Indigenous or low-income families)?
             </p>
             <p v-if="rfiApp?.underservedChildCareTypes" class="mt-2">{{ rfiApp?.underservedChildCareTypes }}</p>
             <v-text-field
@@ -742,6 +757,7 @@
 </template>
 <script>
 import summaryMixin from '@/mixins/summaryMixin.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { CHANGE_TYPES, changeUrlGuid, PATHS, pcfUrlGuid } from '@/utils/constants.js';
 import { mapState } from 'pinia';
@@ -781,7 +797,7 @@ export default {
       ],
       wageIncreasesTableHeaders: [
         { title: 'Number of staff receiving wage increase', value: 'staffNumber', sortable: true },
-        { title: 'Direct Care staff role', value: 'staffRole', sortable: true },
+        { title: 'Direct Care Staff role', value: 'staffRole', sortable: true },
         { title: 'Wage before increase', value: 'wageBeforeIncrease', sortable: true },
         { title: 'Wage after increase', value: 'wageAfterIncrease', sortable: true },
         { title: 'Average hours per week at this facility', value: 'averageHours', sortable: true },
@@ -806,6 +822,7 @@ export default {
   },
   computed: {
     ...mapState(useNavBarStore, ['isChangeRequest']),
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
     routingPath() {
       return this.isChangeRequest
         ? changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI)
