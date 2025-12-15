@@ -62,7 +62,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="5" class="custom-vcol">
+        <v-col cols="12" md="6" class="custom-vcol">
           <p>Invoice number:</p>
           <v-text-field
             v-model="invoiceNumberSearch"
@@ -247,12 +247,13 @@ export default {
     filteredPayments() {
       if (isEmpty(this.payments)) return [];
 
+      const facilitySearchLower = (this.facilitySearch || '').toLowerCase();
+
       return this.payments.filter((payment) => {
         const isMonthSelected = this.selectedPaymentMonths?.some(
           (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
         );
 
-        const facilitySearchLower = (this.facilitySearch || '').toLowerCase();
         const facilityMatch =
           payment.facilityName?.toLowerCase().includes(facilitySearchLower) ||
           payment.facilityAccountNumber?.toLowerCase().includes(facilitySearchLower);
