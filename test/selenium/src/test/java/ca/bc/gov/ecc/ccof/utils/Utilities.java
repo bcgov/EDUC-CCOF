@@ -22,7 +22,7 @@ import org.testng.Assert;
 
 public class Utilities {
 	WebDriverWait wait;
-	JSONObject testData;
+	static JSONObject testData;
 	WebDriver driver;
 
 	private static final Logger logger = LogManager.getLogger(Utilities.class);

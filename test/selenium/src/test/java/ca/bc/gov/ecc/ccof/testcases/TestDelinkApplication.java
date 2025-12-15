@@ -15,6 +15,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestDelinkApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestDelinkApplication.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void delinkapplication(Method method) throws Throwable {
@@ -23,6 +24,7 @@ public class TestDelinkApplication extends BaseTest {
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
 		Thread.sleep(2000);
@@ -45,10 +47,7 @@ public class TestDelinkApplication extends BaseTest {
 		Thread.sleep(5000);
 
 		// searching the contact
-		deleteApp.searchBox(utils.getDataFromJson("contact"));
-		Thread.sleep(5000);
-		deleteApp.pressEnter();
-		Thread.sleep(5000);
+		deleteApp.searchAndOpenContact(contactName);
 
 		// selecting the contact
 		deleteApp.fullName();

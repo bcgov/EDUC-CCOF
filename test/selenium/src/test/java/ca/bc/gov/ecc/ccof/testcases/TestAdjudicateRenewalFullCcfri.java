@@ -20,6 +20,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestAdjudicateRenewalFullCcfri.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void adjudicateRenewals(Method method) throws Throwable {
@@ -28,6 +29,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
 		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
@@ -50,12 +52,7 @@ public class TestAdjudicateRenewalFullCcfri extends BaseTest {
 		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteApp.searchBox(utils.getDataFromJson("contact"));
-		Thread.sleep(3000);
-		deleteApp.pressEnter();
-		Thread.sleep(5000);
-		deleteApp.fullName();
-		Thread.sleep(3000);
+		deleteApp.searchAndOpenContact(contactName);
 
 		BCeIDPage bceidPage = new BCeIDPage(driver);
 		bceidPage.clickSelectOrganization();

@@ -18,6 +18,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestDeleteApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestDeleteApplication.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void deleteApplication(Method method) throws Throwable {
@@ -26,6 +27,7 @@ public class TestDeleteApplication extends BaseTest {
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
 		Thread.sleep(2000);
@@ -48,12 +50,7 @@ public class TestDeleteApplication extends BaseTest {
 		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteApp.searchBox(utils.getDataFromJson("contact"));
-		Thread.sleep(3000);
-		deleteApp.pressEnter();
-		Thread.sleep(5000);
-		deleteApp.fullName();
-		Thread.sleep(3000);
+		deleteApp.searchAndOpenContact(contactName);
 
 		BCeIDPage bceidPage = new BCeIDPage(driver);
 		bceidPage.clickSelectOrganization();
