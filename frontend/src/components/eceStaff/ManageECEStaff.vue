@@ -90,8 +90,8 @@ export default {
         { title: 'First Name', sortable: true, value: 'firstName' },
         { title: 'Registration Number', sortable: true, value: 'registrationNumber' },
         { title: 'Hourly Wage', sortable: true, value: 'hourlyWage' },
-        { title: 'Certifications', sortable: false, value: 'certifications' },
         { title: 'Status', sortable: true, value: 'status' },
+        { title: 'Certifications', sortable: false, value: 'certifications' },
       ],
     };
   },
@@ -109,10 +109,10 @@ export default {
         const staffRecords = await ECEStaffService.getECEStaff({
           facilityId: this.$route.params.facilityId,
         });
-        staffRecords.forEach((record) => {
+        this.eceStaff = staffRecords;
+        this.eceStaff.forEach((record) => {
           record.hourlyWage = formatDecimalNumber(record.hourlyWage);
         });
-        this.eceStaff = staffRecords;
         this.sortECEStaff();
       } catch {
         this.setFailureAlert('Failed to load ECE Staff records');
