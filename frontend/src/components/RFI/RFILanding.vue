@@ -30,10 +30,15 @@
             As outlined in the <a :href="fundingUrl" target="_blank">Funding Guidelines</a>, this exception applies to
             sudden and unexpected expenses that:
           </p>
-          <ul class="ml-10 text-primary">
+          <ul v-if="showApplicationTemplateV1" class="ml-10 text-primary">
             <li>Are outside of the organization's control and/or outside of the scope of regular cost increases;</li>
             <li>Address an immediate health or safety concern or are needed for the facility to operate; and</li>
             <li>Occur within six months of the requested fee increase.</li>
+          </ul>
+          <ul v-else class="ml-10 text-primary">
+            <li>are outside the organization's control and are not regular cost increases;</li>
+            <li>address an immediate health or safety concern or are essential for the facility to operate; and</li>
+            <li>occur within six months of the requested fee increase.</li>
           </ul>
           <div class="mt-6">
             <label for="exceptionalCircumstances">Is your fee increase due to an exceptional circumstance?</label>
@@ -324,7 +329,7 @@
       <!--end page 1 RFI landing-->
 
       <v-card elevation="6" class="my-10 rounded-lg">
-        <p class="px-6 py-3 card-title font-weight-bold">Direct Care staff Wages Increases</p>
+        <p class="px-6 py-3 card-title font-weight-bold">Direct Care Staff Wages Increases</p>
         <div class="px-8 py-4">
           <AppAlertBanner type="info" class="my-2">
             <strong>
@@ -334,12 +339,12 @@
           </AppAlertBanner>
 
           <p class="text-h6 text-primary my-8">
-            This exception applies to wage increases for Direct Care staff employed at the facility on a full-time,
-            part-time or casual basis. Direct Care staff are staff who spend at least 50% of their working time directly
-            responsible for and engaged in the care and supervision of children at the Facility.
+            This exception applies to wage increases for Direct Care Staff employed at the facility on a full-time,
+            part-time or casual basis. Direct Care Staff are staff who spend at least 50% of their working time directly
+            responsible for and engaged in the care and supervision of children at the facility.
           </p>
           <div>
-            <label for="feeIncreaseDueToWage">Is your fee increase due to a wage increase for Direct Care staff?</label>
+            <label for="feeIncreaseDueToWage">Is your fee increase due to a wage increase for Direct Care Staff?</label>
             <v-radio-group
               id="feeIncreaseDueToWage"
               v-model="model.feeIncreaseDueToWage"
@@ -376,7 +381,7 @@
               </template>
 
               <label for="isBargainingAgreement">
-                Is the wage increase part of a collective bargaining agreement for Direct Care staff at the facility?
+                Is the wage increase part of a collective bargaining agreement for Direct Care Staff at the facility?
               </label>
               <v-radio-group
                 id="isBargainingAgreement"
@@ -391,7 +396,7 @@
               </v-radio-group>
 
               <label for="lossOfCareStaff">
-                Has the facility been unable to hire and/or retain Direct Care staff due to wages?
+                Has the facility been unable to hire or retain Direct Care Staff due to wages?
               </label>
               <v-radio-group
                 id="lossOfCareStaff"
@@ -425,7 +430,7 @@
 
           <template v-if="model.feeIncreaseDueToWage === 1">
             <div>
-              <p class="text-h5 text-primary my-4">Direct Care staff Wages Increases</p>
+              <p class="text-h5 text-primary my-4">Direct Care Staff Wages Increases</p>
               <AppAlertBanner type="info" class="my-4">
                 <strong>
                   Note: If two or more staff have the same information for every column, they can be included in one
@@ -440,7 +445,7 @@
                     <h3 class="text-center">Number of staff receiving wage increase</h3>
                   </v-col>
                   <v-col cols="12" xl="2">
-                    <h3 class="text-center">Direct Care staff role</h3>
+                    <h3 class="text-center">Direct Care Staff role</h3>
                     <br />
                     <p class="text-center font-small">(e.g. Responsible Adult, ECE, ECEA, etc)</p>
                   </v-col>
@@ -479,7 +484,7 @@
                       v-model.number="obj.staffNumber"
                       :disabled="isReadOnly"
                       type="number"
-                      label="Number of Staff Receiving Wage Increase"
+                      label="Number of Staff Receiving Wage increase"
                       variant="outlined"
                       clearable
                       :rules="rules.required"
@@ -491,7 +496,7 @@
                     <v-text-field
                       v-model="obj.staffRole"
                       :disabled="isReadOnly"
-                      label="Direct Care staff Role "
+                      label="Direct Care Staff Role "
                       variant="outlined"
                       clearable
                       :rules="rules.required"
@@ -517,7 +522,7 @@
                       :disabled="isReadOnly"
                       prefix="$"
                       type="number"
-                      label="Wage After increase"
+                      label="Wage after increase"
                       variant="outlined"
                       clearable
                       :rules="rules.required"
@@ -576,7 +581,7 @@
                   class="mb-2"
                 />
 
-                <label for="wage1"> How many Direct Care staff have left your facility due to wages? </label>
+                <label for="wage1"> How many Direct Care Staff have left your facility due to wages? </label>
                 <v-textarea
                   id="wage1"
                   v-model="model.textbox2"
@@ -650,7 +655,10 @@
       <!--End page two Wage Increase-->
 
       <v-card elevation="6" class="my-10 rounded-lg">
-        <p class="px-6 py-3 card-title font-weight-bold">Priority Service Expansion: Increase in Hours of Operation</p>
+        <p v-if="showApplicationTemplateV1" class="px-6 py-3 card-title font-weight-bold">
+          Priority Service Expansion: Increase in Hours of Operation
+        </p>
+        <p v-else class="px-6 py-3 card-title font-weight-bold">Priority Service Expansion: Increase in Hours</p>
         <div class="px-8 py-4">
           <div>
             <label for="feeIncreaseExtendedHours">
@@ -846,9 +854,14 @@
         </p>
         <div class="px-8 py-4">
           <div>
-            <label for="IndigenousConnection">
+            <label v-if="showApplicationTemplateV1" for="IndigenousConnection">
               Is your fee increase due to an increased connection to Indigenous community, culture, or language for all
               enrolled children in a Facility owned, managed, or governed by at least 51% Indigenous peoples?
+            </label>
+            <label v-else for="IndigenousConnection">
+              Is your fee increase due to increasing opportunities for all enrolled children in a facility majority
+              owned, managed or governed by First Nations, Métis, Inuit or Indigenous organizations to connect with
+              Indigenous languages, cultures, and communities?
             </label>
             <v-radio-group
               id="IndigenousConnection"
@@ -876,12 +889,19 @@
               <a :href="fundingUrl" target="_blank"> Funding Guidelines</a>, this may include:
             </p>
 
-            <ul class="ml-10">
+            <ul v-if="showApplicationTemplateV1" class="ml-10">
               <li>
                 Participation of an Elder, culture/language teacher, and/or family members in the child care program;
               </li>
               <li>Children's participation in community, language, and/or cultural events or activities; or</li>
               <li>Language or culture resources for use in the child care program.</li>
+            </ul>
+            <ul v-else class="ml-10">
+              <li>
+                participation of an Elder, culture/language teacher, and/or family members in the child care program;
+              </li>
+              <li>children's participation in community, language or culture events; or</li>
+              <li>language or culture resources for use in the child care program.</li>
             </ul>
           </div>
 
@@ -1005,13 +1025,21 @@
         <div class="px-8 py-4">
           <div>
             <p>Fee increases may be considered under this exception if:</p>
-            <ul class="ml-10">
+            <ul v-if="showApplicationTemplateV1" class="ml-10">
               <li>
                 The facility has historically provided care to underserved populations - including Indigenous or
                 low-income families - at significantly below the regional median fees for their area or at no fee;
               </li>
               <li>The fee increase will contribute to the operational sustainability of the organization; and</li>
               <li>The fee increase will not greatly increase the out-of-pocket cost of care for families.</li>
+            </ul>
+            <ul v-else class="ml-10">
+              <li>
+                the facility has historically provided care to underserved populations (e.g. First Nations, Métis,
+                Inuit, Indigenous or low-income families) at significantly below regional median fees or at no cost;
+              </li>
+              <li>the fee increase will help ensure operational sustainability; and</li>
+              <li>the fee increase will not significantly raise out-of-pocket costs for families.</li>
             </ul>
           </div>
           <div class="mt-4">
@@ -1031,9 +1059,13 @@
 
           <template v-if="model.underservedPop === 1">
             <div class="mb-4">
-              <label for="underservedPop1">
+              <label v-if="showApplicationTemplateV1" for="underservedPop1">
                 Please describe how the majority of children you provide care for represent an underserved population
                 (e.g. Indigenous children, low-income families)
+              </label>
+              <label v-else for="underservedPop1">
+                Please describe how the majority of children you provide care for represent an underserved population
+                (e.g. First Nations, Métis, Inuit, Indigenous or low-income families)?
               </label>
               <v-textarea
                 id="underservedPop1"
@@ -1217,6 +1249,7 @@ export default {
       'isApplicationProcessing',
       'formattedProgramYear',
       'programYearId',
+      'showApplicationTemplateV1',
     ]),
     ...mapState(useNavBarStore, [
       'nextPath',

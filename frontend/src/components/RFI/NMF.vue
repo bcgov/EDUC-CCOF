@@ -44,10 +44,15 @@
           </div>
 
           <div class="my-4">
-            <p>
+            <p v-if="showApplicationTemplateV1">
               2. Does your facility provide additional services (such as meals or other wrap-around services), to
               support families experiencing vulnerability and/or underserved populations, such as Indigenous or
               low-income families?
+            </p>
+            <p v-else>
+              2. Does your facility provide additional services (such as meals or other wrap-around services), to
+              support families experiencing vulnerability and/or underserved populations, such as First Nations, Métis,
+              Inuit, Indigenous or low-income families?
             </p>
             <v-radio-group v-model="model.lowIncomeFamilies" inline :disabled="isReadOnly" :rules="rules.required">
               <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
@@ -89,9 +94,14 @@
           </div>
 
           <div class="my-4">
-            <p>
+            <p v-if="showApplicationTemplateV1">
               4. Please tell us anything else you'd like us to know about how your facility's business case supports
               setting fees higher than the Affordability Benchmarks outlined in the {{ formattedProgramYear }}
+              <a :href="fundingUrl" target="_blank">Funding Guidelines</a>.
+            </p>
+            <p v-else>
+              4. Please tell us anything else you'd like us to know about how your facility's business case supports
+              setting fees higher than the Affordability Benchmarks outlined in the
               <a :href="fundingUrl" target="_blank">Funding Guidelines</a>.
             </p>
             <v-textarea
@@ -151,7 +161,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId']),
+    ...mapState(useApplicationStore, ['formattedProgramYear', 'programYearId', 'showApplicationTemplateV1']),
     ...mapState(useNmfAppStore, ['nmfModel']),
     ...mapState(useNavBarStore, ['navBarList', 'nextPath', 'previousPath']),
     ...mapState(useAppStore, ['getFundingUrl']),
