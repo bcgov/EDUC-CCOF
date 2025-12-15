@@ -91,7 +91,7 @@ export default {
         { title: 'Registration Number', sortable: true, value: 'registrationNumber' },
         { title: 'Hourly Wage', sortable: true, value: 'hourlyWage' },
         { title: 'Certifications', sortable: false, value: 'certifications' },
-        { title: 'Status', sortable: false, value: 'status' },
+        { title: 'Status', sortable: true, value: 'status' },
       ],
     };
   },
