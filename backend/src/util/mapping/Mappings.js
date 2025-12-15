@@ -427,6 +427,7 @@ const UserProfileChangeRequestNewFacilityMappings = [
 const ProgramYearMappings = [
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
   { back: 'ccof_bcssa_link', front: 'bcssaUrl' },
+  { back: 'ccof_ecewe_funding_guidelines', front: 'eceweFundingGuidelinesUrl' },
   { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
   { back: 'ccof_ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
