@@ -8,3 +8,6 @@ cypress/reports/
 
 # Environment / config secrets
 cypress.env.json
+
+# Other
+.DS_Store
