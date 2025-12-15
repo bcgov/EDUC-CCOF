@@ -883,7 +883,7 @@ const ECEStaffMappings = [
   { back: 'ccof_last_name', front: 'lastName' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
-  { back: 'statecode', front: 'status' },
+  { back: 'statuscode', front: 'status' },
 ];
 module.exports = {
   ApplicationDocumentsMappings,

@@ -32,7 +32,7 @@
         class="elevation-2"
       >
         <template #item.hourlyWage="{ item }">
-          <v-row no-gutters class="justify-end justify-md-start">
+          <v-row no-gutters class="justify-end justify-lg-start">
             <v-text-field
               v-model.number="item.hourlyWage"
               type="number"
@@ -47,15 +47,17 @@
         </template>
 
         <template #[`item.certifications`]="{ item }">
-          <v-row no-gutters class="justify-end justify-md-start">
+          <v-row no-gutters class="justify-end justify-lg-start">
             <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)"> View </AppButton>
           </v-row>
         </template>
 
         <template #[`item.status`]="{ item }">
           <v-radio-group v-model="item.status" inline hide-details :disabled="!isEditing">
-            <v-radio :value="ECE_STAFF_STATUSES.ACTIVE" label="Active" />
-            <v-radio :value="ECE_STAFF_STATUSES.INACTIVE" label="Inactive" />
+            <v-row no-gutters class="justify-end justify-lg-start">
+              <v-radio :value="ECE_STAFF_STATUSES.ACTIVE" label="Active" />
+              <v-radio :value="ECE_STAFF_STATUSES.INACTIVE" label="Inactive" />
+            </v-row>
           </v-radio-group>
         </template>
       </v-data-table>
@@ -88,8 +90,8 @@ export default {
         { title: 'First Name', sortable: true, value: 'firstName' },
         { title: 'Registration Number', sortable: true, value: 'registrationNumber' },
         { title: 'Hourly Wage', sortable: true, value: 'hourlyWage' },
-        { title: 'Certifications', sortable: true, value: 'certifications' },
-        { title: 'Status', value: 'status' },
+        { title: 'Certifications', sortable: false, value: 'certifications' },
+        { title: 'Status', sortable: false, value: 'status' },
       ],
     };
   },
