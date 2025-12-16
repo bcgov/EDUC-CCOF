@@ -264,6 +264,9 @@ export default {
     filteredPayments() {
       if (isEmpty(this.payments)) return [];
 
+      const facilityIdSearchTerm = (this.facilityIdSearch || '').toLowerCase();
+      const invoiceSearchTerm = (this.invoiceNumberSearch || '').toLowerCase();
+
       return this.payments.filter((payment) => {
         const isMonthSelected = this.selectedPaymentMonths?.some(
           (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
@@ -273,13 +276,9 @@ export default {
 
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
 
-        const facilityIdMatch = payment.facilityAccountNumber
-          ?.toLowerCase()
-          .includes((this.facilityIdSearch || '').toLowerCase());
+        const facilityIdMatch = payment.facilityAccountNumber?.toLowerCase().includes(facilityIdSearchTerm);
 
-        const invoiceMatch = payment.invoiceNumber
-          ?.toLowerCase()
-          .includes((this.invoiceNumberSearch || '').toLowerCase());
+        const invoiceMatch = payment.invoiceNumber?.toLowerCase().includes(invoiceSearchTerm);
 
         const paidStartMatch = !this.paidStartDate || new Date(payment.paidDate) >= new Date(this.paidStartDate);
 
