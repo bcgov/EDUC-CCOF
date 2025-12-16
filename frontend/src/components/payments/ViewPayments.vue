@@ -16,7 +16,7 @@
           </v-col>
         </v-row>
 
-        <v-col cols="12" md="5" class="custom-vcol">
+        <v-col cols="12" lg="5" class="custom-vcol">
           <p>Month of service:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedPaymentMonths"
