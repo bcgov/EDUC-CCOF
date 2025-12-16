@@ -114,8 +114,9 @@ export default {
           record.hourlyWage = formatDecimalNumber(record.hourlyWage);
         });
         this.sortECEStaff();
-      } catch {
+      } catch (error) {
         this.setFailureAlert('Failed to load ECE Staff records');
+        console.error(error);
       } finally {
         this.isLoading = false;
       }
