@@ -127,18 +127,16 @@ export default {
     },
 
     sortECEStaff() {
+      const safe = (v) => (v ?? '').toLowerCase();
+
       this.eceStaff?.sort((a, b) => {
         // 1. Status priority (Active first)
         if (a.status !== b.status) {
           return a.status - b.status;
         }
 
-        // Last name (A-Z)
-        const last = a.lastName.localeCompare(b.lastName);
-        if (last !== 0) return last;
-
-        // First name (A-Z)
-        return a.firstName.localeCompare(b.firstName);
+        // 2. Last Name (A–Z), then First Name (A–Z)
+        return safe(a.lastName).localeCompare(safe(b.lastName)) || safe(a.firstName).localeCompare(safe(b.firstName));
       });
     },
 
