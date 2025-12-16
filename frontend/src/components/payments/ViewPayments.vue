@@ -32,11 +32,29 @@
           />
         </v-col>
 
-        <v-col cols="12" md="6" class="custom-vcol">
-          <p>Facility search:</p>
+        <v-col cols="12" lg="6" class="custom-vcol">
+          <p>Facility name:</p>
+          <AppMultiSelectInput
+            v-model.lazy="selectedFacilities"
+            :loading="isLoading"
+            :disabled="isLoading"
+            :items="facilityList"
+            item-value="facilityId"
+            item-title="facilityName"
+            label="Facility name"
+            clearable
+            hide-details
+            class="flex-grow-1"
+          />
+        </v-col>
+
+        <v-col lg="1"></v-col>
+
+        <v-col cols="12" lg="5" class="custom-vcol">
+          <p>Facility ID:</p>
           <v-text-field
-            v-model="facilitySearch"
-            label="Facility Name or Facility ID"
+            v-model="facilityIdSearch"
+            label="Facility ID"
             variant="outlined"
             clearable
             hide-details
@@ -44,9 +62,7 @@
           />
         </v-col>
 
-        <v-col md="1"></v-col>
-
-        <v-col cols="12" md="5" class="custom-vcol">
+        <v-col cols="12" lg="6" class="custom-vcol">
           <p>Funding type:</p>
           <AppMultiSelectInput
             v-model.lazy="selectedFundingTypes"
@@ -62,19 +78,7 @@
           />
         </v-col>
 
-        <v-col cols="12" md="6" class="custom-vcol">
-          <p>Invoice number:</p>
-          <v-text-field
-            v-model="invoiceNumberSearch"
-            label="Invoice number"
-            variant="outlined"
-            clearable
-            hide-details
-            class="flex-grow-1"
-          />
-        </v-col>
-
-        <v-spacer />
+        <v-col lg="1"></v-col>
 
         <v-col cols="12" lg="5" class="custom-vcol">
           <p class="mr-lg-2">Select paid date(s):</p>
@@ -98,6 +102,18 @@
               />
             </v-col>
           </v-row>
+        </v-col>
+
+        <v-col cols="12" lg="6" class="custom-vcol">
+          <p>Invoice number:</p>
+          <v-text-field
+            v-model="invoiceNumberSearch"
+            label="Invoice number"
+            variant="outlined"
+            clearable
+            hide-details
+            class="flex-grow-1"
+          />
         </v-col>
         <v-col cols="12" class="d-flex justify-end mt-n4">
           <AppButton size="small" color="primary" @click="resetFilters"> Reset </AppButton>
@@ -169,10 +185,11 @@ export default {
     return {
       isLoading: false,
       payments: [],
-      facilitySearch: '',
+      selectedFacilities: [],
       selectedFundingTypes: [],
       selectedPaymentMonths: [],
       selectedProgramYear: null,
+      facilityIdSearch: '',
       invoiceNumberSearch: '',
       paidStartDate: null,
       paidEndDate: null,
@@ -247,18 +264,18 @@ export default {
     filteredPayments() {
       if (isEmpty(this.payments)) return [];
 
-      const facilitySearchLower = (this.facilitySearch || '').toLowerCase();
-
       return this.payments.filter((payment) => {
         const isMonthSelected = this.selectedPaymentMonths?.some(
           (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
         );
 
-        const facilityMatch =
-          payment.facilityName?.toLowerCase().includes(facilitySearchLower) ||
-          payment.facilityAccountNumber?.toLowerCase().includes(facilitySearchLower);
+        const isFacilitySelected = this.selectedFacilities?.includes(payment.facilityId);
 
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
+
+        const facilityIdMatch = payment.facilityAccountNumber
+          ?.toLowerCase()
+          .includes((this.facilityIdSearch || '').toLowerCase());
 
         const invoiceMatch = payment.invoiceNumber
           ?.toLowerCase()
@@ -268,7 +285,15 @@ export default {
 
         const paidEndMatch = !this.paidEndDate || new Date(payment.paidDate) <= new Date(this.paidEndDate);
 
-        return isMonthSelected && facilityMatch && fundingSelected && invoiceMatch && paidStartMatch && paidEndMatch;
+        return (
+          isMonthSelected &&
+          isFacilitySelected &&
+          fundingSelected &&
+          facilityIdMatch &&
+          invoiceMatch &&
+          paidStartMatch &&
+          paidEndMatch
+        );
       });
     },
   },
@@ -290,6 +315,7 @@ export default {
     formatMonthYearToString,
     formatUTCDate,
     async loadData() {
+      this.selectedFacilities = this.facilityList?.map((facility) => facility.facilityId);
       this.selectedPaymentMonths = this.allPaymentsMonths?.map((report) => report.value);
       await this.loadPayments();
       this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
@@ -372,9 +398,10 @@ export default {
     },
 
     resetFilters() {
-      this.facilitySearch = '';
+      this.selectedFacilities = this.facilityList?.map((f) => f.facilityId);
       this.selectedPaymentMonths = this.allPaymentsMonths?.map((m) => m.value);
       this.selectedFundingTypes = this.allFundingTypes.map((f) => f.value);
+      this.facilityIdSearch = '';
       this.invoiceNumberSearch = '';
       this.paidStartDate = null;
       this.paidEndDate = null;
