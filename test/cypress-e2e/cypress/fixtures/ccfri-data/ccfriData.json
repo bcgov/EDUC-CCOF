@@ -1,10 +1,12 @@
 {
+    "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccfri and change values below this line according to your test case. Ensure the facilityName matches that added to extra-facs-ccof.",
     "facilityName": "Hedies Facility 1",
     "optInOrOut": "Opt-In",
     "_optionsOptInOrOut": "Opt-In OR Opt-Out",
     "parentFees": {
         "frequency": "Monthly",
         "_optionsFrequency": "Monthly OR Daily",
+        "_NOTE": "There is no separation between template1/template2 for parent fees, only current vs. renewal applications",
         "familyParentFeeCategories": [
             " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
             " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
