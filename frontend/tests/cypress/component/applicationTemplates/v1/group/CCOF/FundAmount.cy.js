@@ -71,7 +71,7 @@ describe('<FundAmountV1 />', () => {
     cy.contains('Please indicate how many preschool sessions your facility offers per day')
       .closest('.v-card')
       .within(() => {
-        cy.get('input[type="number"').should('have.length', 6);
+        cy.get('input[type="number"]').should('have.length', 6);
       });
   });
 
@@ -95,13 +95,13 @@ describe('<FundAmountV1 />', () => {
     cy.contains('Please indicate how many preschool sessions your facility offers per day')
       .closest('.v-card')
       .within(() => {
-        cy.get('input[type="number"').eq(0).type(1);
-        cy.get('input[type="number"').eq(1).type(1);
-        cy.get('input[type="number"').eq(2).type(2);
-        cy.get('input[type="number"').eq(3).type(2);
-        cy.get('input[type="number"').eq(4).type(2);
+        cy.get('input[type="number"]').eq(0).type(1);
+        cy.get('input[type="number"]').eq(1).type(1);
+        cy.get('input[type="number"]').eq(2).type(2);
+        cy.get('input[type="number"]').eq(3).type(2);
+        cy.get('input[type="number"]').eq(4).type(2);
 
-        cy.get('input[type="number"').eq(5).should('have.value', '8');
+        cy.get('input[type="number"]').eq(5).should('have.value', '8');
       });
   });
 

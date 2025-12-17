@@ -34,7 +34,7 @@ export const ApiRoutes = Object.freeze({
   APPLICATION: baseRoot + '/application',
   APPLICATION_ECEWE: baseRoot + '/application/ecewe',
   APPLICATION_ECEWE_FACILITY: baseRoot + '/application/ecewe/facilities',
-  APPLICATION_RENEW: baseRoot + '/application/renew-ccof',
+  APPLICATION_RENEW: baseRoot + '/application/renew',
   APPLICATION_CCFRI: baseRoot + '/application/ccfri',
   APPLICATION_RFI: baseRoot + '/application/ccfri',
   APPLICATION_NMF: baseRoot + '/application/ccfri',
@@ -63,6 +63,7 @@ export const ApiRoutes = Object.freeze({
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
   PAYMENTS: baseRoot + '/payments',
+  ECE_STAFF: baseRoot + '/eceStaff',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -124,7 +125,9 @@ export const PATHS = {
   //These are all suffixes.
   SELECT_APPLICATION_TYPE: '/select-application-type',
   NEW_APPLICATION_INTERMEDIATE: '/new-application',
-  RENEW_CONFIRM: '/group/renew',
+
+  CCOF_RENEWAL_BANKING_INFORMATION: '/banking-information',
+  CCOF_RENEWAL_FA: '/funding-agreement',
 
   CCOF_GROUP_ORG: '/group/organization',
   CCOF_GROUP_FACILITY: '/group/facility',
@@ -187,7 +190,7 @@ export function changeUrlGuid(
 }
 
 export const NAV_BAR_GROUPS = {
-  CCOF: 'CCOF',
+  CCOF: 'CCOF Base Funding',
   CCFRI: 'CCFRI',
   ECEWE: 'ECE-WE',
   MTFI: 'MTFI',
@@ -312,6 +315,10 @@ export const CHANGE_REQUEST_TYPES = {
   NEW_CLOSURE: 100000015,
   EDIT_EXISTING_CLOSURE: 100000016,
   REMOVE_A_CLOSURE: 100000017,
+};
+
+export const CHANGE_REQUEST_TYPE_TEXTS = {
+  MTFI: 'PARENT_FEE_CHANGE',
 };
 
 export const CHANGE_REQUEST_EXTERNAL_STATUS = {
@@ -736,4 +743,9 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
   PENDING: 'Pending',
   PAID: 'Paid',
   CANCELLED: 'Cancelled',
+});
+
+export const ECE_STAFF_STATUSES = Object.freeze({
+  ACTIVE: 1,
+  INACTIVE: 2,
 });

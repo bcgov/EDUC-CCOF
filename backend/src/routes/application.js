@@ -12,16 +12,30 @@ const {
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
   getDeclaration,
+  getRenewalApplicationCCOF,
   submitApplication,
+  updateApplication,
 } = require('../components/application');
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { param, validationResult, body } = require('express-validator');
 
-router.post('/renew-ccof', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF), [], (req, res) => {
+router.post('/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF), [], (req, res) => {
   return renewCCOFApplication(req, res);
 });
+
+router.get(
+  '/renew/:applicationId/ccof',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getRenewalApplicationCCOF(req, res);
+  },
+);
 
 /* CREATE or UPDATE an existing CCFRI application for opt-in and out
   CCOF application guid and facility guid are defined in the payload
@@ -271,6 +285,18 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getChangeRequest(req, res);
+  },
+);
+
+router.patch(
+  '/:applicationId/',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_NEW_APPLICATION, PERMISSIONS.CREATE_RENEWAL_PCF),
+  [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateApplication(req, res);
   },
 );
 

@@ -12,6 +12,14 @@ async function getFundingAgreements(req, res) {
     const query = `${buildFilterQuery(req.query, FundingAgreementMappings)} and statuscode ne 101510002`; // 101510002 = 'Drafted'
     const response = await getOperation(`ccof_funding_agreements?${query}`);
     const fundingAgreements = response?.value?.map((item) => new MappableObjectForFront(item, FundingAgreementMappings).toJSON());
+    if (req.query.includePdf) {
+      await Promise.all(
+        fundingAgreements.map(async (fundingAgreement) => {
+          const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreement.fundingAgreementId})/ccof_funding_pdf`);
+          fundingAgreement.pdfFile = pdfResponse?.value;
+        }),
+      );
+    }
     return res.status(HttpStatus.OK).json(fundingAgreements);
   } catch (e) {
     log.error(e);
