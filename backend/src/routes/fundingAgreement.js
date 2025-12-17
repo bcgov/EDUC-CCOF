@@ -15,7 +15,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT),
+  validatePermission(PERMISSIONS.VIEW_FUNDING_AGREEMENT, PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF),
   query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
   (req, res) => {
     validationResult(req).throw();

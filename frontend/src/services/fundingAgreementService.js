@@ -4,16 +4,16 @@ import { ApiRoutes } from '@/utils/constants';
 import { checkSession } from '@/utils/session';
 
 export default {
-  async getFundingAgreements(organizationId) {
-    checkSession();
+  async getFundingAgreements(query) {
     try {
-      if (!organizationId) return [];
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.FUNDING_AGREEMENTS}?organizationId=${organizationId}`,
-      );
-      return response.data;
+      const queryString = buildQueryString(query);
+      if (!queryString) {
+        return [];
+      }
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}${queryString}`);
+      return response?.data;
     } catch (error) {
-      console.error(`Failed to load funding agreements - ${error}`);
+      console.error(`Failed to get funding agreements - ${error}`);
       throw error;
     }
   },
@@ -25,7 +25,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.FUNDING_AGREEMENTS}/${fundingAgreementId}`);
       return response.data;
     } catch (error) {
-      console.error(`Failed to load funding agreement - ${error}`);
+      console.error(`Failed to get funding agreement - ${error}`);
       throw error;
     }
   },

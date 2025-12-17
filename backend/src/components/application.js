@@ -48,6 +48,27 @@ async function renewCCOFApplication(req, res) {
   }
 }
 
+async function getRenewalApplicationCCOF(req, res) {
+  try {
+    const operation = `ccof_applications(${req.params.applicationId})?$select=ccof_has_banking_information_changed,ccof_is_funding_agreement_confirmed,ccof_are_licence_details_confirmed`;
+    const response = await getOperation(operation);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ApplicationSummaryMappings));
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function updateApplication(req, res) {
+  try {
+    const response = await patchOperationWithObjectId('ccof_applications', req.params.applicationId, new MappableObjectForBack(req.body, ApplicationSummaryMappings).toJSON());
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function patchCCFRIApplication(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, CCFRIFacilityMappings).toJSON();
@@ -661,4 +682,6 @@ module.exports = {
   patchCCFRIApplication,
   deleteCCFRIApplication,
   deletePcfApplication,
+  getRenewalApplicationCCOF,
+  updateApplication,
 };
