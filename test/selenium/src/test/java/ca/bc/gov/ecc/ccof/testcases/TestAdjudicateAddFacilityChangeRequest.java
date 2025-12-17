@@ -41,7 +41,7 @@ public class TestAdjudicateAddFacilityChangeRequest extends BaseTest {
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		Thread.sleep(3000);
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();

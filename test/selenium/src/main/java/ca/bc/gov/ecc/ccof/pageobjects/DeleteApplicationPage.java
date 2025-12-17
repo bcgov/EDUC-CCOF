@@ -20,7 +20,6 @@ public class DeleteApplicationPage {
 	Actions action;
 	WebDriverWait wait;
 	WebDriver driver;
-	// Utilities utils;
 
 	@FindBy(xpath = "//*[@id='GlobalSearchBox']")
 	WebElement searchBox;

@@ -35,7 +35,7 @@ public class TestDeleteApplication extends BaseTest {
 		objCRMSignInCredentialPage.clickNext();
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		Thread.sleep(2000);
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();

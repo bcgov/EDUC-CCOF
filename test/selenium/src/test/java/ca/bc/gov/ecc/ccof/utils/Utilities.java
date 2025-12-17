@@ -106,6 +106,14 @@ public class Utilities {
 		wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 
+	public void waitForPageToLoad() {
+		new WebDriverWait(driver, Duration.ofSeconds(1000));
+
+		// Wait for the document to be fully loaded
+		wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState")
+				.equals("complete"));
+	}
+
 	public void assertElementDeleted(List<WebElement> elements) {
 		Assert.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
 	}
