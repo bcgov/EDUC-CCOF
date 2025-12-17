@@ -170,12 +170,16 @@ export function formatStringToNumberList(str) {
   return str.split(',').map((x) => Number(x.trim()));
 }
 /**
- * Converts a UTC ISO date string to "Month YYYY" format (e.g., "November 2025").
+ * Converts a date value to "Month YYYY" format (e.g., "November 2025").
  *
- * Expected Input:
- *      A valid ISO date string (e.g., "2025-11-25T23:37:40Z").
+ * Expected input formats:
+ *   - Full ISO date strings (e.g., "2025-11-25T23:37:40Z")
+ *   - Date-only strings (e.g., "2025-09-13")
+ *   - Year-month strings (e.g., "2025-09")
+ *
  * Expected Output:
- *      Formatted string like "November 2025", or null if invalid.
+ *   - Returns a formatted string like "September 2025" or null
+ *
  */
 export function formatUTCDateToMonthYear(date) {
   if (!date) return null;
