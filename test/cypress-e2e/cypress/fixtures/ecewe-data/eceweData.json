@@ -34,9 +34,11 @@
         "confirmation": "I confirm our organization/facilities has reached a local agreement with the union to amend the collective agreement(s) in order to implement the ECE-WE."
     },
     "facility": {
-        "facilityOptInOrOut": "Opt-In All Facilities",
+        "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ecewe and change values below this line according to your test case. Ensure the facilityName matches that added to extra-facs-ccof.",
+        "facilityName": "Hedies Facility 1",
+        "facilityOptInOrOut": "Opt-In",
         "_optionsFacilityOptInOrOut": {
-            "optIn": " Opt-In All Facilities ",
+            "optIn": " Opt-In",
             "optOut": "Opt-Out"
         },
         "facilityUnionStatus": "Unionized",

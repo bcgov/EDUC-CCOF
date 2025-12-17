@@ -23,8 +23,9 @@
       "position": "owner"
     }
   },
+  "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccof and change values below this line according to your test case",
   "facilityData": {
-    "facilityName": "Hedies Demo Facility",
+    "facilityName": "Hedies Facility 1",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -53,61 +54,76 @@
         "September",
         "December"
       ],
+      "_optionsClosedMonths": [
+        "January", 
+        "February",
+        "March", 
+        "April", 
+        "May", 
+        "June",
+        "July", 
+        "August", 
+        "September",
+        "October",
+        "November", 
+        "December"
+      ],
       "closedMonthsOld": [
         "Jan",
         "Sep",
         "Dec"
+      ],
+      "_optionsClosedMonthsOld": [
+        "Jan", 
+        "Feb",
+        "Mar", 
+        "Apr", 
+        "May", 
+        "Jun",
+        "Jul", 
+        "Aug", 
+        "Sep",
+        "Oct",
+        "Nov", 
+        "Dec"
       ]
     },
+    "_NOTE": "For oldGroup categories, put max=0 if NOT using that licence, all other categories change 'checked' to 'false'.",
+    "_NOTE2": "For oldGroup and oldFamilyExtendedHours, please scroll to the bottom of  the file to fill in the under/over 4 hour values. Regular group/family extended hours have their values within the licence category itself.",
     "oldGroupLicenceCategories": {
       "Group Child Care (under 36 Months)": {
-        "checked": true,
-        "max": 1,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 1
       },
       "Group Child Care (30 Months to School Age)": {
-        "checked": true,
-        "max": 1,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 0
       },
       "Preschool": {
-        "checked": true,
-        "max": 1,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 0
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
-        "checked": true,
-        "max": 1,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 0
       },
       "Multi-Age Child Care": {
-        "checked": true,
-        "max": 1,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 0
       }
     },
     "groupLicenceCategories": {
       "Group Child Care (Under 36 Months)": {
-        "checked": true,
+        "checked": false,
         "max": 1,
         "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "checked": true,
+        "checked": false,
         "max": 24,
         "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age)": {
-        "checked": true,
+        "checked": false,
         "max": 20,
         "extended": true,
         "maxUnderFourHours": 4,
@@ -121,12 +137,12 @@
         "maxOverFourHours": 4
       },
       "Preschool": {
-        "checked": true,
+        "checked": false,
         "max": 24,
         "extended": false
       },
       "Multi-Age Child Care": {
-        "checked": true,
+        "checked": false,
         "max": 50,
         "extended": true,
         "maxUnderFourHours": 4,
@@ -136,21 +152,15 @@
     "oldFamilyLicenceCategories": {
       "Family child care": {
         "checked": true,
-        "max": 50,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 50
       },
       "In-Home Multi-Age Child Care": {
         "checked": false,
-        "max": 20,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 20
       },
       "Multi-Age Care": {
         "checked": false,
-        "max": 50,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "max": 50
       }
     },
     "familyLicenceCategories": {
@@ -182,14 +192,19 @@
       "Thursday": 1,
       "Friday": 1
     },
-    "isOnSchoolProperty": "Yes",
     "schoolAgedCareServiceDetails": [
       "Before School",
       "After School",
       "Before Kindergarten",
       "After Kindergarten"
     ],
-    "offerExtendedHoursChildCare": "No",
+    "_optionsSchoolAgedCareServiceDetails": [
+      "Before School",
+      "After School",
+      "Before Kindergarten",
+      "After Kindergarten"
+    ],
+    "offerExtendedHoursChildCare": "Yes",
     "_optionsOfferExtendedHoursChildCare": {
       "optIn": "Yes",
       "optOut": "No"
@@ -232,11 +247,6 @@
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       }
-    },
-    "addFacilityData": "No",
-    "_optionsAddAnotherFacilityData": {
-      "addAnother": "Yes",
-      "onlyOne": "No"
     }
   }
 }
