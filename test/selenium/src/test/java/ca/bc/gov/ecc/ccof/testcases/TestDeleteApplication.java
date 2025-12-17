@@ -18,6 +18,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestDeleteApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestDeleteApplication.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void deleteApplication(Method method) throws Throwable {
@@ -25,56 +26,52 @@ public class TestDeleteApplication extends BaseTest {
 		logger.info("Starting the TestDeleteApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
 		Thread.sleep(2000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		Thread.sleep(2000);
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
-		Thread.sleep(3000);
-		deleteapp.pressEnter();
-		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.searchAndOpenContact(contactName);
+
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
-		Thread.sleep(3000);
-
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		orginfo.clickMainApplication();
+		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// deleting the application
-		appinfo.clickDeleteBtn();
+		appInfo.clickDeleteBtn();
 		Thread.sleep(3000);
-		appinfo.clickDeleteConfirmBtn();
+		appInfo.clickDeleteConfirmBtn();
 		Thread.sleep(5000);
 
 		// verifying the application is deleted
-		ut.assertElementDeleted(orginfo.getOpenApplications());
+		utils.assertElementDeleted(orgInfo.getOpenApplications());
 		logger.info("Ending the TestDeleteApplication test...");
 
 	}
