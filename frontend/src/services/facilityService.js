@@ -1,6 +1,5 @@
 import ApiService from '@/common/apiService';
-import { replaceChildCareLabel } from '@/utils/common.js';
-import { buildQueryString } from '@/utils/common.js';
+import { buildQueryString, replaceChildCareLabel } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
