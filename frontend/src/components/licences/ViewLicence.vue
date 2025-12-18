@@ -8,7 +8,7 @@
       </p>
     </v-row>
 
-    <v-expansion-panels class="mb-4" multiple expand>
+    <v-expansion-panels v-model="panels" multiple class="mb-4">
       <v-expansion-panel>
         <v-expansion-panel-title>
           <h3>Licence and Service Details Record</h3>
@@ -56,6 +56,7 @@ export default {
       isLicenceLoading: false,
       selectedLicence: null,
       viewDialogOpen: false,
+      panels: [0, 1],
     };
   },
   computed: {
