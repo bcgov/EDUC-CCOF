@@ -338,9 +338,13 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-row class="mt-6">
+      <v-col cols="12"> <ViewOrgCcfriFacilities :organization-id="organizationId" /> </v-col>
+    </v-row>
+    <v-row class="mt-6">
+      <v-col cols="12"> <ViewOrgEceweFacilities :organization-id="organizationId" /> </v-col>
+    </v-row>
   </v-container>
-  <OrganizationCCFRITable :organization-id="organizationId" />
-  <OrganizationECEWETable :organization-id="organizationId" />
 </template>
 <script>
 import { mapActions, mapState, mapWritableState } from 'pinia';
@@ -354,16 +358,15 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
-import OrganizationCCFRITable from './OrganizationCCFRITable.vue';
-import OrganizationECEWETable from './OrganizationECEWETable.vue';
-
+import ViewOrgCcfriFacilities from '@/components/orgFacilities/ViewOrgCcfriFacilities.vue';
+import ViewOrgEceweFacilities from '@/components/orgFacilities/ViewOrgEceweFacilities.vue';
 export default {
   name: 'ManageOrganization',
   components: {
     AppButton,
     AppLabel,
-    OrganizationCCFRITable,
-    OrganizationECEWETable,
+    ViewOrgCcfriFacilities,
+    ViewOrgEceweFacilities,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {

@@ -8,7 +8,7 @@ const config = require('../config/index');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { FacilityMappings, CCFRIFacilityMappings } = require('../util/mapping/Mappings');
-const { ACCOUNT_TYPE, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER, CHILD_AGE_CATEGORY_TYPES, LICENCE_CATEGORIES } = require('../util/constants');
+const { ACCOUNT_TYPE, CCOF_LICENSE_FACILITY_ACCOUNT_STATUSES, CCOF_STATUS_CODES, CHILD_AGE_CATEGORY_ORDER, CHILD_AGE_CATEGORY_TYPES, LICENCE_CATEGORIES } = require('../util/constants');
 const { getLicenseCategory } = require('./lookup');
 
 function buildNewFacilityPayload(req) {
@@ -354,17 +354,10 @@ async function getApprovedParentFees(req, res) {
 // Fetches CCFRI applications for the given organizationID and program year and returns a list of facilities with their CCFRI info.
 async function getCcfriFacilities(req, res) {
   try {
-    const organizationId = req.query.orgId;
-    const programYear = req.query.selectedFY;
-
-    if (!organizationId) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Missing orgId query parameter' });
-    }
-    const query = `ccof_applications?$select=ccof_describe_your_org&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_adjudication_ccfri_facility_Application($select=ccof_ccfripaymenteligibilitystartdate),ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001)))),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
-    const response = await getOperation(query);
-    const raw = response?.value ?? [];
-    const transformed = transformCcfri(raw);
-    return res.status(HttpStatus.OK).json(transformed);
+    const { orgId: organizationId, selectedFY: programYear } = req.query;
+    const query = `ccof_applications?$select=ccof_describe_your_org&$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin,ccof_opt_in_date;$expand=ccof_adjudication_ccfri_facility_Application($select=ccof_ccfripaymenteligibilitystartdate),ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${CCOF_LICENSE_FACILITY_ACCOUNT_STATUSES.DRAFT})))),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
+    const transformedResponse = transformCcfri((await getOperation(query))?.value ?? []);
+    return res.status(HttpStatus.OK).json(transformedResponse);
   } catch (e) {
     log.error('CCFRI facilities data error:', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -373,7 +366,7 @@ async function getCcfriFacilities(req, res) {
 // Converts raw CCFRI application records into a list of facility-level summaries.
 function transformCcfri(applications) {
   const ccfriFacilities = [];
-  if (!applications?.length) return [];
+  if (isEmpty(applications)) return [];
   applications.forEach((app) => {
     app.ccof_applicationccfri_Application_ccof_ap?.forEach((ccfri) => {
       const facility = ccfri.ccof_Facility;
@@ -393,17 +386,10 @@ function transformCcfri(applications) {
 // Fetches ECE-WE Applications for the given organizationID and program year and returns a list of facilities with their ECE-WE info.
 async function getEceweFacilities(req, res) {
   try {
-    const organizationId = req.query.orgId;
-    const programYear = req.query.selectedFY;
-
-    if (!organizationId) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Missing orgId query parameter' });
-    }
-    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne 100000001))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
-    const response = await getOperation(query);
-    const raw = response?.value ?? [];
-    const transformed = transformEcewe(raw);
-    return res.status(HttpStatus.OK).json(transformed);
+    const { orgId: organizationId, selectedFY: programYear } = req.query;
+    const query = `ccof_applications?$select=ccof_describe_your_org,ccof_ecewe_employeeunion,ccof_ecewe_optin,ccof_public_sector_employer&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${CCOF_LICENSE_FACILITY_ACCOUNT_STATUSES.DRAFT}))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date)),ccof_ProgramYear($select=ccof_name)&$filter=(_ccof_organization_value eq ${organizationId} and _ccof_programyear_value eq ${programYear})`;
+    const transformedResponse = transformEcewe((await getOperation(query))?.value ?? []);
+    return res.status(HttpStatus.OK).json(transformedResponse);
   } catch (e) {
     log.error('ECEWE facilities data error:', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -412,7 +398,7 @@ async function getEceweFacilities(req, res) {
 // Converts raw ECE-WE application records into a list of facility-level summaries.
 function transformEcewe(applications) {
   const eceweFacilities = [];
-  if (!applications?.length) return [];
+  if (isEmpty(applications)) return [];
   applications.forEach((app) => {
     app.ccof_ccof_application_ccof_applicationecewe_application?.forEach((ece) => {
       const facility = ece.ccof_Facility;

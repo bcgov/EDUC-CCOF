@@ -253,7 +253,7 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   YES: 1,
   NO: 0,
 };
-export const ECEWE_APPLICATION_STATUS = {
+export const ECEWE_APPLICATION_STATUSES = {
   SUBMITTED: 1,
   INACTIVE: 2,
   APPROVED: 3,
@@ -266,7 +266,7 @@ export const ECEWE_APPLICATION_STATUS = {
 export const BASE_FACILITY_HEADERS = [
   { title: 'Facility Name', key: 'facilityName' },
   { title: 'Facility ID', key: 'facilityAccountNumber' },
-  { title: 'Licence #', key: 'licenseNumber' },
+  { title: 'Licence Number', key: 'licenseNumber' },
 ];
 
 //these are used at the facility level - other codes are at ORG level

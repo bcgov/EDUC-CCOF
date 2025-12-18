@@ -26,15 +26,31 @@ const facilitySchema = {
 
 module.exports = router;
 
+const { query } = require('express-validator');
+
 /**
  * Get CCFRI facility details
  */
-router.get('/ccfri-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getCcfriFacilities);
+router.get(
+  '/ccfri-facilities',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  getCcfriFacilities,
+);
 
 /**
  * Get ECE-WE facility details
  */
-router.get('/ecewe-facilities', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION), getEceweFacilities);
+router.get(
+  '/ecewe-facilities',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  getEceweFacilities,
+);
 /**
  * Get Facility details
  */

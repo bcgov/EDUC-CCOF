@@ -1,5 +1,6 @@
 import ApiService from '@/common/apiService';
 import { replaceChildCareLabel } from '@/utils/common.js';
+import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
@@ -56,9 +57,11 @@ export default {
   },
   async getCcfriFacilities(organizationId, selectedFY) {
     try {
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.CCFRI_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
-      );
+      const query = buildQueryString({
+        orgId: organizationId,
+        selectedFY,
+      });
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FACILITIES}${query}`);
       return response.data;
     } catch (err) {
       console.log(`Failed to fetch ccfri facilities - ${err}`);
@@ -67,9 +70,11 @@ export default {
   },
   async getEceweFacilities(organizationId, selectedFY) {
     try {
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.ECEWE_FACILITIES}?orgId=${organizationId}&selectedFY=${selectedFY}`,
-      );
+      const query = buildQueryString({
+        orgId: organizationId,
+        selectedFY,
+      });
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECEWE_FACILITIES}${query}`);
       return response.data;
     } catch (err) {
       console.log(`Failed to fetch ece-we facilities - ${err}`);

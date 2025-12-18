@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" class="mt-8">
+  <v-col cols="12">
     <h2>Early Childhood Educator Wage Enhancement (ECE-WE)</h2>
     <v-card variant="outlined" class="mt-3">
       <v-card-text>
@@ -20,44 +20,56 @@ import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import facilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
 import { formatUTCDateToMonthYear } from '@/utils/format.js';
+import alertMixin from '@/mixins/alertMixin.js';
 import {
   OPT_STATUSES,
   ECEWE_DESCRIBE_ORG_TYPES,
   ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
   ECEWE_FACILITY_UNION_TYPES,
-  ECEWE_APPLICATION_STATUS,
+  ECEWE_APPLICATION_STATUSES,
   BASE_FACILITY_HEADERS,
 } from '@/utils/constants.js';
+
+const ECEWE_HEADERS = [
+  ...BASE_FACILITY_HEADERS,
+  { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
+  { title: 'CSSEA Member', key: 'isCsseaMember' },
+  { title: 'Unionized', key: 'unionStatus' },
+  { title: 'Opt-In/Out Status', key: 'eceweOptStatus' },
+  { title: 'ECE-WE Application', key: 'eceweApplicationStatus' },
+  { title: 'ECE-WE Start Date', key: 'eceweStartDate' },
+];
 const LOOKUP = {
-  OPT_STATUS: {
-    [OPT_STATUSES.OPT_IN]: 'Opt-In',
-    [OPT_STATUSES.OPT_OUT]: 'Opt-Out',
-  },
-  UNION: {
-    [ECEWE_FACILITY_UNION_TYPES.UNIONIZED]: 'Yes',
-    [ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED]: 'No',
+  APPLICATION_STATUS: {
+    [ECEWE_APPLICATION_STATUSES.ACTION_REQUIRED]: 'Action Required',
+    [ECEWE_APPLICATION_STATUSES.APPROVED]: 'Approved',
+    [ECEWE_APPLICATION_STATUSES.INACTIVE]: 'Inactive',
+    [ECEWE_APPLICATION_STATUSES.INELIGIBLE]: 'Ineligible',
+    [ECEWE_APPLICATION_STATUSES.NEW]: 'New',
+    [ECEWE_APPLICATION_STATUSES.OPT_OUT]: 'Opted Out',
+    [ECEWE_APPLICATION_STATUSES.SUBMITTED]: 'Submitted',
   },
   CSSEA: {
     [ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA]: 'Yes',
     [ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA]: 'No',
   },
-  PSE: {
-    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES]: 'Yes',
-    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO]: 'No',
+  OPT_STATUS: {
+    [OPT_STATUSES.OPT_IN]: 'Opt-In',
+    [OPT_STATUSES.OPT_OUT]: 'Opt-Out',
   },
-  APPLICATION_STATUS: {
-    [ECEWE_APPLICATION_STATUS.NEW]: 'New',
-    [ECEWE_APPLICATION_STATUS.SUBMITTED]: 'Submitted',
-    [ECEWE_APPLICATION_STATUS.INACTIVE]: 'Inactive',
-    [ECEWE_APPLICATION_STATUS.APPROVED]: 'Approved',
-    [ECEWE_APPLICATION_STATUS.INELIGIBLE]: 'Ineligible',
-    [ECEWE_APPLICATION_STATUS.ACTION_REQUIRED]: 'Action Required',
-    [ECEWE_APPLICATION_STATUS.OPT_OUT]: 'Opted Out',
+  PSE: {
+    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO]: 'No',
+    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES]: 'Yes',
+  },
+  UNION: {
+    [ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED]: 'No',
+    [ECEWE_FACILITY_UNION_TYPES.UNIONIZED]: 'Yes',
   },
 };
 export default {
   name: 'OrganizationECEWETable',
   components: { FiscalYearSlider },
+  mixins: [alertMixin],
   props: {
     organizationId: {
       type: String,
@@ -69,6 +81,7 @@ export default {
       selectedProgramYearIdLocal: null,
       items: [],
       isLoading: false,
+      headers: ECEWE_HEADERS,
     };
   },
   computed: {
@@ -96,17 +109,6 @@ export default {
           eceweStartDate: formatUTCDateToMonthYear(item.eceweStartDate),
         }));
     },
-    headers() {
-      return [
-        ...BASE_FACILITY_HEADERS,
-        { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
-        { title: 'CSSEA Member', key: 'isCsseaMember' },
-        { title: 'Unionized', key: 'unionStatus' },
-        { title: 'Opt-In/Out Status', key: 'eceweOptStatus' },
-        { title: 'ECE-WE Application', key: 'eceweApplicationStatus' },
-        { title: 'ECE-WE Start Date', key: 'eceweStartDate' },
-      ];
-    },
   },
   methods: {
     async onProgramYearChange(programYear) {
@@ -119,7 +121,8 @@ export default {
         this.isLoading = true;
         this.items = await facilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
       } catch (error) {
-        console.error('Failed to load ECE-WE facilities', error);
+        console.error(error);
+        this.setFailureAlert('Failed to load ECE-WE facilities');
       } finally {
         this.isLoading = false;
       }
