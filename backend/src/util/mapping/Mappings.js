@@ -427,6 +427,7 @@ const UserProfileChangeRequestNewFacilityMappings = [
 const ProgramYearMappings = [
   { back: '_ccof_previousyear_value', front: 'previousYearId' },
   { back: 'ccof_bcssa_link', front: 'bcssaUrl' },
+  { back: 'ccof_ecewe_funding_guidelines', front: 'eceweFundingGuidelinesUrl' },
   { back: 'ccof_ccfri_funding_guidelines', front: 'fundingGuidelinesUrl' },
   { back: 'ccof_ccof_application_template_version', front: 'applicationTemplateVersion' },
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
@@ -479,10 +480,10 @@ const ApplicationSummaryMappings = [
   { back: 'ccof_applicationid', front: 'applicationId' }, //"ad483720-e1a7-ed11-aad0-000d3a09c3a2",
   { back: 'ccof_name', front: 'name' }, //"APP-23005239",
   { back: 'ccof_providertype', front: 'organizationProviderType' }, //100000001,
-  // Unsure if this is needed
-  // { back: 'ccof_familychildcare', front: 'isFamiliyChildCare' }, //false,
-  // { back: 'ccof_multiagechildcare', front: 'isMultiAgeChildCare' }, //false,
-  // { back: 'ccof_inhomemultiagechildcare', front: 'isHomeMultiAgeChildCare' }, //false,
+  { back: 'ccof_has_banking_information_changed', front: 'hasBankingInfoChanged' },
+  { back: 'ccof_is_funding_agreement_confirmed', front: 'isFundingAgreementConfirmed' },
+  { back: 'ccof_are_licence_details_confirmed', front: 'areLicenceDetailsConfirmed' },
+
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,
@@ -791,6 +792,7 @@ const LicenceMappings = [
   { back: 'ccof_organization', front: 'ccofOrganization' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: 'ccof_facility_id', front: 'facilityAccountNumber' },
+  { back: '_ccof_organization_name_value', front: 'organizationId' },
   { back: 'ccof_start_date', front: 'licenceStartDate' },
   { back: 'ccof_end_date', front: 'licenceEndDate' },
   { back: 'ccof_record_start_date', front: 'recordStartDate' },
@@ -874,6 +876,16 @@ const PaymentMappings = [
   { back: 'ofm_invoice_number', front: 'invoiceNumber' },
 ];
 
+const ECEStaffMappings = [
+  { back: '_ccof_facility_id_value', front: 'facilityId' },
+  { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: 'ccof_first_name', front: 'firstName' },
+  { back: 'ccof_middle_name', front: 'middleName' },
+  { back: 'ccof_last_name', front: 'lastName' },
+  { back: 'ccof_hourly_wage', front: 'hourlyWage' },
+  { back: 'ccof_registration_no', front: 'registrationNumber' },
+  { back: 'statuscode', front: 'status' },
+];
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -885,6 +897,7 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  ECEStaffMappings,
   EnrolmentReportDifferenceMappings,
   EnrolmentReportExtensionMappings,
   EnrolmentReportMappings,

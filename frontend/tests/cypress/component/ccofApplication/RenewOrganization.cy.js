@@ -1,11 +1,17 @@
 import RenewOrganization from '@/components/ccofApplication/RenewOrganization.vue';
 import vuetify from '@/plugins/vuetify';
+import { APPLICATION_STATUSES } from '@/utils/constants.js';
 
-function mountWithPinia(initialState = {}) {
+function mountWithPinia(initialState = {}, dateOverride = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(RenewOrganization, {
       global: {
         plugins: [pinia, vuetify],
+      },
+      data() {
+        return {
+          ...dateOverride,
+        };
       },
     });
   });
@@ -36,7 +42,7 @@ describe('<RenewOrganization />', () => {
   });
 
   it('should render `Do not continue` text if banking info changes', () => {
-    mountWithPinia();
+    mountWithPinia({ application: { applicationStatus: APPLICATION_STATUSES.DRAFT } });
 
     cy.get('.v-radio-group').within(() => {
       cy.get('.v-radio').eq(0).click();
