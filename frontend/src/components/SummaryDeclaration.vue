@@ -376,7 +376,7 @@ export default {
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
     ]),
-    ...mapState(useAuthStore, ['isImpersonating', 'isMinistryUser', 'userInfo']),
+    ...mapState(useAuthStore, ['isMinistryUser', 'userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['changeRequestId', 'isChangeRequest', 'navBarList', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
@@ -389,7 +389,7 @@ export default {
       return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
     },
     isReadOnly() {
-      if (this.isMinistryUser || this.isImpersonating) {
+      if (this.isMinistryUser) {
         return true;
       }
       if (!this.hasPermission([this.PERMISSIONS.SUBMIT_NEW_APPLICATION, this.PERMISSIONS.SUBMIT_RENEWAL_PCF])) {
