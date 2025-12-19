@@ -60,6 +60,9 @@ export default {
         orgId: organizationId,
         selectedFY,
       });
+      if (!query) {
+        return [];
+      }
       const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FACILITIES}${query}`);
       return response.data;
     } catch (err) {
@@ -73,6 +76,9 @@ export default {
         orgId: organizationId,
         selectedFY,
       });
+      if (!query) {
+        return [];
+      }
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECEWE_FACILITIES}${query}`);
       return response.data;
     } catch (err) {

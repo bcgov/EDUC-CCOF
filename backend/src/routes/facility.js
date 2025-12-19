@@ -37,9 +37,11 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
   [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
-  getCcfriFacilities,
+  (req, res) => {
+    validationResult(req).throw();
+    return getCcfriFacilities(req, res);
+  },
 );
-
 /**
  * Get ECE-WE facility details
  */
@@ -49,7 +51,10 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
   [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
-  getEceweFacilities,
+  (req, res) => {
+    validationResult(req).throw();
+    return getEceweFacilities(req, res);
+  },
 );
 /**
  * Get Facility details

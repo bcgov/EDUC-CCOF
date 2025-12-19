@@ -84,7 +84,10 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
   { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
-
+const CcfriEceweFacilityMappings = [
+  { back: '_ccof_organization_value', front: 'orgID' },
+  { back: '_ccof_programyear_value', front: 'selectedFY' },
+];
 const RFIApplicationMappings = [
   { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'notes2' }, // "is there anything else about your change in hours",
   { back: 'ccof_rfipfiid', front: 'rfiId' }, // "df27e229-0b88-ed11-81ac-000d3af48db8",
@@ -912,6 +915,7 @@ module.exports = {
   ProgramYearMappings,
   MessageMappings,
   CCFRIApprovableFeeSchedulesMappings,
+  CcfriEceweFacilityMappings,
   CCFRIFacilityMappings,
   OrganizationFacilityMappings,
   ClosureMappings,

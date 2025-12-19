@@ -1,44 +1,33 @@
 <template>
-  <v-col cols="12">
-    <h2>Early Childhood Educator Wage Enhancement (ECE-WE)</h2>
-    <v-card variant="outlined" class="mt-3">
-      <v-card-text>
-        <v-row class="align-center">
-          <h3 class="ml-5 mr-3">Select fiscal year:</h3>
-          <FiscalYearSlider always-display @select-program-year="onProgramYearChange" />
-        </v-row>
-      </v-card-text>
-      <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-data-table :headers="headers" :items="mappedItems" density="compact" :items-per-page="10" />
-      </v-skeleton-loader>
-    </v-card>
-  </v-col>
+  <h2>Early Childhood Educator Wage Enhancement (ECE-WE)</h2>
+  <v-card variant="outlined" class="mt-3">
+    <v-card-text>
+      <v-row class="align-center">
+        <h3 class="ml-5 mr-3">Select fiscal year:</h3>
+        <FiscalYearSlider always-display @select-program-year="onProgramYearChange" />
+      </v-row>
+    </v-card-text>
+    <v-skeleton-loader :loading="isLoading" type="table-tbody">
+      <v-data-table :headers="headers" :items="mappedItems" density="compact" :items-per-page="10" />
+    </v-skeleton-loader>
+  </v-card>
 </template>
 <script>
-import { mapState } from 'pinia';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
-import facilityService from '@/services/facilityService';
+import {
+  BASE_FACILITY_HEADERS,
+  ECEWE_APPLICATION_STATUSES,
+  ECEWE_DESCRIBE_ORG_TYPES,
+  ECEWE_FACILITY_UNION_TYPES,
+  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
+  OPT_STATUSES,
+} from '@/utils/constants.js';
+import alertMixin from '@/mixins/alertMixin.js';
+import { mapState } from 'pinia';
+import FacilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
 import { formatUTCDateToMonthYear } from '@/utils/format.js';
-import alertMixin from '@/mixins/alertMixin.js';
-import {
-  OPT_STATUSES,
-  ECEWE_DESCRIBE_ORG_TYPES,
-  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  ECEWE_FACILITY_UNION_TYPES,
-  ECEWE_APPLICATION_STATUSES,
-  BASE_FACILITY_HEADERS,
-} from '@/utils/constants.js';
 
-const ECEWE_HEADERS = [
-  ...BASE_FACILITY_HEADERS,
-  { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
-  { title: 'CSSEA Member', key: 'isCsseaMember' },
-  { title: 'Unionized', key: 'unionStatus' },
-  { title: 'Opt-In/Out Status', key: 'eceweOptStatus' },
-  { title: 'ECE-WE Application', key: 'eceweApplicationStatus' },
-  { title: 'ECE-WE Start Date', key: 'eceweStartDate' },
-];
 const LOOKUP = {
   APPLICATION_STATUS: {
     [ECEWE_APPLICATION_STATUSES.ACTION_REQUIRED]: 'Action Required',
@@ -81,7 +70,6 @@ export default {
       selectedProgramYearIdLocal: null,
       items: [],
       isLoading: false,
-      headers: ECEWE_HEADERS,
     };
   },
   computed: {
@@ -110,16 +98,27 @@ export default {
         }));
     },
   },
+  created() {
+    this.headers = [
+      ...BASE_FACILITY_HEADERS,
+      { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
+      { title: 'CSSEA Member', key: 'isCsseaMember' },
+      { title: 'Unionized', key: 'unionStatus' },
+      { title: 'Opt-In/Out Status', key: 'eceweOptStatus' },
+      { title: 'ECE-WE Application', key: 'eceweApplicationStatus' },
+      { title: 'ECE-WE Start Date', key: 'eceweStartDate' },
+    ];
+  },
   methods: {
     async onProgramYearChange(programYear) {
       this.selectedProgramYearIdLocal = programYear.programYearId;
-      await this.fetchData();
+      await this.loadData();
     },
-    async fetchData() {
+    async loadData() {
       if (!this.organizationId || !this.selectedProgramYearId) return;
       try {
         this.isLoading = true;
-        this.items = await facilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
+        this.items = await FacilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE-WE facilities');
