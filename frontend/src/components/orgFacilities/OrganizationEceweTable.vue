@@ -13,6 +13,7 @@
   </v-card>
 </template>
 <script>
+import { mapState } from 'pinia';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import {
   BASE_FACILITY_HEADERS,
@@ -23,7 +24,6 @@ import {
   OPT_STATUSES,
 } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
-import { mapState } from 'pinia';
 import FacilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
 import { formatUTCDateToMonthYear } from '@/utils/format.js';

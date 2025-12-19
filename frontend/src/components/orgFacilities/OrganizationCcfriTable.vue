@@ -13,9 +13,9 @@
   </v-card>
 </template>
 <script>
+import { mapState } from 'pinia';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import { mapState } from 'pinia';
 import FacilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
 import { BASE_FACILITY_HEADERS, OPT_STATUSES } from '@/utils/constants.js';
@@ -43,9 +43,7 @@ export default {
       return this.selectedProgramYearIdLocal ?? this.programYearId;
     },
     mappedItems() {
-      const items = Array.isArray(this.items) ? [...this.items] : [];
-
-      return items
+      return [...this.items]
         .sort((a, b) => {
           const aStatus = a?.ccfriOptStatus ?? -1;
           const bStatus = b?.ccfriOptStatus ?? -1;

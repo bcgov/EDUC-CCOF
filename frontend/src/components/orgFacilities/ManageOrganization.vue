@@ -338,12 +338,8 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-row class="mt-6">
-      <v-col><OrganizationCcfriTable :organization-id="organizationId" /></v-col>
-    </v-row>
-    <v-row class="mt-6">
-      <v-col> <OrganizationEceweTable :organization-id="organizationId" /> </v-col>
-    </v-row>
+    <OrganizationCcfriTable :organization-id="organizationId" />
+    <OrganizationEceweTable :organization-id="organizationId" />
   </v-container>
 </template>
 <script>
