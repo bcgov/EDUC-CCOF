@@ -85,7 +85,7 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
 const CcfriEceweFacilityMappings = [
-  { back: '_ccof_organization_value', front: 'orgID' },
+  { back: '_ccof_organization_value', front: 'orgId' },
   { back: '_ccof_programyear_value', front: 'selectedFY' },
 ];
 const RFIApplicationMappings = [
