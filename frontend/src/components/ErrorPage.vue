@@ -23,7 +23,6 @@ export default {
       errorMessage: this.$route.query.message,
     };
   },
-
   async created() {
     if (this.errorMessage === 'Unable_to_authenticate') {
       this.loginErrorRedirect();
