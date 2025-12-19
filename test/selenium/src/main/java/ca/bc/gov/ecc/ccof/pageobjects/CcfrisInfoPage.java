@@ -29,6 +29,12 @@ public class CcfrisInfoPage {
 	@FindBy(xpath = "//span[contains(text(),'Unlock')]")
 	WebElement unlockBtn;
 
+	@FindBy(xpath = "//*[@aria-label='More Header Editable Fields']")
+	WebElement expandIconBtn;
+
+	@FindBy(xpath = "//*[@aria-label='Status Reason']")
+	WebElement statusReasonField;
+
 	public CcfrisInfoPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -54,5 +60,17 @@ public class CcfrisInfoPage {
 
 	public void clickUnlockBtn() {
 		unlockBtn.click();
+	}
+
+	public void clickExpandIconBtn() {
+		expandIconBtn.click();
+	}
+
+	public String getStatusReason() {
+		return wait.until(ExpectedConditions.visibilityOf(statusReasonField)).getAttribute("value");
+	}
+
+	public WebElement waitForStatusReasonField() {
+		return statusReasonField;
 	}
 }

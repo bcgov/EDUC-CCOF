@@ -84,8 +84,13 @@ public class CcfriUnlockForm {
 		unlockReasonTxtBox.sendKeys(value);
 	}
 
-	public WebElement clickConfirmAndCloseBtn() {
+	public WebElement scrollToConfirmAndCloseBtn() {
 		return confirmAndCloseBtn;
+	}
+
+	public void clickConfirmAndCloseBtn() {
+		confirmAndCloseBtn.click();
+		;
 	}
 
 }
