@@ -338,19 +338,19 @@
         </v-card>
       </v-col>
     </v-row>
-    <OrganizationCcfriTable :organization-id="organizationId" />
-    <OrganizationEceweTable :organization-id="organizationId" />
+    <div class="mt-6"><OrganizationCcfriTable :organization-id="organizationId" /></div>
+    <div class="mt-6"><OrganizationEceweTable :organization-id="organizationId" /></div>
   </v-container>
 </template>
 <script>
+import { isEmpty } from 'lodash';
+import { mapActions, mapState, mapWritableState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppLabel from '@/components/guiComponents/AppLabel.vue';
 import OrganizationCcfriTable from '@/components/orgFacilities/OrganizationCcfriTable.vue';
 import OrganizationEceweTable from '@/components/orgFacilities/OrganizationEceweTable.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
-import { isEmpty } from 'lodash';
-import { mapActions, mapState, mapWritableState } from 'pinia';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';

@@ -1,5 +1,6 @@
 'use strict';
 const { buildFilterQuery } = require('./../components/utils');
+const { restrictFacilities } = require('../util/common');
 const { isEmpty } = require('lodash');
 const { getOperation, postOperation, patchOperationWithObjectId, minify, getLabelFromValue, deleteOperationWithObjectId, getApplicationDocument, getHttpHeader } = require('./utils');
 const HttpStatus = require('http-status-codes');
@@ -355,9 +356,9 @@ async function getApprovedParentFees(req, res) {
 async function getCcfriFacilities(req, res) {
   try {
     const response = await getOperation(
-      `ccof_applications?$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin;$expand=ccof_adjudication_ccfri_facility_Application($select=ccof_ccfripaymenteligibilitystartdate),ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
+      `ccof_applications?$expand=ccof_applicationccfri_Application_ccof_ap($select=ccof_ccfrioptin;$expand=ccof_adjudication_ccfri_facility_Application($select=ccof_ccfripaymenteligibilitystartdate),ccof_Facility($select=accountnumber,accountid,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
     );
-    const transformedResponse = transformCcfri(response?.value ?? []);
+    const transformedResponse = restrictFacilities(req, transformCcfri(response?.value));
     return res.status(HttpStatus.OK).json(transformedResponse);
   } catch (e) {
     log.error('CCFRI facilities data error:', e);
@@ -375,6 +376,7 @@ function transformCcfri(applications) {
 
       ccfriFacilities.push({
         facilityName: facility.name,
+        facilityId: facility.accountid,
         facilityAccountNumber: facility.accountnumber,
         licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         ccfriOptStatus: ccfri.ccof_ccfrioptin,
@@ -388,9 +390,9 @@ function transformCcfri(applications) {
 async function getEceweFacilities(req, res) {
   try {
     const response = await getOperation(
-      `ccof_applications?$select=ccof_public_sector_employer,ccof_describe_your_org&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
+      `ccof_applications?$select=ccof_public_sector_employer,ccof_describe_your_org&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,accountid,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
     );
-    const transformedResponse = transformEcewe(response?.value ?? []);
+    const transformedResponse = restrictFacilities(req, transformEcewe(response?.value));
     return res.status(HttpStatus.OK).json(transformedResponse);
   } catch (e) {
     log.error('ECEWE facilities data error:', e);
@@ -410,6 +412,7 @@ function transformEcewe(applications) {
       eceweFacilities.push({
         facilityName: facility.name,
         facilityAccountNumber: facility.accountnumber,
+        facilityId: facility.accountid,
         licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         eceweOptStatus: ece.ccof_optintoecewe,
         eceweApplicationStatus: ece.statuscode,
