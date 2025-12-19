@@ -13,14 +13,25 @@ const defaultOrgState = {
 };
 
 function interceptAPI() {
-  const query = buildQueryString({ organizationId: ORGANIZATION_ID });
-  cy.intercept('GET', `${ApiRoutes.LICENCES}${query}`, {
+  const queryLicences = buildQueryString({ organizationId: ORGANIZATION_ID });
+  const queryFA = buildQueryString({
+    organizationId: ORGANIZATION_ID,
+    programYearId: PROGRAM_YEAR_GUID,
+    fundingAgreementOrderNumber: 0,
+    includePdf: true,
+  });
+  cy.intercept('GET', `${ApiRoutes.LICENCES}${queryLicences}`, {
     statusCode: StatusCodes.OK,
     body: [
       {
         TEST_FIELD: 'TESTING123',
       },
     ],
+  });
+
+  cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}${queryFA}`, {
+    statusCode: StatusCodes.OK,
+    body: [{}],
   });
 }
 

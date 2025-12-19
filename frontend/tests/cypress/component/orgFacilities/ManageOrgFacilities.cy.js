@@ -1,3 +1,5 @@
+import { StatusCodes } from 'http-status-codes';
+
 import ManageOrgFacilities from '@/components/orgFacilities/ManageOrgFacilities.vue';
 import vuetify from '@/plugins/vuetify';
 import { buildQueryString } from '@/utils/common.js';
@@ -12,9 +14,17 @@ const programYearId = '1234';
 
 function interceptGetPaymentAPI() {
   cy.intercept('GET', `${ApiRoutes.PAYMENTS}${buildQueryString({ organizationId, programYearId })}`, {
-    statusCode: 200,
+    statusCode: StatusCodes.OK,
     body: [{ invoiceNumber: '' }],
   }).as('getPaymentAPI');
+}
+
+function interceptFA() {
+  const queryString = buildQueryString({ organizationId });
+  cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}${queryString}`, {
+    statusCode: StatusCodes.OK,
+    body: [],
+  });
 }
 
 function createOrganizationStore(extras) {
@@ -80,6 +90,7 @@ function mountWithPinia(initialState = {}, tab = 'organization-tab') {
 describe('<ManageOrgFacilities />', () => {
   beforeEach(() => {
     interceptGetPaymentAPI();
+    interceptFA();
   });
   it('should render organization name and account number', () => {
     mountWithPinia({
