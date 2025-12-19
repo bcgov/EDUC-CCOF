@@ -18,6 +18,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestAdjudicateApplicationFA extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationFA.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void adjudicateApplicationsFA(Method method) throws Throwable {
@@ -25,97 +26,94 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 		logger.info("Starting the AdjudicateApplicationFA test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// Login to CRM
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(8000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// Search contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
-		Thread.sleep(5000);
-		deleteapp.pressEnter();
-		Thread.sleep(5000);
-		deleteapp.fullName();
-		Thread.sleep(5000);
+		deleteApp.searchAndOpenContact(contactName);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
+		BCeIDPage bceidPage = new BCeIDPage(driver);
 
 		// Switch to organization information page
-		bceidpage.clickSelectOrganization();
+		bceidPage.clickSelectOrganization();
 		Thread.sleep(5000);
 
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
-		ut.scrollToElement(orginfo.getOpenFundingAgreement());
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
+		utils.scrollToElement(orgInfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
 
 		// Open funding agreement and adjudicate
-		orginfo.clickFundingAgreement();
+		orgInfo.clickFundingAgreement();
 		Thread.sleep(5000);
 
-		FundingAgreementPage fainfo = new FundingAgreementPage(driver);
-		fainfo.enterStartDate(ut.getDataFromJson("fundingAgreementStartDate"));// date should be within an year from end
-																				// date of FA
+		FundingAgreementPage faInfo = new FundingAgreementPage(driver);
+		faInfo.enterStartDate(utils.getDataFromJson("fundingAgreementStartDate"));// date should be within an year from
+																					// end
+																					// date of FA
 		Thread.sleep(2000);
-		ut.javaScriptExecutorAction(fainfo.clickReadyForProviderAction());
+		utils.javaScriptExecutorAction(faInfo.clickReadyForProviderAction());
 		Thread.sleep(2000);
-		fainfo.clickSaveAndClose();
+		faInfo.clickSaveAndClose();
 		Thread.sleep(3000);
 
 		// Change status to Drafted - with Ministry
-		ut.scrollToElement(orginfo.getOpenFundingAgreement());
+		utils.scrollToElement(orgInfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
-		orginfo.clickFundingAgreement();
+		orgInfo.clickFundingAgreement();
 		Thread.sleep(5000);
-		fainfo.clickExpandIcon();
+		faInfo.clickExpandIcon();
 		Thread.sleep(2000);
-		fainfo.clickStatusReason();
+		faInfo.clickStatusReason();
 		Thread.sleep(2000);
-		ut.selectDropdownValue("Drafted - with Ministry", fainfo.getStatusReasonField());
+		utils.selectDropdownValue("Drafted - with Ministry", faInfo.getStatusReasonField());
 		Thread.sleep(2000);
-		fainfo.clickSaveAndClose();
+		faInfo.clickSaveAndClose();
 
 		// Change status to Approved
 		Thread.sleep(2000);
-		ut.scrollToElement(orginfo.getOpenFundingAgreement());
+		utils.scrollToElement(orgInfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
-		orginfo.clickFundingAgreement();
+		orgInfo.clickFundingAgreement();
 		Thread.sleep(5000);
-		fainfo.clickExpandIcon();
+		faInfo.clickExpandIcon();
 		Thread.sleep(2000);
-		fainfo.clickStatusReason();
+		faInfo.clickStatusReason();
 		Thread.sleep(2000);
-		ut.selectDropdownValue("Approved", fainfo.getStatusReasonField());
-		fainfo.clickSaveAndClose();
+		utils.selectDropdownValue("Approved", faInfo.getStatusReasonField());
+		faInfo.clickSaveAndClose();
 		Thread.sleep(2000);
 
 		// Change status to Active
-		ut.scrollToElement(orginfo.getOpenFundingAgreement());
+		utils.scrollToElement(orgInfo.getOpenFundingAgreement());
 		Thread.sleep(5000);
-		orginfo.clickFundingAgreement();
+		orgInfo.clickFundingAgreement();
 		Thread.sleep(5000);
-		fainfo.clickExpandIcon();
+		faInfo.clickExpandIcon();
 		Thread.sleep(2000);
-		fainfo.clickStatusReason();
+		faInfo.clickStatusReason();
 		Thread.sleep(2000);
-		ut.selectDropdownValue("Active", fainfo.getStatusReasonField());
-		fainfo.clickSaveAndClose();
+		utils.selectDropdownValue("Active", faInfo.getStatusReasonField());
+		faInfo.clickSaveAndClose();
 		Thread.sleep(2000);
 
 		logger.info("Ending the AdjudicateApplicationFA test...");

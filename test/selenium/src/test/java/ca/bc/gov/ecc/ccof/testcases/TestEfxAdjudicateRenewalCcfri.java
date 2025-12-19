@@ -20,6 +20,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestEfxAdjudicateRenewalCcfri extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestEfxAdjudicateRenewalCcfri.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void adjudicateRenewalsEfx(Method method) throws Throwable {
@@ -27,132 +28,128 @@ public class TestEfxAdjudicateRenewalCcfri extends BaseTest {
 		logger.info("Starting the AdjudicateRenewalFullCcfriEfx  test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeEnterUserId());
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElementToLoad(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
-		Thread.sleep(3000);
-		deleteapp.pressEnter();
-		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.searchAndOpenContact(contactName);
+
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
-		Thread.sleep(3000);
-
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// adding Organization ID
-		orginfo.enterOrgId(ut.generateDynamicValue("organizationId"));
+		orgInfo.enterOrgId(utils.generateDynamicValue("organizationId"));
 		Thread.sleep(3000);
-		orginfo.clickSaveBtn();
+		orgInfo.clickSaveBtn();
 		Thread.sleep(5000);
-		ut.clickIfPresent(orginfo.ignoreAndSaveButton());
+		utils.clickIfPresent(orgInfo.ignoreAndSaveButton());
 		Thread.sleep(3000);
 
 		// selecting the application
-		orginfo.clickRenewalApplication();
+		orgInfo.clickRenewalApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
-		appinfo.clickDeclarationBStatus();
-		ut.selectDropdownValue(ut.getDataFromJson("declarationBStatus"), appinfo.getDeclarationBStatusOptions());
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
+		appInfo.clickDeclarationBStatus();
+		utils.selectDropdownValue(utils.getDataFromJson("declarationBStatus"), appInfo.getDeclarationBStatusOptions());
 		Thread.sleep(3000);
 
 		// navigating to related tab
-		appinfo.clickRelatedTab();
+		appInfo.clickRelatedTab();
 		Thread.sleep(5000);
 
 		// navigating to CCFRIs in related Tab
-		appinfo.clickCCFRISLink();
+		appInfo.clickCCFRISLink();
 		Thread.sleep(5000);
-		appinfo.clickCcfri();
+		appInfo.clickCcfri();
 		Thread.sleep(5000);
 
-		CcfrisInfoPage ccfriinfo = new CcfrisInfoPage(driver);
+		CcfrisInfoPage ccfriInfo = new CcfrisInfoPage(driver);
 
 		// checking system recommendation inside Overview page of CCFRI
-		String recommendation = ccfriinfo.getSystemRecommendation();
+		String recommendation = ccfriInfo.getSystemRecommendation();
 		logger.info("System Recommendation is: {}", recommendation);
 		Thread.sleep(5000);
-		ccfriinfo.clickCcfriFacilityAdjudicationTitle();
+		ccfriInfo.clickCcfriFacilityAdjudicationTitle();
 		Thread.sleep(5000);
 
 		// selecting the facility and changing the status to CCFRI Complete
-		ccfriinfo.clickOpenFacility();
+		ccfriInfo.clickOpenFacility();
 		Thread.sleep(5000);
 
-		FacilityInfoPage facilityinfo = new FacilityInfoPage(driver);
-		facilityinfo.clickFacilityNameLink();
+		FacilityInfoPage facilityInfo = new FacilityInfoPage(driver);
+		facilityInfo.clickFacilityNameLink();
 
 		// adding Facility ID
-		facilityinfo.enterFacId(ut.generateDynamicValue("facilityId"));
+		facilityInfo.enterFacId(utils.generateDynamicValue("facilityId"));
 
 		Thread.sleep(5000);
-		facilityinfo.clickMyCcsTestDropdown();
+		facilityInfo.clickMyCcsTestDropdown();
 		Thread.sleep(5000);
-		facilityinfo.clickFacilityStatusField();
+		facilityInfo.clickFacilityStatusField();
 		Thread.sleep(5000);
-		facilityinfo.mouseOverCcfriComplete();
+		facilityInfo.mouseOverCcfriComplete();
 		Thread.sleep(5000);
 		logger.info("CCFRI Complete option is selected from Facility Status dropdown");
-		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
+		facilityInfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
-		ut.clickIfPresent(facilityinfo.ignoreAndSaveButton());
+		utils.clickIfPresent(facilityInfo.ignoreAndSaveButton());
 		Thread.sleep(3000);
 
 		// entering initial decision tab and changing ccfri recommendation and QC
-		facilityinfo.clickInitialDecisionLink();
+		facilityInfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
-		facilityinfo.clickCcfriRecommendationField();
+		facilityInfo.clickCcfriRecommendationField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("ccfriAdjudicatorRecommendation"),
-				facilityinfo.getCCFRIAdjudicatorRecommendation());
+		utils.selectDropdownValue(utils.getDataFromJson("ccfriAdjudicatorRecommendation"),
+				facilityInfo.getCCFRIAdjudicatorRecommendation());
 		Thread.sleep(5000);
-		facilityinfo.switchToCcfriStartDateIFrame();
-		ut = new Utilities(driver);
-		ut.selectvalue(facilityinfo.getCCFRIPaymentEligibilityStartDate(),
-				ut.getDataFromJson("ccfriPaymentEligibilityStartDate"));
+		facilityInfo.switchToCcfriStartDateIFrame();
+		utils = new Utilities(driver);
+		utils.selectvalue(facilityInfo.getCCFRIPaymentEligibilityStartDate(),
+				utils.getDataFromJson("ccfriPaymentEligibilityStartDate"));
 		Thread.sleep(2000);
-		facilityinfo.switchToDefaultContent();
+		facilityInfo.switchToDefaultContent();
 		Thread.sleep(5000);
-		facilityinfo.clickCcfriQcDecisionField();
+		facilityInfo.clickCcfriQcDecisionField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("ccfriQcDecision"), facilityinfo.getCCFRIQCDecision());
+		utils.selectDropdownValue(utils.getDataFromJson("ccfriQcDecision"), facilityInfo.getCCFRIQCDecision());
 		Thread.sleep(5000);
-		facilityinfo.clickSaveBtn();
+		facilityInfo.clickSaveBtn();
 		Thread.sleep(5000);
-		facilityinfo.clickExpandIcon();
+		facilityInfo.clickExpandIcon();
 		Thread.sleep(5000);
-		facilityinfo.clickCcfriStatusField();
+		facilityInfo.clickCcfriStatusField();
 		Thread.sleep(5000);
-		ut.selectDropdownValue(ut.getDataFromJson("ccfriStatusOptions"), facilityinfo.getCcfriStatusOptions());
+		utils.selectDropdownValue(utils.getDataFromJson("ccfriStatusOptions"), facilityInfo.getCcfriStatusOptions());
 		Thread.sleep(5000);
 		logger.info("Complete-Approved option is selected from CCFRI Status dropdown");
-		facilityinfo.clickSaveAndCloseCcfriFacilityBtn();
+		facilityInfo.clickSaveAndCloseCcfriFacilityBtn();
 		Thread.sleep(5000);
-		ccfriinfo.clickSaveAndCloseBtn();
+		ccfriInfo.clickSaveAndCloseBtn();
 		Thread.sleep(5000);
 
 		logger.info("Ending the EfxAdjudicateRenewalCcfriTest  test...");

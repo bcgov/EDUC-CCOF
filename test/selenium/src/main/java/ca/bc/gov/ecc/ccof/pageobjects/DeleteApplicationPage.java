@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -96,9 +97,13 @@ public class DeleteApplicationPage {
 		fullName.click();
 	}
 
-	public String searchBoxN(String value) {
-		searchBox.sendKeys(value);
-		return value;
+	public void searchAndOpenContact(String contactName) throws InterruptedException {
+		searchBox.clear();
+		searchBox(contactName);
+		searchBox.sendKeys(Keys.ENTER);
+		Thread.sleep(5000);
+		fullName();
+		Thread.sleep(5000);
 	}
 
 	public void selectIdCheckBox() {

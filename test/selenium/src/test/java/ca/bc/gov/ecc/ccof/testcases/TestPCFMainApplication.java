@@ -20,6 +20,7 @@ import ca.bc.gov.ecc.ccof.utils.Utilities;
 public class TestPCFMainApplication extends BaseTest {
 
 	private static final Logger logger = LogManager.getLogger(TestPCFMainApplication.class);
+	String contactName;
 
 	@Test(priority = 1)
 	public void unlockPCFApplication(Method method) throws Throwable {
@@ -27,84 +28,80 @@ public class TestPCFMainApplication extends BaseTest {
 		logger.info("Starting the TestPCFMainApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
-		Utilities ut = new Utilities(driver);
+		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
 
 		// login to application
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
 		objCRMSignInCredentialPage.clickNext();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
 		objCRMSignInCredentialPage.clickSignIn();
-		Thread.sleep(3000);
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
 		objCRMSignInCredentialPage.clickYes();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
-		ut.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
 		objCRMSignInCredentialPage.clickOrgFacilities();
 		Thread.sleep(3000);
 
-		DeleteApplicationPage deleteapp = new DeleteApplicationPage(driver);
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
 
 		// searching the contact
-		deleteapp.searchBox(ut.getDataFromJson("contact"));
-		Thread.sleep(3000);
-		deleteapp.pressEnter();
-		Thread.sleep(5000);
-		deleteapp.fullName();
+		deleteApp.searchAndOpenContact(contactName);
+
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
 		Thread.sleep(3000);
 
-		BCeIDPage bceidpage = new BCeIDPage(driver);
-		bceidpage.clickSelectOrganization();
-		Thread.sleep(3000);
-
-		OrganizationInfoPage orginfo = new OrganizationInfoPage(driver);
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		orginfo.clickMainApplication();
+		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
-		ApplicationInfoPage appinfo = new ApplicationInfoPage(driver);
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
 
 		// navigating to related tab
-		appinfo.clickRelatedTab();
+		appInfo.clickRelatedTab();
 		Thread.sleep(5000);
 
 		// navigating to CCFRIs in related Tab
-		appinfo.clickCCFRISLink();
+		appInfo.clickCCFRISLink();
 		Thread.sleep(5000);
-		appinfo.clickCcfri();
-		Thread.sleep(5000);
-
-		CcfrisInfoPage ccfriinfo = new CcfrisInfoPage(driver);
-
-		ccfriinfo.clickUnlockBtn();
+		appInfo.clickCcfri();
 		Thread.sleep(5000);
 
-		CcfriUnlockForm ccfriunlock = new CcfriUnlockForm(driver);
+		CcfrisInfoPage ccfriInfo = new CcfrisInfoPage(driver);
+
+		ccfriInfo.clickUnlockBtn();
+		Thread.sleep(5000);
+
+		CcfriUnlockForm ccfriUnlock = new CcfriUnlockForm(driver);
 		// filling the unlock form
-		ut.javaScriptExecutorAction(ccfriunlock.clickDeclarationUnlockBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickDeclarationUnlockBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickCcofNewOrgBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickCcofNewOrgBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickLicenceUploadBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickLicenceUploadBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickEceweBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickEceweBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickSupportingDocBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickSupportingDocBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickCcfriUnlockBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickCcfriUnlockBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickRfiUnlockBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickRfiUnlockBtn());
 		Thread.sleep(3000);
-		ut.javaScriptExecutorAction(ccfriunlock.clickNmfUnlockBtn());
+		utils.javaScriptExecutorAction(ccfriUnlock.clickNmfUnlockBtn());
 		Thread.sleep(5000);
-		ccfriunlock.enterUnlockReasonTxtBox("PCFUnlock");
+		ccfriUnlock.enterUnlockReasonTxtBox("PCFUnlock");
 		Thread.sleep(3000);
-		ut.scrollToElement(ccfriunlock.clickConfirmAndCloseBtn());
+		utils.scrollToElement(ccfriUnlock.clickConfirmAndCloseBtn());
 		Thread.sleep(3000);
 		// TODO neha - handle final status change after the bug isCCFRI-6285 is fixed
 		logger.info("Ending the TestPCFMainApplication test...");

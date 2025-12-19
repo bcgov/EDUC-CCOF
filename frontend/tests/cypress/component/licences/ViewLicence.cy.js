@@ -47,7 +47,7 @@ describe('<ViewLicence />', () => {
     mountWithPinia();
     cy.contains('Review your Licence and Service Details Record.').should('exist');
     cy.contains('You must notify the Child Care Operating Funding Program of changes to your').should('exist');
-    cy.contains('Community Care and Assisted Living Act Facility Licence Details').should('not.exist');
+    cy.contains('Community Care and Assisted Living Act Facility Licence Details').should('exist');
   });
 
   it('should render default expansion panels', () => {
@@ -71,7 +71,6 @@ describe('<ViewLicence />', () => {
     interceptAPI(LICENCE);
     mountWithPinia();
 
-    cy.get('.v-expansion-panel-title').eq(0).click();
     cy.contains('No active or approved licences found.').should('not.exist');
     cy.contains('Community Care and Assisted Living Act Facility Licence Details').should('exist');
   });
@@ -80,7 +79,6 @@ describe('<ViewLicence />', () => {
     interceptAPI(LICENCE);
     mountWithPinia();
 
-    cy.get('.v-expansion-panel-title').eq(1).click();
     cy.contains('button', 'View Record').click();
     cy.contains('Community Care and Assisted Living Act Facility Licence Details').should('exist');
   });

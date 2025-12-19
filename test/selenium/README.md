@@ -27,23 +27,25 @@ It follows the Page Object Model (POM) design pattern and integrates with Extent
 
 3. Open config.properties and update values for:
 
-   qa_crm_url=
+env=
+QA.url=
+UAT.url=
+EFX.url=
 
-   uat_crm_url=
+crm_username=
+crm_password=
+browser=CHROME
+headless=false
 
-   crm_username=
+4. Update the testData.json file with the contact
 
-   crm_password=
-
-   browser=
-
-4. Run Tests
+5. Run Tests
 
    Add any test class tag names to testNG.xml that you would like to run
 
    From Eclipse: Right-click your TestNG runner → Run As → TestNG Suite
 
-5. Reports & Logs
+6. Reports & Logs
 
    Extent Reports: /extent-reports/
 
@@ -55,3 +57,4 @@ Note: config.properties, logs, extent-reports and test-output are ignored from G
 Each developer must maintain their own local config.properties file.
 Run tests from testng in order to generate reports
 Delete application test will work if we have any organization linked .
+Change request test cases are defined for individual type of change request in "Submitted" state and should be run in sequential order
