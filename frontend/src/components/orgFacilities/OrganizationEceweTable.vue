@@ -121,7 +121,10 @@ export default {
       try {
         this.items = [];
         this.isLoading = true;
-        this.items = await FacilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
+        this.items = await FacilityService.getEceweFacilities({
+          organizationId: this.organizationId,
+          programYearId: this.selectedProgramYearId,
+        });
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE-WE facilities');

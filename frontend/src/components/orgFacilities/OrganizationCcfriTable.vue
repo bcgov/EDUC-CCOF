@@ -81,7 +81,10 @@ export default {
       try {
         this.items = [];
         this.isLoading = true;
-        this.items = await FacilityService.getCcfriFacilities(this.organizationId, this.selectedProgramYearId);
+        this.items = await FacilityService.getCcfriFacilities({
+          organizationId: this.organizationId,
+          programYearId: this.selectedProgramYearId,
+        });
       } catch (err) {
         console.log(err);
         this.setFailureAlert('Failed to load CCFRI facilities');

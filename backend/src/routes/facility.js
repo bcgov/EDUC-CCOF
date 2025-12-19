@@ -36,7 +36,10 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
-  [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  [
+    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
   (req, res) => {
     validationResult(req).throw();
     return getCcfriFacilities(req, res);
@@ -50,7 +53,10 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
-  [query('orgId', 'Query param [orgId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION), query('selectedFY', 'Query param [selectedFY] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  [
+    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
   (req, res) => {
     validationResult(req).throw();
     return getEceweFacilities(req, res);

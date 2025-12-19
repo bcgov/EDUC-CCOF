@@ -54,32 +54,20 @@ export default {
       throw error;
     }
   },
-  async getCcfriFacilities(organizationId, selectedFY) {
+  async getCcfriFacilities(query) {
     try {
-      const query = buildQueryString({
-        orgId: organizationId,
-        selectedFY,
-      });
-      if (!query) {
-        return [];
-      }
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FACILITIES}${query}`);
+      if (!query?.organizationId) return [];
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.CCFRI_FACILITIES}${buildQueryString(query)}`);
       return response.data;
     } catch (err) {
       console.log(`Failed to fetch ccfri facilities - ${err}`);
       throw err;
     }
   },
-  async getEceweFacilities(organizationId, selectedFY) {
+  async getEceweFacilities(query) {
     try {
-      const query = buildQueryString({
-        orgId: organizationId,
-        selectedFY,
-      });
-      if (!query) {
-        return [];
-      }
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECEWE_FACILITIES}${query}`);
+      if (!query?.organizationId) return [];
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECEWE_FACILITIES}${buildQueryString(query)}`);
       return response.data;
     } catch (err) {
       console.log(`Failed to fetch ece-we facilities - ${err}`);
