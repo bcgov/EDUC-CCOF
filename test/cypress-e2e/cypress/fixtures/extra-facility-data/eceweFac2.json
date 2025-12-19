@@ -26,7 +26,7 @@
             "nonProvinciallyFunded": "All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.",
             "mixedFunding": "Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non -provincially funded ECEs that do not receive Low - Wage Redress Funding."
         },
-        "unionStatus": "Some or all of our facilities are unionized.",
+        "unionStatus": "None of our facilities are unionized.",
         "_optionsUnionStatus": {
             "noneUnionized": "None of our facilities are unionized.",
             "someOrAllUnionized": "Some or all of our facilities are unionized."
@@ -36,7 +36,7 @@
     "facility": {
         "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ecewe and change values below this line according to your test case. Ensure the facilityName matches that added to extra-facs-ccof.",
         "facilityName": "Hedies Facility 2",
-        "facilityOptInOrOut": "Opt-Out",
+        "facilityOptInOrOut": "Opt-In",
         "_optionsFacilityOptInOrOut": {
             "optIn": " Opt-In",
             "optOut": "Opt-Out"

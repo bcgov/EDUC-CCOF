@@ -26,7 +26,7 @@
             "nonProvinciallyFunded": "All of our facilities have only non-provincially funded ECEs and do not receive Low-Wage Redress Funding.",
             "mixedFunding": "Our facilities have both provincially funded ECEs receiving Low -Wage Redress Funding and non -provincially funded ECEs that do not receive Low - Wage Redress Funding."
         },
-        "unionStatus": "Some or all of our facilities are unionized.",
+        "unionStatus": "None of our facilities are unionized.",
         "_optionsUnionStatus": {
             "noneUnionized": "None of our facilities are unionized.",
             "someOrAllUnionized": "Some or all of our facilities are unionized."
