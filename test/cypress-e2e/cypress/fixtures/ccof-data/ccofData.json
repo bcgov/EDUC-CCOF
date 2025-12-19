@@ -85,20 +85,6 @@
         "Oct",
         "Nov", 
         "Dec"
-      ],
-      "_optionsClosedMonthsOld": [
-        "Jan", 
-        "Feb",
-        "Mar", 
-        "Apr", 
-        "May", 
-        "Jun",
-        "Jul", 
-        "Aug", 
-        "Sep",
-        "Oct",
-        "Nov", 
-        "Dec"
       ]
     },
     "_NOTE": "For oldGroup categories, put max=0 if NOT using that licence, all other categories change 'checked' to 'false'.",

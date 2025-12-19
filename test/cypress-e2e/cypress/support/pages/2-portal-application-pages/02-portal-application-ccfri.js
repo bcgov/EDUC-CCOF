@@ -111,12 +111,15 @@ class CcfriApplication{
         if (appType != "groupOld" && appType != "familyOld"){
             cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         }
-        cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
-        cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
         
-        cy.getByLabel(`${this.closureCharges}`).click()
+        cy.contains('div', 'Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.').within(()=> {
+            cy.contains('label', `${this.closureCharges}`).click()
+        })
+        
         // Opt-Out Path
         if (this.closureCharges === "No") {
+            cy.clickByText('Save')
+            cy.clickByText('Next')
             return
         }
 
