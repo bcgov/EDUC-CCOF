@@ -101,9 +101,18 @@ public class TestPCFRenewalApplication extends BaseTest {
 		Thread.sleep(5000);
 		ccfriUnlock.enterUnlockReasonTxtBox("PCFUnlock");
 		Thread.sleep(3000);
-		utils.scrollToElement(ccfriUnlock.clickConfirmAndCloseBtn());
-		Thread.sleep(3000);
-		// TODO neha - handle final status change after the bug isCCFRI-6285 is fixed
+		utils.scrollToElement(ccfriUnlock.scrollToConfirmAndCloseBtn());
+		ccfriUnlock.clickConfirmAndCloseBtn();
+		Thread.sleep(5000);
+
+		// Validate the ccfri status reason is updated to "PCF - Awaiting Provider"
+		ccfriInfo.clickExpandIconBtn();
+		utils.waitForElement(ccfriInfo.waitForStatusReasonField());
+		String statusreason = ccfriInfo.getStatusReason();
+		logger.info("Status Reason is: {}", statusreason);
+
+		// Assert they are equal
+		utils.compareValues(statusreason, "PCF - Awaiting Provider");
 
 		logger.info("Ending the TestPCFRenewalApplication test...");
 
