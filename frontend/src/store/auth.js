@@ -104,15 +104,8 @@ export const useAuthStore = defineStore('auth', {
         this.setUserInfo(userInfoRes.data);
 
         // Lookup the permissions
-        let role;
         const appStore = useAppStore();
-        if (this.isImpersonating) {
-          // TODO (weskubo-cgi) How are we handling impersonation?
-          // When impersonating always use 'Impersonate', not the impersonated user's role
-          //role = appStore.roles.find((role) => role.roleName === ROLES.IMPERSONATE);
-        } else {
-          role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
-        }
+        const role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
         this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);

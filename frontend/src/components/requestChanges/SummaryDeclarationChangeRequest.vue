@@ -341,14 +341,14 @@ export default {
   },
   computed: {
     ...mapState(useApplicationStore, ['isRenewal', 'applicationMap']),
-    ...mapState(useAuthStore, ['userInfo', 'isMinistryUser']),
+    ...mapState(useAuthStore, ['userInfo', 'isMinistryUser', 'isImpersonating']),
     ...mapState(useNavBarStore, ['changeType', 'previousPath']),
     ...mapState(useReportChangesStore, ['getChangeNotificationActionId', 'isChangeNotificationFormComplete']),
     ...mapState(useSupportingDocumentUploadStore, ['uploadedDocuments']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useSummaryDeclarationStore, ['summaryModel', 'declarationModel']),
     isReadOnly() {
-      if (this.isMinistryUser || this.isProcessing) {
+      if (this.isImpersonating || this.isMinistryUser || this.isProcessing) {
         return true;
       } else if (this.model?.unlockDeclaration) {
         return false;

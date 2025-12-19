@@ -18,7 +18,7 @@ module.exports = function (...requiredPermissions) {
     }
 
     const userRole = req.session?.passport?.user?.role;
-
+    console.log(userRole);
     if (!userRole) {
       return res.sendStatus(HttpStatus.FORBIDDEN);
     }
