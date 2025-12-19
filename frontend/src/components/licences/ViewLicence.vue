@@ -9,7 +9,7 @@
     </v-row>
 
     <v-expansion-panels v-model="panels" multiple class="mb-4">
-      <v-expansion-panel>
+      <v-expansion-panel value="service-details">
         <v-expansion-panel-title>
           <h3>Licence and Service Details Record</h3>
         </v-expansion-panel-title>
@@ -19,7 +19,7 @@
         </v-expansion-panel-text>
       </v-expansion-panel>
 
-      <v-expansion-panel>
+      <v-expansion-panel value="history">
         <v-expansion-panel-title>
           <h3>Record History</h3>
         </v-expansion-panel-title>
@@ -56,7 +56,7 @@ export default {
       isLicenceLoading: false,
       selectedLicence: null,
       viewDialogOpen: false,
-      panels: [0, 1],
+      panels: ['service-details', 'history'],
     };
   },
   computed: {
