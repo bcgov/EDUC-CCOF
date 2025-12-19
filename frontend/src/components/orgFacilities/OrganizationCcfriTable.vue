@@ -79,6 +79,7 @@ export default {
       if (!this.organizationId || !this.selectedProgramYearId) return;
 
       try {
+        this.items = [];
         this.isLoading = true;
         this.items = await FacilityService.getCcfriFacilities(this.organizationId, this.selectedProgramYearId);
       } catch (err) {

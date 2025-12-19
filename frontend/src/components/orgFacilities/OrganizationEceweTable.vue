@@ -119,6 +119,7 @@ export default {
     async loadData() {
       if (!this.organizationId || !this.selectedProgramYearId) return;
       try {
+        this.items = [];
         this.isLoading = true;
         this.items = await FacilityService.getEceweFacilities(this.organizationId, this.selectedProgramYearId);
       } catch (error) {
