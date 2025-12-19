@@ -83,9 +83,11 @@ export default {
           if (a.eceweOptStatus !== b.eceweOptStatus) {
             return b.eceweOptStatus - a.eceweOptStatus;
           }
-          return a.facilityName.localeCompare(b.facilityName, undefined, {
-            sensitivity: 'base',
-          });
+
+          const nameA = a.facilityName ?? '';
+          const nameB = b.facilityName ?? '';
+
+          return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
         })
         .map((item) => ({
           ...item,

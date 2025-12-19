@@ -43,19 +43,23 @@ export default {
       return this.selectedProgramYearIdLocal ?? this.programYearId;
     },
     mappedItems() {
-      return [...this.items]
+      const items = Array.isArray(this.items) ? [...this.items] : [];
+
+      return items
         .sort((a, b) => {
-          if (a.ccfriOptStatus !== b.ccfriOptStatus) {
-            return b.ccfriOptStatus - a.ccfriOptStatus;
-          }
-          return a.facilityName.localeCompare(b.facilityName, undefined, {
-            sensitivity: 'base',
-          });
+          const aStatus = a?.ccfriOptStatus ?? -1;
+          const bStatus = b?.ccfriOptStatus ?? -1;
+          if (aStatus !== bStatus) return bStatus - aStatus;
+
+          const aName = a?.facilityName ?? '';
+          const bName = b?.facilityName ?? '';
+          return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
         })
         .map((item) => ({
           ...item,
-          ccfriOptStatus: this.mapOptStatus(item.ccfriOptStatus),
-          ccfriStartDate: formatUTCDateToMonthYear(item.ccfriStartDate),
+          facilityName: item?.facilityName ?? '',
+          ccfriOptStatus: this.mapOptStatus(item?.ccfriOptStatus),
+          ccfriStartDate: formatUTCDateToMonthYear(item?.ccfriStartDate),
         }));
     },
   },
