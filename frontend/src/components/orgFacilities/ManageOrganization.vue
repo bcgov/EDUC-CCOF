@@ -6,7 +6,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" sm="7"><h2>Organization Info</h2></v-col>
+      <v-col cols="12" sm="7"><h2>Organization Information</h2></v-col>
       <v-col v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" cols="12" sm="5" class="d-flex justify-end align-end">
         <div>
           <AppButton size="small" @click="goToChangeRequest"> Request a Change </AppButton>
@@ -338,26 +338,29 @@
         </v-card>
       </v-col>
     </v-row>
+    <div class="mt-6"><OrganizationCcfriTable :organization-id="organizationId" /></div>
+    <div class="mt-6"><OrganizationEceweTable :organization-id="organizationId" /></div>
   </v-container>
 </template>
 <script>
-import { mapActions, mapState, mapWritableState } from 'pinia';
 import { isEmpty } from 'lodash';
-
+import { mapActions, mapState, mapWritableState } from 'pinia';
+import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppLabel from '@/components/guiComponents/AppLabel.vue';
+import OrganizationCcfriTable from '@/components/orgFacilities/OrganizationCcfriTable.vue';
+import OrganizationEceweTable from '@/components/orgFacilities/OrganizationEceweTable.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { ORGANIZATION_TYPES } from '@/utils/constants.js';
 import rules from '@/utils/rules.js';
-
-import AppButton from '@/components/guiComponents/AppButton.vue';
-import AppLabel from '@/components/guiComponents/AppLabel.vue';
-import alertMixin from '@/mixins/alertMixin.js';
-import permissionsMixin from '@/mixins/permissionsMixin.js';
-
 export default {
   name: 'ManageOrganization',
   components: {
     AppButton,
     AppLabel,
+    OrganizationCcfriTable,
+    OrganizationEceweTable,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
