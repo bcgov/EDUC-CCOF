@@ -22,7 +22,7 @@ import org.testng.Assert;
 
 public class Utilities {
 	WebDriverWait wait;
-	JSONObject testData;
+	static JSONObject testData;
 	WebDriver driver;
 
 	private static final Logger logger = LogManager.getLogger(Utilities.class);
@@ -38,7 +38,7 @@ public class Utilities {
 		Random random = new Random();
 		int randomNumber = random.nextInt(10000) + 1;
 		String dynamicValue = prefix + randomNumber;
-		logger.info("Entered Org ID as : {}", dynamicValue);
+		logger.info("Entered ID as : {}", dynamicValue);
 		return dynamicValue;
 	}
 
@@ -106,8 +106,20 @@ public class Utilities {
 		wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 
+	public void waitForPageToLoad() {
+		new WebDriverWait(driver, Duration.ofSeconds(1000));
+
+		// Wait for the document to be fully loaded
+		wait.until(webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState")
+				.equals("complete"));
+	}
+
 	public void assertElementDeleted(List<WebElement> elements) {
 		Assert.assertTrue(elements.isEmpty(), "Expected elements to be deleted, but some are still present");
+	}
+
+	public void compareValues(String expected, String actual) {
+		Assert.assertEquals(actual, expected, "Actual value: " + actual + "Expected value: " + expected);
 	}
 
 }

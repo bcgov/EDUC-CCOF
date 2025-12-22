@@ -324,13 +324,14 @@ export default {
 
         this.payments.forEach((payment) => {
           const facility = this.facilityList?.find((item) => item.facilityId === payment.facilityId);
-          payment.facilityAccountNumber = facility?.facilityAccountNumber;
-          payment.facilityName = facility?.facilityName;
+          payment.facilityAccountNumber = facility?.facilityAccountNumber || '';
+          payment.facilityName = facility?.facilityName || '';
           payment.paymentPeriod = `${payment.paymentYear}-${String(payment.paymentMonth).padStart(2, '0')}`;
         });
         this.sortPayments();
-      } catch {
+      } catch (error) {
         this.setFailureAlert('Failed to load Payments');
+        console.error(error);
       } finally {
         this.isLoading = false;
       }

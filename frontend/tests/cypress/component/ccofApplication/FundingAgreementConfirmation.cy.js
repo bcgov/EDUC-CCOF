@@ -12,17 +12,32 @@ const defaultOrgState = {
   organization: { organizationName: 'TEST_ORG_NAME', organizationId: ORGANIZATION_ID },
 };
 
-function interceptAPI() {
-  const query = buildQueryString({ organizationId: ORGANIZATION_ID });
-  cy.intercept('GET', `${ApiRoutes.LICENCES}${query}`, {
+function interceptLicences() {
+  const queryLicences = buildQueryString({ organizationId: ORGANIZATION_ID });
+
+  cy.intercept('GET', `${ApiRoutes.LICENCES}${queryLicences}`, {
     statusCode: StatusCodes.OK,
     body: [
       {
-        TEST_FIELD: 'TESTING123',
+        recordStartDate: '2024-06-01',
       },
     ],
   });
 }
+
+const interceptFA = (FA = null) => {
+  const queryFA = buildQueryString({
+    organizationId: ORGANIZATION_ID,
+    programYearId: PROGRAM_YEAR_GUID,
+    fundingAgreementOrderNumber: 0,
+    includePdf: true,
+  });
+
+  cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}${queryFA}`, {
+    statusCode: StatusCodes.OK,
+    body: [FA],
+  });
+};
 
 function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
   cy.setupPinia({
@@ -49,9 +64,11 @@ const clickRadio = (label) => cy.contains('label', label).click();
 
 describe('<FundingAgreementConfirmation />', () => {
   beforeEach(() => {
-    interceptAPI();
+    interceptLicences();
   });
+
   it('should render header with organization name', () => {
+    interceptFA();
     mountWithPinia();
 
     cy.contains('Child Care Operating Funding Program');
@@ -59,6 +76,7 @@ describe('<FundingAgreementConfirmation />', () => {
   });
 
   it('should render static confirmation text', () => {
+    interceptFA();
     mountWithPinia();
 
     cy.contains('p', 'The Funding Agreement outlines the legal terms and conditions');
@@ -67,6 +85,7 @@ describe('<FundingAgreementConfirmation />', () => {
   });
 
   it('should navigate when clicking Request a Change', () => {
+    interceptFA();
     mountWithPinia();
 
     cy.contains('button', 'Request a Change').click();
@@ -75,7 +94,8 @@ describe('<FundingAgreementConfirmation />', () => {
 
   context('Funding Agreement Card', () => {
     it('should render confirmation list items', () => {
-      mountWithPinia({ dataOverride: { fundingAgreement: {} } });
+      interceptFA({});
+      mountWithPinia();
 
       cy.contains('I confirm I have read the Funding Agreement');
       cy.contains('li', 'the organization information on the first page is correct;');
@@ -84,9 +104,9 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should disable radio group when application is SUBMITTED', () => {
+      interceptFA({ pdfFile: '' });
       mountWithPinia({
         initialState: { application: { applicationStatus: APPLICATION_STATUSES.SUBMITTED } },
-        dataOverride: { fundingAgreement: { pdfFile: '' }, licences: [] },
       });
 
       radioGroup().within(() => {
@@ -97,13 +117,12 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should show alert when selecting No', () => {
-      interceptAPI();
+      interceptFA({ pdfFile: 'test', fundingAgreementStartDate: '2025-01-01' });
 
       mountWithPinia({
         initialState: {
           application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
         },
-        dataOverride: { fundingAgreement: { pdfFile: 'test' } },
       });
 
       radioGroup().within(() => clickRadio('No'));
@@ -112,13 +131,12 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should show licence records when selecting `Yes`', () => {
-      interceptAPI();
+      interceptFA({ pdfFile: 'test', fundingAgreementStartDate: '2025-01-01' });
 
       mountWithPinia({
         initialState: {
           application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
         },
-        dataOverride: { fundingAgreement: { pdfFile: 'test' } },
       });
 
       radioGroup().within(() => clickRadio('Yes'));
@@ -129,7 +147,7 @@ describe('<FundingAgreementConfirmation />', () => {
     });
 
     it('should render licence confirmation radio group', () => {
-      interceptAPI();
+      interceptFA({ pdfFile: 'test', fundingAgreementStartDate: '2025-01-01' });
       mountWithPinia({
         initialState: {
           application: { applicationStatus: APPLICATION_STATUSES.DRAFT },
@@ -137,7 +155,6 @@ describe('<FundingAgreementConfirmation />', () => {
         dataOverride: {
           isFundingAgreementConfirmed: YES_NO_VALUES.YES,
           areLicenceDetailsConfirmed: YES_NO_VALUES.NO,
-          fundingAgreement: { pdfFile: 'test' },
         },
       });
 
@@ -149,7 +166,9 @@ describe('<FundingAgreementConfirmation />', () => {
   });
 
   it('should render navigation buttons', () => {
+    interceptFA();
     mountWithPinia();
+
     cy.contains('button', 'Back');
     cy.contains('button', 'Next');
     cy.contains('button', 'Save');

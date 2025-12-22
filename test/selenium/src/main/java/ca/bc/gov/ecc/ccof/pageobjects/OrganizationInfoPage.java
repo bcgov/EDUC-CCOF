@@ -49,6 +49,10 @@ public class OrganizationInfoPage {
 		action.moveToElement(openMainApplication).doubleClick().build().perform();
 	}
 
+	public WebElement waitBeforeClickMainApplication() {
+		return openMainApplication;
+	}
+
 	public void clickRenewalApplication() {
 		Actions action = new Actions(driver);
 		action.moveToElement(openRenewalApplication).doubleClick().build().perform();

@@ -7,16 +7,17 @@ function handleCardWithin(card, data) {
 }
 
 class CcfriApplication{
-    loadFixtures() {
-        return cy.fixture('ccfriData').then((data)=> {
+    loadFixtures(file) {
+        return cy.fixture(`/ccfri-data/${file}`).then((data)=> {
             this.optInOrOut = data.optInOrOut
             this.parentFees = data.parentFees
             this.closures = data.closures
+            this.facilityName = data.facilityName
         })
     }
 
-    loadFixturesAndVariables() {
-        this.loadFixtures()
+    loadFixturesAndVariables(file) {
+        this.loadFixtures(file)
         cy.then(()=> {
             this.paymentFrequency = this.parentFees.frequency
             this.closureCharges = this.closures.closureCharges
@@ -25,16 +26,29 @@ class CcfriApplication{
         })
     }
 
-    optInFacilities() {
+    optInFacilities(files) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
-        if (this.optInOrOut === 'Opt-Out') {
-            cy.contains('Child Care Fee Reduction Initiative (CCFRI)').clickByText('Update')
-            cy.getByLabel(this.optInOrOut).click()
-        } else {
-            cy.clickByText('Opt-In All Facilities')
+        cy.contains('Child Care Fee Reduction Initiative (CCFRI)')
+        cy.contains('.v-card', this.facilityName).within(()=> {
+            cy.clickByText('UPDATE')
+            cy.contains('label',this.optInOrOut).click()
+        })
+        
+        if (files) {
+            cy.wrap(files).each((file)=>  {
+                this.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
+                cy.then(()=> {
+                    cy.contains('.v-card', this.facilityName).within(()=> {
+                        cy.clickByText('UPDATE')
+                        cy.contains('label', this.optInOrOut).click()
+                    })
+                })
+            })
         }
         cy.clickByText('Save')
+        cy.contains('Success! CCFRI Opt-In status has been saved.').should('be.visible')
         cy.clickByText('Next')
+        
     }
 
     parentFeesRenewal() {
@@ -43,31 +57,38 @@ class CcfriApplication{
         cy.clickByText('Next')
     }
 
-    addParentFees(appType, term) {
-        let parentFeeCategories
-        switch (appType) {
-            case 'group': 
-            case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
-            case 'family': 
-            case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
-            case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
-            case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
-        }
-        cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
-        cy.get('.v-card.my-10').each((card, index) => {
-            const category = parentFeeCategories[index]
-            cy.wrap(card)
-                .should('contain', `${category}`)
-                .contains('label', `${this.paymentFrequency}`)
-                .click()
-                .then(() => handleCardWithin(card, this.parentFees.months))
-        })
+    addParentFees(appType, term, file) {
+        this.loadFixturesAndVariables(file)
+        cy.then(()=> {
+            let parentFeeCategories
+            switch (appType) {
+                case 'group': 
+                case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
+                case 'family': 
+                case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
+                case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
+                case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
+            }
+            cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
+            cy.contains(this.facilityName)
+            cy.then(()=> {
+                cy.get('.v-card.my-10').each((card, index) => {
+                    const category = parentFeeCategories[index]
+                    cy.wrap(card)
+                        .should('contain', `${category}`)
+                        .contains('label', `${this.paymentFrequency}`)
+                        .click()
+                    handleCardWithin(card, this.parentFees.months)
+                })
 
-        if (appType === "groupOld" || appType === 'familyOld'){
-            this.addClosures(appType, term)
-        }
-        cy.clickByText('Save')
-        cy.clickByText('Next')
+                if (appType === "groupOld" || appType === 'familyOld'){
+                    this.addClosures(appType, term)
+                }
+                cy.clickByText('Save')
+                cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
+                cy.clickByText('Next')
+            })
+        })
     }
 
     addClosures(appType, term) {
@@ -90,12 +111,15 @@ class CcfriApplication{
         if (appType != "groupOld" && appType != "familyOld"){
             cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         }
-        cy.contains(' Do you charge parent fees at this facility for any closures on business days?')
-        cy.contains('Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.')
         
-        cy.getByLabel(`${this.closureCharges}`).click()
+        cy.contains('div', 'Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.').within(()=> {
+            cy.contains('label', `${this.closureCharges}`).click()
+        })
+        
         // Opt-Out Path
         if (this.closureCharges === "No") {
+            cy.clickByText('Save')
+            cy.clickByText('Next')
             return
         }
 

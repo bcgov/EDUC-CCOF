@@ -279,8 +279,9 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
   });
 });
 
-Cypress.Commands.add('runCcofApp', (appType) => {
-  ccofApp.loadFixturesAndVariables()
+Cypress.Commands.add('runCcofApp', (appType, files = []) => {
+
+  ccofApp.loadFixturesAndVariables('ccofData')
   cy.then(()=>{
     ccofApp.validateGroupUrl(appType)
     ccofApp.inputOrganizationInfo(appType)
@@ -291,34 +292,31 @@ Cypress.Commands.add('runCcofApp', (appType) => {
       case 'group':
         ccofApp.groupLicenses(appType)
         ccofApp.offerExtendedHours(appType)
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
+        ccofApp.addAnotherFacility(appType, files)
         break;
       case 'groupOld': 
         ccofApp.groupLicenses(appType)
         ccofApp.oldOfferExtendedHours(appType)
-        ccofApp.addAnotherFacility()
-        ccofApp.licenceUpload()
+        ccofApp.addAnotherFacility(appType, files)
         break;
       case 'family':
         ccofApp.familyLicences(appType)
         ccofApp.offerExtendedHours(appType)
-        ccofApp.licenceUpload()
         break;
       case 'familyOld': 
         ccofApp.familyLicences(appType)
         ccofApp.oldOfferExtendedHours(appType)
-        ccofApp.licenceUpload()
         break;
     }
+    ccofApp.licenceUpload()
   })
 });
 
 
-Cypress.Commands.add('runCcfriApp', (appType, term) => {
-  ccfriApp.loadFixturesAndVariables()
+Cypress.Commands.add('runCcfriApp', (appType, term, files = []) => {
+  ccfriApp.loadFixturesAndVariables('ccfriData')
   cy.then(()=> {
-    ccfriApp.optInFacilities()
+    ccfriApp.optInFacilities(files)
     switch(appType) {
       case 'group':
       case 'family': 
@@ -332,19 +330,26 @@ Cypress.Commands.add('runCcfriApp', (appType, term) => {
         ccfriApp.addClosures(appType, term)
         break;
       case 'groupOld':
-      case 'familyOld':ccfriApp.addParentFees(appType, term); break;
+      case 'familyOld':
+        // Reload original data to prepare for parentFees
+        ccfriApp.addParentFees(appType, term, 'ccfriData')
+        if (files) {
+          cy.wrap(files).each((file) => {
+            ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`)
+          })
+        }
     }
   })
 }); 
 
-Cypress.Commands.add('runEceWeApp', (appType, term) => {
-  eceWeApp.loadFixturesAndVariables()
+Cypress.Commands.add('runEceWeApp', (appType, term, files = []) => {
+  eceWeApp.loadFixturesAndVariables('eceweData')
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
     if (appType.includes("family")) {
       eceWeApp.familyEceWe()
     } else {
-      eceWeApp.groupEceWe(appType)
+      eceWeApp.groupEceWe(appType, files)
     }
     eceWeApp.supportingDocUpload()
   })
