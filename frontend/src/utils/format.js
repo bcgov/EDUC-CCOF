@@ -169,3 +169,19 @@ export function formatStringToNumberList(str) {
   if (!str) return [];
   return str.split(',').map((x) => Number(x.trim()));
 }
+/**
+ * Converts a date value to "Month YYYY" format (e.g., "November 2025").
+ *
+ * Expected input formats:
+ *   - Full ISO date strings (e.g., "2025-11-25T23:37:40Z")
+ *   - Date-only strings (e.g., "2025-09-13")
+ *   - Year-month strings (e.g., "2025-09")
+ *
+ * Expected Output:
+ *   - Returns a formatted string like "September 2025" or null
+ *
+ */
+export function formatUTCDateToMonthYear(date) {
+  if (!date) return null;
+  return moment.utc(date).format('MMMM YYYY');
+}

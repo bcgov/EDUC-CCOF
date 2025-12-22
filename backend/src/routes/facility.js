@@ -5,7 +5,17 @@ const auth = require('../components/auth');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getFacility, getFacilityChildCareTypes, createFacility, updateFacility, deleteFacility, getLicenseCategories, getApprovedParentFees } = require('../components/facility');
+const {
+  getFacility,
+  getFacilityChildCareTypes,
+  createFacility,
+  updateFacility,
+  deleteFacility,
+  getLicenseCategories,
+  getApprovedParentFees,
+  getCcfriFacilities,
+  getEceweFacilities,
+} = require('../components/facility');
 const { param, validationResult, checkSchema } = require('express-validator');
 const validateFacility = require('../middlewares/validateFacility');
 
@@ -16,6 +26,42 @@ const facilitySchema = {
 
 module.exports = router;
 
+const { query } = require('express-validator');
+
+/**
+ * Get CCFRI facility details
+ */
+router.get(
+  '/ccfri-facilities',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [
+    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
+  (req, res) => {
+    validationResult(req).throw();
+    return getCcfriFacilities(req, res);
+  },
+);
+/**
+ * Get ECE-WE facility details
+ */
+router.get(
+  '/ecewe-facilities',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [
+    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
+  (req, res) => {
+    validationResult(req).throw();
+    return getEceweFacilities(req, res);
+  },
+);
 /**
  * Get Facility details
  */
