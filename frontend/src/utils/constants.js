@@ -63,7 +63,9 @@ export const ApiRoutes = Object.freeze({
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
   PAYMENTS: baseRoot + '/payments',
+  ECE_REPORTS: baseRoot + '/eceReports',
   ECE_STAFF: baseRoot + '/eceStaff',
+  ECEWE: baseRoot + '/ecewe',
 });
 
 export const PAGE_TITLES = Object.freeze({
@@ -78,6 +80,7 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
   MANAGE_REPORTS: 'Manage Reports',
+  MANAGE_ECE_REPORTS: 'Manage ECE Reports',
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
@@ -116,6 +119,7 @@ export const PATHS = {
     FUNDING_AGREEMENTS: '/funding-agreements',
     CLOSURES: '/closures',
     MANAGE_REPORTS: '/manage-reports',
+    MANAGE_ECE_REPORTS: '/manage-ece-reports',
     ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {

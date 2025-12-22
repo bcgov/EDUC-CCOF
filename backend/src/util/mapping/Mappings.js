@@ -876,6 +876,13 @@ const PaymentMappings = [
   { back: 'ofm_invoice_number', front: 'invoiceNumber' },
 ];
 
+const ECEReportMappings = [
+  { back: 'ccof_ece_monthly_reportid', front: 'eceReportId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: '_ccof_fiscal_year_value', front: 'programYearId' },
+  { back: 'statuscode', front: 'statusCode' },
+];
+
 const ECEStaffMappings = [
   { back: '_ccof_facility_id_value', front: 'facilityId' },
   { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
@@ -886,6 +893,7 @@ const ECEStaffMappings = [
   { back: 'ccof_registration_no', front: 'registrationNumber' },
   { back: 'statuscode', front: 'status' },
 ];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -897,6 +905,7 @@ module.exports = {
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
+  ECEReportMappings,
   ECEStaffMappings,
   EnrolmentReportDifferenceMappings,
   EnrolmentReportExtensionMappings,

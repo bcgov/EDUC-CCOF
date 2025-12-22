@@ -108,7 +108,7 @@ export default {
       this.$router.push(PATHS.ROOT.ENROLMENT_REPORTS);
     },
     goToEceReports() {
-      alert('UPDATE ME');
+      this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
     },
     goToChangeRequest() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);

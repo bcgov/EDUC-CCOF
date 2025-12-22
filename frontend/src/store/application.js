@@ -4,6 +4,7 @@ import ApiService from '@/common/apiService.js';
 import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
 import { APPLICATION_STATUSES, APPLICATION_TYPES, ApiRoutes } from '@/utils/constants.js';
@@ -222,6 +223,7 @@ export const useApplicationStore = defineStore('application', {
       return applicationIds;
     },
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
+      const authStore = useAuthStore();
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;
       const selectedApplication = state.applicationMap?.get(programYearId);
       let facilityList = selectedApplication?.facilityList;
@@ -239,6 +241,13 @@ export const useApplicationStore = defineStore('application', {
       }
 
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
+
+      if (authStore.isFacilityAdmin) {
+        facilityList = facilityList?.filter((facility) => {
+          return authStore.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+
       return facilityList;
     },
     showApplicationTemplateV1: (state) => {
