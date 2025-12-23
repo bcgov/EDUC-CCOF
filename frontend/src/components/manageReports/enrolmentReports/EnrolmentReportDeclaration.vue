@@ -73,7 +73,7 @@ export default {
       return this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
     },
     isSubmitDisabled() {
-      return this.readonly || !!this.isMinistryUser;
+      return this.readonly || this.isMinistryUser;
     },
   },
   async created() {
