@@ -24,7 +24,6 @@ export const useAuthStore = defineStore('auth', {
     error: false,
     isMinistryUser: false,
     impersonateId: null,
-    isImpersonating: false,
     isLoading: true,
     loginError: false,
     jwtToken: localStorage.getItem('jwtToken'),
@@ -97,7 +96,6 @@ export const useAuthStore = defineStore('auth', {
         let userInfoRes;
         if (this.impersonateId && this.isMinistryUser) {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
-          this.isImpersonating = true;
         } else {
           userInfoRes = await ApiService.getUserInfo();
         }

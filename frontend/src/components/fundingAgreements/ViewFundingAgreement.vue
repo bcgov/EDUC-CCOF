@@ -190,9 +190,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['isImpersonating']),
+    ...mapState(useAuthStore, ['isMinistryUser']),
     isReadOnly() {
-      return this.isImpersonating || READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
+      if (this.isMinistryUser) return true;
+      return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
     fundingAgreementNumber() {
       return this.fundingAgreement?.fundingAgreementNumber;

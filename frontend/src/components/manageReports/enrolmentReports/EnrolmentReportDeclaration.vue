@@ -68,12 +68,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['isImpersonating']),
+    ...mapState(useAuthStore, ['isMinistryUser']),
     isSubmitDisplayed() {
       return this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
     },
     isSubmitDisabled() {
-      return this.readonly || this.isImpersonating;
+      return this.readonly || !!this.isMinistryUser;
     },
   },
   async created() {
