@@ -130,6 +130,7 @@ async function getUserInfo(req, res) {
   const user = new MappableObjectForFront(userResponse, UserProfileMappings).data;
   if (userResponse.portalRole) {
     user.role = new MappableObjectForFront(userResponse.portalRole, RoleMappings).data;
+    req.session.passport.user.role = user.role;
   }
 
   // Get facilities for Facility Admin users

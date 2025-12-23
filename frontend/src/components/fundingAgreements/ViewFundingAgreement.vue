@@ -144,6 +144,7 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppPDFViewer from '@/components/guiComponents/AppPDFViewer.vue';
@@ -155,6 +156,7 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import LicenceService from '@/services/licenceService.js';
+import { useAuthStore } from '@/store/auth.js';
 import { FUNDING_AGREEMENTS_STATUS, FUNDING_AGREEMENT_EXTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 
 const READ_ONLY_STATUSES = [
@@ -188,7 +190,9 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isMinistryUser']),
     isReadOnly() {
+      if (this.isMinistryUser) return true;
       return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
     fundingAgreementNumber() {
