@@ -41,17 +41,19 @@
   <EnrolmentReportNavButtons
     :loading="loading || processing"
     :is-submit-displayed="isSubmitDisplayed"
-    :is-submit-disabled="readonly"
+    :is-submit-disabled="isSubmitDisabled"
     @previous="$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${$route.params.enrolmentReportId}`)"
     @submit="submit"
   />
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import SubmitConfirmationDialog from '@/components/manageReports/enrolmentReports/SubmitConfirmationDialog.vue';
 import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import EnrolmentReportService from '@/services/enrolmentReportService.js';
+import { useAuthStore } from '@/store/auth.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES } from '@/utils/constants.js';
 
 export default {
@@ -66,8 +68,12 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isMinistryUser']),
     isSubmitDisplayed() {
       return this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
+    },
+    isSubmitDisabled() {
+      return this.readonly || this.isMinistryUser;
     },
   },
   async created() {
