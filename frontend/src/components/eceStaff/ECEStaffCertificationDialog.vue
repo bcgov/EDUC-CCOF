@@ -28,10 +28,10 @@
       </v-row>
 
       <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Staff Start Date </v-col>
+        <v-col cols="5" class="text-left"> Effective Start Date </v-col>
         <v-col cols="4">
           <v-text-field
-            :value="formatUTCDate(staff?.staffStartDate)"
+            :value="formatUTCDate(staff?.effectiveStartDate)"
             disabled
             hide-details
             density="compact"
@@ -41,10 +41,10 @@
       </v-row>
 
       <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Staff End Date </v-col>
+        <v-col cols="5" class="text-left"> Effective End Date </v-col>
         <v-col cols="4">
           <v-text-field
-            :value="formatUTCDate(staff?.staffEndDate)"
+            :value="formatUTCDate(staff?.effectiveEndDate)"
             disabled
             hide-details
             density="compact"
