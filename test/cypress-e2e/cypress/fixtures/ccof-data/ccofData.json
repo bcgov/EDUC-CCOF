@@ -1,6 +1,6 @@
 {
   "orgData": {
-    "typeOfOrganization": "Registered Company",
+    "typeOfOrganization": "Sole Proprietorship",
     "_optionsTypeOfOrganization": {
       "nonProfitSociety": "Non-Profit Society",
       "publicInstitute": "Public Institution (college/university)",
@@ -11,7 +11,7 @@
       "partnership": "Partnership"
     },
     "orgInfo": {
-      "legalOrgName": "Hedies Demo Auto Org",
+      "legalOrgName": "Hello Testing",
       "incorporationNumber": "BC654321",
       "streetAddress": "506 John Street",
       "city": "Vancouver",
@@ -29,7 +29,7 @@
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
-    "healthAuthority": "Fraser Health",
+    "healthAuthority": "Island Health",
     "_optionsHealthAuthority": {
       "fraser": "Fraser Health",
       "interior": "Interior Health",
@@ -42,8 +42,8 @@
     "licenceInfo": {
       "maxDaysPerWeek": "5",
       "maxWeeksPerYear": "52",
-      "hoursFrom": "08:00",
-      "hoursTo": "18:00",
+      "hoursFrom": "07:00",
+      "hoursTo": "17:00",
       "closedEntireMonths": "Yes",
       "_optionsClosedEntireMonths": {
         "fullyClosed": "Yes",
@@ -69,9 +69,8 @@
         "December"
       ],
       "closedMonthsOld": [
-        "Jan",
-        "Sep",
-        "Dec"
+        "Feb",
+        "Mar"
       ],
       "_optionsClosedMonthsOld": [
         "Jan", 
@@ -98,7 +97,7 @@
         "max": 0
       },
       "Preschool": {
-        "max": 0
+        "max": 1
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
         "max": 0
@@ -188,8 +187,8 @@
     "PreschoolSessions": {
       "Monday": 1,
       "Tuesday": 1,
-      "Wednesday": 1,
-      "Thursday": 1,
+      "Wednesday": 3,
+      "Thursday": 2,
       "Friday": 1
     },
     "schoolAgedCareServiceDetails": [
@@ -218,16 +217,16 @@
         "maxOverFourHours": 4
       },
       "Group Child Care (30 Months to School Age)": {
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "maxUnderFourHours": 0,
+        "maxOverFourHours": 0
       },
       "Group Child Care (School Age / School Age Care on School Grounds)": {
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "maxUnderFourHours": 0,
+        "maxOverFourHours": 0
       },
       "Multi-Age Child Care": {
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "maxUnderFourHours": 0,
+        "maxOverFourHours": 0
       }
     },
     "oldFamilyLicenceCategoriesExtendedHours": {

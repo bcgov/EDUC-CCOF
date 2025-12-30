@@ -63,6 +63,8 @@ export const ApiRoutes = Object.freeze({
   LICENCES: baseRoot + '/licences',
   PROGRAMS_VACANCIES: baseRoot + '/programsVacancies',
   PAYMENTS: baseRoot + '/payments',
+  CCFRI_FACILITIES: baseRoot + '/facility/ccfri-facilities',
+  ECEWE_FACILITIES: baseRoot + '/facility/ecewe-facilities',
   ECE_STAFF: baseRoot + '/eceStaff',
 });
 
@@ -254,6 +256,21 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   YES: 1,
   NO: 0,
 };
+export const ECEWE_APPLICATION_STATUSES = {
+  SUBMITTED: 1,
+  INACTIVE: 2,
+  APPROVED: 3,
+  INELIGIBLE: 4,
+  ACTION_REQUIRED: 5,
+  OPT_OUT: 6,
+  NEW: 7,
+};
+// these are common table headers used in both CCFRI and ECEWE tables under Accounts Management
+export const BASE_FACILITY_HEADERS = [
+  { title: 'Facility Name', key: 'facilityName' },
+  { title: 'Facility ID', key: 'facilityAccountNumber' },
+  { title: 'Licence Number', key: 'licenseNumber' },
+];
 
 //these are used at the facility level - other codes are at ORG level
 export const ECEWE_FACILITY_UNION_TYPES = {

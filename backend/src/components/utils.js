@@ -108,7 +108,7 @@ function isIdirUser(req) {
   if (!userInfo || !userInfo.jwt || !userInfo._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
-  const isIdir = req.session?.passport?.user?._json?.idir_username;
+  const isIdir = !!req.session?.passport?.user?._json?.idir_username;
 
   // For local development only.
   // generally set isIdirUser to false, so that developers can log in using their

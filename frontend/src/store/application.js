@@ -4,9 +4,11 @@ import ApiService from '@/common/apiService.js';
 import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
 import { useAppStore } from '@/store/app.js';
+import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
 import { APPLICATION_STATUSES, APPLICATION_TYPES, ApiRoutes } from '@/utils/constants.js';
+import { PERMISSIONS } from '@/utils/constants/permissions.js';
 import { formatFiscalYearName } from '@/utils/format';
 
 export const useApplicationStore = defineStore('application', {
@@ -127,6 +129,7 @@ export const useApplicationStore = defineStore('application', {
       const application = this.applicationMap.get(programYearId);
       const appStore = useAppStore();
       const applicationStore = useApplicationStore();
+      const authStore = useAuthStore();
       const navBarStore = useNavBarStore();
       if (application) {
         const isRenewal = application.applicationType === APPLICATION_TYPES.RENEWAL;
@@ -145,7 +148,11 @@ export const useApplicationStore = defineStore('application', {
         this.setUnlockSupportingDocuments(application.unlockSupportingDocuments);
         this.setIsEceweComplete(application.isEceweComplete);
         this.setIsLicenseUploadComplete(application.isLicenseUploadComplete);
-        if (isRenewal && !this.renewalApplicationCCOF) {
+        if (
+          authStore.hasPermission(PERMISSIONS.CREATE_RENEWAL_PCF, PERMISSIONS.VIEW_SUBMITTED_PCF) &&
+          isRenewal &&
+          !this.renewalApplicationCCOF
+        ) {
           this.renewalApplicationCCOF = await ApplicationService.getRenewalApplicationCCOF(application.applicationId);
         }
         navBarStore.setIsRenewal(isRenewal);

@@ -180,9 +180,9 @@ class CcofApplication {
       cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
       cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
       if (this.licenceInfo.closedEntireMonths === "Yes") {
-        cy.getByLabel(this.monthsClosed[0]).check().should('be.checked')
-        cy.getByLabel(this.monthsClosed[1]).check().should('be.checked')
-        cy.getByLabel(this.monthsClosed[2]).check().should('be.checked')
+        this.monthsClosed.forEach((month)=> {
+          cy.getByLabel(month).check().should('be.checked')
+        })
       }
   }
 

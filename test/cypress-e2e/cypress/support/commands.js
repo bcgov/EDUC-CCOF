@@ -279,7 +279,7 @@ Cypress.Commands.add('continueApplicationIfPresent', () => {
   });
 });
 
-Cypress.Commands.add('runCcofApp', (appType, files) => {
+Cypress.Commands.add('runCcofApp', (appType, files = []) => {
 
   ccofApp.loadFixturesAndVariables('ccofData')
   cy.then(()=>{
@@ -313,7 +313,7 @@ Cypress.Commands.add('runCcofApp', (appType, files) => {
 });
 
 
-Cypress.Commands.add('runCcfriApp', (appType, term, files) => {
+Cypress.Commands.add('runCcfriApp', (appType, term, files = []) => {
   ccfriApp.loadFixturesAndVariables('ccfriData')
   cy.then(()=> {
     ccfriApp.optInFacilities(files)
@@ -342,7 +342,7 @@ Cypress.Commands.add('runCcfriApp', (appType, term, files) => {
   })
 }); 
 
-Cypress.Commands.add('runEceWeApp', (appType, term, files) => {
+Cypress.Commands.add('runEceWeApp', (appType, term, files = []) => {
   eceWeApp.loadFixturesAndVariables('eceweData')
   cy.then(()=> {
     eceWeApp.optInEceWe(term)
