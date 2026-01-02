@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { buildQueryString, hasEmptyFields, validateHourDifference } from '@/utils/common.js';
+import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
   ApiRoutes,

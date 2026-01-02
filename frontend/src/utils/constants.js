@@ -67,7 +67,6 @@ export const ApiRoutes = Object.freeze({
   ECEWE_FACILITIES: baseRoot + '/facility/ecewe-facilities',
   ECE_REPORTS: baseRoot + '/eceReports',
   ECE_STAFF: baseRoot + '/eceStaff',
-  ECEWE: baseRoot + '/ecewe',
 });
 
 export const PAGE_TITLES = Object.freeze({
