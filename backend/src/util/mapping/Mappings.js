@@ -888,6 +888,11 @@ const ECEStaffMappings = [
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
   { back: 'statuscode', front: 'status' },
+  { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
+  { back: 'ccof_effective_start_date', front: 'effectiveStartDate' },
+  { back: 'ccof_effective_end_date', front: 'effectiveEndDate' },
+  { back: 'ccof_certification_start_date', front: 'certStartDate' },
+  { back: 'ccof_certification_expiry', front: 'certEndDate' },
 ];
 module.exports = {
   ApplicationDocumentsMappings,
