@@ -43,6 +43,7 @@ import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import ManageReports from '@/components/manageReports/ManageReports.vue';
 import ManageECEReports from '@/components/manageReports/eceReports/ManageECEReports.vue';
+import MonthlyECEReport from '@/components/manageReports/eceReports/MonthlyECEReport.vue';
 import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/manageReports/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/manageReports/enrolmentReports/ViewEnrolmentReports.vue';
@@ -1025,6 +1026,15 @@ const router = createRouter({
       meta: {
         pageTitle: PAGE_TITLES.MANAGE_REPORTS,
         showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    // TODO: Implement ECE Reports permission
+    {
+      path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/:eceReportId`,
+      name: 'monthly-ece-report',
+      component: MonthlyECEReport,
+      meta: {
         requiresAuth: true,
       },
     },

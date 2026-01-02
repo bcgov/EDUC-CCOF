@@ -12,12 +12,25 @@ async function createECEReport(req, res) {
   try {
     const eceReport = req.body;
     const payload = {
+      'ccof_organization@odata.bind': `/accounts(${eceReport.organizationId})`,
       'ccof_Facility@odata.bind': `/accounts(${eceReport.facilityId})`,
       'ccof_fiscal_year@odata.bind': `/ccof_program_years(${eceReport.programYearId})`,
+      ccof_month: String(eceReport.month),
+      ccof_year: String(eceReport.year),
+      ccof_report_type: eceReport.reportType,
     };
     const response = await postOperation('ccof_ece_monthly_reports', payload);
-    console.log(response);
-    return res.status(HttpStatus.CREATED).json();
+    return res.status(HttpStatus.CREATED).json(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getECEReport(req, res) {
+  try {
+    const response = await getOperation(`ccof_ece_monthly_reports(${req.params.eceReportId})`);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ECEReportMappings).toJSON());
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -37,4 +50,4 @@ async function getECEReports(req, res) {
   }
 }
 
-module.exports = { createECEReport, getECEReports };
+module.exports = { createECEReport, getECEReport, getECEReports };

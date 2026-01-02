@@ -16,6 +16,17 @@ export default {
     }
   },
 
+  async getECEReport(eceReportId) {
+    try {
+      if (!eceReportId) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}/${eceReportId}`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get ECE report - ${error}`);
+      throw error;
+    }
+  },
+
   async getECEReports(query) {
     try {
       const queryString = buildQueryString(query);

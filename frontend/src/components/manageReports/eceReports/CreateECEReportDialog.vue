@@ -16,7 +16,7 @@
             <FiscalYearSlider
               :always-display="true"
               :readonly="loading"
-              :default-program-year-id="currentProgramYearId"
+              :default-program-year-id="selectedProgramYearId"
               @select-program-year="selectProgramYear"
             />
           </v-col>
@@ -36,7 +36,7 @@
               label="Select facility"
               variant="outlined"
               :rules="rules.required"
-              class="mt-2 wrap-select text-wrap"
+              class="mt-2"
             >
               <template #no-data>
                 <v-list-item>
@@ -54,7 +54,8 @@
             <v-select
               v-model.lazy="selectedReportingMonth"
               :loading="loading"
-              :disabled="loading"
+              :disabled="isSelectMonthDisabled"
+              :hide-details="isSelectMonthDisabled"
               :items="allReportingMonths"
               item-title="label"
               item-value="value"
@@ -88,18 +89,21 @@
 
 <script>
 import { mapState } from 'pinia';
-import { useAppStore } from '@/store/app.js';
-import { useApplicationStore } from '@/store/application.js';
-import { rules } from '@/utils/rules';
-
-import { useOrganizationStore } from '@/store/ccof/organization';
 
 import alertMixin from '@/mixins/alertMixin.js';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
+import ApplicationService from '@/services/applicationService';
 import ECEReportService from '@/services/eceReportService.js';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
+import { useAuthStore } from '@/store/auth.js';
+import { useOrganizationStore } from '@/store/ccof/organization';
+import { padString } from '@/utils/common.js';
+import { ECE_REPORT_TYPES, ECEWE_FACILITY_STATUSES, FISCAL_YEAR_MONTHS, OPT_STATUSES, PATHS } from '@/utils/constants';
 import { formatMonthYearToString } from '@/utils/format';
+import { rules } from '@/utils/rules';
 
 export default {
   name: 'CreateECEReportDialog',
@@ -110,17 +114,15 @@ export default {
       type: Boolean,
       default: false,
     },
-    eceReports: {
-      type: Array,
-      default: () => [],
-    },
   },
-  emits: ['close', 'reload'],
+  emits: ['close'],
   data() {
     return {
       loading: false,
       isDisplayed: false,
       isValidForm: false,
+      eceReports: [],
+      eceweFacilities: [],
       selectedFacilityId: null,
       selectedReportingMonth: null,
       selectedProgramYear: null,
@@ -129,45 +131,93 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
-    currentProgramYearId() {
-      return this.programYearList?.newApp?.programYearId;
-    },
     selectedProgramYearId() {
-      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.currentProgramYearId;
+      return this.selectedProgramYear?.programYearId;
+    },
+    isSelectedProgramYearInFuture() {
+      return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
     },
     facilityList() {
-      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      const eceweFacilityMap = new Map(this.eceweFacilities?.map((facility) => [facility.facilityId, facility]));
+      const facilities = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+      const filteredFacilities = facilities.filter((facility) => {
+        const ecewe = eceweFacilityMap.get(facility.facilityId);
+        return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN;
+      });
+      return filteredFacilities;
+    },
+    isSelectMonthDisabled() {
+      return this.loading || !this.selectedFacilityId;
+    },
+    eceweFacility() {
+      return this.eceweFacilities?.find((facility) => facility.facilityId === this.selectedFacilityId);
     },
     /*
-    TODO
-    - if a facility is created recently, need to check the ECE payment Eligibility start date. they cannot select month before that.
-      if a facility has Mid-year Opt-out last date of funding, they cannot select month after that.
-      Only display facility with current date is within Temp Approval Start and End Date or ECEWE Status is Complete Approved
-    - current month is Dec 2025. they should not be able to open 2026/27 fiscal year, because there's nothing there.
-      if current month is July 2026, they should only see from April to July 2026.
+      CCFRI-6645 - Reporting month rules:
+      - Only allow months within the selected fiscal year (April to March).
+      - If a future fiscal year is selected, return an empty array
+        (e.g. Dec 2025 cannot create reports for FY 2026/27).
+      - Limit selection to a maximum of the last 6 fiscal months
+        (e.g. Aug 2025 to Jan 2026).
+      - Months before the ECE payment eligibility start date are not displayed.
+      - Months after the mid-year opt-out date are not displayed.
+      - Facility must be either:
+        - Fully approved (ECEWE status = Complete Approved), or
+        - Temporarily approved with the current date within the temp approval window.
+
+      Additional constraints:
+      - Exclude months that already have a report created for the facility.
     */
     allReportingMonths() {
-      const programYear = this.lookupInfo?.programYear?.list?.find(
-        (year) => year.programYearId === this.selectedProgramYearId,
-      );
-      const existingReportMonths = this.eceReports
-        .filter((report) => report.facilityId === this.selectedFacilityId)
-        .map((report) => report.month);
-      const startYear = new Date(programYear.intakeStart).getUTCFullYear();
-      const endYear = new Date(programYear.intakeEnd).getUTCFullYear();
+      if (this.isSelectedProgramYearInFuture || !this.eceweFacility) {
+        return [];
+      }
+      const facility = this.eceweFacility;
+      const startYear = new Date(this.selectedProgramYear.intakeStart).getUTCFullYear();
+      const endYear = new Date(this.selectedProgramYear.intakeEnd).getUTCFullYear();
       const currentMonth = new Date().getMonth() + 1;
       const lastSixMonths = this.getLastSixMonths(currentMonth);
-      console.log('lastSixMonths');
-      console.log(lastSixMonths);
-      console.log('existingReportMonths');
-      console.log(this.eceReports);
-      const availableMonths = lastSixMonths.filter((month) => !existingReportMonths.includes(month));
-      return availableMonths.map((month) => {
+      const formattedLastSixMonths = lastSixMonths.map((month) => {
         const year = month >= 4 ? startYear : endYear;
         return {
-          label: formatMonthYearToString(month, year),
-          value: { month, year },
+          month: month,
+          year: year,
+          firstDate: `${year}-${padString(month, 2, '0')}-01`,
+        };
+      });
+      const midYearOptOutDate = facility.midYearOptOutDate ? `${facility.midYearOptOutDate}-01` : null;
+      const paymentEligibilityStartDate = facility.paymentEligibilityStartDate
+        ? `${facility.paymentEligibilityStartDate}-01`
+        : null;
+      const existingReportMonths = new Set(
+        this.eceReports.filter((report) => report.facilityId === this.selectedFacilityId).map((report) => report.month),
+      );
+      const isFullApproved = facility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
+      const availableMonths = formattedLastSixMonths.filter((item) => {
+        const isTempApproved =
+          facility.tempApprovalStartDate &&
+          facility.tempApprovalEndDate &&
+          item.firstDate >= facility.tempApprovalStartDate &&
+          item.firstDate <= facility.tempApprovalEndDate;
+        const isECEWEFacilityApproved = isFullApproved || isTempApproved;
+        const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
+          ? item.firstDate >= paymentEligibilityStartDate
+          : true;
+        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate < midYearOptOutDate : true;
+        const hasNoReportCreated = !existingReportMonths.has(item.month);
+        return (
+          isECEWEFacilityApproved &&
+          isAfterPaymentEligibilityStartDate &&
+          isBeforeMidYearOptOutDate &&
+          hasNoReportCreated
+        );
+      });
+      return availableMonths.map((item) => {
+        return {
+          label: formatMonthYearToString(item.month, item.year),
+          value: { month: item.month, year: item.year },
         };
       });
     },
@@ -179,7 +229,9 @@ export default {
       },
     },
     selectedProgramYearId: {
-      handler() {
+      async handler() {
+        this.$refs.form?.resetValidation();
+        await this.loadData();
         this.selectedFacilityId = null;
         this.selectedReportingMonth = null;
       },
@@ -192,16 +244,13 @@ export default {
   },
   created() {
     this.rules = rules;
+    this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
   },
   methods: {
-    loadECEWEFacilities() {
+    async loadData() {
       try {
         this.loading = true;
-        // this.eceReports = await ECEReportService.getECEReports({
-        //   organizationId: this.organizationId,
-        //   programYearId: this.selectedProgramYearId,
-        // });
-        // console.log(this.eceReports);
+        await Promise.all([this.loadECEReports(), this.loadECEWEFacility()]);
       } catch (error) {
         console.log(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -209,74 +258,58 @@ export default {
         this.loading = false;
       }
     },
-    // Returns the last 6 months (including currentMonth), handling year wrap-around
+    async loadECEReports() {
+      this.eceReports = await ECEReportService.getECEReports({
+        organizationId: this.organizationId,
+        programYearId: this.selectedProgramYearId,
+      });
+    },
+    async loadECEWEFacility() {
+      const application = this.userInfo?.applications?.find(
+        (item) => item.ccofProgramYearId === this.selectedProgramYearId,
+      );
+      this.eceweFacilities = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
+    },
     getLastSixMonths(currentMonth) {
-      const months = [];
-      for (let offset = 5; offset >= 0; offset--) {
-        let month = currentMonth - offset;
-        if (month <= 0) {
-          month += 12;
-        }
-        months.push(month);
-      }
-      return months;
+      const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
+      // Take up to 6 months ending at currentMonth
+      const startIndex = Math.max(0, currentIndex - 5);
+      return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
+    },
+    selectProgramYear(programYear) {
+      this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
+        (item) => item.programYearId === programYear.programYearId,
+      );
     },
     closeDialog() {
       this.isDisplayed = false;
       this.$refs.form?.reset();
       this.$emit('close');
     },
-    selectProgramYear(programYear) {
-      this.selectedProgramYear = programYear;
-    },
     async submit() {
       this.$refs.form?.validate();
       if (!this.isValidForm) return;
       try {
         this.loading = true;
-        await ECEReportService.createECEReport({
-          programYearId: this.selectedProgramYearId,
+        const response = await ECEReportService.createECEReport({
+          organizationId: this.organizationId,
           facilityId: this.selectedFacilityId,
+          programYearId: this.selectedProgramYearId,
+          month: this.selectedReportingMonth?.month,
+          year: this.selectedReportingMonth?.year,
+          reportType: ECE_REPORT_TYPES.BASE,
         });
+        const eceReportId = response?.data;
+        this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
         this.setSuccessAlert('ECE report created successfully.');
       } catch (error) {
         this.setFailureAlert('An error occurred while creating ECE report. Please try again later.');
         console.log(error);
       } finally {
         this.closeDialog();
-        this.$emit('reload');
         this.loading = false;
       }
     },
   },
 };
 </script>
-<style scoped>
-/* dropdown items */
-.wrap-select .v-list-item-title {
-  white-space: normal;
-  line-height: 1.3;
-}
-
-/* selected value */
-.wrap-select .v-select__selection-text {
-  white-space: normal;
-}
-
-/* Selected value inside the input */
-.wrap-v-select .v-field__input {
-  white-space: normal !important;
-  line-height: 1.4;
-}
-
-/* Dropdown list items */
-.wrap-v-select .v-list-item-title {
-  white-space: normal !important;
-  line-height: 1.4;
-}
-
-/* Prevent vertical clipping */
-.wrap-v-select .v-field {
-  align-items: flex-start;
-}
-</style>

@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
+import { buildQueryString, hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
   ApiRoutes,
@@ -760,6 +760,17 @@ export default {
       return response;
     } catch (error) {
       console.error(`Failed to update the application - ${error}`);
+      throw error;
+    }
+  },
+
+  async getAdjudicationECEWEFacilities(applicationId) {
+    try {
+      if (!applicationId) return;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION}/${applicationId}/adj-ecewe-facilities`);
+      return response.data;
+    } catch (error) {
+      console.log(`Failed to get Adjudication ECEWE facilities - ${error}`);
       throw error;
     }
   },

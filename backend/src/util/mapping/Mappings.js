@@ -84,10 +84,23 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
   { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
+
 const CcfriEceweFacilityMappings = [
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_programyear_value', front: 'programYearId' },
 ];
+
+const AdjudicationECEWEFacilityMappings = [
+  { back: '_ccof_applicationecewe_value', front: 'eceweApplicationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_eceweoptin', front: 'optInECEWE' },
+  { back: 'ccof_temp_start_date', front: 'tempApprovalStartDate' },
+  { back: 'ccof_temp_end_date', front: 'tempApprovalEndDate' },
+  { back: 'ccof_pay_eligibility_start_date', front: 'paymentEligibilityStartDate' },
+  { back: 'ccof_mid_year_funding_date', front: 'midYearOptOutDate' },
+  { back: 'statuscode', front: 'statusCode' },
+];
+
 const RFIApplicationMappings = [
   { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'notes2' }, // "is there anything else about your change in hours",
   { back: 'ccof_rfipfiid', front: 'rfiId' }, // "df27e229-0b88-ed11-81ac-000d3af48db8",
@@ -881,8 +894,13 @@ const PaymentMappings = [
 
 const ECEReportMappings = [
   { back: 'ccof_ece_monthly_reportid', front: 'eceReportId' },
+  { back: 'ccof_name', front: 'eceReportNumber' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: '_ccof_fiscal_year_value', front: 'programYearId' },
+  { back: 'ccof_month', front: 'month' },
+  { back: 'ccof_year', front: 'year' },
+  { back: 'ccof_report_type', front: 'reportType' },
   { back: 'statuscode', front: 'statusCode' },
 ];
 
@@ -907,6 +925,7 @@ module.exports = {
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
+  AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,
   ECEStaffMappings,
