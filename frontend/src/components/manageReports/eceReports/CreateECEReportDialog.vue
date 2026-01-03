@@ -80,7 +80,9 @@
           <AppButton :primary="false" :loading="loading" min-width="180" @click="closeDialog"> Cancel </AppButton>
         </v-col>
         <v-col cols="12" sm="6" class="d-flex justify-center">
-          <AppButton type="submit" :loading="loading" min-width="180" @click="submit"> Create Report </AppButton>
+          <AppButton type="submit" :loading="loading" :disabled="!isValidForm" min-width="180" @click="submit">
+            Create Report
+          </AppButton>
         </v-col>
       </v-row>
     </template>
@@ -171,10 +173,13 @@ export default {
       - Exclude months that already have a report created for the facility.
     */
     allReportingMonths() {
-      if (this.isSelectedProgramYearInFuture || !this.eceweFacility) {
+      if (this.isSelectedProgramYearInFuture || !this.selectedFacilityId || !this.eceweFacility) {
         return [];
       }
       const facility = this.eceweFacility;
+      const existingReportMonths = new Set(
+        this.eceReports.filter((report) => report.facilityId === this.selectedFacilityId).map((report) => report.month),
+      );
       const startYear = new Date(this.selectedProgramYear.intakeStart).getUTCFullYear();
       const endYear = new Date(this.selectedProgramYear.intakeEnd).getUTCFullYear();
       const currentMonth = new Date().getMonth() + 1;
@@ -191,11 +196,10 @@ export default {
       const paymentEligibilityStartDate = facility.paymentEligibilityStartDate
         ? `${facility.paymentEligibilityStartDate}-01`
         : null;
-      const existingReportMonths = new Set(
-        this.eceReports.filter((report) => report.facilityId === this.selectedFacilityId).map((report) => report.month),
-      );
       const isFullApproved = facility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
+
       const availableMonths = formattedLastSixMonths.filter((item) => {
+        const hasNoReportCreated = !existingReportMonths.has(item.month);
         const isTempApproved =
           facility.tempApprovalStartDate &&
           facility.tempApprovalEndDate &&
@@ -206,7 +210,6 @@ export default {
           ? item.firstDate >= paymentEligibilityStartDate
           : true;
         const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate < midYearOptOutDate : true;
-        const hasNoReportCreated = !existingReportMonths.has(item.month);
         return (
           isECEWEFacilityApproved &&
           isAfterPaymentEligibilityStartDate &&
@@ -214,6 +217,7 @@ export default {
           hasNoReportCreated
         );
       });
+
       return availableMonths.map((item) => {
         return {
           label: formatMonthYearToString(item.month, item.year),
@@ -287,7 +291,6 @@ export default {
       this.$emit('close');
     },
     async submit() {
-      this.$refs.form?.validate();
       if (!this.isValidForm) return;
       try {
         this.loading = true;
