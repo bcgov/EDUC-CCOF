@@ -127,6 +127,7 @@ export default {
       'applicationMap',
       'programYearId',
       'showApplicationTemplateV1',
+      'unlockRenewal',
     ]),
     ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
     ...mapState(useNavBarStore, [
@@ -147,6 +148,8 @@ export default {
         }
         return false;
       } else if (this.unlockLicenseUpload) {
+        return false;
+      } else if (this.unlockRenewal) {
         return false;
       } else if (this.applicationStatus === 'SUBMITTED') {
         return true;

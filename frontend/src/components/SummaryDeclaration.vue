@@ -371,6 +371,7 @@ export default {
       'programYearId',
       'showApplicationTemplateV1',
       'unlockBaseFunding',
+      'unlockRenewal',
       'unlockDeclaration',
       'unlockEcewe',
       'unlockLicenseUpload',
@@ -634,6 +635,7 @@ export default {
     createRelockPayloadForApplication() {
       let applicationRelockPayload = {
         unlockBaseFunding: this.unlockBaseFunding,
+        unlockRenewal: this.unlockRenewal,
         unlockDeclaration: this.unlockDeclaration,
         unlockEcewe: this.unlockEcewe,
         unlockLicenseUpload: this.unlockLicenseUpload,
@@ -642,7 +644,7 @@ export default {
       // Create payload with only unlock propteries set to 1.
 
       applicationRelockPayload = Object.fromEntries(
-        Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1),
+        Object.entries(applicationRelockPayload).filter(([_, v]) => v === 1),
       );
       // Update payload unlock properties from 1 to 0.
       Object.keys(applicationRelockPayload).forEach((key) => {

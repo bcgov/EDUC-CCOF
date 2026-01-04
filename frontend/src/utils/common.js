@@ -129,6 +129,7 @@ export function checkApplicationUnlocked(application) {
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
   const isApplicationUnlocked =
+    (application?.applicationTemplateVersion != 1 && application?.unlockRenewal && application?.isRenewal) ||
     (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
     application?.unlockLicenseUpload ||
     application?.unlockEcewe ||
