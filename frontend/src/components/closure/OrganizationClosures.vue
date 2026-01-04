@@ -207,7 +207,7 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['getProgramYearNameById']),
-    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useNavBarStore, ['getNavByFacilityId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     filteredClosures() {
