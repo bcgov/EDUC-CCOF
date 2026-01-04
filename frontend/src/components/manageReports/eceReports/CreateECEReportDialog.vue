@@ -30,7 +30,7 @@
               v-model.lazy="selectedFacilityId"
               :loading="loading"
               :disabled="loading"
-              :items="facilityList"
+              :items="filteredFacilities"
               item-value="facilityId"
               item-title="facilityName"
               label="Select facility"
@@ -56,7 +56,7 @@
               :loading="loading"
               :disabled="isSelectMonthDisabled"
               :hide-details="isSelectMonthDisabled"
-              :items="allReportingMonths"
+              :items="allReportingMonths.get(selectedFacilityId) || []"
               item-title="label"
               item-value="value"
               label="Select reporting month"
@@ -90,6 +90,7 @@
 </template>
 
 <script>
+import { isEmpty } from 'lodash';
 import { mapState } from 'pinia';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -124,7 +125,7 @@ export default {
       isDisplayed: false,
       isValidForm: false,
       eceReports: [],
-      eceweFacilities: [],
+      eceweFacilities: new Map(),
       selectedFacilityId: null,
       selectedReportingMonth: null,
       selectedProgramYear: null,
@@ -132,36 +133,51 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    ...mapState(useOrganizationStore, ['organizationId']),
     selectedProgramYearId() {
       return this.selectedProgramYear?.programYearId;
     },
     isSelectedProgramYearInFuture() {
       return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
     },
-    facilityList() {
-      const eceweFacilityMap = new Map(this.eceweFacilities?.map((facility) => [facility.facilityId, facility]));
-      const facilities = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
-      const filteredFacilities = facilities.filter((facility) => {
-        const ecewe = eceweFacilityMap.get(facility.facilityId);
-        return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN;
+    facilities() {
+      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
+    },
+    filteredFacilities() {
+      const filteredFacilities = this.facilities?.filter((facility) => {
+        const ecewe = this.eceweFacilities.get(facility.facilityId);
+        const reportingMonths = this.allReportingMonths.get(facility.facilityId);
+        return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);
       });
       return filteredFacilities;
     },
     isSelectMonthDisabled() {
       return this.loading || !this.selectedFacilityId;
     },
-    eceweFacility() {
-      return this.eceweFacilities?.find((facility) => facility.facilityId === this.selectedFacilityId);
+    reportingMonthCandidates() {
+      if (!this.selectedProgramYear) {
+        return [];
+      }
+      const startYear = new Date(this.selectedProgramYear.intakeStart).getUTCFullYear();
+      const endYear = new Date(this.selectedProgramYear.intakeEnd).getUTCFullYear();
+      const currentMonth = new Date().getMonth() + 1;
+      return this.getTrailingMonths(currentMonth).map((month) => {
+        const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
+        return {
+          month,
+          year,
+          firstDate: `${year}-${padString(month, 2, '0')}-01`,
+        };
+      });
     },
     /*
       CCFRI-6645 - Reporting month rules:
       - Only allow months within the selected fiscal year (April to March).
       - If a future fiscal year is selected, return an empty array
         (e.g. Dec 2025 cannot create reports for FY 2026/27).
-      - Limit selection to a maximum of the last 6 fiscal months
+      - Limit selection to a maximum of the last 6 fiscal months (getTrailingMonths - maxMonths defaults to 6)
         (e.g. Aug 2025 to Jan 2026).
       - Months before the ECE payment eligibility start date are not displayed.
       - Months after the mid-year opt-out date are not displayed.
@@ -173,57 +189,14 @@ export default {
       - Exclude months that already have a report created for the facility.
     */
     allReportingMonths() {
-      if (this.isSelectedProgramYearInFuture || !this.selectedFacilityId || !this.eceweFacility) {
-        return [];
+      if (this.isSelectedProgramYearInFuture) {
+        return new Map();
       }
-      const facility = this.eceweFacility;
-      const existingReportMonths = new Set(
-        this.eceReports.filter((report) => report.facilityId === this.selectedFacilityId).map((report) => report.month),
-      );
-      const startYear = new Date(this.selectedProgramYear.intakeStart).getUTCFullYear();
-      const endYear = new Date(this.selectedProgramYear.intakeEnd).getUTCFullYear();
-      const currentMonth = new Date().getMonth() + 1;
-      const lastSixMonths = this.getLastSixMonths(currentMonth);
-      const formattedLastSixMonths = lastSixMonths.map((month) => {
-        const year = month >= 4 ? startYear : endYear;
-        return {
-          month: month,
-          year: year,
-          firstDate: `${year}-${padString(month, 2, '0')}-01`,
-        };
-      });
-      const midYearOptOutDate = facility.midYearOptOutDate ? `${facility.midYearOptOutDate}-01` : null;
-      const paymentEligibilityStartDate = facility.paymentEligibilityStartDate
-        ? `${facility.paymentEligibilityStartDate}-01`
-        : null;
-      const isFullApproved = facility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
-
-      const availableMonths = formattedLastSixMonths.filter((item) => {
-        const hasNoReportCreated = !existingReportMonths.has(item.month);
-        const isTempApproved =
-          facility.tempApprovalStartDate &&
-          facility.tempApprovalEndDate &&
-          item.firstDate >= facility.tempApprovalStartDate &&
-          item.firstDate <= facility.tempApprovalEndDate;
-        const isECEWEFacilityApproved = isFullApproved || isTempApproved;
-        const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
-          ? item.firstDate >= paymentEligibilityStartDate
-          : true;
-        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate < midYearOptOutDate : true;
-        return (
-          isECEWEFacilityApproved &&
-          isAfterPaymentEligibilityStartDate &&
-          isBeforeMidYearOptOutDate &&
-          hasNoReportCreated
-        );
-      });
-
-      return availableMonths.map((item) => {
-        return {
-          label: formatMonthYearToString(item.month, item.year),
-          value: { month: item.month, year: item.year },
-        };
-      });
+      const reportingMonths = new Map();
+      for (const facility of this.facilities ?? []) {
+        reportingMonths.set(facility.facilityId, this.getReportingMonthsByFacilityId(facility.facilityId));
+      }
+      return reportingMonths;
     },
   },
   watch: {
@@ -272,13 +245,52 @@ export default {
       const application = this.userInfo?.applications?.find(
         (item) => item.ccofProgramYearId === this.selectedProgramYearId,
       );
-      this.eceweFacilities = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
+      const response = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
+      this.eceweFacilities = new Map((response ?? []).map((f) => [f.facilityId, f]));
     },
-    getLastSixMonths(currentMonth) {
+    getTrailingMonths(currentMonth, maxMonths = 6) {
       const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
-      // Take up to 6 months ending at currentMonth
-      const startIndex = Math.max(0, currentIndex - 5);
+      const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
       return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
+    },
+    getReportingMonthsByFacilityId(facilityId) {
+      const eceweFacility = this.eceweFacilities.get(facilityId);
+      if (!eceweFacility) {
+        return [];
+      }
+      const existingReportMonths = new Set(
+        this.eceReports.filter((report) => report.facilityId === facilityId).map((report) => report.month),
+      );
+      const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-01` : null;
+      const paymentEligibilityStartDate = eceweFacility.paymentEligibilityStartDate
+        ? `${eceweFacility.paymentEligibilityStartDate}-01`
+        : null;
+      const isFullyApproved = eceweFacility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
+      const reportingMonths = this.reportingMonthCandidates.filter((item) => {
+        const hasNoReportCreated = !existingReportMonths.has(item.month);
+        const isTempApproved =
+          eceweFacility.tempApprovalStartDate &&
+          eceweFacility.tempApprovalEndDate &&
+          item.firstDate >= eceweFacility.tempApprovalStartDate &&
+          item.firstDate <= eceweFacility.tempApprovalEndDate;
+        const isECEWEFacilityApproved = isFullyApproved || isTempApproved;
+        const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
+          ? item.firstDate >= paymentEligibilityStartDate
+          : true;
+        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate < midYearOptOutDate : true;
+        return (
+          isECEWEFacilityApproved &&
+          isAfterPaymentEligibilityStartDate &&
+          isBeforeMidYearOptOutDate &&
+          hasNoReportCreated
+        );
+      });
+      return reportingMonths.map((item) => {
+        return {
+          label: formatMonthYearToString(item.month, item.year),
+          value: { month: item.month, year: item.year },
+        };
+      });
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(

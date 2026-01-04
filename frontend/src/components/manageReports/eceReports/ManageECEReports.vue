@@ -50,13 +50,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.action-buttons {
-  gap: 8px;
-  padding: 10px;
-}
-
-.report-status {
-  min-width: 112px;
-}
-</style>
