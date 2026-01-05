@@ -101,7 +101,7 @@ public class DeleteApplicationPage {
 		searchBox.clear();
 		searchBox(contactName);
 		searchBox.sendKeys(Keys.ENTER);
-		Thread.sleep(5000);
+		Thread.sleep(8000);
 		fullName();
 		Thread.sleep(5000);
 	}

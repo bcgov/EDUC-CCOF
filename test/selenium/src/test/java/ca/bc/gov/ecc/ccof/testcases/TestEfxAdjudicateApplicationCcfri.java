@@ -99,7 +99,7 @@ public class TestEfxAdjudicateApplicationCcfri extends BaseTest {
 		Thread.sleep(8000);
 
 		// selecting the facility and changing the status to CCFRI Complete
-		ccfriInfo.clickOpenFacility();
+		ccfriInfo.clickOpenSubmittedFacility();
 		Thread.sleep(8000);
 
 		FacilityInfoPage facilityInfo = new FacilityInfoPage(driver);
