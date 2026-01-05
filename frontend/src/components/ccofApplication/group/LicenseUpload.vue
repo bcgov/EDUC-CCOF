@@ -144,19 +144,15 @@ export default {
       if (this.isChangeRequest) {
         if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
           return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
         }
-        return false;
-      } else if (this.unlockLicenseUpload) {
-        return false;
-      } else if (this.unlockRenewal) {
-        return false;
-      } else if (this.isApplicationSubmitted) {
-        return true;
+        return this.changeRequestStatus !== 'INCOMPLETE';
       }
-      return false;
+      if (this.unlockLicenseUpload || this.unlockRenewal) {
+        return false;
+      }
+      return this.isApplicationSubmitted;
     },
+
     headers() {
       const tableHeadersTemplateV1 = [
         {
