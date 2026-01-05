@@ -129,8 +129,10 @@ export function checkApplicationUnlocked(application) {
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
   const isApplicationUnlocked =
-    (application?.applicationTemplateVersion != 1 && application?.unlockRenewal && application?.isRenewal) ||
-    (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
+    (!application?.showApplicationTemplateV1 &&
+      application?.unlockRenewal &&
+      application?.applicationType === APPLICATION_TYPES.RENEWAL) ||
+    (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG) ||
     application?.unlockLicenseUpload ||
     application?.unlockEcewe ||
     application?.unlockSupportingDocuments ||

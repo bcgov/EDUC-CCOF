@@ -870,7 +870,11 @@ export default {
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
       else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG)
         this.goToCCOFFunding(programYearId, facilityList);
-      else if (application?.unlockRenewal && application?.applicationType === APPLICATION_TYPES.RENEWAL)
+      else if (
+        !application?.showApplicationTemplateV1 &&
+        application?.unlockRenewal &&
+        application?.applicationType === APPLICATION_TYPES.RENEWAL
+      )
         this.goToBankingInformation(programYearId);
       else if (application?.unlockEcewe) this.goToECEWE(programYearId);
       else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
