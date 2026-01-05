@@ -14,6 +14,18 @@
 
       <v-col cols="auto">
         <v-row class="g-2" justify="end">
+          <v-col v-if="!isEditing" cols="auto">
+            <AppButton :primary="true" size="small" @click="startEditing"> Edit </AppButton>
+          </v-col>
+
+          <v-col v-if="isEditing" cols="auto">
+            <AppButton :primary="true" size="small" @click="saveChanges"> Save Changes </AppButton>
+          </v-col>
+
+          <v-col v-if="isEditing" cols="auto">
+            <AppButton :primary="false" size="small" @click="cancelChanges"> Cancel </AppButton>
+          </v-col>
+
           <v-col cols="auto">
             <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
           </v-col>
@@ -35,13 +47,15 @@
           <v-row no-gutters class="justify-end justify-lg-start">
             <v-text-field
               v-model.number="item.hourlyWage"
+              :value="formatDecimalNumber(item.hourlyWage, false)"
               type="number"
               variant="outlined"
               density="compact"
-              hide-details
+              hide-details="auto"
               prefix="$"
-              max-width="100"
+              max-width="120"
               :disabled="!isEditing"
+              :rules="rules.wage"
             />
           </v-row>
         </template>
@@ -71,8 +85,10 @@ import alertMixin from '@/mixins/alertMixin.js';
 
 import ECEStaffService from '@/services/eceStaffService.js';
 
+import { deepCloneObject } from '@/utils/common.js';
 import { ECE_STAFF_STATUSES } from '@/utils/constants';
 import { formatDecimalNumber } from '@/utils/format';
+import rules from '@/utils/rules';
 
 export default {
   name: 'ManageECEStaff',
@@ -84,6 +100,7 @@ export default {
       isEditing: false,
       eceSearch: '',
       eceStaff: [],
+      originalECEStaff: [],
       eceStaffTableHeaders: [
         { title: 'Last Name', sortable: true, value: 'lastName' },
         { title: 'Middle Name', sortable: true, value: 'middleName' },
@@ -93,6 +110,7 @@ export default {
         { title: 'Status', sortable: true, value: 'status' },
         { title: 'Certifications', sortable: false, value: 'certifications' },
       ],
+      rules,
     };
   },
 
@@ -110,9 +128,7 @@ export default {
           facilityId: this.$route.params.facilityId,
         });
         this.eceStaff = staffRecords;
-        this.eceStaff.forEach((record) => {
-          record.hourlyWage = formatDecimalNumber(record.hourlyWage);
-        });
+        this.originalECEStaff = deepCloneObject(this.eceStaff);
         this.sortECEStaff();
       } catch (error) {
         this.setFailureAlert('Failed to load ECE Staff records');
@@ -124,6 +140,7 @@ export default {
 
     async refreshECEStaff() {
       await this.loadEceStaff();
+      this.isEditing = false;
       this.setSuccessAlert('ECE Staff information has been refreshed');
     },
 
@@ -144,6 +161,40 @@ export default {
     goToViewCertification() {
       //TODO: will be added as a part of CCFRI-6259
       alert('View Certification');
+    },
+
+    startEditing() {
+      this.isEditing = true;
+      this.originalECEStaff = deepCloneObject(this.eceStaff);
+    },
+
+    cancelChanges() {
+      this.eceStaff = deepCloneObject(this.originalECEStaff);
+      this.isEditing = false;
+    },
+
+    async saveChanges() {
+      try {
+        this.isLoading = true;
+
+        const changedStaff = this.eceStaff.filter((staff, i) => {
+          const original = this.originalECEStaff[i];
+          return original && (staff.hourlyWage !== original.hourlyWage || staff.status !== original.status);
+        });
+
+        for (const staff of changedStaff) {
+          const payload = { hourlyWage: staff.hourlyWage, status: staff.status };
+          await ECEStaffService.updateECEStaff(staff.eceStaffId, payload);
+        }
+        this.originalECEStaff = deepCloneObject(this.eceStaff);
+        this.isEditing = false;
+        this.setSuccessAlert('ECE Staff changes saved successfully.');
+      } catch (error) {
+        this.setFailureAlert('Failed to save changes.');
+        console.error(error);
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
 };
