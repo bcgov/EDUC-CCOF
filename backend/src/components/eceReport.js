@@ -1,10 +1,9 @@
 'use strict';
 
-const { getOperation, postOperation } = require('./utils');
+const { buildFilterQuery, getOperation, postOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { ECEReportMappings } = require('../util/mapping/Mappings');
-const { buildFilterQuery } = require('./utils');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 

@@ -105,7 +105,7 @@ import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import { padString } from '@/utils/common.js';
 import { ECE_REPORT_TYPES, ECEWE_FACILITY_STATUSES, FISCAL_YEAR_MONTHS, OPT_STATUSES, PATHS } from '@/utils/constants';
-import { formatMonthYearToString } from '@/utils/format';
+import { formatMonthYearToString, convertUTCtoPacificTime } from '@/utils/format';
 import { rules } from '@/utils/rules';
 
 export default {
@@ -160,9 +160,9 @@ export default {
       if (!this.selectedProgramYear) {
         return [];
       }
-      const startYear = new Date(this.selectedProgramYear.intakeStart).getUTCFullYear();
-      const endYear = new Date(this.selectedProgramYear.intakeEnd).getUTCFullYear();
-      const currentMonth = new Date().getMonth() + 1;
+      const startYear = convertUTCtoPacificTime(this.selectedProgramYear.intakeStart)?.year;
+      const endYear = convertUTCtoPacificTime(this.selectedProgramYear.intakeEnd)?.year;
+      const currentMonth = convertUTCtoPacificTime(this.userInfo?.serverTime)?.month;
       return this.getTrailingMonths(currentMonth).map((month) => {
         const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
         return {

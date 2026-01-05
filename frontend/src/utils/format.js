@@ -185,3 +185,41 @@ export function formatUTCDateToMonthYear(date) {
   if (!date) return null;
   return moment.utc(date).format('MMMM YYYY');
 }
+
+/**
+ * Convert UTC time to Pacific Time (America/Vancouver)
+ * and return easy-access date parts
+ *
+ * @param {string | Date} utcTime - UTC ISO string or Date
+ * @returns {{
+ *   year: number,
+ *   month: number,
+ *   day: number,
+ *   hour: number,
+ *   minute: number,
+ *   second: number,
+ * }}
+ */
+export function convertUTCtoPacificTime(utcTime) {
+  const date = new Date(utcTime);
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Vancouver',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(date);
+  const get = (type) => Number(parts.find((p) => p.type === type)?.value);
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: get('hour'),
+    minute: get('minute'),
+    second: get('second'),
+  };
+}
