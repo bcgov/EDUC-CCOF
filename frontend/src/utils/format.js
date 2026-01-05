@@ -187,7 +187,7 @@ export function formatUTCDateToMonthYear(date) {
 }
 
 /**
- * Convert UTC time to Pacific Time (America/Vancouver)
+ * Format UTC time to Pacific Time (America/Vancouver)
  * and return easy-access date parts
  *
  * @param {string | Date} utcTime - UTC ISO string or Date
@@ -200,7 +200,7 @@ export function formatUTCDateToMonthYear(date) {
  *   second: number,
  * }}
  */
-export function convertUTCtoPacificTime(utcTime) {
+export function formatUTCtoPacificTime(utcTime) {
   const date = new Date(utcTime);
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Vancouver',
