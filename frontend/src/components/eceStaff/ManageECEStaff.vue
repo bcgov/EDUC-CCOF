@@ -1,81 +1,87 @@
 <template>
   <v-container class="pa-0 text-body-1" fluid>
-    <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
-    <p>
-      Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry before
-      making any changes to Hourly Wage or status. To save changes to Hourly Wage or Status click
-      <strong>Save Changes</strong> below.
-    </p>
+    <v-form ref="form" v-model="isFormValid">
+      <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
+      <p>
+        Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry
+        before making any changes to Hourly Wage or status. To save changes to Hourly Wage or Status click
+        <strong>Save Changes</strong> below.
+      </p>
 
-    <v-row justify="space-between" align="center">
-      <v-col cols="6" sm="4" md="3">
-        <v-text-field v-model="eceSearch" label="Search ECE Staff" variant="outlined" dense hide-details clearable />
-      </v-col>
+      <v-row justify="space-between" align="center">
+        <v-col cols="6" sm="4" md="3">
+          <v-text-field v-model="eceSearch" label="Search ECE Staff" variant="outlined" dense hide-details clearable />
+        </v-col>
 
-      <v-col cols="auto">
-        <v-row class="g-2" justify="end">
-          <v-col v-if="!isEditing" cols="auto">
-            <AppButton :primary="true" size="small" @click="startEditing"> Edit </AppButton>
-          </v-col>
+        <v-col cols="auto">
+          <v-row class="g-2" justify="end">
+            <v-col v-if="!isEditing" cols="auto">
+              <AppButton :primary="true" size="small" @click="startEditing"> Edit </AppButton>
+            </v-col>
 
-          <v-col v-if="isEditing" cols="auto">
-            <AppButton :primary="true" size="small" @click="saveChanges"> Save Changes </AppButton>
-          </v-col>
+            <v-col v-if="isEditing" cols="auto">
+              <AppButton :primary="true" size="small" :disabled="!isFormValid" @click="saveChanges">
+                Save Changes
+              </AppButton>
+            </v-col>
 
-          <v-col v-if="isEditing" cols="auto">
-            <AppButton :primary="false" size="small" @click="cancelChanges"> Cancel </AppButton>
-          </v-col>
+            <v-col v-if="isEditing" cols="auto">
+              <AppButton :primary="false" size="small" @click="cancelChanges"> Cancel </AppButton>
+            </v-col>
 
-          <v-col cols="auto">
-            <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
-          </v-col>
-        </v-row>
-      </v-col>
-    </v-row>
-
-    <v-skeleton-loader :loading="isLoading">
-      <v-data-table
-        :items="eceStaff"
-        :search="eceSearch"
-        :headers="eceStaffTableHeaders"
-        :items-per-page="10"
-        mobile-breakpoint="lg"
-        :mobile="null"
-        class="elevation-2"
-      >
-        <template #item.hourlyWage="{ item }">
-          <v-row no-gutters class="justify-end justify-lg-start">
-            <v-text-field
-              v-model.number="item.hourlyWage"
-              :value="formatDecimalNumber(item.hourlyWage, false)"
-              type="number"
-              variant="outlined"
-              density="compact"
-              hide-details="auto"
-              prefix="$"
-              max-width="120"
-              :disabled="!isEditing"
-              :rules="rules.wage"
-            />
+            <v-col cols="auto">
+              <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
+            </v-col>
           </v-row>
-        </template>
+        </v-col>
+      </v-row>
 
-        <template #[`item.certifications`]="{ item }">
-          <v-row no-gutters class="justify-end justify-lg-start">
-            <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)"> View </AppButton>
-          </v-row>
-        </template>
-
-        <template #[`item.status`]="{ item }">
-          <v-radio-group v-model="item.status" inline hide-details :disabled="!isEditing">
+      <v-skeleton-loader :loading="isLoading">
+        <v-data-table
+          :items="eceStaff"
+          :search="eceSearch"
+          :headers="eceStaffTableHeaders"
+          :items-per-page="10"
+          mobile-breakpoint="lg"
+          :mobile="null"
+          class="elevation-2"
+        >
+          <template #item.hourlyWage="{ item }">
             <v-row no-gutters class="justify-end justify-lg-start">
-              <v-radio :value="ECE_STAFF_STATUSES.ACTIVE" label="Active" />
-              <v-radio :value="ECE_STAFF_STATUSES.INACTIVE" label="Inactive" />
+              <v-text-field
+                :model-value="formatDecimalNumber(item.hourlyWage, false)"
+                type="number"
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                prefix="$"
+                max-width="120"
+                :disabled="!isEditing"
+                :rules="rules.wage"
+                @update:model-value="item.hourlyWage = Number($event)"
+              />
             </v-row>
-          </v-radio-group>
-        </template>
-      </v-data-table>
-    </v-skeleton-loader>
+          </template>
+
+          <template #[`item.certifications`]="{ item }">
+            <v-row no-gutters class="justify-end justify-lg-start">
+              <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)">
+                View
+              </AppButton>
+            </v-row>
+          </template>
+
+          <template #[`item.status`]="{ item }">
+            <v-radio-group v-model="item.status" inline hide-details :disabled="!isEditing">
+              <v-row no-gutters class="justify-end justify-lg-start">
+                <v-radio :value="ECE_STAFF_STATUSES.ACTIVE" label="Active" />
+                <v-radio :value="ECE_STAFF_STATUSES.INACTIVE" label="Inactive" />
+              </v-row>
+            </v-radio-group>
+          </template>
+        </v-data-table>
+      </v-skeleton-loader>
+    </v-form>
   </v-container>
 </template>
 <script>
@@ -98,6 +104,7 @@ export default {
     return {
       isLoading: false,
       isEditing: false,
+      isFormValid: false,
       eceSearch: '',
       eceStaff: [],
       originalECEStaff: [],
@@ -174,6 +181,9 @@ export default {
     },
 
     async saveChanges() {
+      const isValid = await this.$refs.form.validate();
+      if (!isValid) return;
+
       try {
         this.isLoading = true;
 
