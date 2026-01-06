@@ -153,7 +153,7 @@ export default {
       return index > -1;
     },
     previous() {
-      this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+      this.$router.back();
     },
     async next() {
       if (!this.isReadOnly) {
