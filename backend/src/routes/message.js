@@ -5,6 +5,7 @@ const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getAllMessages, updateMessageLastOpenedTime } = require('../components/message');
 const { param, validationResult } = require('express-validator');
+const validateRole = require('../middlewares/validateRole');
 
 module.exports = router;
 
@@ -15,7 +16,7 @@ router.get(
   '/organization/:organizationId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Validate that the user has a role
+  validateRole(),
   [param('organizationId', 'URL param: [organizationId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();
@@ -30,7 +31,7 @@ router.put(
   '/:messageId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  // TODO #securitymatrix Validate that the user has a role
+  validateRole(),
   [param('messageId', 'URL param: [messageId] is required').not().isEmpty()],
   (req, res) => {
     validationResult(req).throw();

@@ -191,9 +191,8 @@ async function populateUserInfo(profile) {
         roleNumber: ROLES.ORG_ADMIN,
       };
     }
-  } else if (identity_provider === config.get('oidc:idpHintIdir')) {
-    // TODO (weskubo-cgi) Add role logic for IDIR users
   }
+  // IDIR users get role information when impersonating, not on login
 }
 
 const parseJwt = (token) => {

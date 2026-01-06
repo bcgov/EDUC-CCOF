@@ -5,17 +5,11 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-
+const validateMinistryUser = require('../middlewares/validateMinistryUser');
 const { getUserInfo } = require('../components/user');
 
 router.get('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, getUserInfo);
 
-router.get(
-  '/:queryUserName',
-  passport.authenticate('jwt', { session: false }),
-  isValidBackendToken,
-  // TODO #securitymatrix Validate that the caller is a Ministry user
-  getUserInfo,
-);
+router.get('/:queryUserName', passport.authenticate('jwt', { session: false }), isValidBackendToken, validateMinistryUser(), getUserInfo);
 
 module.exports = router;

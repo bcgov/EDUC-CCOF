@@ -307,7 +307,7 @@
       >
         <v-row>
           <v-col cols="12" md="4" order="2" order-md="1">
-            <!--TODO: sezarch box only looks at facility name. Update it later to search for status and licence
+            <!--TODO: search box only looks at facility name. Update it later to search for status and licence
             Update when data comes in from the API
             Filter by Facility Name, status, or licence: "
             .-->
