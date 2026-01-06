@@ -1,6 +1,6 @@
 <template>
   <v-container class="pa-0 text-body-1" fluid>
-    <v-form ref="form" v-model="isFormValid">
+    <v-form ref="form" v-model="isValidForm">
       <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
       <p>
         Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry
@@ -20,17 +20,25 @@
             </v-col>
 
             <v-col v-if="isEditing" cols="auto">
-              <AppButton :primary="true" size="small" :disabled="!isFormValid" @click="saveChanges">
+              <AppButton
+                :primary="true"
+                size="small"
+                :disabled="!isValidForm"
+                :loading="isLoading"
+                @click="saveChanges"
+              >
                 Save Changes
               </AppButton>
             </v-col>
 
             <v-col v-if="isEditing" cols="auto">
-              <AppButton :primary="false" size="small" @click="cancelChanges"> Cancel </AppButton>
+              <AppButton :primary="false" size="small" :loading="isLoading" @click="cancelChanges"> Cancel </AppButton>
             </v-col>
 
             <v-col cols="auto">
-              <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
+              <AppButton :primary="false" size="small" :loading="isLoading" @click="refreshECEStaff">
+                Refresh ECE Information
+              </AppButton>
             </v-col>
           </v-row>
         </v-col>
@@ -49,7 +57,7 @@
           <template #item.hourlyWage="{ item }">
             <v-row no-gutters class="justify-end justify-lg-start">
               <v-text-field
-                :model-value="formatDecimalNumber(item.hourlyWage, false)"
+                :model-value="formatHourlyWage(item)"
                 type="number"
                 variant="outlined"
                 density="compact"
@@ -57,7 +65,11 @@
                 prefix="$"
                 max-width="120"
                 :disabled="!isEditing"
-                :rules="rules.wage"
+                :rules="[
+                  ...rules.required,
+                  rules.min(1, 'Wage cannot be less than $1.00'),
+                  rules.max(1000, 'Wage cannot be more than $1000'),
+                ]"
                 @update:model-value="item.hourlyWage = Number($event)"
               />
             </v-row>
@@ -104,7 +116,7 @@ export default {
     return {
       isLoading: false,
       isEditing: false,
-      isFormValid: false,
+      isValidForm: false,
       eceSearch: '',
       eceStaff: [],
       originalECEStaff: [],
@@ -170,6 +182,10 @@ export default {
       alert('View Certification');
     },
 
+    formatHourlyWage(item) {
+      return this.isEditing ? item.hourlyWage : formatDecimalNumber(item.hourlyWage, false);
+    },
+
     startEditing() {
       this.isEditing = true;
       this.originalECEStaff = deepCloneObject(this.eceStaff);
@@ -181,8 +197,8 @@ export default {
     },
 
     async saveChanges() {
-      const isValid = await this.$refs.form.validate();
-      if (!isValid) return;
+      await this.$refs.form.validate();
+      if (!this.isValidForm) return;
 
       try {
         this.isLoading = true;

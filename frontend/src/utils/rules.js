@@ -86,7 +86,6 @@ export const rules = {
     if (isEmpty(v)) return true;
     return isValidFQDN(v) || 'Please enter a valid website address';
   },
-  wage: [(v) => v >= 1 || 'Wage cannot be less than $1.00', (v) => v <= 1000 || 'Wage cannot be more than $1000'],
 };
 
 export default rules;
