@@ -175,9 +175,7 @@ export default {
       );
     },
     isNextDisabled() {
-      return (
-        this.readonly || !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed
-      );
+      return !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed;
     },
   },
   async created() {

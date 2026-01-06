@@ -102,7 +102,11 @@ export default {
       return (this.isApplicationSubmitted && !this.unlockRenewal) || this.hasActiveChangeRequest;
     },
     isNextDisabled() {
-      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged === YES_NO_VALUES.YES;
+      return (
+        (this.hasActiveChangeRequest && !this.isApplicationSubmitted) ||
+        !this.isValidForm ||
+        this.hasBankingInfoChanged === YES_NO_VALUES.YES
+      );
     },
   },
   async created() {

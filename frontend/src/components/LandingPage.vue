@@ -476,7 +476,6 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationId',
-      'applicationTemplateVersion',
       'showApplicationTemplateV1',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
@@ -870,27 +869,24 @@ export default {
       const unlockNMFList = getUnlockNMFList(facilityList);
       const unlockAFSList = getUnlockAFSList(facilityList);
       const isTemplateV1 = ApplicationService.showApplicationTemplateV1(application?.applicationTemplateVersion);
-      if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
-      else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG)
-        this.goToCCOFFunding(programYearId, facilityList);
-      else if (
-        !isTemplateV1 &&
-        application?.unlockRenewal &&
-        application?.applicationType === APPLICATION_TYPES.RENEWAL
-      ) {
+      if (!isTemplateV1 && application?.unlockRenewal && application?.applicationType === APPLICATION_TYPES.RENEWAL) {
         this.goToBankingInformation(programYearId);
+      } else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG) {
+        this.goToCCOFFunding(programYearId, facilityList);
+      } else if (application?.unlockLicenseUpload) {
+        this.goToLicenseUpload(programYearId);
+      } else if (!isEmpty(unlockCCFRIList)) {
+        this.goToCCFRI(unlockCCFRIList[0], application);
+      } else if (!isEmpty(unlockRFIList)) {
+        this.goToRFI(unlockRFIList[0], programYearId);
+      } else if (!isEmpty(unlockNMFList)) {
+        this.goToNMF(unlockNMFList[0], programYearId);
+      } else if (!isEmpty(unlockAFSList)) {
+        this.goToAFS(unlockAFSList[0], programYearId);
       } else if (application?.unlockEcewe) {
         this.goToECEWE(programYearId);
       } else if (application?.unlockSupportingDocuments) {
         this.goToSupportingDocumentUpload(programYearId);
-      } else if (!isEmpty(unlockCCFRIList)) {
-        this.goToCCFRI(unlockCCFRIList[0], application);
-      } else if (!isEmpty(unlockNMFList)) {
-        this.goToNMF(unlockNMFList[0], programYearId);
-      } else if (!isEmpty(unlockRFIList)) {
-        this.goToRFI(unlockRFIList[0], programYearId);
-      } else if (!isEmpty(unlockAFSList)) {
-        this.goToAFS(unlockAFSList[0], programYearId);
       } else if (application?.unlockDeclaration) {
         this.goToSummaryDeclaration(programYearId);
       }
