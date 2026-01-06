@@ -1024,7 +1024,7 @@ const router = createRouter({
       name: 'manage-ece-reports',
       component: ManageECEReports,
       meta: {
-        pageTitle: PAGE_TITLES.MANAGE_REPORTS,
+        pageTitle: PAGE_TITLES.MANAGE_ECE_REPORTS,
         showNavBar: false,
         requiresAuth: true,
       },

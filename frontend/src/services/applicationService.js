@@ -770,7 +770,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION}/${applicationId}/adj-ecewe-facilities`);
       return response.data;
     } catch (error) {
-      console.log(`Failed to get Adjudication ECEWE facilities - ${error}`);
+      console.error(`Failed to get Adjudication ECEWE facilities - ${error}`);
       throw error;
     }
   },

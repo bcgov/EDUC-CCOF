@@ -3,11 +3,9 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { UUID_VALIDATOR_VERSION } = require('../util/constants');
+const { ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { createECEReport, getECEReport, getECEReports } = require('../components/eceReport');
 const { checkSchema, param, query, validationResult } = require('express-validator');
-
-module.exports = router;
 
 const createECEReportSchema = {
   organizationId: {
@@ -28,12 +26,30 @@ const createECEReportSchema = {
   month: {
     in: ['body'],
     exists: { errorMessage: '[month] is required' },
-    isNumeric: { errorMessage: '[month] must be a number' },
+    isInt: {
+      options: { min: 1, max: 12 },
+      errorMessage: '[month] must be an integer between 1 and 12',
+    },
   },
   year: {
     in: ['body'],
     exists: { errorMessage: '[year] is required' },
-    isNumeric: { errorMessage: '[year] must be a number' },
+    isInt: {
+      options: { min: 2000, max: 2200 },
+      errorMessage: '[year] must be an integer between 2000 and 2200',
+    },
+  },
+  reportType: {
+    in: ['body'],
+    exists: {
+      options: { checkFalsy: true },
+      errorMessage: '[reportType] is required',
+    },
+    toInt: true,
+    isIn: {
+      options: [Object.values(ECE_REPORT_TYPES)],
+      errorMessage: '[reportType] must be a valid report type',
+    },
   },
 };
 

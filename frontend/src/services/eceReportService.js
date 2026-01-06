@@ -22,7 +22,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}/${eceReportId}`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get ECE report - ${error}`);
+      console.error(`Failed to get ECE report - ${error}`);
       throw error;
     }
   },
@@ -36,7 +36,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}${queryString}`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get ECE Reports - ${error}`);
+      console.error(`Failed to get ECE Reports - ${error}`);
       throw error;
     }
   },

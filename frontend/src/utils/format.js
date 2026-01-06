@@ -188,7 +188,7 @@ export function formatUTCDateToMonthYear(date) {
 
 /**
  * Format UTC time to Pacific Time (America/Vancouver)
- * and return easy-access date parts
+ * and return easy-access date parts.
  *
  * @param {string | Date} utcTime - UTC ISO string or Date
  * @returns {{
@@ -198,10 +198,13 @@ export function formatUTCDateToMonthYear(date) {
  *   hour: number,
  *   minute: number,
  *   second: number,
- * }}
+ * } | null}
  */
 export function formatUTCtoPacificTime(utcTime) {
   const date = new Date(utcTime);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Vancouver',
     year: 'numeric',

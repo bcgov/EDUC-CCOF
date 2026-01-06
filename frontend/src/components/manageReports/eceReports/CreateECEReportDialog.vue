@@ -229,7 +229,7 @@ export default {
         this.loading = true;
         await Promise.all([this.loadECEReports(), this.loadECEWEFacility()]);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
       } finally {
         this.loading = false;
@@ -249,6 +249,9 @@ export default {
       this.eceweFacilities = new Map((response ?? []).map((f) => [f.facilityId, f]));
     },
     getTrailingMonths(currentMonth, maxMonths = 6) {
+      if (!currentMonth) {
+        return [];
+      }
       const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
       const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
       return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
@@ -315,13 +318,13 @@ export default {
           reportType: ECE_REPORT_TYPES.BASE,
         });
         const eceReportId = response?.data;
-        this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
+        await this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
         this.setSuccessAlert('ECE report created successfully.');
+        this.closeDialog();
       } catch (error) {
         this.setFailureAlert('An error occurred while creating ECE report. Please try again later.');
-        console.log(error);
+        console.error(error);
       } finally {
-        this.closeDialog();
         this.loading = false;
       }
     },

@@ -11,11 +11,7 @@
     <v-card variant="outlined" class="pa-6 mt-8">
       <p>This is a placeholder for the ECE Reports table.</p>
     </v-card>
-    <CreateECEReportDialog
-      :show="showCreateECEReportDialog"
-      :ece-reports="eceReports"
-      @close="showCreateECEReportDialog = false"
-    />
+    <CreateECEReportDialog :show="showCreateECEReportDialog" @close="showCreateECEReportDialog = false" />
   </div>
   <NavButton @previous="$router.push(`${PATHS.ROOT.MANAGE_REPORTS}`)" />
 </template>
@@ -33,7 +29,6 @@ export default {
   components: { AppButton, CreateECEReportDialog, NavButton },
   data() {
     return {
-      eceReports: [],
       showCreateECEReportDialog: false,
     };
   },

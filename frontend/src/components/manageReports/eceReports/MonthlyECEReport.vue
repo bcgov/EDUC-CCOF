@@ -35,7 +35,7 @@ export default {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to load ECE report');
       } finally {
         this.loading = false;
