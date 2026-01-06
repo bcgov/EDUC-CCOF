@@ -93,7 +93,12 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import { deepCloneObject, isAnyChangeRequestActive } from '@/utils/common.js';
-import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
+import {
+  CHANGE_REQUEST_STATUSES,
+  DOCUMENT_TYPES,
+  FILE_REQUIREMENTS_TEXT,
+  FILE_TYPES_ACCEPT,
+} from '@/utils/constants.js';
 import { isValidFile, readFile } from '@/utils/file.js';
 import rules from '@/utils/rules.js';
 
@@ -145,7 +150,7 @@ export default {
         if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
           return false;
         }
-        return this.changeRequestStatus !== 'INCOMPLETE';
+        return this.changeRequestStatus !== CHANGE_REQUEST_STATUSES.INCOMPLETE;
       }
       if (this.unlockLicenseUpload || this.unlockRenewal) {
         return false;
