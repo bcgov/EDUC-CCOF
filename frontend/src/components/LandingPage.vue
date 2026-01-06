@@ -394,6 +394,7 @@ import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
 import SmallCard from '@/components/guiComponents/SmallCard.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
+import ApplicationService from '@/services/applicationService';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -475,6 +476,7 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationId',
+      'applicationTemplateVersion',
       'showApplicationTemplateV1',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
@@ -867,22 +869,31 @@ export default {
       const unlockRFIList = getUnlockRFIList(facilityList);
       const unlockNMFList = getUnlockNMFList(facilityList);
       const unlockAFSList = getUnlockAFSList(facilityList);
+      const isTemplateV1 = ApplicationService.showApplicationTemplateV1(application?.applicationTemplateVersion);
       if (application?.unlockLicenseUpload) this.goToLicenseUpload(programYearId);
       else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG)
         this.goToCCOFFunding(programYearId, facilityList);
       else if (
-        !application?.showApplicationTemplateV1 &&
+        !isTemplateV1 &&
         application?.unlockRenewal &&
         application?.applicationType === APPLICATION_TYPES.RENEWAL
-      )
+      ) {
         this.goToBankingInformation(programYearId);
-      else if (application?.unlockEcewe) this.goToECEWE(programYearId);
-      else if (application?.unlockSupportingDocuments) this.goToSupportingDocumentUpload(programYearId);
-      else if (!isEmpty(unlockCCFRIList)) this.goToCCFRI(unlockCCFRIList[0], application);
-      else if (!isEmpty(unlockNMFList)) this.goToNMF(unlockNMFList[0], programYearId);
-      else if (!isEmpty(unlockRFIList)) this.goToRFI(unlockRFIList[0], programYearId);
-      else if (!isEmpty(unlockAFSList)) this.goToAFS(unlockAFSList[0], programYearId);
-      else if (application?.unlockDeclaration) this.goToSummaryDeclaration(programYearId);
+      } else if (application?.unlockEcewe) {
+        this.goToECEWE(programYearId);
+      } else if (application?.unlockSupportingDocuments) {
+        this.goToSupportingDocumentUpload(programYearId);
+      } else if (!isEmpty(unlockCCFRIList)) {
+        this.goToCCFRI(unlockCCFRIList[0], application);
+      } else if (!isEmpty(unlockNMFList)) {
+        this.goToNMF(unlockNMFList[0], programYearId);
+      } else if (!isEmpty(unlockRFIList)) {
+        this.goToRFI(unlockRFIList[0], programYearId);
+      } else if (!isEmpty(unlockAFSList)) {
+        this.goToAFS(unlockAFSList[0], programYearId);
+      } else if (application?.unlockDeclaration) {
+        this.goToSummaryDeclaration(programYearId);
+      }
     },
     actionRequiredFacilityRoute(ccfriApplicationId) {
       const application = this.applicationMap?.get(this.selectedProgramYearId);
