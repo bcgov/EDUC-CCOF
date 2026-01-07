@@ -180,16 +180,10 @@ export default {
   computed: {
     ...mapState(useAppStore, ['lookupInfo']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
-    ...mapState(useAuthStore, ['isFacilityAdmin', 'userInfo']),
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
-      let facilityList = this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
-      if (this.isFacilityAdmin) {
-        facilityList = facilityList.filter((facility) => {
-          return this.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
-        });
-      }
-      return facilityList;
+      return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     allReportingMonths() {
       const reportingMonths = [];

@@ -229,6 +229,7 @@ export const useApplicationStore = defineStore('application', {
       return applicationIds;
     },
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
+      const authStore = useAuthStore();
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;
       const selectedApplication = state.applicationMap?.get(programYearId);
       let facilityList = selectedApplication?.facilityList;
@@ -246,6 +247,13 @@ export const useApplicationStore = defineStore('application', {
       }
 
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
+
+      if (authStore.isFacilityAdmin) {
+        facilityList = facilityList?.filter((facility) => {
+          return authStore.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+
       return facilityList;
     },
     showApplicationTemplateV1: (state) => {

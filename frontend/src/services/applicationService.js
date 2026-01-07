@@ -763,4 +763,15 @@ export default {
       throw error;
     }
   },
+
+  async getAdjudicationECEWEFacilities(applicationId) {
+    try {
+      if (!applicationId) return;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION}/${applicationId}/adj-ecewe-facilities`);
+      return response.data;
+    } catch (error) {
+      console.error(`Failed to get Adjudication ECEWE facilities - ${error}`);
+      throw error;
+    }
+  },
 };
