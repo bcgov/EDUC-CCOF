@@ -137,6 +137,9 @@ async function getUserInfo(req, res) {
   if (isFacilityAdmin(user)) {
     const facilities = await getRawContactFacilities(user.contactId);
     user.facilities = facilities;
+    if (isIdir) {
+      req.session.passport.user.facilities = facilities;
+    }
   }
 
   const organization = new MappableObjectForFront(userResponse, UserProfileOrganizationMappings).data;

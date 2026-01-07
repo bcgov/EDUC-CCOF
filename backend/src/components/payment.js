@@ -1,5 +1,6 @@
 'use strict';
 const { getOperation } = require('./utils');
+const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { buildFilterQuery } = require('./utils');
 const { PaymentMappings } = require('../util/mapping/Mappings');
@@ -26,7 +27,8 @@ async function getPayments(req, res) {
         PaymentMappings,
       ).toJSON(),
     );
-    return res.status(HttpStatus.OK).json(mappedPayments);
+    const restrictedPayments = restrictFacilities(req, mappedPayments);
+    return res.status(HttpStatus.OK).json(restrictedPayments);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
