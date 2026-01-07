@@ -32,12 +32,22 @@
               :disabled="loading"
               :items="filteredFacilities"
               item-value="facilityId"
-              item-title="facilityName"
               label="Select facility"
               variant="outlined"
               :rules="rules.required"
               class="mt-2"
             >
+              <template #item="{ props, item }">
+                <!-- remove default title -->
+                <v-list-item v-bind="{ ...props, title: undefined }">
+                  <v-list-item-title>
+                    {{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}
+                  </v-list-item-title>
+                </v-list-item>
+              </template>
+              <template #selection="{ item }">
+                {{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}
+              </template>
               <template #no-data>
                 <v-list-item>
                   <v-list-item-title>No available facilities.</v-list-item-title>
@@ -48,7 +58,7 @@
         </v-row>
         <v-row no-gutters>
           <v-col cols="12" md="4" lg="3">
-            <p class="font-weight-bold pt-6 pr-4">Select reporting month:</p>
+            <p class="font-weight-bold pt-6 pr-4">Select month of service:</p>
           </v-col>
           <v-col cols="12" md="8" lg="9" class="d-flex justify-start">
             <v-select
@@ -59,7 +69,7 @@
               :items="allReportingMonths.get(selectedFacilityId) || []"
               item-title="label"
               item-value="value"
-              label="Select reporting month"
+              label="Select month of service"
               variant="outlined"
               :rules="rules.required"
               class="mt-2"
@@ -103,7 +113,14 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
-import { ECE_REPORT_TYPES, ECEWE_FACILITY_STATUSES, FISCAL_YEAR_MONTHS, OPT_STATUSES, PATHS } from '@/utils/constants';
+import {
+  ECE_REPORT_TYPES,
+  ECEWE_FACILITY_STATUSES,
+  EMPTY_PLACEHOLDER,
+  FISCAL_YEAR_MONTHS,
+  OPT_STATUSES,
+  PATHS,
+} from '@/utils/constants';
 import { formatFirstDateOfMonth, formatMonthYearToString, formatUTCtoPacificTime } from '@/utils/format';
 import { rules } from '@/utils/rules';
 
@@ -138,6 +155,16 @@ export default {
     selectedProgramYearId() {
       return this.selectedProgramYear?.programYearId;
     },
+    defaultFacilityId() {
+      return this.filteredFacilities?.length === 1 ? this.filteredFacilities[0].facilityId : null;
+    },
+    defaultReportingMonth() {
+      if (!this.selectedFacilityId) {
+        return null;
+      }
+      const reportingMonths = this.allReportingMonths.get(this.selectedFacilityId);
+      return !isEmpty(reportingMonths) ? reportingMonths[reportingMonths.length - 1]?.value : null;
+    },
     isSelectedProgramYearInFuture() {
       return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
     },
@@ -145,11 +172,17 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     filteredFacilities() {
-      return this.facilities?.filter((facility) => {
-        const ecewe = this.eceweFacilities.get(facility.facilityId);
-        const reportingMonths = this.allReportingMonths.get(facility.facilityId);
-        return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);
-      });
+      return this.facilities
+        ?.filter((facility) => {
+          const ecewe = this.eceweFacilities.get(facility.facilityId);
+          const reportingMonths = this.allReportingMonths.get(facility.facilityId);
+          return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);
+        })
+        .sort((a, b) =>
+          (a.facilityAccountNumber ?? '').localeCompare(b.facilityAccountNumber ?? '', undefined, {
+            sensitivity: 'base',
+          }),
+        );
     },
     isSelectMonthDisabled() {
       return this.loading || !this.selectedFacilityId;
@@ -175,8 +208,8 @@ export default {
       - Only allow months within the selected fiscal year (April to March).
       - If a future fiscal year is selected, return an empty array
         (e.g. Dec 2025 cannot create reports for FY 2026/27).
-      - Limit selection to a maximum of the last 6 fiscal months (getTrailingMonths - maxMonths defaults to DEFAULT_MAX_MONTHS)
-        (e.g. Aug 2025 to Jan 2026).
+      - Users can create reports for the current month and for any of the previous 6 months. (getTrailingMonths - maxMonths defaults to DEFAULT_MAX_MONTHS)
+        (e.g. Jul 2025 to Jan 2026).
       - Months before the ECE payment eligibility start date are not displayed.
       - Months after the mid-year opt-out date are not displayed.
       - Facility must be either:
@@ -207,18 +240,19 @@ export default {
       async handler() {
         this.$refs.form?.resetValidation();
         await this.loadData();
-        this.selectedFacilityId = null;
+        this.selectedFacilityId = this.defaultFacilityId;
         this.selectedReportingMonth = null;
       },
     },
     selectedFacilityId: {
       handler() {
-        this.selectedReportingMonth = null;
+        this.selectedReportingMonth = this.defaultReportingMonth;
       },
     },
   },
   created() {
-    this.DEFAULT_MAX_MONTHS = 6;
+    this.DEFAULT_MAX_MONTHS = 7;
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.rules = rules;
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
   },
