@@ -41,12 +41,12 @@
                 <!-- remove default title -->
                 <v-list-item v-bind="{ ...props, title: undefined }">
                   <v-list-item-title>
-                    {{ item.raw.facilityAccountNumber }}, {{ item.raw.facilityName }}
+                    {{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}
                   </v-list-item-title>
                 </v-list-item>
               </template>
               <template #selection="{ item }">
-                {{ item.raw.facilityAccountNumber }}, {{ item.raw.facilityName }}
+                {{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}
               </template>
               <template #no-data>
                 <v-list-item>
@@ -113,7 +113,14 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
-import { ECE_REPORT_TYPES, ECEWE_FACILITY_STATUSES, FISCAL_YEAR_MONTHS, OPT_STATUSES, PATHS } from '@/utils/constants';
+import {
+  ECE_REPORT_TYPES,
+  ECEWE_FACILITY_STATUSES,
+  EMPTY_PLACEHOLDER,
+  FISCAL_YEAR_MONTHS,
+  OPT_STATUSES,
+  PATHS,
+} from '@/utils/constants';
 import { formatFirstDateOfMonth, formatMonthYearToString, formatUTCtoPacificTime } from '@/utils/format';
 import { rules } from '@/utils/rules';
 
@@ -245,6 +252,7 @@ export default {
   },
   created() {
     this.DEFAULT_MAX_MONTHS = 7;
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.rules = rules;
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
   },
