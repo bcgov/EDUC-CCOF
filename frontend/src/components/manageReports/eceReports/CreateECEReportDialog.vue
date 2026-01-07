@@ -163,7 +163,7 @@ export default {
         return null;
       }
       const reportingMonths = this.allReportingMonths.get(this.selectedFacilityId);
-      return !isEmpty(reportingMonths) ? reportingMonths[reportingMonths.length - 1]?.value : null;
+      return isEmpty(reportingMonths) ? null : reportingMonths[reportingMonths.length - 1]?.value;
     },
     isSelectedProgramYearInFuture() {
       return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
@@ -204,21 +204,30 @@ export default {
       });
     },
     /*
-      CCFRI-6645 - Reporting month rules:
-      - Only allow months within the selected fiscal year (April to March).
-      - If a future fiscal year is selected, return an empty array
-        (e.g. Dec 2025 cannot create reports for FY 2026/27).
-      - Users can create reports for the current month and for any of the previous 6 months. (getTrailingMonths - maxMonths defaults to DEFAULT_MAX_MONTHS)
-        (e.g. Jul 2025 to Jan 2026).
-      - Months before the ECE payment eligibility start date are not displayed.
-      - Months after the mid-year opt-out date are not displayed.
-      - Facility must be either:
-        - Fully approved (ECEWE status = Complete Approved), or
-        - Temporarily approved with the current date within the temp approval window.
-
-      Additional constraints:
-      - Exclude months that already have a report created for the facility.
-    */
+     * CCFRI-6645 – Reporting month rules
+     *
+     * General rules:
+     * - Only months within the selected fiscal year (April–March) are allowed.
+     * - If a future fiscal year is selected, return an empty list
+     *   (e.g., if the current month is Dec 2025, reports cannot be created for FY 2026/27).
+     * - Users can create reports for:
+     *   - the current month, and
+     *   - up to the previous 6 months (e.g., Jul 2025–Jan 2026).
+     * - Do not display months:
+     *   - before the ECE payment eligibility start date, or
+     *   - after the mid-year opt-out date.
+     *
+     * Facility-specific rules:
+     * - Fully approved (ECEWE status = Complete Approved):
+     *   - Display all available months.
+     * - Temporarily approved:
+     *   - Display only months where the first day of the month falls within the temporary approval window.
+     *     (e.g., temp approval from Nov 1 – Dec 31, 2025:
+     *      in Jan 2026, only Nov and Dec are shown unless full approval is granted.)
+     *
+     * Additional constraints:
+     * - Exclude months that already have a report created for the facility.
+     */
     allReportingMonths() {
       const reportingMonths = new Map();
       if (this.isSelectedProgramYearInFuture) {

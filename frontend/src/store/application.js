@@ -23,6 +23,7 @@ export const useApplicationStore = defineStore('application', {
     isRenewal: false,
 
     unlockBaseFunding: false,
+    unlockRenewal: false,
     unlockDeclaration: false,
     unlockEcewe: false,
     unlockLicenseUpload: false,
@@ -69,6 +70,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setUnlockBaseFunding(value) {
       this.unlockBaseFunding = value;
+    },
+    setUnlockRenewal(value) {
+      this.unlockRenewal = value;
     },
     setUnlockDeclaration(value) {
       this.unlockDeclaration = value;
@@ -142,6 +146,7 @@ export const useApplicationStore = defineStore('application', {
         this.setProgramYearLabel(application.ccofProgramYearName);
         this.setIsRenewal(isRenewal);
         this.setUnlockBaseFunding(application.unlockBaseFunding);
+        this.setUnlockRenewal(application.unlockRenewal);
         this.setUnlockDeclaration(application.unlockDeclaration);
         this.setUnlockEcewe(application.unlockEcewe);
         this.setUnlockLicenseUpload(application.unlockLicenseUpload);
