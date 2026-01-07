@@ -103,9 +103,8 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
-import { padString } from '@/utils/common.js';
 import { ECE_REPORT_TYPES, ECEWE_FACILITY_STATUSES, FISCAL_YEAR_MONTHS, OPT_STATUSES, PATHS } from '@/utils/constants';
-import { formatMonthYearToString, formatUTCtoPacificTime } from '@/utils/format';
+import { formatFirstDateOfMonth, formatMonthYearToString, formatUTCtoPacificTime } from '@/utils/format';
 import { rules } from '@/utils/rules';
 
 export default {
@@ -146,12 +145,11 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     filteredFacilities() {
-      const filteredFacilities = this.facilities?.filter((facility) => {
+      return this.facilities?.filter((facility) => {
         const ecewe = this.eceweFacilities.get(facility.facilityId);
         const reportingMonths = this.allReportingMonths.get(facility.facilityId);
         return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);
       });
-      return filteredFacilities;
     },
     isSelectMonthDisabled() {
       return this.loading || !this.selectedFacilityId;
@@ -168,7 +166,7 @@ export default {
         return {
           month,
           year,
-          firstDate: `${year}-${padString(month, 2, '0')}-01`,
+          firstDate: formatFirstDateOfMonth(month, year),
         };
       });
     },
@@ -177,7 +175,7 @@ export default {
       - Only allow months within the selected fiscal year (April to March).
       - If a future fiscal year is selected, return an empty array
         (e.g. Dec 2025 cannot create reports for FY 2026/27).
-      - Limit selection to a maximum of the last 6 fiscal months (getTrailingMonths - maxMonths defaults to 6)
+      - Limit selection to a maximum of the last 6 fiscal months (getTrailingMonths - maxMonths defaults to DEFAULT_MAX_MONTHS)
         (e.g. Aug 2025 to Jan 2026).
       - Months before the ECE payment eligibility start date are not displayed.
       - Months after the mid-year opt-out date are not displayed.
@@ -189,10 +187,10 @@ export default {
       - Exclude months that already have a report created for the facility.
     */
     allReportingMonths() {
-      if (this.isSelectedProgramYearInFuture) {
-        return new Map();
-      }
       const reportingMonths = new Map();
+      if (this.isSelectedProgramYearInFuture) {
+        return reportingMonths;
+      }
       for (const facility of this.facilities ?? []) {
         reportingMonths.set(facility.facilityId, this.getReportingMonthsByFacilityId(facility.facilityId));
       }
@@ -220,6 +218,7 @@ export default {
     },
   },
   created() {
+    this.DEFAULT_MAX_MONTHS = 6;
     this.rules = rules;
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
   },
@@ -227,7 +226,7 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        await Promise.all([this.loadECEReports(), this.loadECEWEFacility()]);
+        await Promise.all([this.loadECEReports(), this.loadECEWEFacilities()]);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -241,14 +240,14 @@ export default {
         programYearId: this.selectedProgramYearId,
       });
     },
-    async loadECEWEFacility() {
+    async loadECEWEFacilities() {
       const application = this.userInfo?.applications?.find(
         (item) => item.ccofProgramYearId === this.selectedProgramYearId,
       );
       const response = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
       this.eceweFacilities = new Map((response ?? []).map((f) => [f.facilityId, f]));
     },
-    getTrailingMonths(currentMonth, maxMonths = 6) {
+    getTrailingMonths(currentMonth, maxMonths = this.DEFAULT_MAX_MONTHS) {
       if (!currentMonth) {
         return [];
       }

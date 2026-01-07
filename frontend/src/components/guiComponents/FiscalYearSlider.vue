@@ -91,9 +91,9 @@ export default {
     },
   },
   created() {
-    const defaultProgramYearId = this.defaultProgramYearId || this.programYearId;
+    const initialProgramYearId = this.defaultProgramYearId || this.programYearId;
     this.selectedProgramYearIndex = this.programYearList?.findIndex(
-      (item) => item.programYearId === defaultProgramYearId,
+      (item) => item.programYearId === initialProgramYearId,
     );
     this.updateActiveIndex();
     if (this.selectedProgramYearIndex > -1)

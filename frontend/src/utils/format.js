@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 
+import { padString } from '@/utils/common.js';
 import { DateTimeFormatterBuilder, ResolverStyle } from '@js-joda/core';
 
 export function getDateFormatter(pattern) {
@@ -225,4 +226,15 @@ export function formatUTCtoPacificTime(utcTime) {
     minute: get('minute'),
     second: get('second'),
   };
+}
+
+/**
+ * Format the first date of a month as a YYYY-MM-DD string
+ *
+ * @param {number|string} year - Full year (e.g., 2025)
+ * @param {number|string} month - 1-based month (1–12)
+ * @returns {string | null}
+ */
+export function formatFirstDateOfMonth(month, year) {
+  return `${year}-${padString(month, 2, '0')}-01`;
 }
