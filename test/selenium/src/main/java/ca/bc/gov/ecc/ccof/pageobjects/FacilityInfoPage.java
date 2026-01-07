@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -18,6 +17,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class FacilityInfoPage {
 	WebDriverWait wait;
 	WebDriver driver;
+	private JavascriptExecutor js;
 
 	@FindBy(xpath = "//*[contains(@id,'headerControlsList_')]//div[3]//a")
 	WebElement facilityNameLink;
@@ -67,7 +67,13 @@ public class FacilityInfoPage {
 	WebElement selectApprovableFeeScheduleCheckbox;
 
 	@FindBy(xpath = "//*[contains(text(),'New Approvable Fee Schedule')]")
-	List<WebElement> NewApprovableFeeSchedule;
+	List<WebElement> newApprovableFeeSchedule;
+
+	@FindBy(xpath = "//*[@aria-label='AFS Confirmed: No']")
+	WebElement afsConfirmedField;
+
+	@FindBy(xpath = "//*[@aria-label='Rich Text Editor Control ccof_adjudication_ccfri_facility ccof_adjudicatorrecommendationnotes']")
+	WebElement adjudicatorRecommendationNotesField;
 
 	// main facility page
 
@@ -90,6 +96,7 @@ public class FacilityInfoPage {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
 		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+		this.js = (JavascriptExecutor) driver;
 	}
 
 	public void clickFacilityNameLink() {
@@ -125,8 +132,8 @@ public class FacilityInfoPage {
 		return ignoreAndSaveBtn;
 	}
 
-	public List<WebElement> NewApprovableFeeScheduleLabel() {
-		return NewApprovableFeeSchedule;
+	public List<WebElement> newApprovableFeeScheduleLabel() {
+		return newApprovableFeeSchedule;
 	}
 
 //initial decision tab methods can be added here
@@ -162,75 +169,38 @@ public class FacilityInfoPage {
 
 	public void clickSelectApprovableFeeScheduleCheckbox() {
 		Actions action = new Actions(driver);
-
-		// Scroll down by 0 on X axis and 500 pixels on Y axis
-		action.scrollByAmount(0, 500).perform();
-
-		// Scroll further down
-		action.scrollByAmount(0, 800).perform();
-
 		action.moveToElement(selectApprovableFeeScheduleCheckbox).doubleClick().build().perform();
-	}
-
-	public void scrollContainerToElement(WebElement el) {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("var target = arguments[0];" +
-		// try common grid viewport classes; adjust to your DOM if needed
-				"var c = target.closest('.ag-body-viewport, .ms-DetailsList, .dwmms-grid-viewport, [data-is-scrollable=\"true\"]');"
-				+ "if (c) {" + "  var top = target.offsetTop - c.clientHeight/2;" + "  c.scrollTop = Math.max(0, top);"
-				+ "} else {" + "  target.scrollIntoView({block:'center', inline:'nearest'});" + "}", el);
-	}
-
-	public void jsClickCenter(WebElement clickable) {
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("var el=arguments[0];" + "el.scrollIntoView({block:'center', inline:'nearest'});"
-				+ "var r=el.getBoundingClientRect();"
-				+ "var opts={bubbles:true,cancelable:true,view:window,clientX:r.left+r.width/2,clientY:r.top+r.height/2};"
-				+ "el.dispatchEvent(new MouseEvent('mousedown', opts));"
-				+ "el.dispatchEvent(new MouseEvent('mouseup', opts));"
-				+ "el.dispatchEvent(new MouseEvent('click', opts));", clickable);
-	}
-
-	public void clickSelectApprovableFeeScheduleCheckbox2() {
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(25));
-		By inputLocator = By.xpath("//input[@type='checkbox' and @aria-label='select or deselect the row']");
-
-		// 1) Get fresh input
-		WebElement input = wait.until(ExpectedConditions.presenceOfElementLocated(inputLocator));
-
-		// 2) Resolve clickable wrapper
-		WebElement clickable;
-		try {
-			clickable = input.findElement(By.xpath("ancestor::label[1]"));
-		} catch (NoSuchElementException e) {
-			// Fluent/Fabric often uses a styled span/div next to the input
-			clickable = input.findElement(By.xpath(
-					"ancestor::*[self::div or self::span][contains(@class,'Checkbox') or contains(@class,'checkbox')][1]"));
-		}
-
-		// 3) Scroll appropriate container (viewport or page)
-		scrollContainerToElement(clickable);
-
-		// 4) Try normal click, then JS fallback
-		try {
-			wait.until(ExpectedConditions.elementToBeClickable(clickable)).click();
-		} catch (ElementClickInterceptedException e1) {
-			((JavascriptExecutor) driver).executeScript("arguments[0].click();", clickable);
-		} catch (Exception e2) {
-			// Final fallback: dispatch mouse events
-			jsClickCenter(clickable);
-		}
-
-		// 5) Assert state changed
-		wait.until(d -> {
-			WebElement re = d.findElement(inputLocator);
-			String aria = re.getAttribute("aria-checked");
-			return re.isSelected() || "true".equalsIgnoreCase(aria);
-		});
 	}
 
 	public WebElement selectApprovableFeeScheduleCheckboxElement() {
 		return selectApprovableFeeScheduleCheckbox;
+	}
+
+	public WebElement clickAfsConfirmedField() {
+		return afsConfirmedField;
+	}
+
+	/**
+	 * Click the AFS Confirmed toggle using the primary page-object locator.
+	 */
+	/*
+	 * public void clickAfsConfirmedToggle() { try {
+	 * wait.until(ExpectedConditions.visibilityOf(afsConfirmedField));
+	 * ((JavascriptExecutor)
+	 * driver).executeScript("arguments[0].scrollIntoView({block:'center'});",
+	 * afsConfirmedField); ((JavascriptExecutor)
+	 * driver).executeScript("arguments[0].click();", afsConfirmedField); } catch
+	 * (Exception e) {
+	 * 
+	 * } }
+	 */
+
+	public void enterAdjudicatorRecommendationNotes(String notes) {
+		adjudicatorRecommendationNotesField.sendKeys(notes);
+	}
+
+	public WebElement adjudicatorRecommendationNotesFieldElement() {
+		return adjudicatorRecommendationNotesField;
 	}
 
 	// main page methods
@@ -263,4 +233,120 @@ public class FacilityInfoPage {
 		facilityID.sendKeys(facId);
 	}
 
+	public String getCcfriStatus() {
+		return wait.until(ExpectedConditions.visibilityOf(ccfriStatusField)).getAttribute("value");
+	}
+
+	public WebElement waitForCcfriStatusField() {
+		return ccfriStatusField;
+	}
+
+	// =========================================================
+	// AFS Confirmed - Page Object API
+	// =========================================================
+
+	/**
+	 * Preferred path: set the AFS Confirmed boolean via Dynamics Xrm client API.
+	 */
+	public boolean setAfsConfirmedViaXrm(boolean value) {
+		driver.switchTo().defaultContent();
+		String script = "try {"
+				+ "  var a = Xrm && Xrm.Page && Xrm.Page.getAttribute && Xrm.Page.getAttribute('ccof_afs_confirmed');"
+				+ "  if (a) { a.setValue(arguments[0]); a.setSubmitMode('always'); a.fireOnChange(); return 'OK'; }"
+				+ "  return 'Attribute not found';" + "} catch(e) { return 'Error: ' + e.message; }";
+		Object res = js.executeScript(script, value);
+		return "OK".equals(res);
+	}
+
+	/**
+	 * Fallback path: click the AFS Confirmed toggle via DOM. Works regardless of
+	 * current state ("Yes" or "No") and handles virtualization via inner container
+	 * scroll.
+	 */
+	public void clickAfsConfirmedToggle(Duration timeout) {
+		WebDriverWait localWait = new WebDriverWait(driver, timeout);
+
+		// State‑agnostic locators:
+		By toggleBy = By.xpath(
+				"//*[contains(@aria-label,'AFS Confirmed') or (@aria-pressed and contains(@aria-label,'AFS Confirmed'))]");
+		By labelSiblingBy = By.xpath("//*[normalize-space()='AFS Confirmed']"
+				+ "/following::*[@role='switch' or @aria-pressed or contains(@aria-label,'AFS Confirmed')][1]");
+
+		// Switch into the frame containing the toggle
+		try {
+			switchToFrameContaining(toggleBy, Duration.ofSeconds(8));
+		} catch (NoSuchElementException e) {
+			switchToFrameContaining(labelSiblingBy, Duration.ofSeconds(8));
+		}
+
+		// Nudge inner form scroll to force virtualization to render controls
+		scrollInnerFormContainerIfPresent();
+
+		// Locate the toggle
+		WebElement toggle;
+		toggle = localWait.until(ExpectedConditions.visibilityOfElementLocated(toggleBy));
+
+		// Click to set YES
+		bringIntoViewAndClick(toggle);
+
+		String beforePressed = toggle.getAttribute("aria-pressed");
+		js.executeScript("arguments[0].click();", toggle);
+
+		if (beforePressed != null) {
+			localWait.until(ExpectedConditions.attributeToBe(toggle, "aria-pressed", "true"));
+		} else {
+			localWait.until(ExpectedConditions.attributeContains(toggle, "aria-label", "Yes"));
+		}
+
+		// Optional visual cue for debug
+		js.executeScript("arguments[0].style.outline='2px solid magenta';", toggle);
+	}
+
+	// =========================================================
+	// Private helpers for this Page Object
+	// =========================================================
+
+	/**
+	 * Switch to the frame that contains `locator`. Returns frame index or -1 if in
+	 * default content.
+	 */
+	private int switchToFrameContaining(By locator, Duration timeout) {
+		WebDriverWait localWait = new WebDriverWait(driver, timeout);
+
+		driver.switchTo().defaultContent();
+		if (!driver.findElements(locator).isEmpty()) {
+			return -1;
+		}
+
+		List<WebElement> frames = driver.findElements(By.tagName("iframe"));
+		for (int i = 0; i < frames.size(); i++) {
+			try {
+				driver.switchTo().defaultContent();
+				localWait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(i));
+				if (!driver.findElements(locator).isEmpty()) {
+					return i; // inside the correct frame
+				}
+			} catch (Exception _) {
+			}
+		}
+
+		driver.switchTo().defaultContent();
+		throw new NoSuchElementException("Locator not found in default content or any frame: " + locator);
+	}
+
+	/** Scroll the inner Dynamics form container (virtualize rendering). */
+	private void scrollInnerFormContainerIfPresent() {
+		List<WebElement> containers = driver.findElements(By.cssSelector(
+				"div[role='presentation'][class*='flexbox'], div[aria-label*='Form'], div[aria-label*='Main form']"));
+		if (!containers.isEmpty()) {
+			js.executeScript("arguments[0].scrollTop = arguments[0].scrollTop + 1000;", containers.get(0));
+		}
+	}
+
+	/** Bring element into view + focus + click via JS. */
+	private void bringIntoViewAndClick(WebElement el) {
+		js.executeScript("arguments[0].scrollIntoView({block:'center'});", el);
+		js.executeScript("arguments[0].focus();", el);
+		js.executeScript("arguments[0].click();", el);
+	}
 }

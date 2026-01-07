@@ -1,23 +1,18 @@
 package ca.bc.gov.ecc.ccof.testcases;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.time.Duration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.Test;
 
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
 import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
-import ca.bc.gov.ecc.ccof.pageobjects.ApprovableFeeSchedulePage;
 import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
+import ca.bc.gov.ecc.ccof.pageobjects.CcfriUnlockForm;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
@@ -93,38 +88,26 @@ public class TestAFSMainApplication extends BaseTest {
 
 		FacilityInfoPage facilityInfo = new FacilityInfoPage(driver);
 		facilityInfo.clickInitialDecisionLink();
-		Thread.sleep(8000);
-		facilityInfo.clickCcfriRecommendationField();
+		Thread.sleep(5000);
 
-		List<WebElement> litsIframe = driver.findElements(By.tagName("iframe"));
-		logger.info("Total iframes are: " + litsIframe.size());
-		// scrolling down the page
-		for (int i = 1; i < litsIframe.size(); i++) {
-
-			driver.switchTo().frame(i);
-			System.out.println("Switched to iframe " + i);
-
-			JavascriptExecutor js = (JavascriptExecutor) driver;
-			js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
-
+		// --- AFS Confirmed: Xrm first; else DOM fallback via page‑object methods ---
+		boolean afsOK = facilityInfo.setAfsConfirmedViaXrm(true);
+		logger.info("AFS Confirmed set via Xrm: {}", afsOK);
+		if (!afsOK) {
+			facilityInfo.clickAfsConfirmedToggle(Duration.ofSeconds(10));
 		}
 
-		Actions action = new Actions(driver);
-		action.sendKeys(Keys.PAGE_DOWN).build().perform();
-		action.sendKeys(Keys.PAGE_DOWN).build().perform();
-		action.sendKeys(Keys.PAGE_DOWN).build().perform();
-		action.sendKeys(Keys.PAGE_DOWN).build().perform();
+		facilityInfo.clickSaveAndCloseCcfriFacilityBtn();
+		Thread.sleep(8000);
+		ccfriInfo.clickUnlockBtn();
 		Thread.sleep(8000);
 
-		facilityInfo.clickSelectApprovableFeeScheduleCheckbox();
-		Thread.sleep(3000);
+		CcfriUnlockForm ccfriUnlock = new CcfriUnlockForm(driver);
+		utils.compareValues("Enabled", ccfriUnlock.actualAfsEnableStatusTxt());
+		utils.compareValues("Unlocked", ccfriUnlock.actualAfsUnlockStatusTxt());
 
-		// approval fee schedule page and edit the fee
+		logger.info("AFS Application adjudicated successfully.");
 
-		ApprovableFeeSchedulePage approvalFeeScheduleInfo = new ApprovableFeeSchedulePage(driver);
-		utils.clearAndType(approvalFeeScheduleInfo.enterAprFee(), utils.getDataFromJson("afsaprfee"));
-		Thread.sleep(3000);
-
-		logger.info("Ending the AdjudicateApplicationCcfri  test...");
+		logger.info("Ending the TestAFSMainApplication  test...");
 	}
 }

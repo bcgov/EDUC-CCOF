@@ -36,6 +36,18 @@ public class CcfriUnlockForm {
 	@FindBy(xpath = "//*[@data-container-name='CCFRI Facilities Gallery-container']//*[@data-control-name='tg_unlock_NMF']//button[contains(@id,'Toggle')]")
 	WebElement nmfUnlockBtn;
 
+	@FindBy(xpath = "//*[@data-container-name='CCFRI Facilities Gallery-container']//*[@data-control-name='tg_unlock_AFSEnable']//button[contains(@id,'Toggle')]")
+	WebElement afsEnableBtn;
+
+	@FindBy(xpath = "//*[@data-container-name='CCFRI Facilities Gallery-container']//*[@data-control-name='tg_unlock_AFSEnable']//*[contains(@id,'-stateText')]")
+	WebElement afsEnableStatusTxt;
+
+	@FindBy(xpath = "//*[@data-container-name='CCFRI Facilities Gallery-container']//*[@data-control-name='tg_unlock_AFS']//button[contains(@id,'Toggle')]")
+	WebElement afsUnlockBtn;
+
+	@FindBy(xpath = "//*[@data-container-name='CCFRI Facilities Gallery-container']//*[@data-control-name='tg_unlock_AFS']//*[contains(@id,'-stateText')]")
+	WebElement afsUnlockStatusTxt;
+
 	@FindBy(xpath = "//*[@placeholder='Please enter an unlock reason']")
 	WebElement unlockReasonTxtBox;
 
@@ -80,6 +92,22 @@ public class CcfriUnlockForm {
 		return nmfUnlockBtn;
 	}
 
+	public WebElement clickAfsEnableBtn() {
+		return afsEnableBtn;
+	}
+
+	public String actualAfsEnableStatusTxt() {
+		return afsEnableStatusTxt.getText();
+	}
+
+	public String actualAfsUnlockStatusTxt() {
+		return afsUnlockStatusTxt.getText();
+	}
+
+	public WebElement clickAfsUnlockBtn() {
+		return afsUnlockBtn;
+	}
+
 	public void enterUnlockReasonTxtBox(String value) {
 		unlockReasonTxtBox.sendKeys(value);
 	}
@@ -90,7 +118,6 @@ public class CcfriUnlockForm {
 
 	public void clickConfirmAndCloseBtn() {
 		confirmAndCloseBtn.click();
-		;
 	}
 
 }
