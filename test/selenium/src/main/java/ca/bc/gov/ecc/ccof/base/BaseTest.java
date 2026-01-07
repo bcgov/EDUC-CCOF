@@ -1,10 +1,12 @@
+
 package ca.bc.gov.ecc.ccof.base;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -23,21 +25,22 @@ public abstract class BaseTest {
 	protected ExtentReports extent;
 	protected ExtentTest test;
 	protected WebDriver driver;
-	public static final String CRM_USERNAME;
 	public static final String CRM_PASSWORD;
+	public static final String CRM_USERNAME;
 	public static final String BROWSER;
 	private static final String PROPERTY_FILE = System.getProperty("user.dir") + "//config.properties";
-	protected static final Logger logger;
 	private static final Properties properties;
+
+	// ✅ Use Log4j 2 Logger
+	protected static final Logger logger = LogManager.getLogger(BaseTest.class);
 
 	// Static initialization block for properties
 	static {
-		logger = Logger.getLogger("CCOFCRM");
 		properties = new Properties();
 		try (FileInputStream fileInputStream = new FileInputStream(PROPERTY_FILE)) {
 			properties.load(fileInputStream);
 		} catch (IOException e) {
-			logger.error("Failed to load properties file: " + e.getMessage());
+			logger.error("Failed to load properties file: {}", e.getMessage());
 		}
 
 		CRM_USERNAME = properties.getProperty("crm_username");
@@ -51,7 +54,7 @@ public abstract class BaseTest {
 			ChromeOptions options = new ChromeOptions();
 
 			String headless = properties.getProperty("headless");
-			logger.info("Launching Chrome browser in headless mode: " + headless);
+			logger.info("Launching Chrome browser in headless mode: {}", headless);
 
 			if ("true".equalsIgnoreCase(headless)) {
 				options.addArguments("--headless");
@@ -79,7 +82,7 @@ public abstract class BaseTest {
 		driver.manage().window().maximize();
 		String env = properties.getProperty("env");
 		String url = properties.getProperty(env + ".url");
-		logger.info("Navigating to URL: " + url);
+		logger.info("Navigating to URL: {}", url);
 		driver.get(url);
 
 		return driver;
