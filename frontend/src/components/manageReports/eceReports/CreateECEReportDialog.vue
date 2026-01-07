@@ -163,7 +163,7 @@ export default {
         return null;
       }
       const reportingMonths = this.allReportingMonths.get(this.selectedFacilityId);
-      return !isEmpty(reportingMonths) ? reportingMonths[reportingMonths.length - 1]?.value : null;
+      return isEmpty(reportingMonths) ? null : reportingMonths[reportingMonths.length - 1]?.value;
     },
     isSelectedProgramYearInFuture() {
       return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
