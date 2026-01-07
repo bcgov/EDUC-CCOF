@@ -13,10 +13,10 @@
     <AppButton size="medium" @click="toggleCreateECEReportDialog"> Create ECE Report </AppButton>
     <v-card variant="outlined" class="pa-6 my-6 soft-outline">
       <v-row no-gutters class="pb-4">
-        <v-col cols="12" md="4" lg="3">
+        <v-col cols="12" md="4" lg="2">
           <p class="font-weight-bold py-1 pr-4">Select fiscal year:</p>
         </v-col>
-        <v-col cols="12" md="8" lg="9" class="d-flex justify-start">
+        <v-col cols="12" md="8" class="d-flex justify-start">
           <FiscalYearSlider
             :always-display="true"
             :readonly="loading"
@@ -26,53 +26,58 @@
         </v-col>
       </v-row>
       <v-row no-gutters>
-        <v-col cols="12" md="4" lg="3">
-          <p class="font-weight-bold pt-6 pr-4">Month of service:</p>
+        <v-col cols="12" md="4" lg="2">
+          <p class="font-weight-bold pt-4 pr-4">Month of service:</p>
         </v-col>
-        <!-- <v-col cols="12" md="8" lg="9" class="d-flex justify-start">
-          <v-select
-            v-model.lazy="selectedReportingMonth"
+        <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
+          <AppMultiSelectInput
+            v-model.lazy="selectedReportingMonths"
             :loading="loading"
-            :disabled="isSelectMonthDisabled"
-            :hide-details="isSelectMonthDisabled"
-            :items="allReportingMonths.get(selectedFacilityId) || []"
+            :disabled="loading"
+            :items="allReportingMonths"
+            :all-selected-label="'All months'"
             item-title="label"
             item-value="value"
-            label="Select reporting month"
-            variant="outlined"
-            :rules="rules.required"
-            class="mt-2"
-          >
-            <template #no-data>
-              <v-list-item>
-                <v-list-item-title>No available months.</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-select>
-        </v-col> -->
-      </v-row>
-      <v-row no-gutters>
-        <v-col cols="12" md="4" lg="3">
-          <p class="font-weight-bold pt-6 pr-4">Facility name:</p>
+            label="Select month of service"
+            hide-details
+            clearable
+          />
         </v-col>
-        <v-col cols="12" md="8" lg="9" class="d-flex justify-start">
-          <v-select
-            v-model.lazy="selectedFacilityId"
+      </v-row>
+      <v-row no-gutters class="py-4">
+        <v-col cols="12" md="4" lg="2">
+          <p class="font-weight-bold pt-4 pr-4">Facility name:</p>
+        </v-col>
+        <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
+          <FacilityMultiSelectInput
+            v-model="selectedFacilityIds"
             :loading="loading"
             :disabled="loading"
             :items="facilityList"
             item-value="facilityId"
-            item-title="facilityName"
             label="Select facility"
-            variant="outlined"
-            class="mt-2"
-          >
-            <template #no-data>
-              <v-list-item>
-                <v-list-item-title>No available facilities.</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-select>
+            clearable
+            hide-details
+          />
+        </v-col>
+      </v-row>
+      <v-row no-gutters>
+        <v-col cols="12" md="4" lg="2">
+          <p class="font-weight-bold pt-4 pr-4">Status:</p>
+        </v-col>
+        <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
+          <AppMultiSelectInput
+            v-model.lazy="selectedStatuses"
+            :loading="loading"
+            :disabled="loading"
+            :items="allStatuses"
+            :all-selected-label="'All statuses'"
+            item-title="label"
+            item-value="value"
+            label="Select status"
+            hide-details
+            clearable
+          />
         </v-col>
       </v-row>
     </v-card>
@@ -98,13 +103,13 @@
         </template> -->
         <template #item.statusCode="{ item }">
           <span class="report-status" :class="getStatusClass(item.statusCode)">
-            {{ item.statusText }}
+            {{ getStatusText(item) }}
           </span>
         </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
-              v-if="isSubmitted(item)"
+              v-if="showViewButton(item)"
               :loading="loading"
               :primary="false"
               size="medium"
@@ -113,7 +118,7 @@
               View
             </AppButton>
             <AppButton
-              v-if="!isSubmitted(item)"
+              v-if="showEditButton(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
@@ -123,7 +128,7 @@
               Edit
             </AppButton>
             <AppButton
-              v-if="isSubmitted(item)"
+              v-if="showAdjustButton(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
@@ -143,8 +148,12 @@
 </template>
 
 <script>
+import moment from 'moment';
 import { mapState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
+import AppTooltip from '@/components/guiComponents/AppTooltip.vue';
+import FacilityMultiSelectInput from '@/components/guiComponents/FacilityMultiSelectInput.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import CreateECEReportDialog from '@/components/manageReports/eceReports/CreateECEReportDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
@@ -158,13 +167,23 @@ import { formatMonthYearToString } from '@/utils/format';
 
 export default {
   name: 'ManageECEReports',
-  components: { AppButton, CreateECEReportDialog, FiscalYearSlider, NavButton },
+  components: {
+    AppButton,
+    AppMultiSelectInput,
+    AppTooltip,
+    CreateECEReportDialog,
+    FacilityMultiSelectInput,
+    FiscalYearSlider,
+    NavButton,
+  },
   data() {
     return {
       loading: false,
       eceReports: [],
       selectedProgramYear: null,
-      selectedFacilityId: null,
+      selectedReportingMonths: [],
+      selectedFacilityIds: [],
+      selectedStatuses: [],
       showCreateECEReportDialog: false,
     };
   },
@@ -176,23 +195,93 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     filteredECEReports() {
-      return this.eceReports;
+      return this.eceReports?.filter((report) => {
+        const matchesMonth = this.selectedReportingMonths?.some(
+          (item) => Number(item.month) === Number(report.month) && Number(item.year) === Number(report.year),
+        );
+        const matchesFacility = this.selectedFacilityIds?.includes(report.facilityId);
+        const matchesStatus = this.selectedStatuses?.includes(report.statusCode);
+        return matchesMonth && matchesFacility && matchesStatus;
+      });
     },
     selectedProgramYearId() {
       return this.selectedProgramYear?.programYearId;
+    },
+    allStatuses() {
+      return [
+        {
+          label: 'Draft',
+          value: ECE_REPORT_STATUSES.DRAFT,
+        },
+        {
+          label: 'Inactive',
+          value: ECE_REPORT_STATUSES.INACTIVE,
+        },
+        {
+          label: 'Submitted',
+          value: ECE_REPORT_STATUSES.SUBMITTED,
+        },
+        {
+          label: 'With Ministry',
+          value: ECE_REPORT_STATUSES.IN_REVIEW,
+        },
+        {
+          label: 'Approved',
+          value: ECE_REPORT_STATUSES.APPROVED,
+        },
+        {
+          label: 'Paid',
+          value: ECE_REPORT_STATUSES.PAID,
+        },
+        {
+          label: 'Rejected',
+          value: ECE_REPORT_STATUSES.REJECTED,
+        },
+        {
+          label: 'Expired',
+          value: ECE_REPORT_STATUSES.EXPIRED,
+        },
+      ];
+    },
+    allReportingMonths() {
+      const reportingMonths = [];
+      const programYear = this.lookupInfo?.programYear?.list?.find(
+        (year) => year.programYearId === this.selectedProgramYearId,
+      );
+      const startYear = moment(programYear?.intakeStart).year();
+      const endYear = moment(programYear?.intakeEnd).year();
+      for (let month = 4; month < 13; month++) {
+        reportingMonths.push({
+          label: `${formatMonthYearToString(month, startYear)}`,
+          value: {
+            month: month,
+            year: startYear,
+          },
+        });
+      }
+      for (let month = 1; month < 4; month++) {
+        reportingMonths.push({
+          label: `${formatMonthYearToString(month, endYear)}`,
+          value: {
+            month: month,
+            year: endYear,
+          },
+        });
+      }
+      return reportingMonths;
+    },
+    allFacilityIds() {
+      return this.facilityList?.map((facility) => facility.facilityId);
     },
   },
   watch: {
     selectedProgramYearId: {
       async handler() {
         await this.loadData();
-        this.selectedFacilityId = null;
-        this.selectedReportingMonth = null;
       },
     },
   },
   created() {
-    this.PATHS = PATHS;
     this.ECE_REPORTS_TABLE_HEADERS = [
       { title: 'Facility Name', key: 'facilityName' },
       { title: 'Facility ID', key: 'facilityAccountNumber' },
@@ -204,6 +293,9 @@ export default {
       { title: 'Actions', key: 'actions', width: '12%', sortable: false },
     ];
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
+    this.selectedReportingMonths = this.allReportingMonths.map((month) => month.value);
+    this.selectedFacilityIds = this.allFacilityIds;
+    this.selectedStatuses = this.allStatuses.map((status) => status.value);
   },
   methods: {
     formatMonthYearToString,
@@ -239,7 +331,6 @@ export default {
         if (facilityNameCompare !== 0) {
           return facilityNameCompare;
         }
-
         // 2. Month of Service (most recent at the top)
         if (a.reportingMonth !== b.reportingMonth) {
           return a.reportingMonth > b.reportingMonth ? -1 : 1;
@@ -251,25 +342,56 @@ export default {
     goToECEReport(eceReportId) {
       this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
     },
+    getStatusText(report) {
+      if (report.statusCode === ECE_REPORT_STATUSES.APPROVED) {
+        return 'Approved';
+      }
+      return report.statusText;
+    },
     getStatusClass(status) {
       switch (status) {
         case ECE_REPORT_STATUSES.DRAFT:
           return 'status-yellow';
         case ECE_REPORT_STATUSES.SUBMITTED:
           return 'status-blue';
+        case ECE_REPORT_STATUSES.IN_REVIEW:
+          return 'status-orange';
         case ECE_REPORT_STATUSES.PAID:
           return 'status-green';
         case ECE_REPORT_STATUSES.REJECTED:
           return 'status-red';
         case ECE_REPORT_STATUSES.EXPIRED:
           return 'status-gray';
-        case ECE_REPORT_STATUSES.WITH_MINISTRY:
-          return 'status-orange';
         case ECE_REPORT_STATUSES.APPROVED:
           return 'status-mint';
         default:
           return null;
       }
+    },
+    hasNextReportCreated(eceReport) {
+      return this.eceReports?.some(
+        (item) =>
+          item.facilityId === eceReport.facilityId &&
+          item.month === eceReport.month &&
+          item.year === eceReport.year &&
+          item.version > eceReport.version,
+      );
+    },
+    showAdjustButton(eceReport) {
+      return (
+        !this.hasNextReportCreated(eceReport) &&
+        [ECE_REPORT_STATUSES.APPROVED, ECE_REPORT_STATUSES.PAID].includes(eceReport.statusCode)
+      );
+    },
+    showEditButton(eceReport) {
+      return (
+        eceReport.statusCode === ECE_REPORT_STATUSES.DRAFT || eceReport.statusCode === ECE_REPORT_STATUSES.REJECTED
+      );
+    },
+    showViewButton(eceReport) {
+      return (
+        eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.REJECTED
+      );
     },
     isSubmitted(report) {
       return report.statusCode !== ECE_REPORT_STATUSES.DRAFT;

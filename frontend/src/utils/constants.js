@@ -775,12 +775,15 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
 
 export const ECE_REPORT_STATUSES = Object.freeze({
   DRAFT: 1,
-  SUBMITTED: 2,
-  WITH_MINISTRY: 3,
-  REJECTED: 4,
+  INACTIVE: 2,
+  SUBMITTED: 3,
+  IN_REVIEW: 4,
+  VERIFIED: 5,
   APPROVED: 6,
   PAID: 7,
-  EXPIRED: 8,
+  REJECTED: 8,
+  PROCESSING_ERROR: 9,
+  EXPIRED: 10,
 });
 
 export const ECE_REPORT_TYPES = Object.freeze({

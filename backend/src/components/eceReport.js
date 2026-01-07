@@ -9,7 +9,7 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { padString } = require('./utils');
 
 function isAdjustmentReport(report) {
-  return report?.reportVersion > 1;
+  return report?.reportType === 2;
 }
 
 function mapECEReportForFront(report) {

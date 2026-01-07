@@ -12,27 +12,50 @@
       </v-list-item>
       <v-divider class="mt-2" />
     </template>
+    <template #item="{ props, item }">
+      <v-list-item v-bind="{ ...props, title: undefined }">
+        <template #prepend>
+          <v-checkbox
+            :model-value="isFacilitySelected(item.raw.facilityId)"
+            density="compact"
+            hide-details
+            tabindex="-1"
+          />
+        </template>
+        <v-list-item-title>
+          {{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }},
+          {{ item.raw.facilityName }}
+        </v-list-item-title>
+      </v-list-item>
+    </template>
     <template #selection="{ item, index }">
       <template v-if="isAllSelected">
-        <v-chip v-if="index === 0">{{ allSelectedLabel }}</v-chip>
+        <v-chip v-if="index === 0">All facilities</v-chip>
       </template>
       <template v-else>
         <v-chip v-if="index < maxDisplayedItems">
-          <span>{{ item.title }}</span>
+          <span>{{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}</span>
         </v-chip>
         <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
           >(+{{ items.length - maxDisplayedItems }} others)</span
         >
       </template>
     </template>
+    <template #no-data>
+      <v-list-item>
+        <v-list-item-title>No available facilities.</v-list-item-title>
+      </v-list-item>
+    </template>
   </v-select>
 </template>
 
 <script>
 import { isEqual } from 'lodash';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
 
 export default {
-  name: 'AppMultiSelectInput',
+  name: 'FacilityMultiSelectInput',
+  inheritAttrs: true,
   props: {
     modelValue: {
       type: Array,
@@ -49,10 +72,6 @@ export default {
     maxDisplayedItems: {
       type: Number,
       default: 5,
-    },
-    allSelectedLabel: {
-      type: String,
-      default: 'All',
     },
   },
   emits: ['update:modelValue'],
@@ -84,9 +103,13 @@ export default {
     },
   },
   created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.selectedItems = this.modelValue;
   },
   methods: {
+    isFacilitySelected(facilityId) {
+      return this.selectedItems?.includes(facilityId);
+    },
     toggleSelectAll() {
       this.selectedItems = this.isAllSelected ? [] : this.items?.map((item) => item[this.itemValue]);
     },
