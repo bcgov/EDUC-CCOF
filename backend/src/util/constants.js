@@ -93,6 +93,11 @@ const CCFRI_STATUS_CODES = Object.freeze({
   'MTFI Action Required': 13,
 });
 
+const ECE_REPORT_TYPES = Object.freeze({
+  BASE: 1,
+  ADJUSTMENT: 2,
+});
+
 const ECEWE_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
   APPROVED: 3,
@@ -227,6 +232,7 @@ module.exports = {
   CHANGE_REQUEST_TYPES,
   CHILD_AGE_CATEGORY_ORDER,
   CHILD_AGE_CATEGORY_TYPES,
+  ECE_REPORT_TYPES,
   ECEWE_STATUS_CODES,
   FACILITY_AGE_GROUP_CODES,
   LICENCE_CATEGORIES,

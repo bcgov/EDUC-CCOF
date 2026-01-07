@@ -38,6 +38,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    defaultProgramYearId: {
+      type: String,
+      default: null,
+    },
   },
   emits: ['selectProgramYear'],
   data() {
@@ -87,8 +91,9 @@ export default {
     },
   },
   created() {
+    const initialProgramYearId = this.defaultProgramYearId || this.programYearId;
     this.selectedProgramYearIndex = this.programYearList?.findIndex(
-      (item) => item.programYearId === this.programYearId,
+      (item) => item.programYearId === initialProgramYearId,
     );
     this.updateActiveIndex();
     if (this.selectedProgramYearIndex > -1)
