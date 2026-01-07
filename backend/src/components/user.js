@@ -46,7 +46,6 @@ async function getUserInfo(req, res) {
 
   // if is idir user (ministry user), make sure they are a user in dynamics
   if (isIdir) {
-    log.info('user info', req.session.passport?.user);
     let response = await getDynamicsUserByEmail(req);
     if (response.value?.length > 0 && response.value[0].systemuserid) {
       log.verbose(`Ministry user: [${req.session.passport.user._json.idir_username}] logged in.`);

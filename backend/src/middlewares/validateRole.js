@@ -9,7 +9,7 @@ const { isIdirUser } = require('../components/utils');
  * @param {*} role The role to validate.
  * @returns True if the user has the specified role, false otherwise.
  */
-module.exports = function (role) {
+module.exports = function validateRole(role) {
   return async function (req, res, next) {
     log.verbose(`validating role ${role ?? 'exists'} `);
 
