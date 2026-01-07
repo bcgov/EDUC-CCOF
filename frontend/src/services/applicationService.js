@@ -30,8 +30,6 @@ import {
   isYearValid,
 } from '@/utils/validation';
 
-const showApplicationTemplateV1 = (version) => !version || version === 1;
-
 const GROUP_LICENCE_CATEGORY_FIELDS = [
   {
     id: GROUP_LICENCE_CATEGORIES.GROUP_CHILD_CARE_UNDER_36_MONTHS,
@@ -74,6 +72,9 @@ export default {
   /*
    **** Summary Declaration validations
    */
+  showApplicationTemplateV1(version) {
+    return !version || version === 1;
+  },
   isOrganizationComplete(organization, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
@@ -98,7 +99,7 @@ export default {
       requiredFields.push('incNumber');
     }
     if (
-      !showApplicationTemplateV1(applicationTemplateVersion) &&
+      !this.showApplicationTemplateV1(applicationTemplateVersion) &&
       organization?.organizationType === ORGANIZATION_TYPES.PARTNERSHIP
     ) {
       requiredFields.push('doingBusinessAs');
@@ -157,7 +158,7 @@ export default {
   isFacilityInformationComplete(facilityInfo, isGroup, applicationTemplateVersion) {
     if (isEmpty(facilityInfo)) return false;
     // Family Application - Template Version 1
-    if (!isGroup && showApplicationTemplateV1(applicationTemplateVersion)) {
+    if (!isGroup && this.showApplicationTemplateV1(applicationTemplateVersion)) {
       const requiredFields = ['facilityName', 'licenseNumber', 'licenseEffectiveDate', 'hasReceivedFunding'];
       if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
         requiredFields.push('fundingFacility');
@@ -177,7 +178,7 @@ export default {
       'licenseEffectiveDate',
       'hasReceivedFunding',
     ];
-    if (!showApplicationTemplateV1(applicationTemplateVersion)) {
+    if (!this.showApplicationTemplateV1(applicationTemplateVersion)) {
       requiredFields.push('healthAuthority');
     }
     if (facilityInfo.hasReceivedFunding === FACILITY_HAS_RECEIVE_FUNDING_VALUES.YES_FACILITY) {
@@ -194,7 +195,7 @@ export default {
 
   // CCOF/LICENCE & SERVICE DETAILS VALIDATIONS
   isCCOFComplete(funding, isGroup, applicationTemplateVersion) {
-    if (showApplicationTemplateV1(applicationTemplateVersion)) {
+    if (this.showApplicationTemplateV1(applicationTemplateVersion)) {
       return isGroup ? this.isCCOFCompleteGroupV1(funding) : this.isCCOFCompleteFamilyV1(funding);
     }
     return isGroup ? this.isCCOFCompleteGroupV2(funding) : this.isCCOFCompleteFamilyV2(funding);
@@ -485,7 +486,7 @@ export default {
     return (
       areAllChildCareTypesComplete &&
       // CCFRI-4636 - Closure-related questions were removed from the CCFRI (Parent Fees) section starting with Application Template Version 2.
-      (!showApplicationTemplateV1(applicationTemplateVersion) ||
+      (!this.showApplicationTemplateV1(applicationTemplateVersion) ||
         this.isClosuresComplete(ccfri, applicationTemplateVersion))
     );
   },
@@ -518,14 +519,16 @@ export default {
   // CLOSURES VALIDATIONS
   isClosuresComplete(ccfri, applicationTemplateVersion) {
     if (isEmpty(ccfri)) return false;
-    const closureRequiredFields = showApplicationTemplateV1(applicationTemplateVersion)
+    const closureRequiredFields = this.showApplicationTemplateV1(applicationTemplateVersion)
       ? ['startDate', 'endDate', 'closureReason', 'paidClosure']
       : ['startDate', 'endDate', 'closureReason', 'fullClosure'];
     const areAllClosureItemsComplete =
       !isEmpty(ccfri.closures) &&
       ccfri.closures?.every((closure) => {
         const isAgeGroupsComplete =
-          showApplicationTemplateV1(applicationTemplateVersion) || closure.fullClosure || !isEmpty(closure.ageGroups);
+          this.showApplicationTemplateV1(applicationTemplateVersion) ||
+          closure.fullClosure ||
+          !isEmpty(closure.ageGroups);
         return !hasEmptyFields(closure, closureRequiredFields) && isAgeGroupsComplete;
       });
     return (
@@ -673,7 +676,7 @@ export default {
     }
     if (ecewe.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA) {
       requiredFields.push('isUnionAgreementReached');
-      if (showApplicationTemplateV1(applicationTemplateVersion)) {
+      if (this.showApplicationTemplateV1(applicationTemplateVersion)) {
         requiredFields.push('fundingModel');
       }
     }

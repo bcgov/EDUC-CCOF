@@ -371,6 +371,7 @@ export default {
       'programYearId',
       'showApplicationTemplateV1',
       'unlockBaseFunding',
+      'unlockRenewal',
       'unlockDeclaration',
       'unlockEcewe',
       'unlockLicenseUpload',
@@ -634,6 +635,7 @@ export default {
     createRelockPayloadForApplication() {
       let applicationRelockPayload = {
         unlockBaseFunding: this.unlockBaseFunding,
+        unlockRenewal: this.unlockRenewal,
         unlockDeclaration: this.unlockDeclaration,
         unlockEcewe: this.unlockEcewe,
         unlockLicenseUpload: this.unlockLicenseUpload,
