@@ -122,10 +122,4 @@ public class Utilities {
 	public void compareValues(String expected, String actual) {
 		Assert.assertEquals(actual, expected, "Actual value: " + actual + "Expected value: " + expected);
 	}
-
-	public void clearAndType(WebElement element, String text) {
-		element.clear(); // Clear existing text
-		element.sendKeys(text); // Type new text
-	}
-
 }
