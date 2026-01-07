@@ -7,8 +7,6 @@ const { getAllMessages, updateMessageLastOpenedTime } = require('../components/m
 const { param, validationResult } = require('express-validator');
 const validateRole = require('../middlewares/validateRole');
 
-module.exports = router;
-
 /**
  * Get ALL messages of an organization
  */
