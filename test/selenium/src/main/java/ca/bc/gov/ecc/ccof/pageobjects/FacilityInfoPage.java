@@ -72,9 +72,6 @@ public class FacilityInfoPage {
 	@FindBy(xpath = "//*[@aria-label='AFS Confirmed: No']")
 	WebElement afsConfirmedField;
 
-	@FindBy(xpath = "//*[@aria-label='Rich Text Editor Control ccof_adjudication_ccfri_facility ccof_adjudicatorrecommendationnotes']")
-	WebElement adjudicatorRecommendationNotesField;
-
 	// main facility page
 
 	@FindBy(xpath = "//*[@title='Save']")
@@ -180,29 +177,6 @@ public class FacilityInfoPage {
 		return afsConfirmedField;
 	}
 
-	/**
-	 * Click the AFS Confirmed toggle using the primary page-object locator.
-	 */
-	/*
-	 * public void clickAfsConfirmedToggle() { try {
-	 * wait.until(ExpectedConditions.visibilityOf(afsConfirmedField));
-	 * ((JavascriptExecutor)
-	 * driver).executeScript("arguments[0].scrollIntoView({block:'center'});",
-	 * afsConfirmedField); ((JavascriptExecutor)
-	 * driver).executeScript("arguments[0].click();", afsConfirmedField); } catch
-	 * (Exception e) {
-	 * 
-	 * } }
-	 */
-
-	public void enterAdjudicatorRecommendationNotes(String notes) {
-		adjudicatorRecommendationNotesField.sendKeys(notes);
-	}
-
-	public WebElement adjudicatorRecommendationNotesFieldElement() {
-		return adjudicatorRecommendationNotesField;
-	}
-
 	// main page methods
 
 	public void clickSaveBtn() {
@@ -301,10 +275,6 @@ public class FacilityInfoPage {
 		// Optional visual cue for debug
 		js.executeScript("arguments[0].style.outline='2px solid magenta';", toggle);
 	}
-
-	// =========================================================
-	// Private helpers for this Page Object
-	// =========================================================
 
 	/**
 	 * Switch to the frame that contains `locator`. Returns frame index or -1 if in

@@ -1,5 +1,5 @@
 {
-  "contact": "QA218 OFM",
+  "contact": "",
   "declarationBStatus": "Yes",
   "ccfriAdjudicatorRecommendation": "Stage 1 (NRC)",
   "ccfriPaymentEligibilityStartDate":"Jul",
@@ -14,5 +14,4 @@
   "adjudicatorRecommendation": "Stage 3 (AFC)",
   "mtfiQCDecision": "Stage 3 (AFC)",
   "mtfiStatusReasonOptions": "Complete - Approved",
-  "afsaprfee": "1000",
 }

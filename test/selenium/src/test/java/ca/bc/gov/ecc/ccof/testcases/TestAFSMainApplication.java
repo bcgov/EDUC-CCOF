@@ -90,7 +90,7 @@ public class TestAFSMainApplication extends BaseTest {
 		facilityInfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
 
-		// --- AFS Confirmed: Xrm first; else DOM fallback via page‑object methods ---
+		// toggle on the AFS Confirmed
 		boolean afsOK = facilityInfo.setAfsConfirmedViaXrm(true);
 		logger.info("AFS Confirmed set via Xrm: {}", afsOK);
 		if (!afsOK) {
@@ -102,6 +102,7 @@ public class TestAFSMainApplication extends BaseTest {
 		ccfriInfo.clickUnlockBtn();
 		Thread.sleep(8000);
 
+		// validate the AFS Enable and Unlock status in unlock form
 		CcfriUnlockForm ccfriUnlock = new CcfriUnlockForm(driver);
 		utils.compareValues("Enabled", ccfriUnlock.actualAfsEnableStatusTxt());
 		utils.compareValues("Unlocked", ccfriUnlock.actualAfsUnlockStatusTxt());
