@@ -93,7 +93,12 @@ import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 
 import { deepCloneObject, isAnyChangeRequestActive } from '@/utils/common.js';
-import { DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT } from '@/utils/constants.js';
+import {
+  CHANGE_REQUEST_STATUSES,
+  DOCUMENT_TYPES,
+  FILE_REQUIREMENTS_TEXT,
+  FILE_TYPES_ACCEPT,
+} from '@/utils/constants.js';
 import { isValidFile, readFile } from '@/utils/file.js';
 import rules from '@/utils/rules.js';
 
@@ -127,6 +132,8 @@ export default {
       'applicationMap',
       'programYearId',
       'showApplicationTemplateV1',
+      'unlockRenewal',
+      'isApplicationSubmitted',
     ]),
     ...mapState(useLicenseUploadStore, ['uploadedLicenses']),
     ...mapState(useNavBarStore, [
@@ -142,17 +149,15 @@ export default {
       if (this.isChangeRequest) {
         if (this.isLicenseUploadUnlocked || !this.changeRequestStatus) {
           return false;
-        } else if (this.changeRequestStatus !== 'INCOMPLETE') {
-          return true;
         }
-        return false;
-      } else if (this.unlockLicenseUpload) {
-        return false;
-      } else if (this.applicationStatus === 'SUBMITTED') {
-        return true;
+        return this.changeRequestStatus !== CHANGE_REQUEST_STATUSES.INCOMPLETE;
       }
-      return false;
+      if (this.unlockLicenseUpload || this.unlockRenewal) {
+        return false;
+      }
+      return this.isApplicationSubmitted;
     },
+
     headers() {
       const tableHeadersTemplateV1 = [
         {
