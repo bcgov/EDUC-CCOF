@@ -48,9 +48,9 @@ async function getUserInfo(req, res) {
   if (isIdir) {
     let response = await getDynamicsUserByEmail(req);
     if (response.value?.length > 0 && response.value[0].systemuserid) {
-      log.verbose(`Ministry user: [${req.session.passport.user._json.display_name}] logged in.`);
+      log.verbose(`Ministry user: [${req.session.passport.user._json.idir_username}] logged in.`);
     } else {
-      log.info(`Ministry user: [${req.session.passport.user._json.display_name}] attempted to log in but is not part of Dynamics.`);
+      log.info(`Ministry user: [${req.session.passport.user._json.idir_username}] attempted to log in but is not part of Dynamics.`);
       return res.status(HttpStatus.UNAUTHORIZED).json({
         message: 'Not Authorized',
       });

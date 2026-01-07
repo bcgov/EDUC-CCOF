@@ -7,7 +7,7 @@ const { getRoles } = require('../components/lookup');
  * @param {*} requiredPermissions
  * @returns
  */
-module.exports = function (...requiredPermissions) {
+module.exports = function validatePermission(...requiredPermissions) {
   return async function (req, res, next) {
     log.verbose(`validating permissions ${requiredPermissions}`);
 
