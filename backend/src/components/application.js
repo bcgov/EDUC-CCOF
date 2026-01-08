@@ -6,6 +6,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const {
+  AdjudicationECEWEFacilityMappings,
   ClosureMappings,
   ECEWEApplicationMappings,
   ECEWEFacilityMappings,
@@ -25,6 +26,7 @@ const { getRfiApplicationByCcfriId } = require('./rfiApplication');
 const { getNmfApplicationByCcfriId } = require('./nmfApplication');
 const { mapFundingObjectForFront } = require('./funding');
 const pLimit = require('p-limit');
+const { restrictFacilities } = require('../util/common');
 
 const { ChangeRequestMappings, ChangeActionRequestMappings, NewFacilityMappings, MtfiMappings } = require('../util/mapping/ChangeRequestMappings');
 
@@ -248,6 +250,25 @@ async function getECEWEApplication(req, res) {
     return res.status(HttpStatus.OK).json(eceweApp);
   } catch (e) {
     log.error('An error occurred while getting ECEWEApplication', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getAdjudicationECEWEFacilities(req, res) {
+  try {
+    const response = await getOperation(
+      `ccof_applicationecewes?$select=ccof_applicationeceweid&$filter=_ccof_application_value eq ${req.params.applicationId}&$expand=ccof_adj_ecewe_facility_App_ecewe($select=_ccof_applicationecewe_value,_ccof_facility_value,ccof_eceweoptin,ccof_temp_start_date,ccof_temp_end_date,ccof_pay_eligibility_start_date,ccof_mid_year_funding_date,statuscode)`,
+    );
+    let eceweFacilities = [];
+    for (const item of response?.value ?? []) {
+      const facility = item.ccof_adj_ecewe_facility_App_ecewe?.[0];
+      if (!facility) continue;
+      eceweFacilities.push(new MappableObjectForFront(facility, AdjudicationECEWEFacilityMappings).toJSON());
+    }
+    eceweFacilities = restrictFacilities(req, eceweFacilities);
+    return res.status(HttpStatus.OK).json(eceweFacilities);
+  } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -670,6 +691,7 @@ module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
   getECEWEApplication,
+  getAdjudicationECEWEFacilities,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   renewCCOFApplication,

@@ -1,6 +1,7 @@
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 
+import { padString } from '@/utils/common.js';
 import { DateTimeFormatterBuilder, ResolverStyle } from '@js-joda/core';
 
 export function getDateFormatter(pattern) {
@@ -185,4 +186,56 @@ export function formatStringToNumberList(str) {
 export function formatUTCDateToMonthYear(date) {
   if (!date) return null;
   return moment.utc(date).format('MMMM YYYY');
+}
+
+/**
+ * Format UTC time to Pacific Time (America/Vancouver)
+ * and return easy-access date parts.
+ *
+ * @param {string | Date} utcTime - UTC ISO string or Date
+ * @returns {{
+ *   year: number,
+ *   month: number,
+ *   day: number,
+ *   hour: number,
+ *   minute: number,
+ *   second: number,
+ * } | null}
+ */
+export function formatUTCtoPacificTime(utcTime) {
+  const date = new Date(utcTime);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Vancouver',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(date);
+  const get = (type) => Number(parts.find((p) => p.type === type)?.value);
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: get('hour'),
+    minute: get('minute'),
+    second: get('second'),
+  };
+}
+
+/**
+ * Format the first date of a month as a YYYY-MM-DD string
+ *
+ * @param {number|string} year - Full year (e.g., 2025)
+ * @param {number|string} month - 1-based month (1–12)
+ * @returns {string | null}
+ */
+export function formatFirstDateOfMonth(month, year) {
+  return `${year}-${padString(month, 2, '0')}-01`;
 }

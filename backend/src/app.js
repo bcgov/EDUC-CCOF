@@ -47,6 +47,7 @@ const licenceRouter = require('./routes/licence');
 const contactRouter = require('./routes/contact');
 const programsVacanciesRouter = require('./routes/programsVacancies');
 const paymentRouter = require('./routes/payment');
+const eceReportRouter = require('./routes/eceReport');
 const eceStaffRouter = require('./routes/eceStaff');
 
 const connectRedis = require('connect-redis');
@@ -191,9 +192,8 @@ async function populateUserInfo(profile) {
         roleNumber: ROLES.ORG_ADMIN,
       };
     }
-  } else if (identity_provider === config.get('oidc:idpHintIdir')) {
-    // TODO (weskubo-cgi) Add role logic for IDIR users
   }
+  // IDIR users get role information when impersonating, not on login
 }
 
 const parseJwt = (token) => {
@@ -283,6 +283,7 @@ apiRouter.use('/licences', licenceRouter);
 apiRouter.use('/contacts', contactRouter);
 apiRouter.use('/programsVacancies', programsVacanciesRouter);
 apiRouter.use('/payments', paymentRouter);
+apiRouter.use('/eceReports', eceReportRouter);
 apiRouter.use('/eceStaff', eceStaffRouter);
 
 //Handle 500 error

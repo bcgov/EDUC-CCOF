@@ -22,7 +22,7 @@ const enrolmentReportDraft = {
   versionText: 'TEST-VERSION-TEXT',
   month: '11',
   year: '2025',
-  submissionDeadline: '2026-01-01',
+  submissionDeadline: '2099-01-01',
   externalCcofStatusText: 'DRAFT',
   externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
   externalCcfriStatusText: 'DRAFT',
@@ -35,7 +35,7 @@ const enrolmentReportDraft = {
 const enrolmentReportApproved = {
   month: '11',
   year: '2025',
-  submissionDeadline: '2026-01-01',
+  submissionDeadline: '2099-01-01',
   externalCcofStatusText: 'APPROVED',
   externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.APPROVED,
   externalCcfriStatusText: 'APPROVED',
@@ -43,6 +43,18 @@ const enrolmentReportApproved = {
   enrolmentReportId: '425422',
   programYearId,
   facilityId,
+};
+
+const createAppStore = () => {
+  return {
+    app: {
+      lookupInfo: {
+        programYear: {
+          list: [{ programYearId, intakeStart: '2025-01-30T00:00:00Z', intakeEnd: '2026-02-15T00:00:00Z' }],
+        },
+      },
+    },
+  };
 };
 
 const createApplicationStore = (extras = {}) => {
@@ -65,14 +77,14 @@ const createOrganizationStore = (extras = {}) => {
   };
 };
 
-function interceptAPI(enrolReport) {
-  enrolReport = enrolReport ?? enrolmentReportDraft;
+function interceptAPI(enrolmentReport) {
+  enrolmentReport = enrolmentReport ?? enrolmentReportDraft;
   cy.intercept(
     'GET',
     `${ApiRoutes.ENROLMENT_REPORTS}?organizationId=${organizationId}&programYearId=${programYearId}`,
     {
       statusCode: 200,
-      body: [enrolReport],
+      body: [enrolmentReport],
     },
   ).as('getEnrolments');
 }
@@ -106,6 +118,7 @@ describe('<ViewEnrolmentReports />', () => {
     interceptAPI();
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
       },
@@ -122,6 +135,7 @@ describe('<ViewEnrolmentReports />', () => {
     interceptAPI();
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
       },
@@ -140,6 +154,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
       },
@@ -166,6 +181,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
       },
@@ -182,6 +198,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
         auth: {
@@ -205,6 +222,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
         auth: {
@@ -220,6 +238,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
         auth: {
@@ -238,6 +257,7 @@ describe('<ViewEnrolmentReports />', () => {
 
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
         auth: {
@@ -253,6 +273,7 @@ describe('<ViewEnrolmentReports />', () => {
     interceptAPI(enrolmentReportApproved);
     mountWithPinia({
       initialState: {
+        ...createAppStore(),
         ...createApplicationStore(),
         ...createOrganizationStore(),
       },

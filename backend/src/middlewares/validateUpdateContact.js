@@ -10,7 +10,7 @@ const { PERMISSIONS } = require('../util/constants');
  * Editing others requires EDIT_USERS permission.
  * @returns
  */
-module.exports = function () {
+module.exports = function validateUpdateContact() {
   return async function (req, res, next) {
     log.verbose('Validating update contact for self or other');
 
