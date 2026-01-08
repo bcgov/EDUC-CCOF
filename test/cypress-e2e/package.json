@@ -11,9 +11,6 @@
     "report": "npm run merge-reports && npm run generate-report",
     "test:report": "npm run clean-reports && npm run cypress:run && npm run report"
   },
-  "overrides": {
-    "qs": "6.14.1"
-  },
   "author": "Neha",
   "license": "ISC",
   "devDependencies": {
