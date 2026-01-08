@@ -380,7 +380,7 @@ function transformCcfri(applications) {
         facilityAccountNumber: facility.accountnumber,
         licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         ccfriOptStatus: ccfri.ccof_ccfrioptin,
-        ccfriStartDate: ccfri.ccof_adjudication_ccfri_facility_Application?.[0]?.ccof_ccfripaymenteligibilitystartdate ?? null,
+        ccfriStartDate: ccfri.ccof_ccfrioptin === 0 ? '' : (ccfri.ccof_adjudication_ccfri_facility_Application?.[0]?.ccof_ccfripaymenteligibilitystartdate ?? null),
       });
     });
   });
@@ -390,7 +390,7 @@ function transformCcfri(applications) {
 async function getEceweFacilities(req, res) {
   try {
     const response = await getOperation(
-      `ccof_applications?$select=ccof_public_sector_employer,ccof_describe_your_org&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_facilityunionstatus,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,accountid,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
+      `ccof_applications?$select=&$expand=ccof_ccof_application_ccof_applicationecewe_application($select=statuscode,ccof_optintoecewe;$expand=ccof_Facility($select=accountnumber,accountid,name;$expand=ccof_license_facility_account($select=ccof_name;$filter=(statuscode ne ${LICENCE_STATUS_CODES.DRAFT}))),ccof_adj_ecewe_facility_App_ecewe($select=ccof_pay_eligibility_start_date))&${buildFilterQuery(req.query, CcfriEceweFacilityMappings)}`,
     );
     const transformedResponse = restrictFacilities(req, transformEcewe(response?.value));
     return res.status(HttpStatus.OK).json(transformedResponse);
@@ -416,10 +416,7 @@ function transformEcewe(applications) {
         licenseNumber: facility.ccof_license_facility_account?.[0]?.ccof_name ?? null,
         eceweOptStatus: ece.ccof_optintoecewe,
         eceweApplicationStatus: ece.statuscode,
-        unionStatus: ece.ccof_facilityunionstatus,
-        eceweStartDate: eceweAdj?.ccof_pay_eligibility_start_date ?? null,
-        isPublicSectorEmployer: app.ccof_public_sector_employer,
-        isCsseaMember: app.ccof_describe_your_org,
+        eceweStartDate: ece.ccof_optintoecewe === 0 ? '' : (eceweAdj?.ccof_pay_eligibility_start_date ?? null),
       });
     });
   });
