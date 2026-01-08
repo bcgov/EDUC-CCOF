@@ -160,13 +160,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useApplicationStore, [
-      'applicationStatus',
-      'applicationType',
-      'ccofApplicationStatus',
-      'programYearId',
-      'latestProgramYearId',
-    ]),
+    ...mapState(useApplicationStore, ['applicationStatus', 'applicationType', 'latestProgramYearId']),
     ...mapState(useAppStore, ['programYearList', 'renewalYearLabel', 'currentYearLabel']),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
     nextProgramYear() {
@@ -178,20 +172,11 @@ export default {
   },
   async created() {
     this.processing = true;
+    if (this.applicationStatus === 'DRAFT' && this.applicationType === 'RENEW') {
+      this.$router.push(PATHS.ROOT.HOME);
+    }
     await this.getChangeRequestList();
     this.processing = false;
-  },
-  mounted() {
-    //this.processing = false;
-    //prevents a user from creating another RENEWAL, in case they hit the 'back' button on the browser and try again.
-    if (
-      this.applicationStatus == 'DRAFT' &&
-      this.applicationType == 'RENEW' &&
-      this.ccofApplicationStatus == 'NEW' &&
-      this.programYearId == this.nextProgramYear?.programYearId
-    ) {
-      this.$router.push(pcfUrl(PATHS.LICENSE_UPLOAD, this.nextProgramYear?.programYearId));
-    }
   },
   methods: {
     ...mapActions(useOrganizationStore, ['renewApplication']),
