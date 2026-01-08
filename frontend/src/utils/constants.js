@@ -763,6 +763,6 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
 });
 
 export const ECE_STAFF_STATUSES = Object.freeze({
-  ACTIVE: 1,
-  INACTIVE: 2,
+  ACTIVE: 0,
+  INACTIVE: 1,
 });

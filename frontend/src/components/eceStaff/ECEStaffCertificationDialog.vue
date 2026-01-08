@@ -1,56 +1,20 @@
 <template>
-  <AppDialog v-model="dialogOpen" title="Staff Certification Details" max-width="600px" @close="closeDialog">
+  <AppDialog v-model="dialogOpen" title="Staff Certification Details" max-width="800px" @close="closeDialog">
     <template #content>
-      <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Certification Start Date </v-col>
-        <v-col cols="4">
-          <v-text-field
-            :value="formatUTCDate(staff?.certStartDate)"
-            disabled
-            hide-details
-            density="compact"
-            variant="outlined"
-          />
-        </v-col>
+      <v-row class="font-weight-bold mb-2">
+        <v-col cols="4">Certifications</v-col>
+        <v-col cols="4">Effective Start Date</v-col>
+        <v-col cols="4">Effective End Date</v-col>
       </v-row>
 
-      <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Certification End Date </v-col>
-        <v-col cols="4">
-          <v-text-field
-            :value="formatUTCDate(staff?.certEndDate)"
-            disabled
-            hide-details
-            density="compact"
-            variant="outlined"
-          />
-        </v-col>
+      <v-row v-for="(cert, index) in staff.certificates" :key="index" align="center">
+        <v-col cols="4">{{ cert.certificateLevel || EMPTY_PLACEHOLDER }}</v-col>
+        <v-col cols="4">{{ cert.effectiveStartDate || EMPTY_PLACEHOLDER }}</v-col>
+        <v-col cols="4">{{ cert.effectiveEndDate || EMPTY_PLACEHOLDER }}</v-col>
       </v-row>
 
-      <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Effective Start Date </v-col>
-        <v-col cols="4">
-          <v-text-field
-            :value="formatUTCDate(staff?.effectiveStartDate)"
-            disabled
-            hide-details
-            density="compact"
-            variant="outlined"
-          />
-        </v-col>
-      </v-row>
-
-      <v-row class="mb-3" justify="center" align="center">
-        <v-col cols="5" class="text-left"> Effective End Date </v-col>
-        <v-col cols="4">
-          <v-text-field
-            :value="formatUTCDate(staff?.effectiveEndDate)"
-            disabled
-            hide-details
-            density="compact"
-            variant="outlined"
-          />
-        </v-col>
+      <v-row v-if="!staff.certificates?.length" align="center">
+        <v-col cols="12" class="text-center">No certificates available</v-col>
       </v-row>
     </template>
   </AppDialog>
@@ -58,7 +22,7 @@
 
 <script>
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
-import { formatUTCDate } from '@/utils/format';
+import { EMPTY_PLACEHOLDER } from '@/utils/constants.js';
 
 export default {
   name: 'ECEStaffCertificationDialog',
@@ -70,7 +34,7 @@ export default {
     },
     staff: {
       type: Object,
-      default: () => ({}),
+      default: null,
     },
   },
   emits: ['update:modelValue'],
@@ -84,8 +48,10 @@ export default {
       },
     },
   },
+  async created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
+  },
   methods: {
-    formatUTCDate,
     closeDialog() {
       this.dialogOpen = false;
     },
