@@ -1,12 +1,8 @@
 import { createPinia, setActivePinia } from 'pinia';
-import vuetify from '@/plugins/vuetify';
+
 import ManageReports from '@/components/manageReports/ManageReports.vue';
-import {
-  APPLICATION_CCOF_STATUSES,
-  APPLICATION_STATUSES,
-  APPLICATION_TYPES,
-  PATHS
-} from '@/utils/constants.js';
+import vuetify from '@/plugins/vuetify';
+import { APPLICATION_CCOF_STATUSES, APPLICATION_STATUSES, APPLICATION_TYPES, PATHS } from '@/utils/constants.js';
 
 const organizationName = 'Test Organization';
 const organizationAccountNumber = 'ORG-12345';
@@ -145,7 +141,7 @@ describe('<ManageReports />', () => {
       cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ENROLMENT_REPORTS);
     });
 
-    it('should show alert when ECE Report button is clicked', () => {
+    it('should navigate to Manage ECE Reports when the button is clicked', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore(),
@@ -158,7 +154,7 @@ describe('<ManageReports />', () => {
       });
 
       cy.contains('button', 'Manage ECE Report').click();
-      cy.get('@alertStub').should('have.been.calledWith', 'UPDATE ME');
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ECE_REPORTS);
     });
 
     it('should navigate to change request when link is clicked', () => {

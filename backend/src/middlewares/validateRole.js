@@ -1,9 +1,22 @@
 const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
+const { isIdirUser } = require('../components/utils');
 
-module.exports = function (role) {
+/**
+ * Validates that the user has the specified role.
+ * If no role is specified, just ensures that the user has a role.
+ *
+ * @param {number} role The role number to validate.
+ * @returns True if the user has the specified role, false otherwise.
+ */
+module.exports = function validateRole(role) {
   return async function (req, res, next) {
-    log.info(`validating role ${role}`);
+    log.verbose(`validating role ${role ?? 'exists'} `);
+
+    // Always allow access for Ministry users
+    if (isIdirUser(req)) {
+      return next();
+    }
 
     // Reject deactivated users
     if (req.session?.passport?.user?.statecode === 1) {
@@ -13,6 +26,13 @@ module.exports = function (role) {
 
     const userRole = req.session?.passport?.user?.role;
     if (!userRole) return res.sendStatus(403);
-    !role || userRole.ofm_name === role ? next() : res.sendStatus(403);
+
+    // If a role was specified, validate it.
+    // Otherwise just ensure that the user has a role.
+    if (role) {
+      userRole.roleNumber === role ? next() : res.sendStatus(403);
+    } else {
+      next();
+    }
   };
 };

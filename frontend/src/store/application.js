@@ -23,6 +23,7 @@ export const useApplicationStore = defineStore('application', {
     isRenewal: false,
 
     unlockBaseFunding: false,
+    unlockRenewal: false,
     unlockDeclaration: false,
     unlockEcewe: false,
     unlockLicenseUpload: false,
@@ -69,6 +70,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setUnlockBaseFunding(value) {
       this.unlockBaseFunding = value;
+    },
+    setUnlockRenewal(value) {
+      this.unlockRenewal = value;
     },
     setUnlockDeclaration(value) {
       this.unlockDeclaration = value;
@@ -142,6 +146,7 @@ export const useApplicationStore = defineStore('application', {
         this.setProgramYearLabel(application.ccofProgramYearName);
         this.setIsRenewal(isRenewal);
         this.setUnlockBaseFunding(application.unlockBaseFunding);
+        this.setUnlockRenewal(application.unlockRenewal);
         this.setUnlockDeclaration(application.unlockDeclaration);
         this.setUnlockEcewe(application.unlockEcewe);
         this.setUnlockLicenseUpload(application.unlockLicenseUpload);
@@ -229,6 +234,7 @@ export const useApplicationStore = defineStore('application', {
       return applicationIds;
     },
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
+      const authStore = useAuthStore();
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;
       const selectedApplication = state.applicationMap?.get(programYearId);
       let facilityList = selectedApplication?.facilityList;
@@ -246,6 +252,13 @@ export const useApplicationStore = defineStore('application', {
       }
 
       facilityList = facilityList ? filterFacilityListForPCF(facilityList, isRenewal, applicationStatus) : facilityList;
+
+      if (authStore.isFacilityAdmin) {
+        facilityList = facilityList?.filter((facility) => {
+          return authStore.userInfo?.facilities?.some((f) => f.facilityId === facility?.facilityId);
+        });
+      }
+
       return facilityList;
     },
     showApplicationTemplateV1: (state) => {

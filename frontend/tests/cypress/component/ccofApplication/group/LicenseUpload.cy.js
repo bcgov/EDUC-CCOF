@@ -1,6 +1,6 @@
 import LicenseUpload from '@/components/ccofApplication/group/LicenseUpload.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, ApiRoutes } from '@/utils/constants.js';
 
 const applicationId = '4321';
 const programYearId = '1234';
@@ -16,7 +16,7 @@ function mountWithPinia(initialState = {}) {
 }
 
 function interceptAPI() {
-  cy.intercept('GET', ApiRoutes.LICENSE_UPLOAD + '/' + applicationId, {
+  cy.intercept('GET', `${ApiRoutes.LICENSE_UPLOAD}/${applicationId}`, {
     statusCode: 200,
     body: [
       {
@@ -27,7 +27,7 @@ function interceptAPI() {
 }
 
 describe('<LicenseUpload />', () => {
-  it('should render `change request in progress`message if change request is active', () => {
+  it('should render `change request in progress` message if change request is active', () => {
     interceptAPI();
     mountWithPinia({
       reportChanges: {
@@ -39,7 +39,7 @@ describe('<LicenseUpload />', () => {
         ],
       },
       application: {
-        applicationStatus: 'SUBMITTED',
+        applicationStatus: APPLICATION_STATUSES.SUBMITTED,
         programYearId,
         applicationMap: new Map([[programYearId, { applicationId }]]),
       },
@@ -92,7 +92,7 @@ describe('<LicenseUpload />', () => {
     const licenseNumber = 'LIC-11111';
     const filename = 'TEST_FILE_NAME';
 
-    cy.intercept('GET', ApiRoutes.LICENSE_UPLOAD + '/' + applicationId, {
+    cy.intercept('GET', `${ApiRoutes.LICENSE_UPLOAD}/${applicationId}`, {
       statusCode: 200,
       body: [
         {
@@ -107,6 +107,7 @@ describe('<LicenseUpload />', () => {
       application: {
         isRenewal: true,
         programYearId,
+        applicationStatus: APPLICATION_STATUSES.DRAFT,
         programYearLabel: 'TEST 2025XX',
         applicationMap: new Map([[programYearId, { applicationId }]]),
       },

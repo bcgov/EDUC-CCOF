@@ -65,6 +65,7 @@ export const ApiRoutes = Object.freeze({
   PAYMENTS: baseRoot + '/payments',
   CCFRI_FACILITIES: baseRoot + '/facility/ccfri-facilities',
   ECEWE_FACILITIES: baseRoot + '/facility/ecewe-facilities',
+  ECE_REPORTS: baseRoot + '/eceReports',
   ECE_STAFF: baseRoot + '/eceStaff',
 });
 
@@ -80,6 +81,7 @@ export const PAGE_TITLES = Object.freeze({
   SUMMARY_DECLARATION: 'Summary and Declaration',
   SUPPORTING_DOCUMENT_UPLOAD: 'Supporting Document Upload',
   MANAGE_REPORTS: 'Manage Reports',
+  MANAGE_ECE_REPORTS: 'Manage ECE Reports',
   MTFI: 'Midterm Parent Fee Increase',
   FACILITY_INFO: 'Facility Information',
   LICENCE_SERVICE_DETAILS: 'Licence and Service Details',
@@ -118,6 +120,8 @@ export const PATHS = {
     FUNDING_AGREEMENTS: '/funding-agreements',
     CLOSURES: '/closures',
     MANAGE_REPORTS: '/manage-reports',
+    MANAGE_ECE_REPORTS: '/manage-ece-reports',
+    MONTHLY_ECE_REPORTS: '/monthly-ece-reports',
     ENROLMENT_REPORTS: '/enrolment-reports',
   },
   PREFIX: {
@@ -256,6 +260,7 @@ export const ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = {
   YES: 1,
   NO: 0,
 };
+
 export const ECEWE_APPLICATION_STATUSES = {
   SUBMITTED: 1,
   INACTIVE: 2,
@@ -265,6 +270,12 @@ export const ECEWE_APPLICATION_STATUSES = {
   OPT_OUT: 6,
   NEW: 7,
 };
+
+export const ECEWE_FACILITY_STATUSES = {
+  SUBMITTED: 1,
+  COMPLETE_APPROVED: 5,
+};
+
 // these are common table headers used in both CCFRI and ECEWE tables under Accounts Management
 export const BASE_FACILITY_HEADERS = [
   { title: 'Facility Name', key: 'facilityName' },
@@ -345,6 +356,10 @@ export const CHANGE_REQUEST_EXTERNAL_STATUS = {
   INELIGIBLE: 4,
   APPROVED: 5,
   CANCELLED: 6,
+};
+
+export const CHANGE_REQUEST_STATUSES = {
+  INCOMPLETE: 'INCOMPLETE',
 };
 
 export const PROGRAM_YEAR_LANGUAGE_TYPES = {
@@ -762,7 +777,15 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
   CANCELLED: 'Cancelled',
 });
 
+export const ECE_REPORT_TYPES = Object.freeze({
+  BASE: 1,
+  ADJUSTMENT: 2,
+});
+
 export const ECE_STAFF_STATUSES = Object.freeze({
   ACTIVE: 1,
   INACTIVE: 2,
 });
+
+// Fiscal year month order: April to March
+export const FISCAL_YEAR_MONTHS = Object.freeze([4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3]);
