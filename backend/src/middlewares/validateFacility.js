@@ -6,7 +6,7 @@ const { isFacilityAdmin } = require('../util/common');
  * @param
  * @returns
  */
-module.exports = function () {
+module.exports = function validateFacility() {
   return async function (req, res, next) {
     log.verbose('validating facility');
 
