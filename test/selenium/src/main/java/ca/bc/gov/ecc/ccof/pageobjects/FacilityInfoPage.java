@@ -129,10 +129,6 @@ public class FacilityInfoPage {
 		return ignoreAndSaveBtn;
 	}
 
-	public List<WebElement> newApprovableFeeScheduleLabel() {
-		return newApprovableFeeSchedule;
-	}
-
 //initial decision tab methods can be added here
 
 	public void clickCcfriRecommendationField() {
@@ -162,19 +158,6 @@ public class FacilityInfoPage {
 
 	public List<WebElement> getCCFRIQCDecision() {
 		return ccfriQcDecisionOptions;
-	}
-
-	public void clickSelectApprovableFeeScheduleCheckbox() {
-		Actions action = new Actions(driver);
-		action.moveToElement(selectApprovableFeeScheduleCheckbox).doubleClick().build().perform();
-	}
-
-	public WebElement selectApprovableFeeScheduleCheckboxElement() {
-		return selectApprovableFeeScheduleCheckbox;
-	}
-
-	public WebElement clickAfsConfirmedField() {
-		return afsConfirmedField;
 	}
 
 	// main page methods
@@ -261,6 +244,18 @@ public class FacilityInfoPage {
 		toggle = localWait.until(ExpectedConditions.visibilityOfElementLocated(toggleBy));
 
 		// Click to set YES
+
+		/**
+		 * Why JS click instead of native WebElement.click(): Dynamics 365 often uses
+		 * custom UI layers, overlays, or virtualization that can block Selenium's
+		 * native click (which requires the element to be fully interactable). JS click
+		 * bypasses these restrictions by invoking the click event directly on the
+		 * element, ensuring reliability even when: - The element is covered by
+		 * invisible overlays. - The control is rendered inside a virtualized container.
+		 * - The UI uses custom event handlers that respond better to JS-triggered
+		 * clicks.
+		 */
+
 		bringIntoViewAndClick(toggle);
 
 		String beforePressed = toggle.getAttribute("aria-pressed");

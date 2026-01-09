@@ -56,11 +56,12 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 
 		BCeIDPage bceidPage = new BCeIDPage(driver);
 		bceidPage.clickSelectOrganization();
-		Thread.sleep(3000);
+		// Thread.sleep(3000);
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
+		utils.waitForElement(orgInfo.waitBeforeClickMainApplication());
 		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 

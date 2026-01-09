@@ -92,20 +92,12 @@ public class CcfriUnlockForm {
 		return nmfUnlockBtn;
 	}
 
-	public WebElement clickAfsEnableBtn() {
-		return afsEnableBtn;
-	}
-
 	public String actualAfsEnableStatusTxt() {
 		return afsEnableStatusTxt.getText();
 	}
 
 	public String actualAfsUnlockStatusTxt() {
 		return afsUnlockStatusTxt.getText();
-	}
-
-	public WebElement clickAfsUnlockBtn() {
-		return afsUnlockBtn;
 	}
 
 	public void enterUnlockReasonTxtBox(String value) {
