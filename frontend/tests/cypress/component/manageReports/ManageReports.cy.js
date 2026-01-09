@@ -44,7 +44,6 @@ function createNavBarStore(overrides = {}) {
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub().as('routerPush');
-    const backStub = cy.stub().as('routerBack');
 
     cy.mount(ManageReports, {
       global: {
@@ -52,7 +51,6 @@ function mountWithPinia(initialState = {}) {
         mocks: {
           $router: {
             push: pushStub,
-            back: backStub,
           },
         },
       },
@@ -168,7 +166,7 @@ describe('<ManageReports />', () => {
       cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.CHANGE_LANDING);
     });
 
-    it('should call router.back when previous button is clicked', () => {
+    it('should call call router.push and go home when previous button is clicked', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore(),
@@ -176,7 +174,7 @@ describe('<ManageReports />', () => {
       });
 
       cy.contains('button', 'Back').click();
-      cy.get('@routerBack').should('have.been.called');
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.HOME);
     });
   });
 

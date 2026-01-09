@@ -1095,7 +1095,7 @@ router.beforeEach((to, _from, next) => {
         if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
-          /* 
+          /*
             Ensures lookupInfo is initialized before continuing.
             getLookupInfo() is triggered in App.vue, but because it runs
             asynchronously, router.js could execute first and attempt to access programYear

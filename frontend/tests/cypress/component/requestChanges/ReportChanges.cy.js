@@ -39,14 +39,13 @@ function fetchChangeReq(changeRequest) {
 function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub().as('routerPush');
-    const backStub = cy.stub().as('routerBack');
+
     cy.mount(ReportChanges, {
       global: {
         plugins: [pinia, vuetify],
         mocks: {
           $router: {
             push: pushStub,
-            back: backStub,
           },
         },
       },
@@ -259,6 +258,6 @@ describe('<ReportChanges />', () => {
   it('should render `Back` button', () => {
     mountWithPinia();
     cy.contains('button', 'Back').click();
-    cy.get('@routerBack').should('have.been.calledOnce');
+    cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.HOME);
   });
 });

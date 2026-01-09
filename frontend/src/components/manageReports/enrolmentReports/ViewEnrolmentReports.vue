@@ -123,7 +123,7 @@
     </v-card>
     <v-row class="pt-12">
       <v-col>
-        <NavButton @previous="$router.back()" />
+        <NavButton @previous="previous" />
       </v-col>
     </v-row>
   </v-container>
@@ -360,6 +360,9 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    previous() {
+      this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
     async prepareEnrolmentReportForEditing(report) {
       const status = report.internalCcofStatusCode;
