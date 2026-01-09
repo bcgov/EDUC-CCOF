@@ -21,7 +21,10 @@ public class CcfrisInfoPage {
 	WebElement ccfriFacilityAdjudicationTitle;
 
 	@FindBy(xpath = "//*[@aria-label='Submitted']")
-	WebElement openFacility;
+	WebElement openSubmittedFacility;
+
+	@FindBy(xpath = "//label[contains(@aria-label,'Complete') and contains(@aria-label,'Approved')]")
+	WebElement openCompleteApprovedFacility;
 
 	@FindBy(xpath = "//*[contains(text(),'Save & Close')]")
 	WebElement saveAndCloseBtn;
@@ -49,9 +52,14 @@ public class CcfrisInfoPage {
 		ccfriFacilityAdjudicationTitle.click();
 	}
 
-	public void clickOpenFacility() {
+	public void clickOpenSubmittedFacility() {
 		Actions action = new Actions(driver);
-		action.moveToElement(openFacility).doubleClick().build().perform();
+		action.moveToElement(openSubmittedFacility).doubleClick().build().perform();
+	}
+
+	public void clickOpenCompleteApprovedFacility() {
+		Actions action = new Actions(driver);
+		action.moveToElement(openCompleteApprovedFacility).doubleClick().build().perform();
 	}
 
 	public void clickSaveAndCloseBtn() {

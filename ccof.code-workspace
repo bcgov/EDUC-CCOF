@@ -52,8 +52,10 @@
       "approvable",
       "ccfri",
       "ecewe",
+      "idir",
       "licence",
-      "mtfi"
+      "mtfi",
+      "statecode"
     ]
   }
 }

@@ -1,12 +1,8 @@
 import { createPinia, setActivePinia } from 'pinia';
-import vuetify from '@/plugins/vuetify';
+
 import ManageReports from '@/components/manageReports/ManageReports.vue';
-import {
-  APPLICATION_CCOF_STATUSES,
-  APPLICATION_STATUSES,
-  APPLICATION_TYPES,
-  PATHS
-} from '@/utils/constants.js';
+import vuetify from '@/plugins/vuetify';
+import { APPLICATION_CCOF_STATUSES, APPLICATION_STATUSES, APPLICATION_TYPES, PATHS } from '@/utils/constants.js';
 
 const organizationName = 'Test Organization';
 const organizationAccountNumber = 'ORG-12345';
@@ -48,7 +44,6 @@ function createNavBarStore(overrides = {}) {
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub().as('routerPush');
-    const backStub = cy.stub().as('routerBack');
 
     cy.mount(ManageReports, {
       global: {
@@ -56,7 +51,6 @@ function mountWithPinia(initialState = {}) {
         mocks: {
           $router: {
             push: pushStub,
-            back: backStub,
           },
         },
       },
@@ -145,7 +139,7 @@ describe('<ManageReports />', () => {
       cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.ENROLMENT_REPORTS);
     });
 
-    it('should show alert when ECE Report button is clicked', () => {
+    it('should navigate to Manage ECE Reports when the button is clicked', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore(),
@@ -158,7 +152,7 @@ describe('<ManageReports />', () => {
       });
 
       cy.contains('button', 'Manage ECE Report').click();
-      cy.get('@alertStub').should('have.been.calledWith', 'UPDATE ME');
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_ECE_REPORTS);
     });
 
     it('should navigate to change request when link is clicked', () => {
@@ -172,7 +166,7 @@ describe('<ManageReports />', () => {
       cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.CHANGE_LANDING);
     });
 
-    it('should call router.back when previous button is clicked', () => {
+    it('should call call router.push and go home when previous button is clicked', () => {
       mountWithPinia({
         ...createOrganizationStore(),
         ...createApplicationStore(),
@@ -180,7 +174,7 @@ describe('<ManageReports />', () => {
       });
 
       cy.contains('button', 'Back').click();
-      cy.get('@routerBack').should('have.been.called');
+      cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.HOME);
     });
   });
 

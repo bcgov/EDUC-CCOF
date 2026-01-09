@@ -5,6 +5,7 @@ import { isEmpty, isEqual, isPlainObject, pick, sortBy } from 'lodash';
 import moment from 'moment';
 import useRfdc from 'rfdc';
 
+import ApplicationService from '@/services/applicationService';
 import {
   APPLICATION_CCOF_STATUSES,
   APPLICATION_STATUSES,
@@ -128,8 +129,10 @@ export function checkApplicationUnlocked(application) {
   const isAFSUnlocked = facilityList?.some(
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
+  const isTemplateV1 = ApplicationService.showApplicationTemplateV1(application?.applicationTemplateVersion);
   const isApplicationUnlocked =
-    (application?.unlockBaseFunding && application?.applicationType === 'NEW') ||
+    (!isTemplateV1 && application?.unlockRenewal && application?.applicationType === APPLICATION_TYPES.RENEWAL) ||
+    (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG) ||
     application?.unlockLicenseUpload ||
     application?.unlockEcewe ||
     application?.unlockSupportingDocuments ||

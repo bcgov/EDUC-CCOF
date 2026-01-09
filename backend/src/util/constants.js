@@ -74,7 +74,7 @@ const ORGANIZATION_PROVIDER_TYPES = Object.freeze({
   FAMILY: 100000001,
 });
 
-const OPTIN_STATUS_CODES = Object.freeze({
+const OPT_STATUSES = Object.freeze({
   OUT: 0,
   IN: 1,
 });
@@ -91,6 +91,11 @@ const CCFRI_STATUS_CODES = Object.freeze({
   'MTFI Requested': 9,
   'MTFI Approved': 10,
   'MTFI Action Required': 13,
+});
+
+const ECE_REPORT_TYPES = Object.freeze({
+  BASE: 1,
+  ADJUSTMENT: 2,
 });
 
 const ECEWE_STATUS_CODES = Object.freeze({
@@ -227,11 +232,12 @@ module.exports = {
   CHANGE_REQUEST_TYPES,
   CHILD_AGE_CATEGORY_ORDER,
   CHILD_AGE_CATEGORY_TYPES,
+  ECE_REPORT_TYPES,
   ECEWE_STATUS_CODES,
   FACILITY_AGE_GROUP_CODES,
   LICENCE_CATEGORIES,
   LICENCE_STATUS_CODES,
-  OPTIN_STATUS_CODES,
+  OPT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_STATUS_CODES,
   PERMISSIONS,

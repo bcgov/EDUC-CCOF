@@ -94,14 +94,19 @@ export default {
       'isApplicationProcessing',
       'isApplicationSubmitted',
       'renewalApplicationCCOF',
+      'unlockRenewal',
     ]),
     ...mapState(useNavBarStore, ['nextPath']),
     ...mapState(useReportChangesStore, ['hasActiveChangeRequest']),
     readonly() {
-      return this.isApplicationSubmitted || this.hasActiveChangeRequest;
+      return (this.isApplicationSubmitted && !this.unlockRenewal) || this.hasActiveChangeRequest;
     },
     isNextDisabled() {
-      return this.readonly || !this.isValidForm || this.hasBankingInfoChanged === YES_NO_VALUES.YES;
+      return (
+        (this.hasActiveChangeRequest && !this.isApplicationSubmitted) ||
+        !this.isValidForm ||
+        this.hasBankingInfoChanged === YES_NO_VALUES.YES
+      );
     },
   },
   async created() {

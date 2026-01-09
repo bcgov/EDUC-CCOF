@@ -42,6 +42,8 @@ import EceweEligibility from '@/components/eceweApplication/EceweEligibility.vue
 import EceweFacilities from '@/components/eceweApplication/EceweFacilities.vue';
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import ManageReports from '@/components/manageReports/ManageReports.vue';
+import ManageECEReports from '@/components/manageReports/eceReports/ManageECEReports.vue';
+import MonthlyECEReport from '@/components/manageReports/eceReports/MonthlyECEReport.vue';
 import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/manageReports/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/manageReports/enrolmentReports/ViewEnrolmentReports.vue';
@@ -1016,6 +1018,26 @@ const router = createRouter({
         permission: PERMISSIONS.VIEW_ER,
       },
     },
+    // TODO: Implement ECE Reports permission
+    {
+      path: PATHS.ROOT.MANAGE_ECE_REPORTS,
+      name: 'manage-ece-reports',
+      component: ManageECEReports,
+      meta: {
+        pageTitle: PAGE_TITLES.MANAGE_ECE_REPORTS,
+        showNavBar: false,
+        requiresAuth: true,
+      },
+    },
+    // TODO: Implement ECE Reports permission
+    {
+      path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/:eceReportId`,
+      name: 'monthly-ece-report',
+      component: MonthlyECEReport,
+      meta: {
+        requiresAuth: true,
+      },
+    },
     {
       path: PATHS.ROOT.ENROLMENT_REPORTS,
       name: 'view-enrolment-reports',
@@ -1073,7 +1095,7 @@ router.beforeEach((to, _from, next) => {
         if (!authStore.isAuthenticated) {
           next('/token-expired');
         } else {
-          /* 
+          /*
             Ensures lookupInfo is initialized before continuing.
             getLookupInfo() is triggered in App.vue, but because it runs
             asynchronously, router.js could execute first and attempt to access programYear

@@ -163,16 +163,19 @@ export default {
       'isApplicationProcessing',
       'isApplicationSubmitted',
       'renewalApplicationCCOF',
+      'unlockRenewal',
     ]),
     ...mapState(useNavBarStore, ['nextPath', 'previousPath']),
     ...mapState(useOrganizationStore, ['organizationId', 'organizationName']),
     readonly() {
-      return this.isApplicationSubmitted || isEmpty(this.fundingAgreement?.pdfFile) || isEmpty(this.licences);
+      return (
+        (this.isApplicationSubmitted && !this.unlockRenewal) ||
+        isEmpty(this.fundingAgreement?.pdfFile) ||
+        isEmpty(this.licences)
+      );
     },
     isNextDisabled() {
-      return (
-        this.readonly || !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed
-      );
+      return !this.isValidForm || !this.isFundingAgreementConfirmed || !this.areLicenceDetailsConfirmed;
     },
   },
   async created() {

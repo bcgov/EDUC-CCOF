@@ -84,10 +84,23 @@ const CCFRIFacilityMappings = [
   { back: 'ccof_afs_status_mtfi', front: 'afsStatusMtfi' },
   { back: 'ccof_closureformcomplete', front: 'isCCFRIClosuresComplete' },
 ];
+
 const CcfriEceweFacilityMappings = [
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_programyear_value', front: 'programYearId' },
 ];
+
+const AdjudicationECEWEFacilityMappings = [
+  { back: '_ccof_applicationecewe_value', front: 'eceweApplicationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: 'ccof_eceweoptin', front: 'optInECEWE' },
+  { back: 'ccof_temp_start_date', front: 'tempApprovalStartDate' },
+  { back: 'ccof_temp_end_date', front: 'tempApprovalEndDate' },
+  { back: 'ccof_pay_eligibility_start_date', front: 'paymentEligibilityStartDate' },
+  { back: 'ccof_mid_year_funding_date', front: 'midYearOptOutDate' },
+  { back: 'statuscode', front: 'statusCode' },
+];
+
 const RFIApplicationMappings = [
   { back: 'ccof_isthereanythingelseaboutyourchangeinhours', front: 'notes2' }, // "is there anything else about your change in hours",
   { back: 'ccof_rfipfiid', front: 'rfiId' }, // "df27e229-0b88-ed11-81ac-000d3af48db8",
@@ -333,6 +346,7 @@ const UserProfileApplicationMappings = [
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
   { back: 'ccof_unlock_ccof', front: 'unlockBaseFunding' },
   { back: 'ccof_unlock_ecewe', front: 'unlockEcewe' },
+  { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
   { back: 'ccof_ccofstatus', front: 'ccofStatus' },
 ];
 
@@ -460,6 +474,7 @@ const DeclarationMappings = [
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
+  { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
@@ -879,6 +894,18 @@ const PaymentMappings = [
   { back: 'ofm_invoice_number', front: 'invoiceNumber' },
 ];
 
+const ECEReportMappings = [
+  { back: 'ccof_ece_monthly_reportid', front: 'eceReportId' },
+  { back: 'ccof_name', front: 'eceReportNumber' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: '_ccof_fiscal_year_value', front: 'programYearId' },
+  { back: 'ccof_month', front: 'month' },
+  { back: 'ccof_year', front: 'year' },
+  { back: 'ccof_report_type', front: 'reportType' },
+  { back: 'statuscode', front: 'statusCode' },
+];
+
 const ECEStaffMappings = [
   { back: '_ccof_facility_id_value', front: 'facilityId' },
   { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
@@ -897,6 +924,7 @@ const ECECertificateMappings = [
   { back: 'ofm_effective_date', front: 'effectiveStartDate' },
   { back: 'ofm_expiry_date', front: 'effectiveEndDate' },
 ];
+
 module.exports = {
   ApplicationDocumentsMappings,
   DailyEnrolmentMappings,
@@ -907,7 +935,9 @@ module.exports = {
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
+  AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
+  ECEReportMappings,
   ECEStaffMappings,
   ECECertificateMappings,
   EnrolmentReportDifferenceMappings,
