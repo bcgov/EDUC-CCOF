@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
@@ -17,13 +19,16 @@ export default {
     }
   },
 
-  async updateECEStaff(eceStaffId, payload) {
+  async updateECEStaff(payload) {
     try {
-      if (!eceStaffId) return;
-      const response = await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/${eceStaffId}`, payload);
-      return response?.data;
+      if (isEmpty(payload)) return;
+      const chunkSize = 10;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/bulk`, chunk);
+      }
     } catch (error) {
-      console.log(`Failed to update the ECE Staff record - ${error}`);
+      console.log(`Failed to update ECE Staff - ${error}`);
       throw error;
     }
   },

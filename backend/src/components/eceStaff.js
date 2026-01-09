@@ -20,10 +20,15 @@ async function getECEStaff(req, res) {
 
 async function updateECEStaff(req, res) {
   try {
-    const eceStaffPayload = new MappableObjectForBack(req.body, ECEStaffMappings).toJSON();
-    const response = await patchOperationWithObjectId('ccof_ece_provider_employees', req.params.eceStaffId, eceStaffPayload);
-    return res.status(HttpStatus.OK).json(response);
+    await Promise.all(
+      req.body?.map(async (item) => {
+        const payload = new MappableObjectForBack(item, ECEStaffMappings).toJSON();
+        await patchOperationWithObjectId('ccof_ece_provider_employees', item.eceStaffId, payload);
+      }),
+    );
+    return res.status(HttpStatus.OK).json();
   } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }

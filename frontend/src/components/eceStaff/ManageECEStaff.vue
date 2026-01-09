@@ -97,13 +97,14 @@
   </v-container>
 </template>
 <script>
+import { pick } from 'lodash';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 
 import ECEStaffService from '@/services/eceStaffService.js';
 
-import { deepCloneObject } from '@/utils/common.js';
+import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import { ECE_STAFF_STATUSES } from '@/utils/constants';
 import { formatDecimalNumber } from '@/utils/format';
 import rules from '@/utils/rules';
@@ -200,18 +201,17 @@ export default {
       await this.$refs.form.validate();
       if (!this.isValidForm) return;
 
+      const keysForBackend = ['eceStaffId', 'hourlyWage', 'status'];
+      const updatedECEStaff = getUpdatedObjectsByKeys(
+        this.originalECEStaff,
+        this.eceStaff,
+        keysForBackend,
+        'eceStaffId',
+      );
+      const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
       try {
         this.isLoading = true;
-
-        const changedStaff = this.eceStaff.filter((staff, i) => {
-          const original = this.originalECEStaff[i];
-          return original && (staff.hourlyWage !== original.hourlyWage || staff.status !== original.status);
-        });
-
-        for (const staff of changedStaff) {
-          const payload = { hourlyWage: staff.hourlyWage, status: staff.status };
-          await ECEStaffService.updateECEStaff(staff.eceStaffId, payload);
-        }
+        await ECEStaffService.updateECEStaff(payload);
         this.originalECEStaff = deepCloneObject(this.eceStaff);
         this.isEditing = false;
         this.setSuccessAlert('ECE Staff changes saved successfully.');

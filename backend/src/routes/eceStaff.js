@@ -5,7 +5,7 @@ const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { getECEStaff, updateECEStaff } = require('../components/eceStaff');
 const { UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { param, query, validationResult } = require('express-validator');
+const { body, query, validationResult } = require('express-validator');
 /**
  * Get the ECE Staff records using facilityID
  */
@@ -22,18 +22,15 @@ router.get(
 );
 
 /**
- * Update an existing ECE Staff record using eceStaffId
+ * Update an existing ECE Staff record
  */
 router.patch(
-  '/:eceStaffId',
+  '/bulk',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   //TODO: Add permissions here
-  [param('eceStaffId', 'URL param: [eceStaffId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
-  (req, res) => {
-    validationResult(req).throw();
-    return updateECEStaff(req, res);
-  },
+  body().isArray({ min: 1 }),
+  (req, res) => updateECEStaff(req, res),
 );
 
 module.exports = router;
