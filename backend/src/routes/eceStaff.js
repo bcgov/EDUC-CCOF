@@ -3,9 +3,9 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getECEStaff } = require('../components/eceStaff');
+const { getECEStaff, getECEStaffCertificate } = require('../components/eceStaff');
 const { UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { query, validationResult } = require('express-validator');
+const { param, query, validationResult } = require('express-validator');
 /**
  * Get the ECE Staff records using facilityID
  */
@@ -21,4 +21,15 @@ router.get(
   },
 );
 
+router.get(
+  '/:registrationNumber/certificate',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  //TODO: Add permissions here
+  param('registrationNumber', 'param: [registrationNumber] is required').notEmpty(),
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEStaffCertificate(req, res);
+  },
+);
 module.exports = router;

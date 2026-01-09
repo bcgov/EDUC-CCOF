@@ -16,4 +16,17 @@ export default {
       throw error;
     }
   },
+
+  async getECEStaffCertificate(registrationNumber) {
+    try {
+      if (!registrationNumber) {
+        return [];
+      }
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}/${registrationNumber}/certificate`);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get certificate for staff - ${error}`);
+      throw error;
+    }
+  },
 };

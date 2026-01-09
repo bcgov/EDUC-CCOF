@@ -145,7 +145,10 @@ export default {
       });
     },
 
-    goToViewCertification(staff) {
+    async goToViewCertification(staff) {
+      if (!staff.certificates) {
+        staff.certificates = await ECEStaffService.getECEStaffCertificate(staff.registrationNumber);
+      }
       this.selectedStaff = staff;
       this.certificationDialogOpen = true;
     },
