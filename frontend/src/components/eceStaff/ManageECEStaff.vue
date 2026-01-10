@@ -62,9 +62,11 @@
         </template>
       </v-data-table>
     </v-skeleton-loader>
+    <ECEStaffCertificationDialog v-model="certificationDialogOpen" :staff="selectedStaff" />
   </v-container>
 </template>
 <script>
+import ECEStaffCertificationDialog from '@/components/eceStaff/ECEStaffCertificationDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -76,14 +78,17 @@ import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'ManageECEStaff',
-  components: { AppButton },
+  components: { AppButton, ECEStaffCertificationDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      isLoadingCertificates: false,
       isEditing: false,
       eceSearch: '',
       eceStaff: [],
+      certificationDialogOpen: false,
+      selectedStaff: null,
       eceStaffTableHeaders: [
         { title: 'Last Name', sortable: true, value: 'lastName' },
         { title: 'Middle Name', sortable: true, value: 'middleName' },
@@ -141,9 +146,20 @@ export default {
       });
     },
 
-    goToViewCertification() {
-      //TODO: will be added as a part of CCFRI-6259
-      alert('View Certification');
+    async goToViewCertification(staff) {
+      try {
+        this.isLoadingCertificates = true;
+        if (!staff.certificates) {
+          staff.certificates = await ECEStaffService.getECEStaffCertificates(staff.registrationNumber);
+        }
+        this.selectedStaff = staff;
+        this.certificationDialogOpen = true;
+      } catch (error) {
+        this.setFailureAlert('Failed to load staff certifications');
+        console.error(error);
+      } finally {
+        this.isLoadingCertificates = false;
+      }
     },
   },
 };
