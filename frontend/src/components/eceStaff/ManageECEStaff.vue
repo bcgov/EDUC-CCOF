@@ -83,6 +83,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      isLoadingCertificates: false,
       isEditing: false,
       eceSearch: '',
       eceStaff: [],
@@ -146,11 +147,19 @@ export default {
     },
 
     async goToViewCertification(staff) {
-      if (!staff.certificates) {
-        staff.certificates = await ECEStaffService.getECEStaffCertificate(staff.registrationNumber);
+      try {
+        this.isLoadingCertificates = true;
+        if (!staff.certificates) {
+          staff.certificates = await ECEStaffService.getECEStaffCertificates(staff.registrationNumber);
+        }
+        this.selectedStaff = staff;
+        this.certificationDialogOpen = true;
+      } catch (error) {
+        this.setFailureAlert('Failed to load staff certifications');
+        console.error(error);
+      } finally {
+        this.isLoadingCertificates = false;
       }
-      this.selectedStaff = staff;
-      this.certificationDialogOpen = true;
     },
   },
 };

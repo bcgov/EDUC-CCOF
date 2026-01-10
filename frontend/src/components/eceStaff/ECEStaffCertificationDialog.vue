@@ -7,7 +7,7 @@
         <v-col cols="4">Effective End Date</v-col>
       </v-row>
 
-      <v-row v-for="(cert, index) in staff.certificates" :key="index" align="center">
+      <v-row v-for="(cert, index) in staff?.certificates" :key="index" align="center">
         <v-col cols="4">{{ cert.certificateLevel || EMPTY_PLACEHOLDER }}</v-col>
         <v-col cols="4">{{ cert.effectiveStartDate || EMPTY_PLACEHOLDER }}</v-col>
         <v-col cols="4">{{ cert.effectiveEndDate || EMPTY_PLACEHOLDER }}</v-col>
@@ -48,7 +48,7 @@ export default {
       },
     },
   },
-  async created() {
+  created() {
     this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
   },
   methods: {

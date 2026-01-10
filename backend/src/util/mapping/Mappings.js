@@ -907,6 +907,7 @@ const ECEReportMappings = [
 ];
 
 const ECEStaffMappings = [
+  { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
   { back: '_ccof_facility_id_value', front: 'facilityId' },
   { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
   { back: 'ccof_first_name', front: 'firstName' },
@@ -915,7 +916,6 @@ const ECEStaffMappings = [
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
   { back: 'statecode', front: 'status' },
-  { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
 ];
 
 const ECECertificateMappings = [
