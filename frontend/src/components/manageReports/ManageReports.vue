@@ -49,7 +49,7 @@
         </SmallCard>
       </v-col>
     </v-row>
-    <NavButton @previous="() => $router.back()" @next="false" />
+    <NavButton @previous="previous" @next="false" />
   </v-container>
 </template>
 <script>
@@ -112,6 +112,9 @@ export default {
     },
     goToChangeRequest() {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING);
+    },
+    previous() {
+      this.$router.push(PATHS.ROOT.HOME);
     },
   },
 };

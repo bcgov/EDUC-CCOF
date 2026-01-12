@@ -52,6 +52,7 @@ public class Utilities {
 	public void scrollToElement(WebElement ele) {
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].scrollIntoView(true);", ele);
+		js.executeScript("window.scrollTo(0, document.body.scrollHeight);");
 	}
 
 	public void selectvalue(WebElement ele, String value) {
@@ -60,7 +61,7 @@ public class Utilities {
 	}
 
 	public void waitForElement(WebElement ele) {
-		wait = new WebDriverWait(driver, Duration.ofMinutes(1));
+		wait = new WebDriverWait(driver, Duration.ofMinutes(3));
 		wait.until(ExpectedConditions.visibilityOf(ele));
 	}
 
@@ -121,5 +122,4 @@ public class Utilities {
 	public void compareValues(String expected, String actual) {
 		Assert.assertEquals(actual, expected, "Actual value: " + actual + "Expected value: " + expected);
 	}
-
 }

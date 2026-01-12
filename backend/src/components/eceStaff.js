@@ -4,7 +4,7 @@ const { getOperation, patchOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { buildFilterQuery } = require('./utils');
-const { ECEStaffMappings } = require('../util/mapping/Mappings');
+const { ECEStaffMappings, ECECertificateMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 async function getECEStaff(req, res) {
@@ -12,6 +12,18 @@ async function getECEStaff(req, res) {
     const response = await getOperation(`ccof_ece_provider_employees?${buildFilterQuery(req.query, ECEStaffMappings)}`);
     const eceStaff = response?.value?.map((record) => new MappableObjectForFront(record, ECEStaffMappings).toJSON());
     return res.status(HttpStatus.OK).json(eceStaff);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getECEStaffCertificates(req, res) {
+  try {
+    const { registrationNumber } = req.query;
+    const certResponse = await getOperation(`ofm_employee_certificates?$filter=ofm_certificate_number eq '${registrationNumber}'`);
+    const certificates = certResponse?.value?.map((cert) => new MappableObjectForFront(cert, ECECertificateMappings).toJSON());
+    return res.status(HttpStatus.OK).json(certificates);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -33,4 +45,4 @@ async function updateECEStaff(req, res) {
   }
 }
 
-module.exports = { getECEStaff, updateECEStaff };
+module.exports = { getECEStaff, getECEStaffCertificates, updateECEStaff };

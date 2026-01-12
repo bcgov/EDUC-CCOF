@@ -15,14 +15,7 @@
 <script>
 import { mapState } from 'pinia';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
-import {
-  BASE_FACILITY_HEADERS,
-  ECEWE_APPLICATION_STATUSES,
-  ECEWE_DESCRIBE_ORG_TYPES,
-  ECEWE_FACILITY_UNION_TYPES,
-  ECEWE_IS_PUBLIC_SECTOR_EMPLOYER,
-  OPT_STATUSES,
-} from '@/utils/constants.js';
+import { BASE_FACILITY_HEADERS, ECEWE_APPLICATION_STATUSES, OPT_STATUSES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import FacilityService from '@/services/facilityService';
 import { useApplicationStore } from '@/store/application.js';
@@ -38,21 +31,9 @@ const LOOKUP = {
     [ECEWE_APPLICATION_STATUSES.OPT_OUT]: 'Opted Out',
     [ECEWE_APPLICATION_STATUSES.SUBMITTED]: 'Submitted',
   },
-  CSSEA: {
-    [ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA]: 'Yes',
-    [ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA]: 'No',
-  },
   OPT_STATUS: {
     [OPT_STATUSES.OPT_IN]: 'Opt-In',
     [OPT_STATUSES.OPT_OUT]: 'Opt-Out',
-  },
-  PSE: {
-    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.NO]: 'No',
-    [ECEWE_IS_PUBLIC_SECTOR_EMPLOYER.YES]: 'Yes',
-  },
-  UNION: {
-    [ECEWE_FACILITY_UNION_TYPES.NON_UNIONIZED]: 'No',
-    [ECEWE_FACILITY_UNION_TYPES.UNIONIZED]: 'Yes',
   },
 };
 export default {
@@ -91,9 +72,6 @@ export default {
         })
         .map((item) => ({
           ...item,
-          isPublicSectorEmployer: this.mapValue('PSE', item.isPublicSectorEmployer),
-          isCsseaMember: this.mapValue('CSSEA', item.isCsseaMember),
-          unionStatus: this.mapValue('UNION', item.unionStatus),
           eceweOptStatus: this.mapValue('OPT_STATUS', item.eceweOptStatus),
           eceweApplicationStatus: this.mapValue('APPLICATION_STATUS', item.eceweApplicationStatus),
           eceweStartDate: formatUTCDateToMonthYear(item.eceweStartDate),
@@ -103,9 +81,6 @@ export default {
   created() {
     this.headers = [
       ...BASE_FACILITY_HEADERS,
-      { title: 'Public Sector Employer', key: 'isPublicSectorEmployer' },
-      { title: 'CSSEA Member', key: 'isCsseaMember' },
-      { title: 'Unionized', key: 'unionStatus' },
       { title: 'Opt-In/Out Status', key: 'eceweOptStatus' },
       { title: 'ECE-WE Application', key: 'eceweApplicationStatus' },
       { title: 'ECE-WE Start Date', key: 'eceweStartDate' },

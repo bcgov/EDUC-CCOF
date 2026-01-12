@@ -19,6 +19,21 @@ export default {
     }
   },
 
+  async getECEStaffCertificates(registrationNumber) {
+    try {
+      if (!registrationNumber) {
+        return [];
+      }
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ECE_STAFF}/certificates?registrationNumber=${registrationNumber}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get certificate for staff - ${error}`);
+      throw error;
+    }
+  },
+
   async updateECEStaff(payload) {
     try {
       if (isEmpty(payload)) return;

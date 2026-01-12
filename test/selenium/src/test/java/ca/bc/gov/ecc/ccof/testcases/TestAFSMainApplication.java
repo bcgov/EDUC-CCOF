@@ -1,6 +1,7 @@
 package ca.bc.gov.ecc.ccof.testcases;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,21 +12,22 @@ import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
 import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
+import ca.bc.gov.ecc.ccof.pageobjects.CcfriUnlockForm;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestAdjudicateApplicationCcfri extends BaseTest {
+public class TestAFSMainApplication extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicateApplicationCcfri.class);
+	private static final Logger logger = LogManager.getLogger(TestAFSMainApplication.class);
 	String contactName;
 
 	@Test(priority = 1)
-	public void adjudicateApplications(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationCcfri");
-		logger.info("Starting the AdjudicateApplicationCcfri  test...");
+	public void adjudicateAFSApplications(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), "AdjudicateApplicationAFS");
+		logger.info("Starting the TestAFSMainApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
@@ -56,21 +58,15 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 
 		BCeIDPage bceidPage = new BCeIDPage(driver);
 		bceidPage.clickSelectOrganization();
-		// Thread.sleep(3000);
+		Thread.sleep(3000);
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
 		// selecting the application
-		utils.waitForElement(orgInfo.waitBeforeClickMainApplication());
 		orgInfo.clickMainApplication();
 		Thread.sleep(5000);
 
 		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
-		appInfo.clickDeclarationBStatus();
-		utils.selectDropdownValue(utils.getDataFromJson("declarationBStatus"), appInfo.getDeclarationBStatusOptions());
-		Thread.sleep(3000);
-		appInfo.clickSaveBtn();
-		Thread.sleep(3000);
 
 		// navigating to related tab
 		appInfo.clickRelatedTab();
@@ -84,67 +80,35 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 
 		CcfrisInfoPage ccfriInfo = new CcfrisInfoPage(driver);
 
-		// checking system recommendation inside Overview page of CCFRI
-		String recommendation = ccfriInfo.getSystemRecommendation();
-		logger.info("System Recommendation is: {}", recommendation);
-		Thread.sleep(5000);
+		// clicking on facility adjudication title
 		ccfriInfo.clickCcfriFacilityAdjudicationTitle();
 		Thread.sleep(8000);
-
-		// selecting the facility and changing the status to CCFRI Complete
-		ccfriInfo.clickOpenSubmittedFacility();
+		ccfriInfo.clickOpenCompleteApprovedFacility();
 		Thread.sleep(8000);
 
 		FacilityInfoPage facilityInfo = new FacilityInfoPage(driver);
-		facilityInfo.clickFacilityNameLink();
-		Thread.sleep(5000);
-		facilityInfo.clickMyCcsTestDropdown();
-		Thread.sleep(5000);
-		facilityInfo.clickFacilityStatusField();
-		Thread.sleep(5000);
-		facilityInfo.mouseOverCcfriComplete();
-		Thread.sleep(5000);
-		logger.info("CCFRI Complete option is selected from Facility Status dropdown");
-		facilityInfo.clickSaveAndCloseCcfriFacilityBtn();
-		Thread.sleep(5000);
-		utils.clickIfPresent(facilityInfo.ignoreAndSaveButton());
-		Thread.sleep(5000);
-
-		// entering initial decision tab and changing ccfri recommendation and QC
 		facilityInfo.clickInitialDecisionLink();
 		Thread.sleep(5000);
-		facilityInfo.clickCcfriRecommendationField();
-		Thread.sleep(5000);
-		utils.selectDropdownValue(utils.getDataFromJson("ccfriAdjudicatorRecommendation"),
-				facilityInfo.getCCFRIAdjudicatorRecommendation());
-		Thread.sleep(5000);
-		facilityInfo.switchToCcfriStartDateIFrame();
-		utils = new Utilities(driver);
-		utils.selectvalue(facilityInfo.getCCFRIPaymentEligibilityStartDate(),
-				utils.getDataFromJson("ccfriPaymentEligibilityStartDate"));
-		Thread.sleep(2000);
-		facilityInfo.switchToDefaultContent();
-		Thread.sleep(5000);
-		facilityInfo.clickCcfriQcDecisionField();
-		Thread.sleep(5000);
-		utils.selectDropdownValue(utils.getDataFromJson("ccfriQcDecision"), facilityInfo.getCCFRIQCDecision());
-		Thread.sleep(5000);
-		facilityInfo.clickSaveBtn();
-		Thread.sleep(5000);
-		facilityInfo.clickExpandIcon();
-		Thread.sleep(5000);
-		facilityInfo.clickCcfriStatusField();
-		Thread.sleep(5000);
-		utils.selectDropdownValue(utils.getDataFromJson("ccfriStatusOptions"), facilityInfo.getCcfriStatusOptions());
-		Thread.sleep(5000);
-		logger.info("Complete-Approved option is selected from CCFRI Status dropdown");
+
+		// toggle on the AFS Confirmed
+		boolean afsOK = facilityInfo.setAfsConfirmedViaXrm(true);
+		logger.info("AFS Confirmed set via Xrm: {}", afsOK);
+		if (!afsOK) {
+			facilityInfo.clickAfsConfirmedToggle(Duration.ofSeconds(10));
+		}
+
 		facilityInfo.clickSaveAndCloseCcfriFacilityBtn();
-		Thread.sleep(5000);
-		ccfriInfo.clickSaveAndCloseBtn();
-		Thread.sleep(5000);
+		Thread.sleep(8000);
+		ccfriInfo.clickUnlockBtn();
+		Thread.sleep(8000);
 
-		logger.info("Ending the AdjudicateApplicationCcfri  test...");
+		// validate the AFS Enable and Unlock status in unlock form
+		CcfriUnlockForm ccfriUnlock = new CcfriUnlockForm(driver);
+		utils.compareValues("Enabled", ccfriUnlock.actualAfsEnableStatusTxt());
+		utils.compareValues("Unlocked", ccfriUnlock.actualAfsUnlockStatusTxt());
 
+		logger.info("AFS Application adjudicated successfully.");
+
+		logger.info("Ending the TestAFSMainApplication  test...");
 	}
-
 }

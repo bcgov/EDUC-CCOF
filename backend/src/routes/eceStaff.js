@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getECEStaff, updateECEStaff } = require('../components/eceStaff');
+const { getECEStaff, getECEStaffCertificates, updateECEStaff } = require('../components/eceStaff');
 const { UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { body, query, validationResult } = require('express-validator');
 /**
@@ -22,6 +22,21 @@ router.get(
 );
 
 /**
+ * Retrieves the list of certificates for a specific ECE staff member.
+ */
+router.get(
+  '/certificates',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  //TODO: Add permissions here
+  query('registrationNumber', 'param: [registrationNumber] is required').notEmpty().matches(/^\d+$/),
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEStaffCertificates(req, res);
+  },
+);
+
+/**
  * Update an existing ECE Staff record
  */
 router.patch(
@@ -32,5 +47,4 @@ router.patch(
   body().isArray({ min: 1 }),
   (req, res) => updateECEStaff(req, res),
 );
-
 module.exports = router;

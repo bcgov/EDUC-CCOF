@@ -44,7 +44,7 @@
         </v-col>
       </v-row>
 
-      <v-skeleton-loader :loading="isLoading">
+      <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <v-data-table
           :items="eceStaff"
           :search="eceSearch"
@@ -66,7 +66,6 @@
                 max-width="120"
                 :disabled="!isEditing"
                 :rules="[
-                  ...rules.required,
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
@@ -77,7 +76,13 @@
 
           <template #[`item.certifications`]="{ item }">
             <v-row no-gutters class="justify-end justify-lg-start">
-              <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)">
+              <AppButton
+                :primary="false"
+                size="small"
+                width="100"
+                :loading="isLoadingCertificates"
+                @click="goToViewCertification(item)"
+              >
                 View
               </AppButton>
             </v-row>
@@ -93,11 +98,14 @@
           </template>
         </v-data-table>
       </v-skeleton-loader>
+      <ECEStaffCertificationDialog v-model="certificationDialogOpen" :staff="selectedStaff" />
     </v-form>
   </v-container>
 </template>
 <script>
 import { pick } from 'lodash';
+
+import ECEStaffCertificationDialog from '@/components/eceStaff/ECEStaffCertificationDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -108,19 +116,21 @@ import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import { ECE_STAFF_STATUSES } from '@/utils/constants';
 import { formatDecimalNumber } from '@/utils/format';
 import rules from '@/utils/rules';
-
 export default {
   name: 'ManageECEStaff',
-  components: { AppButton },
+  components: { AppButton, ECEStaffCertificationDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      isLoadingCertificates: false,
       isEditing: false,
       isValidForm: false,
       eceSearch: '',
       eceStaff: [],
       originalECEStaff: [],
+      certificationDialogOpen: false,
+      selectedStaff: null,
       eceStaffTableHeaders: [
         { title: 'Last Name', sortable: true, value: 'lastName' },
         { title: 'Middle Name', sortable: true, value: 'middleName' },
@@ -178,9 +188,20 @@ export default {
       });
     },
 
-    goToViewCertification() {
-      //TODO: will be added as a part of CCFRI-6259
-      alert('View Certification');
+    async goToViewCertification(staff) {
+      try {
+        this.isLoadingCertificates = true;
+        if (!staff.certificates) {
+          staff.certificates = await ECEStaffService.getECEStaffCertificates(staff.registrationNumber);
+        }
+        this.selectedStaff = staff;
+        this.certificationDialogOpen = true;
+      } catch (error) {
+        this.setFailureAlert('Failed to load staff certifications');
+        console.error(error);
+      } finally {
+        this.isLoadingCertificates = false;
+      }
     },
 
     formatHourlyWage(item) {

@@ -91,7 +91,6 @@ function interceptAPI(enrolmentReport) {
 
 function mountWithPinia({ initialState = {} } = {}) {
   const pushStub = cy.stub().as('routerPush');
-  const backStub = cy.stub().as('routerBack');
 
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ViewEnrolmentReports, {
@@ -100,7 +99,6 @@ function mountWithPinia({ initialState = {} } = {}) {
         mocks: {
           $router: {
             push: pushStub,
-            back: backStub,
           },
         },
       },
@@ -269,7 +267,7 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('button', 'Adjust').should('not.exist');
   });
 
-  it('should call router back when back button is clicked', () => {
+  it('should return to manage reports when back button is clicked', () => {
     interceptAPI(enrolmentReportApproved);
     mountWithPinia({
       initialState: {
@@ -280,6 +278,6 @@ describe('<ViewEnrolmentReports />', () => {
     });
 
     cy.contains('button', 'Back').click();
-    cy.get('@routerBack').should('have.been.called');
+    cy.get('@routerPush').should('have.been.calledWith', PATHS.ROOT.MANAGE_REPORTS);
   });
 });
