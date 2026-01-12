@@ -15,13 +15,15 @@
       <v-col cols="auto">
         <v-row class="g-2" justify="end">
           <v-col cols="auto">
-            <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
+            <AppButton :primary="false" size="small" :loading="isLoading" @click="refreshECEStaff">
+              Refresh ECE Information
+            </AppButton>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
 
-    <v-skeleton-loader :loading="isLoading">
+    <v-skeleton-loader :loading="isLoading" type="table-tbody">
       <v-data-table
         :items="eceStaff"
         :search="eceSearch"
@@ -48,7 +50,15 @@
 
         <template #[`item.certifications`]="{ item }">
           <v-row no-gutters class="justify-end justify-lg-start">
-            <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)"> View </AppButton>
+            <AppButton
+              :primary="false"
+              size="small"
+              width="100"
+              :loading="isLoadingCertificates"
+              @click="goToViewCertification(item)"
+            >
+              View
+            </AppButton>
           </v-row>
         </template>
 
@@ -62,9 +72,11 @@
         </template>
       </v-data-table>
     </v-skeleton-loader>
+    <ECEStaffCertificationDialog v-model="certificationDialogOpen" :staff="selectedStaff" />
   </v-container>
 </template>
 <script>
+import ECEStaffCertificationDialog from '@/components/eceStaff/ECEStaffCertificationDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
@@ -76,14 +88,17 @@ import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'ManageECEStaff',
-  components: { AppButton },
+  components: { AppButton, ECEStaffCertificationDialog },
   mixins: [alertMixin],
   data() {
     return {
       isLoading: false,
+      isLoadingCertificates: false,
       isEditing: false,
       eceSearch: '',
       eceStaff: [],
+      certificationDialogOpen: false,
+      selectedStaff: null,
       eceStaffTableHeaders: [
         { title: 'Last Name', sortable: true, value: 'lastName' },
         { title: 'Middle Name', sortable: true, value: 'middleName' },
@@ -141,9 +156,20 @@ export default {
       });
     },
 
-    goToViewCertification() {
-      //TODO: will be added as a part of CCFRI-6259
-      alert('View Certification');
+    async goToViewCertification(staff) {
+      try {
+        this.isLoadingCertificates = true;
+        if (!staff.certificates) {
+          staff.certificates = await ECEStaffService.getECEStaffCertificates(staff.registrationNumber);
+        }
+        this.selectedStaff = staff;
+        this.certificationDialogOpen = true;
+      } catch (error) {
+        this.setFailureAlert('Failed to load staff certifications');
+        console.error(error);
+      } finally {
+        this.isLoadingCertificates = false;
+      }
     },
   },
 };

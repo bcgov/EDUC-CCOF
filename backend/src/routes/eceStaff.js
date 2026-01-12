@@ -3,7 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { getECEStaff } = require('../components/eceStaff');
+const { getECEStaff, getECEStaffCertificates } = require('../components/eceStaff');
 const { UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { query, validationResult } = require('express-validator');
 /**
@@ -21,4 +21,15 @@ router.get(
   },
 );
 
+router.get(
+  '/certificates',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  //TODO: Add permissions here
+  query('registrationNumber', 'param: [registrationNumber] is required').notEmpty().matches(/^\d+$/),
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEStaffCertificates(req, res);
+  },
+);
 module.exports = router;
