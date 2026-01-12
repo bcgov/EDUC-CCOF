@@ -21,8 +21,7 @@ async function getECEStaff(req, res) {
 async function getECEStaffCertificates(req, res) {
   try {
     const { registrationNumber } = req.query;
-    const safeRegistrationNumber = encodeURIComponent(String(registrationNumber));
-    const certResponse = await getOperation(`ofm_employee_certificates?$filter=ofm_certificate_number eq '${safeRegistrationNumber}'`);
+    const certResponse = await getOperation(`ofm_employee_certificates?$filter=ofm_certificate_number eq '${registrationNumber}'`);
     const certificates = certResponse?.value?.map((cert) => new MappableObjectForFront(cert, ECECertificateMappings).toJSON());
     return res.status(HttpStatus.OK).json(certificates);
   } catch (e) {

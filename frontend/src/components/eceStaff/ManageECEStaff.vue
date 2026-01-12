@@ -15,13 +15,15 @@
       <v-col cols="auto">
         <v-row class="g-2" justify="end">
           <v-col cols="auto">
-            <AppButton :primary="false" size="small" @click="refreshECEStaff"> Refresh ECE Information </AppButton>
+            <AppButton :primary="false" size="small" :loading="isLoading" @click="refreshECEStaff">
+              Refresh ECE Information
+            </AppButton>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
 
-    <v-skeleton-loader :loading="isLoading">
+    <v-skeleton-loader :loading="isLoading" type="table-tbody">
       <v-data-table
         :items="eceStaff"
         :search="eceSearch"
@@ -48,7 +50,15 @@
 
         <template #[`item.certifications`]="{ item }">
           <v-row no-gutters class="justify-end justify-lg-start">
-            <AppButton :primary="false" size="small" width="100" @click="goToViewCertification(item)"> View </AppButton>
+            <AppButton
+              :primary="false"
+              size="small"
+              width="100"
+              :loading="isLoadingCertificates"
+              @click="goToViewCertification(item)"
+            >
+              View
+            </AppButton>
           </v-row>
         </template>
 

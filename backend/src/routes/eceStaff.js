@@ -26,7 +26,7 @@ router.get(
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   //TODO: Add permissions here
-  query('registrationNumber', 'param: [registrationNumber] is required').notEmpty(),
+  query('registrationNumber', 'param: [registrationNumber] is required').notEmpty().matches(/^\d+$/),
   (req, res) => {
     validationResult(req).throw();
     return getECEStaffCertificates(req, res);
