@@ -839,8 +839,8 @@ export const ECE_REPORT_TYPES = Object.freeze({
 });
 
 export const ECE_STAFF_STATUSES = Object.freeze({
-  ACTIVE: 1,
-  INACTIVE: 2,
+  ACTIVE: 0,
+  INACTIVE: 1,
 });
 
 // Fiscal year month order: April to March
