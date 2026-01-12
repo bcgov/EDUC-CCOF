@@ -916,7 +916,6 @@ const ECEStaffMappings = [
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
   { back: 'statecode', front: 'status' },
-  { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
 ];
 
 const ECECertificateMappings = [

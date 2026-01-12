@@ -16,7 +16,7 @@
         <v-col cols="auto">
           <v-row class="g-2" justify="end">
             <v-col v-if="!isEditing" cols="auto">
-              <AppButton :primary="true" size="small" @click="startEditing"> Edit </AppButton>
+              <AppButton :primary="true" size="small" :loading="isLoading" @click="startEditing"> Edit </AppButton>
             </v-col>
 
             <v-col v-if="isEditing" cols="auto">
