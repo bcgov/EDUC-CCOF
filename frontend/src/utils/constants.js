@@ -790,6 +790,49 @@ export const ECE_REPORT_STATUSES = Object.freeze({
   EXPIRED: 10,
 });
 
+export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
+  {
+    label: 'Draft',
+    value: ECE_REPORT_STATUSES.DRAFT,
+  },
+  {
+    label: 'Inactive',
+    value: ECE_REPORT_STATUSES.INACTIVE,
+  },
+  {
+    label: 'Submitted',
+    value: ECE_REPORT_STATUSES.SUBMITTED,
+  },
+  {
+    label: 'With Ministry',
+    value: ECE_REPORT_STATUSES.IN_REVIEW,
+  },
+  {
+    label: 'Verified',
+    value: ECE_REPORT_STATUSES.VERIFIED,
+  },
+  {
+    label: 'Approved',
+    value: ECE_REPORT_STATUSES.APPROVED,
+  },
+  {
+    label: 'Paid',
+    value: ECE_REPORT_STATUSES.PAID,
+  },
+  {
+    label: 'Rejected',
+    value: ECE_REPORT_STATUSES.REJECTED,
+  },
+  {
+    label: 'Processing Error',
+    value: ECE_REPORT_STATUSES.PROCESSING_ERROR,
+  },
+  {
+    label: 'Expired',
+    value: ECE_REPORT_STATUSES.EXPIRED,
+  },
+]);
+
 export const ECE_REPORT_TYPES = Object.freeze({
   BASE: 1,
   ADJUSTMENT: 2,

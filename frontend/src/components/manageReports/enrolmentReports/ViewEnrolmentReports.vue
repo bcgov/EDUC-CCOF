@@ -149,9 +149,8 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 
-import { padString } from '@/utils/common.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
+import { formatDateToStandardFormat, formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
 export default {
   name: 'ViewEnrolmentReports',
@@ -257,7 +256,7 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
+          report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
         }
         this.sortEnrolmentReports();
       } catch (error) {

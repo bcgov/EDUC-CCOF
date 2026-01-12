@@ -10,7 +10,7 @@
       ECE staff information, wage rates, and facility details up to date. Review the Monthly ECE Report Instructions.
     </p>
     <!-- TODO: Implement ECE Reports permission -->
-    <AppButton size="medium" @click="toggleCreateECEReportDialog"> Create ECE Report </AppButton>
+    <AppButton size="medium" @click="showCreateECEReportDialog = true"> Create ECE Report </AppButton>
     <v-card variant="outlined" class="pa-6 my-6 soft-outline">
       <v-row no-gutters class="pb-4">
         <v-col cols="12" md="4" lg="2">
@@ -27,7 +27,7 @@
       </v-row>
       <v-row no-gutters>
         <v-col cols="12" md="4" lg="2">
-          <p class="font-weight-bold pt-4 pr-4">Month of service:</p>
+          <p class="font-weight-bold pt-4 pb-2 pr-4">Month of service:</p>
         </v-col>
         <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
           <AppMultiSelectInput
@@ -46,7 +46,7 @@
       </v-row>
       <v-row no-gutters class="py-4">
         <v-col cols="12" md="4" lg="2">
-          <p class="font-weight-bold pt-4 pr-4">Facility name:</p>
+          <p class="font-weight-bold pt-4 pb-2 pr-4">Facility name:</p>
         </v-col>
         <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
           <FacilityMultiSelectInput
@@ -63,14 +63,14 @@
       </v-row>
       <v-row no-gutters>
         <v-col cols="12" md="4" lg="2">
-          <p class="font-weight-bold pt-4 pr-4">Status:</p>
+          <p class="font-weight-bold pt-4 pb-2 pr-4">Status:</p>
         </v-col>
         <v-col cols="12" md="8" lg="6" class="d-flex justify-start">
           <AppMultiSelectInput
             v-model.lazy="selectedStatuses"
             :loading="loading"
             :disabled="loading"
-            :items="allStatuses"
+            :items="ECE_REPORT_STATUS_OPTIONS"
             :all-selected-label="'All statuses'"
             item-title="label"
             item-value="value"
@@ -98,12 +98,9 @@
           />
         </template>
         <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
-        <!-- <template #item.submissionDeadline="{ item }">
-          {{ formatDateToStandardFormat(item.submissionDeadline) }}
-        </template> -->
         <template #item.statusCode="{ item }">
           <span class="report-status" :class="getStatusClass(item.statusCode)">
-            {{ getStatusText(item) }}
+            {{ getStatusText(item.statusCode) }}
           </span>
         </template>
         <template #item.actions="{ item }">
@@ -133,7 +130,7 @@
               :disabled="false"
               :primary="false"
               size="medium"
-              @click="true"
+              @click="adjust"
             >
               Adjust
             </AppButton>
@@ -141,8 +138,7 @@
         </template>
       </v-data-table>
     </v-skeleton-loader>
-
-    <CreateECEReportDialog :show="showCreateECEReportDialog" @close="showCreateECEReportDialog = false" />
+    <CreateECEReportDialog v-model="showCreateECEReportDialog" />
   </div>
   <NavButton @previous="$router.back" />
 </template>
@@ -161,9 +157,8 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { padString } from '@/utils/common.js';
-import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
-import { formatMonthYearToString } from '@/utils/format';
+import { ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
 export default {
   name: 'ManageECEReports',
@@ -185,6 +180,7 @@ export default {
       selectedFacilityIds: [],
       selectedStatuses: [],
       showCreateECEReportDialog: false,
+      ECE_REPORT_STATUS_OPTIONS,
     };
   },
   computed: {
@@ -206,42 +202,6 @@ export default {
     },
     selectedProgramYearId() {
       return this.selectedProgramYear?.programYearId;
-    },
-    allStatuses() {
-      return [
-        {
-          label: 'Draft',
-          value: ECE_REPORT_STATUSES.DRAFT,
-        },
-        {
-          label: 'Inactive',
-          value: ECE_REPORT_STATUSES.INACTIVE,
-        },
-        {
-          label: 'Submitted',
-          value: ECE_REPORT_STATUSES.SUBMITTED,
-        },
-        {
-          label: 'With Ministry',
-          value: ECE_REPORT_STATUSES.IN_REVIEW,
-        },
-        {
-          label: 'Approved',
-          value: ECE_REPORT_STATUSES.APPROVED,
-        },
-        {
-          label: 'Paid',
-          value: ECE_REPORT_STATUSES.PAID,
-        },
-        {
-          label: 'Rejected',
-          value: ECE_REPORT_STATUSES.REJECTED,
-        },
-        {
-          label: 'Expired',
-          value: ECE_REPORT_STATUSES.EXPIRED,
-        },
-      ];
     },
     allReportingMonths() {
       const reportingMonths = [];
@@ -288,14 +248,13 @@ export default {
       { title: 'Licence Number', key: 'licenceNumber' },
       { title: 'Month of Service', key: 'reportingMonth' },
       { title: 'Version Number', key: 'version' },
-      // { title: 'Submission Deadline', key: 'submissionDeadline' },
       { title: 'Status', key: 'statusCode' },
       { title: 'Actions', key: 'actions', width: '12%', sortable: false },
     ];
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
     this.selectedReportingMonths = this.allReportingMonths.map((month) => month.value);
     this.selectedFacilityIds = this.allFacilityIds;
-    this.selectedStatuses = this.allStatuses.map((status) => status.value);
+    this.selectedStatuses = this.ECE_REPORT_STATUS_OPTIONS.map((status) => status.value);
   },
   methods: {
     formatMonthYearToString,
@@ -311,7 +270,7 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
+          report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
         }
         this.sortECEReports();
       } catch (error) {
@@ -342,11 +301,9 @@ export default {
     goToECEReport(eceReportId) {
       this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
     },
-    getStatusText(report) {
-      if (report.statusCode === ECE_REPORT_STATUSES.APPROVED) {
-        return 'Approved';
-      }
-      return report.statusText;
+    getStatusText(statusCode) {
+      const status = ECE_REPORT_STATUS_OPTIONS.find((option) => option.value === statusCode);
+      return status?.label ?? '';
     },
     getStatusClass(status) {
       switch (status) {
@@ -377,6 +334,11 @@ export default {
           item.version > eceReport.version,
       );
     },
+    // TODO (vietle-cgi): Implement Adjust functionality
+    adjust() {
+      window.alert('Adjust button is clicked');
+    },
+    // TODO: Implement ECE Reports permission
     showAdjustButton(eceReport) {
       return (
         !this.hasNextReportCreated(eceReport) &&
@@ -393,16 +355,10 @@ export default {
         eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.REJECTED
       );
     },
-    isSubmitted(report) {
-      return report.statusCode !== ECE_REPORT_STATUSES.DRAFT;
-    },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
         (item) => item.programYearId === programYear.programYearId,
       );
-    },
-    toggleCreateECEReportDialog() {
-      this.showCreateECEReportDialog = !this.showCreateECEReportDialog;
     },
   },
 };

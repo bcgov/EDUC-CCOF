@@ -9,7 +9,12 @@ const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { padString } = require('./utils');
 
 function isAdjustmentReport(report) {
-  return report?.reportType === 2;
+  return report?.version > 1;
+}
+
+function getReportVersionText(report) {
+  const version = padString(report?.version, 2, '0');
+  return isAdjustmentReport(report) ? `${version}-Adjustment` : `${version}-Base`;
 }
 
 function mapECEReportForFront(report) {
@@ -17,11 +22,6 @@ function mapECEReportForFront(report) {
   mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
   mappedReport.versionText = getReportVersionText(mappedReport);
   return mappedReport;
-}
-
-function getReportVersionText(report) {
-  const version = padString(report?.version, 2, '0');
-  return isAdjustmentReport(report) ? `${version}-Adjustment` : `${version}-Base`;
 }
 
 async function createECEReport(req, res) {
