@@ -227,6 +227,27 @@
             />
           </v-container>
         </v-container>
+        <v-container>
+          <v-card variant="outlined" class="px-8 px-md-12 py-6 mt-4">
+            <h2 class="mb-4">Declaration and Submission</h2>
+            <p class="mb-3">By submitting this Closure Request, I confirm that:</p>
+            <ul class="declaration-list px-md-4 px-xl-12 pb-2">
+              <li>
+                The information provided in this request is true, accurate and complete to the best of my knowledge;
+              </li>
+              <li>I am authorized to submit Closure Requests for this facility;</li>
+              <li>
+                I understand that the Ministry relies on the content of these requests for its decision to disburse
+                funds to this organization;
+              </li>
+              <li>I will maintain proper records regarding this facility’s operating days and closure days;</li>
+              <li>
+                I will not charge parent fees for any closure days that were not approved by the Ministry, if this
+                facility is participating in the Child Care Fee Reduction Initiative.
+              </li>
+            </ul>
+          </v-card>
+        </v-container>
       </v-form>
     </template>
     <template #button>
@@ -245,7 +266,9 @@
               @click="removeClosure"
               >Remove Closure</AppButton
             >
-            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">Submit</AppButton>
+            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">
+              Accept and Submit</AppButton
+            >
           </v-col>
         </v-row>
       </v-container>
