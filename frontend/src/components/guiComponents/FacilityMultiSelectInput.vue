@@ -1,5 +1,5 @@
 <template>
-  <v-select v-model="selectedItems" :items="items" :item-value="itemValue" variant="outlined" multiple>
+  <v-select v-model="selectedFacilities" :items="items" :item-value="itemValue" variant="outlined" multiple>
     <template #prepend-item>
       <v-list-item title="Select All" @click="toggleSelectAll">
         <template #prepend>
@@ -33,12 +33,12 @@
         <v-chip v-if="index === 0">All facilities</v-chip>
       </template>
       <template v-else>
-        <v-chip v-if="index < maxDisplayedItems">
+        <v-chip v-if="index < maxDisplayedFacilities">
           <span>{{ item.raw.facilityAccountNumber ?? EMPTY_PLACEHOLDER }}, {{ item.raw.facilityName }}</span>
         </v-chip>
-        <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
-          >(+{{ items.length - maxDisplayedItems }} others)</span
-        >
+        <span v-if="index === maxDisplayedFacilities" class="text-grey text-caption align-self-center">
+          (+{{ selectedFacilities.length - maxDisplayedFacilities }} others)
+        </span>
       </template>
     </template>
     <template #no-data>
@@ -69,7 +69,7 @@ export default {
       type: String,
       default: null,
     },
-    maxDisplayedItems: {
+    maxDisplayedFacilities: {
       type: Number,
       default: 5,
     },
@@ -77,41 +77,45 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
-      selectedItems: [],
+      selectedFacilities: [],
+      EMPTY_PLACEHOLDER,
     };
   },
   computed: {
     isAllSelected() {
-      return this.selectedItems?.length === this.items?.length;
+      return this.selectedFacilities?.length === this.items?.length;
     },
     isSomeSelected() {
-      return this.selectedItems?.length > 0;
+      return this.selectedFacilities?.length > 0;
     },
   },
   watch: {
     modelValue: {
       handler(value) {
-        if (!isEqual(value, this.selectedItems)) {
-          this.selectedItems = value;
+        if (!isEqual(value, this.selectedFacilities)) {
+          this.selectedFacilities = value;
         }
       },
+      immediate: false,
     },
-    selectedItems: {
-      handler() {
-        this.$emit('update:modelValue', this.selectedItems);
+    selectedFacilities: {
+      handler(value) {
+        if (!isEqual(value, this.modelValue)) {
+          this.$emit('update:modelValue', value);
+        }
       },
+      immediate: false,
     },
   },
   created() {
-    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
-    this.selectedItems = this.modelValue;
+    this.selectedFacilities = this.modelValue;
   },
   methods: {
     isFacilitySelected(facilityId) {
-      return this.selectedItems?.includes(facilityId);
+      return this.selectedFacilities?.includes(facilityId);
     },
     toggleSelectAll() {
-      this.selectedItems = this.isAllSelected ? [] : this.items?.map((item) => item[this.itemValue]);
+      this.selectedFacilities = this.isAllSelected ? [] : this.items?.map((item) => item[this.itemValue]);
     },
   },
 };

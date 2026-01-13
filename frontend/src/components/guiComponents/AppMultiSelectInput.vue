@@ -21,7 +21,7 @@
           <span>{{ item.title }}</span>
         </v-chip>
         <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
-          >(+{{ items.length - maxDisplayedItems }} others)</span
+          >(+{{ selectedItems.length - maxDisplayedItems }} others)</span
         >
       </template>
     </template>
@@ -76,11 +76,15 @@ export default {
           this.selectedItems = value;
         }
       },
+      immediate: false,
     },
     selectedItems: {
-      handler() {
-        this.$emit('update:modelValue', this.selectedItems);
+      handler(value) {
+        if (!isEqual(value, this.modelValue)) {
+          this.$emit('update:modelValue', value);
+        }
       },
+      immediate: false,
     },
   },
   created() {

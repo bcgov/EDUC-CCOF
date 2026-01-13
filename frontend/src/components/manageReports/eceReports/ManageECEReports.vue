@@ -35,7 +35,7 @@
             :loading="loading"
             :disabled="loading"
             :items="allReportingMonths"
-            :all-selected-label="'All months'"
+            all-selected-label="All months"
             item-title="label"
             item-value="value"
             label="Select month of service"
@@ -71,7 +71,7 @@
             :loading="loading"
             :disabled="loading"
             :items="ECE_REPORT_STATUS_OPTIONS"
-            :all-selected-label="'All statuses'"
+            all-selected-label="All statuses"
             item-title="label"
             item-value="value"
             label="Select status"
@@ -80,10 +80,11 @@
           />
         </v-col>
       </v-row>
+      <AppButton size="medium" :primary="false" class="mt-4" @click="resetFilters"> Reset </AppButton>
     </v-card>
     <v-skeleton-loader :loading="loading" type="table-tbody">
       <v-data-table
-        :headers="ECE_REPORTS_TABLE_HEADERS"
+        :headers="eceReportTableHeaders"
         :items="filteredECEReports"
         :items-per-page="10"
         :mobile="null"
@@ -138,7 +139,7 @@
         </template>
       </v-data-table>
     </v-skeleton-loader>
-    <CreateECEReportDialog v-model="showCreateECEReportDialog" />
+    <CreateECEReportDialog v-if="showCreateECEReportDialog" v-model="showCreateECEReportDialog" />
   </div>
   <NavButton @previous="$router.back" />
 </template>
@@ -153,6 +154,7 @@ import FacilityMultiSelectInput from '@/components/guiComponents/FacilityMultiSe
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import CreateECEReportDialog from '@/components/manageReports/eceReports/CreateECEReportDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
+import alertMixin from '@/mixins/alertMixin';
 import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -171,9 +173,19 @@ export default {
     FiscalYearSlider,
     NavButton,
   },
+  mixins: [alertMixin],
   data() {
     return {
       loading: false,
+      eceReportTableHeaders: [
+        { title: 'Facility Name', key: 'facilityName' },
+        { title: 'Facility ID', key: 'facilityAccountNumber' },
+        { title: 'Licence Number', key: 'licenceNumber' },
+        { title: 'Month of Service', key: 'reportingMonth' },
+        { title: 'Version Number', key: 'version' },
+        { title: 'Status', key: 'statusCode' },
+        { title: 'Actions', key: 'actions', width: '12%', sortable: false },
+      ],
       eceReports: [],
       selectedProgramYear: null,
       selectedReportingMonths: [],
@@ -242,19 +254,7 @@ export default {
     },
   },
   created() {
-    this.ECE_REPORTS_TABLE_HEADERS = [
-      { title: 'Facility Name', key: 'facilityName' },
-      { title: 'Facility ID', key: 'facilityAccountNumber' },
-      { title: 'Licence Number', key: 'licenceNumber' },
-      { title: 'Month of Service', key: 'reportingMonth' },
-      { title: 'Version Number', key: 'version' },
-      { title: 'Status', key: 'statusCode' },
-      { title: 'Actions', key: 'actions', width: '12%', sortable: false },
-    ];
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
-    this.selectedReportingMonths = this.allReportingMonths.map((month) => month.value);
-    this.selectedFacilityIds = this.allFacilityIds;
-    this.selectedStatuses = this.ECE_REPORT_STATUS_OPTIONS.map((status) => status.value);
   },
   methods: {
     formatMonthYearToString,
@@ -272,6 +272,7 @@ export default {
           report.licenceNumber = facility?.licenseNumber;
           report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
         }
+        this.resetFilters();
         this.sortECEReports();
       } catch (error) {
         console.error(error);
@@ -297,6 +298,11 @@ export default {
         // 3. Version (desc - last adjustment to the original report)
         return (b.version ?? 0) - (a.version ?? 0);
       });
+    },
+    resetFilters() {
+      this.selectedReportingMonths = this.allReportingMonths.map((month) => month.value);
+      this.selectedFacilityIds = this.allFacilityIds;
+      this.selectedStatuses = this.ECE_REPORT_STATUS_OPTIONS.map((status) => status.value);
     },
     goToECEReport(eceReportId) {
       this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
