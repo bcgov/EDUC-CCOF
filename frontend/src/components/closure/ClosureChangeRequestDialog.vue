@@ -2,7 +2,7 @@
   <AppDialog v-model="isDisplayed" :title="title" :loading="isLoading" text-alignment="left" @close="closeDialog">
     <template #content>
       <v-form v-model="isValidForm">
-        <v-container width="80%" class="text-primary pa-0">
+        <v-container width="90%" class="text-primary pa-0">
           <h1>Fiscal Year: {{ getProgramYearNameById(programYearId).slice(0, -3) }}</h1>
           <p class="mt-6 text-black">
             Closures may impact your CCFRI payments. See the
@@ -81,7 +81,7 @@
               </v-radio-group>
             </v-col>
           </v-row>
-          <v-container v-if="input.facilityId && input.paidClosure != null" width="100%" class="pa-0">
+          <template v-if="input.facilityId && input.paidClosure != null">
             <v-row>
               <v-col cols="12" lg="9">
                 <h3 class="mt-2">
@@ -109,7 +109,7 @@
                 </v-radio-group>
               </v-col>
             </v-row>
-            <div v-if="input.fullClosure === false">
+            <template v-if="input.fullClosure === false">
               <v-row class="ml-0" align="center">
                 <h3 class="pr-2">Affected Care Categorie(s)</h3>
                 <p>(select all that apply):</p>
@@ -126,13 +126,13 @@
                 :rules="rules.required"
                 clearable
               />
-            </div>
+            </template>
             <h3 class="mt-6">Dates:</h3>
             <p class="text-black mt-4">
               Select the estimated end date, if applicable. To report a closure for a previous term, please return to
               the home page, select a different fiscal year, and go to Organization Closures.
             </p>
-            <div v-if="isEditClosureRequest">
+            <template v-if="isEditClosureRequest">
               <h3 class="mt-4">Approved Dates:</h3>
               <v-row>
                 <v-col cols="12" lg="5">
@@ -144,7 +144,7 @@
                 </v-col>
               </v-row>
               <h3>New Dates:</h3>
-            </div>
+            </template>
             <v-row>
               <v-col cols="12" lg="5">
                 <AppDateInput
@@ -213,8 +213,8 @@
               @update-documents-to-upload="updateDocuments"
               @delete-uploaded-document="deleteUploadedDocument"
             />
-          </v-container>
-          <v-container v-if="isRemoveClosureRequest" class="pa-0 pt-4">
+          </template>
+          <div v-if="isRemoveClosureRequest" class="pa-0 pt-4">
             <h3>Reason for closure removal:</h3>
             <v-textarea
               v-model="input.reasonForClosureRemoval"
@@ -225,30 +225,50 @@
               label="Please describe the reason for removal."
               class="text-left mt-3"
             />
-          </v-container>
+          </div>
+          <v-card variant="outlined" class="text-black px-8 px-md-12 py-6 mt-12">
+            <h2 class="mb-4">Declaration and Submission</h2>
+            <p class="mb-3">By submitting this Closure Request, I confirm that:</p>
+            <ul class="declaration-list px-md-4 px-xl-12 pb-2">
+              <li>
+                The information provided in this request is true, accurate and complete to the best of my knowledge;
+              </li>
+              <li>I am authorized to submit Closure Requests for this facility;</li>
+              <li>
+                I understand that the Ministry relies on the content of these requests for its decision to disburse
+                funds to this organization;
+              </li>
+              <li>I will maintain proper records regarding this facility’s operating days and closure days;</li>
+              <li>
+                I will not charge parent fees for any closure days that were not approved by the Ministry, if this
+                facility is participating in the Child Care Fee Reduction Initiative.
+              </li>
+            </ul>
+          </v-card>
         </v-container>
       </v-form>
     </template>
     <template #button>
-      <v-container width="80%">
-        <v-row>
-          <v-col md="6">
-            <AppButton :primary="false" :loading="isLoading" :disabled="isLoading" @click="closeDialog">
-              Cancel
-            </AppButton>
-          </v-col>
-          <v-col md="6" align="right">
-            <AppButton
-              v-if="isRemoveClosureRequest"
-              :loading="isLoading"
-              :disabled="disableSubmit"
-              @click="removeClosure"
-              >Remove Closure</AppButton
-            >
-            <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">Submit</AppButton>
-          </v-col>
-        </v-row>
-      </v-container>
+      <v-row justify="space-around">
+        <v-col cols="12" md="6" class="d-flex justify-center">
+          <AppButton :primary="false" :loading="isLoading" :disabled="isLoading" @click="closeDialog">
+            Cancel
+          </AppButton>
+        </v-col>
+        <v-col cols="12" md="6" class="d-flex justify-center">
+          <AppButton
+            v-if="isRemoveClosureRequest"
+            :loading="isLoading"
+            :disabled="disableSubmit"
+            @click="removeClosure"
+          >
+            Remove Closure
+          </AppButton>
+          <AppButton v-else :loading="isLoading" :disabled="disableSubmit" @click="submit">
+            Accept and Submit
+          </AppButton>
+        </v-col>
+      </v-row>
     </template>
   </AppDialog>
 </template>
