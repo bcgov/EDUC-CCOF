@@ -238,7 +238,7 @@ export default {
         }
         this.sortEnrolmentReports();
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to load enrolment reports');
       } finally {
         this.loading = false;
@@ -332,7 +332,7 @@ export default {
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to create adjustment enrolment report.');
       } finally {
         this.loading = false;
@@ -370,7 +370,7 @@ export default {
         await this.prepareEnrolmentReportForEditing(report);
         this.goToEnrolmentReport(report.enrolmentReportId);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to edit enrolment report.');
       } finally {
         this.loading = false;
@@ -379,4 +379,3 @@ export default {
   },
 };
 </script>
-<style scoped></style>
