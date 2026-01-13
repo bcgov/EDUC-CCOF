@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import moment from 'moment';
 import { mapState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppMultiSelectInput from '@/components/guiComponents/AppMultiSelectInput.vue';
@@ -159,6 +158,7 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { buildFiscalYearMonths } from '@/utils/common.js';
 import { ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
@@ -216,31 +216,10 @@ export default {
       return this.selectedProgramYear?.programYearId;
     },
     allReportingMonths() {
-      const reportingMonths = [];
       const programYear = this.lookupInfo?.programYear?.list?.find(
         (year) => year.programYearId === this.selectedProgramYearId,
       );
-      const startYear = moment(programYear?.intakeStart).year();
-      const endYear = moment(programYear?.intakeEnd).year();
-      for (let month = 4; month < 13; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, startYear)}`,
-          value: {
-            month: month,
-            year: startYear,
-          },
-        });
-      }
-      for (let month = 1; month < 4; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, endYear)}`,
-          value: {
-            month: month,
-            year: endYear,
-          },
-        });
-      }
-      return reportingMonths;
+      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
     },
     allFacilityIds() {
       return this.facilityList?.map((facility) => facility.facilityId);

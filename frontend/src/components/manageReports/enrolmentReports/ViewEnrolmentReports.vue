@@ -131,7 +131,6 @@
 
 <script>
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -148,7 +147,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-
+import { buildFiscalYearMonths } from '@/utils/common.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat, formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
@@ -185,31 +184,10 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     allReportingMonths() {
-      const reportingMonths = [];
       const programYear = this.lookupInfo?.programYear?.list?.find(
         (year) => year.programYearId === this.selectedProgramYearId,
       );
-      const startYear = moment(programYear?.intakeStart).year();
-      const endYear = moment(programYear?.intakeEnd).year();
-      for (let month = 4; month < 13; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, startYear)}`,
-          value: {
-            month: month,
-            year: startYear,
-          },
-        });
-      }
-      for (let month = 1; month < 4; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, endYear)}`,
-          value: {
-            month: month,
-            year: endYear,
-          },
-        });
-      }
-      return reportingMonths;
+      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
     },
     selectedProgramYearId() {
       return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.programYearId;
