@@ -903,7 +903,9 @@ const ECEReportMappings = [
   { back: 'ccof_month', front: 'month' },
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_report_type', front: 'reportType' },
+  { back: 'ccof_version', front: 'version' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'statusText' },
 ];
 
 const ECEStaffMappings = [

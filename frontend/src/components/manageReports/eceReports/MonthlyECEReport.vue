@@ -5,7 +5,7 @@
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" />
   </div>
-  <NavButton :is-processing="loading" @previous="$router.push(`${PATHS.ROOT.MANAGE_ECE_REPORTS}`)" />
+  <NavButton :is-processing="loading" @previous="$router.back" />
 </template>
 
 <script>

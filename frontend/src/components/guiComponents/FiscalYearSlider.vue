@@ -56,7 +56,7 @@ export default {
       let programYearList = [];
       this.applicationMap.forEach((item) => {
         programYearList.push({
-          name: item.ccofProgramYearName.slice(0, -3),
+          name: item.ccofProgramYearName?.slice(0, -3),
           programYearId: item.ccofProgramYearId,
           status: item.ccofProgramYearStatus,
         });

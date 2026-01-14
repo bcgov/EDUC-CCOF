@@ -6,6 +6,23 @@ const log = require('./logger');
 const { ECEReportMappings } = require('../util/mapping/Mappings');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
+const { padString } = require('./utils');
+
+function isAdjustmentReport(report) {
+  return report?.version > 1;
+}
+
+function getReportVersionText(report) {
+  const version = padString(report?.version, 2, '0');
+  return isAdjustmentReport(report) ? `${version}-Adjustment` : `${version}-Base`;
+}
+
+function mapECEReportForFront(report) {
+  const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
+  mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
+  mappedReport.versionText = getReportVersionText(mappedReport);
+  return mappedReport;
+}
 
 async function createECEReport(req, res) {
   try {
@@ -40,7 +57,7 @@ async function getECEReports(req, res) {
   try {
     const response = await getOperation(`ccof_ece_monthly_reports?${buildFilterQuery(req.query, ECEReportMappings)}`);
     let eceReports = [];
-    response?.value?.forEach((report) => eceReports.push(new MappableObjectForFront(report, ECEReportMappings).toJSON()));
+    response?.value?.forEach((report) => eceReports.push(mapECEReportForFront(report)));
     eceReports = restrictFacilities(req, eceReports);
     return res.status(HttpStatus.OK).json(eceReports);
   } catch (e) {
