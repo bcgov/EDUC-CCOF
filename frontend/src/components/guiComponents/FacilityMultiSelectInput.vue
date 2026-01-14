@@ -3,11 +3,7 @@
     <template #prepend-item>
       <v-list-item title="Select All" @click="toggleSelectAll">
         <template #prepend>
-          <v-checkbox-btn
-            :color="isSomeSelected ? '#003366' : undefined"
-            :indeterminate="isSomeSelected && !isAllSelected"
-            :model-value="isSomeSelected"
-          />
+          <v-checkbox-btn :model-value="isAllSelected" :indeterminate="isSomeSelected" color="#003366" />
         </template>
       </v-list-item>
       <v-divider class="mt-2" />
@@ -78,15 +74,14 @@ export default {
   data() {
     return {
       selectedFacilities: [],
-      EMPTY_PLACEHOLDER,
     };
   },
   computed: {
     isAllSelected() {
-      return this.selectedFacilities?.length === this.items?.length;
+      return this.items?.length > 0 && this.selectedFacilities?.length === this.items?.length;
     },
     isSomeSelected() {
-      return this.selectedFacilities?.length > 0;
+      return this.selectedFacilities?.length > 0 && this.selectedFacilities?.length < this.items?.length;
     },
   },
   watch: {
@@ -108,6 +103,7 @@ export default {
     },
   },
   created() {
+    this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.selectedFacilities = this.modelValue;
   },
   methods: {

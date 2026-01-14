@@ -192,7 +192,6 @@ export default {
       selectedFacilityIds: [],
       selectedStatuses: [],
       showCreateECEReportDialog: false,
-      ECE_REPORT_STATUS_OPTIONS,
     };
   },
   computed: {
@@ -233,6 +232,7 @@ export default {
     },
   },
   created() {
+    this.ECE_REPORT_STATUS_OPTIONS = ECE_REPORT_STATUS_OPTIONS;
     this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
   },
   methods: {
