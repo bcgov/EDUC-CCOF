@@ -42,6 +42,21 @@ const enrolmentReportApproved = {
   externalCcfriStatusText: 'APPROVED',
   externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.APPROVED,
   enrolmentReportId: '425422',
+  hasApprovedParentFees: true,
+  programYearId,
+  facilityId,
+};
+
+const enrolmentReportWithNoApprovedParentFees = {
+  month: '11',
+  year: '2025',
+  submissionDeadline: '2099-01-01',
+  externalCcofStatusText: 'PAID',
+  externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.PAID,
+  externalCcfriStatusText: 'PAID',
+  externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.PAID,
+  enrolmentReportId: '425422',
+  hasApprovedParentFees: false,
   programYearId,
   facilityId,
 };
@@ -145,6 +160,21 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('Sort by');
     cy.contains('Items per page');
     cy.get('.v-select').should('have.length', 4);
+  });
+
+  it('should display CCFRI Status as N/A for enrolment report with no approved parent fees', () => {
+    interceptAPI(enrolmentReportWithNoApprovedParentFees);
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.wait('@getEnrolments');
+    cy.get('table').within(() => {
+      cy.get('td').eq(7).should('contain.text', 'CCFRI Funding Status').and('contain.text', 'N/A');
+    });
   });
 
   it('should render enrolment report info', () => {
