@@ -18,12 +18,14 @@ class Redis {
   static init() {
     if (config.get('redis:clustered') == 'true') {
       log.info('using CLUSTERED Redis implementation');
-      Redis.client = createCluster([
-        {
-          host: config.get('redis:host'),
-          port: config.get('redis:port'),
-        },
-      ]);
+      Redis.client = createCluster({
+        rootNodes: [
+          {
+            host: config.get('redis:host'),
+            port: config.get('redis:port'),
+          },
+        ],
+      });
     } else {
       log.info('using STANDALONE Redis implementation');
       Redis.client = new createClient({
