@@ -16,8 +16,8 @@ class Redis {
     }
   }
 
-  static isReady() {
-    return Redis.clustered ? Redis.client.isOpen() : Redis.client.isReady();
+  static get isReady() {
+    return Redis.clustered ? Redis.client.isOpen : Redis.client.isReady;
   }
 
   static async init() {
