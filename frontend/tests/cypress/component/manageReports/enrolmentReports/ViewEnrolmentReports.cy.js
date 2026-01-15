@@ -28,6 +28,7 @@ const enrolmentReportDraft = {
   externalCcfriStatusText: 'DRAFT',
   externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
   enrolmentReportId: '111223',
+  hasApprovedParentFees: true,
   programYearId,
   facilityId,
 };

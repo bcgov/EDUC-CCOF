@@ -3,18 +3,18 @@ import vuetify from '@/plugins/vuetify';
 
 function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
-    const onClose = cy.spy().as('closeDialogSpy');
+    const updateModelValue = cy.spy().as('updateModelValue');
     const onProceed = cy.spy().as('proceedDialogSpy');
     cy.mount(FullMonthClosureConfirmationDialog, {
       global: {
         plugins: [pinia, vuetify],
       },
       props: {
-        show: true,
+        modelValue: true,
+        'onUpdate:modelValue': updateModelValue,
         ...propOverride,
       },
       attrs: {
-        onClose,
         onProceed,
       },
     });
@@ -34,7 +34,7 @@ describe('<FullMonthClosureConfirmationDialog />', () => {
   });
 
   it('should not display dialog', () => {
-    mountWithPinia({ propOverride: { show: false } });
+    mountWithPinia({ propOverride: { modelValue: false } });
     cy.contains('Confirm Full Month Closure or No Enrolment').should('not.exist');
   });
 
@@ -50,9 +50,9 @@ describe('<FullMonthClosureConfirmationDialog />', () => {
     cy.get('@proceedDialogSpy').should('have.been.calledOnce');
   });
 
-  it('should emit `close` event when clicking `Cancel`', () => {
+  it('should close dialog when clicking `Cancel`', () => {
     mountWithPinia();
     cy.contains('button', 'Cancel').click();
-    cy.get('@closeDialogSpy').should('have.been.calledOnce');
+    cy.get('@updateModelValue').should('have.been.calledWith', false);
   });
 });
