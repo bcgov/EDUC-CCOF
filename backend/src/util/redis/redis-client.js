@@ -15,23 +15,19 @@ class Redis {
     }
   }
 
-  static init() {
+  static async init() {
     if (config.get('redis:clustered') == 'true') {
       log.info('using CLUSTERED Redis implementation');
       Redis.client = createCluster({
         rootNodes: [
           {
-            host: config.get('redis:host'),
-            port: config.get('redis:port'),
+            url: `redis://${config.get('redis:host')}:${config.get('redis:port')}`,
           },
         ],
       });
     } else {
       log.info('using STANDALONE Redis implementation');
-      Redis.client = new createClient({
-        host: config.get('redis:host'),
-        port: config.get('redis:port'),
-      });
+      Redis.client = new createClient({ url: `redis://${config.get('redis:host')}:${config.get('redis:port')}` });
     }
 
     Redis.client.on('error', (error) => {
@@ -50,10 +46,10 @@ class Redis {
       log.info('Connected to Redis.');
     });
 
-    Redis.client.connect();
-
     process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
     process.on('SIGINT', () => Redis.shutdown('SIGINT'));
+
+    await Redis.client.connect();
   }
 }
 module.exports = Redis;
