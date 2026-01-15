@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const cacheHelper = {
   async getGuidE(guid) {
-    if (Redis.client.isReady) {
+    if (Redis.isReady()) {
       const retVal = await Redis.client.HGET(GUID_E, guid);
       if (retVal) {
         return retVal;
@@ -26,7 +26,7 @@ const cacheHelper = {
     }
   },
   async getGuidD(guid) {
-    if (Redis.client.isReady) {
+    if (Redis.isReady()) {
       const retVal = await Redis.client.HGET(GUID_D, guid);
       return retVal;
     } else {
@@ -34,7 +34,7 @@ const cacheHelper = {
     }
   },
   async getFacility(guidd) {
-    if (Redis.client.isReady) {
+    if (Redis.isReady()) {
       const facilityTTL = Number(config.get('redis:estimatorFacilityTTL')) || 0;
       log.verbose('facility TTL: ', facilityTTL);
       if (facilityTTL > 0) {
@@ -53,7 +53,7 @@ const cacheHelper = {
     }
   },
   async setFacility(guidd, facility) {
-    if (Redis.client.isReady) {
+    if (Redis.isReady()) {
       await Redis.client.HSET(FACILITY_D, guidd, JSON.stringify(facility));
     } else {
       log.error('Redis client is not available, this should not have happened');
