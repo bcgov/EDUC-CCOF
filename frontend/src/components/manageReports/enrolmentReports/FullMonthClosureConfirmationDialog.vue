@@ -1,5 +1,5 @@
 <template>
-  <AppDialog :model-value="show" :loading="loading" persistent max-width="50%" @close="close">
+  <AppDialog v-model="dialogOpen" :loading="loading" persistent max-width="50%" @close="cancel">
     <template #content>
       <p class="pt-4 font-weight-bold text-h5">Confirm Full Month Closure or No Enrolment</p>
       <div class="text-h6 text-left px-8 pt-8">
@@ -20,7 +20,7 @@
     <template #button>
       <v-row justify="space-around" class="px-4">
         <v-col cols="12" md="6" class="d-flex justify-center">
-          <AppButton id="cancel" :loading="loading" :primary="false" min-width="150px" @click="close">
+          <AppButton id="cancel" :loading="loading" :primary="false" min-width="150px" @click="cancel">
             Cancel
           </AppButton>
         </v-col>
@@ -47,17 +47,32 @@ export default {
       type: Boolean,
       default: false,
     },
-    show: {
+    modelValue: {
       type: Boolean,
-      default: false,
+      required: true,
     },
   },
-  emits: ['close', 'proceed'],
+  emits: ['update:modelValue', 'cancel', 'proceed'],
+  computed: {
+    dialogOpen: {
+      get() {
+        return this.modelValue;
+      },
+      set(val) {
+        this.$emit('update:modelValue', val);
+      },
+    },
+  },
   methods: {
-    close() {
-      this.$emit('close');
+    closeDialog() {
+      this.dialogOpen = false;
+    },
+    cancel() {
+      this.closeDialog();
+      this.$emit('cancel');
     },
     proceed() {
+      this.closeDialog();
       this.$emit('proceed');
     },
   },
