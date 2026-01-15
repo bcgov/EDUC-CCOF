@@ -3,25 +3,21 @@
     <template #prepend-item>
       <v-list-item title="Select All" @click="toggleSelectAll">
         <template #prepend>
-          <v-checkbox-btn
-            :color="isSomeSelected ? '#003366' : undefined"
-            :indeterminate="isSomeSelected && !isAllSelected"
-            :model-value="isSomeSelected"
-          />
+          <v-checkbox-btn :model-value="isAllSelected" :indeterminate="isSomeSelected" color="#003366" />
         </template>
       </v-list-item>
       <v-divider class="mt-2" />
     </template>
     <template #selection="{ item, index }">
       <template v-if="isAllSelected">
-        <v-chip v-if="index === 0">All</v-chip>
+        <v-chip v-if="index === 0">{{ allSelectedLabel }}</v-chip>
       </template>
       <template v-else>
         <v-chip v-if="index < maxDisplayedItems">
           <span>{{ item.title }}</span>
         </v-chip>
         <span v-if="index === maxDisplayedItems" class="text-grey text-caption align-self-center"
-          >(+{{ items.length - maxDisplayedItems }} others)</span
+          >(+{{ selectedItems.length - maxDisplayedItems }} others)</span
         >
       </template>
     </template>
@@ -50,6 +46,10 @@ export default {
       type: Number,
       default: 5,
     },
+    allSelectedLabel: {
+      type: String,
+      default: 'All',
+    },
   },
   emits: ['update:modelValue'],
   data() {
@@ -59,10 +59,10 @@ export default {
   },
   computed: {
     isAllSelected() {
-      return this.selectedItems?.length === this.items?.length;
+      return this.items?.length > 0 && this.selectedItems?.length === this.items?.length;
     },
     isSomeSelected() {
-      return this.selectedItems?.length > 0;
+      return this.selectedItems?.length > 0 && this.selectedItems?.length < this.items?.length;
     },
   },
   watch: {
@@ -72,11 +72,15 @@ export default {
           this.selectedItems = value;
         }
       },
+      immediate: false,
     },
     selectedItems: {
-      handler() {
-        this.$emit('update:modelValue', this.selectedItems);
+      handler(value) {
+        if (!isEqual(value, this.modelValue)) {
+          this.$emit('update:modelValue', value);
+        }
       },
+      immediate: false,
     },
   },
   created() {

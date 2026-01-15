@@ -1,11 +1,5 @@
 <template>
-  <AppDialog
-    v-model="isDisplayed"
-    title="Create ECE Report"
-    max-width="1000"
-    text-alignment="left"
-    @close="closeDialog"
-  >
+  <AppDialog v-model="dialogOpen" title="Create ECE Report" max-width="1000" text-alignment="left" @close="closeDialog">
     <template #content>
       <v-form ref="form" v-model="isValidForm" @submit.prevent="false">
         <v-row no-gutters class="pb-4">
@@ -129,16 +123,15 @@ export default {
   components: { AppButton, AppDialog, FiscalYearSlider },
   mixins: [alertMixin],
   props: {
-    show: {
+    modelValue: {
       type: Boolean,
-      default: false,
+      required: true,
     },
   },
-  emits: ['close'],
+  emits: ['update:modelValue'],
   data() {
     return {
       loading: false,
-      isDisplayed: false,
       isValidForm: false,
       eceReports: [],
       eceweFacilities: new Map(),
@@ -152,6 +145,14 @@ export default {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationId']),
+    dialogOpen: {
+      get() {
+        return this.modelValue;
+      },
+      set(val) {
+        this.$emit('update:modelValue', val);
+      },
+    },
     selectedProgramYearId() {
       return this.selectedProgramYear?.programYearId;
     },
@@ -240,11 +241,6 @@ export default {
     },
   },
   watch: {
-    show: {
-      handler(value) {
-        this.isDisplayed = value;
-      },
-    },
     selectedProgramYearId: {
       async handler() {
         this.$refs.form?.resetValidation();
@@ -343,9 +339,8 @@ export default {
       );
     },
     closeDialog() {
-      this.isDisplayed = false;
       this.$refs.form?.reset();
-      this.$emit('close');
+      this.dialogOpen = false;
     },
     async submit() {
       if (!this.isValidForm) return;

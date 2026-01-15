@@ -261,6 +261,15 @@ ol.declarationBList {
   text-align: center;
 }
 
+.report-status {
+  min-width: 112px;
+}
+
+.action-buttons {
+  gap: 8px;
+  padding: 10px;
+}
+
 /* SUMMARY DECLARATION */
 .summary-label {
   color: grey;

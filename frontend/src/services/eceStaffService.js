@@ -1,3 +1,5 @@
+import { isEmpty } from 'lodash';
+
 import ApiService from '@/common/apiService';
 import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
@@ -13,6 +15,35 @@ export default {
       return response?.data;
     } catch (error) {
       console.log(`Failed to get ECE Staff by facilityId - ${error}`);
+      throw error;
+    }
+  },
+
+  async getECEStaffCertificates(registrationNumber) {
+    try {
+      if (!registrationNumber) {
+        return [];
+      }
+      const response = await ApiService.apiAxios.get(
+        `${ApiRoutes.ECE_STAFF}/certificates?registrationNumber=${registrationNumber}`,
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to get certificate for staff - ${error}`);
+      throw error;
+    }
+  },
+
+  async updateECEStaff(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const chunkSize = 10;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/bulk`, chunk);
+      }
+    } catch (error) {
+      console.log(`Failed to update ECE Staff - ${error}`);
       throw error;
     }
   },

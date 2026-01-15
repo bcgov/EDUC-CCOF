@@ -903,10 +903,13 @@ const ECEReportMappings = [
   { back: 'ccof_month', front: 'month' },
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_report_type', front: 'reportType' },
+  { back: 'ccof_version', front: 'version' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'statusText' },
 ];
 
 const ECEStaffMappings = [
+  { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
   { back: '_ccof_facility_id_value', front: 'facilityId' },
   { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
   { back: 'ccof_first_name', front: 'firstName' },
@@ -914,7 +917,14 @@ const ECEStaffMappings = [
   { back: 'ccof_last_name', front: 'lastName' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
-  { back: 'statuscode', front: 'status' },
+  { back: 'statecode', front: 'status' },
+];
+
+const ECECertificateMappings = [
+  { back: 'ofm_certificate_number', front: 'certificateNumber' },
+  { back: 'ofm_certificate_level', front: 'certificateLevel' },
+  { back: 'ofm_effective_date', front: 'effectiveStartDate' },
+  { back: 'ofm_expiry_date', front: 'effectiveEndDate' },
 ];
 
 module.exports = {
@@ -931,6 +941,7 @@ module.exports = {
   ECEWEFacilityMappings,
   ECEReportMappings,
   ECEStaffMappings,
+  ECECertificateMappings,
   EnrolmentReportDifferenceMappings,
   EnrolmentReportExtensionMappings,
   EnrolmentReportMappings,

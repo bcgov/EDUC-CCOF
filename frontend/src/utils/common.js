@@ -17,7 +17,7 @@ import {
   ORGANIZATION_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
+import { formatMonthYearToString, formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
@@ -421,4 +421,35 @@ export function buildQueryString(query) {
     }
   }
   return queryString;
+}
+
+/**
+ * Builds month options for a fiscal year (April–March).
+ *
+ * @param {string|Date} fiscalYearStart - Fiscal year start date
+ * @param {string|Date} fiscalYearEnd - Fiscal year end date
+ * @returns {Array<{ label: string, value: { month: number, year: number } }>}
+ */
+export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
+  if (!fiscalYearStart || !fiscalYearEnd) {
+    return [];
+  }
+  const months = [];
+  const startYear = moment(fiscalYearStart).year();
+  const endYear = moment(fiscalYearEnd).year();
+  // April–December (start year)
+  for (let month = 4; month <= 12; month++) {
+    months.push({
+      label: formatMonthYearToString(month, startYear),
+      value: { month, year: startYear },
+    });
+  }
+  // January–March (end year)
+  for (let month = 1; month <= 3; month++) {
+    months.push({
+      label: formatMonthYearToString(month, endYear),
+      value: { month, year: endYear },
+    });
+  }
+  return months;
 }

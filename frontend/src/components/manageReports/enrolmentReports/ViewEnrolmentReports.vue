@@ -123,7 +123,7 @@
     </v-card>
     <v-row class="pt-12">
       <v-col>
-        <NavButton @previous="$router.back()" />
+        <NavButton @previous="previous" />
       </v-col>
     </v-row>
   </v-container>
@@ -131,7 +131,6 @@
 
 <script>
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -148,10 +147,9 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-
-import { padString } from '@/utils/common.js';
+import { buildFiscalYearMonths } from '@/utils/common.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
+import { formatDateToStandardFormat, formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
 export default {
   name: 'ViewEnrolmentReports',
@@ -186,31 +184,10 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     allReportingMonths() {
-      const reportingMonths = [];
       const programYear = this.lookupInfo?.programYear?.list?.find(
         (year) => year.programYearId === this.selectedProgramYearId,
       );
-      const startYear = moment(programYear?.intakeStart).year();
-      const endYear = moment(programYear?.intakeEnd).year();
-      for (let month = 4; month < 13; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, startYear)}`,
-          value: {
-            month: month,
-            year: startYear,
-          },
-        });
-      }
-      for (let month = 1; month < 4; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, endYear)}`,
-          value: {
-            month: month,
-            year: endYear,
-          },
-        });
-      }
-      return reportingMonths;
+      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
     },
     selectedProgramYearId() {
       return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.programYearId;
@@ -257,11 +234,11 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
+          report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
         }
         this.sortEnrolmentReports();
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to load enrolment reports');
       } finally {
         this.loading = false;
@@ -355,11 +332,14 @@ export default {
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to create adjustment enrolment report.');
       } finally {
         this.loading = false;
       }
+    },
+    previous() {
+      this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
     async prepareEnrolmentReportForEditing(report) {
       const status = report.internalCcofStatusCode;
@@ -390,7 +370,7 @@ export default {
         await this.prepareEnrolmentReportForEditing(report);
         this.goToEnrolmentReport(report.enrolmentReportId);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to edit enrolment report.');
       } finally {
         this.loading = false;
@@ -399,13 +379,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.action-buttons {
-  gap: 8px;
-  padding: 10px;
-}
-
-.report-status {
-  min-width: 112px;
-}
-</style>

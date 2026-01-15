@@ -128,12 +128,13 @@ export function formatUTCTimeToLocal(time) {
  * formatNumber("233.14");  // "233.14"
  * formatNumber(9876543);   // "9,876,543.00"
  */
-export function formatDecimalNumber(input) {
+export function formatDecimalNumber(input, useCommas = true) {
   const number = parseFloat(input);
   if (isNaN(number)) return null;
   return number.toLocaleString('en-CA', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    useGrouping: useCommas,
   });
 }
 
@@ -237,4 +238,9 @@ export function formatUTCtoPacificTime(utcTime) {
  */
 export function formatFirstDateOfMonth(month, year) {
   return `${year}-${padString(month, 2, '0')}-01`;
+}
+
+// Formats year and month values into a YYYY-MM string for display
+export function formatYearMonthYYYYMM(year, month) {
+  return `${year}-${padString(month, 2, '0')}`;
 }
