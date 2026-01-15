@@ -49,9 +49,17 @@ async function getEnrolmentReport(req, res) {
 
 async function getEnrolmentReports(req, res) {
   try {
-    const response = await getOperation(`ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}`);
-    let enrolmentReports = [];
-    response?.value?.forEach((report) => enrolmentReports.push(mapEnrolmentReportSummaryForFront(report)));
+    const approvedParentFeeFields = ['0to18', '18to36', '3yk', 'oosck', 'ooscg', 'pre'].map((suffix) => `ccof_approvedparentfee${suffix}`);
+    const hasApprovedParentFees = (fees) => approvedParentFeeFields.some((field) => fees?.[field] != null);
+    const response = await getOperation(
+      `ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}&$expand=ccof_reportextension($select=${approvedParentFeeFields.join(',')})`,
+    );
+    let enrolmentReports =
+      response?.value?.map((report) => {
+        const mappedReport = mapEnrolmentReportSummaryForFront(report);
+        mappedReport.hasApprovedParentFees = hasApprovedParentFees(report.ccof_reportextension);
+        return mappedReport;
+      }) ?? [];
     enrolmentReports = restrictFacilities(req, enrolmentReports);
     return res.status(HttpStatus.OK).json(enrolmentReports);
   } catch (e) {
