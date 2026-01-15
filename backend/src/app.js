@@ -50,9 +50,10 @@ const paymentRouter = require('./routes/payment');
 const eceReportRouter = require('./routes/eceReport');
 const eceStaffRouter = require('./routes/eceStaff');
 
-const connectRedis = require('connect-redis');
-const { RedisStore } = require('rate-limit-redis');
-const rateLimit = require('express-rate-limit');
+const { RedisStore: ConnectRedis } = require('connect-redis');
+const { RedisStore: RateLimitRedis } = require('rate-limit-redis');
+const { rateLimit } = require('express-rate-limit');
+const Redis = require('./util/redis/redis-client');
 
 const promMid = require('express-prometheus-middleware');
 const { isEmpty } = require('lodash');
@@ -62,6 +63,7 @@ const { isFacilityAdmin } = require('./util/common');
 
 //initialize app
 const app = express();
+
 app.set('trust proxy', 1);
 //sets security measures (headers, etc)
 app.use(cors());
@@ -89,6 +91,18 @@ const logStream = {
   },
 };
 
+function getRedisDbSession() {
+  if (config.get('redis:use') == 'true') {
+    Redis.init();
+    const dbSession = new ConnectRedis({
+      client: Redis.client,
+      prefix: 'ccof-sess:',
+    });
+    return dbSession;
+  }
+  return undefined;
+}
+
 const dbSession = getRedisDbSession();
 const cookie = {
   secure: true,
@@ -114,20 +128,6 @@ app.use(require('./routes/health-check').router);
 //initialize routing and session. Cookies are now only reachable via requests (not js)
 app.use(passport.initialize());
 app.use(passport.session());
-
-function getRedisDbSession() {
-  if (config.get('redis:use') == 'true') {
-    const Redis = require('./util/redis/redis-client');
-    Redis.init(); // call the init to initialize appropriate client, and reuse it across the app.
-    const RedisStore = connectRedis(session);
-    const dbSession = new RedisStore({
-      client: Redis.getRedisClient(),
-      prefix: 'ccof-sess:',
-    });
-    return dbSession;
-  }
-  return undefined;
-}
 
 function addLoginPassportUse(discovery, strategyName, callbackURI, kc_idp_hint, clientId, clientSecret) {
   passport.use(
@@ -253,7 +253,7 @@ const limiter = rateLimit({
   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  store: dbSession ? new RedisStore({ sendCommand: (...args) => dbSession.client.call(...args) }) : undefined,
+  store: dbSession.client.isReady ? new RateLimitRedis({ sendCommand: (...args) => dbSession.client.call(...args) }) : undefined,
 });
 app.use('/api/canadaPost', limiter);
 
@@ -309,4 +309,5 @@ app.use((_req, res) => {
 process.on('unhandledRejection', (err) => {
   log.error('Unhandled Rejection at:', err?.stack || err);
 });
+
 module.exports = app;

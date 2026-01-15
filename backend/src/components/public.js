@@ -3,7 +3,7 @@
 const axios = require('axios');
 const log = require('./logger');
 const config = require('../config/index');
-const cacheHelper = config.get('redis:use') ? require('../util/redis/cache-helper') : require('../util/redis/no-redis-cache-helper');
+const cacheHelper = config.get('redis:use') ? require('../util/redis/estimator-cache-helper') : require('../util/redis/estimator-no-redis-cache-helper');
 const { errorResponse, minify, getHttpHeader, getOperation } = require('./utils');
 
 //This is the Child age category types used by the estimator

@@ -1,18 +1,24 @@
-'use strict';
-let redisClient;
-let connectionClosed = false;
-const Redis = {
-  /**
-   * This method is called during application start and redis client is obtained.
-   * The redis client can be reused rather than creating multiple clients.
-   */
-  init() {
-    const IOREDIS = require('ioredis');
-    const config = require('../../config');
-    const log = require('../../components/logger');
+const { createClient, createCluster } = require('redis');
+const config = require('../../config');
+const log = require('../../components/logger');
+
+class Redis {
+  static client;
+
+  static async shutdown(signal = 'quit') {
+    log.info(`Received ${signal}, closing Redis connection`);
+    try {
+      await Redis.client.quit();
+    } catch (err) {
+      log.error('Redis had to force quit', err);
+      await Redis.client.disconnect();
+    }
+  }
+
+  static init() {
     if (config.get('redis:clustered') == 'true') {
       log.info('using CLUSTERED Redis implementation');
-      redisClient = new IOREDIS.Cluster([
+      Redis.client = createCluster([
         {
           host: config.get('redis:host'),
           port: config.get('redis:port'),
@@ -20,30 +26,32 @@ const Redis = {
       ]);
     } else {
       log.info('using STANDALONE Redis implementation');
-      redisClient = new IOREDIS({
+      Redis.client = new createClient({
         host: config.get('redis:host'),
         port: config.get('redis:port'),
       });
     }
-    redisClient.on('error', (error) => {
-      log.error(`error occurred in redis client. ${error}`);
+
+    Redis.client.on('error', (error) => {
+      log.error(`Error occurred in Redis client. ${error}`);
     });
-    redisClient.on('end', (error) => {
-      log.error(`redis client end. ${error}`);
-      connectionClosed = true;
+
+    Redis.client.on('end', () => {
+      log.info('Redis client closed.');
     });
-    redisClient.on('ready', () => {
+
+    Redis.client.on('ready', () => {
       log.info('Redis Ready.');
     });
-    redisClient.on('connect', () => {
-      log.info('connected to redis.');
+
+    Redis.client.on('connect', () => {
+      log.info('Connected to Redis.');
     });
-  },
-  isConnectionClosed() {
-    return connectionClosed;
-  },
-  getRedisClient() {
-    return redisClient;
-  },
-};
+
+    Redis.client.connect();
+
+    process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
+    process.on('SIGINT', () => Redis.shutdown('SIGINT'));
+  }
+}
 module.exports = Redis;
