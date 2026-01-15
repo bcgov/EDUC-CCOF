@@ -4,7 +4,6 @@ const log = require('../../components/logger');
 
 class Redis {
   static client;
-  static clustered;
 
   static async shutdown(signal = 'quit') {
     log.info(`Received ${signal}, closing Redis connection`);
@@ -20,20 +19,27 @@ class Redis {
     return Redis.clustered ? Redis.client.isOpen : Redis.client.isReady;
   }
 
+  static get clustered() {
+    return config.get('redis:clustered') == 'true';
+  }
+
+  static get rootNode() {
+    return `redis://${config.get('redis:host')}:${config.get('redis:port')}`;
+  }
+
   static async init() {
-    Redis.clustered = config.get('redis:clustered') == 'true';
     if (Redis.clustered) {
       log.info('using CLUSTERED Redis implementation');
       Redis.client = createCluster({
         rootNodes: [
           {
-            url: `redis://${config.get('redis:host')}:${config.get('redis:port')}`,
+            url: Redis.rootNode,
           },
         ],
       });
     } else {
       log.info('using STANDALONE Redis implementation');
-      Redis.client = new createClient({ url: `redis://${config.get('redis:host')}:${config.get('redis:port')}` });
+      Redis.client = new createClient({ url: Redis.rootNode });
     }
 
     Redis.client.on('error', (error) => {
