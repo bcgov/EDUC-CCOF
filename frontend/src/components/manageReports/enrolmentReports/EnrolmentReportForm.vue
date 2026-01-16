@@ -173,7 +173,7 @@
             </v-col>
             <v-col>
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.less0To18"
                     maxlength="3"
@@ -181,7 +181,7 @@
                     :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')"
                   />
                 </v-col>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.over0To18"
                     maxlength="3"
@@ -193,7 +193,7 @@
             </v-col>
             <v-col>
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.less18To36"
                     maxlength="3"
@@ -201,7 +201,7 @@
                     :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')"
                   />
                 </v-col>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.over18To36"
                     maxlength="3"
@@ -213,7 +213,7 @@
             </v-col>
             <v-col>
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.less3YK"
                     maxlength="3"
@@ -221,7 +221,7 @@
                     :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')"
                   />
                 </v-col>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.over3YK"
                     maxlength="3"
@@ -233,7 +233,7 @@
             </v-col>
             <v-col>
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.lessOOSCK"
                     maxlength="3"
@@ -241,7 +241,7 @@
                     :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')"
                   />
                 </v-col>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.overOOSCK"
                     maxlength="3"
@@ -253,7 +253,7 @@
             </v-col>
             <v-col>
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.lessOOSCG"
                     maxlength="3"
@@ -261,7 +261,7 @@
                     :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')"
                   />
                 </v-col>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.overOOSCG"
                     maxlength="3"
@@ -273,7 +273,7 @@
             </v-col>
             <v-col v-if="isGroup" cols="1">
               <v-row no-gutters>
-                <v-col class="border-right">
+                <v-col :class="getCellClass(dailyEnrolment)">
                   <AppNumberInput
                     v-model="dailyEnrolment.lessPre"
                     maxlength="3"
@@ -1259,6 +1259,18 @@
         <div class="legend">
           <div class="legend-item"><span class="color-box background-light-blue"></span>Stat holidays</div>
           <div class="legend-item"><span class="color-box background-light-yellow"></span>Weekends</div>
+          <div class="legend-item">
+            <span class="color-box background-pink"> </span>Approved closure (CCOF Base and CCFRI funding eligible)
+          </div>
+          <div class="legend-item">
+            <span class="color-box background-orange"></span>Approved closure (CCOF Base funding eligible)
+          </div>
+          <div class="legend-item">
+            <span class="color-box background-blue"></span>Approved closure (CCFRI funding eligible)
+          </div>
+          <div class="legend-item">
+            <span class="color-box background-grey"></span>Closure (Not approved for funding)
+          </div>
         </div>
       </v-card>
     </template>
@@ -1461,6 +1473,16 @@ export default {
         'background-light-blue': dailyEnrolment.dayType === DAY_TYPES.STATUTORY,
         'background-light-yellow': dailyEnrolment.dayType === DAY_TYPES.WEEKEND,
         'border-bottom': rowIndex < this.dailyEnrolments.length - 1,
+      };
+    },
+
+    getCellClass(dailyEnrolment) {
+      return {
+        'background-pink': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF,
+        'background-orange': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCOF,
+        'background-blue': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI,
+        'background-gray': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE,
+        'border-right': true,
       };
     },
 
@@ -1811,6 +1833,22 @@ export default {
     inset 0 0 0 2px #003366,
     0 0 0 2px rgba(0, 51, 102, 0.2);
   background-color: white;
+}
+
+.background-pink {
+  background-color: #cd86b9;
+}
+
+.background-orange {
+  background-color: #fca45b;
+}
+
+.background-blue {
+  background-color: #8798ff;
+}
+
+.background-grey {
+  background-color: #d9d9d9;
 }
 
 .background-light-blue {
