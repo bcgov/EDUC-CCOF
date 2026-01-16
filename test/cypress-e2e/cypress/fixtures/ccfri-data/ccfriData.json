@@ -1,103 +1,99 @@
 {
-    "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccfri and change values below this line according to your test case. Ensure the facilityName matches that added to extra-facs-ccof.",
-    "facilityName": "Hedies Facility 1",
-    "optInOrOut": "Opt-In",
-    "_optionsOptInOrOut": "Opt-In OR Opt-Out",
-    "parentFees": {
-        "frequency": "Monthly",
-        "_optionsFrequency": "Monthly OR Daily",
-        "_NOTE": "There is no separation between template1/template2 for parent fees, only current vs. renewal applications",
-        "familyParentFeeCategories": [
-            " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2024-25 FY: Full-Time Kindergarten",
-            " Parent Fees 2024-25 FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12"
-        ],
-        "groupParentFeeCategories": [
-            " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2024-25 FY: Full-Time Preschool",
-            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2025-26 FY: Full-Time Preschool"
-        ],
-        "groupRenewalParentFeeCategories": [
-            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees 2025-26 FY: Full-Time Preschool",
-            " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2026-27 FY: Full-Time Kindergarten",
-            " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees 2026-27 FY: Full-Time Preschool"
-        ],
-        "familyRenewalParentFeeCategories": [
-            " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Kindergarten",
-            " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
-            " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
-            " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees 2026-27 FY: Full-Time Kindergarten",
-            " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12"
-        ],
-        "_NOTE": "FAMILY applications (original/renewal) do NOT have 'Full-Time Preschool' as an option on the portal so ensure you do NOT add that category to your tests",
-        "_NOTE2": "Licences added to parent fee categories will need to correspond to the Licence Categories selected in CCOF fixture files",
-        "_optionsParentFeeCategories": [
-            "Prev-yr = last year range e.g. 2024-25 vs. Curr-yr = this year range 2025-26  -> If renewals, ensure Prev-yr  = this year range & Curr-yr = next year range",
-            " Parent Fees Prev-yr FY: Full-Time 0 to 18 months",
-            " Parent Fees Prev-yr FY: Full-Time 18 to 36 months",
-            " Parent Fees Prev-yr FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees Prev-yr FY: Full-Time Kindergarten",
-            " Parent Fees Prev-yr FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees Prev-yr FY: Full-Time Preschool",
-            " Parent Fees Curr-yr FY: Full-Time 0 to 18 months",
-            " Parent Fees Curr-yr FY: Full-Time 18 to 36 months",
-            " Parent Fees Curr-yr FY: Full-Time 3 Years to Kindergarten",
-            " Parent Fees Curr-yr FY: Full-Time Kindergarten",
-            " Parent Fees Curr-yr FY: Full-Time Grade 1 to Age 12",
-            " Parent Fees Curr-yr FY: Full-Time Preschool"
-        ],
-        "months": {
-            "Apr": "1",
-            "May": "1",
-            "Jun": "1",
-            "Jul": "1",
-            "Aug": "1",
-            "Sep": "1",
-            "Oct": "1",
-            "Nov": "1",
-            "Dec": "1",
-            "Jan": "1",
-            "Feb": "1",
-            "Mar": "1"
-        }
-    },
-    "closures": {
-        "closureCharges": "No",
-        "_optionsClosureCharges": "Yes OR No",
-        "fullFacilityClosureStatus" : "Yes",
-        "_optionsFullFacilityClosureStatus": "Yes OR No",
+  "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccfri and change values below this line according to your test case. Ensure the facilityName matches that added to extra-facs-ccof.",
+  "facilityName": "Auto Test Facility 1",
+  "optInOrOut": "Opt-In",
+  "_optionsOptInOrOut": "Opt-In OR Opt-Out",
+  "parentFees": {
+    "frequency": "Monthly",
+    "_optionsFrequency": "Monthly OR Daily",
+    "_NOTE": "There is no separation between template1/template2 for parent fees, only current vs. renewal applications",
+    "familyParentFeeCategories": [
+      " Parent Fees 2024-25 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2024-25 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2024-25 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2024-25 FY: Full-Time Kindergarten",
+      " Parent Fees 2024-25 FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12"
+    ],
+    "groupParentFeeCategories": [
+      " Parent Fees 2024-25 FY: Full-Time Preschool",
+      " Parent Fees 2025-26 FY: Full-Time Preschool"
+    ],
+    "groupRenewalParentFeeCategories": [
+      " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees 2025-26 FY: Full-Time Preschool",
+      " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2026-27 FY: Full-Time Kindergarten",
+      " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees 2026-27 FY: Full-Time Preschool"
+    ],
+    "familyRenewalParentFeeCategories": [
+      " Parent Fees 2025-26 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2025-26 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2025-26 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Kindergarten",
+      " Parent Fees 2025-26 FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees 2026-27 FY: Full-Time 0 to 18 months",
+      " Parent Fees 2026-27 FY: Full-Time 18 to 36 months",
+      " Parent Fees 2026-27 FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees 2026-27 FY: Full-Time Kindergarten",
+      " Parent Fees 2026-27 FY: Full-Time Grade 1 to Age 12"
+    ],
+    "_NOTE": "FAMILY applications (original/renewal) do NOT have 'Full-Time Preschool' as an option on the portal so ensure you do NOT add that category to your tests",
+    "_NOTE2": "Licences added to parent fee categories will need to correspond to the Licence Categories selected in CCOF fixture files",
+    "_optionsParentFeeCategories": [
+      "Prev-yr = last year range e.g. 2024-25 vs. Curr-yr = this year range 2025-26  -> If renewals, ensure Prev-yr  = this year range & Curr-yr = next year range",
+      " Parent Fees Prev-yr FY: Full-Time 0 to 18 months",
+      " Parent Fees Prev-yr FY: Full-Time 18 to 36 months",
+      " Parent Fees Prev-yr FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees Prev-yr FY: Full-Time Kindergarten",
+      " Parent Fees Prev-yr FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees Prev-yr FY: Full-Time Preschool",
+      " Parent Fees Curr-yr FY: Full-Time 0 to 18 months",
+      " Parent Fees Curr-yr FY: Full-Time 18 to 36 months",
+      " Parent Fees Curr-yr FY: Full-Time 3 Years to Kindergarten",
+      " Parent Fees Curr-yr FY: Full-Time Kindergarten",
+      " Parent Fees Curr-yr FY: Full-Time Grade 1 to Age 12",
+      " Parent Fees Curr-yr FY: Full-Time Preschool"
+    ],
+    "months": {
+      "Apr": "1",
+      "May": "1",
+      "Jun": "1",
+      "Jul": "1",
+      "Aug": "1",
+      "Sep": "1",
+      "Oct": "1",
+      "Nov": "1",
+      "Dec": "1",
+      "Jan": "1",
+      "Feb": "1",
+      "Mar": "1"
+    }
+  },
+  "closures": {
+    "closureCharges": "No",
+    "_optionsClosureCharges": "Yes OR No",
+    "fullFacilityClosureStatus": "Yes",
+    "_optionsFullFacilityClosureStatus": "Yes OR No",
         "careCategoriesAffected": [
             "0 to 18 months",
             "18 to 36 months"
         ],
-        "startDate": "2025-12-01",
-        "endDate": "2025-12-06",
-        "renewalStartDate": "2026-07-01",
-        "renewalEndDate": "2026-07-06",
-        "closureReason": "renovations"
-    }
+    "startDate": "2025-12-01",
+    "endDate": "2025-12-06",
+    "renewalStartDate": "2026-07-01",
+    "renewalEndDate": "2026-07-06",
+    "closureReason": "renovations"
+  }
 }
