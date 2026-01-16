@@ -15,7 +15,7 @@ function mountWithPinia({ initialState = {}, propOverride = {} } = {}) {
         },
       },
       props: {
-        show: true,
+        modelValue: true,
         ...propOverride,
       },
     });
@@ -26,8 +26,8 @@ describe('<SubmitConfirmationDialog />', () => {
   beforeEach(() => {
     cy.viewport(1250, 1250);
   });
-  it('should not render dialog if show is false', () => {
-    mountWithPinia({ propOverride: { show: false } });
+  it('should not render dialog if modelValue is false', () => {
+    mountWithPinia({ propOverride: { modelValue: false } });
     cy.contains('p', 'Submission Successful').should('not.exist');
   });
 
