@@ -2,36 +2,36 @@
   "folders": [
     {
       "name": "Frontend",
-      "path": "frontend"
+      "path": "frontend",
     },
     {
       "name": "Backend",
-      "path": "backend"
+      "path": "backend",
     },
     {
       "name": "Tests/Cypress E2E",
-      "path": "test/cypress-e2e"
+      "path": "test/cypress-e2e",
     },
     {
       "name": "Tests/Cypress Component",
-      "path": "frontend/tests/cypress"
+      "path": "frontend/tests/cypress",
     },
     {
       "name": "Tests/Selenium",
-      "path": "test/selenium"
+      "path": "test/selenium",
     },
     {
       "name": "Devops/Github",
-      "path": ".github"
+      "path": ".github",
     },
     {
       "name": "Devops/OpenShift",
-      "path": "tools"
+      "path": "tools",
     },
     {
       "name": "All",
-      "path": "."
-    }
+      "path": ".",
+    },
   ],
   "extensions": {
     "recommendations": [
@@ -41,8 +41,8 @@
       "dbaeumer.vscode-eslint",
       "github.copilot",
       "esbenp.prettier-vscode",
-      "soramatiasq.sort-imports"
-    ]
+      "soramatiasq.sort-imports",
+    ],
   },
   "settings": {
     "editor.formatOnSave": true,
@@ -55,7 +55,14 @@
       "idir",
       "licence",
       "mtfi",
-      "statecode"
-    ]
-  }
+      "statecode",
+    ],
+    "github.copilot.enable": {
+      "*": true,
+      "json": false,
+      "yaml": false,
+      "dotenv": false,
+      "xml": false,
+    },
+  },
 }
