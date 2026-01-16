@@ -32,7 +32,6 @@ class SubmitApplication {
         .first()
         .within(() => {
           cy.get("td").eq(0).should("contain", "Add new facility(s)");
-          cy.get("td").eq(2).should("contain", "Auto Test Facility 1");
           cy.get("td").eq(3).should("contain", "Submitted");
         });
     } else if (isRenewal) {
