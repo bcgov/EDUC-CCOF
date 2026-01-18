@@ -58,11 +58,11 @@
       "statecode",
     ],
     "github.copilot.enable": {
-      "*": true,
-      "json": false,
-      "yaml": false,
-      "dotenv": false,
-      "xml": false,
+      "*": false,
+      "css": true,
+      "javascript": true,
+      "java": true,
+      "vue": true,
     },
   },
 }
