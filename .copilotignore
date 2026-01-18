@@ -1,0 +1,8 @@
+# Block file types that may contain sensitive configuration or data
+**/*.json
+**/*.yaml
+**/*.env
+**/*.xml
+
+# Block backend config folder
+backend/src/config/**
