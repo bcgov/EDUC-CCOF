@@ -56,20 +56,17 @@
         >
           <template #item.hourlyWage="{ item }">
             <v-row no-gutters class="justify-end justify-lg-start">
-              <v-text-field
-                :model-value="formatHourlyWage(item)"
-                type="number"
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                prefix="$"
-                max-width="120"
+              <AppNumberInput
+                v-model="item.hourlyWage"
+                :decimal="true"
                 :disabled="!isEditing"
                 :rules="[
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                @update:model-value="item.hourlyWage = Number($event)"
+                hide-details="auto"
+                max-width="120"
+                prefix="$"
               />
             </v-row>
           </template>
@@ -107,6 +104,7 @@ import { pick } from 'lodash';
 
 import ECEStaffCertificationDialog from '@/components/eceStaff/ECEStaffCertificationDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
 
@@ -114,11 +112,10 @@ import ECEStaffService from '@/services/eceStaffService.js';
 
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import { ECE_STAFF_STATUSES } from '@/utils/constants';
-import { formatDecimalNumber } from '@/utils/format';
 import rules from '@/utils/rules';
 export default {
   name: 'ManageECEStaff',
-  components: { AppButton, ECEStaffCertificationDialog },
+  components: { AppButton, AppNumberInput, ECEStaffCertificationDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -150,7 +147,6 @@ export default {
   },
 
   methods: {
-    formatDecimalNumber,
     async loadEceStaff() {
       try {
         this.isLoading = true;
@@ -202,10 +198,6 @@ export default {
       } finally {
         this.isLoadingCertificates = false;
       }
-    },
-
-    formatHourlyWage(item) {
-      return this.isEditing ? item.hourlyWage : formatDecimalNumber(item.hourlyWage, false);
     },
 
     startEditing() {
