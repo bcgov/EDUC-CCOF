@@ -68,7 +68,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
 
-import { CHANGE_TYPES } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, CHANGE_REQUEST_STATUSES, CHANGE_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
 import closureMixin from '@/mixins/closureMixin.js';
 
@@ -93,9 +93,9 @@ export default {
         return false;
       }
       if (this.isChangeRequest) {
-        return this.changeRequestStatus && this.changeRequestStatus !== 'INCOMPLETE';
+        return this.changeRequestStatus && this.changeRequestStatus !== CHANGE_REQUEST_STATUSES.INCOMPLETE;
       }
-      return this.applicationStatus === 'SUBMITTED';
+      return this.applicationStatus === APPLICATION_STATUSES.SUBMITTED;
     },
   },
   watch: {

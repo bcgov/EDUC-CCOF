@@ -885,13 +885,12 @@ export default {
         this.goToLicenseUpload(programYearId);
       } else if (!isEmpty(unlockCCFRIList)) {
         this.goToCCFRI(unlockCCFRIList[0], application);
-      } else if (!isEmpty(unlockClosuresList)) {
-        console.log(unlockClosuresList);
-        this.goToClosures(unlockClosuresList[0], programYearId);
       } else if (!isEmpty(unlockRFIList)) {
         this.goToRFI(unlockRFIList[0], programYearId);
       } else if (!isEmpty(unlockNMFList)) {
         this.goToNMF(unlockNMFList[0], programYearId);
+      } else if (!isEmpty(unlockClosuresList)) {
+        this.goToClosures(unlockClosuresList[0], programYearId);
       } else if (!isEmpty(unlockAFSList)) {
         this.goToAFS(unlockAFSList[0], programYearId);
       } else if (application?.unlockEcewe) {
@@ -906,12 +905,12 @@ export default {
       const application = this.applicationMap?.get(this.selectedProgramYearId);
       if (this.isCCFRIUnlock(ccfriApplicationId, application)) {
         this.goToCCFRI(ccfriApplicationId, application);
-      } else if (this.isClosuresUnlock(ccfriApplicationId, application)) {
-        this.goToClosures(ccfriApplicationId, this.selectedProgramYearId);
-      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
-        this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
       } else if (this.isRFIUnlock(ccfriApplicationId, application)) {
         this.goToRFI(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
+        this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isClosuresUnlock(ccfriApplicationId, application)) {
+        this.goToClosures(ccfriApplicationId, this.selectedProgramYearId);
       } else if (this.isAFSUnlock(ccfriApplicationId, application)) {
         this.goToAFS(ccfriApplicationId, this.selectedProgramYearId);
       }
