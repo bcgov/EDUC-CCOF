@@ -476,7 +476,6 @@ const DeclarationMappings = [
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
-  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
