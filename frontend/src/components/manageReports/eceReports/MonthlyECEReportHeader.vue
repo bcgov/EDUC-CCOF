@@ -6,8 +6,9 @@
       <p>{{ facility?.facilityAccountNumber }}</p>
       <p>Licence #: {{ facility?.licenseNumber }}</p>
     </div>
-    <div>
-      <p class="py-2">Reporting month: {{ formatMonthYearToString(eceReport?.month, eceReport?.year) }}</p>
+    <div class="my-2">
+      <p class="my-2">Reporting month: {{ formatMonthYearToString(eceReport?.month, eceReport?.year) }}</p>
+      <p class="my-2">Version number: {{ eceReport?.versionText }}</p>
     </div>
   </div>
 </template>

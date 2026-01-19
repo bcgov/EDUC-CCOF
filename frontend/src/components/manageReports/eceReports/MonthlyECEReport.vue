@@ -23,6 +23,17 @@ export default {
     return {
       loading: false,
       eceReport: null,
+      eceStaffTableHeaders: [
+        { title: 'ECE', sortable: true, value: 'fullName' },
+        { title: 'Registration Number', sortable: true, value: 'registrationNumber' },
+        { title: 'Hourly Wage', sortable: true, value: 'hourlyWage' },
+        { title: 'Total Hours Worked', sortable: true, value: 'totalHoursWorked' },
+        { title: 'WE Amount', sortable: true, value: 'weAmount' },
+        { title: 'Statutory Benefit Amount', sortable: true, value: 'statutoryBenefitAmount' },
+        { title: 'Total', sortable: false, value: 'total' },
+        { title: 'Reason', sortable: false, value: 'reason' },
+        { title: 'Actions', sortable: false, value: 'actions' },
+      ],
     };
   },
   async created() {

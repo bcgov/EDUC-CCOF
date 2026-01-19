@@ -46,7 +46,7 @@ async function createECEReport(req, res) {
 async function getECEReport(req, res) {
   try {
     const response = await getOperation(`ccof_ece_monthly_reports(${req.params.eceReportId})`);
-    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ECEReportMappings).toJSON());
+    return res.status(HttpStatus.OK).json(mapECEReportForFront(response));
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
