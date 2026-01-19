@@ -89,7 +89,7 @@ export default {
       return this.navBarList.find((el) => el.ccfriApplicationId == this.$route.params.urlGuid);
     },
     isReadOnly() {
-      if (this.currentFacility?.unlockCcfri) {
+      if (this.currentFacility?.unlockClosures) {
         return false;
       }
       if (this.isChangeRequest) {

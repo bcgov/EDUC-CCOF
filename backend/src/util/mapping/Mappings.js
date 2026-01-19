@@ -419,6 +419,7 @@ const UserProfileBaseCCFRIMappings = [
 const UserProfileCCFRIMappings = [
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' },
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri' },
+  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' },
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
@@ -475,6 +476,7 @@ const DeclarationMappings = [
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
+  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
   { back: 'ccof_unlock_licenseupload', front: 'unlockLicenseUpload' },
   { back: 'ccof_unlock_supportingdocument', front: 'unlockSupportingDocuments' },
@@ -532,6 +534,7 @@ const ApplicationSummaryCcfriMappings = [
   ...CCFRIFacilityMappings,
   { back: 'ccof_applicationccfriid', front: 'ccfriId' }, // null,
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri' }, // null,
+  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_has_nmf', front: 'hasNmf' }, // false,
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' }, // null,
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete' }, // false,
