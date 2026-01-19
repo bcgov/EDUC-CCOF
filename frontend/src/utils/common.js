@@ -126,6 +126,7 @@ export function checkApplicationUnlocked(application) {
   const isCCFRIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockCcfri);
   const isNMFUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockNmf);
   const isRFIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockRfi);
+  const isClosuresUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockClosures);
   const isAFSUnlocked = facilityList?.some(
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
@@ -140,6 +141,7 @@ export function checkApplicationUnlocked(application) {
     isCCFRIUnlocked ||
     isNMFUnlocked ||
     isRFIUnlocked ||
+    isClosuresUnlocked ||
     isAFSUnlocked;
   return isApplicationUnlocked;
 }
@@ -338,7 +340,9 @@ function getUnlockList(facilityList = [], facilityProperty = '') {
 export function getUnlockCCFRIList(facilityList) {
   return getUnlockList(facilityList, 'unlockCcfri');
 }
-
+export function getUnlockClosuresList(facilityList) {
+  return getUnlockList(facilityList, 'unlockClosures');
+}
 export function getUnlockNMFList(facilityList) {
   return getUnlockList(facilityList, 'unlockNmf');
 }
