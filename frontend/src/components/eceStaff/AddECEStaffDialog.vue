@@ -79,10 +79,10 @@
                   <v-table density="compact">
                     <thead>
                       <tr>
-                        <th class="font-weight-bold">Certifications</th>
-                        <th class="font-weight-bold">Effective Start Date</th>
-                        <th class="font-weight-bold">Effective End Date</th>
-                        <th class="font-weight-bold">Status</th>
+                        <th class="font-weight-bold" scope="col">Certifications</th>
+                        <th class="font-weight-bold" scope="col">Effective Start Date</th>
+                        <th class="font-weight-bold" scope="col">Effective End Date</th>
+                        <th class="font-weight-bold" scope="col">Status</th>
                       </tr>
                     </thead>
 
