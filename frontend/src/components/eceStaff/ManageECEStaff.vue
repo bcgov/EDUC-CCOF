@@ -10,13 +10,33 @@
 
       <v-row justify="space-between" align="center">
         <v-col cols="6" sm="4" md="3">
-          <v-text-field v-model="eceSearch" label="Search ECE Staff" variant="outlined" dense hide-details clearable />
+          <v-text-field
+            v-model="eceSearch"
+            label="Search ECE Staff"
+            variant="outlined"
+            dense
+            hide-details
+            clearable
+            :disabled="!eceStaff.length"
+          />
         </v-col>
 
         <v-col cols="auto">
           <v-row class="g-2" justify="end">
+            <v-col cols="auto">
+              <AppButton size="small" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+            </v-col>
+
             <v-col v-if="!isEditing" cols="auto">
-              <AppButton :primary="true" size="small" :loading="isLoading" @click="startEditing"> Edit </AppButton>
+              <AppButton
+                :primary="true"
+                size="small"
+                :loading="isLoading"
+                :disabled="!eceStaff.length"
+                @click="startEditing"
+              >
+                Edit
+              </AppButton>
             </v-col>
 
             <v-col v-if="isEditing" cols="auto">
@@ -36,7 +56,13 @@
             </v-col>
 
             <v-col cols="auto">
-              <AppButton :primary="false" size="small" :loading="isLoading" @click="refreshECEStaff">
+              <AppButton
+                :primary="false"
+                size="small"
+                :loading="isLoading"
+                :disabled="!eceStaff.length"
+                @click="refreshECEStaff"
+              >
                 Refresh ECE Information
               </AppButton>
             </v-col>
@@ -99,12 +125,13 @@
         </v-data-table>
       </v-skeleton-loader>
       <ECEStaffCertificationDialog v-model="certificationDialogOpen" :staff="selectedStaff" />
+      <AddECEStaffDialog v-model="addDialogOpen" :existing-staff="eceStaff" @staff-added="loadEceStaff" />
     </v-form>
   </v-container>
 </template>
 <script>
 import { pick } from 'lodash';
-
+import AddECEStaffDialog from '@/components/eceStaff/AddECEStaffDialog.vue';
 import ECEStaffCertificationDialog from '@/components/eceStaff/ECEStaffCertificationDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
@@ -118,7 +145,7 @@ import { formatDecimalNumber } from '@/utils/format';
 import rules from '@/utils/rules';
 export default {
   name: 'ManageECEStaff',
-  components: { AppButton, ECEStaffCertificationDialog },
+  components: { AppButton, AddECEStaffDialog, ECEStaffCertificationDialog },
   mixins: [alertMixin],
   data() {
     return {
@@ -129,6 +156,7 @@ export default {
       eceSearch: '',
       eceStaff: [],
       originalECEStaff: [],
+      addDialogOpen: false,
       certificationDialogOpen: false,
       selectedStaff: null,
       eceStaffTableHeaders: [
@@ -192,7 +220,9 @@ export default {
       try {
         this.isLoadingCertificates = true;
         if (!staff.certificates) {
-          staff.certificates = await ECEStaffService.getECEStaffCertificates(staff.registrationNumber);
+          staff.certificates = await ECEStaffService.getECEStaffCertificates({
+            registrationNumber: staff.registrationNumber,
+          });
         }
         this.selectedStaff = staff;
         this.certificationDialogOpen = true;

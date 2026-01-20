@@ -19,14 +19,13 @@ export default {
     }
   },
 
-  async getECEStaffCertificates(registrationNumber) {
+  async getECEStaffCertificates(query) {
     try {
-      if (!registrationNumber) {
+      const queryString = buildQueryString(query);
+      if (!queryString) {
         return [];
       }
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.ECE_STAFF}/certificates?registrationNumber=${registrationNumber}`,
-      );
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}/certificates${queryString}`);
       return response?.data;
     } catch (error) {
       console.log(`Failed to get certificate for staff - ${error}`);
@@ -44,6 +43,17 @@ export default {
       }
     } catch (error) {
       console.log(`Failed to update ECE Staff - ${error}`);
+      throw error;
+    }
+  },
+
+  async createECEStaff(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const response = await ApiService.apiAxios.post(ApiRoutes.ECE_STAFF, payload);
+      return response?.data;
+    } catch (error) {
+      console.log(`Failed to create ECE Staff - ${error}`);
       throw error;
     }
   },

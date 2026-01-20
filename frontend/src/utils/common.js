@@ -11,6 +11,7 @@ import {
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CCOF_STATUS,
+  ECE_STAFF_CERT_STATUSES,
   LICENCE_STATUSES,
   OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
@@ -421,4 +422,19 @@ export function buildQueryString(query) {
     }
   }
   return queryString;
+}
+
+/**
+ * Maps a ECE Staff certificate status to a CSS class name.
+ *
+ * @param {string} status - ECE Staff certificate status
+ * @returns {string} CSS class name corresponding to the status
+ */
+export function getECECertStatusClass(status) {
+  switch (status) {
+    case ECE_STAFF_CERT_STATUSES.EXPIRED:
+      return 'status-red';
+    default:
+      return '';
+  }
 }

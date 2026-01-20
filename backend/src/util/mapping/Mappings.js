@@ -919,10 +919,14 @@ const ECEStaffMappings = [
 ];
 
 const ECECertificateMappings = [
-  { back: 'ofm_certificate_number', front: 'certificateNumber' },
+  { back: 'ofm_certificate_number', front: 'registrationNumber' },
+  { back: 'ofm_first_name', front: 'firstName' },
+  { back: 'ofm_middle_name', front: 'middleName' },
+  { back: 'ofm_last_name', front: 'lastName' },
   { back: 'ofm_certificate_level', front: 'certificateLevel' },
   { back: 'ofm_effective_date', front: 'effectiveStartDate' },
   { back: 'ofm_expiry_date', front: 'effectiveEndDate' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'certStatus' },
 ];
 
 module.exports = {
