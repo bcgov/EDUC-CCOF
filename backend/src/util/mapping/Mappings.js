@@ -936,6 +936,7 @@ const ECECertificateMappings = [
   { back: 'ofm_certificate_level', front: 'certificateLevel' },
   { back: 'ofm_effective_date', front: 'effectiveStartDate' },
   { back: 'ofm_expiry_date', front: 'effectiveEndDate' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'certStatus' },
 ];
 
 module.exports = {
