@@ -1,5 +1,5 @@
 <template>
-  <AppDialog v-model="isDisplayed" persistent max-width="60%" @close="closeDialog">
+  <AppDialog v-model="dialogOpen" persistent max-width="60%" @close="closeDialog">
     <template #content>
       <div class="text-center">
         <p class="pt-4 font-weight-bold text-h5">Leave this page?</p>
@@ -34,27 +34,25 @@ export default {
     AppDialog,
   },
   props: {
-    show: {
+    modelValue: {
       type: Boolean,
-      default: false,
+      required: true,
     },
   },
-  emits: ['close'],
-  data() {
-    return {
-      isDisplayed: false,
-    };
-  },
-  watch: {
-    show: {
-      handler(value) {
-        this.isDisplayed = value;
+  emits: ['update:modelValue'],
+  computed: {
+    dialogOpen: {
+      get() {
+        return this.modelValue;
+      },
+      set(val) {
+        this.$emit('update:modelValue', val);
       },
     },
   },
   methods: {
     closeDialog() {
-      this.$emit('close');
+      this.dialogOpen = false;
     },
     goToEnrolmentReportDashboard() {
       this.$router.push(PATHS.ROOT.ENROLMENT_REPORTS);

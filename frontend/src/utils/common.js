@@ -18,7 +18,7 @@ import {
   ORGANIZATION_TYPES,
   PATHS,
 } from '@/utils/constants.js';
-import { formatTime12to24, getDateFormatter } from '@/utils/format.js';
+import { formatMonthYearToString, formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
 
 const clone = useRfdc();
@@ -127,6 +127,7 @@ export function checkApplicationUnlocked(application) {
   const isCCFRIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockCcfri);
   const isNMFUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockNmf);
   const isRFIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockRfi);
+  const isClosuresUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockClosures);
   const isAFSUnlocked = facilityList?.some(
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
@@ -141,6 +142,7 @@ export function checkApplicationUnlocked(application) {
     isCCFRIUnlocked ||
     isNMFUnlocked ||
     isRFIUnlocked ||
+    isClosuresUnlocked ||
     isAFSUnlocked;
   return isApplicationUnlocked;
 }
@@ -339,7 +341,9 @@ function getUnlockList(facilityList = [], facilityProperty = '') {
 export function getUnlockCCFRIList(facilityList) {
   return getUnlockList(facilityList, 'unlockCcfri');
 }
-
+export function getUnlockClosuresList(facilityList) {
+  return getUnlockList(facilityList, 'unlockClosures');
+}
 export function getUnlockNMFList(facilityList) {
   return getUnlockList(facilityList, 'unlockNmf');
 }
@@ -422,6 +426,37 @@ export function buildQueryString(query) {
     }
   }
   return queryString;
+}
+
+/**
+ * Builds month options for a fiscal year (April–March).
+ *
+ * @param {string|Date} fiscalYearStart - Fiscal year start date
+ * @param {string|Date} fiscalYearEnd - Fiscal year end date
+ * @returns {Array<{ label: string, value: { month: number, year: number } }>}
+ */
+export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
+  if (!fiscalYearStart || !fiscalYearEnd) {
+    return [];
+  }
+  const months = [];
+  const startYear = moment(fiscalYearStart).year();
+  const endYear = moment(fiscalYearEnd).year();
+  // April–December (start year)
+  for (let month = 4; month <= 12; month++) {
+    months.push({
+      label: formatMonthYearToString(month, startYear),
+      value: { month, year: startYear },
+    });
+  }
+  // January–March (end year)
+  for (let month = 1; month <= 3; month++) {
+    months.push({
+      label: formatMonthYearToString(month, endYear),
+      value: { month, year: endYear },
+    });
+  }
+  return months;
 }
 
 /**

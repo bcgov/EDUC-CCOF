@@ -239,3 +239,8 @@ export function formatUTCtoPacificTime(utcTime) {
 export function formatFirstDateOfMonth(month, year) {
   return `${year}-${padString(month, 2, '0')}-01`;
 }
+
+// Formats year and month values into a YYYY-MM string for display
+export function formatYearMonthYYYYMM(year, month) {
+  return `${year}-${padString(month, 2, '0')}`;
+}

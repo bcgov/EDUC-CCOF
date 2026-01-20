@@ -13,7 +13,12 @@
             <p class="font-weight-bold py-1 pr-4">Select fiscal year:</p>
           </v-col>
           <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
-            <FiscalYearSlider :always-display="true" :readonly="loading" @select-program-year="selectProgramYear" />
+            <FiscalYearSlider
+              :always-display="true"
+              :default-program-year-id="currentProgramYearId"
+              :readonly="loading"
+              @select-program-year="selectProgramYear"
+            />
           </v-col>
         </v-row>
         <v-row no-gutters class="py-2">
@@ -81,8 +86,8 @@
             </span>
           </template>
           <template #item.externalCcfriStatusCode="{ item }">
-            <span class="report-status" :class="getStatusClass(item.externalCcfriStatusCode)">
-              {{ item.externalCcfriStatusText }}
+            <span class="report-status" :class="getCCFRIStatusClass(item)">
+              {{ getCCFRIStatusText(item) }}
             </span>
           </template>
           <template #item.actions="{ item }">
@@ -131,7 +136,6 @@
 
 <script>
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
@@ -148,10 +152,9 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-
-import { padString } from '@/utils/common.js';
+import { buildFiscalYearMonths } from '@/utils/common.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
-import { formatDateToStandardFormat, formatMonthYearToString } from '@/utils/format';
+import { formatDateToStandardFormat, formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
 export default {
   name: 'ViewEnrolmentReports',
@@ -178,42 +181,24 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['lookupInfo']),
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'programYearId']),
+    ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
+    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     allReportingMonths() {
-      const reportingMonths = [];
       const programYear = this.lookupInfo?.programYear?.list?.find(
         (year) => year.programYearId === this.selectedProgramYearId,
       );
-      const startYear = moment(programYear?.intakeStart).year();
-      const endYear = moment(programYear?.intakeEnd).year();
-      for (let month = 4; month < 13; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, startYear)}`,
-          value: {
-            month: month,
-            year: startYear,
-          },
-        });
-      }
-      for (let month = 1; month < 4; month++) {
-        reportingMonths.push({
-          label: `${formatMonthYearToString(month, endYear)}`,
-          value: {
-            month: month,
-            year: endYear,
-          },
-        });
-      }
-      return reportingMonths;
+      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
+    },
+    currentProgramYearId() {
+      return this.programYearList?.newApp?.programYearId;
     },
     selectedProgramYearId() {
-      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.programYearId;
+      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.currentProgramYearId;
     },
     filteredEnrolmentReports() {
       if (isEmpty(this.enrolmentReports)) return [];
@@ -257,11 +242,11 @@ export default {
           report.facilityAccountNumber = facility?.facilityAccountNumber;
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
-          report.reportingMonth = `${report?.year}-${padString(report?.month, 2, '0')}`; // Format as YYYY-MM to support sorting
+          report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
         }
         this.sortEnrolmentReports();
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to load enrolment reports');
       } finally {
         this.loading = false;
@@ -313,6 +298,12 @@ export default {
           return null;
       }
     },
+    getCCFRIStatusClass(report) {
+      return report.hasApprovedParentFees ? this.getStatusClass(report.externalCcfriStatusCode) : 'status-white';
+    },
+    getCCFRIStatusText(report) {
+      return report.hasApprovedParentFees ? report.externalCcfriStatusText : 'N/A';
+    },
     isSubmissionDeadlinePassed(enrolmentReport) {
       return EnrolmentReportService.isSubmissionDeadlinePassed(enrolmentReport);
     },
@@ -355,7 +346,7 @@ export default {
         this.setSuccessAlert('Adjustment report created successfully.');
         this.goToEnrolmentReport(response.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to create adjustment enrolment report.');
       } finally {
         this.loading = false;
@@ -393,7 +384,7 @@ export default {
         await this.prepareEnrolmentReportForEditing(report);
         this.goToEnrolmentReport(report.enrolmentReportId);
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('Failed to edit enrolment report.');
       } finally {
         this.loading = false;
@@ -402,13 +393,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.action-buttons {
-  gap: 8px;
-  padding: 10px;
-}
-
-.report-status {
-  min-width: 112px;
-}
-</style>

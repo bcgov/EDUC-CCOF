@@ -189,6 +189,15 @@ ol.declarationBList {
   list-style-position: inside;
 }
 
+.status-white {
+  background-color: #ffffff;
+  border-radius: 5px;
+  padding: 2px 6px 2px 6px;
+  display: inline-block;
+  min-width: 90px;
+  text-align: center;
+}
+
 .status-gray {
   background-color: #e0e0e0;
   border-radius: 5px;
@@ -259,6 +268,15 @@ ol.declarationBList {
   display: inline-block;
   min-width: 90px;
   text-align: center;
+}
+
+.report-status {
+  min-width: 112px;
+}
+
+.action-buttons {
+  gap: 8px;
+  padding: 10px;
 }
 
 /* SUMMARY DECLARATION */
