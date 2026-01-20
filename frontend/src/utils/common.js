@@ -466,10 +466,7 @@ export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
  * @returns {string} CSS class name corresponding to the status
  */
 export function getECECertStatusClass(status) {
-  switch (status) {
-    case ECE_STAFF_CERT_STATUSES.EXPIRED:
-      return 'status-red';
-    default:
-      return '';
+  if (status === ECE_STAFF_CERT_STATUSES.EXPIRED) {
+    return 'status-red';
   }
 }
