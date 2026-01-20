@@ -1,30 +1,32 @@
 <template>
   <AppDialog v-model="dialogOpen" title="Staff Certification Details" max-width="800px" @close="closeDialog">
     <template #content>
-      <v-row class="font-weight-bold mb-2">
-        <v-col cols="3">Certifications</v-col>
-        <v-col cols="3">Effective Start Date</v-col>
-        <v-col cols="3">Effective End Date</v-col>
-        <v-col cols="2">Status</v-col>
-      </v-row>
+      <v-data-table :headers="headers" :items="staff?.certificates" item-key="certificateLevel" hide-default-footer>
+        <template #item.certificateLevel="{ item }">
+          {{ item.certificateLevel || EMPTY_PLACEHOLDER }}
+        </template>
 
-      <v-row v-for="(cert, index) in staff?.certificates" :key="index" align="center">
-        <v-col cols="3">{{ cert.certificateLevel || EMPTY_PLACEHOLDER }}</v-col>
-        <v-col cols="3">{{ cert.effectiveStartDate || EMPTY_PLACEHOLDER }}</v-col>
-        <v-col cols="3">{{ cert.effectiveEndDate || EMPTY_PLACEHOLDER }}</v-col>
-        <v-col cols="2">
+        <template #item.effectiveStartDate="{ item }">
+          {{ item.effectiveStartDate || EMPTY_PLACEHOLDER }}
+        </template>
+
+        <template #item.effectiveEndDate="{ item }">
+          {{ item.effectiveEndDate || EMPTY_PLACEHOLDER }}
+        </template>
+
+        <template #item.certStatus="{ item }">
           <span
-            v-if="cert.certStatus === ECE_STAFF_CERT_STATUSES.EXPIRED"
-            :class="getECECertStatusClass(cert.certStatus)"
+            v-if="item.certStatus === ECE_STAFF_CERT_STATUSES.EXPIRED"
+            :class="getECECertStatusClass(item.certStatus)"
           >
-            {{ cert.certStatus }}
+            {{ item.certStatus }}
           </span>
-        </v-col>
-      </v-row>
+        </template>
 
-      <v-row v-if="!staff.certificates?.length" align="center">
-        <v-col cols="12" class="text-center">No certificates available</v-col>
-      </v-row>
+        <template #no-data>
+          <div class="text-center py-4">No certificates available</div>
+        </template>
+      </v-data-table>
     </template>
   </AppDialog>
 </template>
@@ -48,6 +50,16 @@ export default {
     },
   },
   emits: ['update:modelValue'],
+  data() {
+    return {
+      headers: [
+        { title: 'Certifications', key: 'certificateLevel', sortable: true },
+        { title: 'Effective Start Date', key: 'effectiveStartDate', sortable: true },
+        { title: 'Effective End Date', key: 'effectiveEndDate', sortable: true },
+        { title: 'Status', key: 'certStatus', sortable: true },
+      ],
+    };
+  },
   computed: {
     dialogOpen: {
       get() {
