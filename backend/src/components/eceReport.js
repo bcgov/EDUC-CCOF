@@ -3,7 +3,7 @@
 const { buildFilterQuery, getOperation, postOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { ECEReportMappings } = require('../util/mapping/Mappings');
+const { ECEReportMappings, ECEStaffInformationMappings } = require('../util/mapping/Mappings');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { padString } = require('./utils');
@@ -21,6 +21,10 @@ function mapECEReportForFront(report) {
   const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
   mappedReport.isAdjustment = isAdjustmentReport(mappedReport);
   mappedReport.versionText = getReportVersionText(mappedReport);
+  const eceStaffInformation = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report;
+  mappedReport.eceStaffInformation = eceStaffInformation?.map((staffInfo) => {
+    return new MappableObjectForFront(staffInfo, ECEStaffInformationMappings).toJSON();
+  });
   return mappedReport;
 }
 
@@ -45,7 +49,10 @@ async function createECEReport(req, res) {
 
 async function getECEReport(req, res) {
   try {
-    const response = await getOperation(`ccof_ece_monthly_reports(${req.params.eceReportId})`);
+    const response = await getOperation(
+      `ccof_ece_monthly_reports(${req.params.eceReportId})?
+      $expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_hourly_wage,ccof_total_hours_worked,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount)`,
+    );
     return res.status(HttpStatus.OK).json(mapECEReportForFront(response));
   } catch (e) {
     log.error(e);
@@ -66,4 +73,21 @@ async function getECEReports(req, res) {
   }
 }
 
-module.exports = { createECEReport, getECEReport, getECEReports };
+async function createECEStaffInformation(req, res) {
+  try {
+    const eceStaff = req.body;
+    const payload = {
+      'ccof_ece_monthly_report@odata.bind': `/ccof_ece_monthly_reports(${eceStaff.organizationId})`,
+      'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${eceStaff.facilityId})`,
+      'ccof_fiscal_year@odata.bind': `/ccof_program_years(${eceStaff.programYearId})`,
+      ccof_hourly_wage: eceStaff.hourlyWage,
+    };
+    const response = await postOperation('ccof_ece_staff_informations', payload);
+    return res.status(HttpStatus.CREATED).json(response);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+module.exports = { createECEReport, createECEStaffInformation, getECEReport, getECEReports };

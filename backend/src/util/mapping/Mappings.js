@@ -908,6 +908,15 @@ const ECEReportMappings = [
   { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'statusText' },
 ];
 
+const ECEStaffInformationMappings = [
+  { back: 'ccof_ece_staff_informationid', front: 'eceStaffInformationId' },
+  // { back: '_ccof_ece_monthly_report_value', front: 'eceReportId' },
+  { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
+  { back: 'ccof_hourly_wage', front: 'hourlyWage' },
+  { back: 'ccof_total_amount', front: 'totalAmount' },
+  { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },
+];
+
 const ECEStaffMappings = [
   { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
   { back: '_ccof_facility_id_value', front: 'facilityId' },
@@ -940,6 +949,7 @@ module.exports = {
   AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,
+  ECEStaffInformationMappings,
   ECEStaffMappings,
   ECECertificateMappings,
   EnrolmentReportDifferenceMappings,
