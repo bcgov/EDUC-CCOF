@@ -373,6 +373,7 @@ export default {
       'unlockBaseFunding',
       'unlockRenewal',
       'unlockDeclaration',
+      'unlockClosures',
       'unlockEcewe',
       'unlockLicenseUpload',
       'unlockSupportingDocuments',
@@ -658,6 +659,7 @@ export default {
         let applicationIdPayload = { ccfriApplicationId: facility.ccfriApplicationId };
         let unlockPayload = {
           unlockCcfri: facility.unlockCcfri,
+          unlockClosures: facility.unlockClosures,
           unlockNmf: facility.unlockNmf,
           unlockRfi: facility.unlockRfi,
           unlockAfs: facility.unlockAfs,

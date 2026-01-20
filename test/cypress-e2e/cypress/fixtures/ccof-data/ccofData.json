@@ -1,13 +1,13 @@
 {
   "orgData": {
-    "typeOfOrganization": "Sole Proprietorship",
+    "typeOfOrganization": "Non-Profit Society",
     "_optionsTypeOfOrganization": {
       "nonProfitSociety": "Non-Profit Society",
       "publicInstitute": "Public Institution (college/university)",
       "registeredCompany": "Registered Company",
       "localGovernment": "Local Government",
       "firstNationsGovernment": "First Nations Government",
-      "soleProprietorship":"Sole Proprietorship",
+      "soleProprietorship": "Sole Proprietorship",
       "partnership": "Partnership"
     },
     "orgInfo": {
@@ -25,7 +25,7 @@
   },
   "_EXTRAFACNOTE": "If adding additional facility, copy-paste the content of this file into a new file under extra-facs-ccof and change values below this line according to your test case",
   "facilityData": {
-    "facilityName": "Hedies Facility 1",
+    "facilityName": "Auto Test Facility 1",
     "yearFacilityBegan": "2018",
     "facilityLicence": "FC#123456",
     "licenceEffectiveDate": "2019-01-01",
@@ -55,17 +55,17 @@
         "December"
       ],
       "_optionsClosedMonths": [
-        "January", 
+        "January",
         "February",
-        "March", 
-        "April", 
-        "May", 
+        "March",
+        "April",
+        "May",
         "June",
-        "July", 
-        "August", 
+        "July",
+        "August",
         "September",
         "October",
-        "November", 
+        "November",
         "December"
       ],
       "closedMonthsOld": [
@@ -73,17 +73,17 @@
         "Mar"
       ],
       "_optionsClosedMonthsOld": [
-        "Jan", 
+        "Jan",
         "Feb",
-        "Mar", 
-        "Apr", 
-        "May", 
+        "Mar",
+        "Apr",
+        "May",
         "Jun",
-        "Jul", 
-        "Aug", 
+        "Jul",
+        "Aug",
         "Sep",
         "Oct",
-        "Nov", 
+        "Nov",
         "Dec"
       ]
     },
@@ -129,14 +129,14 @@
         "maxOverFourHours": 4
       },
       "School Age Care on School Grounds": {
-        "checked": true,
+        "checked": false,
         "max": 16,
         "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Preschool": {
-        "checked": false,
+        "checked": true,
         "max": 24,
         "extended": false
       },
@@ -203,7 +203,7 @@
       "Before Kindergarten",
       "After Kindergarten"
     ],
-    "offerExtendedHoursChildCare": "Yes",
+    "offerExtendedHoursChildCare": "No",
     "_optionsOfferExtendedHoursChildCare": {
       "optIn": "Yes",
       "optOut": "No"
