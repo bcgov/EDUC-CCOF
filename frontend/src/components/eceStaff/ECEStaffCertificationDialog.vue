@@ -1,7 +1,7 @@
 <template>
   <AppDialog v-model="dialogOpen" title="Staff Certification Details" max-width="800px" @close="closeDialog">
     <template #content>
-      <v-data-table :headers="headers" :items="staff?.certificates" item-key="certificateLevel" hide-default-footer>
+      <v-data-table :headers="headers" :items="staff?.certificates" hide-default-footer>
         <template #item.certificateLevel="{ item }">
           {{ item.certificateLevel || EMPTY_PLACEHOLDER }}
         </template>
