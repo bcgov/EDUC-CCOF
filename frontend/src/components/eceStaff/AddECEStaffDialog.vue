@@ -30,7 +30,7 @@
       </v-row>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-row v-if="duplicateStaffFound" class="mb-2">
+        <v-row v-if="resultState.duplicateStaff" class="mb-2">
           <v-col cols="12" class="text-error">
             This ECE Staff registration number {{ results[0].registrationNumber }} already exists on this facility. You
             may edit the existing record.
@@ -38,7 +38,7 @@
         </v-row>
 
         <v-data-table
-          v-if="hasResults"
+          v-if="resultState.hasResults"
           v-model:expanded="expanded"
           :items="results"
           :headers="headers"
@@ -108,7 +108,7 @@
           </template>
         </v-data-table>
 
-        <v-row v-else-if="noResultsFound" class="mt-2">
+        <v-row v-else-if="resultState.noResults" class="mt-2">
           <v-col cols="12" class="text-error">
             No ECE found. Please ensure information entered is exactly as it appears on the ECE certificate and try
             again. If you continue to have issues, please contact the ECE registry at: <strong>1-888-338-6622</strong>
@@ -123,7 +123,7 @@
           <AppButton display="inline" :primary="false" size="small" @click="closeDialog">Cancel</AppButton>
         </v-col>
 
-        <v-col v-if="hasResults">
+        <v-col v-if="resultState.hasResults">
           <AppButton display="inline" size="small" :disabled="!canAddECE" @click="addECEStaff">Add ECE</AppButton>
         </v-col>
       </v-row>
@@ -138,6 +138,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES } from '@/utils/constants.js';
+import { capitalize } from '@/utils/format';
 import rules from '@/utils/rules';
 
 export default {
@@ -151,14 +152,12 @@ export default {
   emits: ['update:modelValue', 'staff-added'],
   data() {
     return {
-      duplicateError: '',
       expanded: [],
       isLoading: false,
       isValidForm: false,
       results: [],
       search: { firstName: '', lastName: '', registrationNumber: '' },
       searched: false,
-      ECE_STAFF_CERT_STATUSES: null,
       headers: [
         { title: 'Registration #', value: 'registrationNumber' },
         { title: 'First Name', value: 'firstName' },
@@ -185,20 +184,15 @@ export default {
       return Boolean(registrationNumber && (firstName || lastName));
     },
 
-    hasResults() {
-      return this.results.length > 0;
-    },
-
-    noResultsFound() {
-      return this.searched && !this.results.length;
-    },
-
-    duplicateStaffFound() {
-      return this.searched && this.results.length > 0 && this.results[0].isDuplicate;
+    resultState() {
+      const hasResults = this.results.length > 0;
+      const noResults = this.searched && !hasResults;
+      const duplicateStaff = hasResults && this.searched && this.results[0].isDuplicate;
+      return { hasResults, noResults, duplicateStaff };
     },
 
     canAddECE() {
-      return this.hasResults && this.isValidForm;
+      return this.resultState.hasResults && this.isValidForm;
     },
   },
 
@@ -216,10 +210,7 @@ export default {
       this.searched = true;
       this.isLoading = true;
       try {
-        const params = {};
-        ['registrationNumber', 'firstName', 'lastName'].forEach((key) => {
-          if (this.search[key]) params[key] = this.search[key];
-        });
+        const params = Object.fromEntries(Object.entries(this.search).filter(([, value]) => value));
         const certificates = await ECEStaffService.getECEStaffCertificates(params);
         const first = certificates?.[0];
         const isDuplicate = first && this.isDuplicateStaff(first.registrationNumber);
@@ -228,8 +219,9 @@ export default {
           ? [
               {
                 registrationNumber: first.registrationNumber,
-                firstName: first.firstName,
-                lastName: first.lastName,
+                firstName: capitalize(first.firstName),
+                middleName: capitalize(first.middleName),
+                lastName: capitalize(first.lastName),
                 certificates,
                 isDuplicate,
               },

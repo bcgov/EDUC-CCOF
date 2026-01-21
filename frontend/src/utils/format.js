@@ -26,6 +26,7 @@ export function formatTime12to24(time12h) {
 }
 
 export function capitalize(word) {
+  if (!word) return '';
   return `${word[0]}${word.slice(1).toLowerCase()}`;
 }
 
