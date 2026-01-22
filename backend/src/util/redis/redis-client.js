@@ -27,6 +27,14 @@ class Redis {
     return `redis://${config.get('redis:host')}:${config.get('redis:port')}`;
   }
 
+  static encodeKey(string) {
+    return Buffer.from(string).toString('hex');
+  }
+
+  static decodeKey(hex) {
+    return Buffer.from(hex, 'hex').toString('utf8');
+  }
+
   static async init() {
     if (Redis.clustered) {
       log.info('using CLUSTERED Redis implementation');
