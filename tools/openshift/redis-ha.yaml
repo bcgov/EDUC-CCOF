@@ -92,7 +92,7 @@ objects:
                   name: client
                 - containerPort: 16379
                   name: gossip
-              command: [ "/usr/bin/tini", "--", "/conf/fix-ip.sh", "redis-server", "/conf/redis.conf" ]
+              command: [ "/usr/bin/tini", "--", "/conf/fix-ip.sh", "redis-server", "/conf/redis-full.conf" ]
               readinessProbe:
                 exec:
                   command: ["/conf/redis-readiness.sh"]
