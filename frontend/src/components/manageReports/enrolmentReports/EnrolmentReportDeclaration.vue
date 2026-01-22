@@ -37,7 +37,7 @@
       </v-card>
     </template>
   </v-container>
-  <SubmitConfirmationDialog :show="showSubmitConfirmationDialog" />
+  <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
   <EnrolmentReportNavButtons
     :loading="loading || processing"
     :is-submit-displayed="isSubmitDisplayed"

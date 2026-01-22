@@ -419,6 +419,7 @@ const UserProfileBaseCCFRIMappings = [
 const UserProfileCCFRIMappings = [
   { back: 'ccof_unlock_rfi', front: 'unlockRfi' },
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri' },
+  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' },
   { back: 'ccof_unlock_afs', front: 'unlockAfs' },
   { back: 'ccof_unlock_afsenable', front: 'enableAfs' },
@@ -532,6 +533,7 @@ const ApplicationSummaryCcfriMappings = [
   ...CCFRIFacilityMappings,
   { back: 'ccof_applicationccfriid', front: 'ccfriId' }, // null,
   { back: 'ccof_unlock_ccfri', front: 'unlockCcfri' }, // null,
+  { back: 'ccof_unlock_closures', front: 'unlockClosures' },
   { back: 'ccof_has_nmf', front: 'hasNmf' }, // false,
   { back: 'ccof_unlock_nmf_rfi', front: 'unlockNmf' }, // null,
   { back: 'ccof_nmf_formcomplete', front: 'isNmfComplete' }, // false,
@@ -925,6 +927,7 @@ const ECECertificateMappings = [
   { back: 'ofm_certificate_level', front: 'certificateLevel' },
   { back: 'ofm_effective_date', front: 'effectiveStartDate' },
   { back: 'ofm_expiry_date', front: 'effectiveEndDate' },
+  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'certStatus' },
 ];
 
 module.exports = {

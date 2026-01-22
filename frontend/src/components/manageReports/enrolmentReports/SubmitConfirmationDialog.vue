@@ -1,5 +1,5 @@
 <template>
-  <AppDialog :model-value="show" persistent max-width="50%" @close="goToEnrolmentReportDashboard">
+  <AppDialog v-model="dialogOpen" persistent max-width="50%" @close="goToEnrolmentReportDashboard">
     <template #content>
       <div class="text-center">
         <p class="pt-4 font-weight-bold text-h5">Submission Successful</p>
@@ -28,9 +28,20 @@ export default {
     AppDialog,
   },
   props: {
-    show: {
+    modelValue: {
       type: Boolean,
-      default: false,
+      required: true,
+    },
+  },
+  emits: ['update:modelValue'],
+  computed: {
+    dialogOpen: {
+      get() {
+        return this.modelValue;
+      },
+      set(val) {
+        this.$emit('update:modelValue', val);
+      },
     },
   },
   methods: {

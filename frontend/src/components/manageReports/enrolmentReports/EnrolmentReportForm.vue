@@ -1263,11 +1263,11 @@
       </v-card>
     </template>
   </v-container>
-  <BackConfirmationDialog :show="showBackConfirmationDialog" @close="showBackConfirmationDialog = false" />
+  <BackConfirmationDialog v-model="showBackConfirmationDialog" />
   <FullMonthClosureConfirmationDialog
-    :show="showFullMonthClosureConfirmationDialog"
+    v-model="showFullMonthClosureConfirmationDialog"
     :loading="loading || processing"
-    @close="closeFullMonthClosureDialog"
+    @cancel="cancelFullMonthClosure"
     @proceed="confirmFullMonthClosure"
   />
   <EnrolmentReportNavButtons
@@ -1671,9 +1671,8 @@ export default {
       }
     },
 
-    closeFullMonthClosureDialog() {
+    cancelFullMonthClosure() {
       this.enrolmentReport.isFullMonthClosure = false;
-      this.showFullMonthClosureConfirmationDialog = false;
     },
 
     async confirmFullMonthClosure() {

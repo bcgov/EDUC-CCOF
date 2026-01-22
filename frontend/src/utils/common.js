@@ -11,6 +11,7 @@ import {
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CCOF_STATUS,
+  ECE_STAFF_CERT_STATUSES,
   LICENCE_STATUSES,
   OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
@@ -126,6 +127,7 @@ export function checkApplicationUnlocked(application) {
   const isCCFRIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockCcfri);
   const isNMFUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockNmf);
   const isRFIUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockRfi);
+  const isClosuresUnlocked = facilityList?.some((facility) => isFacilityAvailable(facility) && facility.unlockClosures);
   const isAFSUnlocked = facilityList?.some(
     (facility) => isFacilityAvailable(facility) && facility.unlockAfs && facility.enableAfs,
   );
@@ -140,6 +142,7 @@ export function checkApplicationUnlocked(application) {
     isCCFRIUnlocked ||
     isNMFUnlocked ||
     isRFIUnlocked ||
+    isClosuresUnlocked ||
     isAFSUnlocked;
   return isApplicationUnlocked;
 }
@@ -338,7 +341,9 @@ function getUnlockList(facilityList = [], facilityProperty = '') {
 export function getUnlockCCFRIList(facilityList) {
   return getUnlockList(facilityList, 'unlockCcfri');
 }
-
+export function getUnlockClosuresList(facilityList) {
+  return getUnlockList(facilityList, 'unlockClosures');
+}
 export function getUnlockNMFList(facilityList) {
   return getUnlockList(facilityList, 'unlockNmf');
 }
@@ -452,4 +457,16 @@ export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
     });
   }
   return months;
+}
+
+/**
+ * Maps a ECE Staff certificate status to a CSS class name.
+ *
+ * @param {string} status - ECE Staff certificate status
+ * @returns {string} CSS class name corresponding to the status
+ */
+export function getECECertStatusClass(status) {
+  if (status === ECE_STAFF_CERT_STATUSES.EXPIRED) {
+    return 'status-red';
+  }
 }

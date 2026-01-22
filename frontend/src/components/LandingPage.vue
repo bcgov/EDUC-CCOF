@@ -424,6 +424,7 @@ import {
   checkApplicationUnlocked,
   getCcofStatus,
   getUnlockCCFRIList,
+  getUnlockClosuresList,
   getUnlockNMFList,
   getUnlockRFIList,
   getUnlockAFSList,
@@ -608,6 +609,9 @@ export default {
     },
     unlockCCFRIList() {
       return getUnlockCCFRIList(this.navBarList);
+    },
+    unlockClosuresList() {
+      return getUnlockClosuresList(this.navBarList);
     },
     unlockNMFList() {
       return getUnlockNMFList(this.navBarList);
@@ -843,6 +847,9 @@ export default {
     goToAFS(ccfriApplicationId, programYearId) {
       this.$router.push(pcfUrlGuid(PATHS.CCFRI_AFS, programYearId, ccfriApplicationId));
     },
+    goToClosures(ccfriApplicationId, programYearId) {
+      this.$router.push(pcfUrlGuid(PATHS.CCFRI_CLOSURES, programYearId, ccfriApplicationId));
+    },
     goToECEWE(programYearId) {
       this.$router.push(pcfUrl(PATHS.ECEWE_ELIGIBILITY, programYearId));
     },
@@ -868,6 +875,7 @@ export default {
       const unlockRFIList = getUnlockRFIList(facilityList);
       const unlockNMFList = getUnlockNMFList(facilityList);
       const unlockAFSList = getUnlockAFSList(facilityList);
+      const unlockClosuresList = getUnlockClosuresList(facilityList);
       const isTemplateV1 = ApplicationService.showApplicationTemplateV1(application?.applicationTemplateVersion);
       if (!isTemplateV1 && application?.unlockRenewal && application?.applicationType === APPLICATION_TYPES.RENEWAL) {
         this.goToBankingInformation(programYearId);
@@ -881,6 +889,8 @@ export default {
         this.goToRFI(unlockRFIList[0], programYearId);
       } else if (!isEmpty(unlockNMFList)) {
         this.goToNMF(unlockNMFList[0], programYearId);
+      } else if (!isEmpty(unlockClosuresList)) {
+        this.goToClosures(unlockClosuresList[0], programYearId);
       } else if (!isEmpty(unlockAFSList)) {
         this.goToAFS(unlockAFSList[0], programYearId);
       } else if (application?.unlockEcewe) {
@@ -895,10 +905,12 @@ export default {
       const application = this.applicationMap?.get(this.selectedProgramYearId);
       if (this.isCCFRIUnlock(ccfriApplicationId, application)) {
         this.goToCCFRI(ccfriApplicationId, application);
-      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
-        this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
       } else if (this.isRFIUnlock(ccfriApplicationId, application)) {
         this.goToRFI(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isNMFUnlock(ccfriApplicationId, application)) {
+        this.goToNMF(ccfriApplicationId, this.selectedProgramYearId);
+      } else if (this.isClosuresUnlock(ccfriApplicationId, application)) {
+        this.goToClosures(ccfriApplicationId, this.selectedProgramYearId);
       } else if (this.isAFSUnlock(ccfriApplicationId, application)) {
         this.goToAFS(ccfriApplicationId, this.selectedProgramYearId);
       }
@@ -915,6 +927,7 @@ export default {
         this.isCCFRIUnlock(ccfriApplicationId, application) ||
         this.isNMFUnlock(ccfriApplicationId, application) ||
         this.isRFIUnlock(ccfriApplicationId, application) ||
+        this.isClosuresUnlock(ccfriApplicationId, application) ||
         this.isAFSUnlock(ccfriApplicationId, application)
       );
     },
@@ -924,6 +937,14 @@ export default {
       return (
         application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
         unlockCCFRIList.includes(ccfriApplicationId)
+      );
+    },
+    isClosuresUnlock(ccfriApplicationId, application) {
+      const facilityList = this.getFacilityListForPCFByProgramYearId(application?.ccofProgramYearId);
+      const unlockClosuresList = getUnlockClosuresList(facilityList);
+      return (
+        application?.applicationStatus === APPLICATION_STATUSES.SUBMITTED &&
+        unlockClosuresList.includes(ccfriApplicationId)
       );
     },
     isNMFUnlock(ccfriApplicationId, application) {
