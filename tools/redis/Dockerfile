@@ -1,5 +1,5 @@
 FROM redis:8.4.0-alpine
 
-RUN apt-get update && apt-get install -y tini && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache tini
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/sbin/tini", "--"]
