@@ -33,6 +33,7 @@ objects:
         cluster-migration-barrier 1
         appendonly yes
         protected-mode no
+        loadmodule /usr/local/lib/redis/modules/rejson.so
       redis-readiness.sh: |
         #!/bin/sh
         response=$(timeout 3 $1 redis-cli -h $HOSTNAME -p 6379 ping)
