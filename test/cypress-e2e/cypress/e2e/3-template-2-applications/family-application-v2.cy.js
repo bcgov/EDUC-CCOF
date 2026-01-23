@@ -7,18 +7,18 @@ describe('Family Application Test', () => {
     it('Should run through Family Application, submit and logout', () => {
         loginPage.visitLoginPage()
         loginPage.clickLoginButton()
-        loginPage.loginThroughExternalProvider(
-            Cypress.env("PORTAL_USERNAME"),
+    loginPage.loginThroughExternalProvider(
+      Cypress.env("PORTAL_USERNAME"),
             Cypress.env("PORTAL_PASSWORD"))
         cy.startNewApp(APP_TYPE.FAMILY_V2)
-    
-        // Currently Template 2 uses "Future" program year
-        // On 2/15/2026 update "Current" year in Constants to 2026-27 and update parameter here to "PROGRAM_YEAR.CURRENT"
-        cy.then(()=> {
-            cy.runCcofApp(APP_TYPE.FAMILY_V2)
-            cy.runCcfriApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.FUTURE)
-            cy.runEceWeApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.FUTURE)
-            submitApp.summaryAndDeclaration(APP_TYPE.FAMILY_V2)
-        })
-    })
-})
+
+    // Currently Template 2 uses "Future" program year
+    // On 2/15/2026 update "Current" year in Constants to 2026-27 and update parameter here to "PROGRAM_YEAR.CURRENT"
+    cy.then(() => {
+      cy.runCcofApp(APP_TYPE.FAMILY_V2);
+      cy.runCcfriApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.CURRENT);
+      cy.runEceWeApp(APP_TYPE.FAMILY_V2, PROGRAM_YEAR.CURRENT);
+      submitApp.summaryAndDeclaration(APP_TYPE.FAMILY_V2);
+    });
+  });
+});
