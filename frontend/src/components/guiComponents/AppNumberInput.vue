@@ -61,7 +61,7 @@ export default {
     },
   },
   mounted() {
-    this.internalValue = this.modelValue != null ? this.format(this.modelValue) : this.defaultString;
+    this.internalValue = this.modelValue == null ? this.defaultString : this.format(this.modelValue);
   },
   methods: {
     sanitize(value) {
@@ -114,7 +114,8 @@ export default {
     },
 
     handleBlur() {
-      const numberValue = this.internalValue == null || this.internalValue === '' ? NaN : Number(this.internalValue);
+      const numberValue =
+        this.internalValue == null || this.internalValue === '' ? Number.NaN : Number(this.internalValue);
       if (Number.isNaN(numberValue)) {
         this.internalValue = this.defaultString;
         this.$emit('update:modelValue', this.defaultValue);

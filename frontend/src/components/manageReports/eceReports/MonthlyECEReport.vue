@@ -64,28 +64,28 @@
           <v-table>
             <thead>
               <tr>
-                <th></th>
-                <th class="font-weight-bold text-right">Reported</th>
-                <th v-if="showVerified" class="font-weight-bold text-right">Verified</th>
+                <th scope="col"></th>
+                <th scope="col" class="font-weight-bold text-right">Reported</th>
+                <th v-if="showVerified" scope="col" class="font-weight-bold text-right">Verified</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <th class="font-weight-bold">WE Subtotal</th>
+                <th scope="row" class="font-weight-bold">WE Subtotal</th>
                 <td class="text-right">{{ formatCurrency(6) }}</td>
                 <td v-if="showVerified" class="text-right">
                   {{ formatCurrency(1) }}
                 </td>
               </tr>
               <tr>
-                <th class="font-weight-bold">SB Subtotal</th>
+                <th scope="row" class="font-weight-bold">SB Subtotal</th>
                 <td class="text-right">{{ formatCurrency(7) }}</td>
                 <td v-if="showVerified" class="text-right">
                   {{ formatCurrency(2) }}
                 </td>
               </tr>
               <tr>
-                <th class="font-weight-bold">Total</th>
+                <th scope="row" class="font-weight-bold">Total</th>
                 <td class="text-right font-weight-bold">
                   {{ formatCurrency(13) }}
                 </td>
