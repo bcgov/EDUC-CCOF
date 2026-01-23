@@ -2,8 +2,9 @@
   <v-text-field
     v-model="inputValue"
     :inputmode="decimal ? 'decimal' : 'numeric'"
+    variant="plain"
     density="compact"
-    variant="outlined"
+    hide-details="auto"
     @beforeinput="handleBeforeInput"
     @blur="handleBlur"
   />

@@ -1270,7 +1270,7 @@
     @cancel="cancelFullMonthClosure"
     @proceed="confirmFullMonthClosure"
   />
-  <EnrolmentReportNavButtons
+  <ReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="isSaveDisplayed"
     :is-next-displayed="isNextDisplayed"
@@ -1868,10 +1868,6 @@ export default {
   font-size: 14px;
   left: 60%;
   position: absolute;
-}
-
-.min-height-screen {
-  min-height: 70vh;
 }
 
 .page-scroll-wrapper {

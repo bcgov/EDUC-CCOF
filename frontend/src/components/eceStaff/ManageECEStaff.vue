@@ -64,9 +64,9 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                hide-details="auto"
                 max-width="120"
                 prefix="$"
+                variant="outlined"
               />
             </v-row>
           </template>

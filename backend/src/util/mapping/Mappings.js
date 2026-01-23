@@ -915,8 +915,10 @@ const ECEStaffInformationMappings = [
   // { back: '_ccof_ece_monthly_report_value', front: 'eceReportId' },
   { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
-  { back: 'ccof_total_amount', front: 'totalAmount' },
   { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },
+  { back: 'ccof_ece_sb_amount', front: 'statutoryBenefitAmount' },
+  { back: 'ccof_ece_we_amount', front: 'weAmount' },
+  { back: 'ccof_total_amount', front: 'totalAmount' },
 ];
 
 const ECEStaffMappings = [

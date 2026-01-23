@@ -56,6 +56,9 @@ export const rules = {
   min(number, message = number != null ? `Minimum entry: ${number}` : 'Min exceeded') {
     return (v) => v >= number || message;
   },
+  greaterThan(number, message = number != null ? `Must be greater than ${number}` : 'Value too small') {
+    return (v) => v > number || message;
+  },
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';
   },

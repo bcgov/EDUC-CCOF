@@ -103,12 +103,14 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import ApplicationService from '@/services/applicationService';
 import ECEReportService from '@/services/eceReportService.js';
+import ECEStaffService from '@/services/eceStaffService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import {
   ECE_REPORT_TYPES,
+  ECE_STAFF_STATUSES,
   ECEWE_FACILITY_STATUSES,
   EMPTY_PLACEHOLDER,
   FISCAL_YEAR_MONTHS,
@@ -342,6 +344,18 @@ export default {
       this.$refs.form?.reset();
       this.dialogOpen = false;
     },
+    async createECEStaffInformation(eceReportId) {
+      const activeECEStaff = await ECEStaffService.getECEStaff({
+        facilityId: this.selectedFacilityId,
+        status: ECE_STAFF_STATUSES.ACTIVE,
+      });
+      const payload = activeECEStaff.map((staff) => ({
+        eceReportId,
+        eceStaffId: staff.eceStaffId,
+        hourlyWage: staff.hourlyWage,
+      }));
+      await ECEReportService.createECEStaffInformation(eceReportId, payload);
+    },
     async submit() {
       if (!this.isValidForm) return;
       try {
@@ -355,6 +369,7 @@ export default {
           reportType: ECE_REPORT_TYPES.BASE,
         });
         const eceReportId = response?.data;
+        await this.createECEStaffInformation(eceReportId);
         await this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
         this.setSuccessAlert('ECE report created successfully.');
         this.closeDialog();

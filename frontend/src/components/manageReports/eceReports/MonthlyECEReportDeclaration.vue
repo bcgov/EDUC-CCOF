@@ -4,7 +4,7 @@
       <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
     </div>
     <template v-else>
-      <EnrolmentReportHeader :enrolment-report="enrolmentReport" />
+      <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
       <v-card variant="outlined" class="px-8 px-md-12 py-6 mt-4">
         <h2 class="text-center mb-6">Declaration and Submission</h2>
         <div class="declaration-content px-md-4 px-xl-12 pb-2">
@@ -37,43 +37,44 @@
       </v-card>
     </template>
   </v-container>
-  <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
+  <!-- TODO (vietle-cgi): Implement Submit ECE report -->
   <ReportNavButtons
     :loading="loading || processing"
-    :is-submit-displayed="isSubmitDisplayed"
+    :is-submit-displayed="true"
     :is-submit-disabled="isSubmitDisabled"
-    @previous="$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${$route.params.enrolmentReportId}`)"
-    @submit="submit"
+    @previous="previous"
+    @submit="setWarningAlert('Submit functionality is not yet implemented.')"
   />
 </template>
 
 <script>
 import { mapState } from 'pinia';
-import SubmitConfirmationDialog from '@/components/manageReports/enrolmentReports/SubmitConfirmationDialog.vue';
-import enrolmentReportMixin from '@/mixins/enrolmentReportMixin.js';
-import permissionsMixin from '@/mixins/permissionsMixin.js';
-import EnrolmentReportService from '@/services/enrolmentReportService.js';
+import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
+import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import ECEReportService from '@/services/eceReportService.js';
 import { useAuthStore } from '@/store/auth.js';
-import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES } from '@/utils/constants.js';
+import { PATHS } from '@/utils/constants.js';
+import { isReportReadOnly } from '@/utils/eceReport.js';
 
 export default {
-  name: 'EnrolmentReportDeclaration',
+  name: 'MonthlyECEReportDeclaration',
   components: {
-    SubmitConfirmationDialog,
+    MonthlyECEReportHeader,
+    ReportNavButtons,
   },
-  mixins: [enrolmentReportMixin, permissionsMixin],
+  mixins: [alertMixin],
   data() {
     return {
-      showSubmitConfirmationDialog: false,
+      eceReport: null,
+      loading: false,
+      processing: false,
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isMinistryUser']),
-    isSubmitDisplayed() {
-      return this.hasPermission(this.PERMISSIONS.SUBMIT_ENROLMENT_REPORT);
-    },
     isSubmitDisabled() {
-      return this.readonly || this.isMinistryUser;
+      return isReportReadOnly({ loading: this.loading }) || this.isMinistryUser;
     },
   },
   async created() {
@@ -84,33 +85,16 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        this.enrolmentReport = await EnrolmentReportService.getEnrolmentReport(this.$route.params.enrolmentReportId);
+        this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
       } catch (error) {
-        console.log(error);
-        this.setFailureAlert('Failed to load enrolment report');
+        console.error(error);
+        this.setFailureAlert('Failed to load ECE report');
       } finally {
         this.loading = false;
       }
     },
-
-    async submit() {
-      if (this.readonly) return;
-      try {
-        this.processing = true;
-        const payload = {
-          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
-          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.SUBMITTED,
-          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
-          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED,
-        };
-        await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
-        this.showSubmitConfirmationDialog = true;
-      } catch (error) {
-        console.log(error);
-        this.setFailureAlert('An error occurred while submitting.');
-      } finally {
-        this.processing = false;
-      }
+    previous() {
+      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.$route.params.eceReportId}`);
     },
   },
 };
