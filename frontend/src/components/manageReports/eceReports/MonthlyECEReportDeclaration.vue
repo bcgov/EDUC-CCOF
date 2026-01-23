@@ -8,29 +8,31 @@
       <v-card variant="outlined" class="px-8 px-md-12 py-6 mt-4">
         <h2 class="text-center mb-6">Declaration and Submission</h2>
         <div class="declaration-content px-md-4 px-xl-12 pb-2">
-          <p>By submitting this Enrolment Report, I confirm that:</p>
+          <p>By submitting this Monthly ECE Report, I confirm that:</p>
           <ul class="ml-8">
             <li>The information provided in this report is true, accurate and complete to the best of my knowledge;</li>
-            <li>I am authorized to submit enrolment reports for these facilities;</li>
+            <li>I am authorized to submit Monthly ECE Reports for this facility;</li>
             <li>
-              I understand that the Ministry will be relying on the content of these reports for its decision to
-              disburse funds to this organization;
+              I understand that the Ministry relies on the content of these reports for its decision to disburse funds
+              to this organization;
             </li>
             <li>
-              These facilities have not accepted registered or drop-in children in numbers which would violate the
-              Community Care and Assisted Living Act and Child Care Licensing Regulation;
+              ECEs submitted on this report are ECE Employees (as defined in the CCOF Funding Agreement) at this
+              facility;
             </li>
             <li>
-              These facilities have not claimed a contribution from the Province for a drop-in child who was temporarily
-              occupying a space that was made available due to the absence of an enrolled child;
+              ECEs submitted on this report have signed a written acknowledgement authorizing this facility to collect
+              and disclose to the Ministry the ECE Employee's personal information and confirming their knowledge that
+              the Ministry may contact them directly to verify any information this facility provides to the Ministry
+              and that the ECE Wage Enhancement Funding is distributed as required by the CCOF Funding Agreement;
             </li>
             <li>
-              These facilities are maintaining records that support the enrolment numbers reported and will provide them
-              upon request to parties authorized by the Ministry for review or audit purposes; and
+              The report accurately represents the Hours Worked (as defined in the CCOF Funding Agreement) by ECE
+              Employees at this facility; and
             </li>
             <li>
-              These facilities have not claimed a contribution from the Province with respect to any children living in
-              the licensee's own home (Family Providers Only).
+              I keep accurate records of each ECE Employee's signed written acknowledgement and the Hours Worked by, and
+              payments distributed to, ECE Employees.
             </li>
           </ul>
         </div>
@@ -39,7 +41,7 @@
   </v-container>
   <!-- TODO (vietle-cgi): Implement Submit ECE report -->
   <ReportNavButtons
-    :loading="loading || processing"
+    :loading="loading"
     :is-submit-displayed="true"
     :is-submit-disabled="isSubmitDisabled"
     @previous="previous"
@@ -68,13 +70,12 @@ export default {
     return {
       eceReport: null,
       loading: false,
-      processing: false,
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isMinistryUser']),
     isSubmitDisabled() {
-      return isReportReadOnly({ loading: this.loading }) || this.isMinistryUser;
+      return isReportReadOnly({ loading: this.loading, eceReport: this.eceReport }) || this.isMinistryUser;
     },
   },
   async created() {

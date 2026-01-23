@@ -141,7 +141,7 @@
     </v-skeleton-loader>
     <CreateECEReportDialog v-if="showCreateECEReportDialog" v-model="showCreateECEReportDialog" />
   </div>
-  <NavButton @previous="$router.back" />
+  <NavButton @previous="previous" />
 </template>
 
 <script>
@@ -282,6 +282,9 @@ export default {
       this.selectedReportingMonths = this.allReportingMonths.map((month) => month.value);
       this.selectedFacilityIds = this.allFacilityIds;
       this.selectedStatuses = this.ECE_REPORT_STATUS_OPTIONS.map((status) => status.value);
+    },
+    previous() {
+      this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
     goToECEReport(eceReportId) {
       this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);

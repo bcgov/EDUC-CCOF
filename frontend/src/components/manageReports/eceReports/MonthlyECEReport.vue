@@ -25,23 +25,23 @@
                 variant="outlined"
               />
               <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-              <p v-if="showVerified"><strong>Verified:</strong> {{ formatDecimalNumber(2) }}</p>
+              <p v-if="showVerified"><strong>Verified:</strong> {{ formatDecimalNumber(0) }}</p>
             </div>
           </template>
           <template #item.weAmount="{ item }">
             <p>{{ formatCurrency(item.weAmount) }}</p>
             <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(200) }}</p>
+            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
           <template #item.statutoryBenefitAmount="{ item }">
             <p>{{ formatCurrency(item.statutoryBenefitAmount) }}</p>
             <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(1999.99) }}</p>
+            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
           <template #item.totalAmount="{ item }">
             <p>{{ formatCurrency(item.totalAmount) }}</p>
             <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(345678.65) }}</p>
+            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
           <!-- TODO (vietle-cgi): Implement ECE Staff remove -->
           <template #item.actions>
@@ -60,6 +60,7 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
+        <!-- TODO (vietle-cgi): Implement ECE Reports calculation -->
         <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': showVerified }">
           <v-table>
             <thead>
@@ -72,25 +73,25 @@
             <tbody>
               <tr>
                 <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                <td class="text-right">{{ formatCurrency(6) }}</td>
+                <td class="text-right">{{ formatCurrency(0) }}</td>
                 <td v-if="showVerified" class="text-right">
-                  {{ formatCurrency(1) }}
+                  {{ formatCurrency(0) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                <td class="text-right">{{ formatCurrency(7) }}</td>
+                <td class="text-right">{{ formatCurrency(0) }}</td>
                 <td v-if="showVerified" class="text-right">
-                  {{ formatCurrency(2) }}
+                  {{ formatCurrency(0) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">Total</th>
                 <td class="text-right font-weight-bold">
-                  {{ formatCurrency(13) }}
+                  {{ formatCurrency(0) }}
                 </td>
                 <td v-if="showVerified" class="text-right font-weight-bold">
-                  {{ formatCurrency(3) }}
+                  {{ formatCurrency(0) }}
                 </td>
               </tr>
             </tbody>
