@@ -25,7 +25,7 @@
         </v-col>
 
         <v-col cols="12" md="2">
-          <AppButton size="medium" :disabled="!canSearch" @click="searchStaff">Search</AppButton>
+          <AppButton size="medium" :disabled="!canSearch" :loading="isLoading" @click="searchStaff">Search</AppButton>
         </v-col>
       </v-row>
 
@@ -75,7 +75,7 @@
           <template #expanded-row="{ item, columns }">
             <tr>
               <td :colspan="columns.length" class="pa-0">
-                <div class="expanded-container">
+                <v-card class="soft-outline ma-4">
                   <v-table density="compact">
                     <thead>
                       <tr>
@@ -102,18 +102,18 @@
                       </tr>
                     </tbody>
                   </v-table>
-                </div>
+                </v-card>
               </td>
             </tr>
           </template>
         </v-data-table>
 
-        <v-row v-else-if="resultState.noResults" class="mt-2">
+        <p v-else-if="resultState.noResults" class="mt-2">
           <v-col cols="12" class="text-error">
             No ECE found. Please ensure information entered is exactly as it appears on the ECE certificate and try
             again. If you continue to have issues, please contact the ECE registry at: <strong>1-888-338-6622</strong>
           </v-col>
-        </v-row>
+        </p>
       </v-skeleton-loader>
     </template>
 
@@ -132,8 +132,8 @@
 </template>
 
 <script>
-import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { getECECertStatusClass } from '@/utils/common.js';
@@ -143,7 +143,7 @@ import rules from '@/utils/rules';
 
 export default {
   name: 'AddECEStaffDialog',
-  components: { AppDialog, AppButton },
+  components: { AppButton, AppDialog },
   mixins: [alertMixin],
   props: {
     modelValue: { type: Boolean, required: true },
@@ -192,7 +192,7 @@ export default {
     },
 
     canAddECE() {
-      return this.resultState.hasResults && this.isValidForm;
+      return this.isValidForm && this.results[0]?.isDuplicate !== true;
     },
   },
 
@@ -213,7 +213,7 @@ export default {
         const params = Object.fromEntries(Object.entries(this.search).filter(([, value]) => value));
         const certificates = await ECEStaffService.getECEStaffCertificates(params);
         const first = certificates?.[0];
-        const isDuplicate = first && this.isDuplicateStaff(first.registrationNumber);
+        const existing = first && this.existingStaff.find((s) => s.registrationNumber === first.registrationNumber);
 
         this.results = first
           ? [
@@ -223,11 +223,13 @@ export default {
                 middleName: capitalize(first.middleName),
                 lastName: capitalize(first.lastName),
                 certificates,
-                isDuplicate,
+                isDuplicate: !!existing,
+                hourlyWage: existing?.hourlyWage,
               },
             ]
           : [];
       } catch (err) {
+        this.setFailureAlert('Failed to search ECE staff.');
         console.error(err);
       } finally {
         this.isLoading = false;
@@ -273,12 +275,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.expanded-container {
-  margin-top: 25px;
-  margin-bottom: 16px;
-  margin-left: 16px;
-  margin-right: 16px;
-  border: 1px solid #dcdcdc;
-}
-</style>

@@ -27,7 +27,15 @@ export function formatTime12to24(time12h) {
 
 export function capitalize(word) {
   if (!word) return '';
-  return `${word[0]}${word.slice(1).toLowerCase()}`;
+  return word
+    .split(' ')
+    .map((part) =>
+      part
+        .split('-')
+        .map((p) => (p ? `${p[0].toUpperCase()}${p.slice(1).toLowerCase()}` : ''))
+        .join('-'),
+    )
+    .join(' ');
 }
 
 /**
