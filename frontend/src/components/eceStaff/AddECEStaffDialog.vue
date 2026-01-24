@@ -138,7 +138,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES } from '@/utils/constants.js';
-import { capitalize } from '@/utils/format';
+import { formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
 export default {
@@ -219,9 +219,9 @@ export default {
           ? [
               {
                 registrationNumber: first.registrationNumber,
-                firstName: capitalize(first.firstName),
-                middleName: capitalize(first.middleName),
-                lastName: capitalize(first.lastName),
+                firstName: formatName(first.firstName),
+                middleName: formatName(first.middleName),
+                lastName: formatName(first.lastName),
                 certificates,
                 isDuplicate: !!existing,
                 hourlyWage: existing?.hourlyWage,

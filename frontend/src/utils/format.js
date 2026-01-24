@@ -26,16 +26,7 @@ export function formatTime12to24(time12h) {
 }
 
 export function capitalize(word) {
-  if (!word) return '';
-  return word
-    .split(' ')
-    .map((part) =>
-      part
-        .split('-')
-        .map((p) => (p ? `${p[0].toUpperCase()}${p.slice(1).toLowerCase()}` : ''))
-        .join('-'),
-    )
-    .join(' ');
+  return `${word[0]}${word.slice(1).toLowerCase()}`;
 }
 
 /**
@@ -252,4 +243,14 @@ export function formatFirstDateOfMonth(month, year) {
 // Formats year and month values into a YYYY-MM string for display
 export function formatYearMonthYYYYMM(year, month) {
   return `${year}-${padString(month, 2, '0')}`;
+}
+
+/**
+ * Formats personal names correctly:
+ * - Capitalizes each part
+ * - Preserves spaces and hyphens
+ **/
+export function formatName(value) {
+  if (!value) return '';
+  return value.toLowerCase().replace(/(^|[\s\-'\u2019])\S/g, (match) => match.toUpperCase());
 }
