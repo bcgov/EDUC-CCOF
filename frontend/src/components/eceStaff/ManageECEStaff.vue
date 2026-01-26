@@ -24,7 +24,7 @@
         <v-col cols="auto">
           <v-row class="g-2" justify="end">
             <v-col cols="auto">
-              <AppButton size="small" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+              <AppButton size="small" :loading="isLoading" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
             </v-col>
 
             <v-col v-if="!isEditing" cols="auto">

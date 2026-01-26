@@ -119,9 +119,7 @@
         </v-col>
 
         <v-col v-if="resultState.hasResults">
-          <AppButton display="inline" size="small" :disabled="!canAddECE" :loading="isLoading" @click="addECEStaff"
-            >Add ECE</AppButton
-          >
+          <AppButton display="inline" size="small" :disabled="!canAddECE" @click="addECEStaff">Add ECE</AppButton>
         </v-col>
       </v-row>
     </template>
