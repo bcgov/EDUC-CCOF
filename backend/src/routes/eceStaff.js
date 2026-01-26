@@ -31,7 +31,7 @@ router.get(
   //TODO: Add permissions here
   [
     query('registrationNumber').notEmpty().withMessage('[registrationNumber] is required').matches(/^\d+$/),
-    oneOf([query('firstName').optional().notEmpty().isString(), query('lastName').optional().notEmpty().isString()], {
+    oneOf([query('firstName').notEmpty().isString(), query('lastName').notEmpty().isString()], {
       message: 'URL query: [firstName, or lastName] is required',
     }),
   ],

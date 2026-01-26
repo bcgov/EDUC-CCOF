@@ -222,6 +222,7 @@ export default {
         if (!staff.certificates) {
           staff.certificates = await ECEStaffService.getECEStaffCertificates({
             registrationNumber: staff.registrationNumber,
+            lastName: staff.lastName,
           });
         }
         this.selectedStaff = staff;

@@ -30,25 +30,22 @@
       </v-row>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <v-row v-if="resultState.duplicateStaff" class="mb-2">
-          <v-col cols="12" class="text-error">
-            This ECE Staff registration number {{ results[0].registrationNumber }} already exists on this facility. You
-            may edit the existing record.
-          </v-col>
-        </v-row>
+        <p v-if="resultState.duplicateStaff" class="mb-2 text-error">
+          This ECE Staff registration number {{ results[0].registrationNumber }} already exists on this facility. You
+          may edit the existing record.
+        </p>
 
         <v-data-table
           v-if="resultState.hasResults"
-          v-model:expanded="expanded"
           :items="results"
           :headers="headers"
           item-key="registrationNumber"
           hide-default-footer
           class="elevation-2"
         >
-          <template #item.actions="{ item }">
+          <template #item.actions="{ item, isExpanded, toggleExpand }">
             <AppButton size="small" :primary="false" @click="toggleExpand(item)">
-              {{ expanded.includes(item.value) ? 'Hide' : 'View' }}
+              {{ isExpanded(item) ? 'Hide' : 'View' }}
             </AppButton>
           </template>
 
@@ -75,7 +72,7 @@
           <template #expanded-row="{ item, columns }">
             <tr>
               <td :colspan="columns.length" class="pa-0">
-                <v-card class="soft-outline ma-4">
+                <v-card variant="outlined" class="soft-outline ma-4">
                   <v-table density="compact">
                     <thead>
                       <tr>
@@ -108,11 +105,9 @@
           </template>
         </v-data-table>
 
-        <p v-else-if="resultState.noResults" class="mt-2">
-          <v-col cols="12" class="text-error">
-            No ECE found. Please ensure information entered is exactly as it appears on the ECE certificate and try
-            again. If you continue to have issues, please contact the ECE registry at: <strong>1-888-338-6622</strong>
-          </v-col>
+        <p v-else-if="resultState.noResults" class="mt-2 text-error">
+          No ECE found. Please ensure information entered is exactly as it appears on the ECE certificate and try again.
+          If you continue to have issues, please contact the ECE registry at: <strong>1-888-338-6622</strong>
         </p>
       </v-skeleton-loader>
     </template>
@@ -124,7 +119,9 @@
         </v-col>
 
         <v-col v-if="resultState.hasResults">
-          <AppButton display="inline" size="small" :disabled="!canAddECE" @click="addECEStaff">Add ECE</AppButton>
+          <AppButton display="inline" size="small" :disabled="!canAddECE" :loading="isLoading" @click="addECEStaff"
+            >Add ECE</AppButton
+          >
         </v-col>
       </v-row>
     </template>
@@ -152,7 +149,6 @@ export default {
   emits: ['update:modelValue', 'staff-added'],
   data() {
     return {
-      expanded: [],
       isLoading: false,
       isValidForm: false,
       results: [],
@@ -266,11 +262,6 @@ export default {
         this.setFailureAlert('Failed to create ECE Staff.');
         console.error(err);
       }
-    },
-
-    toggleExpand(item) {
-      const key = item.value;
-      this.expanded.includes(key) ? this.expanded.splice(this.expanded.indexOf(key), 1) : this.expanded.push(key);
     },
   },
 };

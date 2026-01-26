@@ -22,7 +22,7 @@ async function getECEStaffCertificates(req, res) {
     const query = { ...req.query };
     ['registrationNumber', 'firstName', 'lastName'].forEach((key) => {
       if (query[key]) {
-        query[key] = `'${query[key]}'`;
+        query[key] = `'${query[key].replace(/'/g, "''")}'`;
       }
     });
     const filterQuery = buildFilterQuery(query, ECECertificateMappings);
