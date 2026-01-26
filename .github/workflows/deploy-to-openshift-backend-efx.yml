@@ -168,7 +168,6 @@ jobs:
               ${{ secrets.SOAM_IDP_HINT_BCEID }} \
               ${{ secrets.SOAM_IDP_HINT_IDIR }} \
               ${{ secrets.SPLUNK_TOKEN }} \
-              ${{ secrets.REDIS_PASSWORD }} \
               ${{ secrets.D365_API_PREFIX }} \
               ${{ secrets.D365_API_KEY_HEADER }} \
               ${{ secrets.D365_API_KEY_VALUE }} \

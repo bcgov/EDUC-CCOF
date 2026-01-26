@@ -9,12 +9,11 @@ readonly SOAM_CLIENT_SECRET=$6
 readonly SOAM_IDP_HINT_BCEID=$7
 readonly SOAM_IDP_HINT_IDIR=$8
 readonly SPLUNK_TOKEN=$9
-readonly REDIS_PASSWORD=${10}
-readonly D365_API_PREFIX=${11}
-readonly D365_API_KEY_HEADER=${12}
-readonly D365_API_KEY_VALUE=${13}
-readonly CANADA_POST_API_ENDPOINT=${14}
-readonly CANADA_POST_API_KEY=${15}
+readonly D365_API_PREFIX=${10}
+readonly D365_API_KEY_HEADER=${11}
+readonly D365_API_KEY_VALUE=${12}
+readonly CANADA_POST_API_ENDPOINT=${13}
+readonly CANADA_POST_API_KEY=${14}
 readonly SOAM_KC_REALM_ID="childcare-applications"
 readonly D365_API_ENDPOINT="http://$D365_API_PREFIX-$ENV_VAL:5091"
 readonly TIMEZONE="America/Vancouver"
@@ -102,7 +101,6 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="REDIS_HOST=redis" \
   --from-literal="REDIS_PORT=6379" \
   --from-literal="REDIS_FACILITY_TTL=600" \
-  --from-literal="REDIS_PASSWORD=$REDIS_PASSWORD" \
   --from-literal="SERVER_FRONTEND=$SERVER_FRONTEND" \
   --from-literal="SERVER_PORT=8080" \
   --from-literal="SITEMINDER_LOGOUT_ENDPOINT=$SITE_MINDER_LOGOUT_URL" \
