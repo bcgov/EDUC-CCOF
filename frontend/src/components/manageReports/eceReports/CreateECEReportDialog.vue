@@ -370,9 +370,9 @@ export default {
         });
         const eceReportId = response?.data;
         await this.createECEStaffInformation(eceReportId);
-        await this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
         this.setSuccessAlert('ECE report created successfully.');
         this.closeDialog();
+        await this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
       } catch (error) {
         this.setFailureAlert('An error occurred while creating ECE report. Please try again later.');
         console.error(error);

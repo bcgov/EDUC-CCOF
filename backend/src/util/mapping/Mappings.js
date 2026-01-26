@@ -912,7 +912,6 @@ const ECEReportMappings = [
 
 const ECEStaffInformationMappings = [
   { back: 'ccof_ece_staff_informationid', front: 'eceStaffInformationId' },
-  // { back: '_ccof_ece_monthly_report_value', front: 'eceReportId' },
   { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },

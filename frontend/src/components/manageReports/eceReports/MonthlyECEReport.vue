@@ -103,6 +103,7 @@
   <ReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="!readonly"
+    :is-save-disabled="!readonly && !isValidForm"
     :is-next-displayed="true"
     :is-next-disabled="!isValidForm"
     @previous="previous"
@@ -243,6 +244,7 @@ export default {
       );
       const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
       await ECEReportService.updateECEStaffInformation(payload);
+      this.originalReportECEStaff = deepCloneObject(this.reportECEStaff);
     },
   },
 };

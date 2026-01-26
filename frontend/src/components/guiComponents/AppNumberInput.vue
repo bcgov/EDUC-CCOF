@@ -1,10 +1,11 @@
 <template>
   <v-text-field
+    v-bind="$attrs"
     v-model="inputValue"
     :inputmode="decimal ? 'decimal' : 'numeric'"
-    variant="plain"
-    density="compact"
-    hide-details="auto"
+    :variant="$attrs.variant ?? 'plain'"
+    :density="$attrs.density ?? 'compact'"
+    :hide-details="$attrs['hide-details'] ?? 'auto'"
     @beforeinput="handleBeforeInput"
     @blur="handleBlur"
   />
@@ -15,6 +16,7 @@ import { formatDecimalNumber } from '@/utils/format';
 
 export default {
   name: 'AppNumberInput',
+  inheritAttrs: false,
   props: {
     modelValue: {
       type: [String, Number],
