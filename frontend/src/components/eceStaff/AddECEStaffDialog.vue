@@ -263,7 +263,7 @@ export default {
         this.setSuccessAlert('ECE Staff record has been added');
         this.closeDialog();
       } catch (err) {
-        this.setFailureAlert('Failed to create ECE Staff:.');
+        this.setFailureAlert('Failed to create ECE Staff.');
         console.error(err);
       }
     },
