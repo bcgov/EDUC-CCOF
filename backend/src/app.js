@@ -253,7 +253,7 @@ const limiter = rateLimit({
   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  store: dbSession.client.isReady ? new RateLimitRedis({ sendCommand: (...args) => dbSession.client.call(...args) }) : undefined,
+  store: Redis.isReady ? new RateLimitRedis({ sendCommand: (...args) => Redis.client.call(...args) }) : undefined,
 });
 app.use('/api/canadaPost', limiter);
 

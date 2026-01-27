@@ -61,7 +61,13 @@ const fundingModelType = [
 ];
 
 async function getLicenseCategory() {
-  let resData = await Redis.client.json.get('licenseCategories');
+  let resData;
+  try {
+    resData = await Redis.client.json.get('licenseCategories');
+  } catch (e) {
+    log.error('Unable to retrieve the licenseCategories from Redis', e);
+  }
+
   if (!resData) {
     resData = {};
     let licenseCategory = await getOperation('ccof_license_categories');
@@ -134,7 +140,13 @@ async function getLookupInfo(_req, res) {
    * 3 - Future
    * 4 - Historical
    */
-  let resData = await Redis.client.json.get('lookups');
+  let resData;
+  try {
+    resData = await Redis.client.json.get('lookups');
+  } catch (e) {
+    console.error('Could not get the lookup data from Redis', e);
+  }
+
   if (!resData) {
     const programYears = await getProgramYear();
 
@@ -163,7 +175,13 @@ async function getLookupInfo(_req, res) {
 }
 
 async function getSystemMessages(_req, res) {
-  let systemMessages = await Redis.client.json.get('systemMessages');
+  let systemMessages;
+  try {
+    systemMessages = await Redis.client.json.get('systemMessages');
+  } catch (e) {
+    console.error('Could not retrieve the systemMessages from Redis', e);
+  }
+
   if (!systemMessages) {
     const currentTime = new Date().toISOString();
     systemMessages = [];
@@ -190,7 +208,13 @@ async function getGlobalOptionsData(operationName) {
 }
 
 async function getRoles() {
-  let roles = await Redis.client.json.get('roles');
+  let roles;
+  try {
+    roles = await Redis.client.json.get('roles');
+  } catch (e) {
+    console.error('Could not retrieve roles data from Redis', e);
+  }
+
   if (!roles) {
     roles = [];
     const response = await getOperation(

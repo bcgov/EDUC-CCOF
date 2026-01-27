@@ -15,10 +15,7 @@ const REDIS_MAP = 'postalQueries';
   The documentation of the Canada Post's AddressComplete API: https://www.canadapost-postescanada.ca/ac/support/api/
 */
 async function findAddresses(req, res) {
-  const jsonInitialized = await Redis.client.exists(REDIS_MAP);
-  if (!jsonInitialized) {
-    await Redis.client.json.set(REDIS_MAP, '$', {});
-  }
+  await Redis.client.json.set(REDIS_MAP, '$', {}, { condition: 'NX' });
 
   try {
     let url = `${config.get('canadaPostApi:apiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;

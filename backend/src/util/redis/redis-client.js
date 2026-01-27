@@ -16,7 +16,10 @@ class Redis {
   }
 
   static get isReady() {
-    return Redis.clustered ? Redis.client.isOpen : Redis.client.isReady;
+    if (Redis.client) {
+      return Redis.clustered ? Redis.client.isOpen : Redis.client.isReady;
+    }
+    return false;
   }
 
   static get clustered() {
@@ -36,40 +39,44 @@ class Redis {
   }
 
   static async init() {
-    if (Redis.clustered) {
-      log.info('using CLUSTERED Redis implementation');
-      Redis.client = createCluster({
-        rootNodes: [
-          {
-            url: Redis.rootNode,
-          },
-        ],
+    if (!Redis.client) {
+      if (Redis.clustered) {
+        log.info('using CLUSTERED Redis implementation');
+        Redis.client = createCluster({
+          rootNodes: [
+            {
+              url: Redis.rootNode,
+            },
+          ],
+        });
+      } else {
+        log.info('using STANDALONE Redis implementation');
+        Redis.client = createClient({ url: Redis.rootNode });
+      }
+
+      Redis.client.on('error', (error) => {
+        log.error(`Error occurred in Redis client. ${error}`);
       });
+
+      Redis.client.on('end', () => {
+        log.info('Redis client closed.');
+      });
+
+      Redis.client.on('ready', () => {
+        log.info('Redis Ready.');
+      });
+
+      Redis.client.on('connect', () => {
+        log.info('Connected to Redis.');
+      });
+
+      process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
+      process.on('SIGINT', () => Redis.shutdown('SIGINT'));
+
+      await Redis.client.connect();
     } else {
-      log.info('using STANDALONE Redis implementation');
-      Redis.client = new createClient({ url: Redis.rootNode });
+      log.warning('Redis.init() called after it was already initialized');
     }
-
-    Redis.client.on('error', (error) => {
-      log.error(`Error occurred in Redis client. ${error}`);
-    });
-
-    Redis.client.on('end', () => {
-      log.info('Redis client closed.');
-    });
-
-    Redis.client.on('ready', () => {
-      log.info('Redis Ready.');
-    });
-
-    Redis.client.on('connect', () => {
-      log.info('Connected to Redis.');
-    });
-
-    process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
-    process.on('SIGINT', () => Redis.shutdown('SIGINT'));
-
-    await Redis.client.connect();
   }
 }
 module.exports = Redis;
