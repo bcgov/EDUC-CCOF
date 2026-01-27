@@ -1,6 +1,6 @@
 {
   "orgData": {
-    "typeOfOrganization": "Non-Profit Society",
+    "typeOfOrganization": "Registered Company",
     "_optionsTypeOfOrganization": {
       "nonProfitSociety": "Non-Profit Society",
       "publicInstitute": "Public Institution (college/university)",
@@ -49,11 +49,7 @@
         "fullyClosed": "Yes",
         "notFullyClosed": "No"
       },
-      "closedMonths": [
-        "January",
-        "September",
-        "December"
-      ],
+      "closedMonths": ["January", "September", "December"],
       "_optionsClosedMonths": [
         "January",
         "February",
@@ -68,10 +64,7 @@
         "November",
         "December"
       ],
-      "closedMonthsOld": [
-        "Feb",
-        "Mar"
-      ],
+      "closedMonthsOld": ["Feb", "Mar"],
       "_optionsClosedMonthsOld": [
         "Jan",
         "Feb",

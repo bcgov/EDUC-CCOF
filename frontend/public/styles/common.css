@@ -294,6 +294,10 @@ ol.declarationBList {
   border: 1px solid #00000040;
 }
 
+.min-height-screen {
+  min-height: calc(100vh - 242px) !important;
+}
+
 /* Styles for input boxes used in Manage Organization/Facilities */
 .less-jitter input {
   padding-top: 0;

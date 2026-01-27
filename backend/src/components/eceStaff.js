@@ -1,9 +1,8 @@
 'use strict';
 
-const { getOperation, patchOperationWithObjectId } = require('./utils');
+const { buildFilterQuery, getOperation, patchOperationWithObjectId, postOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
-const { buildFilterQuery } = require('./utils');
 const { ECEStaffMappings, ECECertificateMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
@@ -20,8 +19,14 @@ async function getECEStaff(req, res) {
 
 async function getECEStaffCertificates(req, res) {
   try {
-    const { registrationNumber } = req.query;
-    const certResponse = await getOperation(`ofm_employee_certificates?$filter=ofm_certificate_number eq '${registrationNumber}'`);
+    const query = { ...req.query };
+    ['registrationNumber', 'firstName', 'lastName'].forEach((key) => {
+      if (query[key]) {
+        query[key] = `'${query[key].replace(/'/g, "''")}'`;
+      }
+    });
+    const filterQuery = buildFilterQuery(query, ECECertificateMappings);
+    const certResponse = await getOperation(`ofm_employee_certificates?${filterQuery}`);
     const certificates = certResponse?.value?.map((cert) => new MappableObjectForFront(cert, ECECertificateMappings).toJSON());
     return res.status(HttpStatus.OK).json(certificates);
   } catch (e) {
@@ -45,4 +50,17 @@ async function updateECEStaff(req, res) {
   }
 }
 
-module.exports = { getECEStaff, getECEStaffCertificates, updateECEStaff };
+async function createECEStaff(req, res) {
+  try {
+    const eceStaffPayload = new MappableObjectForBack(req.body, ECEStaffMappings).toJSON();
+    eceStaffPayload['ccof_facility_id@odata.bind'] = `/accounts(${req.body.facilityId})`;
+    delete eceStaffPayload._ccof_facility_id_value;
+    await postOperation('ccof_ece_provider_employees', eceStaffPayload);
+    return res.status(HttpStatus.CREATED).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+module.exports = { createECEStaff, getECEStaff, getECEStaffCertificates, updateECEStaff };

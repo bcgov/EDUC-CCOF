@@ -38,7 +38,7 @@
     </template>
   </v-container>
   <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
-  <EnrolmentReportNavButtons
+  <ReportNavButtons
     :loading="loading || processing"
     :is-submit-displayed="isSubmitDisplayed"
     :is-submit-disabled="isSubmitDisabled"
@@ -122,9 +122,5 @@ export default {
 
 .declaration-content li {
   margin-bottom: 16px;
-}
-
-.min-height-screen {
-  min-height: 70vh;
 }
 </style>
