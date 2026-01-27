@@ -13,6 +13,7 @@
 
 <script>
 import { formatDecimalNumber } from '@/utils/format';
+import { parseNumber } from '@/utils/common.js';
 
 export default {
   name: 'AppNumberInput',
@@ -116,8 +117,7 @@ export default {
     },
 
     handleBlur() {
-      const numberValue =
-        this.internalValue == null || this.internalValue === '' ? Number.NaN : Number(this.internalValue);
+      const numberValue = parseNumber(this.internalValue);
       if (Number.isNaN(numberValue)) {
         this.internalValue = this.defaultString;
         this.$emit('update:modelValue', this.defaultValue);
@@ -125,7 +125,7 @@ export default {
       }
       const formatted = this.format(numberValue);
       this.internalValue = formatted;
-      this.$emit('update:modelValue', Number(formatted));
+      this.$emit('update:modelValue', parseNumber(formatted)); // Emit as number to enforce 2 decimal places
     },
   },
 };

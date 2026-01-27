@@ -482,3 +482,19 @@ export function getStatusText(statusCode, options = []) {
   const status = options.find((option) => option.value === statusCode);
   return status?.label ?? '';
 }
+
+/**
+ * Parses a value into a number.
+ *
+ * - Returns the value directly if it is already a number
+ * - Converts formatted numeric strings (e.g. "1,234") into a number
+ * - Returns NaN for null, undefined, or empty values
+ *
+ * @param {string|number|null|undefined} value - The value to be parsed.
+ * @returns {number} The parsed number, or NaN if the value cannot be parsed.
+ */
+export function parseNumber(value) {
+  if (value == null || value === '') return Number.NaN;
+  if (typeof value === 'number') return value;
+  return Number(String(value).replace(/,/g, ''));
+}
