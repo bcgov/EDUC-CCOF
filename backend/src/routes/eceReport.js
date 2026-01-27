@@ -4,8 +4,8 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { createECEReport, getECEReport, getECEReports } = require('../components/eceReport');
-const { checkSchema, param, query, validationResult } = require('express-validator');
+const { createECEReport, createECEStaffInformation, getECEReport, getECEReports, updateECEStaffInformation } = require('../components/eceReport');
+const { body, checkSchema, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
   organizationId: {
@@ -53,6 +53,47 @@ const createECEReportSchema = {
   },
 };
 
+const createECEStaffInformationSchema = {
+  '*.eceStaffId': {
+    in: ['body'],
+    exists: { errorMessage: '[eceStaffId] is required' },
+    isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[eceStaffId] must be a valid UUID' },
+  },
+  '*.eceReportId': {
+    in: ['body'],
+    exists: { errorMessage: '[eceReportId] is required' },
+    isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[eceReportId] must be a valid UUID' },
+  },
+  '*.hourlyWage': {
+    in: ['body'],
+    exists: {
+      errorMessage: '[hourlyWage] is required',
+    },
+    isFloat: {
+      options: { min: 1, max: 1000 },
+      errorMessage: '[hourlyWage] must be a number between 1 and 1000',
+    },
+  },
+};
+
+const updateECEStaffInformationSchema = {
+  '*.eceStaffInformationId': {
+    in: ['body'],
+    exists: { errorMessage: '[eceStaffInformationId] is required' },
+    isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[eceStaffInformationId] must be a valid UUID' },
+  },
+  '*.totalHoursWorked': {
+    in: ['body'],
+    exists: {
+      errorMessage: '[totalHoursWorked] is required',
+    },
+    isFloat: {
+      options: { min: 0, max: 195 },
+      errorMessage: '[totalHoursWorked] must be a number between 0 and 195',
+    },
+  },
+};
+
 // TODO: Implement ECE Reports permission
 router.get(
   '/',
@@ -85,5 +126,32 @@ router.post('/', passport.authenticate('jwt', { session: false }), isValidBacken
   validationResult(req).throw();
   return createECEReport(req, res);
 });
+
+// TODO: Implement ECE Reports permission
+router.post(
+  '/:eceReportId/staff-information',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
+  checkSchema(createECEStaffInformationSchema),
+  (req, res) => {
+    validationResult(req).throw();
+    return createECEStaffInformation(req, res);
+  },
+);
+
+router.patch(
+  '/staff-information/bulk',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  //TODO: Add permissions here
+  body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
+  checkSchema(updateECEStaffInformationSchema),
+  (req, res) => {
+    validationResult(req).throw();
+    return updateECEStaffInformation(req, res);
+  },
+);
 
 module.exports = router;
