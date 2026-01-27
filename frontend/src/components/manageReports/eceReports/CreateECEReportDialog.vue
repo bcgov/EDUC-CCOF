@@ -304,7 +304,7 @@ export default {
       const existingReportMonths = new Set(
         this.eceReports.filter((report) => report.facilityId === facilityId).map((report) => report.month),
       );
-      const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-01` : null;
+      const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-31` : null;
       const paymentEligibilityStartDate = eceweFacility.paymentEligibilityStartDate
         ? `${eceweFacility.paymentEligibilityStartDate}-01`
         : null;
