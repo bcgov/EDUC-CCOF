@@ -5,27 +5,27 @@
       <v-card-title class="rounded-t-lg py-3 card-title font-weight-bold"> Summary </v-card-title>
       <v-row no-gutters class="px-4 pb-2">
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Facility</p>
+          <p class="font-weight-bold">Facility Name</p>
           <p>{{ facility?.facilityName }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Organization Facility ID</p>
+          <p class="font-weight-bold">Facility ID</p>
           <p>{{ facility?.facilityAccountNumber }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Licence #</p>
+          <p class="font-weight-bold">Licence Number</p>
           <p>{{ facility?.licenseNumber }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Public sector employer</p>
+          <p class="font-weight-bold">Public Sector Employer</p>
           <p>{{ getYesNoValue(eceReport?.publicSectorEmployer) }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Reporting month</p>
+          <p class="font-weight-bold">Reporting Month</p>
           <p>{{ formatMonthYearToString(eceReport?.month, eceReport?.year) }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Version number</p>
+          <p class="font-weight-bold">Version Number</p>
           <p>{{ eceReport?.versionText }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
@@ -33,7 +33,7 @@
           <p>{{ reportStatus }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Submitted date</p>
+          <p class="font-weight-bold">Submitted Date</p>
           <p>{{ formatUTCDate(eceReport?.submittedDate) ?? 'N/A' }}</p>
         </v-col>
       </v-row>
