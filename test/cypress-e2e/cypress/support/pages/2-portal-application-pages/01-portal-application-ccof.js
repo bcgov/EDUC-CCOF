@@ -349,15 +349,17 @@ class CcofApplication {
       })
     }
 
-    cy.contains('div', 'Is the facility located on school property?').within(
-      () => {
-        cy.getByLabel('Yes').click()
-      },
-    );
-  
-    cy.clickByText('Save')
-    cy.contains('Application saved successfully.').should('be.visible')
-    cy.clickByText('Next')
+    if (appType === "group") {
+      cy.contains("div", "Is the facility located on school property?").within(
+        () => {
+          cy.getByLabel("Yes").click();
+        },
+      );
+    }
+
+    cy.clickByText("Save");
+    cy.contains("Application saved successfully.").should("be.visible");
+    cy.clickByText("Next");
   }
 
   // NOTE: Currently only setup for Template 1

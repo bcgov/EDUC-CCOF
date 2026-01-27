@@ -194,16 +194,20 @@ Cypress.Commands.add("startNewRenewalApp", () => {
   cy.clickByText("Next");
 });
 
-Cypress.Commands.add("startAddNewFacilityCR", () => {
+Cypress.Commands.add("startChangeRequest", (changeType) => {
   cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
   cy.contains("What would you like to do?").should("be.visible");
   cy.contains("Request a change").clickByText("Request a change");
   cy.contains("Child Care Operating Funding Program");
   cy.url().should("include", `/change/landing#change-request-history`);
-  cy.contains("Add a new facility to an existing organization").should(
-    "be.visible"
-  );
-  cy.contains("Add new facility").clickByText("Add new facility");
+  
+  if (changeType === "addNewFacility") {
+    cy.contains("Add a new facility to an existing organization").should("be.visible");
+    cy.contains("Add new facility").clickByText("Add new facility");
+  } else if (changeType === "reportLicenceChange") {
+    cy.contains("Report changes to your Licence or service").should("be.visible");
+    cy.contains("Upload a Change Notification Form ").clickByText("Upload a Change Notification Form ");
+  }
 });
 
 /*

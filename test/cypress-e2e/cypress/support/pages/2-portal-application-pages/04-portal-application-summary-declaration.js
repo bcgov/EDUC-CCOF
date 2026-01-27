@@ -1,20 +1,20 @@
 class SubmitApplication {
-  summaryAndDeclaration(appType) {
+  summaryAndDeclaration(appType, changeRequestType = null) {
     cy.url().should("include", "/summary-declaration");
 
     // Submit App
     cy.contains("Summary and Declaration").should("be.visible");
     if (appType.includes("Renewal")) {
       cy.getByLabel(
-        "I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief."
+        "I do hereby certify that I am the authorized signing authority and that all of the information provided is true and complete to the best of my knowledge and belief.",
       ).click();
     } else {
       cy.getByLabel(
-        "I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
+        "I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions.",
       ).click();
     }
     cy.getByLabel(
-      "Your Organization's Authorized Signing Authority"
+      "Your Organization's Authorized Signing Authority",
     ).typeAndAssert("Luffy");
     cy.clickByText("Submit");
     cy.contains("Submission Complete");
@@ -25,15 +25,27 @@ class SubmitApplication {
     const isChangeRequest = appType.includes("ChangeRequest");
 
     if (isChangeRequest) {
+      // Common navigation for all change requests
       cy.clickByText("Request a change");
       cy.contains("Child Care Operating Funding Program");
       cy.url().should("include", `/change/landing#change-request-history`);
-      cy.get(".v-data-table tbody tr")
-        .first()
-        .within(() => {
-          cy.get("td").eq(0).should("contain", "Add new facility(s)");
-          cy.get("td").eq(3).should("contain", "Submitted");
-        });
+
+      // Validate based on change request type
+      if (changeRequestType === "AddNewFacility") {
+        cy.get(".v-data-table tbody tr")
+          .first()
+          .within(() => {
+            cy.get("td").eq(0).should("contain", "Add new facility(s)");
+            cy.get("td").eq(3).should("contain", "Submitted");
+          });
+      } else if (changeRequestType === "ReportOtherChanges") {
+        cy.get(".v-data-table tbody tr")
+          .first()
+          .within(() => {
+            cy.get("td").eq(0).should("contain", "Report other changes");
+            cy.get("td").eq(3).should("contain", "Submitted");
+          });
+      }
     } else if (isRenewal) {
       cy.contains("Renew my Funding Agreement").wrap(() => {
         cy.get(".smallCardDisabled").should("exist");
@@ -41,14 +53,14 @@ class SubmitApplication {
     } else {
       cy.contains(
         ".v-card",
-        "Apply for Child Care Operating Funding (CCOF) including:"
+        "Apply for Child Care Operating Funding (CCOF) including:",
       ).should("contain", "Status: Submitted");
       cy.contains(
         ".v-card",
-        "Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED"
+        "Child Care Fee Reduction Initiative (CCFRI) Status: SUBMITTED",
       ).should(
         "contain",
-        "Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED"
+        "Early Childhood Educator Wage Enhancement (ECE-WE) Status: SUBMITTED",
       );
     }
     cy.contains(Cypress.env("PORTAL_USERNAME")).click();
