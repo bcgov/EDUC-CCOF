@@ -470,3 +470,15 @@ export function getECECertStatusClass(status) {
     return 'status-red';
   }
 }
+
+/**
+ * Returns the display label for a given status code based on the provided options.
+ *
+ * @param {string|number} statusCode - The status value to look up.
+ * @param {Array<{ value: string|number, label: string }>} options - List of available status options.
+ * @returns {string} The matching status label, or an empty string if not found.
+ */
+export function getStatusText(statusCode, options = []) {
+  const status = options.find((option) => option.value === statusCode);
+  return status?.label ?? '';
+}

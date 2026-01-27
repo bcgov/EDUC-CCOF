@@ -906,8 +906,9 @@ const ECEReportMappings = [
   { back: 'ccof_year', front: 'year' },
   { back: 'ccof_report_type', front: 'reportType' },
   { back: 'ccof_version', front: 'version' },
+  { back: 'ccof_public_sector_employee', front: 'publicSectorEmployer' },
+  { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'statuscode', front: 'statusCode' },
-  { back: 'statuscode@OData.Community.Display.V1.FormattedValue', front: 'statusText' },
 ];
 
 const ECEStaffInformationMappings = [
