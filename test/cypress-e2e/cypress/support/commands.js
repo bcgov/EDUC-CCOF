@@ -33,6 +33,7 @@
 import { ccofApp } from './pages/2-portal-application-pages/01-portal-application-ccof.js'
 import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
 import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
+import { reportMtfiChange } from "../../support/pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js"
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   'textarea',
@@ -207,6 +208,12 @@ Cypress.Commands.add("startChangeRequest", (changeType) => {
   } else if (changeType === "reportLicenceChange") {
     cy.contains("Report changes to your Licence or service").should("be.visible");
     cy.contains("Upload a Change Notification Form ").clickByText("Upload a Change Notification Form ");
+  }
+   else if (changeType === "mtfi") {
+    cy.contains("Mid-Term Fee Increase (MTFI)").should("be.visible");
+    cy.contains("Request change to parent fees").clickByText(
+      "Request change to parent fees",
+    );
   }
 });
 
@@ -407,6 +414,13 @@ Cypress.Commands.add('runEceWeApp', (appType, term, files = []) => {
       eceWeApp.groupEceWe(appType, files);
     }
     eceWeApp.supportingDocUpload();
+  });
+});
+
+Cypress.Commands.add("runMtfiChangeRequest", (appType, file) => {
+  reportMtfiChange.loadFixturesAndVariables(file);
+  cy.then(() => {
+    reportMtfiChange.enterFeeDataFacilities(file, appType);
   });
 });
 
