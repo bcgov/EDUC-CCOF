@@ -1,0 +1,111 @@
+<template>
+  <v-container fluid class="px-8 px-xl-12 pt-0 mb-12">
+    <div v-if="loading" class="text-center">
+      <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
+    </div>
+    <template v-else>
+      <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+      <v-card variant="outlined" class="px-8 px-md-12 py-6 mt-4">
+        <h2 class="text-center mb-6">Declaration and Submission</h2>
+        <div class="declaration-content px-md-4 px-xl-12 pb-2">
+          <p>By submitting this Monthly ECE Report, I confirm that:</p>
+          <ul class="ml-8">
+            <li>The information provided in this report is true, accurate and complete to the best of my knowledge;</li>
+            <li>I am authorized to submit Monthly ECE Reports for this facility;</li>
+            <li>
+              I understand that the Ministry relies on the content of these reports for its decision to disburse funds
+              to this organization;
+            </li>
+            <li>
+              ECEs submitted on this report are ECE Employees (as defined in the CCOF Funding Agreement) at this
+              facility;
+            </li>
+            <li>
+              ECEs submitted on this report have signed a written acknowledgement authorizing this facility to collect
+              and disclose to the Ministry the ECE Employee's personal information and confirming their knowledge that
+              the Ministry may contact them directly to verify any information this facility provides to the Ministry
+              and that the ECE Wage Enhancement Funding is distributed as required by the CCOF Funding Agreement;
+            </li>
+            <li>
+              The report accurately represents the Hours Worked (as defined in the CCOF Funding Agreement) by ECE
+              Employees at this facility; and
+            </li>
+            <li>
+              I keep accurate records of each ECE Employee's signed written acknowledgement and the Hours Worked by, and
+              payments distributed to, ECE Employees.
+            </li>
+          </ul>
+        </div>
+      </v-card>
+    </template>
+  </v-container>
+  <!-- TODO (vietle-cgi): Implement Submit ECE report -->
+  <ReportNavButtons
+    :loading="loading"
+    :is-submit-displayed="true"
+    :is-submit-disabled="isSubmitDisabled"
+    @previous="previous"
+    @submit="setWarningAlert('Submit functionality is not yet implemented.')"
+  />
+</template>
+
+<script>
+import { mapState } from 'pinia';
+import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
+import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
+import alertMixin from '@/mixins/alertMixin.js';
+import ECEReportService from '@/services/eceReportService.js';
+import { useAuthStore } from '@/store/auth.js';
+import { PATHS } from '@/utils/constants.js';
+import { isReportReadOnly } from '@/utils/eceReport.js';
+
+export default {
+  name: 'MonthlyECEReportDeclaration',
+  components: {
+    MonthlyECEReportHeader,
+    ReportNavButtons,
+  },
+  mixins: [alertMixin],
+  data() {
+    return {
+      eceReport: null,
+      loading: false,
+    };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isMinistryUser']),
+    isSubmitDisabled() {
+      return isReportReadOnly({ loading: this.loading, eceReport: this.eceReport }) || this.isMinistryUser;
+    },
+  },
+  async created() {
+    window.scrollTo(0, 0);
+    await this.loadData();
+  },
+  methods: {
+    async loadData() {
+      try {
+        this.loading = true;
+        this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('Failed to load ECE report');
+      } finally {
+        this.loading = false;
+      }
+    },
+    previous() {
+      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.$route.params.eceReportId}`);
+    },
+  },
+};
+</script>
+<style scoped>
+.declaration-content p {
+  margin-bottom: 16px;
+}
+
+.declaration-content li {
+  margin-bottom: 16px;
+}
+</style>
