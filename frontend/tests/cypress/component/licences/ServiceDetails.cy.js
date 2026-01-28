@@ -4,7 +4,7 @@ import { LICENCE_STATUSES } from '@/utils/constants.js';
 
 const SERVICE_DELIVERY_DETAIL = {
   licenceCategory: 'preschool',
-  licencedSpaces: 12,
+  maxCapacity: 12,
   preschoolSessions: 22,
   beforeSchoolCare: 1,
   afterSchoolCare: 1,
@@ -59,7 +59,7 @@ describe('<ServiceDetails />', () => {
 
     cy.contains('Maximum Capacity by Care Type:')
       .siblings('span')
-      .should('include.text', SERVICE_DELIVERY_DETAIL.licencedSpaces);
+      .should('include.text', SERVICE_DELIVERY_DETAIL.maxCapacity);
 
     cy.contains('Max number of days per week you provide child care:')
       .siblings('span')

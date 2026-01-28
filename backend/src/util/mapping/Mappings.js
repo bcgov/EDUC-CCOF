@@ -830,7 +830,7 @@ const LicenceMappings = [
 const ServiceDeliveryMappings = [
   { back: '_ccof_license_categories_lookup_value@OData.Community.Display.V1.FormattedValue', front: 'licenceCategory' },
   { back: 'ccof_care_type@OData.Community.Display.V1.FormattedValue', front: 'capacityByCareType' },
-  { back: 'ccof_licenced_spaces', front: 'licencedSpaces' },
+  { back: 'ccof_max_capacity', front: 'maxCapacity' },
 
   { back: 'ccof_max_4_or_less', front: 'maxfourorLess' },
   { back: 'ccof_max_over_4', front: 'maxoverFour' },
