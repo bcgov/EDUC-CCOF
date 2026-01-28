@@ -244,3 +244,13 @@ export function formatFirstDateOfMonth(month, year) {
 export function formatYearMonthYYYYMM(year, month) {
   return `${year}-${padString(month, 2, '0')}`;
 }
+
+/**
+ * Formats personal names correctly:
+ * - Capitalizes each part
+ * - Preserves spaces and hyphens
+ **/
+export function formatName(value) {
+  if (!value) return '';
+  return value.toLowerCase().replace(/(^|[\s\-'\u2019])\S/g, (match) => match.toUpperCase());
+}
