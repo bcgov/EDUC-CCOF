@@ -24,11 +24,11 @@ async function findAddresses(req, res) {
       try {
         const cachedSearchResult = await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` });
         if (!isEmpty(cachedSearchResult)) {
-          log.info(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
+          log.verbose(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
           return res.status(HttpStatus.OK).json(cachedSearchResult);
         }
       } catch {
-        log.info('Unable to find cached search term');
+        log.verbose('Unable to find cached search term');
       }
       url += `&SearchTerm=${req.query.searchTerm}`;
     }
@@ -46,7 +46,7 @@ async function findAddresses(req, res) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
       Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
     }
-    log.info(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
+    log.verbose(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
     log.error(e);

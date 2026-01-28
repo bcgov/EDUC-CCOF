@@ -144,7 +144,7 @@ async function getLookupInfo(_req, res) {
   try {
     resData = await Redis.client.json.get('lookups');
   } catch (e) {
-    console.error('Could not get the lookup data from Redis', e);
+    log.error('Could not get the lookup data from Redis', e);
   }
 
   if (!resData) {
@@ -179,7 +179,7 @@ async function getSystemMessages(_req, res) {
   try {
     systemMessages = await Redis.client.json.get('systemMessages');
   } catch (e) {
-    console.error('Could not retrieve the systemMessages from Redis', e);
+    log.error('Could not retrieve the systemMessages from Redis', e);
   }
 
   if (!systemMessages) {
@@ -212,7 +212,7 @@ async function getRoles() {
   try {
     roles = await Redis.client.json.get('roles');
   } catch (e) {
-    console.error('Could not retrieve roles data from Redis', e);
+    log.error('Could not retrieve roles data from Redis', e);
   }
 
   if (!roles) {
