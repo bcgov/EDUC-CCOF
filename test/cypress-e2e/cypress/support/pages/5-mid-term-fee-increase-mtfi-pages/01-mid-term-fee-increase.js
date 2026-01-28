@@ -10,29 +10,33 @@ class ChangeRequestMtfi {
     this.loadFixtures(file);
   }
 
-  enterFeeDataFacilities(files) {
+  enterFeeDataFacilities(files, appType = "group") {
     cy.url().should("contain", "/mtfi/mtfi-instructions");
     cy.contains("div", "Welcome to CCOF!").should("be.visible");
     cy.contains("button", "Next").should("have.class", "blueButton");
     cy.clickByText("Next");
-    cy.url().should("contain", "/mtfi-select-facility");
-    cy.contains(
-      "div",
-      "Please select which facility you would like to update",
-    ).should("be.visible");
 
-    // Click the checkbox to select facility
-    cy.contains(".v-card", this.facilityName).within(() => {
-      cy.get('input[type="checkbox"][id^="checkbox-"]')
-        .first()
-        .check({ force: true });
-    });
+    // Facility selection is only for group applications
+    if (appType === "group" || appType === "groupOld") {
+      cy.url().should("contain", "/mtfi-select-facility");
+      cy.contains(
+        "div",
+        "Please select which facility you would like to update",
+      ).should("be.visible");
 
-    cy.contains("button", "Next").should("have.class", "blueButton");
-    cy.clickByText("Next");
+      // Click the checkbox to select facility
+      cy.contains(".v-card", this.facilityName).within(() => {
+        cy.get('input[type="checkbox"][id^="checkbox-"]')
+          .first()
+          .check({ force: true });
+      });
 
-    // Verify facility name is visible on the page
-    cy.contains(this.facilityName).should("be.visible");
+      cy.contains("button", "Next").should("have.class", "blueButton");
+      cy.clickByText("Next");
+    }
+
+    // Verify facility name is on the page
+    cy.contains(this.facilityName);
 
     // Click "Auto-fill approved parent fees" button for all parent fee cards
     cy.get('button:contains("Auto-fill approved parent fees")').each(($btn) => {

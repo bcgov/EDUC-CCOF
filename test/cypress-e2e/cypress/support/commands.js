@@ -440,10 +440,10 @@ Cypress.Commands.add("runEceWeApp", (appType, term, files = []) => {
   });
 });
 
-Cypress.Commands.add("runMtfiChangeRequest", (file) => {
+Cypress.Commands.add("runMtfiChangeRequest", (appType, file) => {
   reportMtfiChange.loadFixturesAndVariables(file);
   cy.then(() => {
-    reportMtfiChange.enterFeeDataFacilities();
+    reportMtfiChange.enterFeeDataFacilities(file, appType);
   });
 });
 
