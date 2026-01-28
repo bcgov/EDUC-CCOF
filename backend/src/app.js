@@ -247,14 +247,25 @@ utils.getOidcDiscovery().then((discovery) => {
 passport.serializeUser((user, next) => next(null, user));
 passport.deserializeUser((obj, next) => next(null, obj));
 
+const createRateLimitRedisConfig = () => {
+  if (Redis.isReady) return;
+  if (Redis.clustered) {
+    return {
+      sendCommandCluster: ({ key, isReadOnly, command }) => Redis.client.sendCommand(key, isReadOnly, command),
+    };
+  }
+  return { sendCommand: (...args) => Redis.client.sendCommand(args) };
+};
+
 // Setup Rate limit for the number of frontend requests allowed per windowMs to avoid DDOS attack
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  store: Redis.isReady ? new RateLimitRedis({ sendCommand: (...args) => Redis.client.sendCommand(...args) }) : undefined,
+  store: new RateLimitRedis(createRateLimitRedisConfig()),
 });
+
 app.use('/api/canadaPost', limiter);
 
 app.use(morgan(config.get('server:morganFormat'), { stream: logStream }));
