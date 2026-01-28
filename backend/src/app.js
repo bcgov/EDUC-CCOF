@@ -255,7 +255,7 @@ const limiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   store: Redis.isReady ? new RateLimitRedis({ sendCommand: (...args) => Redis.client.sendCommand(args) }) : undefined,
 });
-app.use('/api/canadaPost', limiter);
+// app.use('/api/canadaPost', limiter);
 
 app.use(morgan(config.get('server:morganFormat'), { stream: logStream }));
 //set up routing to auth and main API
