@@ -108,7 +108,7 @@ export default {
         { title: 'Funding Agreement Term', sortable: true, value: 'fundingAgreementTerm' },
         { title: 'Funding Agreement Number', sortable: true, value: 'fundingAgreementNumber' },
         { title: 'Status', sortable: true, value: 'externalStatusText' },
-        { title: 'Actions', sortable: false, value: 'actions', width: '200px' },
+        { title: 'Actions', sortable: false, value: 'actions', width: '210px' },
         { title: 'Effective Date', sortable: true, value: 'fundingAgreementStartDate' },
         { title: 'End Date', sortable: true, value: 'endDate' },
       ],
