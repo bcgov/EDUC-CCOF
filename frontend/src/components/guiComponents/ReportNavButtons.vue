@@ -33,7 +33,7 @@
 import AppButton from '@/components/guiComponents/AppButton.vue';
 
 export default {
-  name: 'EnrolmentReportNavButtons',
+  name: 'ReportNavButtons',
   components: {
     AppButton,
   },

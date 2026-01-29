@@ -44,6 +44,7 @@ import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgre
 import ManageReports from '@/components/manageReports/ManageReports.vue';
 import ManageECEReports from '@/components/manageReports/eceReports/ManageECEReports.vue';
 import MonthlyECEReport from '@/components/manageReports/eceReports/MonthlyECEReport.vue';
+import MonthlyECEReportDeclaration from '@/components/manageReports/eceReports/MonthlyECEReportDeclaration.vue';
 import EnrolmentReportDeclaration from '@/components/manageReports/enrolmentReports/EnrolmentReportDeclaration.vue';
 import EnrolmentReportForm from '@/components/manageReports/enrolmentReports/EnrolmentReportForm.vue';
 import ViewEnrolmentReports from '@/components/manageReports/enrolmentReports/ViewEnrolmentReports.vue';
@@ -1034,6 +1035,14 @@ const router = createRouter({
       path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/:eceReportId`,
       name: 'monthly-ece-report',
       component: MonthlyECEReport,
+      meta: {
+        requiresAuth: true,
+      },
+    },
+    {
+      path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/:eceReportId/declaration`,
+      name: 'monthly-ece-report-declaration',
+      component: MonthlyECEReportDeclaration,
       meta: {
         requiresAuth: true,
       },

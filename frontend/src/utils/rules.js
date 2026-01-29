@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
 
-import { validateHourDifference } from '@/utils/common.js';
+import { parseNumber, validateHourDifference } from '@/utils/common.js';
 import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
 import { getFileExtension, humanFileSize } from '@/utils/file';
 import { isEmailValid, isPhoneNumberValid, isPostalCodeValid, isYearValid } from '@/utils/validation';
@@ -51,10 +51,13 @@ export const rules = {
   },
   notRequired: [() => true],
   max(number, message = number != null ? `Maximum entry: ${number}` : 'Max exceeded') {
-    return (v) => !v || v <= number || message;
+    return (v) => !v || parseNumber(v) <= number || message;
   },
   min(number, message = number != null ? `Minimum entry: ${number}` : 'Min exceeded') {
-    return (v) => v >= number || message;
+    return (v) => parseNumber(v) >= number || message;
+  },
+  greaterThan(number, message = number == null ? 'Value too small' : `Must be greater than ${number}`) {
+    return (v) => parseNumber(v) > number || message;
   },
   maxLength(number) {
     return (v) => !v || v.length <= number || 'Max length exceeded';

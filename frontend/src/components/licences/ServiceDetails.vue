@@ -42,7 +42,7 @@
           </v-col>
           <v-col cols="12" md="6" class="d-flex flex-wrap align-center">
             <strong class="mr-2">Maximum Capacity by Care Type:</strong>
-            <span>{{ serviceDetail.licencedSpaces }}</span>
+            <span>{{ serviceDetail.maxCapacity }}</span>
           </v-col>
         </v-row>
       </div>

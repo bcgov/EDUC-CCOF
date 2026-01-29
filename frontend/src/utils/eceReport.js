@@ -1,0 +1,9 @@
+import { ECE_REPORT_STATUSES } from '@/utils/constants.js';
+
+// TODO: Implement ECE Reports permissions
+export function isReportReadOnly({ loading, eceReport }) {
+  if (loading || !eceReport) {
+    return true;
+  }
+  return eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.SUBMITTED;
+}

@@ -3,8 +3,8 @@ import { submitApp } from "../../support/pages/2-portal-application-pages/04-por
 import { reportLicenceChange } from "../../support/pages/4-report-changes-licence-service-pages/01-report-changes-licence.js";
 import { APP_TYPE, PROGRAM_YEAR } from "../../support/constants.js";
 
-describe("Group Change Request Add Facility Application Test", () => {
-  it("Should run through Group Change Request Add Facility Application , submit and logout", () => {
+describe("Change Request Report Licence Change Application Test", () => {
+  it("Should run through Change Request Report Licence Change Application, submit and logout", () => {
     loginPage.visitLoginPage();
     loginPage.clickLoginButton();
     loginPage.loginThroughExternalProvider(
@@ -13,12 +13,10 @@ describe("Group Change Request Add Facility Application Test", () => {
     );
     cy.startChangeRequest("reportLicenceChange");
 
-    cy.then(() => {
-      reportLicenceChange.uploadLicenceServiceChange();
-      submitApp.summaryAndDeclaration(
-        APP_TYPE.FAMILY_CHANGE_REQUEST_V2,
-        "ReportOtherChanges",
-      );
-    });
+    reportLicenceChange.uploadLicenceServiceChange();
+    submitApp.summaryAndDeclaration(
+      APP_TYPE.FAMILY_CHANGE_REQUEST_V2,
+      "ReportOtherChanges",
+    );
   });
 });

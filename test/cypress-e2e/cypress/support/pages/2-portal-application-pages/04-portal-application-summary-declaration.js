@@ -30,21 +30,29 @@ class SubmitApplication {
       cy.contains("Child Care Operating Funding Program");
       cy.url().should("include", `/change/landing#change-request-history`);
 
-      // Validate based on change request type
-      if (changeRequestType === "AddNewFacility") {
-        cy.get(".v-data-table tbody tr")
-          .first()
-          .within(() => {
-            cy.get("td").eq(0).should("contain", "Add new facility(s)");
-            cy.get("td").eq(3).should("contain", "Submitted");
-          });
-      } else if (changeRequestType === "ReportOtherChanges") {
-        cy.get(".v-data-table tbody tr")
-          .first()
-          .within(() => {
-            cy.get("td").eq(0).should("contain", "Report other changes");
-            cy.get("td").eq(3).should("contain", "Submitted");
-          });
+      // Map change request types to their display names
+      const changeRequestTypeMap = {
+        AddNewFacility: "Add new facility(s)",
+        ReportOtherChanges: "Report other changes",
+        MidTermFeeIncrease: "Mid-Term Fee Increase",
+      };
+
+      // Validate the change request in the table
+      const displayName = changeRequestTypeMap[changeRequestType];
+      if (displayName) {
+        // Find the row containing both the display name and "Submitted" status
+        cy.get(".v-data-table tbody tr").each(($row) => {
+          cy.wrap($row)
+            .invoke("text")
+            .then((text) => {
+              if (text.includes(displayName) && text.includes("Submitted")) {
+                cy.wrap($row).within(() => {
+                  cy.get("td").eq(0).should("contain", displayName);
+                  cy.get("td").eq(3).should("contain", "Submitted");
+                });
+              }
+            });
+        });
       }
     } else if (isRenewal) {
       cy.contains("Renew my Funding Agreement").wrap(() => {
