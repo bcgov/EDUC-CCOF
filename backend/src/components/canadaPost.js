@@ -15,14 +15,18 @@ const REDIS_MAP = 'postalQueries';
   The documentation of the Canada Post's AddressComplete API: https://www.canadapost-postescanada.ca/ac/support/api/
 */
 async function findAddresses(req, res) {
-  await Redis.client.json.set(REDIS_MAP, '$', {}, { condition: 'NX' });
+  if (Redis.isReady) {
+    await Redis.client.json.set(REDIS_MAP, '$', {}, { condition: 'NX' });
+  } else {
+    log.error('Redis is not working for Canada Post lookups, this should not have happened.');
+  }
 
   try {
     let url = `${config.get('canadaPostApi:apiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;
 
     if (req?.query?.searchTerm) {
       try {
-        const cachedSearchResult = await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` });
+        const cachedSearchResult = Redis.isReady ? await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` }) : false;
         if (!isEmpty(cachedSearchResult)) {
           log.verbose(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
           return res.status(HttpStatus.OK).json(cachedSearchResult);
@@ -42,7 +46,7 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, headers);
-    if (req?.query?.searchTerm) {
+    if (req?.query?.searchTerm && Redis.isReady) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
       Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
     }
