@@ -1,4 +1,5 @@
 import { isEmpty } from 'lodash';
+import moment from 'moment';
 
 import { parseNumber, validateHourDifference } from '@/utils/common.js';
 import { ERROR_MESSAGES, FILE_EXTENSIONS_ACCEPT, FILE_EXTENSIONS_ACCEPT_TEXT, MAX_FILE_SIZE } from '@/utils/constants';
@@ -55,6 +56,18 @@ export const rules = {
   },
   min(number, message = number != null ? `Minimum entry: ${number}` : 'Min exceeded') {
     return (v) => parseNumber(v) >= number || message;
+  },
+  minDate(minDate, message = 'Date is too early') {
+    return (v) => {
+      if (!v) return true;
+      return moment(v, 'YYYY-MM-DD', true).isSameOrAfter(moment(minDate, 'YYYY-MM-DD', true)) || message;
+    };
+  },
+  maxDate(maxDate, message = 'Date is too late') {
+    return (v) => {
+      if (!v) return true;
+      return moment(v, 'YYYY-MM-DD', true).isSameOrBefore(moment(maxDate, 'YYYY-MM-DD', true)) || message;
+    };
   },
   greaterThan(number, message = number == null ? 'Value too small' : `Must be greater than ${number}`) {
     return (v) => parseNumber(v) > number || message;
