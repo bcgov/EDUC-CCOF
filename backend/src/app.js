@@ -136,7 +136,7 @@ Redis.init()
         }
         return { sendCommand: (...args) => Redis.client.sendCommand(args) };
       };
-      limiter.store = new RateLimitRedis(createRateLimitRedisConfig())
+      limiter.store = new RateLimitRedis(createRateLimitRedisConfig());
     }
 
     app.use('/api/canadaPost', limiter);
