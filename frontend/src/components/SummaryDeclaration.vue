@@ -519,7 +519,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'setRenewalFundingAgreementId']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     ...mapActions(useSummaryDeclarationStore, [
       'loadChangeRequestSummaryDeclaration',
@@ -546,6 +546,21 @@ export default {
         this.setIsApplicationProcessing(true);
 
         await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
+        if (this.isRenewal && !this.renewalFundingAgreementId) {
+          const response = await FundingAgreementService.getFundingAgreements({
+            organizationId: this.summaryModel?.application?.organizationId,
+            programYearId: this.programYearId,
+            fundingAgreementOrderNumber: 0,
+            includePdf: false,
+          });
+
+          const fa = response?.[0];
+          if (!fa?.fundingAgreementId) {
+            console.warn('[SummaryDeclaration] Renewal FA not found during load');
+          }
+          this.setRenewalFundingAgreementId(fa.fundingAgreementId);
+        }
+
         if (this.isChangeRequest) {
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
         } else {
@@ -709,6 +724,9 @@ export default {
     },
     async updateRenewalFundingAgreementBeforeSubmit() {
       if (!this.isRenewal) return;
+      if (!this.renewalFundingAgreementId) {
+        throw new Error('Funding Agreement not found');
+      }
       const payload = {
         consentCheck: this.model.agreeConsentCertify === 1,
         signedBy: this.model.orgContactName,
