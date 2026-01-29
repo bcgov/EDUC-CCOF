@@ -68,7 +68,11 @@ export default {
         });
       } catch (error) {
         console.error(error);
-        this.setFailureAlert('An error occurred while finding addresses. Please try again later.');
+        if (typeof error?.response?.data === 'string') {
+          this.setFailureAlert(error.response.data); // Probably too many requests
+        } else {
+          this.setFailureAlert('An error occurred while finding addresses. Please try again later.');
+        }
       } finally {
         this.loading = false;
       }

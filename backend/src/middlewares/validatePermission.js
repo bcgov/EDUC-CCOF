@@ -24,8 +24,8 @@ module.exports = function validatePermission(...requiredPermissions) {
     }
 
     const roles = await getRoles();
-    const matchingRole = roles.find((role) => role.data.roleNumber === userRole.roleNumber);
-    const permissions = matchingRole ? matchingRole.data.permissions?.map((p) => p.permissionNumber) : [];
+    const matchingRole = roles.find((role) => role.roleNumber === userRole.roleNumber);
+    const permissions = matchingRole ? matchingRole.permissions?.map((p) => p.permissionNumber) : [];
 
     const valid = requiredPermissions?.some((p) => permissions.includes(p));
 

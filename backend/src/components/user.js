@@ -107,10 +107,8 @@ async function getUserInfo(req, res) {
   // 2. An empty ({}) userResponse means no Organization and/or Applications
   if (isEmpty(userResponse)) {
     const roles = await getRoles();
-    const orgAdminRole = roles.find((role) => role.data.roleNumber === ROLES.ORG_ADMIN);
-    const {
-      data: { roleId, roleNumber },
-    } = orgAdminRole;
+    const orgAdminRole = roles.find((role) => role.roleNumber === ROLES.ORG_ADMIN);
+    const { roleId, roleNumber } = orgAdminRole;
 
     if (userResponse === null) {
       createUser(req, roleId);
