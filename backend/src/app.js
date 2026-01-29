@@ -110,7 +110,7 @@ Redis.init().then(() => {
       resave: false,
       saveUninitialized: true,
       cookie: cookie,
-      store: new ConnectRedis({ client: Redis.client, prefix: 'ccof-sess:' }),
+      store: Redis.isReady ? new ConnectRedis({ client: Redis.client, prefix: 'ccof-sess:' }) : undefined,
     }),
   );
 
