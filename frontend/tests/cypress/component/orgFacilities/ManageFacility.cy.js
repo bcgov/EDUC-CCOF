@@ -146,8 +146,7 @@ describe('<ManageFacility />', () => {
     cy.get('@routerPush').should('have.been.calledWith', { name: 'Report Change' });
   });
 
-  // TODO: Remove .skip below once the permission is added for `Manage ECE Staff` tab
-  it.skip('should not render any tabs without any permissions', () => {
+  it('should not render any tabs without any permissions', () => {
     mountWithPinia({ ...createOrganizationStore() });
 
     cy.get('.v-tabs').find('button').should('have.length', 0);
@@ -223,7 +222,7 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        permissions: [], // TODO: Add permission for 'Manage ECE Staff' tab here when implemented in component
+        permissions: [PERMISSIONS.VIEW_ECE_STAFF],
       },
     });
 
@@ -235,7 +234,20 @@ describe('<ManageFacility />', () => {
       });
   });
 
-  // TODO: Add test for negative permission scenario for `Manage ECE Staff` tab when implemented in component
+  it('should not render `Manage ECE Staff` tab', () => {
+    const permsWithoutECEStaff = Object.values(PERMISSIONS).filter(
+      (permission) => permission !== PERMISSIONS.VIEW_ECE_STAFF,
+    );
+
+    mountWithPinia({
+      ...createOrganizationStore(),
+      auth: {
+        permissions: permsWithoutECEStaff,
+      },
+    });
+
+    cy.get('.v-tab').contains('Manage ECE Staff').should('not.exist');
+  });
 
   it('should render all tabs with the correct tab names', () => {
     const expectedTexts = [
@@ -251,6 +263,7 @@ describe('<ManageFacility />', () => {
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
           PERMISSIONS.VIEW_PROGRAMS_VACANCIES,
           PERMISSIONS.VIEW_LICENCE_INFORMATION,
+          PERMISSIONS.VIEW_ECE_STAFF,
         ],
       },
     });
