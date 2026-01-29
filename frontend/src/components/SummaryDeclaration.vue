@@ -546,20 +546,7 @@ export default {
         this.setIsApplicationProcessing(true);
 
         await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
-        if (this.isRenewal && !this.renewalFundingAgreementId) {
-          const response = await FundingAgreementService.getFundingAgreements({
-            organizationId: this.summaryModel?.application?.organizationId,
-            programYearId: this.programYearId,
-            fundingAgreementOrderNumber: 0,
-            includePdf: false,
-          });
-
-          const fa = response?.[0];
-          if (!fa?.fundingAgreementId) {
-            console.warn('[SummaryDeclaration] Renewal FA not found during load');
-          }
-          this.setRenewalFundingAgreementId(fa.fundingAgreementId);
-        }
+        await this.loadRenewalFundingAgreementId();
 
         if (this.isChangeRequest) {
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
@@ -734,6 +721,24 @@ export default {
         externalStatusCode: FUNDING_AGREEMENT_EXTERNAL_STATUSES.DRAFTED_WITH_MINISTRY,
       };
       await FundingAgreementService.updateFundingAgreement(this.renewalFundingAgreementId, payload);
+    },
+    async loadRenewalFundingAgreementId() {
+      if (!this.isRenewal || this.renewalFundingAgreementId) return;
+
+      const response = await FundingAgreementService.getFundingAgreements({
+        organizationId: this.summaryModel?.application?.organizationId,
+        programYearId: this.programYearId,
+        fundingAgreementOrderNumber: 0,
+        includePdf: false,
+      });
+
+      const fa = response?.[0];
+      if (!fa?.fundingAgreementId) {
+        console.warn('[SummaryDeclaration] Renewal FA not found during load');
+        return;
+      }
+
+      this.setRenewalFundingAgreementId(fa.fundingAgreementId);
     },
   },
 };
