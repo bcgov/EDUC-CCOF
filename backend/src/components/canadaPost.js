@@ -19,7 +19,7 @@ async function findAddresses(req, res) {
 
   try {
     let url = `${config.get('canadaPostApi:apiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;
-
+    log.verbose(`Canada Post Query URL: ${url}`);
     if (req?.query?.searchTerm) {
       try {
         const cachedSearchResult = await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` });
