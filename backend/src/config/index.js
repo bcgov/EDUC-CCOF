@@ -67,7 +67,6 @@ nconf.defaults({
     ccofFormURL: process.env.CCOF_API_ENDPOINT + '/ccof',
   },
   redis: {
-    use: process.env.USE_REDIS,
     host: process.env.REDIS_HOST,
     port: process.env.REDIS_PORT,
     password: process.env.REDIS_PASSWORD,
