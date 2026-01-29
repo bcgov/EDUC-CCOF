@@ -86,8 +86,13 @@ async function getLicenseCategory() {
       .sort((a, b) => {
         return a.ccof_categorynumber - b.ccof_categorynumber;
       });
-    Redis.client.json.set('licenseCategories', '$', resData);
-    Redis.client.expire('licenseCategories', ...REDIS_EXPIRE_ARGS);
+
+    try {
+      Redis.client.json.set('licenseCategories', '$', resData);
+      Redis.client.expire('licenseCategories', ...REDIS_EXPIRE_ARGS);
+    } catch (e) {
+      log.error('Could not set license categories with Redis', e);
+    }
   }
 
   return resData;
@@ -168,8 +173,12 @@ async function getLookupInfo(_req, res) {
       healthAuthorities: healthAuthorities,
       roles: roles,
     };
-    Redis.client.json.set('lookups', '$', resData);
-    Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS);
+    try {
+      Redis.client.json.set('lookups', '$', resData);
+      Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS);
+    } catch (e) {
+      log.error('Could not set lookups with Redis', e);
+    }
   }
   return res.status(HttpStatus.OK).json(resData);
 }
@@ -187,8 +196,13 @@ async function getSystemMessages(_req, res) {
     systemMessages = [];
     const resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
     resData?.value.forEach((message) => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
-    Redis.client.json.set('systemMessages', '$', systemMessages);
-    Redis.client.expire('systemMessages', 900, 'NX');
+
+    try {
+      Redis.client.json.set('systemMessages', '$', systemMessages);
+      Redis.client.expire('systemMessages', 900, 'NX');
+    } catch (e) {
+      log.error('Could not set systemMessages with Redis', e);
+    }
   }
   return res.status(HttpStatus.OK).json(systemMessages);
 }
@@ -226,8 +240,13 @@ async function getRoles() {
       roles.push(role);
     });
     roles.sort((a, b) => a.roleName?.localeCompare(b.roleName));
-    Redis.client.json.set('roles', '$', roles);
-    Redis.client.expire('roles', ...REDIS_EXPIRE_ARGS);
+
+    try {
+      Redis.client.json.set('roles', '$', roles);
+      Redis.client.expire('roles', ...REDIS_EXPIRE_ARGS);
+    } catch (e) {
+      log.error('Could not set roles with Redis', e);
+    }
   }
 
   return roles;
