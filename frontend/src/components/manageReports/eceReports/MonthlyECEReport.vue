@@ -4,6 +4,9 @@
   </div>
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+    <div class="d-flex justify-end mb-4">
+      <AppButton size="medium" :loading="loading" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+    </div>
     <v-card>
       <v-form ref="form" v-model="isValidForm">
         <v-data-table :items="reportECEStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
@@ -44,7 +47,7 @@
             <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
           <!-- TODO (vietle-cgi): Implement ECE Staff remove -->
-          <template #item.actions>
+          <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
                 v-if="showRemoveButton"
@@ -52,7 +55,7 @@
                 :primary="false"
                 color="red"
                 size="small"
-                @click="setWarningAlert('Remove ECE staff functionality is not yet implemented.')"
+                @click="removeStaff(item)"
               >
                 Remove
               </AppButton>
@@ -100,6 +103,7 @@
       </v-form>
     </v-card>
   </div>
+  <AddECEStaffDialog v-model="addDialogOpen" :existing-staff="facilityECEStaff" @staff-added="loadFacilityECEStaff" />
   <ReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="!readonly"
@@ -114,6 +118,7 @@
 
 <script>
 import { pick } from 'lodash';
+import AddECEStaffDialog from '@/components/eceStaff/AddECEStaffDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
@@ -129,7 +134,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'MonthlyECEReport',
-  components: { AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
+  components: { AddECEStaffDialog, AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
   mixins: [alertMixin],
   data() {
     return {
@@ -137,6 +142,7 @@ export default {
       processing: false,
       isValidForm: false,
       eceReport: null,
+      addDialogOpen: false,
       reportCalculationSummary: {},
       facilityECEStaff: [],
       reportECEStaff: [],
@@ -182,9 +188,7 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
-        this.facilityECEStaff = await ECEStaffService.getECEStaff({
-          facilityId: this.eceReport?.facilityId,
-        });
+        await this.loadFacilityECEStaff();
         this.reportECEStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
           const facilityStaff = this.facilityECEStaffById.get(staff.eceStaffId);
           return {
@@ -207,6 +211,11 @@ export default {
         this.loading = false;
       }
     },
+    async loadFacilityECEStaff() {
+      this.facilityECEStaff = await ECEStaffService.getECEStaff({
+        facilityId: this.eceReport?.facilityId,
+      });
+    },
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
     },
@@ -217,6 +226,9 @@ export default {
     // TODO (vietle-cgi): Implement ECE Reports calculation
     calculate() {
       this.setWarningAlert('Calculate functionality is not yet implemented.');
+    },
+    removeStaff(staff) {
+      console.log(staff);
     },
     async save(showMessage) {
       if (this.readonly) return;
