@@ -172,9 +172,7 @@ async function getLookupInfo(_req, res) {
     };
     Redis.client.json
       .set('lookups', '$', resData)
-      .then(() => {
-        Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS);
-      })
+      .then(() => Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS))
       .catch((error) => log.error('Could not set lookups with Redis', error));
   }
   return res.status(HttpStatus.OK).json(resData);
