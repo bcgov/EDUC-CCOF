@@ -157,7 +157,7 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION],
+        permissions: [PERMISSIONS.VIEW_FACILITY_INFORMATION, PERMISSIONS.VIEW_ECE_STAFF],
       },
     });
 
@@ -190,7 +190,7 @@ describe('<ManageFacility />', () => {
     mountWithPinia({
       ...createOrganizationStore(),
       auth: {
-        permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION],
+        permissions: [PERMISSIONS.VIEW_LICENCE_INFORMATION, PERMISSIONS.VIEW_ECE_STAFF],
       },
     });
 
