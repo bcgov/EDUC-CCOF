@@ -21,8 +21,8 @@
                 :max="fiscalStartAndEndDates.endDate"
                 :rules="[
                   ...rules.required,
-                  rules.min(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
-                  rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                  rules.minDate(fiscalStartAndEndDates.startDate, 'Must exceed fiscal year start date'),
+                  rules.maxDate(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                 ]"
                 :disabled="readonly"
                 :hide-details="readonly"
@@ -39,8 +39,8 @@
                 :max="fiscalStartAndEndDates.endDate"
                 :rules="[
                   ...rules.required,
-                  rules.min(obj.startDate, 'Must exceed start date'),
-                  rules.max(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
+                  rules.minDate(obj.startDate, 'Must exceed start date'),
+                  rules.maxDate(fiscalStartAndEndDates.endDate, 'Must be before fiscal year end date'),
                 ]"
                 :disabled="readonly"
                 :hide-details="readonly"

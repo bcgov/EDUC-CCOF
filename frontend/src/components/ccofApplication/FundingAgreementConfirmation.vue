@@ -185,7 +185,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'setRenewalFundingAgreementId']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     async loadData() {
       try {
@@ -209,6 +209,7 @@ export default {
         includePdf: true,
       });
       this.fundingAgreement = response[0];
+      this.setRenewalFundingAgreementId(this.fundingAgreement?.fundingAgreementId ?? null);
       if (isEmpty(this.fundingAgreement?.pdfFile)) {
         this.setWarningAlert('Funding Agreement not found for this application.');
       } else {

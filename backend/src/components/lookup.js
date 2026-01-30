@@ -2,14 +2,13 @@
 const { getOperation, getLabelFromValue } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const _ = require('lodash');
-const cache = require('memory-cache');
 const { PROGRAM_YEAR_STATUS_CODES, ORGANIZATION_PROVIDER_TYPES, CHANGE_REQUEST_TYPES } = require('../util/constants');
 const { PermissionMappings, ProgramYearMappings, RoleMappings, SystemMessagesMappings } = require('../util/mapping/Mappings');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const log = require('./logger');
 
-const lookupCache = new cache.Cache();
-const ONE_HOUR_MS = 60 * 60 * 1000; // Cache timeout set for one hour
+const Redis = require('../util/redis/redis-client');
+const REDIS_EXPIRE_ARGS = [3600, 'NX'];
 
 const organizationType = [
   {
@@ -62,7 +61,13 @@ const fundingModelType = [
 ];
 
 async function getLicenseCategory() {
-  let resData = lookupCache.get('licenseCategory');
+  let resData;
+  try {
+    resData = await Redis.client.json.get('licenseCategories');
+  } catch (e) {
+    log.error('Unable to retrieve the licenseCategories from Redis', e);
+  }
+
   if (!resData) {
     resData = {};
     let licenseCategory = await getOperation('ccof_license_categories');
@@ -81,8 +86,12 @@ async function getLicenseCategory() {
       .sort((a, b) => {
         return a.ccof_categorynumber - b.ccof_categorynumber;
       });
-    lookupCache.put('licenseCategory', resData, ONE_HOUR_MS);
+    Redis.client.json
+      .set('licenseCategories', '$', resData)
+      .then(() => Redis.client.expire('licenseCategories', ...REDIS_EXPIRE_ARGS))
+      .catch((error) => log.error('Could not set licenseCategories with Redis', error));
   }
+
   return resData;
 }
 
@@ -124,16 +133,22 @@ async function getProgramYear() {
   return programYears;
 }
 
-async function getLookupInfo(req, res) {
+async function getLookupInfo(_req, res) {
   /**
    * Look ups from Dynamics365.
    * status code values are:
    * 1 - Current
    * 2 - Inactive
    * 3 - Future
-   * 4 - Historica
+   * 4 - Historical
    */
-  let resData = lookupCache.get('lookups');
+  let resData;
+  try {
+    resData = await Redis.client.json.get('lookups');
+  } catch (e) {
+    log.error('Could not get the lookup data from Redis', e);
+  }
+
   if (!resData) {
     const programYears = await getProgramYear();
 
@@ -155,19 +170,31 @@ async function getLookupInfo(req, res) {
       healthAuthorities: healthAuthorities,
       roles: roles,
     };
-    lookupCache.put('lookups', resData, ONE_HOUR_MS);
+    Redis.client.json
+      .set('lookups', '$', resData)
+      .then(() => Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS))
+      .catch((error) => log.error('Could not set lookups with Redis', error));
   }
   return res.status(HttpStatus.OK).json(resData);
 }
 
-async function getSystemMessages(req, res) {
-  let systemMessages = lookupCache.get('systemMessages');
+async function getSystemMessages(_req, res) {
+  let systemMessages;
+  try {
+    systemMessages = await Redis.client.json.get('systemMessages');
+  } catch (e) {
+    log.error('Could not retrieve the systemMessages from Redis', e);
+  }
+
   if (!systemMessages) {
     const currentTime = new Date().toISOString();
     systemMessages = [];
     const resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
     resData?.value.forEach((message) => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
-    lookupCache.put('systemMessages', systemMessages, ONE_HOUR_MS);
+    Redis.client.json
+      .set('systemMessages', '$', systemMessages)
+      .then(() => Redis.client.expire('systemMessages', 900, 'NX'))
+      .catch((error) => log.error('Could not set systemMessages with Redis', error));
   }
   return res.status(HttpStatus.OK).json(systemMessages);
 }
@@ -187,20 +214,30 @@ async function getGlobalOptionsData(operationName) {
 }
 
 async function getRoles() {
-  let roles = lookupCache.get('roles');
+  let roles;
+  try {
+    roles = await Redis.client.json.get('roles');
+  } catch (e) {
+    log.error('Could not retrieve roles data from Redis', e);
+  }
+
   if (!roles) {
     roles = [];
     const response = await getOperation(
       "ofm_portal_roles?$select=ofm_name,ofm_portal_role_number&$expand=owningbusinessunit($select=name),ofm_portal_role_permission($select=ofm_portal_permissionid,_ofm_portal_privilege_value;$expand=ofm_portal_privilege($select=ofm_category,ofm_name,ofm_portal_privilege_number);$filter=(statecode eq 0))&$filter=(statecode eq 0) and (owningbusinessunit/name eq 'CCOF')",
     );
     response?.value?.forEach((item) => {
-      const role = new MappableObjectForFront(item, RoleMappings);
-      role.data.permissions = item.ofm_portal_role_permission.map((p) => new MappableObjectForFront(p.ofm_portal_privilege, PermissionMappings).toJSON());
+      const role = new MappableObjectForFront(item, RoleMappings).toJSON();
+      role.permissions = item.ofm_portal_role_permission.map((p) => new MappableObjectForFront(p.ofm_portal_privilege, PermissionMappings).toJSON());
       roles.push(role);
     });
-    roles.sort((a, b) => a.data.roleName?.localeCompare(b.data.roleName));
-    lookupCache.put('roles', roles, ONE_HOUR_MS);
+    roles.sort((a, b) => a.roleName?.localeCompare(b.roleName));
+    Redis.client.json
+      .set('roles', '$', roles)
+      .then(() => Redis.client.expire('roles', ...REDIS_EXPIRE_ARGS))
+      .catch((error) => log.error('Could not set roles with Redis', error));
   }
+
   return roles;
 }
 

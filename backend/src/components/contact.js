@@ -20,7 +20,7 @@ async function getActiveContactsInOrganization(req, res) {
   try {
     const contactsData = await getActiveContactsByOrgID(req.params.organizationId);
     const contactsRaw = contactsData.value.map((contact) => new MappableObjectForFront(contact, ContactMappings)).map(setContactType);
-    const roleMap = new Map((await getRoles()).map(({ data }) => [data.roleId, { roleNumber: data.roleNumber, roleName: data.roleName }]));
+    const roleMap = new Map((await getRoles()).map((role) => [role.roleId, { roleNumber: role.roleNumber, roleName: role.roleName }]));
     const contacts = await Promise.all(
       contactsRaw.map(async ({ roleId, contactId, ...rest }) => {
         const facilities = await getRawContactFacilities(contactId);

@@ -21,6 +21,7 @@ export const useApplicationStore = defineStore('application', {
     programYearId: null,
     programYearLabel: null,
     isRenewal: false,
+    renewalFundingAgreementId: null,
 
     unlockBaseFunding: false,
     unlockRenewal: false,
@@ -64,6 +65,9 @@ export const useApplicationStore = defineStore('application', {
     },
     setIsRenewal(value) {
       this.isRenewal = value;
+    },
+    setRenewalFundingAgreementId(value) {
+      this.renewalFundingAgreementId = value;
     },
     setFormattedProgramYear(value) {
       this.formattedProgramYear = value;

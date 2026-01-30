@@ -325,10 +325,12 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import ApplicationService from '@/services/applicationService';
 import DocumentService from '@/services/documentService';
+import FundingAgreementService from '@/services/fundingAgreementService.js';
 import {
   AFS_STATUSES,
   CHANGE_REQUEST_TYPES,
   DOCUMENT_TYPES,
+  FUNDING_AGREEMENT_EXTERNAL_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
 } from '@/utils/constants.js';
@@ -368,6 +370,7 @@ export default {
       'formattedProgramYear',
       'isApplicationProcessing',
       'isRenewal',
+      'renewalFundingAgreementId',
       'programYearId',
       'showApplicationTemplateV1',
       'unlockBaseFunding',
@@ -516,7 +519,7 @@ export default {
     await this.loadData();
   },
   methods: {
-    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'setRenewalFundingAgreementId']),
     ...mapActions(useReportChangesStore, ['getChangeRequestList']),
     ...mapActions(useSummaryDeclarationStore, [
       'loadChangeRequestSummaryDeclaration',
@@ -543,6 +546,8 @@ export default {
         this.setIsApplicationProcessing(true);
 
         await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
+        await this.loadRenewalFundingAgreementId();
+
         if (this.isChangeRequest) {
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
         } else {
@@ -591,6 +596,7 @@ export default {
           // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
+          await this.updateRenewalFundingAgreementBeforeSubmit();
           await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
@@ -702,6 +708,37 @@ export default {
           await DocumentService.updateDocument(document.annotationId, payload);
         }),
       );
+    },
+    async updateRenewalFundingAgreementBeforeSubmit() {
+      if (!this.isRenewal) return;
+      if (!this.renewalFundingAgreementId) {
+        throw new Error('Funding Agreement not found');
+      }
+      const payload = {
+        consentCheck: this.model.agreeConsentCertify === 1,
+        signedBy: this.model.orgContactName,
+        signedOn: new Date().toISOString(),
+        externalStatusCode: FUNDING_AGREEMENT_EXTERNAL_STATUSES.DRAFTED_WITH_MINISTRY,
+      };
+      await FundingAgreementService.updateFundingAgreement(this.renewalFundingAgreementId, payload);
+    },
+    async loadRenewalFundingAgreementId() {
+      if (!this.isRenewal || this.renewalFundingAgreementId) return;
+
+      const response = await FundingAgreementService.getFundingAgreements({
+        organizationId: this.summaryModel?.application?.organizationId,
+        programYearId: this.programYearId,
+        fundingAgreementOrderNumber: 0,
+        includePdf: false,
+      });
+
+      const fa = response?.[0];
+      if (!fa?.fundingAgreementId) {
+        console.warn('[SummaryDeclaration] Renewal FA not found during load');
+        return;
+      }
+
+      this.setRenewalFundingAgreementId(fa.fundingAgreementId);
     },
   },
 };
