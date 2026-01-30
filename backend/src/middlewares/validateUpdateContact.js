@@ -18,8 +18,8 @@ module.exports = function validateUpdateContact() {
     const targetContactId = req.params.contactId;
 
     const roles = await getRoles();
-    const matchingRole = roles.find((role) => role.data.roleNumber === currentUser.role.roleNumber);
-    const permissions = matchingRole?.data?.permissions?.map((p) => p.permissionNumber) || [];
+    const matchingRole = roles.find((role) => role.roleNumber === currentUser.role.roleNumber);
+    const permissions = matchingRole?.permissions?.map((p) => p.permissionNumber) || [];
 
     if (currentUser.contactId === targetContactId) {
       // Validate update to self
