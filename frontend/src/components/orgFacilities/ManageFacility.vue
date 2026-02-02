@@ -95,8 +95,7 @@ export default {
       return this.$route.params.facilityId;
     },
     facilityIsActive() {
-      const application = this.applicationMap?.get(this.programYearId);
-      return isFacilityActive(this.facility, application);
+      return isFacilityActive(this.facility, this.applicationMap);
     },
     facilityDataReady() {
       return !isEmpty(this.facility);
