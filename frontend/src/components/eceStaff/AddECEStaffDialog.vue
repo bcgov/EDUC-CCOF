@@ -2,7 +2,7 @@
   <AppDialog v-model="dialogOpen" title="Add ECE Staff" max-width="900px" @close="closeDialog">
     <template #content>
       <v-col>
-        Enter ECE's Registration Number and First or Last Name exactly as they appear on the ECE certificate.
+        Enter ECE's Registration Number and First or Last Name exactly as they appear on the ECE Certificate.
       </v-col>
 
       <br />
@@ -106,8 +106,8 @@
         </v-data-table>
 
         <p v-else-if="resultState.noResults" class="mt-2 text-error">
-          No ECE found. Please ensure information entered is exactly as it appears on the ECE certificate and try again.
-          If you continue to have issues, please contact the ECE registry at: <strong>1-888-338-6622</strong>
+          No ECE found. Please ensure information entered is exactly as it appears on the ECE Certification and try
+          again. If you continue to have issues, please contact the ECE Registry at: <strong>1-888-338-6622</strong>
         </p>
       </v-skeleton-loader>
     </template>
