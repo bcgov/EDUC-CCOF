@@ -31,8 +31,7 @@
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <p v-if="resultState.duplicateStaff" class="mb-2 text-error">
-          This ECE Staff registration number {{ results[0].registrationNumber }} already exists on this facility. You
-          may edit the existing record.
+          {{ duplicateStaffErrorMessage }}
         </p>
 
         <v-data-table
@@ -51,7 +50,11 @@
 
           <template #item.hourlyWage="{ item }">
             <v-form ref="eceForm" v-model="isValidForm">
+              <p v-if="isEceReport">
+                {{ formatCurrency(item.hourlyWage) }}
+              </p>
               <v-text-field
+                v-else
                 v-model.number="item.hourlyWage"
                 type="number"
                 variant="outlined"
@@ -133,7 +136,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES } from '@/utils/constants.js';
-import { formatName } from '@/utils/format';
+import { formatCurrency, formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
 export default {
@@ -141,8 +144,22 @@ export default {
   components: { AppButton, AppDialog },
   mixins: [alertMixin],
   props: {
-    modelValue: { type: Boolean, required: true },
-    existingStaff: { type: Array, default: () => [] },
+    modelValue: {
+      type: Boolean,
+      required: true,
+    },
+    isEceReport: {
+      type: Boolean,
+      default: false,
+    },
+    facilityExistingStaff: {
+      type: Array,
+      default: () => [],
+    },
+    reportExistingStaff: {
+      type: Array,
+      default: () => [],
+    },
   },
   emits: ['update:modelValue', 'staff-added'],
   data() {
@@ -173,6 +190,19 @@ export default {
       },
     },
 
+    existingStaff() {
+      return this.isEceReport ? this.reportExistingStaff : this.facilityExistingStaff;
+    },
+
+    foundStaff() {
+      return this.results?.[0] ?? null;
+    },
+
+    duplicateStaffErrorMessage() {
+      return `This ECE Staff registration number ${this.foundStaff?.registrationNumber} already exists on this
+      ${this.isEceReport ? 'report' : 'facility'}. You may edit the existing record.`;
+    },
+
     canSearch() {
       const { registrationNumber, firstName, lastName } = this.search;
       return Boolean(registrationNumber && (firstName || lastName));
@@ -181,12 +211,12 @@ export default {
     resultState() {
       const hasResults = this.results.length > 0;
       const noResults = this.searched && !hasResults;
-      const duplicateStaff = hasResults && this.searched && this.results[0].isDuplicate;
+      const duplicateStaff = hasResults && this.searched && this.foundStaff?.isDuplicate;
       return { hasResults, noResults, duplicateStaff };
     },
 
     canAddECE() {
-      return this.isValidForm && this.results[0]?.isDuplicate !== true;
+      return this.isValidForm && this.foundStaff?.isDuplicate !== true;
     },
   },
 
@@ -195,10 +225,11 @@ export default {
   },
 
   methods: {
+    formatCurrency,
     getECECertStatusClass,
-    isDuplicateStaff(registrationNumber) {
-      return this.existingStaff.some((s) => s.registrationNumber === registrationNumber);
-    },
+    // isDuplicateStaff(registrationNumber) {
+    //   return this.existingStaff.some((s) => s.registrationNumber === registrationNumber);
+    // },
 
     async searchStaff() {
       this.searched = true;
@@ -242,14 +273,20 @@ export default {
     },
 
     async addECEStaff() {
-      const [staffToAdd] = this.results;
+      if (!this.foundStaff) return;
       try {
+        if (this.isEceReport) {
+          this.$emit('staff-added', this.foundStaff);
+          this.setSuccessAlert('ECE Staff record has been added to the report');
+          this.closeDialog();
+          return;
+        }
         const payload = {
-          registrationNumber: staffToAdd.registrationNumber,
-          firstName: staffToAdd.firstName,
-          middleName: staffToAdd.middleName,
-          lastName: staffToAdd.lastName,
-          hourlyWage: Number(staffToAdd.hourlyWage.toFixed(2)),
+          registrationNumber: this.foundStaff.registrationNumber,
+          firstName: this.foundStaff.firstName,
+          middleName: this.foundStaff.middleName,
+          lastName: this.foundStaff.lastName,
+          hourlyWage: Number(this.foundStaff.hourlyWage.toFixed(2)),
           facilityId: this.$route.params.facilityId,
         };
         const created = await ECEStaffService.createECEStaff(payload);

@@ -122,7 +122,7 @@
         </v-data-table>
       </v-skeleton-loader>
       <ECEStaffCertificationDialog v-model="certificationDialogOpen" :staff="selectedStaff" />
-      <AddECEStaffDialog v-model="addDialogOpen" :existing-staff="eceStaff" @staff-added="loadEceStaff" />
+      <AddECEStaffDialog v-model="addDialogOpen" :facility-existing-staff="eceStaff" @staff-added="loadEceStaff" />
     </v-form>
   </v-container>
 </template>

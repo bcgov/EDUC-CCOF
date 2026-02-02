@@ -103,7 +103,13 @@
       </v-form>
     </v-card>
   </div>
-  <AddECEStaffDialog v-model="addDialogOpen" :existing-staff="facilityECEStaff" @staff-added="loadFacilityECEStaff" />
+  <AddECEStaffDialog
+    v-model="addDialogOpen"
+    :is-ece-report="true"
+    :facility-existing-staff="facilityECEStaff"
+    :report-existing-staff="reportECEStaff"
+    @staff-added="loadFacilityECEStaff"
+  />
   <ReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="!readonly"
