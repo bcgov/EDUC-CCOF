@@ -10,11 +10,17 @@
         <v-row no-gutters class="py-2">
           <v-col class="d-flex" cols="10">
             <span class="pr-2 pt-4">Report full month closure or no enrolment</span>
-            <v-switch v-model="enrolmentReport.isFullMonthClosure" :disabled="readonly" color="primary" hide-details
-              @update:model-value="toggleFullMonthClosure" />
+            <v-switch
+              v-model="enrolmentReport.isFullMonthClosure"
+              :disabled="readonly"
+              color="primary"
+              hide-details
+              @update:model-value="toggleFullMonthClosure"
+            />
             <span class="pt-4 pl-2">
               <AppTooltip
-                tooltip-content="Select this if your facility was closed or had no enrolment for the entire reporting month." />
+                tooltip-content="Select this if your facility was closed or had no enrolment for the entire reporting month."
+              />
             </span>
           </v-col>
           <v-col class="d-flex justify-end align-center" cols="2">
@@ -38,35 +44,69 @@
               <v-col class="first-column border-right background-light-grey d-flex align-center justify-center">
                 <span class="pr-1"> Total Enrolled </span>
                 <AppTooltip
-                  tooltip-content="For each rate category, enter the number of individual children, including drop-ins, who were enrolled this month." />
+                  tooltip-content="For each rate category, enter the number of individual children, including drop-ins, who were enrolled this month."
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolled0To18" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolled0To18')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolled0To18"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolled0To18')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolled18To36" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolled18To36')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolled18To36"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolled18To36')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolled3YK" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolled3YK')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolled3YK"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolled3YK')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolledOOSCK" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolledOOSCK')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolledOOSCK"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolledOOSCK')"
+                />
               </v-col>
               <v-col class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolledOOSCG" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolledOOSCG')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolledOOSCG"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolledOOSCG')"
+                />
               </v-col>
               <v-col v-if="isGroup" cols="1" class="border-right">
-                <AppNumberInput v-model="enrolmentReport.totalEnrolledPre" maxlength="3" :disabled="isFormDisabled"
-                  :default-value="0" :class="getTotalEnrolledClass('totalEnrolledPre')" />
+                <AppNumberInput
+                  v-model="enrolmentReport.totalEnrolledPre"
+                  maxlength="3"
+                  :disabled="isFormDisabled"
+                  :default-value="0"
+                  :class="getTotalEnrolledClass('totalEnrolledPre')"
+                />
               </v-col>
             </v-row>
-            <v-row v-if="hasPermission(PERMISSIONS.VIEW_A_CR)" no-gutters
-              class="background-light-grey border-bottom border-right px-8 py-2">
+            <v-row
+              v-if="hasPermission(PERMISSIONS.VIEW_A_CR)"
+              no-gutters
+              class="background-light-grey border-bottom border-right px-8 py-2"
+            >
               <p>
                 Approved Parent Fees are the fees approved by the program. If any of these fees are incorrect, click
                 <router-link :to="PATHS.ROOT.CHANGE_LANDING">
@@ -127,8 +167,12 @@
               </v-col>
               <v-col v-if="isGroup" cols="1" class="border-right cell-text-center" />
             </v-row>
-            <v-row v-for="(dailyEnrolment, rowIndex) in dailyEnrolments" :key="dailyEnrolment.dailyEnrolmentId"
-              no-gutters :class="getRowClass(dailyEnrolment, rowIndex)">
+            <v-row
+              v-for="(dailyEnrolment, rowIndex) in dailyEnrolments"
+              :key="dailyEnrolment.dailyEnrolmentId"
+              no-gutters
+              :class="getRowClass(dailyEnrolment, rowIndex)"
+            >
               <v-col class="background-light-grey border-right first-column d-flex align-center justify-center">
                 <span>{{ dailyEnrolment.day }}</span>
                 <span class="day-label">
@@ -138,68 +182,112 @@
               <v-col>
                 <v-row no-gutters>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.less0To18" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.less0To18"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')"
+                    />
                   </v-col>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.over0To18" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over0To18')" />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col>
-                <v-row no-gutters>
-                  <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.less18To36" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')" />
-                  </v-col>
-                  <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.over18To36" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over18To36')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.over0To18"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over0To18')"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col>
                 <v-row no-gutters>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.less3YK" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.less18To36"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')"
+                    />
                   </v-col>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.over3YK" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over3YK')" />
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col>
-                <v-row no-gutters>
-                  <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.lessOOSCK" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')" />
-                  </v-col>
-                  <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.overOOSCK" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCK')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.over18To36"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over18To36')"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col>
                 <v-row no-gutters>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.lessOOSCG" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.less3YK"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')"
+                    />
                   </v-col>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.overOOSCG" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCG')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.over3YK"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'over3YK')"
+                    />
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col>
+                <v-row no-gutters>
+                  <v-col class="border-right">
+                    <AppNumberInput
+                      v-model="dailyEnrolment.lessOOSCK"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')"
+                    />
+                  </v-col>
+                  <v-col class="border-right">
+                    <AppNumberInput
+                      v-model="dailyEnrolment.overOOSCK"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCK')"
+                    />
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col>
+                <v-row no-gutters>
+                  <v-col class="border-right">
+                    <AppNumberInput
+                      v-model="dailyEnrolment.lessOOSCG"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')"
+                    />
+                  </v-col>
+                  <v-col class="border-right">
+                    <AppNumberInput
+                      v-model="dailyEnrolment.overOOSCG"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'overOOSCG')"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
               <v-col v-if="isGroup" cols="1">
                 <v-row no-gutters>
                   <v-col class="border-right">
-                    <AppNumberInput v-model="dailyEnrolment.lessPre" maxlength="3" :disabled="isFormDisabled"
-                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessPre')" />
+                    <AppNumberInput
+                      v-model="dailyEnrolment.lessPre"
+                      maxlength="3"
+                      :disabled="isFormDisabled"
+                      :class="getDailyEnrolmentClass(dailyEnrolment, 'lessPre')"
+                    />
                   </v-col>
                 </v-row>
               </v-col>
@@ -263,8 +351,9 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ previousEnrolmentReport.currentTotalLess3YK
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      previousEnrolmentReport.currentTotalLess3YK
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ previousEnrolmentReport.currentTotalOver3YK }}</v-col>
                   </v-row>
                 </v-col>
@@ -359,8 +448,9 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCOF['less18To36']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCOF['less18To36']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCOF['over18To36'] }}</v-col>
                   </v-row>
                 </v-col>
@@ -457,8 +547,9 @@
                     <v-col class="border-right cell-text-right">
                       {{ formatCurrency(enrolmentReport.ccofBaseAmountLess18To36) }}
                     </v-col>
-                    <v-col class="cell-text-right">{{ formatCurrency(enrolmentReport.ccofBaseAmountOver18To36)
-                      }}</v-col>
+                    <v-col class="cell-text-right">{{
+                      formatCurrency(enrolmentReport.ccofBaseAmountOver18To36)
+                    }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
@@ -547,8 +638,9 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters class="background-light-grey border-top">
-                  <v-col class="border-right first-column font-weight-bold cell-text-left">Difference CCOF Base
-                    $</v-col>
+                  <v-col class="border-right first-column font-weight-bold cell-text-left"
+                    >Difference CCOF Base $</v-col
+                  >
                   <v-col class="border-right">
                     <v-row no-gutters>
                       <v-col class="border-right cell-text-right">
@@ -613,15 +705,17 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less0To18']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['less0To18']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over0To18'] }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less18To36']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['less18To36']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over18To36'] }}</v-col>
                   </v-row>
                 </v-col>
@@ -633,15 +727,17 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCK']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['lessOOSCK']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCK'] }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCG']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['lessOOSCG']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCG'] }}</v-col>
                   </v-row>
                 </v-col>
@@ -712,8 +808,9 @@
                     <v-col class="border-right cell-text-right">
                       {{ formatCCFRICurrency(enrolmentReport.ccfriAmountLess0To18) }}
                     </v-col>
-                    <v-col class="cell-text-right">{{ formatCCFRICurrency(enrolmentReport.ccfriAmountOver0To18)
-                      }}</v-col>
+                    <v-col class="cell-text-right">{{
+                      formatCCFRICurrency(enrolmentReport.ccfriAmountOver0To18)
+                    }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
@@ -739,8 +836,9 @@
                     <v-col class="border-right cell-text-right">
                       {{ formatCCFRICurrency(enrolmentReport.ccfriAmountLessOOSCK) }}
                     </v-col>
-                    <v-col class="cell-text-right">{{ formatCCFRICurrency(enrolmentReport.ccfriAmountOverOOSCK)
-                      }}</v-col>
+                    <v-col class="cell-text-right">{{
+                      formatCCFRICurrency(enrolmentReport.ccfriAmountOverOOSCK)
+                    }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
@@ -748,8 +846,9 @@
                     <v-col class="border-right cell-text-right">
                       {{ formatCCFRICurrency(enrolmentReport.ccfriAmountLessOOSCG) }}
                     </v-col>
-                    <v-col class="cell-text-right">{{ formatCCFRICurrency(enrolmentReport.ccfriAmountOverOOSCG)
-                      }}</v-col>
+                    <v-col class="cell-text-right">{{
+                      formatCCFRICurrency(enrolmentReport.ccfriAmountOverOOSCG)
+                    }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col v-if="isGroup" cols="1" class="border-right cell-text-right">
@@ -879,15 +978,17 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less0To18']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['less0To18']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over0To18'] }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['less18To36']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['less18To36']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['over18To36'] }}</v-col>
                   </v-row>
                 </v-col>
@@ -899,15 +1000,17 @@
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCK']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['lessOOSCK']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCK'] }}</v-col>
                   </v-row>
                 </v-col>
                 <v-col class="border-right">
                   <v-row no-gutters>
-                    <v-col class="border-right cell-text-right">{{ paymentEligibleDaysCount.CCFRI['lessOOSCG']
-                      }}</v-col>
+                    <v-col class="border-right cell-text-right">{{
+                      paymentEligibleDaysCount.CCFRI['lessOOSCG']
+                    }}</v-col>
                     <v-col class="cell-text-right">{{ paymentEligibleDaysCount.CCFRI['overOOSCG'] }}</v-col>
                   </v-row>
                 </v-col>
@@ -1200,10 +1303,20 @@
     </template>
   </v-container>
   <BackConfirmationDialog v-model="showBackConfirmationDialog" />
-  <FullMonthClosureConfirmationDialog v-model="showFullMonthClosureConfirmationDialog" :loading="loading || processing"
-    @cancel="cancelFullMonthClosure" @proceed="confirmFullMonthClosure" />
-  <ReportNavButtons :loading="loading || processing" :is-save-displayed="isSaveDisplayed"
-    :is-next-displayed="isNextDisplayed" @previous="previous" @next="next" @save="save(true)" />
+  <FullMonthClosureConfirmationDialog
+    v-model="showFullMonthClosureConfirmationDialog"
+    :loading="loading || processing"
+    @cancel="cancelFullMonthClosure"
+    @proceed="confirmFullMonthClosure"
+  />
+  <ReportNavButtons
+    :loading="loading || processing"
+    :is-save-displayed="isSaveDisplayed"
+    :is-next-displayed="isNextDisplayed"
+    @previous="previous"
+    @next="next"
+    @save="save(true)"
+  />
 </template>
 
 <script>
@@ -1639,7 +1752,7 @@ export default {
     },
 
     goToClosures() {
-      this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.originalEnrolmentReport?.programYearId}`)
+      this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.originalEnrolmentReport?.programYearId}`);
     },
 
     async save(showMessage) {
