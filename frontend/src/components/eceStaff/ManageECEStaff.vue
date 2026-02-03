@@ -4,7 +4,7 @@
       <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
       <p>
         Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry
-        before making any changes to Hourly Wage or status. To save changes to Hourly Wage or Status click
+        before making any changes to Hourly Wage or Status. To save changes to Hourly Wage or Status click
         <strong>Save Changes</strong> below.
       </p>
 
@@ -24,10 +24,17 @@
         <v-col cols="auto">
           <v-row class="g-2" justify="end">
             <v-col cols="auto">
-              <AppButton size="small" :loading="isLoading" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+              <AppButton
+                v-if="hasPermission(PERMISSIONS.ADD_ECE_STAFF) && !isEditing"
+                size="small"
+                :loading="isLoading"
+                @click="addDialogOpen = true"
+              >
+                Add ECE Staff
+              </AppButton>
             </v-col>
 
-            <v-col v-if="!isEditing" cols="auto">
+            <v-col v-if="!isEditing && hasPermission(PERMISSIONS.EDIT_ECE_STAFF)" cols="auto">
               <AppButton
                 :primary="true"
                 size="small"
@@ -39,7 +46,7 @@
               </AppButton>
             </v-col>
 
-            <v-col v-if="isEditing" cols="auto">
+            <v-col v-if="isEditing && hasPermission(PERMISSIONS.EDIT_ECE_STAFF)" cols="auto">
               <AppButton
                 :primary="true"
                 size="small"
@@ -51,7 +58,7 @@
               </AppButton>
             </v-col>
 
-            <v-col v-if="isEditing" cols="auto">
+            <v-col v-if="isEditing && hasPermission(PERMISSIONS.EDIT_ECE_STAFF)" cols="auto">
               <AppButton :primary="false" size="small" :loading="isLoading" @click="cancelChanges"> Cancel </AppButton>
             </v-col>
 
@@ -100,6 +107,7 @@
           <template #[`item.certifications`]="{ item }">
             <v-row no-gutters class="justify-end justify-lg-start">
               <AppButton
+                v-if="hasPermission(PERMISSIONS.VIEW_ECE_STAFF)"
                 :primary="false"
                 size="small"
                 width="100"
@@ -134,6 +142,7 @@ import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 import ECEStaffService from '@/services/eceStaffService.js';
 
@@ -143,7 +152,7 @@ import rules from '@/utils/rules';
 export default {
   name: 'ManageECEStaff',
   components: { AppButton, AddECEStaffDialog, AppNumberInput, ECEStaffCertificationDialog },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       isLoading: false,
