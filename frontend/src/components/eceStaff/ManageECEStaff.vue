@@ -4,7 +4,7 @@
       <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
       <p>
         Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry
-        before making any changes to Hourly Wage or status. To save changes to Hourly Wage or Status click
+        before making any changes to Hourly Wage or Status. To save changes to Hourly Wage or Status click
         <strong>Save Changes</strong> below.
       </p>
 
@@ -25,7 +25,7 @@
           <v-row class="g-2" justify="end">
             <v-col cols="auto">
               <AppButton
-                v-if="hasPermission(PERMISSIONS.ADD_ECE_STAFF)"
+                v-if="hasPermission(PERMISSIONS.ADD_ECE_STAFF) && !isEditing"
                 size="small"
                 :loading="isLoading"
                 @click="addDialogOpen = true"
