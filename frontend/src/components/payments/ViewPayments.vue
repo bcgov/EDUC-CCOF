@@ -344,6 +344,7 @@ export default {
     getDisplayStatus(statusCode) {
       switch (statusCode) {
         case PAYMENT_STATUSES.APPROVED_PAYMENT:
+        case PAYMENT_STATUSES.INVOICED:
         case PAYMENT_STATUSES.PROCESSING_PAYMENT:
         case PAYMENT_STATUSES.PROCESSING_ERROR:
           return PAYMENT_STATUS_TEXTS.APPROVED;
