@@ -8,7 +8,7 @@
       <v-skeleton-loader v-if="processing" :loading="processing" type="table-tbody" class="mt-4 mb-8" />
       <v-card v-else variant="outlined" class="overflow-auto mt-4 pa-4 pt-0 pa-md-8 pt-md-0">
         <v-row no-gutters class="py-2">
-          <v-col class="d-flex" cols="10">
+          <v-col class="d-flex" cols="12" md="10">
             <span class="pr-2 pt-4">Report full month closure or no enrolment</span>
             <v-switch
               v-model="enrolmentReport.isFullMonthClosure"
@@ -23,9 +23,9 @@
               />
             </span>
           </v-col>
-          <v-col class="d-flex justify-end align-center" cols="2">
+          <v-col v-if="PERMISSIONS.VIEW_CLOSURES" class="d-flex justify-md-end align-center mb-1 mt-1" cols="12" md="2">
             <div>
-              <AppButton size="small" auto-height="false" @click.prevent="goToClosures">Go to Closures</AppButton>
+              <AppButton size="small" auto-height="false" @click.prevent="goToClosures">Closure Details</AppButton>
             </div>
           </v-col>
         </v-row>
