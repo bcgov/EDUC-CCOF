@@ -1,9 +1,10 @@
 import { isEmpty } from 'lodash';
-import { ORGANIZATION_FACILITY_STATUS_CODES, FUNDING_AGREEMENTS_STATUS } from './constants.js';
 
-export function isFacilityActive(facility, application) {
-  const orgHasFundingAgreementThisYear = !!(
-    application?.fundingAgreementNumber && application?.internalStatus === FUNDING_AGREEMENTS_STATUS.ACTIVE
+import { FUNDING_AGREEMENTS_STATUS, ORGANIZATION_FACILITY_STATUS_CODES } from './constants.js';
+
+export function isFacilityActive(facility, applicationMap) {
+  const orgHasFundingAgreementThisYear = [...(applicationMap?.values() ?? [])].some(
+    (app) => app?.fundingAgreementNumber && app?.internalStatus === FUNDING_AGREEMENTS_STATUS.ACTIVE,
   );
 
   return (
