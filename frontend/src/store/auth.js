@@ -32,11 +32,7 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     hasPermission: (state) => {
       return (permissions) => {
-        console.log('hasPermissions: ');
-        console.log(state.permissions);
-        console.log(permissions);
         const requiredPermissions = Array.isArray(permissions) ? permissions : [permissions];
-        console.log(requiredPermissions);
         return state.permissions?.some((p) => requiredPermissions.includes(p));
       };
     },
@@ -93,9 +89,20 @@ export const useAuthStore = defineStore('auth', {
       //This method is called by the router.
       //Only hit the API service if the info has not already been loaded.
       if (!this.isUserInfoLoaded) {
+        const appStore = useAppStore();
         const applicationStore = useApplicationStore();
         const navBarStore = useNavBarStore();
         const organizationStore = useOrganizationStore();
+
+        /*
+          Ensures lookupInfo is initialized before continuing.
+          getLookupInfo() is triggered in App.vue, but because it runs asynchronously,
+          the system could attempt to access lookup data before it was loaded.
+          This check guarantees lookupInfo is fully initialized before any dependent logic runs.
+        */
+        if (!appStore.lookupInfo) {
+          await appStore.getLookupInfo();
+        }
 
         let userInfoRes;
         if (this.impersonateId && this.isMinistryUser) {
@@ -106,15 +113,7 @@ export const useAuthStore = defineStore('auth', {
         this.setUserInfo(userInfoRes.data);
 
         // Lookup the permissions
-        const appStore = useAppStore();
-        if (!appStore.lookupInfo) {
-          await appStore.getLookupInfo();
-        }
         const role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
-        console.log('getUserInfo permissions: ');
-        console.log('this.userInfo.role');
-        console.log(this.userInfo.role);
-        console.log(role);
         this.permissions = role?.permissions?.map((p) => p.permissionNumber) ?? [];
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
