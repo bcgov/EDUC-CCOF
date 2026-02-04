@@ -4,8 +4,9 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { createECEStaff, getECEStaff, getECEStaffCertificates, updateECEStaff } = require('../components/eceStaff');
-const { UUID_VALIDATOR_VERSION } = require('../util/constants');
+const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { body, checkSchema, oneOf, query, validationResult } = require('express-validator');
+const validatePermission = require('../middlewares/validatePermission');
 /**
  * Get the ECE Staff records using facilityID
  */
@@ -13,7 +14,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  //TODO: Add permissions here
+  validatePermission(PERMISSIONS.VIEW_ECE_STAFF),
   query('facilityId', 'Query param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
@@ -28,7 +29,7 @@ router.get(
   '/certificates',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  //TODO: Add permissions here
+  validatePermission(PERMISSIONS.VIEW_ECE_STAFF),
   [
     query('registrationNumber').notEmpty().withMessage('[registrationNumber] is required').matches(/^\d+$/),
     oneOf([query('firstName').notEmpty().isString(), query('lastName').notEmpty().isString()], {
@@ -74,7 +75,7 @@ router.patch(
   '/bulk',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  //TODO: Add permissions here
+  validatePermission(PERMISSIONS.EDIT_ECE_STAFF),
   body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
   checkSchema(updateECEStaffSchema),
   (req, res) => {
@@ -106,7 +107,7 @@ router.post(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  //TODO: Add permissions here
+  validatePermission(PERMISSIONS.ADD_ECE_STAFF),
   [body('facilityId').notEmpty().withMessage('[facilityId] is required').isUUID(UUID_VALIDATOR_VERSION)],
   checkSchema(createECEStaffSchema),
   (req, res) => {

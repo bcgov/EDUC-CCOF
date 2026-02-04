@@ -768,6 +768,7 @@ export const PAYMENT_STATUSES = Object.freeze({
   PROCESSING_ERROR: 6,
   CANCELLED: 7,
   HOLD: 101510001,
+  INVOICED: 101510002,
 });
 
 export const PAYMENT_STATUS_TEXTS = Object.freeze({
