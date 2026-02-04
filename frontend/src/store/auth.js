@@ -32,7 +32,11 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     hasPermission: (state) => {
       return (permissions) => {
+        console.log('hasPermissions: ');
+        console.log(state.permissions);
+        console.log(permissions);
         const requiredPermissions = Array.isArray(permissions) ? permissions : [permissions];
+        console.log(requiredPermissions);
         return state.permissions?.some((p) => requiredPermissions.includes(p));
       };
     },
@@ -104,6 +108,10 @@ export const useAuthStore = defineStore('auth', {
         // Lookup the permissions
         const appStore = useAppStore();
         const role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
+        console.log('getUserInfo permissions: ');
+        console.log('this.userInfo.role');
+        console.log(this.userInfo.role);
+        console.log(role);
         this.permissions = role?.permissions.map((p) => p.permissionNumber);
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
