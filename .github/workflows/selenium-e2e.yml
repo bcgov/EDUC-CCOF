@@ -1,8 +1,6 @@
 name: Selenium end-to-end tests
-
 on:
   workflow_dispatch:
-
 jobs:
   selenium-run:
     name: Run Selenium E2E tests
