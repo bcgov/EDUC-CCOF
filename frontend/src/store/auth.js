@@ -107,12 +107,15 @@ export const useAuthStore = defineStore('auth', {
 
         // Lookup the permissions
         const appStore = useAppStore();
+        if (!appStore.lookupInfo) {
+          await appStore.getLookupInfo();
+        }
         const role = appStore.roles.find((role) => role.roleId === this.userInfo.role?.roleId);
         console.log('getUserInfo permissions: ');
         console.log('this.userInfo.role');
         console.log(this.userInfo.role);
         console.log(role);
-        this.permissions = role?.permissions.map((p) => p.permissionNumber);
+        this.permissions = role?.permissions?.map((p) => p.permissionNumber) ?? [];
 
         applicationStore.addApplicationsToMap(userInfoRes.data.applications);
         await applicationStore.loadApplicationFromStore(applicationStore.latestProgramYearId);

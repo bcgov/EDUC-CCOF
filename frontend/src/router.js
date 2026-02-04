@@ -1096,7 +1096,7 @@ const router = createRouter({
 
 router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth) {
-    const appStore = useAppStore();
+    // const appStore = useAppStore();
     const authStore = useAuthStore();
     authStore
       .getJwtToken()
@@ -1111,9 +1111,9 @@ router.beforeEach((to, _from, next) => {
             data before it was loaded - causing errors for NEW users.
             This check guarantees lookupInfo is fully initialized before any dependent logic runs.
           */
-          if (!appStore.lookupInfo) {
-            await appStore.getLookupInfo();
-          }
+          // if (!appStore.lookupInfo) {
+          //   await appStore.getLookupInfo();
+          // }
           authStore
             .getUserInfo(to)
             .then(async () => {
