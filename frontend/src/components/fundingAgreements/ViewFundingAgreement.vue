@@ -212,7 +212,7 @@ export default {
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
     licenceToDisplay() {
-      return this.licences.filter((l) => !l.recordEndDate);
+      return this.licences.length <= 1 ? this.licences : this.licences.filter((l) => !l.recordEndDate);
     },
   },
   async created() {
