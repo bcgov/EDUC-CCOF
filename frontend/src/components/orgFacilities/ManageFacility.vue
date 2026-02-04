@@ -27,8 +27,7 @@
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_LICENCE_INFORMATION)" value="licences-details">
               Licence and Service Details Record
             </v-tab>
-            <!-- TODO: Add permissions here to secure this tab-->
-            <v-tab value="ece-staff"> Manage ECE Staff </v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_ECE_STAFF)" value="ece-staff"> Manage ECE Staff </v-tab>
           </v-tabs>
           <v-card-text>
             <v-window v-model="tab">
@@ -95,8 +94,7 @@ export default {
       return this.$route.params.facilityId;
     },
     facilityIsActive() {
-      const application = this.applicationMap?.get(this.programYearId);
-      return isFacilityActive(this.facility, application);
+      return isFacilityActive(this.facility, this.applicationMap);
     },
     facilityDataReady() {
       return !isEmpty(this.facility);

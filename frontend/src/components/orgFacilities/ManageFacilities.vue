@@ -92,8 +92,7 @@ export default {
   },
   methods: {
     facilityIsActive(facility) {
-      const application = this.applicationMap?.get(this.programYearId);
-      return isFacilityActive(facility, application);
+      return isFacilityActive(facility, this.applicationMap);
     },
   },
 };
