@@ -32,6 +32,11 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     hasPermission: (state) => {
       return (permissions) => {
+        console.log('Checking hasPermission:');
+        console.log('permissions');
+        console.log(permissions);
+        console.log('state.permissions');
+        console.log(state.permissions);
         const requiredPermissions = Array.isArray(permissions) ? permissions : [permissions];
         return state.permissions?.some((p) => requiredPermissions.includes(p));
       };
@@ -103,7 +108,12 @@ export const useAuthStore = defineStore('auth', {
         if (!appStore.lookupInfo) {
           await appStore.getLookupInfo();
         }
-
+        console.log('=====================================');
+        console.log('Fetching user info');
+        console.log('appStore.roles');
+        console.log(appStore.roles);
+        console.log(appStore.healthAuthorities);
+        console.log('=====================================');
         let userInfoRes;
         if (this.impersonateId && this.isMinistryUser) {
           userInfoRes = await ApiService.getUserImpersonateInfo(this.impersonateId);
