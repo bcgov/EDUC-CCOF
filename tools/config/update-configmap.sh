@@ -100,6 +100,7 @@ oc create -n "$OPENSHIFT_NAMESPACE" configmap \
   --from-literal="REDIS_HOST=redis" \
   --from-literal="REDIS_PORT=6379" \
   --from-literal="REDIS_FACILITY_TTL=600" \
+  --from-literal="REDIS_PREFIX=$ENV_VAL:" \
   --from-literal="SERVER_FRONTEND=$SERVER_FRONTEND" \
   --from-literal="SERVER_PORT=8080" \
   --from-literal="SITEMINDER_LOGOUT_ENDPOINT=$SITE_MINDER_LOGOUT_URL" \
