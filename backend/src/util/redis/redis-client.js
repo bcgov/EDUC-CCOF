@@ -4,6 +4,7 @@ const log = require('../../components/logger');
 
 class Redis {
   static client;
+  static prefix = config.get('redis:prefix');
 
   static async shutdown(signal = 'quit') {
     log.info(`Received ${signal}, closing Redis connection`);
@@ -36,6 +37,61 @@ class Redis {
 
   static decodeKey(hex) {
     return Buffer.from(hex, 'hex').toString('utf8');
+  }
+
+  /**
+   * A prefix wrapper for `Redis.client.get`. Do not use this for cached data
+   * that is shared between pod environments.
+   *
+   * @param {string} key - The un-prefixed Redis key
+   * @param {args} args - The rest of the command args
+   */
+  static async get(key, ...args) {
+    return Redis.client.get(`${Redis.prefix}${key}`, ...args);
+  }
+
+  /**
+   * A prefix wrapper for `Redis.client.set`. Do not use this for cached data
+   * that is shared between pod environments.
+   *
+   * @param {string} key - The un-prefixed Redis key
+   * @param {args} args - The rest of the command args
+   */
+  static async set(key, ...args) {
+    return Redis.client.set(`${Redis.prefix}${key}`, ...args);
+  }
+
+  /**
+   * A prefix wrapper for `Redis.client.json.get`. Do not use this for cached data
+   * that is shared between pod environments.
+   *
+   * @param {string} key - The un-prefixed Redis key
+   * @param {args} args - The rest of the command args
+   */
+  static async jsonGet(key, ...args) {
+    return Redis.client.json.get(`${Redis.prefix}${key}`, ...args);
+  }
+
+  /**
+   * A prefix wrapper for `Redis.client.json.set`. Do not use this for cached data
+   * that is shared between pod environments.
+   *
+   * @param {string} key - The un-prefixed Redis key
+   * @param {args} args - The rest of the command args
+   */
+  static async jsonSet(key, ...args) {
+    return Redis.client.json.set(`${Redis.prefix}${key}`, ...args);
+  }
+
+  /**
+   * A prefix wrapper for `Redis.client.expire`. Do not use this for cached data
+   * that is shared between pod environments.
+   *
+   * @param {string} key - The un-prefixed Redis key
+   * @param {args} args - The rest of the command args
+   */
+  static async expire(key, ...args) {
+    return Redis.client.expire(`${Redis.prefix}${key}`, ...args);
   }
 
   static async init() {
