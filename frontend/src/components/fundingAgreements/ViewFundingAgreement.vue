@@ -212,7 +212,12 @@ export default {
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
     licenceToDisplay() {
-      return this.licences.length <= 1 ? this.licences : this.licences.filter((l) => !l.recordEndDate);
+      const faStart = new Date(this.fundingAgreement.fundingAgreementStartDate);
+      return this.licences.filter((l) => {
+        const start = new Date(l.recordStartDate);
+        const end = l.recordEndDate ? new Date(l.recordEndDate) : null;
+        return start <= faStart && (!end || end >= faStart);
+      });
     },
   },
   async created() {
