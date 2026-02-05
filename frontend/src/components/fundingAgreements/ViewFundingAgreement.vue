@@ -216,7 +216,7 @@ export default {
       return this.licences.filter((l) => {
         const start = new Date(l.recordStartDate);
         const end = l.recordEndDate ? new Date(l.recordEndDate) : null;
-        return start <= faStart && (!end || end >= faStart);
+        return start <= faStart && (!end || end > faStart);
       });
     },
   },
