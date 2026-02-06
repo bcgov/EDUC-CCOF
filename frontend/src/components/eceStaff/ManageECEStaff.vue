@@ -254,12 +254,12 @@ export default {
       await this.$refs.form.validate();
       if (!this.isValidForm) return;
 
-      const keysForBackend = ['eceStaffId', 'hourlyWage', 'status'];
+      const keysForBackend = ['staffInformationId', 'hourlyWage', 'status'];
       const updatedECEStaff = getUpdatedObjectsByKeys(
         this.originalECEStaff,
         this.eceStaff,
         keysForBackend,
-        'eceStaffId',
+        'staffInformationId',
       );
       const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
       try {

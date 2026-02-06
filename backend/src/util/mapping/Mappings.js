@@ -923,13 +923,20 @@ const ECEStaffInformationMappings = [
 
 const ECEStaffMappings = [
   { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
+  { back: 'ccof_ece_staff_information_facilityid', front: 'staffInformationId' },
   { back: '_ccof_facility_id_value', front: 'facilityId' },
   { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
   { back: 'ccof_first_name', front: 'firstName' },
   { back: 'ccof_middle_name', front: 'middleName' },
   { back: 'ccof_last_name', front: 'lastName' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
+  { back: 'statecode', front: 'status' },
+];
+
+const ECEFacilityStaffMappings = [
+  { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'statecode', front: 'status' },
 ];
 
@@ -957,6 +964,7 @@ module.exports = {
   AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,
+  ECEFacilityStaffMappings,
   ECEStaffInformationMappings,
   ECEStaffMappings,
   ECECertificateMappings,

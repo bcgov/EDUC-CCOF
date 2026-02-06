@@ -43,10 +43,10 @@ router.get(
 );
 
 const updateECEStaffSchema = {
-  '*.eceStaffId': {
+  '*.staffInformationId': {
     in: ['body'],
-    exists: { errorMessage: '[eceStaffId] is required' },
-    isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[eceStaffId] must be a valid UUID' },
+    exists: { errorMessage: '[staffInformationId] is required' },
+    isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[staffInformationId] must be a valid UUID' },
   },
   '*.hourlyWage': {
     in: ['body'],
