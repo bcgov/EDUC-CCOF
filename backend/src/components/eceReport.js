@@ -1,6 +1,6 @@
 'use strict';
 
-const { buildFilterQuery, getOperation, padString, patchOperationWithObjectId, postOperation } = require('./utils');
+const { buildFilterQuery, deleteOperationWithObjectId, getOperation, padString, patchOperationWithObjectId, postOperation } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { ECEReportMappings, ECEStaffInformationMappings } = require('../util/mapping/Mappings');
@@ -106,4 +106,18 @@ async function updateECEStaffInformation(req, res) {
   }
 }
 
-module.exports = { createECEReport, createECEStaffInformation, getECEReport, getECEReports, updateECEStaffInformation };
+async function deleteECEStaffInformation(req, res) {
+  try {
+    await Promise.all(
+      req.body?.eceStaffInformationIds?.map(async (id) => {
+        await deleteOperationWithObjectId('ccof_ece_staff_informations', id);
+      }),
+    );
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+module.exports = { createECEReport, createECEStaffInformation, deleteECEStaffInformation, getECEReport, getECEReports, updateECEStaffInformation };

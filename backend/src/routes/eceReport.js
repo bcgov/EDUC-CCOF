@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { createECEReport, createECEStaffInformation, getECEReport, getECEReports, updateECEStaffInformation } = require('../components/eceReport');
+const { createECEReport, createECEStaffInformation, deleteECEStaffInformation, getECEReport, getECEReports, updateECEStaffInformation } = require('../components/eceReport');
 const { body, checkSchema, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
@@ -151,6 +151,18 @@ router.patch(
   (req, res) => {
     validationResult(req).throw();
     return updateECEStaffInformation(req, res);
+  },
+);
+
+router.delete(
+  '/staff-information',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  //TODO: Add permissions here
+  [body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'), body('*').isUUID().withMessage('Each ID must be a valid UUID')],
+  (req, res) => {
+    validationResult(req).throw();
+    return deleteECEStaffInformation(req, res);
   },
 );
 

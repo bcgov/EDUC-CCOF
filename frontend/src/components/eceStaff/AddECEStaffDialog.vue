@@ -30,10 +30,9 @@
       </v-row>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <p v-if="resultState.duplicateStaff" class="mb-2 text-error">
+        <AppAlertBanner v-if="isDuplicate" type="error">
           {{ duplicateStaffErrorMessage }}
-        </p>
-
+        </AppAlertBanner>
         <v-data-table
           v-if="resultState.hasResults"
           :items="results"
@@ -50,7 +49,7 @@
 
           <template #item.hourlyWage="{ item }">
             <v-form ref="eceForm" v-model="isValidForm">
-              <p v-if="isEceReport">
+              <p v-if="item.isExistingInFacility">
                 {{ formatCurrency(item.hourlyWage) }}
               </p>
               <v-text-field
@@ -66,8 +65,8 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                :disabled="item.isDuplicate"
                 required
+                class="py-2"
               />
             </v-form>
           </template>
@@ -108,10 +107,10 @@
           </template>
         </v-data-table>
 
-        <p v-else-if="resultState.noResults" class="mt-2 text-error">
+        <AppAlertBanner v-else-if="resultState.noResults" type="error">
           No ECE found. Please ensure information entered is exactly as it appears on the ECE Certification and try
           again. If you continue to have issues, please contact the ECE Registry at: <strong>1-888-338-6622</strong>
-        </p>
+        </AppAlertBanner>
       </v-skeleton-loader>
     </template>
 
@@ -130,18 +129,19 @@
 </template>
 
 <script>
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { getECECertStatusClass } from '@/utils/common.js';
-import { ECE_STAFF_CERT_STATUSES } from '@/utils/constants.js';
+import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
 export default {
   name: 'AddECEStaffDialog',
-  components: { AppButton, AppDialog },
+  components: { AppAlertBanner, AppButton, AppDialog },
   mixins: [alertMixin],
   props: {
     modelValue: {
@@ -190,12 +190,13 @@ export default {
       },
     },
 
-    existingStaff() {
-      return this.isEceReport ? this.reportExistingStaff : this.facilityExistingStaff;
+    foundStaff() {
+      return this.results[0] ?? null;
     },
 
-    foundStaff() {
-      return this.results?.[0] ?? null;
+    isDuplicate() {
+      if (!this.foundStaff) return false;
+      return this.isEceReport ? this.foundStaff.isExistingInReport : this.foundStaff.isExistingInFacility;
     },
 
     duplicateStaffErrorMessage() {
@@ -211,12 +212,11 @@ export default {
     resultState() {
       const hasResults = this.results.length > 0;
       const noResults = this.searched && !hasResults;
-      const duplicateStaff = hasResults && this.searched && this.foundStaff?.isDuplicate;
-      return { hasResults, noResults, duplicateStaff };
+      return { hasResults, noResults };
     },
 
     canAddECE() {
-      return this.isValidForm && this.foundStaff?.isDuplicate !== true;
+      return this.isValidForm && !this.isDuplicate;
     },
   },
 
@@ -227,38 +227,41 @@ export default {
   methods: {
     formatCurrency,
     getECECertStatusClass,
-    // isDuplicateStaff(registrationNumber) {
-    //   return this.existingStaff.some((s) => s.registrationNumber === registrationNumber);
-    // },
-
     async searchStaff() {
       this.searched = true;
       this.isLoading = true;
       try {
         const params = Object.fromEntries(Object.entries(this.search).filter(([, value]) => value));
         const certificates = await ECEStaffService.getECEStaffCertificates(params);
-        const first = certificates?.[0];
-        const existing = first && this.existingStaff.find((s) => s.registrationNumber === first.registrationNumber);
-
-        this.results = first
-          ? [
-              {
-                registrationNumber: first.registrationNumber,
-                firstName: formatName(first.firstName),
-                middleName: formatName(first.middleName),
-                lastName: formatName(first.lastName),
-                certificates,
-                isDuplicate: !!existing,
-                hourlyWage: existing?.hourlyWage,
-              },
-            ]
-          : [];
+        this.results = this.buildSearchResults(certificates);
       } catch (err) {
         this.setFailureAlert('Failed to search ECE staff.');
         console.error(err);
       } finally {
         this.isLoading = false;
       }
+    },
+
+    buildSearchResults(certificates = []) {
+      if (!certificates.length) return [];
+      const staff = certificates[0];
+      const existsInReport = this.reportExistingStaff.find((s) => s.registrationNumber === staff.registrationNumber);
+      const existsInFacility = this.facilityExistingStaff.find(
+        (s) => s.registrationNumber === staff.registrationNumber,
+      );
+      return [
+        {
+          registrationNumber: staff.registrationNumber,
+          firstName: formatName(staff.firstName),
+          middleName: formatName(staff.middleName),
+          lastName: formatName(staff.lastName),
+          certificates,
+          isExistingInReport: Boolean(existsInReport),
+          isExistingInFacility: Boolean(existsInFacility),
+          isFacilityStaffActive: existsInFacility?.status === ECE_STAFF_STATUSES.ACTIVE,
+          hourlyWage: existsInFacility?.hourlyWage ?? null,
+        },
+      ];
     },
 
     closeDialog() {
@@ -273,11 +276,10 @@ export default {
     },
 
     async addECEStaff() {
-      if (!this.foundStaff) return;
+      if (!this.foundStaff || this.isDuplicate) return;
       try {
         if (this.isEceReport) {
           this.$emit('staff-added', this.foundStaff);
-          this.setSuccessAlert('ECE Staff record has been added to the report');
           this.closeDialog();
           return;
         }
