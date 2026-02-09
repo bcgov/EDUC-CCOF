@@ -60,12 +60,6 @@ async function updateECEStaff(req, res) {
   }
 }
 
-async function createProviderEmployee(staffData) {
-  const payload = new MappableObjectForBack(staffData, ECEStaffMappings).toJSON();
-  const created = await postOperation('ccof_ece_provider_employees', payload);
-  return created.ccof_ece_provider_employeeid;
-}
-
 async function createFacilityStaff(facilityData) {
   const payload = new MappableObjectForBack(facilityData, ECEFacilityStaffMappings).toJSON();
   payload['ccof_ece_staff@odata.bind'] = `/ccof_ece_provider_employees(${facilityData.staffId})`;
@@ -77,16 +71,16 @@ async function createFacilityStaff(facilityData) {
 async function createECEStaff(req, res) {
   try {
     const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = req.body;
-    const lookup = await getOperation(`ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${registrationNumber.replace(/'/g, "''")}'`);
 
-    let staffId;
-    if (lookup?.value?.length) {
-      staffId = lookup.value[0].ccof_ece_provider_employeeid;
-      await createFacilityStaff({ staffId, facilityId, hourlyWage, organizationId });
-    } else {
-      staffId = await createProviderEmployee({ firstName, middleName, lastName, registrationNumber });
-      await createFacilityStaff({ staffId, facilityId, hourlyWage, organizationId });
+    const payload = new MappableObjectForBack({ firstName, middleName, lastName, registrationNumber }, ECEStaffMappings).toJSON();
+    const created = await postOperation('ccof_ece_provider_employees', payload);
+
+    let staffId = created?.ccof_ece_provider_employeeid;
+    if (!staffId) {
+      const lookup = await getOperation(`ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${registrationNumber.replace(/'/g, "''")}'`);
+      staffId = lookup?.value?.[0]?.ccof_ece_provider_employeeid;
     }
+    await createFacilityStaff({ staffId, facilityId, hourlyWage, organizationId });
 
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {
