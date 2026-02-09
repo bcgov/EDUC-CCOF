@@ -71,17 +71,16 @@ async function createFacilityStaff(facilityData) {
 async function createECEStaff(req, res) {
   try {
     const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = req.body;
+    const lookup = await getOperation(`ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${registrationNumber.replace(/'/g, "''")}'`);
+    let staffId;
 
-    const payload = new MappableObjectForBack({ firstName, middleName, lastName, registrationNumber }, ECEStaffMappings).toJSON();
-    const created = await postOperation('ccof_ece_provider_employees', payload);
-
-    let staffId = created?.ccof_ece_provider_employeeid;
-    if (!staffId) {
-      const lookup = await getOperation(`ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${registrationNumber.replace(/'/g, "''")}'`);
-      staffId = lookup?.value?.[0]?.ccof_ece_provider_employeeid;
+    if (lookup?.value?.length > 0) {
+      staffId = lookup.value[0].ccof_ece_provider_employeeid;
+    } else {
+      const payload = new MappableObjectForBack({ firstName, middleName, lastName, registrationNumber }, ECEStaffMappings).toJSON();
+      staffId = await postOperation('ccof_ece_provider_employees', payload);
     }
     await createFacilityStaff({ staffId, facilityId, hourlyWage, organizationId });
-
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     log.error(e);
