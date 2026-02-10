@@ -36,7 +36,7 @@ function sanitizeODataFilterValue(value) {
   }
   let sanitized = value.trim();
   // Allow only letters, numbers, space, and safe punctuation
-  sanitized = sanitized.replace(/[^\p{L}\p{N} ._'\-]/gu, '');
+  sanitized = sanitized.replace(/[^\p{L}\p{N} ._'-]/gu, '');
   // Escape single quotes for OData
   sanitized = sanitized.replace(/'/g, "''");
   return sanitized;
