@@ -211,14 +211,16 @@ export default {
       try {
         if (this.isReadOnly) return;
         this.setIsApplicationProcessing(true);
-        if (this.hasModelChanged || this.hasDataToDelete) {
+        const shouldSaveCcfri = this.hasModelChanged || this.hasDataToDelete;
+        if (shouldSaveCcfri) {
           await this.saveCcfri({
             isFormComplete: this.isFormComplete,
             hasRfi: this.getNavByCCFRIId(this.$route.params.urlGuid).hasRfi,
           });
           this.setLoadedModel(cloneDeep(this.CCFRIFacilityModel));
         }
-        if (this.showApplicationTemplateV1 && !this.hasIllegalClosureDates) {
+        const shouldProcessClosures = this.showApplicationTemplateV1 && !this.hasIllegalClosureDates;
+        if (shouldProcessClosures) {
           await this.processUpdatedClosures();
           await this.loadClosures(this.$route.params.urlGuid);
         }
@@ -230,14 +232,18 @@ export default {
         //remove the facility to delete from the store
         this.deleteChildCareTypes();
         this.refreshNavBarList();
-        if (showMessage) {
-          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
+        if (showMessage && (shouldSaveCcfri || shouldProcessClosures)) {
+          this.setSuccessAlert('Success! CCFRI Parent fees have been saved');
+        } else {
+          this.setWarningAlert('There were no changes to save');
         }
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while saving. Please try again later.');
       } finally {
         this.setIsApplicationProcessing(false);
+        await this.$nextTick();
+        this.validateApplicationForm();
       }
     },
   },
