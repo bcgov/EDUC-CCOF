@@ -178,7 +178,7 @@ router.post(
  * Update ECE Report Staff information in bulk
  */
 router.patch(
-  '/staff-information/bulk',
+  '/report-staff',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   //TODO: Add permissions here

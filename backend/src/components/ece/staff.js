@@ -5,6 +5,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECECertificateMappings, ECEFacilityStaffMappings, ECEReportStaffMappings, ECEStaffMappings } = require('../../util/mapping/Mappings');
 const { MappableObjectForBack, MappableObjectForFront } = require('../../util/mapping/MappableObject');
+const { sanitizeODataFilterValue } = require('../../util/common');
 
 function mapECEFacilityStaffForFront(eceFacilityStaff) {
   const result = [];
@@ -38,7 +39,7 @@ async function getECEStaffCertificates(req, res) {
     const query = { ...req.query };
     ['registrationNumber', 'firstName', 'lastName'].forEach((key) => {
       if (query[key]) {
-        query[key] = `'${query[key].replace(/'/g, "''")}'`;
+        query[key] = `'${sanitizeODataFilterValue(query[key])}'`;
       }
     });
     const filterQuery = buildFilterQuery(query, ECECertificateMappings);
@@ -66,27 +67,28 @@ async function updateECEFacilityStaff(req, res) {
   }
 }
 
-async function createFacilityStaff(facilityData) {
-  const payload = new MappableObjectForBack(facilityData, ECEFacilityStaffMappings).toJSON();
-  payload['ccof_ece_staff@odata.bind'] = `/ccof_ece_provider_employees(${facilityData.staffId})`;
-  payload['ccof_facility@odata.bind'] = `/accounts(${facilityData.facilityId})`;
-  payload['ccof_organization@odata.bind'] = `/accounts(${facilityData.organizationId})`;
-  await postOperation('ccof_ece_staff_information_facilities', payload);
+async function findOrCreateECEStaff({ firstName, middleName, lastName, registrationNumber }) {
+  const sanitizedRegistrationNumber = sanitizeODataFilterValue(registrationNumber);
+  const query = `ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${sanitizedRegistrationNumber}'`;
+  const lookup = await getOperation(query);
+  if (lookup?.value?.length > 0) {
+    return lookup.value[0].ccof_ece_provider_employeeid;
+  }
+  const payload = new MappableObjectForBack({ firstName, middleName, lastName, registrationNumber }, ECEStaffMappings).toJSON();
+  return await postOperation('ccof_ece_provider_employees', payload);
 }
 
 async function createECEFacilityStaff(req, res) {
   try {
     const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = req.body;
-
-    const payload = new MappableObjectForBack({ firstName, middleName, lastName, registrationNumber }, ECEStaffMappings).toJSON();
-    const created = await postOperation('ccof_ece_provider_employees', payload);
-    let staffId = created?.ccof_ece_provider_employeeid;
-    if (!staffId) {
-      const lookup = await getOperation(`ccof_ece_provider_employees?$select=ccof_ece_provider_employeeid&$filter=ccof_registration_no eq '${registrationNumber.replace(/'/g, "''")}'`);
-      staffId = lookup?.value?.[0]?.ccof_ece_provider_employeeid;
-    }
-    await createFacilityStaff({ staffId, facilityId, hourlyWage, organizationId });
-
+    const staffId = await findOrCreateECEStaff({ firstName, middleName, lastName, registrationNumber });
+    const payload = {
+      'ccof_organization@odata.bind': `/accounts(${organizationId})`,
+      'ccof_facility@odata.bind': `/accounts(${facilityId})`,
+      'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${staffId})`,
+      ccof_hourly_wage: hourlyWage,
+    };
+    await postOperation('ccof_ece_staff_information_facilities', payload);
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     log.error(e);
