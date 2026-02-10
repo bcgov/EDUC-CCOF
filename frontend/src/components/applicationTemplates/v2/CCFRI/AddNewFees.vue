@@ -252,7 +252,7 @@ export default {
   },
   computed: {
     pageContainsErrors() {
-      return Object.values(this.sectionErrors).some((error) => error);
+      return Object.values(this.sectionErrors).includes(true);
     },
   },
   watch: {
