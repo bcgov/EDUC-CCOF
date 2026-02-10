@@ -40,32 +40,4 @@ export default {
       throw error;
     }
   },
-
-  async createECEStaffInformation(eceReportId, payload) {
-    try {
-      if (!eceReportId || isEmpty(payload)) return;
-      const chunkSize = 10;
-      for (let i = 0; i < payload.length; i += chunkSize) {
-        const chunk = payload.slice(i, i + chunkSize);
-        await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/staff-information`, chunk);
-      }
-    } catch (error) {
-      console.error(`Failed to create ECE Staff Information - ${error}`);
-      throw error;
-    }
-  },
-
-  async updateECEStaffInformation(payload) {
-    try {
-      if (isEmpty(payload)) return;
-      const chunkSize = 10;
-      for (let i = 0; i < payload.length; i += chunkSize) {
-        const chunk = payload.slice(i, i + chunkSize);
-        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/staff-information/bulk`, chunk);
-      }
-    } catch (error) {
-      console.error(`Failed to update ECE Staff Information - ${error}`);
-      throw error;
-    }
-  },
 };

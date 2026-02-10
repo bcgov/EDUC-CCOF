@@ -182,7 +182,7 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
-        this.facilityECEStaff = await ECEStaffService.getECEStaff({
+        this.facilityECEStaff = await ECEStaffService.getECEFacilityStaff({
           facilityId: this.eceReport?.facilityId,
         });
         this.reportECEStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
@@ -235,15 +235,15 @@ export default {
       }
     },
     async saveECEStaffInformation() {
-      const keysForBackend = ['eceStaffInformationId', 'totalHoursWorked'];
+      const keysForBackend = ['eceReportStaffId', 'totalHoursWorked'];
       const updatedECEStaff = getUpdatedObjectsByKeys(
         this.originalReportECEStaff,
         this.reportECEStaff,
         keysForBackend,
-        'eceStaffInformationId',
+        'eceReportStaffId',
       );
       const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
-      await ECEReportService.updateECEStaffInformation(payload);
+      await ECEStaffService.updateECEReportStaff(payload);
       this.originalReportECEStaff = deepCloneObject(this.reportECEStaff);
     },
   },

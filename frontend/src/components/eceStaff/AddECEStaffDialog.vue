@@ -256,7 +256,7 @@ export default {
           facilityId: this.$route.params.facilityId,
           organizationId: this.organizationId,
         };
-        const created = await ECEStaffService.createECEStaff(payload);
+        const created = await ECEStaffService.createECEFacilityStaff(payload);
         this.$emit('staff-added', created);
         this.setSuccessAlert('ECE Staff record has been added');
         this.closeDialog();
