@@ -287,15 +287,15 @@ export default {
       console.log(reportECEStaffToCreate);
     },
     async updateReportECEStaff() {
-      const keysForBackend = ['eceStaffInformationId', 'totalHoursWorked'];
+      const keysForBackend = ['eceReportStaffId', 'totalHoursWorked'];
       const updatedECEStaff = getUpdatedObjectsByKeys(
         this.originalReportECEStaff,
         this.reportECEStaff,
         keysForBackend,
-        'eceStaffInformationId',
+        'eceReportStaffId',
       );
       const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
-      await ECEReportService.updateECEStaffInformation(payload);
+      await ECEStaffService.updateECEReportStaff(payload);
       console.log(updatedECEStaff);
     },
     async deleteReportECEStaff() {

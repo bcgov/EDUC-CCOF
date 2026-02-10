@@ -130,10 +130,12 @@
 
 <script>
 import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
+import { mapState } from 'pinia';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatName } from '@/utils/format';
@@ -181,6 +183,7 @@ export default {
   },
 
   computed: {
+    ...mapState(useOrganizationStore, ['organizationId']),
     dialogOpen: {
       get() {
         return this.modelValue;
@@ -290,8 +293,9 @@ export default {
           lastName: this.foundStaff.lastName,
           hourlyWage: Number(this.foundStaff.hourlyWage.toFixed(2)),
           facilityId: this.$route.params.facilityId,
+          organizationId: this.organizationId,
         };
-        const created = await ECEStaffService.createECEStaff(payload);
+        const created = await ECEStaffService.createECEFacilityStaff(payload);
         this.$emit('staff-added', created);
         this.setSuccessAlert('ECE Staff record has been added');
         this.closeDialog();

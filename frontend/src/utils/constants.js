@@ -65,8 +65,8 @@ export const ApiRoutes = Object.freeze({
   PAYMENTS: baseRoot + '/payments',
   CCFRI_FACILITIES: baseRoot + '/facility/ccfri-facilities',
   ECEWE_FACILITIES: baseRoot + '/facility/ecewe-facilities',
-  ECE_REPORTS: baseRoot + '/eceReports',
-  ECE_STAFF: baseRoot + '/eceStaff',
+  ECE_REPORTS: baseRoot + '/ece/reports',
+  ECE_STAFF: baseRoot + '/ece/staff',
 });
 
 export const PAGE_TITLES = Object.freeze({

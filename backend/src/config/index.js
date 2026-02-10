@@ -72,6 +72,7 @@ nconf.defaults({
     password: process.env.REDIS_PASSWORD,
     clustered: process.env.REDIS_USE_CLUSTERED,
     estimatorFacilityTTL: process.env.REDIS_FACILITY_TTL,
+    prefix: process.env.REDIS_PREFIX,
   },
   canadaPostApi: {
     apiEndpoint: process.env.CANADA_POST_API_ENDPOINT,

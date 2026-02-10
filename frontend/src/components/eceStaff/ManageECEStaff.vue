@@ -187,7 +187,7 @@ export default {
     async loadEceStaff() {
       try {
         this.isLoading = true;
-        const staffRecords = await ECEStaffService.getECEStaff({
+        const staffRecords = await ECEStaffService.getECEFacilityStaff({
           facilityId: this.$route.params.facilityId,
         });
         this.eceStaff = staffRecords;
@@ -254,17 +254,17 @@ export default {
       await this.$refs.form.validate();
       if (!this.isValidForm) return;
 
-      const keysForBackend = ['eceStaffId', 'hourlyWage', 'status'];
+      const keysForBackend = ['eceFacilityStaffId', 'hourlyWage', 'status'];
       const updatedECEStaff = getUpdatedObjectsByKeys(
         this.originalECEStaff,
         this.eceStaff,
         keysForBackend,
-        'eceStaffId',
+        'eceFacilityStaffId',
       );
       const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
       try {
         this.isLoading = true;
-        await ECEStaffService.updateECEStaff(payload);
+        await ECEStaffService.updateECEFacilityStaff(payload);
         this.originalECEStaff = deepCloneObject(this.eceStaff);
         this.isEditing = false;
         this.setSuccessAlert('ECE Staff changes saved successfully.');

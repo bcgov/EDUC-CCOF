@@ -47,8 +47,8 @@ const licenceRouter = require('./routes/licence');
 const contactRouter = require('./routes/contact');
 const programsVacanciesRouter = require('./routes/programsVacancies');
 const paymentRouter = require('./routes/payment');
-const eceReportRouter = require('./routes/eceReport');
-const eceStaffRouter = require('./routes/eceStaff');
+const eceReportRouter = require('./routes/ece/report');
+const eceStaffRouter = require('./routes/ece/staff');
 
 const { RedisStore: ConnectRedis } = require('connect-redis');
 const { RedisStore: RateLimitRedis } = require('rate-limit-redis');
@@ -290,8 +290,8 @@ Redis.init()
     apiRouter.use('/contacts', contactRouter);
     apiRouter.use('/programsVacancies', programsVacanciesRouter);
     apiRouter.use('/payments', paymentRouter);
-    apiRouter.use('/eceReports', eceReportRouter);
-    apiRouter.use('/eceStaff', eceStaffRouter);
+    apiRouter.use('/ece/reports', eceReportRouter);
+    apiRouter.use('/ece/staff', eceStaffRouter);
 
     //Handle 500 error
     app.use((err, _req, res, next) => {

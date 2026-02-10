@@ -63,7 +63,7 @@ const fundingModelType = [
 async function getLicenseCategory() {
   let resData;
   try {
-    resData = await Redis.client.json.get('licenseCategories');
+    resData = await Redis.jsonGet('licenseCategories');
   } catch (e) {
     log.error('Unable to retrieve the licenseCategories from Redis', e);
   }
@@ -86,9 +86,8 @@ async function getLicenseCategory() {
       .sort((a, b) => {
         return a.ccof_categorynumber - b.ccof_categorynumber;
       });
-    Redis.client?.json
-      .set('licenseCategories', '$', resData)
-      .then(() => Redis.client.expire('licenseCategories', ...REDIS_EXPIRE_ARGS))
+    Redis.jsonSet('licenseCategories', '$', resData)
+      .then(() => Redis.expire('licenseCategories', ...REDIS_EXPIRE_ARGS))
       .catch((error) => log.error('Could not set licenseCategories with Redis', error));
   }
 
@@ -144,7 +143,7 @@ async function getLookupInfo(_req, res) {
    */
   let resData;
   try {
-    resData = await Redis.client.json.get('lookups');
+    resData = await Redis.jsonGet('lookups');
   } catch (e) {
     log.error('Could not get the lookup data from Redis', e);
   }
@@ -170,9 +169,8 @@ async function getLookupInfo(_req, res) {
       healthAuthorities: healthAuthorities,
       roles: roles,
     };
-    Redis.client?.json
-      .set('lookups', '$', resData)
-      .then(() => Redis.client.expire('lookups', ...REDIS_EXPIRE_ARGS))
+    Redis.jsonSet('lookups', '$', resData)
+      .then(() => Redis.expire('lookups', ...REDIS_EXPIRE_ARGS))
       .catch((error) => log.error('Could not set lookups with Redis', error));
   }
   return res.status(HttpStatus.OK).json(resData);
@@ -181,7 +179,7 @@ async function getLookupInfo(_req, res) {
 async function getSystemMessages(_req, res) {
   let systemMessages;
   try {
-    systemMessages = await Redis.client.json.get('systemMessages');
+    systemMessages = await Redis.jsonGet('systemMessages');
   } catch (e) {
     log.error('Could not retrieve the systemMessages from Redis', e);
   }
@@ -191,9 +189,8 @@ async function getSystemMessages(_req, res) {
     systemMessages = [];
     const resData = await getOperation(`ccof_systemmessages?$filter=(ccof_startdate le ${currentTime} and ccof_enddate ge ${currentTime})`);
     resData?.value.forEach((message) => systemMessages.push(new MappableObjectForFront(message, SystemMessagesMappings).data));
-    Redis.client?.json
-      .set('systemMessages', '$', systemMessages)
-      .then(() => Redis.client.expire('systemMessages', 900, 'NX'))
+    Redis.jsonSet('systemMessages', '$', systemMessages)
+      .then(() => Redis.expire('systemMessages', 900, 'NX'))
       .catch((error) => log.error('Could not set systemMessages with Redis', error));
   }
   return res.status(HttpStatus.OK).json(systemMessages);
@@ -216,7 +213,7 @@ async function getGlobalOptionsData(operationName) {
 async function getRoles() {
   let roles;
   try {
-    roles = await Redis.client.json.get('roles');
+    roles = await Redis.jsonGet('roles');
   } catch (e) {
     log.error('Could not retrieve roles data from Redis', e);
   }
@@ -232,9 +229,8 @@ async function getRoles() {
       roles.push(role);
     });
     roles.sort((a, b) => a.roleName?.localeCompare(b.roleName));
-    Redis.client?.json
-      .set('roles', '$', roles)
-      .then(() => Redis.client.expire('roles', ...REDIS_EXPIRE_ARGS))
+    Redis.jsonSet('roles', '$', roles)
+      .then(() => Redis.expire('roles', ...REDIS_EXPIRE_ARGS))
       .catch((error) => log.error('Could not set roles with Redis', error));
   }
 

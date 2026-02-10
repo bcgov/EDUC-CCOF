@@ -344,8 +344,8 @@ export default {
       this.$refs.form?.reset();
       this.dialogOpen = false;
     },
-    async createECEStaffInformation(eceReportId) {
-      const activeECEStaff = await ECEStaffService.getECEStaff({
+    async createECEReportStaff(eceReportId) {
+      const activeECEStaff = await ECEStaffService.getECEFacilityStaff({
         facilityId: this.selectedFacilityId,
         status: ECE_STAFF_STATUSES.ACTIVE,
       });
@@ -354,7 +354,7 @@ export default {
         eceStaffId: staff.eceStaffId,
         hourlyWage: staff.hourlyWage,
       }));
-      await ECEReportService.createECEStaffInformation(eceReportId, payload);
+      await ECEStaffService.createECEReportStaff(payload);
     },
     async submit() {
       if (!this.isValidForm) return;
@@ -369,7 +369,7 @@ export default {
           reportType: ECE_REPORT_TYPES.BASE,
         });
         const eceReportId = response?.data;
-        await this.createECEStaffInformation(eceReportId);
+        await this.createECEReportStaff(eceReportId);
         this.setSuccessAlert('ECE report created successfully.');
         this.closeDialog();
         await this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
