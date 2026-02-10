@@ -5,7 +5,7 @@ import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
-  async getECEStaff(query) {
+  async getECEFacilityStaff(query) {
     try {
       const queryString = buildQueryString(query);
       if (!queryString) {
@@ -14,7 +14,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}${queryString}`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get ECE Staff by facilityId - ${error}`);
+      console.log(`Failed to get ECE Facility Staff - ${error}`);
       throw error;
     }
   },
@@ -28,32 +28,60 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}/certificates${queryString}`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get certificate for staff - ${error}`);
+      console.error(`Failed to get certificates for staff - ${error}`);
       throw error;
     }
   },
 
-  async updateECEStaff(payload) {
+  async updateECEFacilityStaff(payload) {
     try {
       if (isEmpty(payload)) return;
       const chunkSize = 10;
       for (let i = 0; i < payload.length; i += chunkSize) {
         const chunk = payload.slice(i, i + chunkSize);
-        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/bulk`, chunk);
+        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/facility-staff`, chunk);
       }
     } catch (error) {
-      console.log(`Failed to update ECE Staff - ${error}`);
+      console.error(`Failed to update ECE Facility Staff - ${error}`);
       throw error;
     }
   },
 
-  async createECEStaff(payload) {
+  async createECEFacilityStaff(payload) {
     try {
       if (isEmpty(payload)) return;
-      const response = await ApiService.apiAxios.post(ApiRoutes.ECE_STAFF, payload);
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.ECE_STAFF}/facility-staff`, payload);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to create ECE Staff - ${error}`);
+      console.error(`Failed to create ECE Facility Staff - ${error}`);
+      throw error;
+    }
+  },
+
+  async createECEReportStaff(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const chunkSize = 10;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.post(`${ApiRoutes.ECE_STAFF}/report-staff`, chunk);
+      }
+    } catch (error) {
+      console.error(`Failed to create ECE Staff Information - ${error}`);
+      throw error;
+    }
+  },
+
+  async updateECEReportStaff(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const chunkSize = 10;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/report-staff`, chunk);
+      }
+    } catch (error) {
+      console.error(`Failed to update ECE Staff Information - ${error}`);
       throw error;
     }
   },

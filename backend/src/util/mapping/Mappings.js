@@ -911,8 +911,8 @@ const ECEReportMappings = [
   { back: 'statuscode', front: 'statusCode' },
 ];
 
-const ECEStaffInformationMappings = [
-  { back: 'ccof_ece_staff_informationid', front: 'eceStaffInformationId' },
+const ECEReportStaffMappings = [
+  { back: 'ccof_ece_staff_informationid', front: 'eceReportStaffId' },
   { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },
@@ -923,13 +923,17 @@ const ECEStaffInformationMappings = [
 
 const ECEStaffMappings = [
   { back: 'ccof_ece_provider_employeeid', front: 'eceStaffId' },
-  { back: '_ccof_facility_id_value', front: 'facilityId' },
-  { back: '_ccof_facility_id_value@OData.Community.Display.V1.FormattedValue', front: 'facilityName' },
   { back: 'ccof_first_name', front: 'firstName' },
   { back: 'ccof_middle_name', front: 'middleName' },
   { back: 'ccof_last_name', front: 'lastName' },
-  { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_registration_no', front: 'registrationNumber' },
+];
+
+const ECEFacilityStaffMappings = [
+  { back: 'ccof_ece_staff_information_facilityid', front: 'eceFacilityStaffId' },
+  { back: '_ccof_facility_value', front: 'facilityId' },
+  { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
+  { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'statecode', front: 'status' },
 ];
 
@@ -957,7 +961,8 @@ module.exports = {
   AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,
-  ECEStaffInformationMappings,
+  ECEFacilityStaffMappings,
+  ECEReportStaffMappings,
   ECEStaffMappings,
   ECECertificateMappings,
   EnrolmentReportDifferenceMappings,
