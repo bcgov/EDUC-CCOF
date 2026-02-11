@@ -132,6 +132,7 @@ import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatName } from '@/utils/format';

@@ -325,6 +325,7 @@ export default {
         this.eceReportStaff,
         keysForBackend,
         'eceReportStaffId',
+        'eceReportStaffId',
       );
       const payload = updatedECEStaff
         .filter((staff) => staff.eceReportStaffId)

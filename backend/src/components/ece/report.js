@@ -1,6 +1,6 @@
 'use strict';
 
-const { buildFilterQuery, deleteOperationWithObjectId, getOperation, padString, postOperation } = require('../utils');
+const { buildFilterQuery, getOperation, padString, postOperation } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
