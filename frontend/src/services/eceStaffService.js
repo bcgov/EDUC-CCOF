@@ -6,7 +6,6 @@ import { ApiRoutes } from '@/utils/constants';
 
 export default {
   async getECEFacilityStaff(query) {
-  async getECEFacilityStaff(query) {
     try {
       const queryString = buildQueryString(query);
       if (!queryString) {
@@ -15,8 +14,7 @@ export default {
       const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}${queryString}`);
       return response?.data;
     } catch (error) {
-      console.log(`Failed to get ECE Facility Staff - ${error}`);
-      console.log(`Failed to get ECE Facility Staff - ${error}`);
+      console.error(`Failed to get ECE Facility Staff - ${error}`);
       throw error;
     }
   },
