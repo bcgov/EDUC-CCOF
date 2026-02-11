@@ -33,27 +33,22 @@
         <AppAlertBanner v-if="isDuplicate" type="error">
           {{ duplicateStaffErrorMessage }}
         </AppAlertBanner>
-        <v-data-table
-          v-if="resultState.hasResults"
-          :items="results"
-          :headers="headers"
-          item-key="registrationNumber"
-          hide-default-footer
-          class="elevation-2"
-        >
-          <template #item.actions="{ item, isExpanded, toggleExpand }">
-            <AppButton size="small" :primary="false" @click="toggleExpand(item)">
-              {{ isExpanded(item) ? 'Hide' : 'View' }}
-            </AppButton>
-          </template>
+        <v-form v-if="resultState.hasResults" ref="eceForm" v-model="isValidForm" class="w-100">
+          <v-data-table
+            :items="results"
+            :headers="headers"
+            item-key="registrationNumber"
+            hide-default-footer
+            class="elevation-2"
+          >
+            <template #item.actions="{ item, isExpanded, toggleExpand }">
+              <AppButton size="small" :primary="false" @click="toggleExpand(item)">
+                {{ isExpanded(item) ? 'Hide' : 'View' }}
+              </AppButton>
+            </template>
 
-          <template #item.hourlyWage="{ item }">
-            <v-form ref="eceForm" v-model="isValidForm">
-              <p v-if="item.isExistingInFacility">
-                {{ formatCurrency(item.hourlyWage) }}
-              </p>
+            <template #item.hourlyWage="{ item }">
               <v-text-field
-                v-else
                 v-model.number="item.hourlyWage"
                 type="number"
                 variant="outlined"
@@ -65,47 +60,48 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
+                :disabled="Boolean(item.eceFacilityStaffId)"
                 required
                 class="py-2"
               />
-            </v-form>
-          </template>
+            </template>
 
-          <template #expanded-row="{ item, columns }">
-            <tr>
-              <td :colspan="columns.length" class="pa-0">
-                <v-card variant="outlined" class="soft-outline ma-4">
-                  <v-table density="compact">
-                    <thead>
-                      <tr>
-                        <th class="font-weight-bold" scope="col">Certifications</th>
-                        <th class="font-weight-bold" scope="col">Effective Start Date</th>
-                        <th class="font-weight-bold" scope="col">Effective End Date</th>
-                        <th class="font-weight-bold" scope="col">Status</th>
-                      </tr>
-                    </thead>
+            <template #expanded-row="{ item, columns }">
+              <tr>
+                <td :colspan="columns.length" class="pa-0">
+                  <v-card variant="outlined" class="soft-outline ma-4">
+                    <v-table density="compact">
+                      <thead>
+                        <tr>
+                          <th class="font-weight-bold" scope="col">Certifications</th>
+                          <th class="font-weight-bold" scope="col">Effective Start Date</th>
+                          <th class="font-weight-bold" scope="col">Effective End Date</th>
+                          <th class="font-weight-bold" scope="col">Status</th>
+                        </tr>
+                      </thead>
 
-                    <tbody>
-                      <tr v-for="(cert, index) in item.certificates" :key="index">
-                        <td>{{ cert.certificateLevel }}</td>
-                        <td>{{ cert.effectiveStartDate }}</td>
-                        <td>{{ cert.effectiveEndDate }}</td>
-                        <td>
-                          <span
-                            v-if="cert.certStatus === ECE_STAFF_CERT_STATUSES.EXPIRED"
-                            :class="getECECertStatusClass(cert.certStatus)"
-                          >
-                            {{ cert.certStatus }}
-                          </span>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </v-table>
-                </v-card>
-              </td>
-            </tr>
-          </template>
-        </v-data-table>
+                      <tbody>
+                        <tr v-for="(cert, index) in item.certificates" :key="index">
+                          <td>{{ cert.certificateLevel }}</td>
+                          <td>{{ cert.effectiveStartDate }}</td>
+                          <td>{{ cert.effectiveEndDate }}</td>
+                          <td>
+                            <span
+                              v-if="cert.certStatus === ECE_STAFF_CERT_STATUSES.EXPIRED"
+                              :class="getECECertStatusClass(cert.certStatus)"
+                            >
+                              {{ cert.certStatus }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-card>
+                </td>
+              </tr>
+            </template>
+          </v-data-table>
+        </v-form>
 
         <AppAlertBanner v-else-if="resultState.noResults" type="error">
           No ECE found. Please ensure information entered is exactly as it appears on the ECE Certification and try
@@ -129,8 +125,8 @@
 </template>
 
 <script>
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import { mapState } from 'pinia';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
@@ -150,10 +146,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    isEceReport: {
-      type: Boolean,
-      default: false,
-    },
     facilityExistingStaff: {
       type: Array,
       default: () => [],
@@ -161,6 +153,10 @@ export default {
     reportExistingStaff: {
       type: Array,
       default: () => [],
+    },
+    eceReportId: {
+      type: String,
+      default: null,
     },
   },
   emits: ['update:modelValue', 'staff-added'],
@@ -193,13 +189,17 @@ export default {
       },
     },
 
+    isEceReport() {
+      return Boolean(this.eceReportId);
+    },
+
     foundStaff() {
       return this.results[0] ?? null;
     },
 
     isDuplicate() {
       if (!this.foundStaff) return false;
-      return this.isEceReport ? this.foundStaff.isExistingInReport : this.foundStaff.isExistingInFacility;
+      return Boolean(this.isEceReport ? this.foundStaff.eceReportStaffId : this.foundStaff.eceFacilityStaffId);
     },
 
     duplicateStaffErrorMessage() {
@@ -248,10 +248,10 @@ export default {
     buildSearchResults(certificates = []) {
       if (!certificates.length) return [];
       const staff = certificates[0];
-      const existsInReport = this.reportExistingStaff.find((s) => s.registrationNumber === staff.registrationNumber);
-      const existsInFacility = this.facilityExistingStaff.find(
+      const facilityStaffMatch = this.facilityExistingStaff.find(
         (s) => s.registrationNumber === staff.registrationNumber,
       );
+      const reportStaffMatch = this.reportExistingStaff.find((s) => s.registrationNumber === staff.registrationNumber);
       return [
         {
           registrationNumber: staff.registrationNumber,
@@ -259,10 +259,11 @@ export default {
           middleName: formatName(staff.middleName),
           lastName: formatName(staff.lastName),
           certificates,
-          isExistingInReport: Boolean(existsInReport),
-          isExistingInFacility: Boolean(existsInFacility),
-          isFacilityStaffActive: existsInFacility?.status === ECE_STAFF_STATUSES.ACTIVE,
-          hourlyWage: existsInFacility?.hourlyWage ?? null,
+          eceStaffId: facilityStaffMatch?.eceStaffId,
+          eceFacilityStaffId: facilityStaffMatch?.eceFacilityStaffId ?? null,
+          eceReportStaffId: reportStaffMatch?.eceReportStaffId ?? null,
+          isFacilityStaffActive: facilityStaffMatch?.status === ECE_STAFF_STATUSES.ACTIVE,
+          hourlyWage: facilityStaffMatch?.hourlyWage ?? null,
         },
       ];
     },
@@ -286,17 +287,19 @@ export default {
           this.closeDialog();
           return;
         }
-        const payload = {
-          registrationNumber: this.foundStaff.registrationNumber,
-          firstName: this.foundStaff.firstName,
-          middleName: this.foundStaff.middleName,
-          lastName: this.foundStaff.lastName,
-          hourlyWage: Number(this.foundStaff.hourlyWage.toFixed(2)),
-          facilityId: this.$route.params.facilityId,
-          organizationId: this.organizationId,
-        };
-        const created = await ECEStaffService.createECEFacilityStaff(payload);
-        this.$emit('staff-added', created);
+        const payload = [
+          {
+            registrationNumber: this.foundStaff.registrationNumber,
+            firstName: this.foundStaff.firstName,
+            middleName: this.foundStaff.middleName,
+            lastName: this.foundStaff.lastName,
+            hourlyWage: Number(this.foundStaff.hourlyWage.toFixed(2)),
+            facilityId: this.$route.params.facilityId,
+            organizationId: this.organizationId,
+          },
+        ];
+        await ECEStaffService.createECEFacilityStaff(payload);
+        this.$emit('staff-added');
         this.setSuccessAlert('ECE Staff record has been added');
         this.closeDialog();
       } catch (err) {

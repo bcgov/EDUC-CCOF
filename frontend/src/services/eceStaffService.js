@@ -50,8 +50,11 @@ export default {
   async createECEFacilityStaff(payload) {
     try {
       if (isEmpty(payload)) return;
-      const response = await ApiService.apiAxios.post(`${ApiRoutes.ECE_STAFF}/facility-staff`, payload);
-      return response?.data;
+      const chunkSize = 5;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.post(`${ApiRoutes.ECE_STAFF}/facility-staff`, chunk);
+      }
     } catch (error) {
       console.error(`Failed to create ECE Facility Staff - ${error}`);
       throw error;
@@ -67,7 +70,7 @@ export default {
         await ApiService.apiAxios.post(`${ApiRoutes.ECE_STAFF}/report-staff`, chunk);
       }
     } catch (error) {
-      console.error(`Failed to create ECE Staff Information - ${error}`);
+      console.error(`Failed to create ECE Report Staff - ${error}`);
       throw error;
     }
   },
@@ -81,7 +84,23 @@ export default {
         await ApiService.apiAxios.patch(`${ApiRoutes.ECE_STAFF}/report-staff`, chunk);
       }
     } catch (error) {
-      console.error(`Failed to update ECE Staff Information - ${error}`);
+      console.error(`Failed to update ECE Report Staff - ${error}`);
+      throw error;
+    }
+  },
+
+  async deleteECEReportStaff(payload) {
+    try {
+      if (isEmpty(payload)) return;
+      const chunkSize = 20;
+      for (let i = 0; i < payload.length; i += chunkSize) {
+        const chunk = payload.slice(i, i + chunkSize);
+        await ApiService.apiAxios.delete(`${ApiRoutes.ECE_STAFF}/report-staff`, {
+          data: chunk,
+        });
+      }
+    } catch (error) {
+      console.error(`Failed to delete ECE Report Staff - ${error}`);
       throw error;
     }
   },

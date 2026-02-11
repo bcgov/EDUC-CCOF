@@ -3,18 +3,26 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { createECEFacilityStaff, createECEReportStaff, getECEFacilityStaff, getECEStaffCertificates, updateECEFacilityStaff, updateECEReportStaff } = require('../../components/ece/staff');
+const {
+  createECEFacilityStaff,
+  createECEReportStaff,
+  deleteECEReportStaff,
+  getECEFacilityStaff,
+  getECEStaffCertificates,
+  updateECEFacilityStaff,
+  updateECEReportStaff,
+} = require('../../components/ece/staff');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../../util/constants');
 const { body, checkSchema, oneOf, query, validationResult } = require('express-validator');
 const validatePermission = require('../../middlewares/validatePermission');
 
 const createECEFacilityStaffSchema = {
-  facilityId: {
+  '*.facilityId': {
     in: ['body'],
     exists: { errorMessage: '[facilityId] is required' },
     isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[facilityId] must be a valid UUID' },
   },
-  hourlyWage: {
+  '*.hourlyWage': {
     in: ['body'],
     exists: { errorMessage: '[hourlyWage] is required' },
     isFloat: {
@@ -69,6 +77,16 @@ const createECEReportStaffSchema = {
     isFloat: {
       options: { min: 1, max: 1000 },
       errorMessage: '[hourlyWage] must be a number between 1 and 1000',
+    },
+  },
+  '*.totalHoursWorked': {
+    in: ['body'],
+    exists: {
+      errorMessage: '[totalHoursWorked] is required',
+    },
+    isFloat: {
+      options: { min: 0, max: 195 },
+      errorMessage: '[totalHoursWorked] must be a number between 0 and 195',
     },
   },
 };
@@ -127,7 +145,7 @@ router.get(
 );
 
 /**
- * Update an existing ECE Staff record
+ * Update ECE Facility Staff records
  */
 router.patch(
   '/facility-staff',
@@ -143,13 +161,14 @@ router.patch(
 );
 
 /**
- * Create a new ECE Facility Staff record
+ * Create ECE Facility Staff records
  */
 router.post(
   '/facility-staff',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.ADD_ECE_STAFF),
+  body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
   checkSchema(createECEFacilityStaffSchema),
   (req, res) => {
     validationResult(req).throw();
@@ -159,7 +178,7 @@ router.post(
 
 // TODO: Implement ECE Reports permission
 /**
- * Create a ECE Report Staff record
+ * Create ECE Report Staff records
  */
 router.post(
   '/report-staff',
@@ -175,7 +194,7 @@ router.post(
 
 // TODO: Implement ECE Reports permission
 /**
- * Update ECE Report Staff information in bulk
+ * Update ECE Report Staff records
  */
 router.patch(
   '/report-staff',
@@ -187,6 +206,21 @@ router.patch(
   (req, res) => {
     validationResult(req).throw();
     return updateECEReportStaff(req, res);
+  },
+);
+
+// TODO: Implement ECE Reports permission
+/**
+ * Delete ECE Report Staff records
+ */
+router.delete(
+  '/report-staff',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'), body('*').isUUID(UUID_VALIDATOR_VERSION).withMessage('Each ID must be a valid UUID')],
+  (req, res) => {
+    validationResult(req).throw();
+    return deleteECEReportStaff(req, res);
   },
 );
 

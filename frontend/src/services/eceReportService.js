@@ -40,18 +40,4 @@ export default {
       throw error;
     }
   },
-
-  async deleteECEStaffInformation(payload) {
-    try {
-      if (isEmpty(payload)) return;
-      await ApiService.apiAxios.delete(`${ApiRoutes.ECE_REPORTS}`, {
-        data: {
-          eceStaffInformationIds: payload,
-        },
-      });
-    } catch (error) {
-      console.error(`Failed to delete ECE Staff Information - ${error}`);
-      throw error;
-    }
-  },
 };
