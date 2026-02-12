@@ -1,0 +1,13 @@
+{
+  "_NOTE": "Sample data for organization closure test cases. This data can be modified as needed for different test scenarios.",
+  "facilityName": "Auto Test Facility 1",
+  "parentsPayForClosure": "No",
+  "_parentsPayForClosureOptions": "Yes OR No",
+  "isFullFacilityClosure": "Yes",
+  "_isFullFacilityClosureFlowNote": "Current flow is for Yes only",
+  "_isFullFacilityClosureOptions": "Yes OR No",
+  "closureStartDate": "2026-02-01",
+  "closureEndDate": "2026-02-07",
+  "reason": "Facility maintenance and repairs",
+  "requestDescription": "The facility will be closed for scheduled maintenance and facility improvements during this period."
+}

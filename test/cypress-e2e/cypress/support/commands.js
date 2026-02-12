@@ -33,7 +33,8 @@
 import { ccofApp } from './pages/2-portal-application-pages/01-portal-application-ccof.js'
 import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
 import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
-import { reportMtfiChange } from "../../support/pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js"
+import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js"
+import { organizationClosure } from "./pages/6-organization-closures-pages/01-add-new-closure.js"
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   'textarea',
@@ -216,6 +217,16 @@ Cypress.Commands.add("startChangeRequest", (changeType) => {
     );
   }
 });
+
+Cypress.Commands.add("startOrganizationClosures", () => {
+  cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
+  cy.contains("What would you like to do?").should("be.visible");
+  cy.contains("Organization Closures").clickByText("Organization Closures");
+  cy.contains("Organization Closures");
+  cy.url().should("include", `/closures/`);
+});
+
+
 
 /*
  * Method to Cancel the application if the button is present
