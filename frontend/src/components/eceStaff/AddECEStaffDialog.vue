@@ -1,5 +1,5 @@
 <template>
-  <AppDialog v-model="dialogOpen" title="Add ECE Staff" max-width="900px" @close="closeDialog">
+  <AppDialog v-model="dialogOpen" title="Add ECE Staff" :loading="isLoading" max-width="900px" @close="closeDialog">
     <template #content>
       <v-col>
         Enter ECE's Registration Number and First or Last Name exactly as they appear on the ECE Certificate.
@@ -10,6 +10,7 @@
         <v-col cols="12" md="3">
           <v-text-field
             v-model.trim="search.registrationNumber"
+            :disabled="isLoading"
             label="Registration #"
             variant="outlined"
             density="compact"
@@ -17,11 +18,23 @@
         </v-col>
 
         <v-col cols="12" md="3">
-          <v-text-field v-model.trim="search.firstName" label="First Name" variant="outlined" density="compact" />
+          <v-text-field
+            v-model.trim="search.firstName"
+            :disabled="isLoading"
+            label="First Name"
+            variant="outlined"
+            density="compact"
+          />
         </v-col>
 
         <v-col cols="12" md="3">
-          <v-text-field v-model.trim="search.lastName" label="Last Name" variant="outlined" density="compact" />
+          <v-text-field
+            v-model.trim="search.lastName"
+            :disabled="isLoading"
+            label="Last Name"
+            variant="outlined"
+            density="compact"
+          />
         </v-col>
 
         <v-col cols="12" md="2">
@@ -32,6 +45,9 @@
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <AppAlertBanner v-if="isDuplicate" type="error">
           {{ duplicateStaffErrorMessage }}
+        </AppAlertBanner>
+        <AppAlertBanner v-else-if="showInactiveWarning" type="error">
+          The ECE you entered is currently inactive. Would you like to activate this ECE and add them to this report?
         </AppAlertBanner>
         <v-form v-if="resultState.hasResults" ref="eceForm" v-model="isValidForm" class="w-100">
           <v-data-table
@@ -111,14 +127,23 @@
     </template>
 
     <template #button>
-      <v-row class="text-center" justify="center">
-        <v-col>
-          <AppButton display="inline" :primary="false" size="small" @click="closeDialog">Cancel</AppButton>
-        </v-col>
-
-        <v-col v-if="resultState.hasResults">
-          <AppButton display="inline" size="small" :disabled="!canAddECE" @click="addECEStaff">Add ECE</AppButton>
-        </v-col>
+      <v-row v-if="!isLoading" class="px-4 flex-column flex-sm-row">
+        <template v-if="!isDuplicate && showInactiveWarning">
+          <v-col>
+            <AppButton display="inline" :primary="false" size="small" @click="closeDialog"> No, go back </AppButton>
+          </v-col>
+          <v-col>
+            <AppButton display="inline" size="small" @click="activateAndAddECEStaff"> Yes, activate and add </AppButton>
+          </v-col>
+        </template>
+        <template v-else>
+          <v-col>
+            <AppButton display="inline" :primary="false" size="small" @click="closeDialog">Cancel</AppButton>
+          </v-col>
+          <v-col v-if="resultState.hasResults">
+            <AppButton display="inline" size="small" :disabled="!canAddECE" @click="addECEStaff">Add ECE</AppButton>
+          </v-col>
+        </template>
       </v-row>
     </template>
   </AppDialog>
@@ -202,6 +227,10 @@ export default {
       return Boolean(this.isEceReport ? this.foundStaff.eceReportStaffId : this.foundStaff.eceFacilityStaffId);
     },
 
+    showInactiveWarning() {
+      return this.isEceReport && this.foundStaff?.isFacilityStaffActive === false;
+    },
+
     duplicateStaffErrorMessage() {
       return `This ECE Staff registration number ${this.foundStaff?.registrationNumber} already exists on this
       ${this.isEceReport ? 'report' : 'facility'}. You may edit the existing record.`;
@@ -238,7 +267,7 @@ export default {
         const certificates = await ECEStaffService.getECEStaffCertificates(params);
         this.results = this.buildSearchResults(certificates);
       } catch (err) {
-        this.setFailureAlert('Failed to search ECE staff.');
+        this.setFailureAlert('Failed to search ECE Staff.');
         console.error(err);
       } finally {
         this.isLoading = false;
@@ -279,9 +308,35 @@ export default {
       this.searched = false;
     },
 
+    async activateAndAddECEStaff() {
+      try {
+        this.isLoading = true;
+        await this.activateECEStaff();
+        await this.addECEStaff();
+      } catch (err) {
+        this.setFailureAlert('Failed to activate and add ECE Staff.');
+        console.error(err);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async activateECEStaff() {
+      if (!this.foundStaff || this.foundStaff.isFacilityStaffActive) return;
+      const payload = [
+        {
+          eceFacilityStaffId: this.foundStaff.eceFacilityStaffId,
+          status: ECE_STAFF_STATUSES.ACTIVE,
+        },
+      ];
+      await ECEStaffService.updateECEFacilityStaff(payload);
+      this.foundStaff.isFacilityStaffActive = true;
+    },
+
     async addECEStaff() {
       if (!this.foundStaff || this.isDuplicate) return;
       try {
+        this.isLoading = true;
         if (this.isEceReport) {
           this.$emit('staff-added', this.foundStaff);
           this.closeDialog();
@@ -300,11 +355,13 @@ export default {
         ];
         await ECEStaffService.createECEFacilityStaff(payload);
         this.$emit('staff-added');
-        this.setSuccessAlert('ECE Staff record has been added');
+        this.setSuccessAlert('ECE Staff record has been added.');
         this.closeDialog();
       } catch (err) {
-        this.setFailureAlert('Failed to create ECE Staff.');
+        this.setFailureAlert('Failed to add ECE Staff.');
         console.error(err);
+      } finally {
+        this.isLoading = false;
       }
     },
   },

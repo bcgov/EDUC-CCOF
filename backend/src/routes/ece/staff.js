@@ -40,9 +40,7 @@ const updateECEFacilityStaffSchema = {
   },
   '*.hourlyWage': {
     in: ['body'],
-    exists: {
-      errorMessage: '[hourlyWage] is required',
-    },
+    optional: true,
     isFloat: {
       options: { min: 0, max: 1000 },
       errorMessage: '[hourlyWage] must be a number between 0 and 1000',
@@ -50,7 +48,7 @@ const updateECEFacilityStaffSchema = {
   },
   '*.status': {
     in: ['body'],
-    exists: { errorMessage: '[status] is required' },
+    optional: true,
     isIn: {
       options: [[0, 1]],
       errorMessage: '[status] must be either 0 (inactive) or 1 (active)',
@@ -77,16 +75,6 @@ const createECEReportStaffSchema = {
     isFloat: {
       options: { min: 1, max: 1000 },
       errorMessage: '[hourlyWage] must be a number between 1 and 1000',
-    },
-  },
-  '*.totalHoursWorked': {
-    in: ['body'],
-    exists: {
-      errorMessage: '[totalHoursWorked] is required',
-    },
-    isFloat: {
-      options: { min: 0, max: 195 },
-      errorMessage: '[totalHoursWorked] must be a number between 0 and 195',
     },
   },
 };
@@ -153,6 +141,9 @@ router.patch(
   isValidBackendToken,
   validatePermission(PERMISSIONS.EDIT_ECE_STAFF),
   body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
+  oneOf([body('*.hourlyWage').exists(), body('*.status').exists()], {
+    message: '[hourlyWage] or [status] is required',
+  }),
   checkSchema(updateECEFacilityStaffSchema),
   (req, res) => {
     validationResult(req).throw();
