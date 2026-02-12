@@ -43,10 +43,10 @@
       </v-row>
 
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
-        <AppAlertBanner v-if="isDuplicate" type="error">
+        <AppAlertBanner v-if="isStaffDuplicate" type="error">
           {{ duplicateStaffErrorMessage }}
         </AppAlertBanner>
-        <AppAlertBanner v-else-if="showInactiveWarning" type="error">
+        <AppAlertBanner v-if="showInactiveStaffAlert" type="error">
           The ECE you entered is currently inactive. Would you like to activate this ECE and add them to this report?
         </AppAlertBanner>
         <v-form v-if="resultState.hasResults" ref="eceForm" v-model="isValidForm" class="w-100">
@@ -76,7 +76,7 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                :disabled="Boolean(item.eceFacilityStaffId)"
+                :disabled="isStaffDuplicate"
                 required
                 class="py-2"
               />
@@ -128,7 +128,7 @@
 
     <template #button>
       <v-row v-if="!isLoading" class="px-4 flex-column flex-sm-row">
-        <template v-if="!isDuplicate && showInactiveWarning">
+        <template v-if="showInactiveStaffAlert">
           <v-col>
             <AppButton display="inline" :primary="false" size="small" @click="closeDialog"> No, go back </AppButton>
           </v-col>
@@ -222,13 +222,13 @@ export default {
       return this.results[0] ?? null;
     },
 
-    isDuplicate() {
+    isStaffDuplicate() {
       if (!this.foundStaff) return false;
-      return Boolean(this.isEceReport ? this.foundStaff.eceReportStaffId : this.foundStaff.eceFacilityStaffId);
+      return this.isEceReport ? this.foundStaff.isReportStaffDuplicate : this.foundStaff.isFacilityStaffDuplicate;
     },
 
-    showInactiveWarning() {
-      return this.isEceReport && this.foundStaff?.isFacilityStaffActive === false;
+    showInactiveStaffAlert() {
+      return this.isEceReport && !this.isStaffDuplicate && this.foundStaff?.isFacilityStaffActive === false;
     },
 
     duplicateStaffErrorMessage() {
@@ -248,7 +248,7 @@ export default {
     },
 
     canAddECE() {
-      return this.isValidForm && !this.isDuplicate;
+      return this.isValidForm && !this.isStaffDuplicate;
     },
   },
 
@@ -281,6 +281,7 @@ export default {
         (s) => s.registrationNumber === staff.registrationNumber,
       );
       const reportStaffMatch = this.reportExistingStaff.find((s) => s.registrationNumber === staff.registrationNumber);
+      const isFacilityStaffActive = facilityStaffMatch ? facilityStaffMatch.status === ECE_STAFF_STATUSES.ACTIVE : null;
       return [
         {
           registrationNumber: staff.registrationNumber,
@@ -291,8 +292,10 @@ export default {
           eceStaffId: facilityStaffMatch?.eceStaffId,
           eceFacilityStaffId: facilityStaffMatch?.eceFacilityStaffId ?? null,
           eceReportStaffId: reportStaffMatch?.eceReportStaffId ?? null,
-          isFacilityStaffActive: facilityStaffMatch?.status === ECE_STAFF_STATUSES.ACTIVE,
-          hourlyWage: facilityStaffMatch?.hourlyWage ?? null,
+          isFacilityStaffActive: isFacilityStaffActive,
+          isFacilityStaffDuplicate: Boolean(facilityStaffMatch),
+          isReportStaffDuplicate: Boolean(reportStaffMatch),
+          hourlyWage: facilityStaffMatch?.hourlyWage ?? reportStaffMatch?.hourlyWage ?? null,
         },
       ];
     },
@@ -334,7 +337,7 @@ export default {
     },
 
     async addECEStaff() {
-      if (!this.foundStaff || this.isDuplicate) return;
+      if (!this.foundStaff || this.isStaffDuplicate) return;
       try {
         this.isLoading = true;
         if (this.isEceReport) {
@@ -348,7 +351,7 @@ export default {
             firstName: this.foundStaff.firstName,
             middleName: this.foundStaff.middleName,
             lastName: this.foundStaff.lastName,
-            hourlyWage: Number(this.foundStaff.hourlyWage.toFixed(2)),
+            hourlyWage: Number(this.foundStaff.hourlyWage?.toFixed(2)),
             facilityId: this.$route.params.facilityId,
             organizationId: this.organizationId,
           },

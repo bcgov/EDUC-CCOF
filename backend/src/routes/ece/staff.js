@@ -77,6 +77,14 @@ const createECEReportStaffSchema = {
       errorMessage: '[hourlyWage] must be a number between 1 and 1000',
     },
   },
+  '*.totalHoursWorked': {
+    in: ['body'],
+    optional: true,
+    isFloat: {
+      options: { min: 0, max: 195 },
+      errorMessage: '[totalHoursWorked] must be a number between 0 and 195',
+    },
+  },
 };
 
 const updateECEReportStaffSchema = {

@@ -5,10 +5,11 @@
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
     <div class="d-flex justify-end mb-4">
-      <AppButton size="medium" :loading="loading" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+      <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
     <v-card>
-      <v-form ref="form" v-model="isValidForm">
+      <v-skeleton-loader v-if="processing" type="table-tbody" />
+      <v-form v-else ref="form" v-model="isValidForm">
         <v-data-table :items="eceReportStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
           <template #item.fullName="{ item }">
             <span>{{ getStaffFullName(item) }}</span>
@@ -174,7 +175,7 @@ export default {
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
     readonly() {
-      return isReportReadOnly({ loading: this.loading, eceReport: this.eceReport });
+      return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
     },
     eceReportId() {
       return this.$route.params.eceReportId;
@@ -255,7 +256,7 @@ export default {
       this.eceReportStaff.push(newStaff);
     },
     removeStaff(staff) {
-      const index = this.eceReportStaff.findIndex((s) => s.eceReportStaffId === staff.eceReportStaffId);
+      const index = this.eceReportStaff.findIndex((s) => s.registrationNumber === staff.registrationNumber);
       if (index === -1) return;
       if (staff?.eceReportStaffId) {
         this.eceReportStaffToDelete.push(staff.eceReportStaffId);
@@ -290,7 +291,7 @@ export default {
           registrationNumber: staff.registrationNumber,
           firstName: staff.firstName,
           lastName: staff.lastName,
-          hourlyWage: Number(staff.hourlyWage.toFixed(2)),
+          hourlyWage: Number(staff.hourlyWage?.toFixed(2)),
           facilityId: this.eceReport.facilityId,
           organizationId: this.organizationId,
         }));
@@ -324,7 +325,6 @@ export default {
         this.originalECEReportStaff,
         this.eceReportStaff,
         keysForBackend,
-        'eceReportStaffId',
         'eceReportStaffId',
       );
       const payload = updatedECEStaff
