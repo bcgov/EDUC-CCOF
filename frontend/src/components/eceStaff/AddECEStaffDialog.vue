@@ -275,7 +275,10 @@ export default {
     },
 
     buildSearchResults(certificates = []) {
-      if (!certificates.length) return [];
+      if (!Array.isArray(certificates)) {
+        throw new Error('Expected certificates to be an array.');
+      }
+      if (certificates.length === 0) return [];
       const staff = certificates[0];
       const facilityStaffMatch = this.facilityExistingStaff.find(
         (s) => s.registrationNumber === staff.registrationNumber,
