@@ -146,8 +146,9 @@ export function formatDecimalNumber(input, useCommas = true) {
  * @returns {number|null} Rounded number, or null if invalid.
  */
 export function formatDecimalNumberToNumber(input, decimalPlaces = 2) {
-  const number = parseFloat(input);
-  if (Number.isNaN(number)) return null;
+  if (input == null) return null;
+  const number = typeof input === 'number' ? input : Number(input);
+  if (!Number.isFinite(number)) return null;
   return Number(number.toFixed(decimalPlaces));
 }
 
