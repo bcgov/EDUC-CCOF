@@ -50,7 +50,6 @@
             <!-- TODO (vietle-cgi): Add Verified value from CMS -->
             <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
-          <!-- TODO (vietle-cgi): Implement ECE Staff remove -->
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
