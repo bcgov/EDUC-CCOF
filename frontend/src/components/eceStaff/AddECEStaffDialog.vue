@@ -276,7 +276,7 @@ export default {
 
     buildSearchResults(certificates = []) {
       if (!Array.isArray(certificates)) {
-        throw new Error('Expected certificates to be an array.');
+        throw new TypeError('Expected certificates to be an array.');
       }
       if (certificates.length === 0) return [];
       const staff = certificates[0];
