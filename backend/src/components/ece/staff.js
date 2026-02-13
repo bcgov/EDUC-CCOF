@@ -55,7 +55,7 @@ async function getECEStaffCertificates(req, res) {
 async function updateECEFacilityStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (item) => {
+      req.body.map(async (item) => {
         const payload = new MappableObjectForBack(item, ECEFacilityStaffMappings).toJSON();
         await patchOperationWithObjectId('ccof_ece_staff_information_facilities', item.eceFacilityStaffId, payload);
       }),
@@ -81,7 +81,7 @@ async function findOrCreateECEStaff({ firstName, middleName, lastName, registrat
 async function createECEFacilityStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (eceStaff) => {
+      req.body.map(async (eceStaff) => {
         const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = eceStaff;
         const staffId = await findOrCreateECEStaff({ firstName, middleName, lastName, registrationNumber });
         const payload = {
@@ -103,7 +103,7 @@ async function createECEFacilityStaff(req, res) {
 async function createECEReportStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (eceStaff) => {
+      req.body.map(async (eceStaff) => {
         const payload = {
           'ccof_ece_monthly_report@odata.bind': `/ccof_ece_monthly_reports(${eceStaff.eceReportId})`,
           'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${eceStaff.eceStaffId})`,
@@ -123,7 +123,7 @@ async function createECEReportStaff(req, res) {
 async function updateECEReportStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (item) => {
+      req.body.map(async (item) => {
         const payload = new MappableObjectForBack(item, ECEReportStaffMappings).toJSON();
         delete payload.ccof_ece_staff_informationid;
         await patchOperationWithObjectId('ccof_ece_staff_informations', item.eceReportStaffId, payload);
@@ -139,7 +139,7 @@ async function updateECEReportStaff(req, res) {
 async function deleteECEReportStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (eceReportStaffId) => {
+      req.body.map(async (eceReportStaffId) => {
         await deleteOperationWithObjectId('ccof_ece_staff_informations', eceReportStaffId);
       }),
     );

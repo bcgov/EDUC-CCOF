@@ -138,7 +138,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { formatCurrency, formatDecimalNumber } from '@/utils/format';
+import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
@@ -291,7 +291,7 @@ export default {
           registrationNumber: staff.registrationNumber,
           firstName: staff.firstName,
           lastName: staff.lastName,
-          hourlyWage: Number(staff.hourlyWage?.toFixed(2)),
+          hourlyWage: formatDecimalNumberToNumber(staff.hourlyWage),
           facilityId: this.eceReport.facilityId,
           organizationId: this.organizationId,
         }));

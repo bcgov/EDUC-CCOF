@@ -159,7 +159,7 @@ import ECEStaffService from '@/services/eceStaffService';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { getECECertStatusClass } from '@/utils/common.js';
 import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
-import { formatCurrency, formatName } from '@/utils/format';
+import { formatCurrency, formatDecimalNumberToNumber, formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
 export default {
@@ -351,7 +351,7 @@ export default {
             firstName: this.foundStaff.firstName,
             middleName: this.foundStaff.middleName,
             lastName: this.foundStaff.lastName,
-            hourlyWage: Number(this.foundStaff.hourlyWage?.toFixed(2)),
+            hourlyWage: formatDecimalNumberToNumber(this.foundStaff.hourlyWage),
             facilityId: this.$route.params.facilityId,
             organizationId: this.organizationId,
           },

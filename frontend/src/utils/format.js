@@ -139,6 +139,19 @@ export function formatDecimalNumber(input, useCommas = true) {
 }
 
 /**
+ * Formats input into a number rounded to the specified decimal places.
+ *
+ * @param {string|number} input
+ * @param {number} [decimalPlaces=2]
+ * @returns {number|null} Rounded number, or null if invalid.
+ */
+export function formatDecimalNumberToNumber(input, decimalPlaces = 2) {
+  const number = parseFloat(input);
+  if (Number.isNaN(number)) return null;
+  return Number(number.toFixed(decimalPlaces));
+}
+
+/**
  * Formats a value as a localized Canadian currency string (CAD).
  *
  * - Uses Intl.NumberFormat with the "en-CA" locale and accounting-style currency.
@@ -154,6 +167,7 @@ export function formatDecimalNumber(input, useCommas = true) {
  */
 export function formatCurrency(value) {
   const amount = Number(value ?? 0);
+  if (Number.isNaN(amount)) return null;
   return new Intl.NumberFormat('en-CA', {
     style: 'currency',
     currency: 'CAD',
