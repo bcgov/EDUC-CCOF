@@ -4,9 +4,16 @@
   </div>
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+    <div class="d-flex justify-end mb-4">
+      <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
+    </div>
     <v-card>
-      <v-form ref="form" v-model="isValidForm">
-        <v-data-table :items="reportECEStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
+      <v-skeleton-loader v-if="processing" type="table-tbody" />
+      <v-form v-else ref="form" v-model="isValidForm">
+        <v-data-table :items="eceReportStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
+          <template #item.fullName="{ item }">
+            <span>{{ getStaffFullName(item) }}</span>
+          </template>
           <template #item.hourlyWage="{ item }">
             <span>{{ formatCurrency(item.hourlyWage) }}</span>
           </template>
@@ -43,8 +50,7 @@
             <!-- TODO (vietle-cgi): Add Verified value from CMS -->
             <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
           </template>
-          <!-- TODO (vietle-cgi): Implement ECE Staff remove -->
-          <template #item.actions>
+          <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
                 v-if="showRemoveButton"
@@ -52,7 +58,7 @@
                 :primary="false"
                 color="red"
                 size="small"
-                @click="setWarningAlert('Remove ECE staff functionality is not yet implemented.')"
+                @click="removeStaff(item)"
               >
                 Remove
               </AppButton>
@@ -100,6 +106,13 @@
       </v-form>
     </v-card>
   </div>
+  <AddECEStaffDialog
+    v-model="addDialogOpen"
+    :ece-report-id="eceReportId"
+    :facility-existing-staff="eceFacilityStaff"
+    :report-existing-staff="eceReportStaff"
+    @staff-added="addECEStaff"
+  />
   <ReportNavButtons
     :loading="loading || processing"
     :is-save-displayed="!readonly"
@@ -113,7 +126,9 @@
 </template>
 
 <script>
-import { pick } from 'lodash';
+import { isEmpty, pick } from 'lodash';
+import { mapState } from 'pinia';
+import AddECEStaffDialog from '@/components/eceStaff/AddECEStaffDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
@@ -121,7 +136,8 @@ import MonthlyECEReportHeader from '@/components/manageReports/eceReports/Monthl
 import alertMixin from '@/mixins/alertMixin.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
-import { formatCurrency, formatDecimalNumber } from '@/utils/format';
+import { useOrganizationStore } from '@/store/ccof/organization.js';
+import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
 import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
@@ -129,7 +145,7 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'MonthlyECEReport',
-  components: { AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
+  components: { AddECEStaffDialog, AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
   mixins: [alertMixin],
   data() {
     return {
@@ -137,10 +153,12 @@ export default {
       processing: false,
       isValidForm: false,
       eceReport: null,
+      addDialogOpen: false,
       reportCalculationSummary: {},
-      facilityECEStaff: [],
-      reportECEStaff: [],
-      originalReportECEStaff: [],
+      eceFacilityStaff: [],
+      originalECEReportStaff: [],
+      eceReportStaff: [],
+      eceReportStaffToDelete: [],
       eceStaffTableHeaders: [
         { title: 'ECE', value: 'fullName', sortable: true },
         { title: 'Registration Number', value: 'registrationNumber', width: 200, sortable: true },
@@ -149,17 +167,23 @@ export default {
         { title: 'WE Amount', value: 'weAmount', sortable: true },
         { title: 'Statutory Benefit Amount', value: 'statutoryBenefitAmount', sortable: true },
         { title: 'Total', value: 'totalAmount', sortable: true },
-        // { title: 'Reason', sortable: false, value: 'reason' },
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
     };
   },
   computed: {
+    ...mapState(useOrganizationStore, ['organizationId']),
     readonly() {
-      return isReportReadOnly({ loading: this.loading, eceReport: this.eceReport });
+      return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
     },
-    facilityECEStaffById() {
-      return new Map((this.facilityECEStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
+    eceReportId() {
+      return this.$route.params.eceReportId;
+    },
+    eceFacilityStaffByRegistrationNumber() {
+      return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.registrationNumber, staff]));
+    },
+    eceFacilityStaffById() {
+      return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
     showVerified() {
       return [ECE_REPORT_STATUSES.VERIFIED, ECE_REPORT_STATUSES.APPROVED, ECE_REPORT_STATUSES.PAID].includes(
@@ -181,19 +205,19 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
-        this.facilityECEStaff = await ECEStaffService.getECEFacilityStaff({
-          facilityId: this.eceReport?.facilityId,
-        });
-        this.reportECEStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
-          const facilityStaff = this.facilityECEStaffById.get(staff.eceStaffId);
+        this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        await this.loadECEFacilityStaff();
+        this.eceReportStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
+          const facilityStaff = this.eceFacilityStaffById.get(staff.eceStaffId);
           return {
             ...staff,
-            fullName: facilityStaff ? `${facilityStaff.lastName}, ${facilityStaff.firstName}`.trim() : '',
+            eceFacilityStaffId: facilityStaff?.eceFacilityStaffId,
+            lastName: facilityStaff?.lastName ?? '',
+            firstName: facilityStaff?.firstName ?? '',
             registrationNumber: facilityStaff?.registrationNumber ?? '',
           };
         });
-        this.originalReportECEStaff = deepCloneObject(this.reportECEStaff);
+        this.initializeStaffChangeState();
         // TODO (vietle-cgi): Implement ECE Reports calculation
         this.reportCalculationSummary = {
           weSubtotal: 0,
@@ -207,23 +231,48 @@ export default {
         this.loading = false;
       }
     },
+    async loadECEFacilityStaff() {
+      this.eceFacilityStaff = await ECEStaffService.getECEFacilityStaff({
+        facilityId: this.eceReport?.facilityId,
+      });
+    },
+    initializeStaffChangeState() {
+      this.eceReportStaffToDelete = [];
+      this.originalECEReportStaff = deepCloneObject(this.eceReportStaff);
+    },
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
     },
     async next() {
       await this.save(false);
-      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.$route.params.eceReportId}/declaration`);
+      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`);
     },
     // TODO (vietle-cgi): Implement ECE Reports calculation
     calculate() {
       this.setWarningAlert('Calculate functionality is not yet implemented.');
+    },
+    addECEStaff(newStaff) {
+      this.eceReportStaff.push(newStaff);
+    },
+    removeStaff(staff) {
+      const index = this.eceReportStaff.findIndex((s) => s.registrationNumber === staff.registrationNumber);
+      if (index === -1) return;
+      if (staff?.eceReportStaffId) {
+        this.eceReportStaffToDelete.push(staff.eceReportStaffId);
+      }
+      this.eceReportStaff.splice(index, 1);
+    },
+    getStaffFullName(staff) {
+      return staff ? `${staff.lastName}, ${staff.firstName}`.trim() : '';
     },
     async save(showMessage) {
       if (this.readonly) return;
       try {
         this.processing = true;
         this.calculate();
-        await this.saveECEStaffInformation();
+        await this.createECEFacilityStaff();
+        await this.saveECEReportStaff();
+        await this.loadData();
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
         }
@@ -234,17 +283,58 @@ export default {
         this.processing = false;
       }
     },
-    async saveECEStaffInformation() {
+    async createECEFacilityStaff() {
+      const staffToCreate = this.eceReportStaff
+        .filter((staff) => !staff.eceFacilityStaffId)
+        .map((staff) => ({
+          registrationNumber: staff.registrationNumber,
+          firstName: staff.firstName,
+          lastName: staff.lastName,
+          hourlyWage: formatDecimalNumberToNumber(staff.hourlyWage),
+          facilityId: this.eceReport.facilityId,
+          organizationId: this.organizationId,
+        }));
+      if (isEmpty(staffToCreate)) return;
+      await ECEStaffService.createECEFacilityStaff(staffToCreate);
+      await this.loadECEFacilityStaff();
+    },
+    async saveECEReportStaff() {
+      await this.createECEReportStaff();
+      await this.updateECEReportStaff();
+      await this.deleteECEReportStaff();
+    },
+    async createECEReportStaff() {
+      const staffToCreate = this.eceReportStaff
+        .filter((staff) => !staff.eceReportStaffId)
+        .map((staff) => {
+          const eceStaffId = this.eceFacilityStaffByRegistrationNumber.get(staff.registrationNumber)?.eceStaffId;
+          return {
+            eceReportId: this.eceReportId,
+            eceStaffId,
+            hourlyWage: staff.hourlyWage,
+            totalHoursWorked: staff.totalHoursWorked,
+          };
+        });
+      if (isEmpty(staffToCreate)) return;
+      await ECEStaffService.createECEReportStaff(staffToCreate);
+    },
+    async updateECEReportStaff() {
       const keysForBackend = ['eceReportStaffId', 'totalHoursWorked'];
       const updatedECEStaff = getUpdatedObjectsByKeys(
-        this.originalReportECEStaff,
-        this.reportECEStaff,
+        this.originalECEReportStaff,
+        this.eceReportStaff,
         keysForBackend,
         'eceReportStaffId',
       );
-      const payload = updatedECEStaff.map((item) => pick(item, keysForBackend));
+      const payload = updatedECEStaff
+        .filter((staff) => staff.eceReportStaffId)
+        .map((staff) => pick(staff, keysForBackend));
+      if (isEmpty(payload)) return;
       await ECEStaffService.updateECEReportStaff(payload);
-      this.originalReportECEStaff = deepCloneObject(this.reportECEStaff);
+    },
+    async deleteECEReportStaff() {
+      if (isEmpty(this.eceReportStaffToDelete)) return;
+      await ECEStaffService.deleteECEReportStaff(this.eceReportStaffToDelete);
     },
   },
 };

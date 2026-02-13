@@ -1,6 +1,6 @@
 'use strict';
 
-const { buildFilterQuery, getOperation, patchOperationWithObjectId, postOperation } = require('../utils');
+const { buildFilterQuery, deleteOperationWithObjectId, getOperation, patchOperationWithObjectId, postOperation } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECECertificateMappings, ECEFacilityStaffMappings, ECEReportStaffMappings, ECEStaffMappings } = require('../../util/mapping/Mappings');
@@ -55,7 +55,7 @@ async function getECEStaffCertificates(req, res) {
 async function updateECEFacilityStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (item) => {
+      req.body.map(async (item) => {
         const payload = new MappableObjectForBack(item, ECEFacilityStaffMappings).toJSON();
         await patchOperationWithObjectId('ccof_ece_staff_information_facilities', item.eceFacilityStaffId, payload);
       }),
@@ -80,15 +80,19 @@ async function findOrCreateECEStaff({ firstName, middleName, lastName, registrat
 
 async function createECEFacilityStaff(req, res) {
   try {
-    const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = req.body;
-    const staffId = await findOrCreateECEStaff({ firstName, middleName, lastName, registrationNumber });
-    const payload = {
-      'ccof_organization@odata.bind': `/accounts(${organizationId})`,
-      'ccof_facility@odata.bind': `/accounts(${facilityId})`,
-      'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${staffId})`,
-      ccof_hourly_wage: hourlyWage,
-    };
-    await postOperation('ccof_ece_staff_information_facilities', payload);
+    await Promise.all(
+      req.body.map(async (eceStaff) => {
+        const { registrationNumber, firstName, middleName, lastName, hourlyWage, facilityId, organizationId } = eceStaff;
+        const staffId = await findOrCreateECEStaff({ firstName, middleName, lastName, registrationNumber });
+        const payload = {
+          'ccof_organization@odata.bind': `/accounts(${organizationId})`,
+          'ccof_facility@odata.bind': `/accounts(${facilityId})`,
+          'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${staffId})`,
+          ccof_hourly_wage: hourlyWage,
+        };
+        await postOperation('ccof_ece_staff_information_facilities', payload);
+      }),
+    );
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     log.error(e);
@@ -99,11 +103,12 @@ async function createECEFacilityStaff(req, res) {
 async function createECEReportStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (eceStaff) => {
+      req.body.map(async (eceStaff) => {
         const payload = {
           'ccof_ece_monthly_report@odata.bind': `/ccof_ece_monthly_reports(${eceStaff.eceReportId})`,
           'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${eceStaff.eceStaffId})`,
           ccof_hourly_wage: eceStaff.hourlyWage,
+          ccof_total_hours_worked: eceStaff.totalHoursWorked,
         };
         await postOperation('ccof_ece_staff_informations', payload);
       }),
@@ -118,7 +123,7 @@ async function createECEReportStaff(req, res) {
 async function updateECEReportStaff(req, res) {
   try {
     await Promise.all(
-      req.body?.map(async (item) => {
+      req.body.map(async (item) => {
         const payload = new MappableObjectForBack(item, ECEReportStaffMappings).toJSON();
         delete payload.ccof_ece_staff_informationid;
         await patchOperationWithObjectId('ccof_ece_staff_informations', item.eceReportStaffId, payload);
@@ -131,4 +136,18 @@ async function updateECEReportStaff(req, res) {
   }
 }
 
-module.exports = { createECEFacilityStaff, createECEReportStaff, getECEFacilityStaff, getECEStaffCertificates, updateECEFacilityStaff, updateECEReportStaff };
+async function deleteECEReportStaff(req, res) {
+  try {
+    await Promise.all(
+      req.body.map(async (eceReportStaffId) => {
+        await deleteOperationWithObjectId('ccof_ece_staff_informations', eceReportStaffId);
+      }),
+    );
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+module.exports = { createECEFacilityStaff, createECEReportStaff, deleteECEReportStaff, getECEFacilityStaff, getECEStaffCertificates, updateECEFacilityStaff, updateECEReportStaff };
