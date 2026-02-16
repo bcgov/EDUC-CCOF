@@ -21,7 +21,7 @@
           <p>{{ getYesNoValue(eceReport?.publicSectorEmployer) }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
-          <p class="font-weight-bold">Reporting Month</p>
+          <p class="font-weight-bold">Month of Service</p>
           <p>{{ formatMonthYearToString(eceReport?.month, eceReport?.year) }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
