@@ -1546,13 +1546,17 @@ export default {
     calculatePaymentEligibleDays() {
       this.initializePaymentEligibleDaysCount();
       for (const dailyEnrolment of this.dailyEnrolments) {
-        for (const category of this.categoryFields) {
+        const affectedCategories = dailyEnrolment.affectedCategories?.length
+          ? dailyEnrolment.affectedCategories
+          : this.categoryFields;
+        for (const category of affectedCategories) {
           if (!dailyEnrolment[category]) continue;
           const eligibility = dailyEnrolment.paymentEligibility;
           switch (eligibility) {
+            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
+              break;
             case null:
             case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
-            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
               this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
               this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
@@ -1569,7 +1573,6 @@ export default {
         }
       }
     },
-
     calculateCurrentTotals() {
       const currentTotals = Object.fromEntries(this.categoryFields.map((category) => [category, 0]));
       for (const dailyEnrolment of this.dailyEnrolments) {
