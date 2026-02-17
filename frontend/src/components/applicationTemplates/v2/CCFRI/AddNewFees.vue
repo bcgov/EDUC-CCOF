@@ -20,6 +20,7 @@
       processing times. If approved, this fee will be posted on the Ministry website. <br /><br />
     </p>
 
+    <v-alert v-if="pageContainsErrors" type="error" text="One or more child care types require your attention." />
     <!-- this is for read only mode - when user is viewing a submitted Renewal application - they don't see the page where we ask them if the current fees are correct -->
     <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="my-10 rounded-lg">
       <p class="px-6 py-3 card-title font-weight-bold">Are the previous year's fees correct for this facility?</p>
@@ -35,7 +36,12 @@
     </v-card>
 
     <div v-for="(item, index) in CCFRIFacilityModel.childCareTypes" :key="index">
-      <v-card v-if="!item.deleteMe" elevation="6" class="my-10 rounded-lg">
+      <v-card
+        v-if="!item.deleteMe"
+        :class="{ 'error-border': sectionErrors[index] }"
+        elevation="6"
+        class="my-10 rounded-lg"
+      >
         <p class="px-6 py-3 card-title font-weight-bold">
           Parent Fees {{ item.programYear }}: Full-Time {{ item.childCareCategory }}
         </p>
@@ -70,7 +76,7 @@
                   label="Apr"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeApr')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -83,7 +89,7 @@
                   label="May"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMay')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -96,7 +102,7 @@
                   label="Jun"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJun')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -109,7 +115,7 @@
                   label="Jul"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJul')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -122,7 +128,7 @@
                   label="Aug"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeAug')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -135,7 +141,7 @@
                   label="Sep"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeSep')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -148,7 +154,7 @@
                   label="Oct"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeOct')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -161,7 +167,7 @@
                   label="Nov"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeNov')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -174,7 +180,7 @@
                   label="Dec"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeDec')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -187,7 +193,7 @@
                   label="Jan"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeJan')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -200,7 +206,7 @@
                   label="Feb"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeFeb')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
               <v-col cols="6" sm="4" md="3" lg="2">
@@ -213,7 +219,7 @@
                   label="Mar"
                   prefix="$"
                   @wheel="$event.target.blur()"
-                  @update:model-value="convertBlankNumberToNull(item, 'approvedFeeMar')"
+                  @update:model-value="checkSectionValidity(index)"
                 />
               </v-col>
             </v-row>
@@ -239,14 +245,50 @@
 </template>
 <script>
 import ccfriMixin from '@/mixins/ccfriMixin.js';
+import ApplicationService from '@/services/applicationService.js';
+
 export default {
   mixins: [ccfriMixin],
+  data() {
+    return { sectionErrors: {} };
+  },
+  computed: {
+    pageContainsErrors() {
+      return Object.values(this.sectionErrors).includes(true);
+    },
+  },
   watch: {
     isApplicationFormValidated: {
       handler() {
+        this.checkAllSections();
         this.$refs.form?.validate();
       },
     },
   },
+  methods: {
+    async checkSectionValidity(sectionIndex) {
+      await this.$nextTick();
+
+      const section = this.CCFRIFacilityModel.childCareTypes[sectionIndex];
+      const hasErrors = this.hasSectionErrors(section);
+      this.sectionErrors[sectionIndex] = hasErrors;
+    },
+    hasSectionErrors(section) {
+      return !ApplicationService.isChildCareTypeComplete(section);
+    },
+    checkAllSections() {
+      for (const [index, section] of this.CCFRIFacilityModel.childCareTypes.entries()) {
+        if (!section.deleteMe) {
+          this.sectionErrors[index] = this.hasSectionErrors(section);
+        }
+      }
+    },
+  },
 };
 </script>
+
+<style scoped>
+.error-border {
+  box-shadow: 0px 0px 5px #d8292f !important;
+}
+</style>
