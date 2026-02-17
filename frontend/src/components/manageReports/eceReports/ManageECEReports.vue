@@ -154,7 +154,7 @@ import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import CreateECEReportDialog from '@/components/manageReports/eceReports/CreateECEReportDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin';
-import ApplicationService from '@/services/ApplicationService.js';
+import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';

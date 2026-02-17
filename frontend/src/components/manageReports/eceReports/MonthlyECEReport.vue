@@ -134,7 +134,7 @@ import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import alertMixin from '@/mixins/alertMixin.js';
-import ApplicationService from '@/services/ApplicationService.js';
+import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
