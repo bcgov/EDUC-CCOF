@@ -1,6 +1,16 @@
 'use strict';
 
-const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue, updateChangeRequestNewFacility, getChangeActionDetails } = require('./utils');
+const {
+  buildFilterQuery,
+  getOperation,
+  postOperation,
+  patchOperationWithObjectId,
+  deleteOperationWithObjectId,
+  sleep,
+  getLabelFromValue,
+  updateChangeRequestNewFacility,
+  getChangeActionDetails,
+} = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -9,6 +19,7 @@ const {
   AdjudicationECEWEFacilityMappings,
   ClosureMappings,
   ECEWEApplicationMappings,
+  ECEWEApplicationPSEMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileBaseCCFRIMappings,
@@ -250,6 +261,20 @@ async function getECEWEApplication(req, res) {
     return res.status(HttpStatus.OK).json(eceweApp);
   } catch (e) {
     log.error('An error occurred while getting ECEWEApplication', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getECEWEApplicationPSE(req, res) {
+  try {
+    const filter = buildFilterQuery(req.query, ECEWEApplicationMappings);
+    const operation = `ccof_applications?$select=ccof_public_sector_employer&${filter}`;
+    log.info('ECEWE PSE operation:', operation);
+    const response = await getOperation(`ccof_applications?$select=ccof_public_sector_employer&${buildFilterQuery(req.query, ECEWEApplicationPSEMappings)}`);
+    const publicSector = response?.value?.[0]?.ccof_public_sector_employer ?? null;
+    return res.status(HttpStatus.OK).json({ publicSector });
+  } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -691,6 +716,7 @@ module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
   getECEWEApplication,
+  getECEWEApplicationPSE,
   getAdjudicationECEWEFacilities,
   updateECEWEApplication,
   updateECEWEFacilityApplication,

@@ -9,6 +9,7 @@ const {
   patchCCFRIApplication,
   getAdjudicationECEWEFacilities,
   getECEWEApplication,
+  getECEWEApplicationPSE,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
@@ -20,7 +21,7 @@ const {
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { param, validationResult, body } = require('express-validator');
+const { param, query, validationResult, body } = require('express-validator');
 
 router.post('/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF), [], (req, res) => {
   return renewCCOFApplication(req, res);
@@ -196,6 +197,21 @@ router.patch(
   [],
   (req, res) => {
     return upsertParentFees(req, res);
+  },
+);
+
+/* Retrieve an ECEWE application PSE reseponse for a specific program year and org Id */
+router.get(
+  '/ecewe/pse',
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [
+    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  ],
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEWEApplicationPSE(req, res);
   },
 );
 

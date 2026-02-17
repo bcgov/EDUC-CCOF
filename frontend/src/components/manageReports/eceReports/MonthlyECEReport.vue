@@ -3,7 +3,7 @@
     <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
   </div>
   <div v-else class="px-12 mb-12">
-    <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+    <MonthlyECEReportHeader :ece-report="eceReport" :public-sector="publicSector" class="mb-8" />
     <div class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
@@ -134,6 +134,7 @@ import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/ApplicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
@@ -169,6 +170,7 @@ export default {
         { title: 'Total', value: 'totalAmount', sortable: true },
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
+      publicSector: this.$route?.state?.publicSector ?? null,
     };
   },
   computed: {
@@ -206,6 +208,12 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        if (this.publicSector === null) {
+          this.publicSector = await ApplicationService.getEcewePse({
+            organizationId: this.organizationId,
+            programYearId: this.eceReport?.programYearId,
+          });
+        }
         await this.loadECEFacilityStaff();
         this.eceReportStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
           const facilityStaff = this.eceFacilityStaffById.get(staff.eceStaffId);

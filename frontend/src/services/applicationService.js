@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
+import { buildQueryString, hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
   ApiRoutes,
@@ -774,6 +774,19 @@ export default {
       return response.data;
     } catch (error) {
       console.error(`Failed to get Adjudication ECEWE facilities - ${error}`);
+      throw error;
+    }
+  },
+  async getEcewePse(query) {
+    try {
+      const queryString = buildQueryString(query);
+      if (!queryString) {
+        return null;
+      }
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE_PSE}${queryString}`);
+      return response?.data?.publicSector ?? null;
+    } catch (error) {
+      console.error(`Failed to get ECEWE PSE - ${error}`);
       throw error;
     }
   },

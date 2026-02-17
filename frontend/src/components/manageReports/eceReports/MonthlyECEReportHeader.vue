@@ -18,7 +18,7 @@
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
           <p class="font-weight-bold">Public Sector Employer</p>
-          <p>{{ getYesNoValue(eceReport?.publicSectorEmployer) }}</p>
+          <p>{{ publicSectorText }}</p>
         </v-col>
         <v-col cols="12" sm="6" md="4" class="pt-2">
           <p class="font-weight-bold">Month of Service</p>
@@ -55,6 +55,7 @@ export default {
       type: Object,
       required: true,
     },
+    publicSector: { type: [Number, null], default: null },
   },
   computed: {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
@@ -64,6 +65,9 @@ export default {
     },
     reportStatus() {
       return getStatusText(this.eceReport?.statusCode, ECE_REPORT_STATUS_OPTIONS);
+    },
+    publicSectorText() {
+      return getYesNoValue(this.publicSector);
     },
   },
   methods: {
