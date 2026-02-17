@@ -233,9 +233,7 @@ export default {
         this.deleteChildCareTypes();
         this.refreshNavBarList();
         if (showMessage && (shouldSaveCcfri || shouldProcessClosures)) {
-          this.setSuccessAlert('Success! CCFRI Parent fees have been saved');
-        } else {
-          this.setWarningAlert('There were no changes to save');
+          this.setSuccessAlert('Success! CCFRI Parent fees have been saved.');
         }
       } catch (error) {
         console.error(error);

@@ -20,7 +20,7 @@
       processing times. If approved, this fee will be posted on the Ministry website. <br /><br />
     </p>
 
-    <v-alert v-if="pageContainsErrors" type="error" text="One or more child care types require your attention" />
+    <v-alert v-if="pageContainsErrors" type="error" text="One or more child care types require your attention." />
     <!-- this is for read only mode - when user is viewing a submitted Renewal application - they don't see the page where we ask them if the current fees are correct -->
     <v-card v-if="isReadOnly && CCFRIFacilityModel.existingFeesCorrect" elevation="6" class="my-10 rounded-lg">
       <p class="px-6 py-3 card-title font-weight-bold">Are the previous year's fees correct for this facility?</p>
@@ -245,6 +245,8 @@
 </template>
 <script>
 import ccfriMixin from '@/mixins/ccfriMixin.js';
+import ApplicationService from '@/services/applicationService.js';
+
 export default {
   mixins: [ccfriMixin],
   data() {
@@ -272,27 +274,7 @@ export default {
       this.sectionErrors[sectionIndex] = hasErrors;
     },
     hasSectionErrors(section) {
-      if (!section.feeFrequency) return true;
-
-      const feeFields = [
-        'approvedFeeApr',
-        'approvedFeeMay',
-        'approvedFeeJun',
-        'approvedFeeJul',
-        'approvedFeeAug',
-        'approvedFeeSep',
-        'approvedFeeOct',
-        'approvedFeeNov',
-        'approvedFeeDec',
-        'approvedFeeJan',
-        'approvedFeeFeb',
-        'approvedFeeMar',
-      ];
-
-      return feeFields.some((field) => {
-        const value = section[field];
-        return this.feeRules.some((rule) => rule(value) !== true);
-      });
+      return !ApplicationService.isChildCareTypeComplete(section);
     },
     checkAllSections() {
       for (const [index, section] of this.CCFRIFacilityModel.childCareTypes.entries()) {
@@ -307,6 +289,6 @@ export default {
 
 <style scoped>
 .error-border {
-  box-shadow: 0px 0px 5px rgb(216, 41, 47) !important;
+  box-shadow: 0px 0px 5px #d8292f !important;
 }
 </style>
