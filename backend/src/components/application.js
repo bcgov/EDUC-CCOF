@@ -267,9 +267,6 @@ async function getECEWEApplication(req, res) {
 
 async function getECEWEApplicationPSE(req, res) {
   try {
-    const filter = buildFilterQuery(req.query, ECEWEApplicationMappings);
-    const operation = `ccof_applications?$select=ccof_public_sector_employer&${filter}`;
-    log.info('ECEWE PSE operation:', operation);
     const response = await getOperation(`ccof_applications?$select=ccof_public_sector_employer&${buildFilterQuery(req.query, ECEWEApplicationPSEMappings)}`);
     const publicSector = response?.value?.[0]?.ccof_public_sector_employer ?? null;
     return res.status(HttpStatus.OK).json({ publicSector });
