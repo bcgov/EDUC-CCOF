@@ -232,12 +232,8 @@ export const useCcfriAppStore = defineStore('ccfriApp', {
 
       payload[0] = obj;
 
-      try {
-        const res = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_PARENT_FEE, payload);
-        return res;
-      } catch (error) {
-        console.log(error);
-      }
+      const res = await ApiService.apiAxios.patch(ApiRoutes.APPLICATION_PARENT_FEE, payload);
+      return res;
     },
     getPreviousCareType(currentRFI, careType, previousProgramYearId) {
       const applicationStore = useApplicationStore();

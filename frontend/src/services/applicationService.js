@@ -777,4 +777,14 @@ export default {
       throw error;
     }
   },
+  async getEceweHeader(applicationId) {
+    try {
+      if (!applicationId) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${applicationId}/header`);
+      return response?.data?.publicSector ?? null;
+    } catch (error) {
+      console.error(`Failed to get ECEWE Header - ${error}`);
+      throw error;
+    }
+  },
 };

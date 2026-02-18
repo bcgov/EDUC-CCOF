@@ -3,7 +3,7 @@
     <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
   </div>
   <div v-else class="px-12 mb-12">
-    <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+    <MonthlyECEReportHeader :ece-report="eceReport" :public-sector="publicSector" class="mb-8" />
     <div class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
@@ -134,8 +134,10 @@ import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
@@ -169,9 +171,11 @@ export default {
         { title: 'Total', value: 'totalAmount', sortable: true },
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
+      publicSector: globalThis.history?.state?.publicSector ?? null,
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationId']),
     readonly() {
       return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
@@ -206,6 +210,11 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        const programYearId = this.eceReport?.programYearId;
+        const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
+        if (this.publicSector === null && applicationId) {
+          this.publicSector = await ApplicationService.getEceweHeader(applicationId);
+        }
         await this.loadECEFacilityStaff();
         this.eceReportStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
           const facilityStaff = this.eceFacilityStaffById.get(staff.eceStaffId);
@@ -240,7 +249,10 @@ export default {
     },
     async next() {
       await this.save(false);
-      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`);
+      this.$router.push({
+        path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`,
+        state: { publicSector: this.publicSector },
+      });
     },
     calculate() {
       let weSubtotal = 0;
