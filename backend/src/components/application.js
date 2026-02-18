@@ -256,8 +256,8 @@ async function getECEWEApplication(req, res) {
 
 async function getECEWEApplicationHeader(req, res) {
   try {
-    const { applicationId } = req.params;
-    const response = await getOperation(`ccof_applications(${applicationId})?$select=ccof_public_sector_employer`);
+    const operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_public_sector_employer';
+    const response = await getOperation(operation);
     const publicSector = response?.ccof_public_sector_employer ?? null;
     return res.status(HttpStatus.OK).json({ publicSector });
   } catch (e) {
