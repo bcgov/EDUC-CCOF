@@ -907,6 +907,8 @@ const ECEReportMappings = [
   { back: 'ccof_report_type', front: 'reportType' },
   { back: 'ccof_version', front: 'version' },
   { back: 'ccof_public_sector_employee', front: 'publicSectorEmployer' },
+  { back: 'ccof_ece_rate', front: 'weRate' },
+  { back: 'ccof_ece_sb_rate', front: 'sbRate' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'statuscode', front: 'statusCode' },
 ];
