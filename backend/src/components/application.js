@@ -9,6 +9,7 @@ const {
   AdjudicationECEWEFacilityMappings,
   ClosureMappings,
   ECEWEApplicationMappings,
+  ECEWEApplicationHeaderMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileBaseCCFRIMappings,
@@ -250,6 +251,18 @@ async function getECEWEApplication(req, res) {
     return res.status(HttpStatus.OK).json(eceweApp);
   } catch (e) {
     log.error('An error occurred while getting ECEWEApplication', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function getECEWEApplicationHeader(req, res) {
+  try {
+    const operation = `ccof_applications(${req.params.applicationId})?$select=ccof_public_sector_employer`;
+    let response = await getOperation(operation);
+    response = new MappableObjectForFront(response, ECEWEApplicationHeaderMappings);
+    return res.status(HttpStatus.OK).json(response);
+  } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
@@ -691,6 +704,7 @@ module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
   getECEWEApplication,
+  getECEWEApplicationHeader,
   getAdjudicationECEWEFacilities,
   updateECEWEApplication,
   updateECEWEFacilityApplication,

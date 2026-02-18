@@ -4,7 +4,7 @@
       <v-progress-circular indeterminate size="100" :width="6" color="#003366" class="min-height-screen" />
     </div>
     <template v-else>
-      <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
+      <MonthlyECEReportHeader :ece-report="eceReport" :public-sector="publicSector" class="mb-8" />
       <v-card variant="outlined" class="px-8 px-md-12 py-6 mt-4">
         <h2 class="text-center mb-6">Declaration and Submission</h2>
         <div class="declaration-content px-md-4 px-xl-12 pb-2">
@@ -55,7 +55,9 @@ import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import SubmitConfirmationDialog from '@/components/manageReports/eceReports/SubmitConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
@@ -74,9 +76,11 @@ export default {
       loading: false,
       processing: false,
       showSubmitConfirmationDialog: false,
+      publicSector: globalThis.history?.state?.publicSector ?? null,
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
     ...mapState(useAuthStore, ['isMinistryUser']),
     eceReportId() {
       return this.$route.params.eceReportId;
@@ -96,6 +100,11 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        const programYearId = this.eceReport?.programYearId;
+        const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
+        if (this.publicSector === null && applicationId) {
+          this.publicSector = await ApplicationService.getEceweHeader(applicationId);
+        }
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE report');

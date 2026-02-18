@@ -154,6 +154,7 @@ import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import CreateECEReportDialog from '@/components/manageReports/eceReports/CreateECEReportDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin';
+import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -192,12 +193,16 @@ export default {
       selectedFacilityIds: [],
       selectedStatuses: [],
       showCreateECEReportDialog: false,
+      publicSector: null,
     };
   },
   computed: {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
+    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    selectedApplicationId() {
+      return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
+    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
@@ -253,6 +258,7 @@ export default {
         }
         this.resetFilters();
         this.sortECEReports();
+        this.publicSector = await ApplicationService.getEceweHeader(this.selectedApplicationId);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');
@@ -287,7 +293,10 @@ export default {
       this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
     goToECEReport(eceReportId) {
-      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`);
+      this.$router.push({
+        path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`,
+        state: { publicSector: this.publicSector },
+      });
     },
     getStatusText(statusCode) {
       const status = ECE_REPORT_STATUS_OPTIONS.find((option) => option.value === statusCode);

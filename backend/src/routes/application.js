@@ -9,6 +9,7 @@ const {
   patchCCFRIApplication,
   getAdjudicationECEWEFacilities,
   getECEWEApplication,
+  getECEWEApplicationHeader,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
@@ -196,6 +197,19 @@ router.patch(
   [],
   (req, res) => {
     return upsertParentFees(req, res);
+  },
+);
+
+/* Retrieve ECEWE header fields for a given application (used by ECE Reports header). */
+router.get(
+  '/ecewe/:applicationId/header',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
+  [param('applicationId', 'URL param [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEWEApplicationHeader(req, res);
   },
 );
 
