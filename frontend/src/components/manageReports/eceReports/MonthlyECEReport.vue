@@ -4,7 +4,7 @@
   </div>
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" class="mb-8" />
-    <div class="d-flex justify-end mb-4">
+    <div v-if="!readonly" class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
     <v-card>
@@ -117,7 +117,7 @@
     :loading="loading || processing"
     :is-save-displayed="!readonly"
     :is-save-disabled="!readonly && !isValidForm"
-    :is-next-displayed="true"
+    :is-next-displayed="!readonly"
     :is-next-disabled="!isValidForm"
     @previous="previous"
     @next="next"

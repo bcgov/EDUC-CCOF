@@ -5,5 +5,5 @@ export function isReportReadOnly({ loading, eceReport }) {
   if (loading || !eceReport) {
     return true;
   }
-  return eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.SUBMITTED;
+  return eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT;
 }

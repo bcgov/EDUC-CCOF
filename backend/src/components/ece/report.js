@@ -1,10 +1,10 @@
 'use strict';
 
-const { buildFilterQuery, getOperation, padString, postOperation } = require('../utils');
+const { buildFilterQuery, getOperation, getUserGuid, padString, patchOperationWithObjectId, postOperation } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
-const { restrictFacilities } = require('../../util/common');
+const { getCurrentPSTDate, restrictFacilities } = require('../../util/common');
 const { MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
@@ -71,4 +71,19 @@ async function getECEReports(req, res) {
   }
 }
 
-module.exports = { createECEReport, getECEReport, getECEReports };
+async function submitECEReport(req, res) {
+  try {
+    const payload = {
+      'ccof_submitted_by@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
+      ccof_submit_date: getCurrentPSTDate(),
+      statuscode: 3, // Submitted
+    };
+    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+module.exports = { createECEReport, getECEReport, getECEReports, submitECEReport };
