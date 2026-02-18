@@ -198,8 +198,11 @@ export default {
   },
   computed: {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
-    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId']),
+    ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    selectedApplicationId() {
+      return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
+    },
     facilityList() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
@@ -255,10 +258,7 @@ export default {
         }
         this.resetFilters();
         this.sortECEReports();
-        this.publicSector = await ApplicationService.getEcewePse({
-          organizationId: this.organizationId,
-          programYearId: this.selectedProgramYearId,
-        });
+        this.publicSector = await ApplicationService.getEceweHeader(this.selectedApplicationId);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while loading. Please try again later.');

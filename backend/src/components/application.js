@@ -1,16 +1,6 @@
 'use strict';
 
-const {
-  buildFilterQuery,
-  getOperation,
-  postOperation,
-  patchOperationWithObjectId,
-  deleteOperationWithObjectId,
-  sleep,
-  getLabelFromValue,
-  updateChangeRequestNewFacility,
-  getChangeActionDetails,
-} = require('./utils');
+const { getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId, sleep, getLabelFromValue, updateChangeRequestNewFacility, getChangeActionDetails } = require('./utils');
 const { CCOF_APPLICATION_TYPES, ORGANIZATION_PROVIDER_TYPES, APPLICATION_STATUS_CODES, CCOF_STATUS_CODES, CHANGE_REQUEST_TYPES, CCFRI_STATUS_CODES } = require('../util/constants');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -19,7 +9,6 @@ const {
   AdjudicationECEWEFacilityMappings,
   ClosureMappings,
   ECEWEApplicationMappings,
-  ECEWEApplicationPSEMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileBaseCCFRIMappings,
@@ -265,10 +254,11 @@ async function getECEWEApplication(req, res) {
   }
 }
 
-async function getECEWEApplicationPSE(req, res) {
+async function getECEWEApplicationHeader(req, res) {
   try {
-    const response = await getOperation(`ccof_applications?$select=ccof_public_sector_employer&${buildFilterQuery(req.query, ECEWEApplicationPSEMappings)}`);
-    const publicSector = response?.value?.[0]?.ccof_public_sector_employer ?? null;
+    const { applicationId } = req.params;
+    const response = await getOperation(`ccof_applications(${applicationId})?$select=ccof_public_sector_employer`);
+    const publicSector = response?.ccof_public_sector_employer ?? null;
     return res.status(HttpStatus.OK).json({ publicSector });
   } catch (e) {
     log.error(e);
@@ -713,7 +703,7 @@ module.exports = {
   updateCCFRIApplication,
   upsertParentFees,
   getECEWEApplication,
-  getECEWEApplicationPSE,
+  getECEWEApplicationHeader,
   getAdjudicationECEWEFacilities,
   updateECEWEApplication,
   updateECEWEFacilityApplication,

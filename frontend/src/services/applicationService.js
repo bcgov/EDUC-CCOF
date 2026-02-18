@@ -1,7 +1,7 @@
 import { isEmpty } from 'lodash';
 
 import ApiService from '@/common/apiService';
-import { buildQueryString, hasEmptyFields, validateHourDifference } from '@/utils/common.js';
+import { hasEmptyFields, validateHourDifference } from '@/utils/common.js';
 import {
   AFS_STATUSES,
   ApiRoutes,
@@ -777,16 +777,13 @@ export default {
       throw error;
     }
   },
-  async getEcewePse(query) {
+  async getEceweHeader(applicationId) {
     try {
-      const queryString = buildQueryString(query);
-      if (!queryString) {
-        return null;
-      }
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE_PSE}${queryString}`);
+      if (!applicationId) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_ECEWE}/${applicationId}/ecewe-header`);
       return response?.data?.publicSector ?? null;
     } catch (error) {
-      console.error(`Failed to get ECEWE PSE - ${error}`);
+      console.error(`Failed to get ECEWE Header - ${error}`);
       throw error;
     }
   },

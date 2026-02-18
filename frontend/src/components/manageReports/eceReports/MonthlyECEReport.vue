@@ -137,6 +137,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
@@ -170,11 +171,12 @@ export default {
         { title: 'Total', value: 'totalAmount', sortable: true },
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
-      publicSector: this.$route?.state?.publicSector ?? null,
+      publicSector: window.history.state?.publicSector ?? null,
     };
   },
   computed: {
     ...mapState(useOrganizationStore, ['organizationId']),
+    ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
     readonly() {
       return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
     },
@@ -208,11 +210,10 @@ export default {
       try {
         this.loading = true;
         this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
-        if (this.publicSector === null) {
-          this.publicSector = await ApplicationService.getEcewePse({
-            organizationId: this.organizationId,
-            programYearId: this.eceReport?.programYearId,
-          });
+        const programYearId = this.eceReport?.programYearId;
+        const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
+        if (this.publicSector === null && applicationId) {
+          this.publicSector = await ApplicationService.getEceweHeader(applicationId);
         }
         await this.loadECEFacilityStaff();
         this.eceReportStaff = (this.eceReport?.eceStaffInformation ?? []).map((staff) => {
@@ -253,7 +254,10 @@ export default {
     },
     async next() {
       await this.save(false);
-      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`);
+      this.$router.push({
+        path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`,
+        state: { publicSector: this.publicSector },
+      });
     },
     // TODO (vietle-cgi): Implement ECE Reports calculation
     calculate() {

@@ -237,6 +237,9 @@ export const useApplicationStore = defineStore('application', {
       });
       return applicationIds;
     },
+    getApplicationIdByProgramYearId: (state) => (programYearId) => {
+      return state.applicationMap?.get(programYearId)?.applicationId ?? null;
+    },
     getFacilityListForPCFByProgramYearId: (state) => (selectedProgramYearId) => {
       const authStore = useAuthStore();
       const programYearId = selectedProgramYearId ? selectedProgramYearId : this.latestProgramYearId;

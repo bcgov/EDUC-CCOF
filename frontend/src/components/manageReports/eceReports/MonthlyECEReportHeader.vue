@@ -73,7 +73,6 @@ export default {
   methods: {
     formatMonthYearToString,
     formatUTCDate,
-    getYesNoValue,
   },
 };
 </script>

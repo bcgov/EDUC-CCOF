@@ -310,11 +310,6 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_describe_your_org', front: 'describeOrgCSSEA' }, //null,
 ];
 
-const ECEWEApplicationPSEMappings = [
-  { back: '_ccof_organization_value', front: 'organizationId' },
-  { back: '_ccof_programyear_value', front: 'programYearId' },
-];
-
 const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
@@ -963,7 +958,6 @@ module.exports = {
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
-  ECEWEApplicationPSEMappings,
   AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,

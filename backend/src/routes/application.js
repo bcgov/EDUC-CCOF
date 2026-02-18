@@ -9,7 +9,7 @@ const {
   patchCCFRIApplication,
   getAdjudicationECEWEFacilities,
   getECEWEApplication,
-  getECEWEApplicationPSE,
+  getECEWEApplicationHeader,
   updateECEWEApplication,
   updateECEWEFacilityApplication,
   getApprovableFeeSchedules,
@@ -21,7 +21,7 @@ const {
 const { getNMFApplication, updateNMFApplication, createNMFApplication } = require('../components/nmfApplication');
 const validatePermission = require('../middlewares/validatePermission');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
-const { param, query, validationResult, body } = require('express-validator');
+const { param, validationResult, body } = require('express-validator');
 
 router.post('/renew', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_RENEWAL_PCF), [], (req, res) => {
   return renewCCOFApplication(req, res);
@@ -200,18 +200,16 @@ router.patch(
   },
 );
 
-/* Retrieve an ECEWE application PSE reseponse for a specific program year and org Id */
+/* Retrieve ECEWE header fields for a given application (used by ECE Reports header). */
 router.get(
-  '/ecewe/pse',
+  '/ecewe/:applicationId/ecewe-header',
+  passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),
-  [
-    query('organizationId', 'Query param [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-    query('programYearId', 'Query param [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
-  ],
+  [param('applicationId', 'URL param [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
-    return getECEWEApplicationPSE(req, res);
+    return getECEWEApplicationHeader(req, res);
   },
 );
 
