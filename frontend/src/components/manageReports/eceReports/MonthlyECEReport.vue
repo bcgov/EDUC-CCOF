@@ -171,12 +171,12 @@ export default {
         { title: 'Total', value: 'totalAmount', sortable: true },
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
-      publicSector: window.history.state?.publicSector ?? null,
+      publicSector: globalThis.history?.state?.publicSector ?? null,
     };
   },
   computed: {
-    ...mapState(useOrganizationStore, ['organizationId']),
     ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
+    ...mapState(useOrganizationStore, ['organizationId']),
     readonly() {
       return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
     },

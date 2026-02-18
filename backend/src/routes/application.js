@@ -202,7 +202,7 @@ router.patch(
 
 /* Retrieve ECEWE header fields for a given application (used by ECE Reports header). */
 router.get(
-  '/ecewe/:applicationId/ecewe-header',
+  '/ecewe/:applicationId/header',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
   validatePermission(PERMISSIONS.VIEW_ORG_INFORMATION),

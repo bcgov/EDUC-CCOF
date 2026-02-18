@@ -309,6 +309,7 @@ const ECEWEApplicationMappings = [
   { back: 'ccof_union_agreement_reached', front: 'isUnionAgreementReached' }, //null,
   { back: 'ccof_describe_your_org', front: 'describeOrgCSSEA' }, //null,
 ];
+const ECEWEApplicationHeaderMappings = [{ back: 'ccof_public_sector_employer', front: 'publicSector' }];
 
 const ECEWEFacilityMappings = [
   { back: 'ccof_applicationeceweid', front: 'eceweApplicationId' },
@@ -958,6 +959,7 @@ module.exports = {
   CCOFApplicationMappings,
   CCOFApplicationFundingMapping,
   ECEWEApplicationMappings,
+  ECEWEApplicationHeaderMappings,
   AdjudicationECEWEFacilityMappings,
   ECEWEFacilityMappings,
   ECEReportMappings,

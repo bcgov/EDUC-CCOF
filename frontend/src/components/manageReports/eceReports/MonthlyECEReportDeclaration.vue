@@ -72,7 +72,7 @@ export default {
     return {
       eceReport: null,
       loading: false,
-      publicSector: window.history.state?.publicSector ?? null,
+      publicSector: globalThis.history?.state?.publicSector ?? null,
     };
   },
   computed: {

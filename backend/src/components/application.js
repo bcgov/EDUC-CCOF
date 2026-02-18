@@ -9,6 +9,7 @@ const {
   AdjudicationECEWEFacilityMappings,
   ClosureMappings,
   ECEWEApplicationMappings,
+  ECEWEApplicationHeaderMappings,
   ECEWEFacilityMappings,
   DeclarationMappings,
   UserProfileBaseCCFRIMappings,
@@ -256,10 +257,10 @@ async function getECEWEApplication(req, res) {
 
 async function getECEWEApplicationHeader(req, res) {
   try {
-    const operation = 'ccof_applications(' + req.params.applicationId + ')?$select=ccof_public_sector_employer';
-    const response = await getOperation(operation);
-    const publicSector = response?.ccof_public_sector_employer ?? null;
-    return res.status(HttpStatus.OK).json({ publicSector });
+    const operation = `ccof_applications(${req.params.applicationId})?$select=ccof_public_sector_employer`;
+    let response = await getOperation(operation);
+    response = new MappableObjectForFront(response, ECEWEApplicationHeaderMappings);
+    return res.status(HttpStatus.OK).json(response);
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
