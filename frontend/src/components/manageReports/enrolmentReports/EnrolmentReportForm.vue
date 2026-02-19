@@ -1333,6 +1333,7 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
+  CATEGORY_FIELD_MAP,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -1546,28 +1547,39 @@ export default {
     calculatePaymentEligibleDays() {
       this.initializePaymentEligibleDaysCount();
       for (const dailyEnrolment of this.dailyEnrolments) {
-        const affectedCategories = dailyEnrolment.affectedCategories?.length
-          ? dailyEnrolment.affectedCategories
-          : this.categoryFields;
-        for (const category of affectedCategories) {
-          if (!dailyEnrolment[category]) continue;
-          const eligibility = dailyEnrolment.paymentEligibility;
+        const eligibility = dailyEnrolment.paymentEligibility;
+
+        const affectedCategories = dailyEnrolment.affectedCategories
+          ? dailyEnrolment.affectedCategories.split(',').map(Number)
+          : [];
+        for (const category of this.categoryFields) {
+          const value = dailyEnrolment[category];
+          if (!value) continue;
+          const groupId = CATEGORY_FIELD_MAP[category];
+
+          if (!dailyEnrolment.isFullClosure && !affectedCategories.includes(groupId)) {
+            this.paymentEligibleDaysCount.CCOF[category] += value;
+            this.paymentEligibleDaysCount.CCFRI[category] += value;
+            continue;
+          }
           switch (eligibility) {
-            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += value;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI:
+              this.paymentEligibleDaysCount.CCFRI[category] += value;
               break;
             case null:
             case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
-              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
-              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              this.paymentEligibleDaysCount.CCOF[category] += value;
+              this.paymentEligibleDaysCount.CCFRI[category] += value;
               break;
-            case CLOSURE_PAYMENT_ELIGIBILITIES.CCOF:
-              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
-              break;
-            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI:
-              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
-              break;
-            default:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
+              if (dailyEnrolment.isFullClosure) {
+                this.paymentEligibleDaysCount.CCOF[category] += value;
+                this.paymentEligibleDaysCount.CCFRI[category] += value;
+              }
               break;
           }
         }

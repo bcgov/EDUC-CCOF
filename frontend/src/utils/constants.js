@@ -850,3 +850,22 @@ export const FISCAL_YEAR_MONTHS = Object.freeze([4, 5, 6, 7, 8, 9, 10, 11, 12, 1
 export const ECE_STAFF_CERT_STATUSES = Object.freeze({
   EXPIRED: 'Expired',
 });
+
+export const CATEGORY_FIELD_MAP = {
+  less0To18: 100000000,
+  over0To18: 100000000,
+
+  less18To36: 100000001,
+  over18To36: 100000001,
+
+  less3YK: 100000002,
+  over3YK: 100000002,
+
+  lessOOSCK: 100000003,
+  overOOSCK: 100000003,
+
+  lessOOSCG: 100000004,
+  overOOSCG: 100000004,
+
+  lessPre: 100000005,
+};
