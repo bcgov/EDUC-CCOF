@@ -258,10 +258,13 @@ export default {
       let weSubtotal = 0;
       let sbSubtotal = 0;
       let total = 0;
-      const weRate = formatDecimalNumberToNumber(this.eceReport?.weRate, null) || 0;
-      const sbRate = formatDecimalNumberToNumber(this.eceReport?.sbRate, null) || 0;
+      const weRate = formatDecimalNumberToNumber(this.eceReport?.weRate, null);
+      const sbRate = formatDecimalNumberToNumber(this.eceReport?.sbRate, null);
+      if (weRate == null || sbRate == null) {
+        throw new Error('Missing WE or SB rate for calculation.');
+      }
       for (const staff of this.eceReportStaff) {
-        const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) || 0;
+        const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) ?? 0;
         const weAmount = weRate * hours;
         const statutoryBenefitAmount = sbRate * hours;
         const totalAmount = weAmount + statutoryBenefitAmount;
