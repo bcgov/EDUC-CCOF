@@ -46,7 +46,7 @@ export default {
       if (!eceReportId) return;
       await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/submit`);
     } catch (error) {
-      console.log(`Failed to submit ECE report - ${error}`);
+      console.error(`Failed to submit ECE report - ${error}`);
       throw error;
     }
   },

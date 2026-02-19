@@ -122,7 +122,7 @@ export default {
         await ECEReportService.submitECEReport(this.eceReportId);
         this.showSubmitConfirmationDialog = true;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         this.setFailureAlert('An error occurred while submitting.');
       } finally {
         this.processing = false;
