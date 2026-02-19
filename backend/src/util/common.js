@@ -42,7 +42,7 @@ function sanitizeODataFilterValue(value) {
   return sanitized;
 }
 
-function getCurrentPSTDate() {
+function getCurrentPacificDate() {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'America/Vancouver',
     year: 'numeric',
@@ -51,4 +51,4 @@ function getCurrentPSTDate() {
   }).format(new Date());
 }
 
-module.exports = { formatDateForBack, getCurrentPSTDate, isFacilityAdmin, restrictFacilities, sanitizeODataFilterValue };
+module.exports = { formatDateForBack, getCurrentPacificDate, isFacilityAdmin, restrictFacilities, sanitizeODataFilterValue };

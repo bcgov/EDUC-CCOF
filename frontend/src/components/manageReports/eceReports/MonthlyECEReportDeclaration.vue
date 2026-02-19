@@ -59,7 +59,7 @@ import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
-import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 
 export default {

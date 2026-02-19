@@ -4,7 +4,7 @@ const { buildFilterQuery, getOperation, getUserGuid, padString, patchOperationWi
 const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
-const { getCurrentPSTDate, restrictFacilities } = require('../../util/common');
+const { getCurrentPacificDate, restrictFacilities } = require('../../util/common');
 const { MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
@@ -75,7 +75,7 @@ async function submitECEReport(req, res) {
   try {
     const payload = {
       'ccof_submitted_by@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
-      ccof_submit_date: getCurrentPSTDate(),
+      ccof_submit_date: getCurrentPacificDate(),
       statuscode: 3, // Submitted
     };
     await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
