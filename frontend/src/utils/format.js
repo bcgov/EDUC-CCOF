@@ -149,6 +149,7 @@ export function formatDecimalNumberToNumber(input, decimalPlaces = 2) {
   if (input == null) return null;
   const number = typeof input === 'number' ? input : Number(input);
   if (!Number.isFinite(number)) return null;
+  if (decimalPlaces == null) return number;
   return Number(number.toFixed(decimalPlaces));
 }
 

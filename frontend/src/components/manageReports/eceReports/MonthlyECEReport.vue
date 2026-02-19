@@ -66,27 +66,27 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <!-- TODO (vietle-cgi): Implement ECE Reports calculation -->
         <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': showVerified }">
           <v-table>
             <thead>
               <tr>
                 <th scope="col"></th>
                 <th scope="col" class="font-weight-bold text-right">Reported</th>
+                <!-- TODO (vietle-cgi): Implement Verified ECE Reports -->
                 <th v-if="showVerified" scope="col" class="font-weight-bold text-right">Verified</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                <td class="text-right">{{ formatCurrency(0) }}</td>
+                <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
                 <td v-if="showVerified" class="text-right">
                   {{ formatCurrency(0) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                <td class="text-right">{{ formatCurrency(0) }}</td>
+                <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
                 <td v-if="showVerified" class="text-right">
                   {{ formatCurrency(0) }}
                 </td>
@@ -94,7 +94,7 @@
               <tr>
                 <th scope="row" class="font-weight-bold">Total</th>
                 <td class="text-right font-weight-bold">
-                  {{ formatCurrency(0) }}
+                  {{ formatCurrency(reportTotals.total) }}
                 </td>
                 <td v-if="showVerified" class="text-right font-weight-bold">
                   {{ formatCurrency(0) }}
@@ -156,7 +156,7 @@ export default {
       isValidForm: false,
       eceReport: null,
       addDialogOpen: false,
-      reportCalculationSummary: {},
+      reportTotals: {},
       eceFacilityStaff: [],
       originalECEReportStaff: [],
       eceReportStaff: [],
@@ -227,12 +227,7 @@ export default {
           };
         });
         this.initializeStaffChangeState();
-        // TODO (vietle-cgi): Implement ECE Reports calculation
-        this.reportCalculationSummary = {
-          weSubtotal: 0,
-          sbSubtotal: 0,
-          total: 0,
-        };
+        this.calculate();
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE report');
@@ -259,9 +254,28 @@ export default {
         state: { publicSector: this.publicSector },
       });
     },
-    // TODO (vietle-cgi): Implement ECE Reports calculation
     calculate() {
-      this.setWarningAlert('Calculate functionality is not yet implemented.');
+      let weSubtotal = 0;
+      let sbSubtotal = 0;
+      let total = 0;
+      const weRate = formatDecimalNumberToNumber(this.eceReport?.weRate, null);
+      const sbRate = formatDecimalNumberToNumber(this.eceReport?.sbRate, null);
+      if (weRate == null || sbRate == null) {
+        throw new Error('Missing WE or SB rate for calculation.');
+      }
+      for (const staff of this.eceReportStaff) {
+        const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) ?? 0;
+        const weAmount = weRate * hours;
+        const statutoryBenefitAmount = sbRate * hours;
+        const totalAmount = weAmount + statutoryBenefitAmount;
+        staff.weAmount = weAmount;
+        staff.statutoryBenefitAmount = statutoryBenefitAmount;
+        staff.totalAmount = totalAmount;
+        weSubtotal += weAmount;
+        sbSubtotal += statutoryBenefitAmount;
+        total += totalAmount;
+      }
+      this.reportTotals = { weSubtotal, sbSubtotal, total };
     },
     addECEStaff(newStaff) {
       this.eceReportStaff.push(newStaff);
