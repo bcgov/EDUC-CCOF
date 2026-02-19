@@ -114,7 +114,7 @@
     @staff-added="addECEStaff"
   />
   <ReportNavButtons
-    :loading="loading || processing"
+    :loading="isBusy"
     :is-save-displayed="!readonly"
     :is-save-disabled="!readonly && !isValidForm"
     :is-next-displayed="!readonly"
@@ -177,8 +177,11 @@ export default {
   computed: {
     ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationId']),
+    isBusy() {
+      return this.loading || this.processing;
+    },
     readonly() {
-      return isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport });
+      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport });
     },
     eceReportId() {
       return this.$route.params.eceReportId;

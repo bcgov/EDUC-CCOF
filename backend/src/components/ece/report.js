@@ -5,6 +5,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
 const { getCurrentPacificDate, restrictFacilities } = require('../../util/common');
+const { ECE_REPORT_STATUS_CODES } = require('../../util/constants');
 const { MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
@@ -76,7 +77,7 @@ async function submitECEReport(req, res) {
     const payload = {
       'ccof_submitted_by@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
       ccof_submit_date: getCurrentPacificDate(),
-      statuscode: 3, // Submitted
+      statuscode: ECE_REPORT_STATUS_CODES.SUBMITTED,
     };
     await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
     return res.status(HttpStatus.OK).json();

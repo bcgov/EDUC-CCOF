@@ -41,7 +41,7 @@
   </v-container>
   <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
   <ReportNavButtons
-    :loading="loading || processing"
+    :loading="isBusy"
     :is-submit-displayed="true"
     :is-submit-disabled="isSubmitDisabled"
     @previous="previous"
@@ -85,10 +85,11 @@ export default {
     eceReportId() {
       return this.$route.params.eceReportId;
     },
+    isBusy() {
+      return this.loading || this.processing;
+    },
     isSubmitDisabled() {
-      return (
-        isReportReadOnly({ loading: this.loading || this.processing, eceReport: this.eceReport }) || this.isMinistryUser
-      );
+      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) || this.isMinistryUser;
     },
   },
   async created() {
