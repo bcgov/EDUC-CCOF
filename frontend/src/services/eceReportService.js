@@ -40,4 +40,14 @@ export default {
       throw error;
     }
   },
+
+  async submitECEReport(eceReportId) {
+    try {
+      if (!eceReportId) return;
+      await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/submit`);
+    } catch (error) {
+      console.error(`Failed to submit ECE report - ${error}`);
+      throw error;
+    }
+  },
 };

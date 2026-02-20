@@ -1,13 +1,24 @@
 <template>
   <v-container class="pa-0 text-body-1" fluid>
+    <div class="d-flex flex-column flex-md-row justify-space-between align-start align-md-center mb-4">
+      <!-- TODO (vietle-cgi) - Implement ECE Reports permission -->
+      <AppButton
+        :primary="false"
+        size="small"
+        :loading="isLoading"
+        class="order-1 order-md-2 mb-4 align-self-end align-self-md-auto"
+        @click="goToEceReports"
+      >
+        Submit an ECE Report
+      </AppButton>
+      <p class="order-2 order-md-1">All ECE information has been updated from the ECE Registry.</p>
+    </div>
     <v-form ref="form" v-model="isValidForm">
-      <p class="mb-4">All ECE information has been updated from the ECE Registry.</p>
       <p>
         Click <strong>Refresh ECE information</strong> to ensure information has been updated from the ECE Registry
         before making any changes to Hourly Wage or Status. To save changes to Hourly Wage or Status click
         <strong>Save Changes</strong> below.
       </p>
-
       <v-row justify="space-between" align="center">
         <v-col cols="6" sm="4" md="3">
           <v-text-field
@@ -35,25 +46,13 @@
             </v-col>
 
             <v-col v-if="!isEditing && hasPermission(PERMISSIONS.EDIT_ECE_STAFF)" cols="auto">
-              <AppButton
-                :primary="true"
-                size="small"
-                :loading="isLoading"
-                :disabled="!eceStaff.length"
-                @click="startEditing"
-              >
+              <AppButton size="small" :loading="isLoading" :disabled="!eceStaff.length" @click="startEditing">
                 Edit
               </AppButton>
             </v-col>
 
             <v-col v-if="isEditing && hasPermission(PERMISSIONS.EDIT_ECE_STAFF)" cols="auto">
-              <AppButton
-                :primary="true"
-                size="small"
-                :disabled="!isValidForm"
-                :loading="isLoading"
-                @click="saveChanges"
-              >
+              <AppButton size="small" :disabled="!isValidForm" :loading="isLoading" @click="saveChanges">
                 Save Changes
               </AppButton>
             </v-col>
@@ -147,7 +146,7 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ECEStaffService from '@/services/eceStaffService.js';
 
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
-import { ECE_STAFF_STATUSES } from '@/utils/constants';
+import { ECE_STAFF_STATUSES, PATHS } from '@/utils/constants';
 import rules from '@/utils/rules';
 export default {
   name: 'ManageECEStaff',
@@ -219,6 +218,10 @@ export default {
         // 2. Last Name (A–Z), then First Name (A–Z)
         return safe(a.lastName).localeCompare(safe(b.lastName)) || safe(a.firstName).localeCompare(safe(b.firstName));
       });
+    },
+
+    goToEceReports() {
+      this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
     },
 
     async goToViewCertification(staff) {

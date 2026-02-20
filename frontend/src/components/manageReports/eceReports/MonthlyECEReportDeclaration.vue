@@ -39,13 +39,13 @@
       </v-card>
     </template>
   </v-container>
-  <!-- TODO (vietle-cgi): Implement Submit ECE report -->
+  <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
   <ReportNavButtons
-    :loading="loading"
+    :loading="isBusy"
     :is-submit-displayed="true"
     :is-submit-disabled="isSubmitDisabled"
     @previous="previous"
-    @submit="setWarningAlert('Submit functionality is not yet implemented.')"
+    @submit="submit"
   />
 </template>
 
@@ -53,6 +53,7 @@
 import { mapState } from 'pinia';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
+import SubmitConfirmationDialog from '@/components/manageReports/eceReports/SubmitConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
@@ -66,20 +67,29 @@ export default {
   components: {
     MonthlyECEReportHeader,
     ReportNavButtons,
+    SubmitConfirmationDialog,
   },
   mixins: [alertMixin],
   data() {
     return {
       eceReport: null,
       loading: false,
+      processing: false,
+      showSubmitConfirmationDialog: false,
       publicSector: globalThis.history?.state?.publicSector ?? null,
     };
   },
   computed: {
     ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
     ...mapState(useAuthStore, ['isMinistryUser']),
+    eceReportId() {
+      return this.$route.params.eceReportId;
+    },
+    isBusy() {
+      return this.loading || this.processing;
+    },
     isSubmitDisabled() {
-      return isReportReadOnly({ loading: this.loading, eceReport: this.eceReport }) || this.isMinistryUser;
+      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) || this.isMinistryUser;
     },
   },
   async created() {
@@ -90,7 +100,7 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        this.eceReport = await ECEReportService.getECEReport(this.$route.params.eceReportId);
+        this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
         const programYearId = this.eceReport?.programYearId;
         const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
         if (this.publicSector === null && applicationId) {
@@ -104,7 +114,20 @@ export default {
       }
     },
     previous() {
-      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.$route.params.eceReportId}`);
+      this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}`);
+    },
+    async submit() {
+      if (this.isSubmitDisabled) return;
+      try {
+        this.processing = true;
+        await ECEReportService.submitECEReport(this.eceReportId);
+        this.showSubmitConfirmationDialog = true;
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while submitting.');
+      } finally {
+        this.processing = false;
+      }
     },
   },
 };

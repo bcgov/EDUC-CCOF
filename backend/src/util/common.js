@@ -42,4 +42,13 @@ function sanitizeODataFilterValue(value) {
   return sanitized;
 }
 
-module.exports = { formatDateForBack, isFacilityAdmin, restrictFacilities, sanitizeODataFilterValue };
+function getCurrentPacificDate() {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Vancouver',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+module.exports = { formatDateForBack, getCurrentPacificDate, isFacilityAdmin, restrictFacilities, sanitizeODataFilterValue };
