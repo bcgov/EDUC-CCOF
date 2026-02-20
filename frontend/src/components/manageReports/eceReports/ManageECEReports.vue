@@ -163,6 +163,21 @@ import { buildFiscalYearMonths } from '@/utils/common.js';
 import { ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
+const EDITABLE_STATUSES = new Set([
+  ECE_REPORT_STATUSES.DRAFT,
+  ECE_REPORT_STATUSES.REJECTED,
+  ECE_REPORT_STATUSES.SUBMITTED,
+]);
+
+const VIEW_ONLY_STATUSES = new Set([
+  ECE_REPORT_STATUSES.IN_REVIEW,
+  ECE_REPORT_STATUSES.VERIFIED,
+  ECE_REPORT_STATUSES.APPROVED,
+  ECE_REPORT_STATUSES.EXPIRED,
+]);
+
+const ADJUSTABLE_STATUSES = new Set([ECE_REPORT_STATUSES.PAID]);
+
 export default {
   name: 'ManageECEReports',
   components: {
@@ -249,6 +264,7 @@ export default {
           organizationId: this.organizationId,
           programYearId: this.selectedProgramYearId,
         });
+        console.log(this.eceReports);
         for (const report of this.eceReports || []) {
           const facility = this.facilityList?.find((item) => item.facilityId === report.facilityId);
           report.facilityAccountNumber = facility?.facilityAccountNumber;
@@ -335,22 +351,14 @@ export default {
     adjust() {
       window.alert('Adjust button is clicked');
     },
-    // TODO: Implement ECE Reports permission
     showAdjustButton(eceReport) {
-      return (
-        !this.hasNextReportCreated(eceReport) &&
-        [ECE_REPORT_STATUSES.APPROVED, ECE_REPORT_STATUSES.PAID].includes(eceReport.statusCode)
-      );
+      return !this.hasNextReportCreated(eceReport) && ADJUSTABLE_STATUSES.has(eceReport.statusCode);
     },
     showEditButton(eceReport) {
-      return (
-        eceReport.statusCode === ECE_REPORT_STATUSES.DRAFT || eceReport.statusCode === ECE_REPORT_STATUSES.REJECTED
-      );
+      return EDITABLE_STATUSES.has(eceReport.statusCode);
     },
     showViewButton(eceReport) {
-      return (
-        eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.REJECTED
-      );
+      return VIEW_ONLY_STATUSES.has(eceReport.statusCode);
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(

@@ -788,7 +788,7 @@ export const ECE_REPORT_STATUSES = Object.freeze({
   PAID: 7,
   REJECTED: 8,
   PROCESSING_ERROR: 9,
-  EXPIRED: 10,
+  EXPIRED: 101510001,
 });
 
 export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
