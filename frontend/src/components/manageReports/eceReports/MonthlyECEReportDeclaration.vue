@@ -90,12 +90,13 @@ export default {
       return this.loading || this.processing;
     },
     hasReportingMonthEnded() {
-      if (!this.eceReport?.month || !this.eceReport?.year) return false;
+      const { month, year } = this.eceReport ?? {};
+      if (!month || !year) return false;
+      const reportingMonth = Number(month);
+      const reportingYear = Number(year);
       const today = formatUTCtoPacificTime(this.userInfo?.serverTime);
-      const currentYear = today.year;
-      const currentMonth = today.month;
-      const reportingYear = Number(this.eceReport.year);
-      const reportingMonth = Number(this.eceReport.month);
+      const currentMonth = today?.month;
+      const currentYear = today?.year;
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
     isSubmitDisabled() {
