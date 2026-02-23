@@ -350,9 +350,13 @@ describe('<EnrolmentReportForm />', () => {
       ...createApplicationStore(),
     });
     cy.get('.legend').within(() => {
-      cy.get('div').should('have.length', 2);
+      cy.get('div').should('have.length', 6);
       cy.contains('Stat holidays');
       cy.contains('Weekends');
+      cy.contains('Approved closure (CCOF Base and CCFRI funding eligible)');
+      cy.contains('Approved closure (CCOF Base funding eligible)');
+      cy.contains('Approved closure (CCFRI funding eligible)');
+      cy.contains('Closure (Not approved for funding)');
     });
   });
 
