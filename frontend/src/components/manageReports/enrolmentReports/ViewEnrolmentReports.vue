@@ -63,10 +63,16 @@
         </v-col>
         <v-col class="d-flex justify-md-end mb-1 mt-1" cols="12" md="4">
           <div>
-            <AppButton size="small" auto-height="false" @click.prevent="goToPaymentInfo">
+            <AppButton id="payment-info-button" size="small" auto-height="false" @click.prevent="goToPaymentInfo">
               View Payment Information
             </AppButton>
-            <AppButton class="mt-2 ml-md-auto" size="small" auto-height="false" @click.prevent="goToClosures">
+            <AppButton
+              id="closure-details-button"
+              class="mt-2 ml-md-auto"
+              size="small"
+              auto-height="false"
+              @click.prevent="goToClosures"
+            >
               Closure Details
             </AppButton>
           </div>
@@ -109,6 +115,7 @@
               v-if="showViewButton(item)"
               :loading="loading"
               :primary="false"
+              class="view-report"
               size="medium"
               @click="goToEnrolmentReport(item.enrolmentReportId)"
             >
