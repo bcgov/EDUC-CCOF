@@ -834,6 +834,12 @@ export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
   },
 ]);
 
+export const ECE_REPORT_STAFF_STATUSES = Object.freeze({
+  ACTIVE: 1,
+  REJECTED: 2,
+  VERIFIED: 101510001,
+});
+
 export const ECE_REPORT_TYPES = Object.freeze({
   BASE: 1,
   ADJUSTMENT: 2,
