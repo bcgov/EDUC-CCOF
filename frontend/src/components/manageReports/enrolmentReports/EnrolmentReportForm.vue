@@ -1333,7 +1333,6 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
-  CATEGORY_FIELD_MAP,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -1342,6 +1341,15 @@ import {
   PATHS,
 } from '@/utils/constants.js';
 import { formatCurrency } from '@/utils/format';
+
+const GROUP_ID_TO_CATEGORY_FIELDS = {
+  100000000: ['less0To18', 'over0To18'],
+  100000001: ['less18To36', 'over18To36'],
+  100000002: ['less3YK', 'over3YK'],
+  100000003: ['lessOOSCK', 'overOOSCK'],
+  100000004: ['lessOOSCG', 'overOOSCG'],
+  100000005: ['lessPre'],
+};
 
 export default {
   name: 'EnrolmentReportForm',
@@ -1552,10 +1560,14 @@ export default {
         const affectedCategories = dailyEnrolment.affectedCategories
           ? dailyEnrolment.affectedCategories.split(',').map(Number)
           : [];
+
         for (const category of this.categoryFields) {
           const value = dailyEnrolment[category];
           if (!value) continue;
-          const groupId = CATEGORY_FIELD_MAP[category];
+
+          const groupId = Number(
+            Object.keys(GROUP_ID_TO_CATEGORY_FIELDS).find((key) => GROUP_ID_TO_CATEGORY_FIELDS[key].includes(category)),
+          );
 
           if (!dailyEnrolment.isFullClosure && !affectedCategories.includes(groupId)) {
             this.paymentEligibleDaysCount.CCOF[category] += value;
@@ -1570,16 +1582,11 @@ export default {
               this.paymentEligibleDaysCount.CCFRI[category] += value;
               break;
             case null:
-            case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
               this.paymentEligibleDaysCount.CCOF[category] += value;
               this.paymentEligibleDaysCount.CCFRI[category] += value;
               break;
             case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
-              if (dailyEnrolment.isFullClosure) {
-                this.paymentEligibleDaysCount.CCOF[category] += value;
-                this.paymentEligibleDaysCount.CCFRI[category] += value;
-              }
               break;
           }
         }
