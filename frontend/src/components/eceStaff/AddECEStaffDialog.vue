@@ -278,7 +278,10 @@ export default {
       if (!Array.isArray(certificates)) {
         throw new TypeError('Expected certificates to be an array.');
       }
-      if (certificates.length === 0) return [];
+      if (this.isEceReport) {
+        certificates = certificates.filter((c) => c.certificateLevel !== 'ECE Assistant');
+        if (!certificates.length) return [];
+      }
       const staff = certificates[0];
       const facilityStaffMatch = this.facilityExistingStaff.find(
         (s) => s.registrationNumber === staff.registrationNumber,
