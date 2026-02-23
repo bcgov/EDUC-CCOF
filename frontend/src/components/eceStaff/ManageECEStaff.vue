@@ -11,7 +11,13 @@
       >
         Submit an ECE Report
       </AppButton>
-      <p class="order-2 order-md-1">All ECE information has been updated from the ECE Registry.</p>
+      <div class="order-2 order-md-1">
+        <p>All ECE information has been updated from the ECE Registry.</p>
+        <p class="mt-3">
+          <strong>Important:</strong> Only staff who hold an active Early Childhood, Infant and Toddler Educator, or
+          Special Needs Educator certification are eligible for the ECE wage enhancement.
+        </p>
+      </div>
     </div>
     <v-form ref="form" v-model="isValidForm">
       <p>
