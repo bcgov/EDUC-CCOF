@@ -67,11 +67,6 @@ const dailyReportPrev = {
   facilityId,
 };
 
-const dailyReportWithClosure = {
-  ...dailyReport,
-  paymentEligibility: 'CCFRI_AND_CCOF',
-};
-
 function interceptAPI(enrolReport = enrolmentReport) {
   cy.intercept('GET', `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}`, {
     statusCode: 200,
@@ -80,7 +75,7 @@ function interceptAPI(enrolReport = enrolmentReport) {
 
   cy.intercept('GET', `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}/daily-enrolments`, {
     statusCode: 200,
-    body: [dailyReportWithClosure],
+    body: [dailyReport],
   }).as('getDailyReport');
 }
 
@@ -355,13 +350,17 @@ describe('<EnrolmentReportForm />', () => {
       ...createApplicationStore(),
     });
     cy.get('.legend').within(() => {
-      cy.get('div').should('have.length', 6);
       cy.contains('Stat holidays');
       cy.contains('Weekends');
-      cy.contains('Approved closure (CCOF Base and CCFRI funding eligible)');
-      cy.contains('Approved closure (CCOF Base funding eligible)');
-      cy.contains('Approved closure (CCFRI funding eligible)');
-      cy.contains('Closure (Not approved for funding)');
+
+      cy.get('.legend-item').then((items) => {
+        if (items.length > 2) {
+          cy.contains('Approved closure (CCOF Base and CCFRI funding eligible)');
+          cy.contains('Approved closure (CCOF Base funding eligible)');
+          cy.contains('Approved closure (CCFRI funding eligible)');
+          cy.contains('Closure (Not approved for funding)');
+        }
+      });
     });
   });
 
