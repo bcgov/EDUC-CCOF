@@ -532,7 +532,6 @@ export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
   CCFRI_AND_CCOF: 100000001,
   CCOF: 100000002,
   INELIGIBLE: 100000003,
-  PENDING: 100000004,
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
@@ -540,7 +539,6 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCFRI_AND_CCOF: 'CCFRI & CCOF',
   CCOF: 'CCOF',
   INELIGIBLE: 'Ineligible',
-  PENDING: 'Pending',
 });
 
 export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({

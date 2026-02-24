@@ -60,6 +60,7 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
+import { formatUTCtoPacificTime } from '@/utils/format';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 
 export default {
@@ -81,15 +82,29 @@ export default {
   },
   computed: {
     ...mapState(useApplicationStore, ['getApplicationIdByProgramYearId']),
-    ...mapState(useAuthStore, ['isMinistryUser']),
+    ...mapState(useAuthStore, ['isMinistryUser', 'userInfo']),
     eceReportId() {
       return this.$route.params.eceReportId;
     },
     isBusy() {
       return this.loading || this.processing;
     },
+    hasReportingMonthEnded() {
+      const { month, year } = this.eceReport ?? {};
+      if (!month || !year) return false;
+      const reportingMonth = Number(month);
+      const reportingYear = Number(year);
+      const today = formatUTCtoPacificTime(this.userInfo?.serverTime);
+      const currentMonth = today?.month;
+      const currentYear = today?.year;
+      return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
+    },
     isSubmitDisabled() {
-      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) || this.isMinistryUser;
+      return (
+        !this.hasReportingMonthEnded ||
+        isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) ||
+        this.isMinistryUser
+      );
     },
   },
   async created() {
