@@ -181,7 +181,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less0To18')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less0To18"
                       maxlength="3"
@@ -189,7 +189,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')"
                     />
                   </v-col>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over0To18')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over0To18"
                       maxlength="3"
@@ -201,7 +201,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less18To36')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less18To36"
                       maxlength="3"
@@ -209,7 +209,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')"
                     />
                   </v-col>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over18To36')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over18To36"
                       maxlength="3"
@@ -221,7 +221,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less3YK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less3YK"
                       maxlength="3"
@@ -229,7 +229,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')"
                     />
                   </v-col>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over3YK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over3YK"
                       maxlength="3"
@@ -241,7 +241,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessOOSCK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessOOSCK"
                       maxlength="3"
@@ -249,7 +249,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')"
                     />
                   </v-col>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'overOOSCK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.overOOSCK"
                       maxlength="3"
@@ -261,7 +261,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessOOSCG')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessOOSCG"
                       maxlength="3"
@@ -269,7 +269,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')"
                     />
                   </v-col>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'overOOSCG')">
                     <AppNumberInput
                       v-model="dailyEnrolment.overOOSCG"
                       maxlength="3"
@@ -281,7 +281,7 @@
               </v-col>
               <v-col v-if="isGroup" cols="1">
                 <v-row no-gutters>
-                  <v-col class="border-right">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessPre')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessPre"
                       maxlength="3"
@@ -1295,9 +1295,23 @@
             </template>
           </div>
         </div>
-        <div class="legend">
+        <div class="legend mt-4">
           <div class="legend-item"><span class="color-box background-light-blue"></span>Stat holidays</div>
           <div class="legend-item"><span class="color-box background-light-yellow"></span>Weekends</div>
+          <template v-if="hasClosureDays">
+            <div class="legend-item">
+              <span class="color-box background-pink"> </span>Approved closure (CCOF Base and CCFRI funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-orange"></span>Approved closure (CCOF Base funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-blue"></span>Approved closure (CCFRI funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-grey"></span>Closure (Not approved for funding)
+            </div>
+          </template>
         </div>
       </v-card>
     </template>
@@ -1333,6 +1347,7 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
+  CLOSURE_AFFECTED_AGE_GROUPS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -1341,6 +1356,27 @@ import {
   PATHS,
 } from '@/utils/constants.js';
 import { formatCurrency } from '@/utils/format';
+
+const CATEGORY_TO_GROUP_ID = {
+  less0To18: CLOSURE_AFFECTED_AGE_GROUPS['0 to 18 months'],
+  over0To18: CLOSURE_AFFECTED_AGE_GROUPS['0 to 18 months'],
+  less18To36: CLOSURE_AFFECTED_AGE_GROUPS['18 to 36 months'],
+  over18To36: CLOSURE_AFFECTED_AGE_GROUPS['18 to 36 months'],
+  less3YK: CLOSURE_AFFECTED_AGE_GROUPS['3 Years to Kindergarten'],
+  over3YK: CLOSURE_AFFECTED_AGE_GROUPS['3 Years to Kindergarten'],
+  lessOOSCK: CLOSURE_AFFECTED_AGE_GROUPS['Kindergarten'],
+  overOOSCK: CLOSURE_AFFECTED_AGE_GROUPS['Kindergarten'],
+  lessOOSCG: CLOSURE_AFFECTED_AGE_GROUPS['Grade 1 to Age 12'],
+  overOOSCG: CLOSURE_AFFECTED_AGE_GROUPS['Grade 1 to Age 12'],
+  lessPre: CLOSURE_AFFECTED_AGE_GROUPS['Preschool'],
+};
+
+const PAYMENT_ELIGIBILITIES_BACKGROUND = {
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF]: 'background-pink',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCOF]: 'background-orange',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI]: 'background-blue',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE]: 'background-grey',
+};
 
 export default {
   name: 'EnrolmentReportForm',
@@ -1432,9 +1468,6 @@ export default {
       lessPre: 100000010,
     };
     await this.loadData();
-    if (!this.readonly) {
-      this.calculate();
-    }
   },
   methods: {
     formatCurrency,
@@ -1448,6 +1481,7 @@ export default {
         if (this.enrolmentReport.isAdjustment) {
           await this.loadPreviousEnrolmentReport();
         }
+        this.calculate();
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load enrolment report');
@@ -1505,6 +1539,20 @@ export default {
       };
     },
 
+    getAffectedCategories(dailyEnrolment) {
+      return dailyEnrolment.affectedCategories?.split(',').map(Number) ?? [];
+    },
+
+    getCellClass(dailyEnrolment, category) {
+      const groupId = CATEGORY_TO_GROUP_ID[category];
+      const affectedCategories = this.getAffectedCategories(dailyEnrolment);
+      const hasBackgroundColor = dailyEnrolment.isFullClosure || affectedCategories.includes(groupId);
+      const backgroundClass = hasBackgroundColor
+        ? PAYMENT_ELIGIBILITIES_BACKGROUND[dailyEnrolment.paymentEligibility]
+        : '';
+      return `border-right ${backgroundClass}`;
+    },
+
     getTotalEnrolledClass(field) {
       return {
         'background-green':
@@ -1546,30 +1594,37 @@ export default {
     calculatePaymentEligibleDays() {
       this.initializePaymentEligibleDaysCount();
       for (const dailyEnrolment of this.dailyEnrolments) {
+        const eligibility = dailyEnrolment.paymentEligibility;
+        const affectedCategories = this.getAffectedCategories(dailyEnrolment);
         for (const category of this.categoryFields) {
-          if (!dailyEnrolment[category]) continue;
-          const eligibility = dailyEnrolment.paymentEligibility;
+          const value = dailyEnrolment[category];
+          if (!value) continue;
+
+          const groupId = CATEGORY_TO_GROUP_ID[category];
+
+          if (!dailyEnrolment.isFullClosure && !affectedCategories.includes(groupId)) {
+            this.paymentEligibleDaysCount.CCOF[category] += value;
+            this.paymentEligibleDaysCount.CCFRI[category] += value;
+            continue;
+          }
           switch (eligibility) {
-            case null:
-            case CLOSURE_PAYMENT_ELIGIBILITIES.PENDING:
-            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
-            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
-              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
-              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
-              break;
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCOF:
-              this.paymentEligibleDaysCount.CCOF[category] += dailyEnrolment[category] || 0;
+              this.paymentEligibleDaysCount.CCOF[category] += value;
               break;
             case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI:
-              this.paymentEligibleDaysCount.CCFRI[category] += dailyEnrolment[category] || 0;
+              this.paymentEligibleDaysCount.CCFRI[category] += value;
               break;
-            default:
+            case null:
+            case CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF:
+              this.paymentEligibleDaysCount.CCOF[category] += value;
+              this.paymentEligibleDaysCount.CCFRI[category] += value;
+              break;
+            case CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE:
               break;
           }
         }
       }
     },
-
     calculateCurrentTotals() {
       const currentTotals = Object.fromEntries(this.categoryFields.map((category) => [category, 0]));
       for (const dailyEnrolment of this.dailyEnrolments) {
@@ -1876,6 +1931,22 @@ export default {
 
 .background-light-yellow {
   background-color: #ffffbc;
+}
+
+.background-pink {
+  background-color: #cd86b9;
+}
+
+.background-orange {
+  background-color: #fca45b;
+}
+
+.background-blue {
+  background-color: #8798ff;
+}
+
+.background-grey {
+  background-color: #d9d9d9;
 }
 
 .border-top {
