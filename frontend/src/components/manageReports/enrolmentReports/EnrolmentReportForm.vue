@@ -181,7 +181,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less0To18')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less0To18"
                       maxlength="3"
@@ -189,7 +189,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less0To18')"
                     />
                   </v-col>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over0To18')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over0To18"
                       maxlength="3"
@@ -201,7 +201,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less18To36')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less18To36"
                       maxlength="3"
@@ -209,7 +209,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less18To36')"
                     />
                   </v-col>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over18To36')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over18To36"
                       maxlength="3"
@@ -221,7 +221,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'less3YK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.less3YK"
                       maxlength="3"
@@ -229,7 +229,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'less3YK')"
                     />
                   </v-col>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'over3YK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.over3YK"
                       maxlength="3"
@@ -241,7 +241,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessOOSCK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessOOSCK"
                       maxlength="3"
@@ -249,7 +249,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCK')"
                     />
                   </v-col>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'overOOSCK')">
                     <AppNumberInput
                       v-model="dailyEnrolment.overOOSCK"
                       maxlength="3"
@@ -261,7 +261,7 @@
               </v-col>
               <v-col>
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessOOSCG')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessOOSCG"
                       maxlength="3"
@@ -269,7 +269,7 @@
                       :class="getDailyEnrolmentClass(dailyEnrolment, 'lessOOSCG')"
                     />
                   </v-col>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'overOOSCG')">
                     <AppNumberInput
                       v-model="dailyEnrolment.overOOSCG"
                       maxlength="3"
@@ -281,7 +281,7 @@
               </v-col>
               <v-col v-if="isGroup" cols="1">
                 <v-row no-gutters>
-                  <v-col :class="getCellClass(dailyEnrolment)">
+                  <v-col :class="getCellClass(dailyEnrolment, 'lessPre')">
                     <AppNumberInput
                       v-model="dailyEnrolment.lessPre"
                       maxlength="3"
@@ -1371,6 +1371,13 @@ const CATEGORY_TO_GROUP_ID = {
   lessPre: CLOSURE_AFFECTED_AGE_GROUPS['Preschool'],
 };
 
+const PAYMENT_ELIGIBILITIES_BACKGROUND = {
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF]: 'background-pink',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCOF]: 'background-orange',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI]: 'background-blue',
+  [CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE]: 'background-grey',
+};
+
 export default {
   name: 'EnrolmentReportForm',
   components: {
@@ -1532,14 +1539,18 @@ export default {
       };
     },
 
-    getCellClass(dailyEnrolment) {
-      return {
-        'background-pink': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF,
-        'background-orange': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCOF,
-        'background-blue': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI,
-        'background-grey': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE,
-        'border-right': true,
-      };
+    getAffectedCategories(dailyEnrolment) {
+      return dailyEnrolment.affectedCategories?.split(',').map(Number) ?? [];
+    },
+
+    getCellClass(dailyEnrolment, category) {
+      const groupId = CATEGORY_TO_GROUP_ID[category];
+      const affectedCategories = this.getAffectedCategories(dailyEnrolment);
+      const hasBackgroundColor = dailyEnrolment.isFullClosure || affectedCategories.includes(groupId);
+      const backgroundClass = hasBackgroundColor
+        ? PAYMENT_ELIGIBILITIES_BACKGROUND[dailyEnrolment.paymentEligibility]
+        : '';
+      return `border-right ${backgroundClass}`;
     },
 
     getTotalEnrolledClass(field) {
@@ -1584,11 +1595,7 @@ export default {
       this.initializePaymentEligibleDaysCount();
       for (const dailyEnrolment of this.dailyEnrolments) {
         const eligibility = dailyEnrolment.paymentEligibility;
-
-        const affectedCategories = dailyEnrolment.affectedCategories
-          ? dailyEnrolment.affectedCategories.split(',').map(Number)
-          : [];
-
+        const affectedCategories = this.getAffectedCategories(dailyEnrolment);
         for (const category of this.categoryFields) {
           const value = dailyEnrolment[category];
           if (!value) continue;
