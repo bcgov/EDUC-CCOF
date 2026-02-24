@@ -23,7 +23,7 @@
         </v-row>
         <v-row no-gutters class="py-2">
           <v-col cols="12" md="4" lg="2">
-            <p class="font-weight-bold pt-6 pr-4">Select month of service:</p>
+            <p class="font-weight-bold pt-6 pr-4">Select reporting month:</p>
           </v-col>
           <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
             <AppMultiSelectInput
@@ -33,7 +33,7 @@
               :items="allReportingMonths"
               item-title="label"
               item-value="value"
-              label="Select month of service"
+              label="Select reporting month"
               hide-details
               clearable
               class="mt-2"

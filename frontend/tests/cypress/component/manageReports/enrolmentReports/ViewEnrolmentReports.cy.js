@@ -155,7 +155,7 @@ describe('<ViewEnrolmentReports />', () => {
       },
     });
 
-    cy.contains('Select month of service:');
+    cy.contains('Select reporting month:');
     cy.contains('Select facility:');
     cy.contains('Sort by');
     cy.contains('Items per page');
