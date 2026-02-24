@@ -34,7 +34,7 @@
                 :items="allReportingMonths"
                 item-title="label"
                 item-value="value"
-                label="Select reporting month"
+                label="Select month of service"
                 hide-details
                 clearable
                 class="mt-2"
