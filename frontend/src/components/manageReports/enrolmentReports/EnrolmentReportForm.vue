@@ -1295,21 +1295,23 @@
             </template>
           </div>
         </div>
-        <div class="legend">
+        <div class="legend mt-4">
           <div class="legend-item"><span class="color-box background-light-blue"></span>Stat holidays</div>
           <div class="legend-item"><span class="color-box background-light-yellow"></span>Weekends</div>
-          <div class="legend-item">
-            <span class="color-box background-pink"> </span>Approved closure (CCOF Base and CCFRI funding eligible)
-          </div>
-          <div class="legend-item">
-            <span class="color-box background-orange"></span>Approved closure (CCOF Base funding eligible)
-          </div>
-          <div class="legend-item">
-            <span class="color-box background-blue"></span>Approved closure (CCFRI funding eligible)
-          </div>
-          <div class="legend-item">
-            <span class="color-box background-grey"></span>Closure (Not approved for funding)
-          </div>
+          <template v-if="hasClosureDays">
+            <div class="legend-item">
+              <span class="color-box background-pink"> </span>Approved closure (CCOF Base and CCFRI funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-orange"></span>Approved closure (CCOF Base funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-blue"></span>Approved closure (CCFRI funding eligible)
+            </div>
+            <div class="legend-item">
+              <span class="color-box background-grey"></span>Closure (Not approved for funding)
+            </div>
+          </template>
         </div>
       </v-card>
     </template>
@@ -1345,6 +1347,7 @@ import EnrolmentReportService from '@/services/enrolmentReportService.js';
 
 import { addDecimal, getDayOfWeek, getUpdatedObjectsByKeys, multiplyDecimal, subtractDecimal } from '@/utils/common.js';
 import {
+  CLOSURE_AFFECTED_AGE_GROUPS,
   CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
@@ -1354,13 +1357,18 @@ import {
 } from '@/utils/constants.js';
 import { formatCurrency } from '@/utils/format';
 
-const GROUP_ID_TO_CATEGORY_FIELDS = {
-  100000000: ['less0To18', 'over0To18'],
-  100000001: ['less18To36', 'over18To36'],
-  100000002: ['less3YK', 'over3YK'],
-  100000003: ['lessOOSCK', 'overOOSCK'],
-  100000004: ['lessOOSCG', 'overOOSCG'],
-  100000005: ['lessPre'],
+const CATEGORY_TO_GROUP_ID = {
+  less0To18: CLOSURE_AFFECTED_AGE_GROUPS['0 to 18 months'],
+  over0To18: CLOSURE_AFFECTED_AGE_GROUPS['0 to 18 months'],
+  less18To36: CLOSURE_AFFECTED_AGE_GROUPS['18 to 36 months'],
+  over18To36: CLOSURE_AFFECTED_AGE_GROUPS['18 to 36 months'],
+  less3YK: CLOSURE_AFFECTED_AGE_GROUPS['3 Years to Kindergarten'],
+  over3YK: CLOSURE_AFFECTED_AGE_GROUPS['3 Years to Kindergarten'],
+  lessOOSCK: CLOSURE_AFFECTED_AGE_GROUPS['Kindergarten'],
+  overOOSCK: CLOSURE_AFFECTED_AGE_GROUPS['Kindergarten'],
+  lessOOSCG: CLOSURE_AFFECTED_AGE_GROUPS['Grade 1 to Age 12'],
+  overOOSCG: CLOSURE_AFFECTED_AGE_GROUPS['Grade 1 to Age 12'],
+  lessPre: CLOSURE_AFFECTED_AGE_GROUPS['Preschool'],
 };
 
 export default {
@@ -1531,7 +1539,7 @@ export default {
         'background-pink': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI_AND_CCOF,
         'background-orange': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCOF,
         'background-blue': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.CCFRI,
-        'background-gray': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE,
+        'background-grey': dailyEnrolment.paymentEligibility === CLOSURE_PAYMENT_ELIGIBILITIES.INELIGIBLE,
         'border-right': true,
       };
     },
@@ -1587,9 +1595,7 @@ export default {
           const value = dailyEnrolment[category];
           if (!value) continue;
 
-          const groupId = Number(
-            Object.keys(GROUP_ID_TO_CATEGORY_FIELDS).find((key) => GROUP_ID_TO_CATEGORY_FIELDS[key].includes(category)),
-          );
+          const groupId = CATEGORY_TO_GROUP_ID[category];
 
           if (!dailyEnrolment.isFullClosure && !affectedCategories.includes(groupId)) {
             this.paymentEligibleDaysCount.CCOF[category] += value;
