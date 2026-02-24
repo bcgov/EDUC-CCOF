@@ -67,6 +67,11 @@ const dailyReportPrev = {
   facilityId,
 };
 
+const dailyReportWithClosure = {
+  ...dailyReport,
+  paymentEligibility: 'CCFRI_AND_CCOF',
+};
+
 function interceptAPI(enrolReport = enrolmentReport) {
   cy.intercept('GET', `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}`, {
     statusCode: 200,
@@ -75,7 +80,7 @@ function interceptAPI(enrolReport = enrolmentReport) {
 
   cy.intercept('GET', `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}/daily-enrolments`, {
     statusCode: 200,
-    body: [dailyReport],
+    body: [dailyReportWithClosure],
   }).as('getDailyReport');
 }
 
