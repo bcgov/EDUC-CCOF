@@ -51,13 +51,22 @@ const enrolmentReportPrev = baseReport({
   currentTotalOverOOSCG: '321',
 });
 
-const dailyReport = {
-  versionText: 'TEST-VERSION-TEXT',
-  month: '11',
-  year: '2025',
-  programYearId,
-  facilityId,
-};
+const dailyReports = [
+  {
+    day: 1,
+    less0To18: 1,
+    over0To18: 2,
+    less18To36: 3,
+    over18To36: 4,
+    less3YK: 5,
+    over3YK: 6,
+    lessOOSCG: 7,
+    overOOSCG: 8,
+    lessOOSCK: 9,
+    overOOSCK: 10,
+    lessPre: 11,
+  },
+];
 
 const dailyReportPrev = {
   versionText: 'TEST-VERSION-TEXT_PREV',
@@ -75,7 +84,7 @@ function interceptAPI(enrolReport = enrolmentReport) {
 
   cy.intercept('GET', `${ApiRoutes.ENROLMENT_REPORTS}/${enrolmentReportId}/daily-enrolments`, {
     statusCode: 200,
-    body: [dailyReport],
+    body: dailyReports,
   }).as('getDailyReport');
 }
 
@@ -268,6 +277,8 @@ describe('<EnrolmentReportForm />', () => {
       ...createApplicationStore(),
     });
 
+    cy.wait('@getEnrolmentReport');
+    cy.wait('@getDailyReport');
     cy.contains('Current Total')
       .parent('.v-row')
       .within(() => {
