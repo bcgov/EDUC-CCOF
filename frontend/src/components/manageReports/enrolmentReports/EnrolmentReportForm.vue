@@ -1461,9 +1461,6 @@ export default {
       lessPre: 100000010,
     };
     await this.loadData();
-    if (!this.readonly) {
-      this.calculate();
-    }
   },
   methods: {
     formatCurrency,
@@ -1477,6 +1474,7 @@ export default {
         if (this.enrolmentReport.isAdjustment) {
           await this.loadPreviousEnrolmentReport();
         }
+        this.calculate();
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load enrolment report');
