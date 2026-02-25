@@ -7,7 +7,7 @@
       <p>Licence #: {{ facility?.licenseNumber }}</p>
     </div>
     <div>
-      <p class="py-2">Reporting month: {{ formatMonthYearToString(enrolmentReport?.month, enrolmentReport?.year) }}</p>
+      <p class="py-2">Month of service: {{ formatMonthYearToString(enrolmentReport?.month, enrolmentReport?.year) }}</p>
       <p>Version number: {{ enrolmentReport.versionText }}</p>
     </div>
   </div>

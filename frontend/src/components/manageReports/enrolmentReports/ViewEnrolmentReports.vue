@@ -1,137 +1,156 @@
 <template>
-  <v-container fluid class="px-12">
+  <div class="px-12">
     <p class="text-h4 font-weight-bold">Enrolment Report</p>
     <div class="text-h6 text-primary mt-2 mb-8">
       <p class="font-weight-bold my-2">{{ organizationName }}</p>
       <p>{{ organizationAccountNumber }}</p>
     </div>
     <p class="my-8">View, create and update monthly enrolment reports for your facility(ies).</p>
-    <v-card class="pa-6">
-      <div class="mb-8">
-        <v-row no-gutters class="py-2">
-          <v-col cols="12" md="4" lg="2">
-            <p class="font-weight-bold py-1 pr-4">Select fiscal year:</p>
-          </v-col>
-          <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
-            <FiscalYearSlider
-              :always-display="true"
-              :default-program-year-id="currentProgramYearId"
-              :readonly="loading"
-              @select-program-year="selectProgramYear"
-            />
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="py-2">
-          <v-col cols="12" md="4" lg="2">
-            <p class="font-weight-bold pt-6 pr-4">Select reporting month:</p>
-          </v-col>
-          <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
-            <AppMultiSelectInput
-              v-model.lazy="selectedReportingMonths"
-              :loading="loading"
-              :disabled="loading"
-              :items="allReportingMonths"
-              item-title="label"
-              item-value="value"
-              label="Select reporting month"
-              hide-details
-              clearable
-              class="mt-2"
-            />
-          </v-col>
-        </v-row>
-        <v-row no-gutters class="py-2">
-          <v-col cols="12" md="4" lg="2">
-            <p class="font-weight-bold pt-6 pr-4">Select facility:</p>
-          </v-col>
-          <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
-            <AppMultiSelectInput
-              v-model.lazy="selectedFacilities"
-              :loading="loading"
-              :disabled="loading"
-              :items="facilityList"
-              item-value="facilityId"
-              item-title="facilityName"
-              label="Select facility"
-              clearable
-              hide-details
-              class="mt-2"
-            />
-          </v-col>
-        </v-row>
-      </div>
-      <v-skeleton-loader :loading="loading" type="table-tbody">
-        <v-data-table
-          :headers="enrolmentReportsHeaders"
-          :items="filteredEnrolmentReports"
-          :items-per-page="20"
-          :mobile="null"
-          mobile-breakpoint="lg"
-          class="elevation-2"
-        >
-          <template #item.reportVersion="{ item }">
-            {{ item.versionText }}
-            <AppTooltip
-              v-if="item.isAdjustment"
-              tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
-            />
-          </template>
-          <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
-          <template #item.submissionDeadline="{ item }">
-            {{ formatDateToStandardFormat(item.submissionDeadline) }}
-          </template>
-          <template #item.externalCcofStatusCode="{ item }">
-            <span class="report-status" :class="getStatusClass(item.externalCcofStatusCode)">
-              {{ item.externalCcofStatusText }}
-            </span>
-          </template>
-          <template #item.externalCcfriStatusCode="{ item }">
-            <span class="report-status" :class="getCCFRIStatusClass(item)">
-              {{ getCCFRIStatusText(item) }}
-            </span>
-          </template>
-          <template #item.actions="{ item }">
-            <v-row class="action-buttons justify-end justify-lg-start">
-              <AppButton
-                v-if="showViewButton(item)"
+    <v-card variant="outlined" class="pa-6 my-6 soft-outline">
+      <v-row no-gutters class="mb-8">
+        <v-col cols="12" md="8">
+          <v-row no-gutters class="pb-4">
+            <v-col cols="12" md="4" lg="2">
+              <p class="font-weight-bold py-1 pr-4">Select fiscal year:</p>
+            </v-col>
+            <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
+              <FiscalYearSlider
+                :always-display="true"
+                :default-program-year-id="currentProgramYearId"
+                :readonly="loading"
+                @select-program-year="selectProgramYear"
+              />
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="py-2">
+            <v-col cols="12" md="4" lg="2">
+              <p class="font-weight-bold pt-6 pr-4">Month of service:</p>
+            </v-col>
+            <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
+              <AppMultiSelectInput
+                v-model.lazy="selectedReportingMonths"
                 :loading="loading"
-                :primary="false"
-                size="medium"
-                @click="goToEnrolmentReport(item.enrolmentReportId)"
-              >
-                View
-              </AppButton>
-              <AppButton
-                v-if="showEditButton(item)"
+                :disabled="loading"
+                :items="allReportingMonths"
+                item-title="label"
+                item-value="value"
+                label="Select month of service"
+                hide-details
+                clearable
+                class="mt-2"
+              />
+            </v-col>
+          </v-row>
+          <v-row no-gutters class="py-2">
+            <v-col cols="12" md="4" lg="2">
+              <p class="font-weight-bold pt-6 pr-4">Select facility:</p>
+            </v-col>
+            <v-col cols="12" md="8" xl="6" class="d-flex justify-start">
+              <AppMultiSelectInput
+                v-model.lazy="selectedFacilities"
                 :loading="loading"
-                :disabled="isSubmissionDeadlinePassed(item)"
-                :primary="false"
-                size="medium"
-                @click="editEnrolmentReport(item)"
-              >
-                Edit
-              </AppButton>
-              <AppButton
-                v-if="showAdjustButton(item)"
-                :loading="loading"
-                :disabled="isSubmissionDeadlinePassed(item)"
-                :primary="false"
-                size="medium"
-                @click="createAdjustmentReport(item)"
-              >
-                Adjust
-              </AppButton>
-            </v-row>
-          </template>
-        </v-data-table>
-      </v-skeleton-loader>
+                :disabled="loading"
+                :items="facilityList"
+                item-value="facilityId"
+                item-title="facilityName"
+                label="Select facility"
+                clearable
+                hide-details
+                class="mt-2"
+              />
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col class="d-flex justify-md-end mb-1 mt-1" cols="12" md="4">
+          <div>
+            <AppButton id="payment-info-button" size="small" auto-height="false" @click.prevent="goToPaymentInfo">
+              View Payment Information
+            </AppButton>
+            <AppButton
+              id="closure-details-button"
+              class="mt-2 ml-md-auto"
+              size="small"
+              auto-height="false"
+              @click.prevent="goToClosures"
+            >
+              Closure Details
+            </AppButton>
+          </div>
+        </v-col>
+      </v-row>
     </v-card>
+    <v-skeleton-loader :loading="loading" type="table-tbody">
+      <v-data-table
+        :headers="enrolmentReportsHeaders"
+        :items="filteredEnrolmentReports"
+        :items-per-page="20"
+        :mobile="null"
+        mobile-breakpoint="lg"
+        class="elevation-2"
+      >
+        <template #item.reportVersion="{ item }">
+          {{ item.versionText }}
+          <AppTooltip
+            v-if="item.isAdjustment"
+            tooltip-content="An Adjustment is a modified version of a submitted Enrolment Report."
+          />
+        </template>
+        <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
+        <template #item.submissionDeadline="{ item }">
+          {{ formatDateToStandardFormat(item.submissionDeadline) }}
+        </template>
+        <template #item.externalCcofStatusCode="{ item }">
+          <span class="report-status" :class="getStatusClass(item.externalCcofStatusCode)">
+            {{ item.externalCcofStatusText }}
+          </span>
+        </template>
+        <template #item.externalCcfriStatusCode="{ item }">
+          <span class="report-status" :class="getCCFRIStatusClass(item)">
+            {{ getCCFRIStatusText(item) }}
+          </span>
+        </template>
+        <template #item.actions="{ item }">
+          <v-row class="action-buttons justify-end justify-lg-start">
+            <AppButton
+              v-if="showViewButton(item)"
+              :loading="loading"
+              :primary="false"
+              class="view-report"
+              size="medium"
+              @click="goToEnrolmentReport(item.enrolmentReportId)"
+            >
+              View
+            </AppButton>
+            <AppButton
+              v-if="showEditButton(item)"
+              :loading="loading"
+              :disabled="isSubmissionDeadlinePassed(item)"
+              :primary="false"
+              size="medium"
+              @click="editEnrolmentReport(item)"
+            >
+              Edit
+            </AppButton>
+            <AppButton
+              v-if="showAdjustButton(item)"
+              :loading="loading"
+              :disabled="isSubmissionDeadlinePassed(item)"
+              :primary="false"
+              size="medium"
+              @click="createAdjustmentReport(item)"
+            >
+              Adjust
+            </AppButton>
+          </v-row>
+        </template>
+      </v-data-table>
+    </v-skeleton-loader>
     <v-row class="pt-12">
       <v-col>
         <NavButton @previous="previous" />
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>
@@ -167,11 +186,11 @@ export default {
       selectedReportingMonths: [],
       selectedProgramYear: null,
       enrolmentReportsHeaders: [
-        { title: 'Version Number', key: 'reportVersion' },
-        { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Facility Name', key: 'facilityName' },
+        { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
-        { title: 'Reporting Month', key: 'reportingMonth' },
+        { title: 'Month of Service', key: 'reportingMonth' },
+        { title: 'Version Number', key: 'reportVersion' },
         { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'CCOF Base Funding Status', key: 'externalCcofStatusCode' },
         { title: 'CCFRI Funding Status', key: 'externalCcfriStatusCode' },
@@ -297,6 +316,12 @@ export default {
         default:
           return null;
       }
+    },
+    goToClosures() {
+      this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.selectedProgramYearId}`);
+    },
+    goToPaymentInfo() {
+      this.$router.push(`${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=payments-tab`);
     },
     getCCFRIStatusClass(report) {
       return report.hasApprovedParentFees ? this.getStatusClass(report.externalCcfriStatusCode) : 'status-white';
