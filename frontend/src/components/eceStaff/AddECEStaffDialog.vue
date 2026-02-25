@@ -281,6 +281,7 @@ export default {
       if (this.isEceReport) {
         certificates = certificates.filter((c) => c.certificateLevel !== 'ECE Assistant');
       }
+      if (!certificates.length) return [];
       const staff = certificates[0];
       const facilityStaffMatch = this.facilityExistingStaff.find(
         (s) => s.registrationNumber === staff.registrationNumber,
