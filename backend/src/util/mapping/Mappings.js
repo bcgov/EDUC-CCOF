@@ -805,6 +805,8 @@ const DailyEnrolmentMappings = [
   { back: 'ccof_lesspre', front: 'lessPre' },
   { back: 'ccof_columnsareupdated', front: 'updatedColumns' },
   { back: 'ccof_paymenteligibility', front: 'paymentEligibility' },
+  { back: 'ccof_isfullclosure', front: 'isFullClosure' },
+  { back: 'ccof_ageaffectedgroups', front: 'affectedCategories' },
 ];
 
 const LicenceMappings = [
