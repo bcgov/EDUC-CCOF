@@ -196,15 +196,20 @@ export default {
       }
       const startYear = formatUTCtoPacificTime(this.selectedProgramYear.intakeStart)?.year;
       const endYear = formatUTCtoPacificTime(this.selectedProgramYear.intakeEnd)?.year;
-      const currentMonth = formatUTCtoPacificTime(this.userInfo?.serverTime)?.month;
-      return this.getTrailingMonths(currentMonth).map((month) => {
-        const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
-        return {
-          month,
-          year,
-          firstDate: formatFirstDateOfMonth(month, year),
-        };
-      });
+      const currentTime = formatUTCtoPacificTime(this.userInfo?.serverTime);
+      const currentMonth = currentTime?.month;
+      const currentYear = currentTime?.year;
+      const currentMonthFirstDate = formatFirstDateOfMonth(currentMonth, currentYear);
+      return this.getTrailingMonths(currentMonth)
+        .map((month) => {
+          const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
+          return {
+            month,
+            year,
+            firstDate: formatFirstDateOfMonth(month, year),
+          };
+        })
+        .filter((month) => month.firstDate <= currentMonthFirstDate);
     },
     /*
      * CCFRI-6645 – Reporting month rules
