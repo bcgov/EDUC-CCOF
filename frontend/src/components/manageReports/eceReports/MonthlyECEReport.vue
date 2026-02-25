@@ -278,7 +278,7 @@ export default {
       let sbSubtotal = 0;
       let total = 0;
 
-      for (const staff of this.eceReportStaff) {
+      for (let staff of this.eceReportStaff) {
         const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) ?? 0;
 
         const weAmount = weRate * hours;
@@ -302,7 +302,7 @@ export default {
       let sbSubtotal = 0;
       let total = 0;
 
-      for (const staff of this.eceReportStaff) {
+      for (let staff of this.eceReportStaff) {
         if (!this.isStaffVerified(staff)) continue;
         const hours = formatDecimalNumberToNumber(staff.verifiedHours) ?? 0;
 
