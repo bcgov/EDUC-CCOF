@@ -4,6 +4,11 @@
   </div>
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" :public-sector="publicSector" class="mb-8" />
+    <v-alert type="info" color="primary" variant="outlined" class="mb-6">
+      <strong>Important:</strong>
+      Only staff who hold an active Early Childhood Educator, Infant and Toddler Educator, or Special Needs Educator
+      certificate are eligible for the ECE Wage Enhancement.
+    </v-alert>
     <div v-if="!readonly" class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>

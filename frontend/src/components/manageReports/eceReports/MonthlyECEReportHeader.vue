@@ -38,10 +38,6 @@
         </v-col>
       </v-row>
     </v-card>
-    <p class="mt-4">
-      <strong>Important:</strong> Only staff who hold an active Early Childhood Educator, Infant and Toddler Educator,
-      or Special Needs Educator certificate are eligible for the ECE Wage Enhancement.
-    </p>
   </div>
 </template>
 
