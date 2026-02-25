@@ -920,9 +920,11 @@ const ECEReportStaffMappings = [
   { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
   { back: 'ccof_hourly_wage', front: 'hourlyWage' },
   { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },
+  { back: 'ccof_verified_hours', front: 'verifiedHours' },
   { back: 'ccof_ece_sb_amount', front: 'statutoryBenefitAmount' },
   { back: 'ccof_ece_we_amount', front: 'weAmount' },
   { back: 'ccof_total_amount', front: 'totalAmount' },
+  { back: 'statuscode', front: 'statusCode' },
 ];
 
 const ECEStaffMappings = [
