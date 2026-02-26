@@ -215,7 +215,6 @@ export default {
       return (eceReport) => {
         const result =
           !this.hasNextReportCreated(eceReport) && ADJUST_LABELS.has(this.getStatusText(eceReport.statusCode));
-        console.log('canAdjust:', eceReport.eceReportId, this.hasNextReportCreated(eceReport));
         return result;
       };
     },
@@ -268,7 +267,6 @@ export default {
           organizationId: this.organizationId,
           programYearId: this.selectedProgramYearId,
         });
-        console.log(this.eceReports);
         for (const report of this.eceReports || []) {
           const facility = this.facilityList?.find((item) => item.facilityId === report.facilityId);
           report.facilityAccountNumber = facility?.facilityAccountNumber;
