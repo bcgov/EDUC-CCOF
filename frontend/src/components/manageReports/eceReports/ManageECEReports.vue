@@ -107,7 +107,7 @@
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
-              v-if="showViewButton(item)"
+              v-if="canView(item)"
               :loading="loading"
               :primary="false"
               size="medium"
@@ -116,22 +116,22 @@
               View
             </AppButton>
             <AppButton
-              v-if="showEditButton(item)"
+              v-if="canEdit(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
               size="medium"
-              @click="goToECEReport(item.eceReportId)"
+              @click="edit(item)"
             >
               Edit
             </AppButton>
             <AppButton
-              v-if="showAdjustButton(item)"
+              v-if="canAdjust(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
               size="medium"
-              @click="adjust"
+              @click="adjust(item)"
             >
               Adjust
             </AppButton>
@@ -156,27 +156,17 @@ import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
+import ECEStaffService from '@/services/eceStaffService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { buildFiscalYearMonths } from '@/utils/common.js';
-import { ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { ECE_REPORT_TYPES, ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
-const EDITABLE_STATUSES = new Set([
-  ECE_REPORT_STATUSES.DRAFT,
-  ECE_REPORT_STATUSES.REJECTED,
-  ECE_REPORT_STATUSES.SUBMITTED,
-]);
-
-const VIEW_ONLY_STATUSES = new Set([
-  ECE_REPORT_STATUSES.IN_REVIEW,
-  ECE_REPORT_STATUSES.VERIFIED,
-  ECE_REPORT_STATUSES.APPROVED,
-  ECE_REPORT_STATUSES.EXPIRED,
-]);
-
-const ADJUSTABLE_STATUSES = new Set([ECE_REPORT_STATUSES.PAID]);
+const EDIT_LABELS = new Set(['Draft', 'Rejected', 'Submitted']);
+const VIEW_LABELS = new Set(['Approved', 'Expired', 'Paid', 'Rejected', 'Submitted', 'With Ministry']);
+const ADJUST_LABELS = new Set(['Approved', 'Paid']);
 
 export default {
   name: 'ManageECEReports',
@@ -215,6 +205,20 @@ export default {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    canEdit() {
+      return (eceReport) => EDIT_LABELS.has(this.getStatusText(eceReport.statusCode));
+    },
+    canView() {
+      return (eceReport) => VIEW_LABELS.has(this.getStatusText(eceReport.statusCode));
+    },
+    canAdjust() {
+      return (eceReport) => {
+        const result =
+          !this.hasNextReportCreated(eceReport) && ADJUST_LABELS.has(this.getStatusText(eceReport.statusCode));
+        console.log('canAdjust:', eceReport.eceReportId, this.hasNextReportCreated(eceReport));
+        return result;
+      };
+    },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
     },
@@ -347,18 +351,75 @@ export default {
           item.version > eceReport.version,
       );
     },
-    // TODO (vietle-cgi): Implement Adjust functionality
-    adjust() {
-      window.alert('Adjust button is clicked');
+    async edit(eceReport) {
+      try {
+        this.loading = true;
+        const externalStatus = this.getStatusText(eceReport.statusCode);
+        if (externalStatus === 'Submitted' || externalStatus === 'Rejected') {
+          await ECEReportService.updateECEReportStatus(eceReport.eceReportId, {
+            statusCode: ECE_REPORT_STATUSES.DRAFT,
+          });
+        }
+        this.goToECEReport(eceReport.eceReportId);
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('Unable to open report for editing.');
+      } finally {
+        this.loading = false;
+      }
     },
-    showAdjustButton(eceReport) {
-      return !this.hasNextReportCreated(eceReport) && ADJUSTABLE_STATUSES.has(eceReport.statusCode);
+    async adjust(eceReport) {
+      try {
+        this.loading = true;
+        const newEceReportId = await this.createAdjustmentReport(eceReport);
+        await this.copyStaffToAdjustment(eceReport.eceReportId, newEceReportId);
+        this.goToECEReport(newEceReportId);
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('Unable to create adjustment.');
+      } finally {
+        this.loading = false;
+      }
     },
-    showEditButton(eceReport) {
-      return EDITABLE_STATUSES.has(eceReport.statusCode);
+    async createAdjustmentReport(sourceReport) {
+      const { year, month } = this.parseReportingMonth(sourceReport.reportingMonth);
+      const { data: newEceReportId } = await ECEReportService.createECEReport(
+        this.createAdjustmentPayload(sourceReport, year, month),
+      );
+      const adjustmentVersion = (sourceReport.version ?? 1) + 1;
+      await ECEReportService.updateECEReportVersion(newEceReportId, adjustmentVersion);
+      return newEceReportId;
     },
-    showViewButton(eceReport) {
-      return VIEW_ONLY_STATUSES.has(eceReport.statusCode);
+    createAdjustmentPayload(sourceReport, year, month) {
+      return {
+        organizationId: sourceReport.organizationId,
+        facilityId: sourceReport.facilityId,
+        programYearId: sourceReport.programYearId,
+        month,
+        year,
+        reportType: ECE_REPORT_TYPES.ADJUSTMENT,
+      };
+    },
+    async copyStaffToAdjustment(sourceReportId, targetReportId) {
+      const details = await ECEReportService.getECEReport(sourceReportId);
+      const sourceStaff = details?.eceStaffInformation ?? [];
+      const payload = this.buildStaffPayload(targetReportId, sourceStaff);
+      if (payload.length === 0) return;
+      await ECEStaffService.createECEReportStaff(payload);
+    },
+    buildStaffPayload(targetReportId, staff = []) {
+      return staff
+        .filter((s) => s?.eceStaffId)
+        .map(({ eceStaffId, hourlyWage, totalHoursWorked }) => ({
+          eceReportId: targetReportId,
+          eceStaffId,
+          hourlyWage,
+          totalHoursWorked,
+        }));
+    },
+    parseReportingMonth(reportingMonth) {
+      const [year, month] = (reportingMonth ?? '').split('-').map(Number);
+      return { year, month };
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(

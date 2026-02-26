@@ -50,4 +50,24 @@ export default {
       throw error;
     }
   },
+
+  async updateECEReportStatus(eceReportId, payload) {
+    try {
+      if (!eceReportId || isEmpty(payload)) return;
+      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/status`, payload);
+    } catch (error) {
+      console.error(`Failed to update ECE report status - ${error}`);
+      throw error;
+    }
+  },
+
+  async updateECEReportVersion(eceReportId, version) {
+    try {
+      if (!eceReportId || version == null) return;
+      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/version`, { version });
+    } catch (error) {
+      console.error(`Failed to update ECE report version - ${error}`);
+      throw error;
+    }
+  },
 };

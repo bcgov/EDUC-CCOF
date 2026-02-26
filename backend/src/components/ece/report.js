@@ -87,4 +87,28 @@ async function submitECEReport(req, res) {
   }
 }
 
-module.exports = { createECEReport, getECEReport, getECEReports, submitECEReport };
+async function updateECEReportStatus(req, res) {
+  try {
+    const payload = {
+      statuscode: req.body.statusCode,
+    };
+    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+async function updateECEReportVersion(req, res) {
+  try {
+    const payload = {
+      ccof_version: req.body.version,
+    };
+    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
+    return res.status(HttpStatus.OK).json();
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+module.exports = { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReportStatus, updateECEReportVersion };

@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { createECEReport, getECEReport, getECEReports, submitECEReport } = require('../../components/ece/report');
+const { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReportStatus, updateECEReportVersion } = require('../../components/ece/report');
 const { checkSchema, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
@@ -77,6 +77,28 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getECEReport(req, res);
+  },
+);
+
+router.patch(
+  '/:eceReportId/status',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  (req, res) => {
+    validationResult(req).throw();
+    return updateECEReportStatus(req, res);
+  },
+);
+
+router.patch(
+  '/:eceReportId/version',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return updateECEReportVersion(req, res);
   },
 );
 

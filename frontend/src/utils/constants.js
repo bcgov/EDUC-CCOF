@@ -797,10 +797,6 @@ export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
     value: ECE_REPORT_STATUSES.DRAFT,
   },
   {
-    label: 'Inactive',
-    value: ECE_REPORT_STATUSES.INACTIVE,
-  },
-  {
     label: 'Submitted',
     value: ECE_REPORT_STATUSES.SUBMITTED,
   },
@@ -809,12 +805,16 @@ export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
     value: ECE_REPORT_STATUSES.IN_REVIEW,
   },
   {
-    label: 'Verified',
+    label: 'With Ministry',
     value: ECE_REPORT_STATUSES.VERIFIED,
   },
   {
     label: 'Approved',
     value: ECE_REPORT_STATUSES.APPROVED,
+  },
+  {
+    label: 'Approved',
+    value: ECE_REPORT_STATUSES.PROCESSING_ERROR,
   },
   {
     label: 'Paid',
@@ -823,10 +823,6 @@ export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
   {
     label: 'Rejected',
     value: ECE_REPORT_STATUSES.REJECTED,
-  },
-  {
-    label: 'Processing Error',
-    value: ECE_REPORT_STATUSES.PROCESSING_ERROR,
   },
   {
     label: 'Expired',
