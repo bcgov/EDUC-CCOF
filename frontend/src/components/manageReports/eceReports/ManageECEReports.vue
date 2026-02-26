@@ -221,7 +221,10 @@ export default {
     },
     allReportingMonths() {
       try {
-        return buildFiscalYearMonths(this.selectedProgramYear?.financialYear);
+        const programYear = this.lookupInfo?.programYear?.list?.find(
+          (year) => year.programYearId === this.selectedProgramYearId,
+        );
+        return buildFiscalYearMonths(programYear?.financialYear);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
