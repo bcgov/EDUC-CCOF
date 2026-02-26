@@ -172,7 +172,7 @@ import PaymentService from '@/services/paymentService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-
+import { buildFiscalYearMonths } from '@/utils/common.js';
 import { PAYMENT_STATUSES, PAYMENT_STATUS_TEXTS } from '@/utils/constants.js';
 import { formatCurrency, formatMonthYearToString, formatUTCDate } from '@/utils/format';
 
@@ -217,31 +217,16 @@ export default {
     },
 
     allPaymentsMonths() {
-      const availablePaymentMonths = [];
-      const programYear = this.lookupInfo?.programYear?.list?.find(
-        (year) => year.programYearId === this.selectedProgramYearId,
-      );
-      const startYear = moment(programYear?.intakeStart).year();
-      const endYear = moment(programYear?.intakeEnd).year();
-      for (let month = 4; month < 13; month++) {
-        availablePaymentMonths.push({
-          label: `${formatMonthYearToString(month, startYear)}`,
-          value: {
-            month: month,
-            year: startYear,
-          },
-        });
+      try {
+        const programYear = this.lookupInfo?.programYear?.list?.find(
+          (year) => year.programYearId === this.selectedProgramYearId,
+        );
+        return buildFiscalYearMonths(programYear?.financialYear);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while processing payment months. Please try again later.');
+        return [];
       }
-      for (let month = 1; month < 4; month++) {
-        availablePaymentMonths.push({
-          label: `${formatMonthYearToString(month, endYear)}`,
-          value: {
-            month: month,
-            year: endYear,
-          },
-        });
-      }
-      return availablePaymentMonths;
     },
 
     selectedProgramYearId() {

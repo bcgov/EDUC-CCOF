@@ -66,7 +66,7 @@ const createAppStore = () => {
     app: {
       lookupInfo: {
         programYear: {
-          list: [{ programYearId, intakeStart: '2025-01-30T00:00:00Z', intakeEnd: '2026-02-15T00:00:00Z' }],
+          list: [{ programYearId, financialYear: 2026 }],
         },
       },
     },
