@@ -77,6 +77,7 @@ const createAppStore = () => {
       programYearList: {
         newApp: {
           programYearId,
+          financialYear: '2026',
         },
       },
     },

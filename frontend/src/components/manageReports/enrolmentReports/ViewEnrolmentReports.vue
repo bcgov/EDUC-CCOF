@@ -209,10 +209,7 @@ export default {
     },
     allReportingMonths() {
       try {
-        const programYear = this.lookupInfo?.programYear?.list?.find(
-          (year) => year.programYearId === this.selectedProgramYearId,
-        );
-        return buildFiscalYearMonths(programYear?.financialYear);
+        return buildFiscalYearMonths(this.selectedProgramYear?.financialYear);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
@@ -296,7 +293,9 @@ export default {
       });
     },
     selectProgramYear(programYear) {
-      this.selectedProgramYear = programYear;
+      this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
+        (item) => item.programYearId === programYear.programYearId,
+      );
     },
     goToEnrolmentReport(enrolmentReportId) {
       this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`);
