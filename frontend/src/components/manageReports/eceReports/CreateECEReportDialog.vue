@@ -354,11 +354,26 @@ export default {
         facilityId: this.selectedFacilityId,
         status: ECE_STAFF_STATUSES.ACTIVE,
       });
-      const payload = activeECEStaff.map((staff) => ({
-        eceReportId,
-        eceStaffId: staff.eceStaffId,
-        hourlyWage: staff.hourlyWage,
-      }));
+
+      const payload = (
+        await Promise.all(
+          activeECEStaff.map(async (staff) => {
+            const certificates = await ECEStaffService.getECEStaffCertificates({
+              registrationNumber: staff.registrationNumber,
+              lastName: staff.lastName,
+            });
+
+            if (certificates?.some((c) => c.certificateLevel !== 'ECE Assistant')) {
+              return {
+                eceReportId,
+                eceStaffId: staff.eceStaffId,
+                hourlyWage: staff.hourlyWage,
+              };
+            }
+          }),
+        )
+      ).filter(Boolean);
+
       await ECEStaffService.createECEReportStaff(payload);
     },
     async submit() {
