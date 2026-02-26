@@ -1294,7 +1294,7 @@ export default {
       if (this.$refs.form.validate()) {
         this.showEstimatorResults = true;
         this.results = [];
-        let rateTableInfo = null;
+        let rateTableInfo;
         const NUMBER_OF_DAYS_PER_MONTH = 20; // hardcode to 20 as per new requirements
         for (let i = 0; i < this.children.length; i++) {
           // Get the rate table info based on the provided type of child care and childs age category...
