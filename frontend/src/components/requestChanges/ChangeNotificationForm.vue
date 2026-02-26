@@ -147,6 +147,8 @@ export default {
     isReadOnly() {
       let currentCR = this.changeRequestMap.get(this.$route.params?.changeRecGuid);
       if (currentCR && currentCR.length > 0) {
+        // Mutation by reference. We're flattening a potential array of change requests into the first available
+        /* eslint-disable-next-line no-useless-assignment */
         currentCR = currentCR[0];
       }
       if (this.isChangeRequestUnlocked || this.isOtherDocumentsUnlocked) {
