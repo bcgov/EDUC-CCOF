@@ -16,7 +16,7 @@ export default defineConfig([
       },
     },
     plugins: { js },
-    files: ['src/**/*.{vue,js}', 'tests/cypress/**/*/js'],
+    files: ['src/**/*.{vue,js}', 'tests/cypress/**/*.js'],
     extends: ['js/recommended', ...pluginVue.configs['flat/recommended'], eslintPluginPrettier],
     rules: {
       semi: 'off',
