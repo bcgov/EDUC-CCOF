@@ -156,7 +156,6 @@
 
 <script>
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { mapState } from 'pinia';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';

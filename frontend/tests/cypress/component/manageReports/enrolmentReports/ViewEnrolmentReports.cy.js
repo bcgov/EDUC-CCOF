@@ -64,9 +64,10 @@ const enrolmentReportWithNoApprovedParentFees = {
 const createAppStore = () => {
   return {
     app: {
-      lookupInfo: {
-        programYear: {
-          list: [{ programYearId, financialYear: 2026 }],
+      programYearList: {
+        newApp: {
+          programYearId,
+          financialYear: '2026',
         },
       },
     },
