@@ -778,9 +778,6 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
 
 export const ECE_REPORT_INTERNAL_STATUSES = Object.freeze({
   DRAFT: 1,
-  VERIFIED: 5,
-  APPROVED: 6,
-  PAID: 7,
 });
 export const ECE_REPORT_EXTERNAL_STATUSES = Object.freeze({
   DRAFT: 101510000,
