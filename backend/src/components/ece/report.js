@@ -6,7 +6,7 @@ const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
 const { getCurrentPacificDate, restrictFacilities } = require('../../util/common');
 const { ECE_REPORT_STATUS_CODES } = require('../../util/constants');
-const { MappableObjectForFront } = require('../../util/mapping/MappableObject');
+const { MappableObjectForBack, MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
   return report?.version > 1;
@@ -87,28 +87,19 @@ async function submitECEReport(req, res) {
   }
 }
 
-async function updateECEReportStatus(req, res) {
+async function updateECEReport(req, res) {
   try {
-    const payload = {
-      statuscode: req.body.statusCode,
-    };
-    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
+    const mapped = new MappableObjectForBack(req.body, ECEReportMappings).toJSON();
+
+    if (!Object.keys(mapped).length) {
+      return res.status(HttpStatus.BAD_REQUEST).json('No valid fields provided for update');
+    }
+
+    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, mapped);
     return res.status(HttpStatus.OK).json();
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
-async function updateECEReportVersion(req, res) {
-  try {
-    const payload = {
-      ccof_version: req.body.version,
-    };
-    await patchOperationWithObjectId('ccof_ece_monthly_reports', req.params.eceReportId, payload);
-    return res.status(HttpStatus.OK).json();
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-module.exports = { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReportStatus, updateECEReportVersion };
+module.exports = { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport };

@@ -51,22 +51,13 @@ export default {
     }
   },
 
-  async updateECEReportStatus(eceReportId, payload) {
+  async updateECEReport(eceReportId, payload) {
     try {
       if (!eceReportId || isEmpty(payload)) return;
-      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/status`, payload);
-    } catch (error) {
-      console.error(`Failed to update ECE report status - ${error}`);
-      throw error;
-    }
-  },
 
-  async updateECEReportVersion(eceReportId, version) {
-    try {
-      if (!eceReportId || version == null) return;
-      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/version`, { version });
+      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}`, payload);
     } catch (error) {
-      console.error(`Failed to update ECE report version - ${error}`);
+      console.error(`Failed to update ECE report - ${error}`);
       throw error;
     }
   },
