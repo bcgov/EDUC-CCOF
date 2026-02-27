@@ -854,3 +854,7 @@ export const FISCAL_YEAR_MONTHS = Object.freeze([4, 5, 6, 7, 8, 9, 10, 11, 12, 1
 export const ECE_STAFF_CERT_STATUSES = Object.freeze({
   EXPIRED: 'Expired',
 });
+
+export const ECE_CERTIFICATE_LEVELS = Object.freeze({
+  ECE_ASSISTANT: 'ECE Assistant',
+});
