@@ -452,6 +452,7 @@ const ProgramYearMappings = [
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
   { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
   { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
+  { back: 'ccof_financial_year', front: 'financialYear' },
   { back: 'ccof_name', front: 'name' },
   { back: 'ccof_programyearnumber', front: 'order' },
   { back: 'statuscode', front: 'status' },
