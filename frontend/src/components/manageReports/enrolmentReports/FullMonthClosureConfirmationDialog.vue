@@ -3,7 +3,7 @@
     <template #content>
       <p class="pt-4 font-weight-bold text-h5">Confirm Full Month Closure or No Enrolment</p>
       <div class="text-h6 text-left px-8 pt-8">
-        <p>You are reporting that your facility was closed or had no enrolment for the entire reporting month.</p>
+        <p>You are reporting that your facility was closed or had no enrolment for the entire month of service.</p>
         <p class="pt-4">
           You will be redirected to a declaration page to confirm this before submitting your Enrolment Report.
         </p>

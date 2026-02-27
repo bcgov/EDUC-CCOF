@@ -9,6 +9,10 @@ const organizationAccountNumber = 'ORG-1234';
 const programYearId = '1234';
 const facilityId = '4444';
 const organizationId = '4321';
+const programYear = {
+  startYear: 2025,
+  endYear: 2026,
+};
 const facilityList = [
   {
     facilityId,
@@ -61,12 +65,38 @@ const enrolmentReportWithNoApprovedParentFees = {
   facilityId,
 };
 
+const expectedReportingMonthLabels = [
+  `April ${programYear.startYear}`,
+  `May ${programYear.startYear}`,
+  `June ${programYear.startYear}`,
+  `July ${programYear.startYear}`,
+  `August ${programYear.startYear}`,
+  `September ${programYear.startYear}`,
+  `October ${programYear.startYear}`,
+  `November ${programYear.startYear}`,
+  `December ${programYear.startYear}`,
+  `January ${programYear.endYear}`,
+  `February ${programYear.endYear}`,
+  `March ${programYear.endYear}`,
+];
+
 const createAppStore = () => {
   return {
     app: {
       lookupInfo: {
         programYear: {
-          list: [{ programYearId, intakeStart: '2025-01-30T00:00:00Z', intakeEnd: '2026-02-15T00:00:00Z' }],
+          list: [
+            {
+              programYearId,
+              financialYear: programYear.endYear,
+            },
+          ],
+        },
+      },
+      programYearList: {
+        newApp: {
+          programYearId,
+          financialYear: programYear.endYear,
         },
       },
     },
@@ -155,11 +185,30 @@ describe('<ViewEnrolmentReports />', () => {
       },
     });
 
-    cy.contains('Select reporting month:');
+    cy.contains('Month of service:');
     cy.contains('Select facility:');
     cy.contains('Sort by');
     cy.contains('Items per page');
     cy.get('.v-select').should('have.length', 4);
+  });
+
+  it('should display correct month options in select month of service dropdown', () => {
+    interceptAPI();
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.wait('@getEnrolments');
+    cy.contains('p', 'Month of service:').closest('.v-row').find('.v-select').click();
+    cy.get('.v-overlay--active').within(() => {
+      cy.contains('.v-list-item-title', 'Select All').should('be.visible');
+      expectedReportingMonthLabels.forEach((label) => {
+        cy.contains('.v-list-item-title', label).should('exist');
+      });
+    });
   });
 
   it('should display CCFRI Status as N/A for enrolment report with no approved parent fees', () => {
@@ -191,11 +240,11 @@ describe('<ViewEnrolmentReports />', () => {
     cy.wait('@getEnrolments');
 
     cy.get('table').within(() => {
-      cy.get('td').eq(0).should('contain.text', 'Version Number').and('contain.text', enrolmentReportDraft.versionText);
+      cy.get('td').eq(0).should('contain.text', 'Facility Name').and('contain.text', facility.facilityName);
       cy.get('td').eq(1).should('contain.text', facility.facilityAccountNumber);
-      cy.get('td').eq(2).should('contain.text', 'Facility Name').and('contain.text', facility.facilityName);
-      cy.get('td').eq(3).should('contain.text', 'Licence Number').and('contain.text', facility.licenseNumber);
-      cy.get('td').eq(4).should('contain.text', 'Reporting Month').and('contain.text', 'November 2025');
+      cy.get('td').eq(2).should('contain.text', 'Licence Number').and('contain.text', facility.licenseNumber);
+      cy.get('td').eq(3).should('contain.text', 'Month of Service').and('contain.text', 'November 2025');
+      cy.get('td').eq(4).should('contain.text', 'Version Number').and('contain.text', enrolmentReportDraft.versionText);
       cy.get('td')
         .eq(5)
         .should('contain.text', 'Submission Deadline')
@@ -215,11 +264,39 @@ describe('<ViewEnrolmentReports />', () => {
         ...createOrganizationStore(),
       },
     });
-    cy.contains('button', 'View').click();
+    cy.contains('.view-report', 'View').click();
     cy.get('@routerPush').should(
       'have.been.calledWith',
       `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportApproved.enrolmentReportId}`,
     );
+  });
+
+  it('should render `View Payment Details` button', () => {
+    interceptAPI(enrolmentReportApproved);
+
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.get('#payment-info-button').contains('View Payment Information').click();
+    cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=payments-tab`);
+  });
+
+  it('should render `Closure Details` button', () => {
+    interceptAPI(enrolmentReportApproved);
+
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.get('#closure-details-button').contains('Closure Details').click();
+    cy.get('@routerPush').should('have.been.calledWith', `${PATHS.ROOT.CLOSURES}/${programYearId}`);
   });
 
   it('should render `Edit` button', () => {

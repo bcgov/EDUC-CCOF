@@ -532,7 +532,6 @@ export const CLOSURE_PAYMENT_ELIGIBILITIES = Object.freeze({
   CCFRI_AND_CCOF: 100000001,
   CCOF: 100000002,
   INELIGIBLE: 100000003,
-  PENDING: 100000004,
 });
 
 export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
@@ -540,7 +539,6 @@ export const CLOSURE_PAYMENT_ELIGIBILITY_TEXTS = Object.freeze({
   CCFRI_AND_CCOF: 'CCFRI & CCOF',
   CCOF: 'CCOF',
   INELIGIBLE: 'Ineligible',
-  PENDING: 'Pending',
 });
 
 export const CLOSURE_AFFECTED_AGE_GROUPS_VALUES_TO_TEXT = Object.freeze({
@@ -825,6 +823,12 @@ export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
   },
 ]);
 
+export const ECE_REPORT_STAFF_STATUSES = Object.freeze({
+  ACTIVE: 1,
+  REJECTED: 2,
+  VERIFIED: 101510001,
+});
+
 export const ECE_REPORT_TYPES = Object.freeze({
   BASE: 1,
   ADJUSTMENT: 2,
@@ -840,4 +844,8 @@ export const FISCAL_YEAR_MONTHS = Object.freeze([4, 5, 6, 7, 8, 9, 10, 11, 12, 1
 
 export const ECE_STAFF_CERT_STATUSES = Object.freeze({
   EXPIRED: 'Expired',
+});
+
+export const ECE_CERTIFICATE_LEVELS = Object.freeze({
+  ECE_ASSISTANT: 'ECE Assistant',
 });

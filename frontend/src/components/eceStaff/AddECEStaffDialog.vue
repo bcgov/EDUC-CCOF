@@ -158,7 +158,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { getECECertStatusClass } from '@/utils/common.js';
-import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
+import { ECE_CERTIFICATE_LEVELS, ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatDecimalNumberToNumber, formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
@@ -278,7 +278,10 @@ export default {
       if (!Array.isArray(certificates)) {
         throw new TypeError('Expected certificates to be an array.');
       }
-      if (certificates.length === 0) return [];
+      if (this.isEceReport) {
+        certificates = certificates.filter((c) => c.certificateLevel !== ECE_CERTIFICATE_LEVELS.ECE_ASSISTANT);
+      }
+      if (!certificates.length) return [];
       const staff = certificates[0];
       const facilityStaffMatch = this.facilityExistingStaff.find(
         (s) => s.registrationNumber === staff.registrationNumber,

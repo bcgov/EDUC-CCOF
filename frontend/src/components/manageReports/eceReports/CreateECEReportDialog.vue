@@ -109,6 +109,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import {
+  ECE_CERTIFICATE_LEVELS,
   ECE_REPORT_TYPES,
   ECE_STAFF_STATUSES,
   ECEWE_FACILITY_STATUSES,
@@ -168,9 +169,6 @@ export default {
       const reportingMonths = this.allReportingMonths.get(this.selectedFacilityId);
       return isEmpty(reportingMonths) ? null : reportingMonths[reportingMonths.length - 1]?.value;
     },
-    isSelectedProgramYearInFuture() {
-      return this.userInfo.serverTime < this.selectedProgramYear?.intakeStart;
-    },
     facilities() {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
@@ -191,20 +189,35 @@ export default {
       return this.loading || !this.selectedFacilityId;
     },
     reportingMonthCandidates() {
-      if (!this.selectedProgramYear) {
+      try {
+        if (!this.selectedProgramYear) {
+          return [];
+        }
+        const { financialYear } = this.selectedProgramYear;
+        const endYear = Number(financialYear);
+        if (!endYear || Number.isNaN(endYear)) {
+          throw new Error(`Invalid financial year: ${financialYear}`);
+        }
+        const startYear = endYear - 1;
+        const currentTime = formatUTCtoPacificTime(this.userInfo?.serverTime);
+        const currentMonth = currentTime?.month;
+        const currentYear = currentTime?.year;
+        const currentMonthFirstDate = formatFirstDateOfMonth(currentMonth, currentYear);
+        return this.getTrailingMonths(currentMonth)
+          .map((month) => {
+            const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
+            return {
+              month,
+              year,
+              firstDate: formatFirstDateOfMonth(month, year),
+            };
+          })
+          .filter((month) => month.firstDate <= currentMonthFirstDate);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
         return [];
       }
-      const startYear = formatUTCtoPacificTime(this.selectedProgramYear.intakeStart)?.year;
-      const endYear = formatUTCtoPacificTime(this.selectedProgramYear.intakeEnd)?.year;
-      const currentMonth = formatUTCtoPacificTime(this.userInfo?.serverTime)?.month;
-      return this.getTrailingMonths(currentMonth).map((month) => {
-        const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
-        return {
-          month,
-          year,
-          firstDate: formatFirstDateOfMonth(month, year),
-        };
-      });
     },
     /*
      * CCFRI-6645 – Reporting month rules
@@ -233,9 +246,6 @@ export default {
      */
     allReportingMonths() {
       const reportingMonths = new Map();
-      if (this.isSelectedProgramYearInFuture) {
-        return reportingMonths;
-      }
       for (const facility of this.facilities ?? []) {
         reportingMonths.set(facility.facilityId, this.getReportingMonthsByFacilityId(facility.facilityId));
       }
@@ -349,11 +359,26 @@ export default {
         facilityId: this.selectedFacilityId,
         status: ECE_STAFF_STATUSES.ACTIVE,
       });
-      const payload = activeECEStaff.map((staff) => ({
-        eceReportId,
-        eceStaffId: staff.eceStaffId,
-        hourlyWage: staff.hourlyWage,
-      }));
+
+      const payload = (
+        await Promise.all(
+          activeECEStaff.map(async (staff) => {
+            const certificates = await ECEStaffService.getECEStaffCertificates({
+              registrationNumber: staff.registrationNumber,
+              lastName: staff.lastName,
+            });
+
+            if (certificates?.some((c) => c.certificateLevel !== ECE_CERTIFICATE_LEVELS.ECE_ASSISTANT)) {
+              return {
+                eceReportId,
+                eceStaffId: staff.eceStaffId,
+                hourlyWage: staff.hourlyWage,
+              };
+            }
+          }),
+        )
+      ).filter(Boolean);
+
       await ECEStaffService.createECEReportStaff(payload);
     },
     async submit() {

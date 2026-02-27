@@ -251,10 +251,13 @@ export default {
       return this.selectedProgramYear?.programYearId;
     },
     allReportingMonths() {
-      const programYear = this.lookupInfo?.programYear?.list?.find(
-        (year) => year.programYearId === this.selectedProgramYearId,
-      );
-      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
+      try {
+        return buildFiscalYearMonths(this.selectedProgramYear?.financialYear);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
+        return [];
+      }
     },
     allFacilityIds() {
       return this.facilityList?.map((facility) => facility.facilityId);

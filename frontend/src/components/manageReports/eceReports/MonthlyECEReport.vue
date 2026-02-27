@@ -4,6 +4,11 @@
   </div>
   <div v-else class="px-12 mb-12">
     <MonthlyECEReportHeader :ece-report="eceReport" :public-sector="publicSector" class="mb-8" />
+    <v-alert type="info" color="primary" variant="outlined" class="mb-6">
+      <strong>Important:</strong>
+      Only staff who hold an active Early Childhood Educator, Infant and Toddler Educator, or Special Needs Educator
+      certificate are eligible for the ECE Wage Enhancement.
+    </v-alert>
     <div v-if="!readonly" class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
@@ -31,24 +36,28 @@
                 max-width="120"
                 variant="outlined"
               />
-              <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-              <p v-if="showVerified"><strong>Verified:</strong> {{ formatDecimalNumber(0) }}</p>
+              <p v-if="showStaffVerifiedAmounts(item)">
+                <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
+              </p>
             </div>
           </template>
           <template #item.weAmount="{ item }">
             <p>{{ formatCurrency(item.weAmount) }}</p>
-            <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
+            <p v-if="showStaffVerifiedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.verifiedWeAmount) }}
+            </p>
           </template>
           <template #item.statutoryBenefitAmount="{ item }">
             <p>{{ formatCurrency(item.statutoryBenefitAmount) }}</p>
-            <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
+            <p v-if="showStaffVerifiedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.verifiedSbAmount) }}
+            </p>
           </template>
           <template #item.totalAmount="{ item }">
             <p>{{ formatCurrency(item.totalAmount) }}</p>
-            <!-- TODO (vietle-cgi): Add Verified value from CMS -->
-            <p v-if="showVerified"><strong>Verified:</strong> {{ formatCurrency(0) }}</p>
+            <p v-if="showStaffVerifiedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.verifiedTotalAmount) }}
+            </p>
           </template>
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
@@ -66,29 +75,28 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': showVerified }">
+        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': isReportVerified }">
           <v-table>
             <thead>
               <tr>
                 <th scope="col"></th>
                 <th scope="col" class="font-weight-bold text-right">Reported</th>
-                <!-- TODO (vietle-cgi): Implement Verified ECE Reports -->
-                <th v-if="showVerified" scope="col" class="font-weight-bold text-right">Verified</th>
+                <th v-if="isReportVerified" scope="col" class="font-weight-bold text-right">Approved</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th scope="row" class="font-weight-bold">WE Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                <td v-if="showVerified" class="text-right">
-                  {{ formatCurrency(0) }}
+                <td v-if="isReportVerified" class="text-right">
+                  {{ formatCurrency(reportVerifiedTotals.weSubtotal) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">SB Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                <td v-if="showVerified" class="text-right">
-                  {{ formatCurrency(0) }}
+                <td v-if="isReportVerified" class="text-right">
+                  {{ formatCurrency(reportVerifiedTotals.sbSubtotal) }}
                 </td>
               </tr>
               <tr>
@@ -96,8 +104,8 @@
                 <td class="text-right font-weight-bold">
                   {{ formatCurrency(reportTotals.total) }}
                 </td>
-                <td v-if="showVerified" class="text-right font-weight-bold">
-                  {{ formatCurrency(0) }}
+                <td v-if="isReportVerified" class="text-right font-weight-bold">
+                  {{ formatCurrency(reportVerifiedTotals.total) }}
                 </td>
               </tr>
             </tbody>
@@ -141,7 +149,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
-import { ECE_REPORT_INTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
+import { ECE_REPORT_STAFF_STATUSES, ECE_REPORT_INTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 import rules from '@/utils/rules.js';
 
@@ -157,6 +165,7 @@ export default {
       eceReport: null,
       addDialogOpen: false,
       reportTotals: {},
+      reportVerifiedTotals: {},
       eceFacilityStaff: [],
       originalECEReportStaff: [],
       eceReportStaff: [],
@@ -186,18 +195,22 @@ export default {
     eceReportId() {
       return this.$route.params.eceReportId;
     },
+    rates() {
+      return {
+        weRate: formatDecimalNumberToNumber(this.eceReport?.weRate, null),
+        sbRate: formatDecimalNumberToNumber(this.eceReport?.sbRate, null),
+      };
+    },
     eceFacilityStaffByRegistrationNumber() {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.registrationNumber, staff]));
     },
     eceFacilityStaffById() {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
-    showVerified() {
-      return [
-        ECE_REPORT_INTERNAL_STATUSES.VERIFIED,
-        ECE_REPORT_INTERNAL_STATUSES.APPROVED,
-        ECE_REPORT_INTERNAL_STATUSES.PAID,
-      ].includes(this.eceReport?.statusCode);
+    isReportVerified() {
+      return [ECE_REPORT_INTERNAL_STATUSES.VERIFIED, ECE_REPORT_INTERNAL_STATUSES.APPROVED, ECE_REPORT_INTERNAL_STATUSES.PAID].includes(
+        this.eceReport?.statusCode,
+      );
     },
     showRemoveButton() {
       return !this.eceReport?.isAdjustment && !this.readonly;
@@ -259,29 +272,72 @@ export default {
         state: { publicSector: this.publicSector },
       });
     },
-    calculate() {
+    isStaffVerified(staff) {
+      return staff?.statusCode === ECE_REPORT_STAFF_STATUSES.VERIFIED;
+    },
+    showStaffVerifiedAmounts(staff) {
+      return this.isReportVerified && this.isStaffVerified(staff);
+    },
+    calculateReportedAmounts(weRate, sbRate) {
       let weSubtotal = 0;
       let sbSubtotal = 0;
       let total = 0;
-      const weRate = formatDecimalNumberToNumber(this.eceReport?.weRate, null);
-      const sbRate = formatDecimalNumberToNumber(this.eceReport?.sbRate, null);
+
+      for (let staff of this.eceReportStaff) {
+        const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) ?? 0;
+
+        const weAmount = weRate * hours;
+        const sbAmount = sbRate * hours;
+        const totalAmount = weAmount + sbAmount;
+
+        staff.weAmount = weAmount;
+        staff.statutoryBenefitAmount = sbAmount;
+        staff.totalAmount = totalAmount;
+
+        weSubtotal += weAmount;
+        sbSubtotal += sbAmount;
+        total += totalAmount;
+      }
+
+      this.reportTotals = { weSubtotal, sbSubtotal, total };
+    },
+
+    calculateVerifiedAmounts(weRate, sbRate) {
+      let weSubtotal = 0;
+      let sbSubtotal = 0;
+      let total = 0;
+
+      for (let staff of this.eceReportStaff) {
+        if (!this.isStaffVerified(staff)) continue;
+        const hours = formatDecimalNumberToNumber(staff.verifiedHours) ?? 0;
+
+        const weAmount = weRate * hours;
+        const sbAmount = sbRate * hours;
+        const totalAmount = weAmount + sbAmount;
+
+        staff.verifiedWeAmount = weAmount;
+        staff.verifiedSbAmount = sbAmount;
+        staff.verifiedTotalAmount = totalAmount;
+
+        weSubtotal += weAmount;
+        sbSubtotal += sbAmount;
+        total += totalAmount;
+      }
+
+      this.reportVerifiedTotals = { weSubtotal, sbSubtotal, total };
+    },
+
+    calculate() {
+      const { weRate, sbRate } = this.rates;
       if (weRate == null || sbRate == null) {
         throw new Error('Missing WE or SB rate for calculation.');
       }
-      for (const staff of this.eceReportStaff) {
-        const hours = formatDecimalNumberToNumber(staff.totalHoursWorked) ?? 0;
-        const weAmount = weRate * hours;
-        const statutoryBenefitAmount = sbRate * hours;
-        const totalAmount = weAmount + statutoryBenefitAmount;
-        staff.weAmount = weAmount;
-        staff.statutoryBenefitAmount = statutoryBenefitAmount;
-        staff.totalAmount = totalAmount;
-        weSubtotal += weAmount;
-        sbSubtotal += statutoryBenefitAmount;
-        total += totalAmount;
+      this.calculateReportedAmounts(weRate, sbRate);
+      if (this.isReportVerified) {
+        this.calculateVerifiedAmounts(weRate, sbRate);
       }
-      this.reportTotals = { weSubtotal, sbSubtotal, total };
     },
+
     addECEStaff(newStaff) {
       this.eceReportStaff.push(newStaff);
     },

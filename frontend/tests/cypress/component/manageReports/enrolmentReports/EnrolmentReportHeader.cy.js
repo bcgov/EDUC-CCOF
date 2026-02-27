@@ -46,7 +46,7 @@ describe('<EnrolmentReportHeader />', () => {
     cy.contains(facility.facilityName);
     cy.contains(facility.facilityAccountNumber);
     cy.contains(`Licence #: ${facility.licenseNumber}`);
-    cy.contains('Reporting month: November 2025');
+    cy.contains('Month of service: November 2025');
     cy.contains(`Version number: ${enrolmentReport.versionText}`);
   });
 });
