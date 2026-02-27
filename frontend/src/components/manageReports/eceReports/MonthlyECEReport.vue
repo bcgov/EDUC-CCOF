@@ -141,7 +141,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
-import { ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import { ECE_REPORT_INTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 import rules from '@/utils/rules.js';
 
@@ -193,9 +193,11 @@ export default {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
     showVerified() {
-      return [ECE_REPORT_STATUSES.VERIFIED, ECE_REPORT_STATUSES.APPROVED, ECE_REPORT_STATUSES.PAID].includes(
-        this.eceReport?.statusCode,
-      );
+      return [
+        ECE_REPORT_INTERNAL_STATUSES.VERIFIED,
+        ECE_REPORT_INTERNAL_STATUSES.APPROVED,
+        ECE_REPORT_INTERNAL_STATUSES.PAID,
+      ].includes(this.eceReport?.statusCode);
     },
     showRemoveButton() {
       return !this.eceReport?.isAdjustment && !this.readonly;

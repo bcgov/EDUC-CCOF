@@ -778,7 +778,7 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
   CANCELLED: 'Cancelled',
 });
 
-export const ECE_REPORT_STATUSES = Object.freeze({
+export const ECE_REPORT_INTERNAL_STATUSES = Object.freeze({
   DRAFT: 1,
   VERIFIED: 5,
   APPROVED: 6,

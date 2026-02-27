@@ -162,8 +162,8 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { buildFiscalYearMonths } from '@/utils/common.js';
 import {
   ECE_REPORT_EXTERNAL_STATUSES,
+  ECE_REPORT_INTERNAL_STATUSES,
   ECE_REPORT_STATUS_OPTIONS,
-  ECE_REPORT_STATUSES,
   PATHS,
 } from '@/utils/constants.js';
 import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
@@ -370,7 +370,7 @@ export default {
           eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED
         ) {
           await ECEReportService.updateECEReport(eceReport.eceReportId, {
-            statusCode: ECE_REPORT_STATUSES.DRAFT,
+            statusCode: ECE_REPORT_INTERNAL_STATUSES.DRAFT,
           });
         }
         this.goToECEReport(eceReport.eceReportId);
