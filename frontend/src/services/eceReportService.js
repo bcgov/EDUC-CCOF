@@ -50,4 +50,15 @@ export default {
       throw error;
     }
   },
+
+  async updateECEReport(eceReportId, payload) {
+    try {
+      if (!eceReportId || isEmpty(payload)) return;
+
+      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}`, payload);
+    } catch (error) {
+      console.error(`Failed to update ECE report - ${error}`);
+      throw error;
+    }
+  },
 };

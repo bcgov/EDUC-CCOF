@@ -914,6 +914,7 @@ const ECEReportMappings = [
   { back: 'ccof_ece_sb_rate', front: 'sbRate' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_external_status', front: 'externalStatus' },
 ];
 
 const ECEReportStaffMappings = [

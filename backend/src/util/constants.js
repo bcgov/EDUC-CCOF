@@ -224,6 +224,7 @@ const PERMISSIONS = Object.freeze({
 });
 
 const ECE_REPORT_STATUS_CODES = Object.freeze({
+  DRAFT: 1,
   SUBMITTED: 3,
 });
 

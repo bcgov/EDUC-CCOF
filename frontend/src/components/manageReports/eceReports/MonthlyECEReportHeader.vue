@@ -64,7 +64,7 @@ export default {
       return facilities?.find((item) => item.facilityId === this.eceReport?.facilityId);
     },
     reportStatus() {
-      return getStatusText(this.eceReport?.statusCode, ECE_REPORT_STATUS_OPTIONS);
+      return getStatusText(this.eceReport?.externalStatus, ECE_REPORT_STATUS_OPTIONS);
     },
     publicSectorText() {
       return getYesNoValue(this.publicSector);
