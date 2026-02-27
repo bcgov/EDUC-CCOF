@@ -61,6 +61,21 @@ const enrolmentReportWithNoApprovedParentFees = {
   facilityId,
 };
 
+const expectedReportingMonthLabels = [
+  'April 2025',
+  'May 2025',
+  'June 2025',
+  'July 2025',
+  'August 2025',
+  'September 2025',
+  'October 2025',
+  'November 2025',
+  'December 2025',
+  'January 2026',
+  'February 2026',
+  'March 2026',
+];
+
 const createAppStore = () => {
   return {
     app: {
@@ -171,6 +186,25 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('Sort by');
     cy.contains('Items per page');
     cy.get('.v-select').should('have.length', 4);
+  });
+
+  it('should display correct month options in select month of service dropdown', () => {
+    interceptAPI();
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.wait('@getEnrolments');
+    cy.contains('p', 'Month of service:').closest('.v-row').find('.v-select').click();
+    cy.get('.v-overlay--active').within(() => {
+      cy.contains('.v-list-item-title', 'Select All').should('be.visible');
+      expectedReportingMonthLabels.forEach((label) => {
+        cy.contains('.v-list-item-title', label).should('exist');
+      });
+    });
   });
 
   it('should display CCFRI Status as N/A for enrolment report with no approved parent fees', () => {
