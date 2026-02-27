@@ -9,6 +9,10 @@ const organizationAccountNumber = 'ORG-1234';
 const programYearId = '1234';
 const facilityId = '4444';
 const organizationId = '4321';
+const programYear = {
+  startYear: 2025,
+  endYear: 2026,
+};
 const facilityList = [
   {
     facilityId,
@@ -61,12 +65,38 @@ const enrolmentReportWithNoApprovedParentFees = {
   facilityId,
 };
 
+const expectedReportingMonthLabels = [
+  `April ${programYear.startYear}`,
+  `May ${programYear.startYear}`,
+  `June ${programYear.startYear}`,
+  `July ${programYear.startYear}`,
+  `August ${programYear.startYear}`,
+  `September ${programYear.startYear}`,
+  `October ${programYear.startYear}`,
+  `November ${programYear.startYear}`,
+  `December ${programYear.startYear}`,
+  `January ${programYear.endYear}`,
+  `February ${programYear.endYear}`,
+  `March ${programYear.endYear}`,
+];
+
 const createAppStore = () => {
   return {
     app: {
       lookupInfo: {
         programYear: {
-          list: [{ programYearId, intakeStart: '2025-01-30T00:00:00Z', intakeEnd: '2026-02-15T00:00:00Z' }],
+          list: [
+            {
+              programYearId,
+              financialYear: programYear.endYear,
+            },
+          ],
+        },
+      },
+      programYearList: {
+        newApp: {
+          programYearId,
+          financialYear: programYear.endYear,
         },
       },
     },
@@ -160,6 +190,25 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('Sort by');
     cy.contains('Items per page');
     cy.get('.v-select').should('have.length', 4);
+  });
+
+  it('should display correct month options in select month of service dropdown', () => {
+    interceptAPI();
+    mountWithPinia({
+      initialState: {
+        ...createAppStore(),
+        ...createApplicationStore(),
+        ...createOrganizationStore(),
+      },
+    });
+    cy.wait('@getEnrolments');
+    cy.contains('p', 'Month of service:').closest('.v-row').find('.v-select').click();
+    cy.get('.v-overlay--active').within(() => {
+      cy.contains('.v-list-item-title', 'Select All').should('be.visible');
+      expectedReportingMonthLabels.forEach((label) => {
+        cy.contains('.v-list-item-title', label).should('exist');
+      });
+    });
   });
 
   it('should display CCFRI Status as N/A for enrolment report with no approved parent fees', () => {
