@@ -208,9 +208,11 @@ export default {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
     isReportVerified() {
-      return [ECE_REPORT_INTERNAL_STATUSES.VERIFIED, ECE_REPORT_INTERNAL_STATUSES.APPROVED, ECE_REPORT_INTERNAL_STATUSES.PAID].includes(
-        this.eceReport?.statusCode,
-      );
+      return [
+        ECE_REPORT_INTERNAL_STATUSES.VERIFIED,
+        ECE_REPORT_INTERNAL_STATUSES.APPROVED,
+        ECE_REPORT_INTERNAL_STATUSES.PAID,
+      ].includes(this.eceReport?.statusCode);
     },
     showRemoveButton() {
       return !this.eceReport?.isAdjustment && !this.readonly;
