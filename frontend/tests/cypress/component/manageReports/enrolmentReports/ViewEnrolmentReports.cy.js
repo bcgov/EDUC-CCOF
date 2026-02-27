@@ -9,6 +9,10 @@ const organizationAccountNumber = 'ORG-1234';
 const programYearId = '1234';
 const facilityId = '4444';
 const organizationId = '4321';
+const programYear = {
+  startYear: 2025,
+  endYear: 2026,
+};
 const facilityList = [
   {
     facilityId,
@@ -62,18 +66,18 @@ const enrolmentReportWithNoApprovedParentFees = {
 };
 
 const expectedReportingMonthLabels = [
-  'April 2025',
-  'May 2025',
-  'June 2025',
-  'July 2025',
-  'August 2025',
-  'September 2025',
-  'October 2025',
-  'November 2025',
-  'December 2025',
-  'January 2026',
-  'February 2026',
-  'March 2026',
+  `April ${programYear.startYear}`,
+  `May ${programYear.startYear}`,
+  `June ${programYear.startYear}`,
+  `July ${programYear.startYear}`,
+  `August ${programYear.startYear}`,
+  `September ${programYear.startYear}`,
+  `October ${programYear.startYear}`,
+  `November ${programYear.startYear}`,
+  `December ${programYear.startYear}`,
+  `January ${programYear.endYear}`,
+  `February ${programYear.endYear}`,
+  `March ${programYear.endYear}`,
 ];
 
 const createAppStore = () => {
@@ -84,7 +88,7 @@ const createAppStore = () => {
           list: [
             {
               programYearId,
-              financialYear: '2026',
+              financialYear: programYear.endYear,
             },
           ],
         },
@@ -92,7 +96,7 @@ const createAppStore = () => {
       programYearList: {
         newApp: {
           programYearId,
-          financialYear: '2026',
+          financialYear: programYear.endYear,
         },
       },
     },
