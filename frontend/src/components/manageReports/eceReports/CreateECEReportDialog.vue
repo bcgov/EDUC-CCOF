@@ -109,6 +109,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import {
+  ECE_CERTIFICATE_LEVELS,
   ECE_REPORT_TYPES,
   ECE_STAFF_STATUSES,
   ECEWE_FACILITY_STATUSES,
@@ -367,7 +368,7 @@ export default {
               lastName: staff.lastName,
             });
 
-            if (certificates?.some((c) => c.certificateLevel !== 'ECE Assistant')) {
+            if (certificates?.some((c) => c.certificateLevel !== ECE_CERTIFICATE_LEVELS.ECE_ASSISTANT)) {
               return {
                 eceReportId,
                 eceStaffId: staff.eceStaffId,
