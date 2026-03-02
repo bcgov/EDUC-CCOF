@@ -3,8 +3,8 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { ECE_REPORT_STATUS_CODES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
+const { createAdjustmentReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
@@ -37,18 +37,6 @@ const createECEReportSchema = {
     isInt: {
       options: { min: 2000, max: 2200 },
       errorMessage: '[year] must be an integer between 2000 and 2200',
-    },
-  },
-  reportType: {
-    in: ['body'],
-    exists: {
-      options: { checkFalsy: true },
-      errorMessage: '[reportType] is required',
-    },
-    toInt: true,
-    isIn: {
-      options: [Object.values(ECE_REPORT_TYPES)],
-      errorMessage: '[reportType] must be a valid report type',
     },
   },
 };
@@ -128,6 +116,18 @@ router.post(
   (req, res) => {
     validationResult(req).throw();
     return submitECEReport(req, res);
+  },
+);
+
+// TODO: Implement ECE Reports permission
+router.post(
+  '/:eceReportId/adjustment',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  (req, res) => {
+    validationResult(req).throw();
+    return createAdjustmentReport(req, res);
   },
 );
 

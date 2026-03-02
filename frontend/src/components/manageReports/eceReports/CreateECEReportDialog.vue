@@ -110,7 +110,6 @@ import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
 import {
   ECE_CERTIFICATE_LEVELS,
-  ECE_REPORT_TYPES,
   ECE_STAFF_STATUSES,
   ECEWE_FACILITY_STATUSES,
   EMPTY_PLACEHOLDER,
@@ -372,7 +371,6 @@ export default {
               return {
                 eceReportId,
                 eceStaffId: staff.eceStaffId,
-                hourlyWage: staff.hourlyWage,
               };
             }
           }),
@@ -391,7 +389,6 @@ export default {
           programYearId: this.selectedProgramYearId,
           month: this.selectedReportingMonth?.month,
           year: this.selectedReportingMonth?.year,
-          reportType: ECE_REPORT_TYPES.BASE,
         });
         const eceReportId = response?.data;
         await this.createECEReportStaff(eceReportId);

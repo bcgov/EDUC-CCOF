@@ -384,9 +384,18 @@ export default {
         this.loading = false;
       }
     },
-    // TODO (vietle-cgi): Implement Adjust functionality
-    adjust() {
-      window.alert('Adjust button is clicked');
+    async adjust(eceReport) {
+      try {
+        this.loading = true;
+        const adjustmentReportId = await ECEReportService.createAdjustmentReport(eceReport.eceReportId);
+        this.setSuccessAlert('Adjustment report created successfully.');
+        this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${adjustmentReportId}`);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('Unable to create adjustment report.');
+      } finally {
+        this.loading = false;
+      }
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(

@@ -62,7 +62,7 @@
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
-                v-if="showRemoveButton"
+                v-if="showRemoveButton(item)"
                 :loading="loading"
                 :primary="false"
                 color="red"
@@ -75,27 +75,27 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': isReportVerified }">
+        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': isReportApproved }">
           <v-table>
             <thead>
               <tr>
                 <th scope="col"></th>
                 <th scope="col" class="font-weight-bold text-right">Reported</th>
-                <th v-if="isReportVerified" scope="col" class="font-weight-bold text-right">Approved</th>
+                <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <th scope="row" class="font-weight-bold">WE Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                <td v-if="isReportVerified" class="text-right">
+                <td v-if="isReportApproved" class="text-right">
                   {{ formatCurrency(reportVerifiedTotals.weSubtotal) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">SB Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                <td v-if="isReportVerified" class="text-right">
+                <td v-if="isReportApproved" class="text-right">
                   {{ formatCurrency(reportVerifiedTotals.sbSubtotal) }}
                 </td>
               </tr>
@@ -104,7 +104,7 @@
                 <td class="text-right font-weight-bold">
                   {{ formatCurrency(reportTotals.total) }}
                 </td>
-                <td v-if="isReportVerified" class="text-right font-weight-bold">
+                <td v-if="isReportApproved" class="text-right font-weight-bold">
                   {{ formatCurrency(reportVerifiedTotals.total) }}
                 </td>
               </tr>
@@ -207,13 +207,10 @@ export default {
     eceFacilityStaffById() {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
-    isReportVerified() {
+    isReportApproved() {
       return [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
         this.eceReport?.externalStatus,
       );
-    },
-    showRemoveButton() {
-      return !this.eceReport?.isAdjustment && !this.readonly;
     },
   },
   async created() {
@@ -239,6 +236,7 @@ export default {
           return {
             ...staff,
             eceFacilityStaffId: facilityStaff?.eceFacilityStaffId,
+            hourlyWage: facilityStaff?.hourlyWage ?? 0,
             lastName: facilityStaff?.lastName ?? '',
             firstName: facilityStaff?.firstName ?? '',
             registrationNumber: facilityStaff?.registrationNumber ?? '',
@@ -276,7 +274,7 @@ export default {
       return staff?.statusCode === ECE_REPORT_STAFF_STATUSES.VERIFIED;
     },
     showStaffVerifiedAmounts(staff) {
-      return this.isReportVerified && this.isStaffVerified(staff);
+      return this.isReportApproved && this.isStaffVerified(staff);
     },
     calculateReportedAmounts(weRate, sbRate) {
       let weSubtotal = 0;
@@ -333,13 +331,16 @@ export default {
         throw new Error('Missing WE or SB rate for calculation.');
       }
       this.calculateReportedAmounts(weRate, sbRate);
-      if (this.isReportVerified) {
+      if (this.isReportApproved) {
         this.calculateVerifiedAmounts(weRate, sbRate);
       }
     },
 
     addECEStaff(newStaff) {
       this.eceReportStaff.push(newStaff);
+    },
+    showRemoveButton(staff) {
+      return !this.readonly && !staff.isInheritedFromParentReport;
     },
     removeStaff(staff) {
       const index = this.eceReportStaff.findIndex((s) => s.registrationNumber === staff.registrationNumber);
@@ -398,7 +399,6 @@ export default {
           return {
             eceReportId: this.eceReportId,
             eceStaffId,
-            hourlyWage: staff.hourlyWage,
             totalHoursWorked: staff.totalHoursWorked,
           };
         });

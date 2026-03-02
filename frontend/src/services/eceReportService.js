@@ -61,4 +61,19 @@ export default {
       throw error;
     }
   },
+
+  async createAdjustmentReport(eceReportId) {
+    try {
+      if (!eceReportId) return;
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/adjustment`);
+      return response?.data;
+    } catch (error) {
+      if (error.response?.status === 504) {
+        console.error('Adjustment report request timed out - creation status is unknown');
+      } else {
+        console.error(`Failed to create adjustment report - ${error}`);
+      }
+      throw error;
+    }
+  },
 };
