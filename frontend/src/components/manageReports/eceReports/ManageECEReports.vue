@@ -166,8 +166,8 @@ import {
   ECE_REPORT_STATUS_OPTIONS,
   PATHS,
 } from '@/utils/constants.js';
-import { formatMonthYearToString, formatUTCDate, formatYearMonthYYYYMM } from '@/utils/format';
 import { getSubmissionDeadlineUTCDate } from '@/utils/eceReport';
+import { formatMonthYearToString, formatUTCDate, formatYearMonthYYYYMM } from '@/utils/format';
 
 const EDIT_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.DRAFT,

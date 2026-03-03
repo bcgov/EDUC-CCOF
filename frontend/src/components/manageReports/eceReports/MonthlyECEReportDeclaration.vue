@@ -60,8 +60,8 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
-import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
 import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
+import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -101,7 +101,6 @@ export default {
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
     isAdjustmentReport() {
-      console.log(this.eceReport.version);
       return this.eceReport.version > 1;
     },
     currentDate() {
