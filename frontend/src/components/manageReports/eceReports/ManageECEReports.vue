@@ -99,15 +99,15 @@
           />
         </template>
         <template #item.reportingMonth="{ item }"> {{ formatMonthYearToString(item?.month, item?.year) }} </template>
-        <template #item.statusCode="{ item }">
-          <span class="report-status" :class="getStatusClass(item.statusCode)">
-            {{ getStatusText(item.statusCode) }}
+        <template #item.externalStatus="{ item }">
+          <span class="report-status" :class="getStatusClass(item.externalStatus)">
+            {{ getStatusText(item.externalStatus) }}
           </span>
         </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
-              v-if="showViewButton(item)"
+              v-if="canView(item)"
               :loading="loading"
               :primary="false"
               size="medium"
@@ -116,22 +116,22 @@
               View
             </AppButton>
             <AppButton
-              v-if="showEditButton(item)"
+              v-if="canEdit(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
               size="medium"
-              @click="goToECEReport(item.eceReportId)"
+              @click="edit(item)"
             >
               Edit
             </AppButton>
             <AppButton
-              v-if="showAdjustButton(item)"
+              v-if="canAdjust(item)"
               :loading="loading"
               :disabled="false"
               :primary="false"
               size="medium"
-              @click="adjust"
+              @click="adjust(item)"
             >
               Adjust
             </AppButton>
@@ -160,8 +160,30 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { buildFiscalYearMonths } from '@/utils/common.js';
-import { ECE_REPORT_STATUS_OPTIONS, ECE_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
+import {
+  ECE_REPORT_EXTERNAL_STATUSES,
+  ECE_REPORT_INTERNAL_STATUSES,
+  ECE_REPORT_STATUS_OPTIONS,
+  PATHS,
+} from '@/utils/constants.js';
 import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
+
+const EDIT_STATUSES = new Set([
+  ECE_REPORT_EXTERNAL_STATUSES.DRAFT,
+  ECE_REPORT_EXTERNAL_STATUSES.REJECTED,
+  ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED,
+]);
+
+const VIEW_STATUSES = new Set([
+  ECE_REPORT_EXTERNAL_STATUSES.APPROVED,
+  ECE_REPORT_EXTERNAL_STATUSES.EXPIRED,
+  ECE_REPORT_EXTERNAL_STATUSES.PAID,
+  ECE_REPORT_EXTERNAL_STATUSES.REJECTED,
+  ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED,
+  ECE_REPORT_EXTERNAL_STATUSES.WITH_MINISTRY,
+]);
+
+const ADJUST_STATUSES = new Set([ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID]);
 
 export default {
   name: 'ManageECEReports',
@@ -184,7 +206,7 @@ export default {
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
         { title: 'Version Number', key: 'version' },
-        { title: 'Status', key: 'statusCode' },
+        { title: 'Status', key: 'externalStatus' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       eceReports: [],
@@ -200,6 +222,15 @@ export default {
     ...mapState(useAppStore, ['lookupInfo', 'programYearList']),
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
+    canEdit() {
+      return (eceReport) => EDIT_STATUSES.has(eceReport?.externalStatus);
+    },
+    canView() {
+      return (eceReport) => VIEW_STATUSES.has(eceReport?.externalStatus);
+    },
+    canAdjust() {
+      return (eceReport) => !this.hasNextReportCreated(eceReport) && ADJUST_STATUSES.has(eceReport?.externalStatus);
+    },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
     },
@@ -212,7 +243,7 @@ export default {
           (item) => Number(item.month) === Number(report.month) && Number(item.year) === Number(report.year),
         );
         const matchesFacility = this.selectedFacilityIds?.includes(report.facilityId);
-        const matchesStatus = this.selectedStatuses?.includes(report.statusCode);
+        const matchesStatus = this.selectedStatuses?.includes(report.externalStatus);
         return matchesMonth && matchesFacility && matchesStatus;
       });
     },
@@ -307,19 +338,19 @@ export default {
     },
     getStatusClass(status) {
       switch (status) {
-        case ECE_REPORT_STATUSES.DRAFT:
+        case ECE_REPORT_EXTERNAL_STATUSES.DRAFT:
           return 'status-yellow';
-        case ECE_REPORT_STATUSES.SUBMITTED:
+        case ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED:
           return 'status-blue';
-        case ECE_REPORT_STATUSES.IN_REVIEW:
+        case ECE_REPORT_EXTERNAL_STATUSES.WITH_MINISTRY:
           return 'status-orange';
-        case ECE_REPORT_STATUSES.PAID:
+        case ECE_REPORT_EXTERNAL_STATUSES.PAID:
           return 'status-green';
-        case ECE_REPORT_STATUSES.REJECTED:
+        case ECE_REPORT_EXTERNAL_STATUSES.REJECTED:
           return 'status-red';
-        case ECE_REPORT_STATUSES.EXPIRED:
+        case ECE_REPORT_EXTERNAL_STATUSES.EXPIRED:
           return 'status-gray';
-        case ECE_REPORT_STATUSES.APPROVED:
+        case ECE_REPORT_EXTERNAL_STATUSES.APPROVED:
           return 'status-mint';
         default:
           return null;
@@ -334,26 +365,28 @@ export default {
           item.version > eceReport.version,
       );
     },
+    async edit(eceReport) {
+      try {
+        this.loading = true;
+        if (
+          eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED ||
+          eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED
+        ) {
+          await ECEReportService.updateECEReport(eceReport.eceReportId, {
+            statusCode: ECE_REPORT_INTERNAL_STATUSES.DRAFT,
+          });
+        }
+        this.goToECEReport(eceReport.eceReportId);
+      } catch (e) {
+        console.error(e);
+        this.setFailureAlert('Unable to open report for editing.');
+      } finally {
+        this.loading = false;
+      }
+    },
     // TODO (vietle-cgi): Implement Adjust functionality
     adjust() {
       window.alert('Adjust button is clicked');
-    },
-    // TODO: Implement ECE Reports permission
-    showAdjustButton(eceReport) {
-      return (
-        !this.hasNextReportCreated(eceReport) &&
-        [ECE_REPORT_STATUSES.APPROVED, ECE_REPORT_STATUSES.PAID].includes(eceReport.statusCode)
-      );
-    },
-    showEditButton(eceReport) {
-      return (
-        eceReport.statusCode === ECE_REPORT_STATUSES.DRAFT || eceReport.statusCode === ECE_REPORT_STATUSES.REJECTED
-      );
-    },
-    showViewButton(eceReport) {
-      return (
-        eceReport.statusCode !== ECE_REPORT_STATUSES.DRAFT && eceReport.statusCode !== ECE_REPORT_STATUSES.REJECTED
-      );
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
