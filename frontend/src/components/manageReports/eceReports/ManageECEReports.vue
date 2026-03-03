@@ -111,7 +111,7 @@
               :loading="loading"
               :primary="false"
               size="medium"
-              @click="goToECEReport(item.eceReportId)"
+              @click="goToECEReport(item.eceReportId, item.submissionDeadline)"
             >
               View
             </AppButton>
@@ -166,7 +166,8 @@ import {
   ECE_REPORT_STATUS_OPTIONS,
   PATHS,
 } from '@/utils/constants.js';
-import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
+import { formatMonthYearToString, formatUTCDate, formatYearMonthYYYYMM } from '@/utils/format';
+import { getSubmissionDeadlineUTCDate } from '@/utils/eceReport';
 
 const EDIT_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.DRAFT,
@@ -183,7 +184,7 @@ const VIEW_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.WITH_MINISTRY,
 ]);
 
-const ADJUST_STATUSES = new Set([ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID]);
+const ADJUST_STATUSES = new Set([ECE_REPORT_EXTERNAL_STATUSES.PAID]);
 
 export default {
   name: 'ManageECEReports',
@@ -205,6 +206,7 @@ export default {
         { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
+        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Version Number', key: 'version' },
         { title: 'Status', key: 'externalStatus' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
@@ -289,6 +291,7 @@ export default {
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
           report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
+          report.submissionDeadline = formatUTCDate(getSubmissionDeadlineUTCDate(report.year, report.month));
         }
         this.resetFilters();
         this.sortECEReports();
@@ -326,10 +329,10 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
-    goToECEReport(eceReportId) {
+    goToECEReport(eceReportId, submissionDeadline) {
       this.$router.push({
         path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`,
-        state: { publicSector: this.publicSector },
+        state: { publicSector: this.publicSector, submissionDeadline },
       });
     },
     getStatusText(statusCode) {
