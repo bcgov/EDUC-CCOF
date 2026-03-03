@@ -106,9 +106,8 @@ export default {
     currentDate() {
       const today = formatUTCtoPacificTime(this.userInfo?.serverTime);
       if (!today) return null;
-      const month = String(today.month).padStart(2, '0');
-      const day = String(today.day).padStart(2, '0');
-      return `${today.year}-${month}-${day}`;
+      const date = new Date(Date.UTC(today.year, today.month - 1, today.day));
+      return formatUTCDate(date);
     },
     isSubmitDisabled() {
       return (
