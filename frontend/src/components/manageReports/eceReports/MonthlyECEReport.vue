@@ -246,10 +246,14 @@ export default {
         this.calculate();
       } catch (error) {
         console.error(error);
+        if (error.response?.status === 503) {
+          this.setWarningAlert('The report is still being finalized. Please try again in a few seconds.');
+          this.previous();
+          return;
+        }
         this.setFailureAlert('Failed to load ECE report');
-      } finally {
-        this.loading = false;
       }
+      this.loading = false;
     },
     async loadECEFacilityStaff() {
       this.eceFacilityStaff = await ECEStaffService.getECEFacilityStaff({

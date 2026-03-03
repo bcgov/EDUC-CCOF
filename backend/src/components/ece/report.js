@@ -1,6 +1,6 @@
 'use strict';
 
-const { buildFilterQuery, getOperation, getUserGuid, padString, patchOperationWithObjectId, postOperation } = require('../utils');
+const { buildFilterQuery, getOperation, getUserGuid, padString, patchOperationWithObjectId, postOperation, sleep } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const { createRawECEReportStaff } = require('./staff');
 const log = require('../logger');
@@ -58,10 +58,32 @@ async function getRawECEReport(eceReportId) {
   return response;
 }
 
+// CMS sets rates shortly after report creation; this can take a few seconds.
+// Retry briefly if rates are not yet available to avoid returning incomplete data.
 async function getECEReport(req, res) {
+  const MAX_RETRIES = 5;
+  const DELAY_MS = 1000; // wait for 1 second before retry
+  const { eceReportId } = req.params;
   try {
-    const response = await getRawECEReport(req.params.eceReportId);
-    return res.status(HttpStatus.OK).json(mapECEReportForFront(response));
+    let attempt = 0;
+    let report;
+    while (attempt < MAX_RETRIES) {
+      attempt++;
+      const response = await getRawECEReport(eceReportId);
+      report = mapECEReportForFront(response);
+      const hasRates = report?.weRate != null && report?.sbRate != null;
+      if (hasRates) {
+        return res.status(HttpStatus.OK).json(report);
+      }
+      if (attempt < MAX_RETRIES) {
+        await sleep(DELAY_MS);
+      }
+      log.verbose(`Rates not ready for report ${eceReportId}. Attempt ${attempt}/${MAX_RETRIES}`);
+    }
+    return res.status(HttpStatus.SERVICE_UNAVAILABLE).json({
+      code: 'RATES_PENDING',
+      message: 'Rates are still being processed. Please try again shortly.',
+    });
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
