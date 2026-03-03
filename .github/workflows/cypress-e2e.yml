@@ -32,6 +32,7 @@ jobs:
           CYPRESS_PORTAL_USERNAME: ${{ secrets.CYPRESS_PORTAL_USERNAME }}
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
           CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
