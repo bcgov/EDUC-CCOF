@@ -229,7 +229,7 @@ export default {
       return (eceReport) => VIEW_STATUSES.has(eceReport?.externalStatus);
     },
     canAdjust() {
-      return (eceReport) => !this.hasNextReportCreated(eceReport) && ADJUST_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) => !eceReport.hasNextReportCreated && ADJUST_STATUSES.has(eceReport?.externalStatus);
     },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
@@ -355,15 +355,6 @@ export default {
         default:
           return null;
       }
-    },
-    hasNextReportCreated(eceReport) {
-      return this.eceReports?.some(
-        (item) =>
-          item.facilityId === eceReport.facilityId &&
-          item.month === eceReport.month &&
-          item.year === eceReport.year &&
-          item.version > eceReport.version,
-      );
     },
     async edit(eceReport) {
       try {

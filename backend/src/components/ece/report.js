@@ -49,9 +49,6 @@ async function createECEReport(req, res) {
 }
 
 async function getRawECEReport(eceReportId) {
-  if (!eceReportId) {
-    throw new Error('eceReportId is required.');
-  }
   const response = await getOperation(
     `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,statuscode)`,
   );
@@ -144,22 +141,31 @@ async function addStaffFromParentReportToAdjustmentReport(staffFromParentReport,
   await Promise.all(mappedStaff.map(async (staff) => await createRawECEReportStaff(staff)));
 }
 
-async function createAdjustmentReport(req, res) {
+async function createAdjustmentReport(report) {
+  const baseReportId = isAdjustmentReport(report?.ccof_report_type) ? report?._ccof_base_report_id_value : report?.ccof_ece_monthly_reportid;
+  const payload = {
+    'ccof_organization@odata.bind': `/accounts(${report._ccof_organization_value})`,
+    'ccof_Facility@odata.bind': `/accounts(${report._ccof_facility_value})`,
+    'ccof_fiscal_year@odata.bind': `/ccof_program_years(${report._ccof_fiscal_year_value})`,
+    'ccof_base_report_id@odata.bind': `/ccof_ece_monthly_reports(${baseReportId})`,
+    ccof_month: String(report.ccof_month),
+    ccof_year: String(report.ccof_year),
+    ccof_report_type: ECE_REPORT_TYPES.ADJUSTMENT,
+    ccof_version: Number(report.ccof_version) + 1,
+  };
+  const adjustmentReportId = await postOperation('ccof_ece_monthly_reports', payload);
+  return adjustmentReportId;
+}
+
+async function adjustECEReport(req, res) {
   try {
-    const report = await getRawECEReport(req.params.eceReportId);
-    const baseReportId = isAdjustmentReport(report?.ccof_report_type) ? report?._ccof_base_report_id_value : report?.ccof_ece_monthly_reportid;
-    const payload = {
-      'ccof_organization@odata.bind': `/accounts(${report._ccof_organization_value})`,
-      'ccof_Facility@odata.bind': `/accounts(${report._ccof_facility_value})`,
-      'ccof_fiscal_year@odata.bind': `/ccof_program_years(${report._ccof_fiscal_year_value})`,
-      'ccof_base_report_id@odata.bind': `/ccof_ece_monthly_reports(${baseReportId})`,
-      ccof_month: String(report.ccof_month),
-      ccof_year: String(report.ccof_year),
-      ccof_report_type: ECE_REPORT_TYPES.ADJUSTMENT,
-      ccof_version: Number(report.ccof_version) + 1,
-    };
+    const { eceReportId } = req.params;
+    await patchOperationWithObjectId('ccof_ece_monthly_reports', eceReportId, {
+      ccof_has_next_report_created: true,
+    });
+    const report = await getRawECEReport(eceReportId);
+    const adjustmentReportId = await createAdjustmentReport(report);
     const staffFromParentReport = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report;
-    const adjustmentReportId = await postOperation('ccof_ece_monthly_reports', payload);
     await addStaffFromParentReportToAdjustmentReport(staffFromParentReport, adjustmentReportId);
     return res.status(HttpStatus.CREATED).json(adjustmentReportId);
   } catch (e) {
@@ -167,4 +173,5 @@ async function createAdjustmentReport(req, res) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
-module.exports = { createAdjustmentReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport };
+
+module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport };

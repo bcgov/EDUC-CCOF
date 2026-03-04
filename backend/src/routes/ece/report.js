@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_STATUS_CODES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { createAdjustmentReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { adjustECEReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
@@ -127,7 +127,7 @@ router.post(
   param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
-    return createAdjustmentReport(req, res);
+    return adjustECEReport(req, res);
   },
 );
 

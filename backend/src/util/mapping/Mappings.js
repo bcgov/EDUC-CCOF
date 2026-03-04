@@ -913,6 +913,7 @@ const ECEReportMappings = [
   { back: 'ccof_ece_rate', front: 'weRate' },
   { back: 'ccof_ece_sb_rate', front: 'sbRate' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
+  { back: 'ccof_has_next_report_created', front: 'hasNextReportCreated' },
   { back: 'statuscode', front: 'statusCode' },
   { back: 'ccof_external_status', front: 'externalStatus' },
 ];
