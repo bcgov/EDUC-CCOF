@@ -28,7 +28,7 @@
                 v-model="item.totalHoursWorked"
                 :decimal="true"
                 :disabled="readonly"
-                :rules="totalHoursWorkedRules"
+                :rules="getTotalHoursWorkedRules(item)"
                 hide-details="auto"
                 max-width="120"
                 variant="outlined"
@@ -72,8 +72,61 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': isReportApproved }">
-          <v-table>
+        <div
+          class="calculation-summary px-4 ml-lg-auto"
+          :class="{
+            'calculation-summary--verified': isReportApproved,
+            'calculation-summary--adjustment': isAdjustmentReport,
+          }"
+        >
+          <v-table v-if="isAdjustmentReport">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col" class="font-weight-bold text-right">Current</th>
+                <th scope="col" class="font-weight-bold text-right">Prev Approved</th>
+                <th scope="col" class="font-weight-bold text-right">Difference</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="font-weight-bold">WE Subtotal</th>
+                <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
+                <td class="text-right">
+                  {{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}
+                </td>
+
+                <td class="text-right">
+                  {{ formatCurrency(reportTotals.weSubtotal - previousReportApprovedAmounts.approvedWeSubtotal) }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" class="font-weight-bold">SB Subtotal</th>
+                <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
+                <td class="text-right">
+                  {{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}
+                </td>
+
+                <td class="text-right">
+                  {{ formatCurrency(reportTotals.sbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal) }}
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" class="font-weight-bold">Total</th>
+
+                <td class="text-right font-weight-bold">
+                  {{ formatCurrency(reportTotals.total) }}
+                </td>
+                <td class="text-right font-weight-bold">
+                  {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
+                </td>
+                <td class="text-right font-weight-bold">
+                  {{ formatCurrency(reportTotals.total - previousReportApprovedAmounts.approvedTotalAmount) }}
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+          <v-table v-else>
             <thead>
               <tr>
                 <th scope="col"></th>
@@ -178,6 +231,7 @@ export default {
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
       publicSector: globalThis.history?.state?.publicSector ?? null,
+      previousReportApprovedAmounts: {},
     };
   },
   computed: {
@@ -204,17 +258,13 @@ export default {
     eceFacilityStaffById() {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
+    isAdjustmentReport() {
+      return this.eceReport?.isAdjustment;
+    },
     isReportApproved() {
       return [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
         this.eceReport?.externalStatus,
       );
-    },
-    totalHoursWorkedRules() {
-      const maxHoursRule = rules.max(195, 'Hours cannot be more than 195');
-      if (this.eceReport?.isAdjustment) {
-        return [maxHoursRule];
-      }
-      return [rules.greaterThan(0, 'Hours must be greater than 0'), maxHoursRule];
     },
   },
   async created() {
@@ -246,6 +296,11 @@ export default {
           };
         });
         this.initializeStaffChangeState();
+        if (this.isAdjustmentReport) {
+          this.previousReportApprovedAmounts = await ECEReportService.getECEReportApprovedAmounts(
+            this.eceReport.previousReportId,
+          );
+        }
         this.calculate();
       } catch (error) {
         console.error(error);
@@ -266,6 +321,14 @@ export default {
     initializeStaffChangeState() {
       this.eceReportStaffToDelete = [];
       this.originalECEReportStaff = deepCloneObject(this.eceReportStaff);
+    },
+    getTotalHoursWorkedRules(staff) {
+      const maxHoursRule = rules.max(195, 'Hours cannot be more than 195');
+      const greaterThanZeroRule = rules.greaterThan(0, 'Hours must be greater than 0');
+      if (this.isAdjustmentReport && staff.isInheritedFromParentReport) {
+        return [...rules.required, maxHoursRule];
+      }
+      return [greaterThanZeroRule, maxHoursRule];
     },
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
@@ -437,6 +500,9 @@ export default {
 .calculation-summary {
   font-size: 1.1rem;
   max-width: 500px;
+}
+.calculation-summary--adjustment {
+  max-width: 800px;
 }
 .calculation-summary--verified {
   max-width: 700px;

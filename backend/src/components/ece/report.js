@@ -87,6 +87,16 @@ async function getECEReport(req, res) {
   }
 }
 
+async function getECEReportApprovedAmounts(req, res) {
+  try {
+    const response = await getOperation(`ccof_ece_monthly_reports(${req.params.eceReportId})?$select=ccof_sb_subtotal,ccof_we_subtotal,ccof_total_amount`);
+    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ECEReportMappings).toJSON());
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
 async function getECEReports(req, res) {
   try {
     const response = await getOperation(`ccof_ece_monthly_reports?${buildFilterQuery(req.query, ECEReportMappings)}`);
@@ -174,4 +184,4 @@ async function adjustECEReport(req, res) {
   }
 }
 
-module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport };
+module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReportApprovedAmounts, getECEReports, submitECEReport, updateECEReport };

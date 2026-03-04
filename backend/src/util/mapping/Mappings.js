@@ -902,6 +902,7 @@ const PaymentMappings = [
 
 const ECEReportMappings = [
   { back: 'ccof_ece_monthly_reportid', front: 'eceReportId' },
+  { back: '_ccof_base_report_id_value', front: 'previousReportId' },
   { back: 'ccof_name', front: 'eceReportNumber' },
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
@@ -912,6 +913,9 @@ const ECEReportMappings = [
   { back: 'ccof_version', front: 'version' },
   { back: 'ccof_ece_rate', front: 'weRate' },
   { back: 'ccof_ece_sb_rate', front: 'sbRate' },
+  { back: 'ccof_sb_subtotal', front: 'approvedSbSubtotal' },
+  { back: 'ccof_we_subtotal', front: 'approvedWeSubtotal' },
+  { back: 'ccof_total_amount', front: 'approvedTotalAmount' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'ccof_has_next_report_created', front: 'hasNextReportCreated' },
   { back: 'statuscode', front: 'statusCode' },

@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_STATUS_CODES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { adjustECEReport, createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { adjustECEReport, createECEReport, getECEReport, getECEReports, getECEReportApprovedAmounts, submitECEReport, updateECEReport } = require('../../components/ece/report');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
@@ -85,6 +85,19 @@ router.get(
     return getECEReport(req, res);
   },
 );
+
+// TODO: Implement ECE Reports permission
+router.get(
+  '/:eceReportId/approved-amounts',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  [param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEReportApprovedAmounts(req, res);
+  },
+);
+
 // TODO: Implement ECE Reports permission
 router.patch(
   '/:eceReportId',
