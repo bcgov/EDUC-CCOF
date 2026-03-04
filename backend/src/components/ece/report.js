@@ -50,7 +50,7 @@ async function createECEReport(req, res) {
 
 async function getRawECEReport(eceReportId) {
   const response = await getOperation(
-    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,statuscode)`,
+    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode)`,
   );
   return response;
 }
@@ -136,7 +136,7 @@ async function addStaffFromParentReportToAdjustmentReport(staffFromParentReport,
     eceReportId: adjustmentReportId,
     eceStaffId: staff._ccof_ece_staff_value,
     totalHoursWorked: staff.statuscode === ECE_REPORT_STAFF_STATUS_CODES.VERIFIED ? staff.ccof_verified_hours : staff.ccof_total_hours_worked,
-    // isInheritedFromParentReport: true,
+    isInheritedFromParentReport: true,
   }));
   await Promise.all(mappedStaff.map(async (staff) => await createRawECEReportStaff(staff)));
 }

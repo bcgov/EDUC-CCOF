@@ -106,9 +106,9 @@ async function createRawECEReportStaff(staff) {
     'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${staff.eceStaffId})`,
     ccof_total_hours_worked: staff.totalHoursWorked,
   };
-  // if (staff.isInheritedFromParentReport) {
-  //   payload.ccof_is_inherited_from_parent_report = staff.isInheritedFromParentReport;
-  // }
+  if (staff.isInheritedFromParentReport) {
+    payload.ccof_is_inherited_from_parent_report = staff.isInheritedFromParentReport;
+  }
   console.log(payload);
   await postOperation('ccof_ece_staff_informations', payload);
 }

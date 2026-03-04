@@ -28,10 +28,7 @@
                 v-model="item.totalHoursWorked"
                 :decimal="true"
                 :disabled="readonly"
-                :rules="[
-                  rules.greaterThan(0, 'Hours must be greater than 0'),
-                  rules.max(195, 'Hours cannot be more than 195'),
-                ]"
+                :rules="totalHoursWorkedRules"
                 hide-details="auto"
                 max-width="120"
                 variant="outlined"
@@ -212,9 +209,15 @@ export default {
         this.eceReport?.externalStatus,
       );
     },
+    totalHoursWorkedRules() {
+      const maxHoursRule = rules.max(195, 'Hours cannot be more than 195');
+      if (this.eceReport?.isAdjustment) {
+        return [maxHoursRule];
+      }
+      return [rules.greaterThan(0, 'Hours must be greater than 0'), maxHoursRule];
+    },
   },
   async created() {
-    this.rules = rules;
     await this.loadData();
     this.$refs.form?.resetValidation();
   },
