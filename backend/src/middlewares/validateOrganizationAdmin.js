@@ -10,12 +10,12 @@ module.exports = async function validateOrganizationAdmin(req, res, next) {
     return next();
   }
 
-  const organizationId = req.params.organizationId ?? req.query.organizationId ?? req.body.organizationId
-  const userOrganizationId = req.session?.passport?.user?.organizationId
+  const organizationId = req.params.organizationId ?? req.query.organizationId ?? req.body.organizationId;
+  const userOrganizationId = req.session?.passport?.user?.organizationId;
 
   if (!organizationId || !userOrganizationId || organizationId !== userOrganizationId) {
-    return res.sendStatus(HttpStatus.UNAUTHORIZED)
+    return res.sendStatus(HttpStatus.UNAUTHORIZED);
   }
 
-  next()
+  next();
 };
