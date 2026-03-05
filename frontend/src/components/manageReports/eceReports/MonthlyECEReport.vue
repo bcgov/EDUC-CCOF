@@ -73,51 +73,103 @@
         </v-data-table>
         <v-divider class="mt-2" />
         <div class="calculation-summary px-4 ml-lg-auto" :class="calculationSummaryClass">
-          <v-table v-if="isAdjustmentReport && !isReportApproved">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col" class="font-weight-bold text-right">Current $</th>
-                <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
-                <th scope="col" class="font-weight-bold text-right">Difference $</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                <td class="text-right">
-                  {{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}
-                </td>
+          <template v-if="isAdjustmentReport">
+            <v-table v-if="isReportApproved">
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col" class="font-weight-bold text-right">Reported $</th>
+                  <th scope="col" class="font-weight-bold text-right">Approved $</th>
+                  <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
+                  <th scope="col" class="font-weight-bold text-right">Difference $</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row" class="font-weight-bold">WE Subtotal</th>
+                  <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
+                  <td class="text-right">{{ formatCurrency(eceReport.approvedWeSubtotal) }}</td>
+                  <td class="text-right">{{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}</td>
+                  <td class="text-right">
+                    {{
+                      formatCurrency(eceReport.approvedWeSubtotal - previousReportApprovedAmounts.approvedWeSubtotal)
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" class="font-weight-bold">SB Subtotal</th>
+                  <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
+                  <td class="text-right">{{ formatCurrency(eceReport.approvedSbSubtotal) }}</td>
+                  <td class="text-right">{{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}</td>
+                  <td class="text-right">
+                    {{
+                      formatCurrency(eceReport.approvedSbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal)
+                    }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" class="font-weight-bold">Total</th>
+                  <td class="text-right font-weight-bold">
+                    {{ formatCurrency(reportTotals.total) }}
+                  </td>
+                  <td class="text-right font-weight-bold">{{ formatCurrency(eceReport.approvedTotalAmount) }}</td>
+                  <td class="text-right font-weight-bold">
+                    {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
+                  </td>
+                  <td class="text-right font-weight-bold">
+                    {{
+                      formatCurrency(eceReport.approvedTotalAmount - previousReportApprovedAmounts.approvedTotalAmount)
+                    }}
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+            <v-table v-else>
+              <thead>
+                <tr>
+                  <th scope="col"></th>
+                  <th scope="col" class="font-weight-bold text-right">Current $</th>
+                  <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
+                  <th scope="col" class="font-weight-bold text-right">Difference $</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row" class="font-weight-bold">WE Subtotal</th>
+                  <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
+                  <td class="text-right">
+                    {{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}
+                  </td>
 
-                <td class="text-right">
-                  {{ formatCurrency(reportTotals.weSubtotal - previousReportApprovedAmounts.approvedWeSubtotal) }}
-                </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                <td class="text-right">
-                  {{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}
-                </td>
-                <td class="text-right">
-                  {{ formatCurrency(reportTotals.sbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal) }}
-                </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">Total</th>
-                <td class="text-right font-weight-bold">
-                  {{ formatCurrency(reportTotals.total) }}
-                </td>
-                <td class="text-right font-weight-bold">
-                  {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
-                </td>
-                <td class="text-right font-weight-bold">
-                  {{ formatCurrency(reportTotals.total - previousReportApprovedAmounts.approvedTotalAmount) }}
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
+                  <td class="text-right">
+                    {{ formatCurrency(reportTotals.weSubtotal - previousReportApprovedAmounts.approvedWeSubtotal) }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" class="font-weight-bold">SB Subtotal</th>
+                  <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
+                  <td class="text-right">
+                    {{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}
+                  </td>
+                  <td class="text-right">
+                    {{ formatCurrency(reportTotals.sbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal) }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row" class="font-weight-bold">Total</th>
+                  <td class="text-right font-weight-bold">
+                    {{ formatCurrency(reportTotals.total) }}
+                  </td>
+                  <td class="text-right font-weight-bold">
+                    {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
+                  </td>
+                  <td class="text-right font-weight-bold">
+                    {{ formatCurrency(reportTotals.total - previousReportApprovedAmounts.approvedTotalAmount) }}
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </template>
           <v-table v-else>
             <thead>
               <tr>
