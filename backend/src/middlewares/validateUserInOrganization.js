@@ -5,7 +5,7 @@ const { isIdirUser } = require('../components/utils');
  * Validates that the admin user editing an organization belongs to that
  * organization.
  */
-module.exports = async function validateOrganizationAdmin(req, res, next) {
+module.exports = async function validateUserInOrganization(req, res, next) {
   if (isIdirUser(req)) {
     return next();
   }
