@@ -61,7 +61,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
 import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
-import { formatUTCDate, formatUTCDateToPacificDate, formatUTCtoPacificTime } from '@/utils/format';
+import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -100,14 +100,14 @@ export default {
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
     currentDate() {
-      return formatUTCDateToPacificDate(this.userInfo?.serverTime);
+      return formatUTCDate(this.userInfo?.serverTime);
     },
     isSubmitDisabled() {
       const isAfterSubmissionDeadline = this.currentDate > this.submissionDeadline;
       return (
         !this.hasReportingMonthEnded ||
         isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) ||
-        (!this.eceReport.isAdjustment && this.currentDate && this.submissionDeadline && isAfterSubmissionDeadline) ||
+        (!this.eceReport.isAdjustment && isAfterSubmissionDeadline) ||
         this.isMinistryUser
       );
     },
