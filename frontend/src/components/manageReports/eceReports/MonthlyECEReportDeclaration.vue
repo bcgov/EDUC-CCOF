@@ -61,7 +61,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
 import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
-import { formatUTCDate, formatUTCtoPacificTime, formatUTCDateToPacificDate } from '@/utils/format';
+import { formatUTCDate, formatUTCDateToPacificDate, formatUTCtoPacificTime } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -100,7 +100,6 @@ export default {
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
     currentDate() {
-      console.log(formatUTCDateToPacificDate(this.userInfo?.serverTime));
       return formatUTCDateToPacificDate(this.userInfo?.serverTime);
     },
     isSubmitDisabled() {
