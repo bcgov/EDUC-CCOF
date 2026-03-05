@@ -16,7 +16,7 @@
             <v-col cols="12" md="8" lg="10" xl="8" class="d-flex justify-start">
               <FiscalYearSlider
                 :always-display="true"
-                :default-program-year-id="currentProgramYearId"
+                :default-program-year-id="selectedProgramYearId"
                 :readonly="loading"
                 @select-program-year="selectProgramYear"
               />
@@ -208,16 +208,16 @@ export default {
       return this.getFacilityListForPCFByProgramYearId(this.selectedProgramYearId);
     },
     allReportingMonths() {
-      const programYear = this.lookupInfo?.programYear?.list?.find(
-        (year) => year.programYearId === this.selectedProgramYearId,
-      );
-      return buildFiscalYearMonths(programYear?.intakeStart, programYear?.intakeEnd);
-    },
-    currentProgramYearId() {
-      return this.programYearList?.newApp?.programYearId;
+      try {
+        return buildFiscalYearMonths(this.selectedProgramYear?.financialYear);
+      } catch (error) {
+        console.error(error);
+        this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
+        return [];
+      }
     },
     selectedProgramYearId() {
-      return this.selectedProgramYear ? this.selectedProgramYear.programYearId : this.currentProgramYearId;
+      return this.selectedProgramYear?.programYearId;
     },
     filteredEnrolmentReports() {
       if (isEmpty(this.enrolmentReports)) return [];
@@ -239,6 +239,7 @@ export default {
   },
   async created() {
     this.PATHS = PATHS;
+    this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
     await this.loadData();
   },
   methods: {
@@ -292,7 +293,9 @@ export default {
       });
     },
     selectProgramYear(programYear) {
-      this.selectedProgramYear = programYear;
+      this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
+        (item) => item.programYearId === programYear.programYearId,
+      );
     },
     goToEnrolmentReport(enrolmentReportId) {
       this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`);

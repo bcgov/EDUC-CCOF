@@ -3,9 +3,9 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { createECEReport, getECEReport, getECEReports, submitECEReport } = require('../../components/ece/report');
-const { checkSchema, param, query, validationResult } = require('express-validator');
+const { ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
+const { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 
 const createECEReportSchema = {
   organizationId: {
@@ -52,6 +52,24 @@ const createECEReportSchema = {
     },
   },
 };
+const updateECEReportSchema = {
+  statusCode: {
+    in: ['body'],
+    optional: true,
+    isIn: {
+      options: [Object.values(ECE_REPORT_STATUS_CODES)],
+      errorMessage: '[statusCode] is invalid',
+    },
+  },
+  version: {
+    in: ['body'],
+    optional: true,
+    isInt: {
+      options: { min: 1 },
+      errorMessage: '[version] must be a positive integer',
+    },
+  },
+};
 
 // TODO: Implement ECE Reports permission
 router.get(
@@ -77,6 +95,21 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return getECEReport(req, res);
+  },
+);
+// TODO: Implement ECE Reports permission
+router.patch(
+  '/:eceReportId',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  oneOf([body('statusCode').exists(), body('version').exists()], {
+    message: 'At least one updatable field is required',
+  }),
+  checkSchema(updateECEReportSchema),
+  (req, res) => {
+    validationResult(req).throw();
+    return updateECEReport(req, res);
   },
 );
 

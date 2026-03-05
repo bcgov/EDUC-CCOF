@@ -452,6 +452,7 @@ const ProgramYearMappings = [
   { back: 'ccof_declarationbstart', front: 'declarationbStart' },
   { back: 'ccof_intakeperiodend', front: 'intakeEnd' },
   { back: 'ccof_intakeperiodstart', front: 'intakeStart' },
+  { back: 'ccof_financial_year', front: 'financialYear' },
   { back: 'ccof_name', front: 'name' },
   { back: 'ccof_programyearnumber', front: 'order' },
   { back: 'statuscode', front: 'status' },
@@ -913,6 +914,7 @@ const ECEReportMappings = [
   { back: 'ccof_ece_sb_rate', front: 'sbRate' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_external_status', front: 'externalStatus' },
 ];
 
 const ECEReportStaffMappings = [

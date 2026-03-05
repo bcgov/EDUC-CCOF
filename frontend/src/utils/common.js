@@ -435,13 +435,13 @@ export function buildQueryString(query) {
  * @param {string|Date} fiscalYearEnd - Fiscal year end date
  * @returns {Array<{ label: string, value: { month: number, year: number } }>}
  */
-export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
-  if (!fiscalYearStart || !fiscalYearEnd) {
-    return [];
+export function buildFiscalYearMonths(financialYear) {
+  const endYear = Number(financialYear);
+  if (!endYear || Number.isNaN(endYear)) {
+    throw new Error(`Invalid financial year: ${financialYear}`);
   }
+  const startYear = endYear - 1;
   const months = [];
-  const startYear = moment(fiscalYearStart).year();
-  const endYear = moment(fiscalYearEnd).year();
   // April–December (start year)
   for (let month = 4; month <= 12; month++) {
     months.push({
