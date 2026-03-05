@@ -33,27 +33,27 @@
                 max-width="120"
                 variant="outlined"
               />
-              <p v-if="showStaffVerifiedAmounts(item)">
+              <p v-if="showStaffApprovedAmounts(item)">
                 <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
               </p>
             </div>
           </template>
           <template #item.weAmount="{ item }">
             <p>{{ formatCurrency(item.weAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedWeAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedWeAmount) }}
             </p>
           </template>
           <template #item.statutoryBenefitAmount="{ item }">
             <p>{{ formatCurrency(item.statutoryBenefitAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedSbAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedSbAmount) }}
             </p>
           </template>
           <template #item.totalAmount="{ item }">
             <p>{{ formatCurrency(item.totalAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedTotalAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedTotalAmount) }}
             </p>
           </template>
           <template #item.actions="{ item }">
@@ -72,20 +72,14 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div
-          class="calculation-summary px-4 ml-lg-auto"
-          :class="{
-            'calculation-summary--verified': isReportApproved,
-            'calculation-summary--adjustment': isAdjustmentReport,
-          }"
-        >
-          <v-table v-if="isAdjustmentReport">
+        <div class="calculation-summary px-4 ml-lg-auto" :class="calculationSummaryClass">
+          <v-table v-if="isAdjustmentReport && !isReportApproved">
             <thead>
               <tr>
                 <th scope="col"></th>
-                <th scope="col" class="font-weight-bold text-right">Current</th>
-                <th scope="col" class="font-weight-bold text-right">Prev Approved</th>
-                <th scope="col" class="font-weight-bold text-right">Difference</th>
+                <th scope="col" class="font-weight-bold text-right">Current $</th>
+                <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
+                <th scope="col" class="font-weight-bold text-right">Difference $</th>
               </tr>
             </thead>
             <tbody>
@@ -106,14 +100,12 @@
                 <td class="text-right">
                   {{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}
                 </td>
-
                 <td class="text-right">
                   {{ formatCurrency(reportTotals.sbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">Total</th>
-
                 <td class="text-right font-weight-bold">
                   {{ formatCurrency(reportTotals.total) }}
                 </td>
@@ -130,8 +122,8 @@
             <thead>
               <tr>
                 <th scope="col"></th>
-                <th scope="col" class="font-weight-bold text-right">Reported</th>
-                <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved</th>
+                <th scope="col" class="font-weight-bold text-right">Reported $</th>
+                <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved $</th>
               </tr>
             </thead>
             <tbody>
@@ -139,14 +131,14 @@
                 <th scope="row" class="font-weight-bold">WE Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
                 <td v-if="isReportApproved" class="text-right">
-                  {{ formatCurrency(reportVerifiedTotals.weSubtotal) }}
+                  {{ formatCurrency(eceReport.approvedWeSubtotal) }}
                 </td>
               </tr>
               <tr>
                 <th scope="row" class="font-weight-bold">SB Subtotal</th>
                 <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
                 <td v-if="isReportApproved" class="text-right">
-                  {{ formatCurrency(reportVerifiedTotals.sbSubtotal) }}
+                  {{ formatCurrency(eceReport.approvedSbSubtotal) }}
                 </td>
               </tr>
               <tr>
@@ -155,7 +147,7 @@
                   {{ formatCurrency(reportTotals.total) }}
                 </td>
                 <td v-if="isReportApproved" class="text-right font-weight-bold">
-                  {{ formatCurrency(reportVerifiedTotals.total) }}
+                  {{ formatCurrency(eceReport.approvedTotalAmount) }}
                 </td>
               </tr>
             </tbody>
@@ -215,7 +207,6 @@ export default {
       eceReport: null,
       addDialogOpen: false,
       reportTotals: {},
-      reportVerifiedTotals: {},
       eceFacilityStaff: [],
       originalECEReportStaff: [],
       eceReportStaff: [],
@@ -265,6 +256,15 @@ export default {
       return [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
         this.eceReport?.externalStatus,
       );
+    },
+    calculationSummaryClass() {
+      if (this.isReportApproved) {
+        return 'calculation-summary--approved';
+      }
+      if (this.isAdjustmentReport) {
+        return 'calculation-summary--adjustment';
+      }
+      return '';
     },
   },
   async created() {
@@ -343,7 +343,7 @@ export default {
     isStaffVerified(staff) {
       return staff?.statusCode === ECE_REPORT_STAFF_STATUSES.VERIFIED;
     },
-    showStaffVerifiedAmounts(staff) {
+    showStaffApprovedAmounts(staff) {
       return this.isReportApproved && this.isStaffVerified(staff);
     },
     calculateReportedAmounts(weRate, sbRate) {
@@ -370,40 +370,12 @@ export default {
       this.reportTotals = { weSubtotal, sbSubtotal, total };
     },
 
-    calculateVerifiedAmounts(weRate, sbRate) {
-      let weSubtotal = 0;
-      let sbSubtotal = 0;
-      let total = 0;
-
-      for (let staff of this.eceReportStaff) {
-        if (!this.isStaffVerified(staff)) continue;
-        const hours = formatDecimalNumberToNumber(staff.verifiedHours) ?? 0;
-
-        const weAmount = weRate * hours;
-        const sbAmount = sbRate * hours;
-        const totalAmount = weAmount + sbAmount;
-
-        staff.verifiedWeAmount = weAmount;
-        staff.verifiedSbAmount = sbAmount;
-        staff.verifiedTotalAmount = totalAmount;
-
-        weSubtotal += weAmount;
-        sbSubtotal += sbAmount;
-        total += totalAmount;
-      }
-
-      this.reportVerifiedTotals = { weSubtotal, sbSubtotal, total };
-    },
-
     calculate() {
       const { weRate, sbRate } = this.rates;
       if (weRate == null || sbRate == null) {
         throw new Error('Missing WE or SB rate for calculation.');
       }
       this.calculateReportedAmounts(weRate, sbRate);
-      if (this.isReportApproved) {
-        this.calculateVerifiedAmounts(weRate, sbRate);
-      }
     },
 
     addECEStaff(newStaff) {
@@ -504,7 +476,7 @@ export default {
 .calculation-summary--adjustment {
   max-width: 800px;
 }
-.calculation-summary--verified {
+.calculation-summary--approved {
   max-width: 700px;
 }
 </style>
