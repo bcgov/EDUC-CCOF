@@ -272,3 +272,15 @@ export function formatName(value) {
   if (!value) return '';
   return value.toLowerCase().replace(/(^|[\s\-'\u2019])\S/g, (match) => match.toUpperCase());
 }
+/**
+ * Converts a UTC datetime to a Pacific calendar date string (YYYY-MM-DD).
+ *
+ * @param {string | Date} utcTime - UTC ISO string or Date
+ * @returns {string | null}
+ */
+export function formatUTCDateToPacificDate(utcTime) {
+  const parts = formatUTCtoPacificTime(utcTime);
+  if (!parts) return null;
+
+  return `${parts.year}-${padString(parts.month, 2, '0')}-${padString(parts.day, 2, '0')}`;
+}

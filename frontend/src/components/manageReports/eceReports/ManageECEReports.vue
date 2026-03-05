@@ -111,7 +111,7 @@
               :loading="loading"
               :primary="false"
               size="medium"
-              @click="goToECEReport(item.eceReportId, item.submissionDeadline)"
+              @click="goToECEReport(item.eceReportId)"
             >
               View
             </AppButton>
@@ -329,10 +329,10 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
-    goToECEReport(eceReportId, submissionDeadline) {
+    goToECEReport(eceReportId) {
       this.$router.push({
         path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`,
-        state: { publicSector: this.publicSector, submissionDeadline },
+        state: { publicSector: this.publicSector },
       });
     },
     getStatusText(statusCode) {

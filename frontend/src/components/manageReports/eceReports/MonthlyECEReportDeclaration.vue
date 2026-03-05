@@ -61,7 +61,7 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
 import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
-import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
+import { formatUTCDate, formatUTCtoPacificTime, formatUTCDateToPacificDate } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -78,7 +78,6 @@ export default {
       processing: false,
       showSubmitConfirmationDialog: false,
       publicSector: globalThis.history?.state?.publicSector ?? null,
-      submissionDeadline: globalThis.history?.state?.submissionDeadline ?? null,
     };
   },
   computed: {
@@ -100,23 +99,16 @@ export default {
       const currentYear = today?.year;
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
-    isAdjustmentReport() {
-      return this.eceReport.version > 1;
-    },
     currentDate() {
-      const today = formatUTCtoPacificTime(this.userInfo?.serverTime);
-      if (!today) return null;
-      const date = new Date(Date.UTC(today.year, today.month - 1, today.day));
-      return formatUTCDate(date);
+      console.log(formatUTCDateToPacificDate(this.userInfo?.serverTime));
+      return formatUTCDateToPacificDate(this.userInfo?.serverTime);
     },
     isSubmitDisabled() {
+      const isAfterSubmissionDeadline = this.currentDate > this.submissionDeadline;
       return (
         !this.hasReportingMonthEnded ||
         isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) ||
-        (!this.isAdjustmentReport &&
-          this.currentDate &&
-          this.submissionDeadline &&
-          this.currentDate > this.submissionDeadline) ||
+        (!this.eceReport.isAdjustment && this.currentDate && this.submissionDeadline && isAfterSubmissionDeadline) ||
         this.isMinistryUser
       );
     },
@@ -135,11 +127,9 @@ export default {
         if (this.publicSector === null && applicationId) {
           this.publicSector = await ApplicationService.getEceweHeader(applicationId);
         }
-        if (this.submissionDeadline === null) {
-          this.submissionDeadline = formatUTCDate(
-            getSubmissionDeadlineUTCDate(this.eceReport.year, this.eceReport.month),
-          );
-        }
+        this.submissionDeadline = formatUTCDate(
+          getSubmissionDeadlineUTCDate(this.eceReport.year, this.eceReport.month),
+        );
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE report');

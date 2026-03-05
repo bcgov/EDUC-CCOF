@@ -181,7 +181,6 @@ export default {
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
       publicSector: globalThis.history?.state?.publicSector ?? null,
-      submissionDeadline: globalThis.history?.state?.submissionDeadline ?? null,
     };
   },
   computed: {
@@ -270,7 +269,7 @@ export default {
       await this.save(false);
       this.$router.push({
         path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${this.eceReportId}/declaration`,
-        state: { publicSector: this.publicSector, submissionDeadline: this.submissionDeadline },
+        state: { publicSector: this.publicSector },
       });
     },
     isStaffVerified(staff) {
