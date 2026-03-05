@@ -33,8 +33,9 @@ jobs:
           CYPRESS_PORTAL_PASSWORD: ${{ secrets.CYPRESS_PORTAL_PASSWORD }}
           CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
           # Disables SSL certificate verification for Node.js (used by wait-on).
-          # Allow Node.js to trust the SSL certificate by default.
-          # *** Only to be used in QA/UAT environments. ***
+          # Required because QA/UAT environments use self-signed or internally-issued certificates
+          # that Node.js does not trust by default. Setting this to "0" bypasses that check entirely.
+          # *** Only to be used in non-production environments. ***
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
       - name: Upload screenshots
