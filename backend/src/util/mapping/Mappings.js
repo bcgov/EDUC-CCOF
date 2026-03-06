@@ -931,7 +931,7 @@ const ECEReportStaffMappings = [
   { back: 'ccof_ece_sb_amount', front: 'approvedSbAmount' },
   { back: 'ccof_ece_we_amount', front: 'approvedWeAmount' },
   { back: 'ccof_total_amount', front: 'approvedTotalAmount' },
-  { back: 'ccof_is_inherited_from_parent_report', front: 'isInheritedFromParentReport' },
+  { back: 'ccof_is_inherited_from_parent_report', front: 'isInheritedFromPreviousReport' },
   { back: 'statuscode', front: 'statusCode' },
 ];
 

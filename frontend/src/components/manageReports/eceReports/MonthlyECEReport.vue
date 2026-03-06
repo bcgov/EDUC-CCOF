@@ -315,7 +315,7 @@ export default {
     getTotalHoursWorkedRules(staff) {
       const maxHoursRule = rules.max(195, 'Hours cannot be more than 195');
       const greaterThanZeroRule = rules.greaterThan(0, 'Hours must be greater than 0');
-      if (this.isAdjustmentReport && staff.isInheritedFromParentReport) {
+      if (this.isAdjustmentReport && staff.isInheritedFromPreviousReport) {
         return [...rules.required, maxHoursRule];
       }
       return [greaterThanZeroRule, maxHoursRule];
@@ -378,7 +378,7 @@ export default {
       this.eceReportStaff.push(newStaff);
     },
     showRemoveButton(staff) {
-      return !this.readonly && !staff.isInheritedFromParentReport;
+      return !this.readonly && !staff.isInheritedFromPreviousReport;
     },
     removeStaff(staff) {
       const index = this.eceReportStaff.findIndex((s) => s.registrationNumber === staff.registrationNumber);

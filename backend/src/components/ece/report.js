@@ -141,12 +141,13 @@ async function updateECEReport(req, res) {
   }
 }
 
-async function addStaffFromParentReportToAdjustmentReport(staffFromParentReport, adjustmentReportId) {
-  const mappedStaff = staffFromParentReport?.map((staff) => ({
+async function createStaffFromPreviousReport(staffFromPreviousReport, adjustmentReportId) {
+  if (!staffFromPreviousReport?.length || !adjustmentReportId) return;
+  const mappedStaff = staffFromPreviousReport.map((staff) => ({
     eceReportId: adjustmentReportId,
     eceStaffId: staff._ccof_ece_staff_value,
     totalHoursWorked: staff.statuscode === ECE_REPORT_STAFF_STATUS_CODES.VERIFIED ? staff.ccof_verified_hours : staff.ccof_total_hours_worked,
-    isInheritedFromParentReport: true,
+    isInheritedFromPreviousReport: true,
   }));
   await Promise.all(mappedStaff.map(async (staff) => await createRawECEReportStaff(staff)));
 }
@@ -176,8 +177,8 @@ async function adjustECEReport(req, res) {
     });
     const report = await getRawECEReport(eceReportId);
     const adjustmentReportId = await createAdjustmentReport(report);
-    const staffFromParentReport = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report;
-    await addStaffFromParentReportToAdjustmentReport(staffFromParentReport, adjustmentReportId);
+    const staffFromPreviousReport = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report;
+    await createStaffFromPreviousReport(staffFromPreviousReport, adjustmentReportId);
     return res.status(HttpStatus.CREATED).json(adjustmentReportId);
   } catch (e) {
     log.error(e);
