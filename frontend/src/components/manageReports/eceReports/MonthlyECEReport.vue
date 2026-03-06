@@ -72,139 +72,45 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div class="calculation-summary px-4 ml-lg-auto" :class="calculationSummaryClass">
-          <template v-if="isAdjustmentReport">
-            <v-table v-if="isReportApproved">
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col" class="font-weight-bold text-right">Reported $</th>
-                  <th scope="col" class="font-weight-bold text-right">Approved $</th>
-                  <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
-                  <th scope="col" class="font-weight-bold text-right">Difference $</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                  <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                  <td class="text-right">{{ formatCurrency(eceReport.approvedWeSubtotal) }}</td>
-                  <td class="text-right">{{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}</td>
-                  <td class="text-right">
-                    {{
-                      formatCurrency(eceReport.approvedWeSubtotal - previousReportApprovedAmounts.approvedWeSubtotal)
-                    }}
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                  <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                  <td class="text-right">{{ formatCurrency(eceReport.approvedSbSubtotal) }}</td>
-                  <td class="text-right">{{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}</td>
-                  <td class="text-right">
-                    {{
-                      formatCurrency(eceReport.approvedSbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal)
-                    }}
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" class="font-weight-bold">Total</th>
-                  <td class="text-right font-weight-bold">
-                    {{ formatCurrency(reportTotals.total) }}
-                  </td>
-                  <td class="text-right font-weight-bold">{{ formatCurrency(eceReport.approvedTotalAmount) }}</td>
-                  <td class="text-right font-weight-bold">
-                    {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
-                  </td>
-                  <td class="text-right font-weight-bold">
-                    {{
-                      formatCurrency(eceReport.approvedTotalAmount - previousReportApprovedAmounts.approvedTotalAmount)
-                    }}
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-            <v-table v-else>
-              <thead>
-                <tr>
-                  <th scope="col"></th>
-                  <th scope="col" class="font-weight-bold text-right">Current $</th>
-                  <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
-                  <th scope="col" class="font-weight-bold text-right">Difference $</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                  <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                  <td class="text-right">
-                    {{ formatCurrency(previousReportApprovedAmounts.approvedWeSubtotal) }}
-                  </td>
-
-                  <td class="text-right">
-                    {{ formatCurrency(reportTotals.weSubtotal - previousReportApprovedAmounts.approvedWeSubtotal) }}
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                  <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                  <td class="text-right">
-                    {{ formatCurrency(previousReportApprovedAmounts.approvedSbSubtotal) }}
-                  </td>
-                  <td class="text-right">
-                    {{ formatCurrency(reportTotals.sbSubtotal - previousReportApprovedAmounts.approvedSbSubtotal) }}
-                  </td>
-                </tr>
-                <tr>
-                  <th scope="row" class="font-weight-bold">Total</th>
-                  <td class="text-right font-weight-bold">
-                    {{ formatCurrency(reportTotals.total) }}
-                  </td>
-                  <td class="text-right font-weight-bold">
-                    {{ formatCurrency(previousReportApprovedAmounts.approvedTotalAmount) }}
-                  </td>
-                  <td class="text-right font-weight-bold">
-                    {{ formatCurrency(reportTotals.total - previousReportApprovedAmounts.approvedTotalAmount) }}
-                  </td>
-                </tr>
-              </tbody>
-            </v-table>
-          </template>
-          <v-table v-else>
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col" class="font-weight-bold text-right">Reported $</th>
-                <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved $</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                <td v-if="isReportApproved" class="text-right">
-                  {{ formatCurrency(eceReport.approvedWeSubtotal) }}
+        <v-table
+          class="calculation-summary px-4 ml-lg-auto"
+          :class="{ 'calculation-summary--adjustment': isAdjustmentReport }"
+        >
+          <thead>
+            <tr>
+              <th></th>
+              <th class="font-weight-bold text-right">
+                {{ isDraftReport ? 'Current $' : 'Reported $' }}
+              </th>
+              <th v-if="isReportApproved" class="font-weight-bold text-right">Approved $</th>
+              <template v-if="isAdjustmentReport">
+                <th class="font-weight-bold text-right">Prev Paid $</th>
+                <th class="font-weight-bold text-right">Difference $</th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in calculationSummaryRows" :key="row.label">
+              <th scope="row" class="font-weight-bold">
+                {{ row.label }}
+              </th>
+              <td :class="getCalculationSummaryRowClass(row)">
+                {{ formatCurrency(row.reportedAmount) }}
+              </td>
+              <td v-if="isReportApproved" :class="getCalculationSummaryRowClass(row)">
+                {{ formatCurrency(row.approvedAmount) }}
+              </td>
+              <template v-if="isAdjustmentReport">
+                <td :class="getCalculationSummaryRowClass(row)">
+                  {{ formatCurrency(row.previousPaidAmount) }}
                 </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                <td v-if="isReportApproved" class="text-right">
-                  {{ formatCurrency(eceReport.approvedSbSubtotal) }}
+                <td :class="getCalculationSummaryRowClass(row)">
+                  {{ formatCurrency(row.adjustmentDifference) }}
                 </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">Total</th>
-                <td class="text-right font-weight-bold">
-                  {{ formatCurrency(reportTotals.total) }}
-                </td>
-                <td v-if="isReportApproved" class="text-right font-weight-bold">
-                  {{ formatCurrency(eceReport.approvedTotalAmount) }}
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
-        </div>
+              </template>
+            </tr>
+          </tbody>
+        </v-table>
       </v-form>
     </v-card>
   </div>
@@ -304,19 +210,45 @@ export default {
     isAdjustmentReport() {
       return this.eceReport?.isAdjustment;
     },
+    isDraftReport() {
+      return this.eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.DRAFT;
+    },
     isReportApproved() {
       return [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
         this.eceReport?.externalStatus,
       );
     },
-    calculationSummaryClass() {
-      if (this.isReportApproved) {
-        return 'calculation-summary--approved';
-      }
-      if (this.isAdjustmentReport) {
-        return 'calculation-summary--adjustment';
-      }
-      return '';
+    calculationSummaryRows() {
+      const previousReport = this.previousReportApprovedAmounts ?? {};
+      const rows = [
+        {
+          label: 'WE Subtotal',
+          reportedAmount: this.reportTotals?.weSubtotal ?? 0,
+          approvedAmount: this.eceReport?.approvedWeSubtotal ?? 0,
+          previousPaidAmount: previousReport.approvedWeSubtotal ?? 0,
+          bold: false,
+        },
+        {
+          label: 'SB Subtotal',
+          reportedAmount: this.reportTotals?.sbSubtotal ?? 0,
+          approvedAmount: this.eceReport?.approvedSbSubtotal ?? 0,
+          previousPaidAmount: previousReport.approvedSbSubtotal ?? 0,
+          bold: false,
+        },
+        {
+          label: 'Total',
+          reportedAmount: this.reportTotals?.total ?? 0,
+          approvedAmount: this.eceReport?.approvedTotalAmount ?? 0,
+          previousPaidAmount: previousReport.approvedTotalAmount ?? 0,
+          bold: true,
+        },
+      ];
+      return rows.map((row) => ({
+        ...row,
+        adjustmentDifference: this.isReportApproved
+          ? row.approvedAmount - row.previousPaidAmount
+          : row.reportedAmount - row.previousPaidAmount,
+      }));
     },
   },
   async created() {
@@ -357,7 +289,7 @@ export default {
       } catch (error) {
         console.error(error);
         if (error.response?.status === 503) {
-          this.setWarningAlert('The report is still being finalized. Please try again in a few seconds.');
+          this.setWarningAlert('The report is still being finalized. Please try again later.');
           this.previous();
           return;
         }
@@ -381,6 +313,12 @@ export default {
         return [...rules.required, maxHoursRule];
       }
       return [greaterThanZeroRule, maxHoursRule];
+    },
+    getCalculationSummaryRowClass(row) {
+      return {
+        'text-right': true,
+        'font-weight-bold': row.bold,
+      };
     },
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
@@ -527,8 +465,5 @@ export default {
 }
 .calculation-summary--adjustment {
   max-width: 800px;
-}
-.calculation-summary--approved {
-  max-width: 700px;
 }
 </style>
