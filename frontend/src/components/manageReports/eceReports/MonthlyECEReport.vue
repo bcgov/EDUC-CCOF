@@ -78,14 +78,14 @@
         >
           <thead>
             <tr>
-              <th></th>
-              <th class="font-weight-bold text-right">
+              <th scope="col"></th>
+              <th scope="col" class="font-weight-bold text-right">
                 {{ isDraftReport ? 'Current $' : 'Reported $' }}
               </th>
-              <th v-if="isReportApproved" class="font-weight-bold text-right">Approved $</th>
+              <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved $</th>
               <template v-if="isAdjustmentReport">
-                <th class="font-weight-bold text-right">Prev Paid $</th>
-                <th class="font-weight-bold text-right">Difference $</th>
+                <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
+                <th scope="col" class="font-weight-bold text-right">Difference $</th>
               </template>
             </tr>
           </thead>

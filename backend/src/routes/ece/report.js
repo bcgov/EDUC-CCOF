@@ -91,7 +91,7 @@ router.get(
   '/:eceReportId/approved-amounts',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  [param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
     return getECEReportApprovedAmounts(req, res);
