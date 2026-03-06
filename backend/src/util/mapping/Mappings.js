@@ -902,7 +902,8 @@ const PaymentMappings = [
 
 const ECEReportMappings = [
   { back: 'ccof_ece_monthly_reportid', front: 'eceReportId' },
-  { back: '_ccof_base_report_id_value', front: 'previousReportId' },
+  { back: '_ccof_base_report_id_value', front: 'baseReportId' },
+  { back: '_ccof_previous_report_value', front: 'previousReportId' },
   { back: 'ccof_name', front: 'eceReportNumber' },
   { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },

@@ -80,7 +80,7 @@ export default {
       return response?.data;
     } catch (error) {
       if (error.response?.status === 504) {
-        console.error('Adjustment report request timed out - creation status is unknown');
+        console.error(`Adjustment report request timed out - ${error}`);
       } else {
         console.error(`Failed to create adjustment report - ${error}`);
       }

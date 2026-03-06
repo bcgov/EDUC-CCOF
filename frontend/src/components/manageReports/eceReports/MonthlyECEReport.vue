@@ -223,21 +223,21 @@ export default {
       const rows = [
         {
           label: 'WE Subtotal',
-          reportedAmount: this.reportTotals?.weSubtotal ?? 0,
+          reportedAmount: this.reportTotals.weSubtotal ?? 0,
           approvedAmount: this.eceReport?.approvedWeSubtotal ?? 0,
           previousPaidAmount: previousReport.approvedWeSubtotal ?? 0,
           bold: false,
         },
         {
           label: 'SB Subtotal',
-          reportedAmount: this.reportTotals?.sbSubtotal ?? 0,
+          reportedAmount: this.reportTotals.sbSubtotal ?? 0,
           approvedAmount: this.eceReport?.approvedSbSubtotal ?? 0,
           previousPaidAmount: previousReport.approvedSbSubtotal ?? 0,
           bold: false,
         },
         {
           label: 'Total',
-          reportedAmount: this.reportTotals?.total ?? 0,
+          reportedAmount: this.reportTotals.total ?? 0,
           approvedAmount: this.eceReport?.approvedTotalAmount ?? 0,
           previousPaidAmount: previousReport.approvedTotalAmount ?? 0,
           bold: true,
@@ -261,7 +261,18 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+
+        try {
+          this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        } catch (error) {
+          if (error.response?.status === 503) {
+            this.setWarningAlert('The report is still being finalized. Please try again later.');
+            this.previous();
+            return;
+          }
+          throw error;
+        }
+
         const programYearId = this.eceReport?.programYearId;
         const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
         if (this.publicSector === null && applicationId) {
@@ -288,12 +299,7 @@ export default {
         this.calculate();
       } catch (error) {
         console.error(error);
-        if (error.response?.status === 503) {
-          this.setWarningAlert('The report is still being finalized. Please try again later.');
-          this.previous();
-          return;
-        }
-        this.setFailureAlert('Failed to load ECE report');
+        this.setFailureAlert('Failed to load ECE report.');
       }
       this.loading = false;
     },

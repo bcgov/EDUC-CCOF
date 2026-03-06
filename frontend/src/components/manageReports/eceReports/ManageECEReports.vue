@@ -386,7 +386,13 @@ export default {
         this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${adjustmentReportId}`);
       } catch (error) {
         console.error(error);
-        this.setFailureAlert('Unable to create adjustment report.');
+        if (error.response?.status === 504) {
+          this.setWarningAlert(
+            'The adjustment report is currently being created. Please refresh the page in a few minutes.',
+          );
+        } else {
+          this.setFailureAlert('An error occurred while creating the adjustment report.');
+        }
       } finally {
         this.loading = false;
       }

@@ -152,12 +152,13 @@ async function addStaffFromParentReportToAdjustmentReport(staffFromParentReport,
 }
 
 async function createAdjustmentReport(report) {
-  const baseReportId = isAdjustmentReport(report?.ccof_report_type) ? report?._ccof_base_report_id_value : report?.ccof_ece_monthly_reportid;
+  const baseReportId = isAdjustmentReport(report.ccof_report_type) ? report._ccof_base_report_id_value : report.ccof_ece_monthly_reportid;
   const payload = {
     'ccof_organization@odata.bind': `/accounts(${report._ccof_organization_value})`,
     'ccof_Facility@odata.bind': `/accounts(${report._ccof_facility_value})`,
     'ccof_fiscal_year@odata.bind': `/ccof_program_years(${report._ccof_fiscal_year_value})`,
     'ccof_base_report_id@odata.bind': `/ccof_ece_monthly_reports(${baseReportId})`,
+    'ccof_previous_report@odata.bind': `/ccof_ece_monthly_reports(${report.ccof_ece_monthly_reportid})`,
     ccof_month: String(report.ccof_month),
     ccof_year: String(report.ccof_year),
     ccof_report_type: ECE_REPORT_TYPES.ADJUSTMENT,
