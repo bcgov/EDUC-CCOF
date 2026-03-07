@@ -79,29 +79,16 @@ export const rules = {
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [
-    (value) => {
-      console.log('fileRules');
-      console.log(value);
-      console.log(isEmpty(value));
-      return !isEmpty(value) || 'This is required';
-    },
-    (value) => {
-      return isEmpty(value) || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
-    },
-    (value) => {
-      return (
-        isEmpty(value) ||
-        value[0]?.size < MAX_FILE_SIZE ||
-        `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
-      );
-    },
-    (value) => {
-      return (
-        isEmpty(value) ||
-        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value[0]?.name)?.toLowerCase()) ||
-        `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`
-      );
-    },
+    (value) => !!value || 'This is required',
+    (value) => !value || value.name?.length <= 255 || 'File name can be max 255 characters.',
+    (value) =>
+      !value ||
+      value.size < MAX_FILE_SIZE ||
+      `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`,
+    (value) =>
+      !value ||
+      FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value.name)?.toLowerCase()) ||
+      `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`,
   ],
   website: (v) => {
     if (isEmpty(v)) return true;
