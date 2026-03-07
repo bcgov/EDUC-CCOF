@@ -1,52 +1,54 @@
 <template>
-  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container fluid class="mx-lg-16">
-      <v-form ref="form" v-model="isValidForm">
-        <ApplicationPCFHeader :program-year="renewalYearLabel" />
-        <ApplicationChangeRequestInProgressAlert
-          v-if="hasActiveChangeRequest"
-          :loading="isApplicationProcessing"
-          class="my-8"
-        />
-        <v-card class="my-8 pa-8 pb-4">
-          <p>Has your banking information changed?</p>
-          <v-radio-group v-model="hasBankingInfoChanged" inline :disabled="readonly" :rules="rules.required">
-            <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
-            <v-radio label="No" :value="YES_NO_VALUES.NO" />
-          </v-radio-group>
-          <v-card v-if="hasBankingInfoChanged" rounded="0" class="mb-4">
-            <v-card-title class="noticeAlert">
-              <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
-              Do not continue.
-            </v-card-title>
-            <div class="px-8 py-4">
-              <p>
-                Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
-                Confirmation Form.
-              </p>
-              <p class="py-2">
-                Update your banking information by submitting the
-                <a
-                  href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
-                  target="_blank"
-                >
-                  Direct Deposit Application
-                </a>
-                by email to <a href="mailto:ccdda@gov.bc.ca" target="_blank">ccdda@gov.bc.ca.</a>
-              </p>
-              <p class="pb-2">
-                You can also submit the form by mail to:<br />
-                Child Care Operating Funding<br />
-                PO Box 9965 Stn Prov Govt<br />
-                Victoria BC V8W 9R4
-              </p>
-              <p>For any questions, call the program at 1-888-338-6622 (option 2)</p>
-            </div>
-          </v-card>
-        </v-card>
-      </v-form>
-    </v-container>
-  </v-skeleton-loader>
+  <v-skeleton-loader
+    v-if="isApplicationProcessing"
+    :loading="isApplicationProcessing"
+    type="table-tbody"
+    class="mb-12"
+  />
+  <v-form v-else ref="form" v-model="isValidForm" class="mx-8 mb-12 mx-lg-16">
+    <ApplicationPCFHeader :program-year="renewalYearLabel" />
+    <ApplicationChangeRequestInProgressAlert
+      v-if="hasActiveChangeRequest"
+      :loading="isApplicationProcessing"
+      class="my-8"
+    />
+    <v-card class="my-8 pa-8 pb-4">
+      <p>Has your banking information changed?</p>
+      <v-radio-group v-model="hasBankingInfoChanged" inline :disabled="readonly" :rules="rules.required">
+        <v-radio label="Yes" :value="YES_NO_VALUES.YES" />
+        <v-radio label="No" :value="YES_NO_VALUES.NO" />
+      </v-radio-group>
+      <v-card v-if="hasBankingInfoChanged" rounded="0" class="mb-4">
+        <v-card-title class="noticeAlert">
+          <v-icon size="x-large" class="noticeAlertIcon">mdi-alert-octagon</v-icon>
+          Do not continue.
+        </v-card-title>
+        <div class="px-8 py-4">
+          <p>
+            Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program Confirmation
+            Form.
+          </p>
+          <p class="py-2">
+            Update your banking information by submitting the
+            <a
+              href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
+              target="_blank"
+            >
+              Direct Deposit Application
+            </a>
+            by email to <a href="mailto:ccdda@gov.bc.ca" target="_blank">ccdda@gov.bc.ca.</a>
+          </p>
+          <p class="pb-2">
+            You can also submit the form by mail to:<br />
+            Child Care Operating Funding<br />
+            PO Box 9965 Stn Prov Govt<br />
+            Victoria BC V8W 9R4
+          </p>
+          <p>For any questions, call the program at 1-888-338-6622 (option 2)</p>
+        </div>
+      </v-card>
+    </v-card>
+  </v-form>
   <NavButton
     :is-next-displayed="true"
     :is-save-displayed="true"
