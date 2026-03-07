@@ -16,6 +16,7 @@ import ca.bc.gov.ecc.ccof.pageobjects.ChangeActionMTFIInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.ChangeRequestInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAdjudicateMTFIChangeRequest extends BaseTest {
@@ -54,9 +55,11 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
 
 		// searching the contact
 		deleteApp.searchAndOpenContact(contactName);
+        Thread.sleep(3000);
 
-		BCeIDPage bceidPage = new BCeIDPage(driver);
-		bceidPage.clickSelectOrganization();
+        // switches view to organization information page
+        OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
+        orgOverview.clickOrgInformation();
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 

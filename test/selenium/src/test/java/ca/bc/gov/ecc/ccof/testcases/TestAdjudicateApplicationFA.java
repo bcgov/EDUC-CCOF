@@ -13,6 +13,7 @@ import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FundingAgreementPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAdjudicateApplicationFA extends BaseTest {
@@ -51,12 +52,11 @@ public class TestAdjudicateApplicationFA extends BaseTest {
 
 		// Search contact
 		deleteApp.searchAndOpenContact(contactName);
+        Thread.sleep(3000);
 
-		BCeIDPage bceidPage = new BCeIDPage(driver);
-
-		// Switch to organization information page
-		bceidPage.clickSelectOrganization();
-		Thread.sleep(5000);
+        // switches view to organization information page
+        OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
+        orgOverview.clickOrgInformation();
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 		utils.scrollToElement(orgInfo.getOpenFundingAgreement());
