@@ -79,7 +79,12 @@ export const rules = {
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [
-    (value) => !isEmpty(value) || 'This is required',
+    (value) => {
+      console.log('fileRules');
+      console.log(value);
+      console.log(isEmpty(value));
+      return !isEmpty(value) || 'This is required';
+    },
     (value) => {
       return isEmpty(value) || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
     },
