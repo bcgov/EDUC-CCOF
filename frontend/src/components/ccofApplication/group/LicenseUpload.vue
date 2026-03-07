@@ -365,7 +365,13 @@ export default {
     async selectFile(event) {
       try {
         this.currentrow = event.target.id;
+        console.log('event');
+        console.log(event);
         const file = event?.target?.files[0];
+        console.log('file');
+        console.log(file);
+        console.log('isValidFile(file)');
+        console.log(isValidFile(file));
         if (file && isValidFile(file)) {
           const doc = await readFile(file);
           const map = new Map();
@@ -374,6 +380,8 @@ export default {
           });
           map.set(this.currentrow, deepCloneObject(doc));
           this.fileMap = map;
+          console.log('this.fileMap');
+          console.log(this.fileMap);
           this.$refs.form.validate();
         } else {
           this.fileMap.delete(this.currentrow);
