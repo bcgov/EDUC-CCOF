@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
 import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
-import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfriUnlockForm;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
