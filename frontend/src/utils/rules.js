@@ -20,6 +20,11 @@ function isValidFQDN(string) {
   return fqdnRegex.test(string);
 }
 
+// Depending on the Vuetify version or environment, v-file-input may return either a File object
+// or a File[] (even when selecting a single file).
+// This helper normalizes the value so validation logic works consistently. Intended for single-file uploads only.
+const getFile = (value) => (Array.isArray(value) ? value[0] : value);
+
 export function allRulesAreValid(rulesArray, value) {
   return rulesArray.map((r) => r(value)).every((ruleCheckResult) => ruleCheckResult === true);
 }
@@ -79,21 +84,24 @@ export const rules = {
   wholeNumber: (v) => !v || /^\d+$/.test(v) || 'A valid whole number is required',
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [
-    (value) => !isEmpty(value) || 'This is required',
+    (value) => !!getFile(value) || 'This is required',
     (value) => {
-      return isEmpty(value) || value[0]?.name?.length < 255 || 'File name can be max 255 characters.';
+      const file = getFile(value);
+      return !file || file.name?.length <= 255 || 'File name can be max 255 characters.';
     },
     (value) => {
+      const file = getFile(value);
       return (
-        isEmpty(value) ||
-        value[0]?.size < MAX_FILE_SIZE ||
+        !file ||
+        file.size < MAX_FILE_SIZE ||
         `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
       );
     },
     (value) => {
+      const file = getFile(value);
       return (
-        isEmpty(value) ||
-        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(value[0]?.name)?.toLowerCase()) ||
+        !file ||
+        FILE_EXTENSIONS_ACCEPT.includes(getFileExtension(file.name)?.toLowerCase()) ||
         `Accepted file types are ${FILE_EXTENSIONS_ACCEPT_TEXT}.`
       );
     },
