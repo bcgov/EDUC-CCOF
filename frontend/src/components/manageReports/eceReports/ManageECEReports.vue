@@ -104,6 +104,9 @@
             {{ getStatusText(item.externalStatus) }}
           </span>
         </template>
+        <template #item.rejected="{ item }">
+          {{ getRejectedValue(item) }}
+        </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
@@ -175,6 +178,12 @@ const EDIT_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED,
 ]);
 
+const REJECTION_TYPES = {
+  FULL_REJECTION: 'Yes - Full rejection',
+  PARTIAL_REJECTION: 'Yes - Partial rejection',
+  NO_REJECTION: 'No',
+};
+
 const VIEW_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.APPROVED,
   ECE_REPORT_EXTERNAL_STATUSES.EXPIRED,
@@ -206,9 +215,10 @@ export default {
         { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
-        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Version Number', key: 'version' },
+        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Status', key: 'externalStatus' },
+        { title: 'Rejected', key: 'rejected' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       eceReports: [],
@@ -359,6 +369,17 @@ export default {
           return null;
       }
     },
+
+    getRejectedValue(report) {
+      if (report.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED) {
+        return REJECTION_TYPES.FULL_REJECTION;
+      }
+      if (report.rejectedStaffCount > 0) {
+        return REJECTION_TYPES.PARTIAL_REJECTION;
+      }
+      return REJECTION_TYPES.NO_REJECTION;
+    },
+
     hasNextReportCreated(eceReport) {
       return this.eceReports?.some(
         (item) =>

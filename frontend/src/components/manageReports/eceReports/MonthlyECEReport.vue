@@ -9,6 +9,10 @@
       Only staff who hold an active Early Childhood Educator, Infant and Toddler Educator, or Special Needs Educator
       certificate are eligible for the ECE Wage Enhancement.
     </v-alert>
+    <AppAlertBanner v-if="isPartialRejection" type="warning" class="mb-4 w-100">
+      One or more ECE hours entries have been rejected. Review the highlighted row(s) below.
+    </AppAlertBanner>
+
     <div v-if="!readonly" class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
@@ -137,6 +141,7 @@
 import { isEmpty, pick } from 'lodash';
 import { mapState } from 'pinia';
 import AddECEStaffDialog from '@/components/eceStaff/AddECEStaffDialog.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
@@ -155,7 +160,14 @@ import rules from '@/utils/rules.js';
 
 export default {
   name: 'MonthlyECEReport',
-  components: { AddECEStaffDialog, AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
+  components: {
+    AddECEStaffDialog,
+    AppAlertBanner,
+    AppButton,
+    AppNumberInput,
+    MonthlyECEReportHeader,
+    ReportNavButtons,
+  },
   mixins: [alertMixin],
   data() {
     return {
@@ -214,6 +226,12 @@ export default {
     },
     showRemoveButton() {
       return !this.eceReport?.isAdjustment && !this.readonly;
+    },
+    isPartialRejection() {
+      return (
+        this.eceReport?.externalStatus !== ECE_REPORT_EXTERNAL_STATUSES.REJECTED &&
+        this.eceReport?.rejectedStaffCount > 0
+      );
     },
   },
   async created() {

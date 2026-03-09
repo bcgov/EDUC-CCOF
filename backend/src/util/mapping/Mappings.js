@@ -915,6 +915,7 @@ const ECEReportMappings = [
   { back: 'ccof_submit_date', front: 'submittedDate' },
   { back: 'statuscode', front: 'statusCode' },
   { back: 'ccof_external_status', front: 'externalStatus' },
+  { back: 'ccof_rejected_ece_staff', front: 'rejectedStaffCount' },
 ];
 
 const ECEReportStaffMappings = [
