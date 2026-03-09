@@ -1862,16 +1862,52 @@ export default {
       return keysForBackend;
     },
 
+    buildPaymentEligibleDaysKeysForBackend() {
+      const keysForBackend = [];
+      for (const category of this.categoryFields) {
+        keysForBackend.push(
+          `ccofPaymentEligibilityDaysCount${category.charAt(0).toUpperCase() + category.slice(1)}`,
+          `ccfriPaymentEligibilityDaysCount${category.charAt(0).toUpperCase() + category.slice(1)}`,
+        );
+      }
+      return keysForBackend;
+    },
+
+    buildPaymentEligibleDaysPayloadForBackend() {
+      const payload = {};
+      for (const category of this.categoryFields) {
+        const suffix = category.charAt(0).toUpperCase() + category.slice(1);
+        payload[`ccofPaymentEligibilityDaysCount${suffix}`] = this.paymentEligibleDaysCount.CCOF[category] ?? 0;
+        payload[`ccfriPaymentEligibilityDaysCount${suffix}`] = this.paymentEligibleDaysCount.CCFRI[category] ?? 0;
+      }
+      return payload;
+    },
+
     async saveEnrolmentReport() {
-      const keysForBackend = this.buildEnrolmentReportKeysForBackend();
-      if (isEqual(pick(this.originalEnrolmentReport, keysForBackend), pick(this.enrolmentReport, keysForBackend))) {
+      const enrolmentReportKeysForBackend = this.buildEnrolmentReportKeysForBackend();
+      const paymentEligibleDaysKeysForBackend = this.buildPaymentEligibleDaysKeysForBackend();
+      const paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
+      const enrolmentReportChanged = !isEqual(
+        pick(this.originalEnrolmentReport, enrolmentReportKeysForBackend),
+        pick(this.enrolmentReport, enrolmentReportKeysForBackend),
+      );
+      const paymentEligibleDaysChanged = !isEqual(
+        pick(this.originalEnrolmentReport, paymentEligibleDaysKeysForBackend),
+        paymentEligibleDaysPayload,
+      );
+      const differencesChanged = this.enrolmentReport.isAdjustment && !isEmpty(this.enrolmentReport.differences);
+      if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
         return;
       }
-      const payload = pick(this.enrolmentReport, keysForBackend);
+      const payload = pick(this.enrolmentReport, enrolmentReportKeysForBackend);
       if (this.enrolmentReport.isAdjustment) {
         payload.differences = this.enrolmentReport.differences;
         payload.differences.enrolmentReportExtensionId = this.enrolmentReport.enrolmentReportExtensionId;
       }
+      payload.paymentEligibleDaysCount = {
+        enrolmentReportExtensionId: this.enrolmentReport.enrolmentReportExtensionId,
+        ...paymentEligibleDaysPayload,
+      };
       await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
       await this.loadEnrolmentReport();
     },

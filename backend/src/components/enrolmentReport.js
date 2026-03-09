@@ -3,18 +3,26 @@ const { getOperation, patchOperationWithObjectId, postAdjustmentERGeneration } =
 const HttpStatus = require('http-status-codes');
 const { isEmpty } = require('lodash');
 const log = require('./logger');
-const { DailyEnrolmentMappings, EnrolmentReportDifferenceMappings, EnrolmentReportMappings, EnrolmentReportSummaryMappings, RateMappings } = require('../util/mapping/Mappings');
+const {
+  DailyEnrolmentMappings,
+  EnrolmentReportDifferenceMappings,
+  EnrolmentReportMappings,
+  EnrolmentReportSummaryMappings,
+  PaymentEligibleDaysCountMappings,
+  RateMappings,
+} = require('../util/mapping/Mappings');
 const { buildFilterQuery, padString } = require('./utils');
+const { ENROLMENT_REPORT_STATUSES, ENROLMENT_REPORT_TYPES } = require('../util/constants');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
-  return report?.reportVersion > 1;
+  return report?.reportType == ENROLMENT_REPORT_TYPES.ADJUSTMENT;
 }
 
 function getReportVersionText(report) {
   const version = padString(report?.reportVersion, 2, '0');
-  return isAdjustmentReport(report) ? `${version}-Adjustment` : version;
+  return isAdjustmentReport(report) ? `${version}-Adjustment` : `${version}-Base`;
 }
 
 function mapEnrolmentReportSummaryForFront(report) {
@@ -51,8 +59,12 @@ async function getEnrolmentReports(req, res) {
   try {
     const approvedParentFeeFields = ['0to18', '18to36', '3yk', 'oosck', 'ooscg', 'pre'].map((suffix) => `ccof_approvedparentfee${suffix}`);
     const hasApprovedParentFees = (fees) => approvedParentFeeFields.some((field) => fees?.[field] != null);
+    const query = {
+      ...req.query,
+      enrolmentReportStatus: ENROLMENT_REPORT_STATUSES.ACTIVE,
+    };
     const response = await getOperation(
-      `ccof_monthlyenrollmentreports?${buildFilterQuery(req.query, EnrolmentReportSummaryMappings)}&$expand=ccof_reportextension($select=${approvedParentFeeFields.join(',')})`,
+      `ccof_monthlyenrollmentreports?${buildFilterQuery(query, EnrolmentReportSummaryMappings)}&$expand=ccof_reportextension($select=${approvedParentFeeFields.join(',')})`,
     );
     let enrolmentReports =
       response?.value?.map((report) => {
@@ -94,9 +106,18 @@ async function updateEnrolmentReport(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, EnrolmentReportMappings).toJSON();
     await patchOperationWithObjectId('ccof_monthlyenrollmentreports', req.params.enrolmentReportId, payload);
+    const extensionPayload = {};
     if (!isEmpty(req?.body?.differences)) {
       const diffPayload = new MappableObjectForBack(req.body.differences, EnrolmentReportDifferenceMappings).toJSON();
-      await patchOperationWithObjectId('ccof_monthlyenrolmentreportextensions', req.body.differences.enrolmentReportExtensionId, diffPayload);
+      Object.assign(extensionPayload, diffPayload);
+    }
+    if (!isEmpty(req?.body?.paymentEligibleDaysCount)) {
+      const paymentEligibleDaysPayload = new MappableObjectForBack(req.body.paymentEligibleDaysCount, PaymentEligibleDaysCountMappings).toJSON();
+      Object.assign(extensionPayload, paymentEligibleDaysPayload);
+    }
+    const extensionId = req?.body?.paymentEligibleDaysCount?.enrolmentReportExtensionId || req?.body?.differences?.enrolmentReportExtensionId;
+    if (extensionId && !isEmpty(extensionPayload)) {
+      await patchOperationWithObjectId('ccof_monthlyenrolmentreportextensions', extensionId, extensionPayload);
     }
     return res.status(HttpStatus.OK).json();
   } catch (e) {

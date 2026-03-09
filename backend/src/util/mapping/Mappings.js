@@ -633,6 +633,34 @@ const EnrolmentReportSummaryMappings = [
   { back: 'ccof_ccfri_external_status@OData.Community.Display.V1.FormattedValue', front: 'externalCcfriStatusText' },
   { back: 'ccof_ccof_internal_status', front: 'internalCcofStatusCode' },
   { back: 'ccof_ccfri_internal_status', front: 'internalCcfriStatusCode' },
+  { back: 'statuscode', front: 'enrolmentReportStatus' },
+  { back: 'ccof_reporttype', front: 'reportType' },
+];
+
+const PaymentEligibleDaysCountMappings = [
+  { back: 'ccof_ccofcurrenttotalless0to18', front: 'ccofPaymentEligibilityDaysCountLess0To18' },
+  { back: 'ccof_ccofcurrenttotalover0to18', front: 'ccofPaymentEligibilityDaysCountOver0To18' },
+  { back: 'ccof_ccofcurrenttotalless18to36', front: 'ccofPaymentEligibilityDaysCountLess18To36' },
+  { back: 'ccof_ccofcurrenttotalover18to36', front: 'ccofPaymentEligibilityDaysCountOver18To36' },
+  { back: 'ccof_ccofcurrenttotalless3yk', front: 'ccofPaymentEligibilityDaysCountLess3YK' },
+  { back: 'ccof_ccofcurrenttotalover3yk', front: 'ccofPaymentEligibilityDaysCountOver3YK' },
+  { back: 'ccof_ccofcurrenttotallessoosck', front: 'ccofPaymentEligibilityDaysCountLessOOSCK' },
+  { back: 'ccof_ccofcurrenttotaloveroosck', front: 'ccofPaymentEligibilityDaysCountOverOOSCK' },
+  { back: 'ccof_ccofcurrenttotallessooscg', front: 'ccofPaymentEligibilityDaysCountLessOOSCG' },
+  { back: 'ccof_ccofcurrenttotaloverooscg', front: 'ccofPaymentEligibilityDaysCountOverOOSCG' },
+  { back: 'ccof_ccofcurrenttotallesspre', front: 'ccofPaymentEligibilityDaysCountLessPre' },
+
+  { back: 'ccof_ccfricurrenttotalless0to18', front: 'ccfriPaymentEligibilityDaysCountLess0To18' },
+  { back: 'ccof_ccfricurrenttotalover0to18', front: 'ccfriPaymentEligibilityDaysCountOver0To18' },
+  { back: 'ccof_ccfricurrenttotalless18to36', front: 'ccfriPaymentEligibilityDaysCountLess18To36' },
+  { back: 'ccof_ccfricurrenttotalover18to36', front: 'ccfriPaymentEligibilityDaysCountOver18To36' },
+  { back: 'ccof_ccfricurrenttotalless3yk', front: 'ccfriPaymentEligibilityDaysCountLess3YK' },
+  { back: 'ccof_ccfricurrenttotalover3yk', front: 'ccfriPaymentEligibilityDaysCountOver3YK' },
+  { back: 'ccof_ccfricurrenttotallessoosck', front: 'ccfriPaymentEligibilityDaysCountLessOOSCK' },
+  { back: 'ccof_ccfricurrenttotaloveroosck', front: 'ccfriPaymentEligibilityDaysCountOverOOSCK' },
+  { back: 'ccof_ccfricurrenttotallessooscg', front: 'ccfriPaymentEligibilityDaysCountLessOOSCG' },
+  { back: 'ccof_ccfricurrenttotaloverooscg', front: 'ccfriPaymentEligibilityDaysCountOverOOSCG' },
+  { back: 'ccof_ccfricurrenttotallesspre', front: 'ccfriPaymentEligibilityDaysCountLessPre' },
 ];
 
 const EnrolmentReportExtensionMappings = [
@@ -978,6 +1006,7 @@ module.exports = {
   EnrolmentReportExtensionMappings,
   EnrolmentReportMappings,
   EnrolmentReportSummaryMappings,
+  PaymentEligibleDaysCountMappings,
   UserProfileFacilityMappings,
   UserProfileBaseFundingMappings,
   UserProfileOrganizationMappings,
