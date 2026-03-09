@@ -20,6 +20,9 @@ function isValidFQDN(string) {
   return fqdnRegex.test(string);
 }
 
+// Depending on the Vuetify version or environment, v-file-input may return either a File object
+// or a File[] (even when selecting a single file).
+// This helper normalizes the value so validation logic works consistently. Intended for single-file uploads only.
 const getFile = (value) => (Array.isArray(value) ? value[0] : value);
 
 export function allRulesAreValid(rulesArray, value) {
@@ -82,12 +85,10 @@ export const rules = {
   phone: (v) => isPhoneNumberValid(v) || 'A valid phone number is required',
   fileRules: [
     (value) => !!getFile(value) || 'This is required',
-
     (value) => {
       const file = getFile(value);
       return !file || file.name?.length <= 255 || 'File name can be max 255 characters.';
     },
-
     (value) => {
       const file = getFile(value);
       return (
@@ -96,7 +97,6 @@ export const rules = {
         `The maximum file size is ${humanFileSize(MAX_FILE_SIZE)} for each document.`
       );
     },
-
     (value) => {
       const file = getFile(value);
       return (

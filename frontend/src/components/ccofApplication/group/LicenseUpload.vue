@@ -1,73 +1,71 @@
 <template>
-  <v-skeleton-loader
-    v-if="isApplicationProcessing"
-    :loading="isApplicationProcessing"
-    type="table-tbody"
-    class="mb-12"
-  />
-  <v-form v-else ref="form" v-model="isValidForm" class="mx-8 mb-12 mx-lg-16">
-    <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
-      <v-card-title class="py-2 noticeAlert">
-        <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
-        You have a change request in progress.
-      </v-card-title>
-      <v-card-text class="pa-4">
-        We will complete the assessment of your Program Confirmation Form once your change has been processed.
-      </v-card-text>
-    </v-card>
-    <v-card class="cc-top-level-card">
-      <v-card-title class="text-center text-wrap pb-0">
-        <h3>
-          Licence Upload
-          <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
-        </h3>
-      </v-card-title>
-      <div class="licence-upload-hint pb-5 mx-10 text-center">
-        Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility.
-        {{ FILE_REQUIREMENTS_TEXT }}
-      </div>
-      <v-data-table
-        :headers="headers"
-        :items="licenseUploadData"
-        hide-default-footer
-        :items-per-page="-1"
-        :mobile="null"
-        mobile-breakpoint="md"
-        class="pa-4"
-      >
-        <template #header.document="{ column }">
-          <v-row align="center">
-            <v-col v-if="!showApplicationTemplateV1" style="max-width: 40px">
-              <AppTooltip tooltip-content="Upload the licence issued by your Health Authority." />
-            </v-col>
-            <v-col>{{ column.title }}</v-col>
-          </v-row>
-        </template>
-        <template v-if="!showApplicationTemplateV1" #item.healthAuthority="{ item }">
-          {{ getHealthAuthorityNameById(item.healthAuthority) }}
-        </template>
-        <template #item.document="{ item }">
-          <div v-if="item.document?.annotationid">
-            <span class="mr-2"> {{ item.document?.filename }} </span>
-            <v-icon v-if="!isLocked" small @click="deleteFile(item)">mdi-delete</v-icon>
+  <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
+    <v-container fluid class="px-lg-16">
+      <v-form ref="form" v-model="isValidForm">
+        <v-card v-if="isSomeChangeRequestActive() && isLocked && !isChangeRequest" class="my-10">
+          <v-card-title class="py-2 noticeAlert">
+            <v-icon size="x-large" class="py-1 px-3 noticeAlertIcon"> mdi-alert-octagon </v-icon>
+            You have a change request in progress.
+          </v-card-title>
+          <v-card-text class="pa-4">
+            We will complete the assessment of your Program Confirmation Form once your change has been processed.
+          </v-card-text>
+        </v-card>
+        <v-card class="cc-top-level-card">
+          <v-card-title class="text-center text-wrap pb-0">
+            <h3>
+              Licence Upload
+              <span v-if="isRenewal"> - {{ formattedProgramYear }} Program Confirmation Form</span>
+            </h3>
+          </v-card-title>
+          <div class="licence-upload-hint pb-5 mx-10 text-center">
+            Upload a copy of the Community Care and Assisted Living Act Facility Licence for each facility.
+            {{ FILE_REQUIREMENTS_TEXT }}
           </div>
-          <v-file-input
-            v-else
-            :id="item.facilityId"
-            color="#003366"
-            :rules="rules.fileRules"
-            prepend-icon="mdi-file-upload"
-            class="pt-4"
-            :accept="FILE_TYPES_ACCEPT"
-            :disabled="isLocked"
-            placeholder="Select your file"
-            @click:clear="deleteFile(item)"
-            @change="selectFile"
-          />
-        </template>
-      </v-data-table>
-    </v-card>
-  </v-form>
+          <v-data-table
+            :headers="headers"
+            :items="licenseUploadData"
+            hide-default-footer
+            :items-per-page="-1"
+            :mobile="null"
+            mobile-breakpoint="md"
+            class="pa-4"
+          >
+            <template #header.document="{ column }">
+              <v-row align="center">
+                <v-col v-if="!showApplicationTemplateV1" style="max-width: 40px">
+                  <AppTooltip tooltip-content="Upload the licence issued by your Health Authority." />
+                </v-col>
+                <v-col>{{ column.title }}</v-col>
+              </v-row>
+            </template>
+            <template v-if="!showApplicationTemplateV1" #item.healthAuthority="{ item }">
+              {{ getHealthAuthorityNameById(item.healthAuthority) }}
+            </template>
+            <template #item.document="{ item }">
+              <div v-if="item.document?.annotationid">
+                <span class="mr-2"> {{ item.document?.filename }} </span>
+                <v-icon v-if="!isLocked" small @click="deleteFile(item)">mdi-delete</v-icon>
+              </div>
+              <v-file-input
+                v-else
+                :id="item.facilityId"
+                color="#003366"
+                :rules="rules.fileRules"
+                prepend-icon="mdi-file-upload"
+                class="pt-4"
+                :accept="FILE_TYPES_ACCEPT"
+                :disabled="isLocked"
+                placeholder="Select your file"
+                @click:clear="deleteFile(item)"
+                @change="selectFile"
+              />
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-form>
+    </v-container>
+  </v-skeleton-loader>
   <NavButton
     :is-next-displayed="true"
     :is-save-displayed="true"
