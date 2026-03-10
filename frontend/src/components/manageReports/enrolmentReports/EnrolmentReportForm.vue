@@ -1885,16 +1885,20 @@ export default {
 
     async saveEnrolmentReport() {
       const enrolmentReportKeysForBackend = this.buildEnrolmentReportKeysForBackend();
-      const paymentEligibleDaysKeysForBackend = this.buildPaymentEligibleDaysKeysForBackend();
-      const paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
       const enrolmentReportChanged = !isEqual(
         pick(this.originalEnrolmentReport, enrolmentReportKeysForBackend),
         pick(this.enrolmentReport, enrolmentReportKeysForBackend),
       );
-      const paymentEligibleDaysChanged = !isEqual(
-        pick(this.originalEnrolmentReport, paymentEligibleDaysKeysForBackend),
-        paymentEligibleDaysPayload,
-      );
+      let paymentEligibleDaysChanged = false;
+      let paymentEligibleDaysPayload;
+      if (this.hasClosureDays) {
+        const paymentEligibleDaysKeysForBackend = this.buildPaymentEligibleDaysKeysForBackend();
+        paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
+        paymentEligibleDaysChanged = !isEqual(
+          pick(this.originalEnrolmentReport, paymentEligibleDaysKeysForBackend),
+          paymentEligibleDaysPayload,
+        );
+      }
       const differencesChanged = this.enrolmentReport.isAdjustment && !isEmpty(this.enrolmentReport.differences);
       if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
         return;
@@ -1904,10 +1908,12 @@ export default {
         payload.differences = this.enrolmentReport.differences;
         payload.differences.enrolmentReportExtensionId = this.enrolmentReport.enrolmentReportExtensionId;
       }
-      payload.paymentEligibleDaysCount = {
-        enrolmentReportExtensionId: this.enrolmentReport.enrolmentReportExtensionId,
-        ...paymentEligibleDaysPayload,
-      };
+      if (this.hasClosureDays) {
+        payload.paymentEligibleDaysCount = {
+          enrolmentReportExtensionId: this.enrolmentReport.enrolmentReportExtensionId,
+          ...paymentEligibleDaysPayload,
+        };
+      }
       await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
       await this.loadEnrolmentReport();
     },

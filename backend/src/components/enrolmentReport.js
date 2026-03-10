@@ -17,7 +17,7 @@ const { restrictFacilities } = require('../util/common');
 const { MappableObjectForBack, MappableObjectForFront } = require('../util/mapping/MappableObject');
 
 function isAdjustmentReport(report) {
-  return report?.reportType == ENROLMENT_REPORT_TYPES.ADJUSTMENT;
+  return report?.reportType === ENROLMENT_REPORT_TYPES.ADJUSTMENT;
 }
 
 function getReportVersionText(report) {
@@ -106,16 +106,17 @@ async function updateEnrolmentReport(req, res) {
   try {
     const payload = new MappableObjectForBack(req.body, EnrolmentReportMappings).toJSON();
     await patchOperationWithObjectId('ccof_monthlyenrollmentreports', req.params.enrolmentReportId, payload);
+    const { differences, paymentEligibleDaysCount } = req.body;
     const extensionPayload = {};
-    if (!isEmpty(req?.body?.differences)) {
-      const diffPayload = new MappableObjectForBack(req.body.differences, EnrolmentReportDifferenceMappings).toJSON();
+    if (!isEmpty(differences)) {
+      const diffPayload = new MappableObjectForBack(differences, EnrolmentReportDifferenceMappings).toJSON();
       Object.assign(extensionPayload, diffPayload);
     }
-    if (!isEmpty(req?.body?.paymentEligibleDaysCount)) {
-      const paymentEligibleDaysPayload = new MappableObjectForBack(req.body.paymentEligibleDaysCount, PaymentEligibleDaysCountMappings).toJSON();
+    if (!isEmpty(paymentEligibleDaysCount)) {
+      const paymentEligibleDaysPayload = new MappableObjectForBack(paymentEligibleDaysCount, PaymentEligibleDaysCountMappings).toJSON();
       Object.assign(extensionPayload, paymentEligibleDaysPayload);
     }
-    const extensionId = req?.body?.paymentEligibleDaysCount?.enrolmentReportExtensionId || req?.body?.differences?.enrolmentReportExtensionId;
+    const extensionId = paymentEligibleDaysCount?.enrolmentReportExtensionId || differences?.enrolmentReportExtensionId;
     if (extensionId && !isEmpty(extensionPayload)) {
       await patchOperationWithObjectId('ccof_monthlyenrolmentreportextensions', extensionId, extensionPayload);
     }
