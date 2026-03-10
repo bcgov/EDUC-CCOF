@@ -76,7 +76,7 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                :disabled="isStaffDuplicate"
+                :disabled="foundStaff?.isFacilityStaffDuplicate"
                 required
                 class="py-2"
               />
@@ -301,7 +301,7 @@ export default {
           isFacilityStaffActive: isFacilityStaffActive,
           isFacilityStaffDuplicate: Boolean(facilityStaffMatch),
           isReportStaffDuplicate: Boolean(reportStaffMatch),
-          hourlyWage: facilityStaffMatch?.hourlyWage ?? reportStaffMatch?.hourlyWage ?? null,
+          hourlyWage: facilityStaffMatch?.hourlyWage ?? null,
         },
       ];
     },

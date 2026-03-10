@@ -67,16 +67,6 @@ const createECEReportStaffSchema = {
     exists: { errorMessage: '[eceReportId] is required' },
     isUUID: { options: [UUID_VALIDATOR_VERSION], errorMessage: '[eceReportId] must be a valid UUID' },
   },
-  '*.hourlyWage': {
-    in: ['body'],
-    exists: {
-      errorMessage: '[hourlyWage] is required',
-    },
-    isFloat: {
-      options: { min: 1, max: 1000 },
-      errorMessage: '[hourlyWage] must be a number between 1 and 1000',
-    },
-  },
   '*.totalHoursWorked': {
     in: ['body'],
     optional: true,
