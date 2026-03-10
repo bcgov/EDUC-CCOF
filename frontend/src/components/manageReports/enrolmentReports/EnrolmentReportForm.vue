@@ -1396,6 +1396,7 @@ export default {
       originalDailyEnrolments: [],
       previousDailyEnrolments: [],
       paymentEligibleDaysCount: {},
+      originalPaymentEligibleDaysCount: {},
       showBackConfirmationDialog: false,
       showFullMonthClosureConfirmationDialog: false,
     };
@@ -1482,6 +1483,7 @@ export default {
           await this.loadPreviousEnrolmentReport();
         }
         this.calculate();
+        this.originalPaymentEligibleDaysCount = cloneDeep(this.paymentEligibleDaysCount);
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load enrolment report');
@@ -1892,12 +1894,10 @@ export default {
       let paymentEligibleDaysChanged = false;
       let paymentEligibleDaysPayload;
       if (this.hasClosureDays) {
-        const paymentEligibleDaysKeysForBackend = this.buildPaymentEligibleDaysKeysForBackend();
-        paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
-        paymentEligibleDaysChanged = !isEqual(
-          pick(this.originalEnrolmentReport, paymentEligibleDaysKeysForBackend),
-          paymentEligibleDaysPayload,
-        );
+        paymentEligibleDaysChanged = !isEqual(this.originalPaymentEligibleDaysCount,this.paymentEligibleDaysCount);
+        if (paymentEligibleDaysChanged) { 
+          paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
+        }
       }
       const differencesChanged = this.enrolmentReport.isAdjustment && !isEmpty(this.enrolmentReport.differences);
       if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
