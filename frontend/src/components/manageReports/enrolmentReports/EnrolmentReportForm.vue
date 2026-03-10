@@ -1827,6 +1827,8 @@ export default {
         }
         await this.saveEnrolmentReport();
         await this.saveDailyEnrolments();
+        this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
+        this.originalPaymentEligibleDaysCount = cloneDeep(this.paymentEligibleDaysCount);
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
         }
@@ -1888,13 +1890,13 @@ export default {
         pick(this.enrolmentReport, enrolmentReportKeysForBackend),
       );
       const paymentEligibleDaysChanged = !isEqual(this.originalPaymentEligibleDaysCount, this.paymentEligibleDaysCount);
-      const differencesChanged = this.enrolmentReport.isAdjustment && !isEmpty(this.enrolmentReport.differences);
+      const differencesChanged = this.enrolmentReport.isAdjustment && !isEqual(this.originalEnrolmentReport.differences || {}, this.enrolmentReport.differences || {});
       if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
         return;
       }
 
       const payload = pick(this.enrolmentReport, enrolmentReportKeysForBackend);
-      if (this.enrolmentReport.isAdjustment) {
+      if (differencesChanged) {
         payload.differences = {
           enrolmentReportExtensionId: this.enrolmentReport.enrolmentReportExtensionId,
           ...this.enrolmentReport.differences,
