@@ -23,7 +23,12 @@
               />
             </span>
           </v-col>
-          <v-col v-if="PERMISSIONS.VIEW_CLOSURES" class="d-flex justify-md-end align-center mb-1 mt-1" cols="12" md="2">
+          <v-col
+            v-if="hasPermission(PERMISSIONS.VIEW_CLOSURES)"
+            class="d-flex justify-md-end align-center mb-1 mt-1"
+            cols="12"
+            md="2"
+          >
             <div>
               <AppButton size="small" auto-height="false" @click.prevent="goToClosures">Closure Details</AppButton>
             </div>

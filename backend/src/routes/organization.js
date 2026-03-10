@@ -67,7 +67,6 @@ router.get(
     PERMISSIONS.VIEW_A_CR,
   ),
   [param('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
-  validateUserInOrganization,
   (req, res) => {
     validationResult(req).throw();
     return getOrganization(req, res);

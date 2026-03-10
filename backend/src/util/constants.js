@@ -93,11 +93,6 @@ const CCFRI_STATUS_CODES = Object.freeze({
   'MTFI Action Required': 13,
 });
 
-const ECE_REPORT_TYPES = Object.freeze({
-  BASE: 1,
-  ADJUSTMENT: 2,
-});
-
 const ECEWE_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
   APPROVED: 3,
@@ -231,9 +226,20 @@ const PERMISSIONS = Object.freeze({
   VIEW_ECE_STAFF: '62',
 });
 
+const ECE_REPORT_STAFF_STATUS_CODES = Object.freeze({
+  ACTIVE: 1,
+  REJECTED: 2,
+  VERIFIED: 101510001,
+});
+
 const ECE_REPORT_STATUS_CODES = Object.freeze({
   DRAFT: 1,
   SUBMITTED: 3,
+});
+
+const ECE_REPORT_TYPES = Object.freeze({
+  BASE: 1,
+  ADJUSTMENT: 2,
 });
 
 const UUID_VALIDATOR_VERSION = 'loose';
@@ -249,6 +255,7 @@ module.exports = {
   CHANGE_REQUEST_TYPES,
   CHILD_AGE_CATEGORY_ORDER,
   CHILD_AGE_CATEGORY_TYPES,
+  ECE_REPORT_STAFF_STATUS_CODES,
   ECE_REPORT_STATUS_CODES,
   ECE_REPORT_TYPES,
   ECEWE_STATUS_CODES,
