@@ -1894,7 +1894,10 @@ export default {
       let paymentEligibleDaysChanged = false;
       let paymentEligibleDaysPayload;
       if (this.hasClosureDays) {
-        paymentEligibleDaysChanged = !isEqual(this.originalPaymentEligibleDaysCount,this.paymentEligibleDaysCount);
+        paymentEligibleDaysChanged = !isEqual(
+          this.originalPaymentEligibleDaysCount,
+          this.paymentEligibleDaysCount,
+        );
         if (paymentEligibleDaysChanged) { 
           paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
         }
