@@ -1900,7 +1900,7 @@ export default {
       let paymentEligibleDaysPayload;
       if (this.hasClosureDays) {
         paymentEligibleDaysChanged = !isEqual(this.originalPaymentEligibleDaysCount, this.paymentEligibleDaysCount);
-        if (paymentEligibleDaysChanged) { 
+        if (paymentEligibleDaysChanged) {
           paymentEligibleDaysPayload = this.buildPaymentEligibleDaysPayloadForBackend();
         }
       }
