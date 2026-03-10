@@ -1890,7 +1890,9 @@ export default {
         pick(this.enrolmentReport, enrolmentReportKeysForBackend),
       );
       const paymentEligibleDaysChanged = !isEqual(this.originalPaymentEligibleDaysCount, this.paymentEligibleDaysCount);
-      const differencesChanged = this.enrolmentReport.isAdjustment && !isEqual(this.originalEnrolmentReport.differences || {}, this.enrolmentReport.differences || {});
+      const differencesChanged =
+        this.enrolmentReport.isAdjustment &&
+        !isEqual(this.originalEnrolmentReport.differences || {}, this.enrolmentReport.differences || {});
       if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
         return;
       }
