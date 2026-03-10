@@ -166,7 +166,8 @@ import {
   ECE_REPORT_STATUS_OPTIONS,
   PATHS,
 } from '@/utils/constants.js';
-import { formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
+import { getSubmissionDeadlineUTCDate } from '@/utils/eceReport';
+import { formatMonthYearToString, formatUTCDate, formatYearMonthYYYYMM } from '@/utils/format';
 
 const EDIT_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.DRAFT,
@@ -183,7 +184,7 @@ const VIEW_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.WITH_MINISTRY,
 ]);
 
-const ADJUST_STATUSES = new Set([ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID]);
+const ADJUST_STATUSES = new Set([ECE_REPORT_EXTERNAL_STATUSES.PAID]);
 
 export default {
   name: 'ManageECEReports',
@@ -205,6 +206,7 @@ export default {
         { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
+        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Version Number', key: 'version' },
         { title: 'Status', key: 'externalStatus' },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
@@ -229,7 +231,7 @@ export default {
       return (eceReport) => VIEW_STATUSES.has(eceReport?.externalStatus);
     },
     canAdjust() {
-      return (eceReport) => !this.hasNextReportCreated(eceReport) && ADJUST_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) => !eceReport.hasNextReportCreated && ADJUST_STATUSES.has(eceReport?.externalStatus);
     },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
@@ -289,6 +291,7 @@ export default {
           report.facilityName = facility?.facilityName;
           report.licenceNumber = facility?.licenseNumber;
           report.reportingMonth = formatYearMonthYYYYMM(report?.year, report?.month);
+          report.submissionDeadline = formatUTCDate(getSubmissionDeadlineUTCDate(report.year, report.month));
         }
         this.resetFilters();
         this.sortECEReports();
@@ -356,15 +359,6 @@ export default {
           return null;
       }
     },
-    hasNextReportCreated(eceReport) {
-      return this.eceReports?.some(
-        (item) =>
-          item.facilityId === eceReport.facilityId &&
-          item.month === eceReport.month &&
-          item.year === eceReport.year &&
-          item.version > eceReport.version,
-      );
-    },
     async edit(eceReport) {
       try {
         this.loading = true;
@@ -384,9 +378,24 @@ export default {
         this.loading = false;
       }
     },
-    // TODO (vietle-cgi): Implement Adjust functionality
-    adjust() {
-      window.alert('Adjust button is clicked');
+    async adjust(eceReport) {
+      try {
+        this.loading = true;
+        const adjustmentReportId = await ECEReportService.createAdjustmentReport(eceReport.eceReportId);
+        this.setSuccessAlert('Adjustment report created successfully.');
+        this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${adjustmentReportId}`);
+      } catch (error) {
+        console.error(error);
+        if (error.response?.status === 504) {
+          this.setWarningAlert(
+            'The adjustment report is currently being created. Please refresh the page in a few minutes.',
+          );
+        } else {
+          this.setFailureAlert('An error occurred while creating the adjustment report.');
+        }
+      } finally {
+        this.loading = false;
+      }
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
