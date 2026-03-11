@@ -523,7 +523,7 @@ export default {
         unlockLicenseUpload: this.unlockLicenseUpload,
         unlockSupportingDocuments: this.unlockSupportingDocuments,
       };
-
+      // Create payload with only unlock propteries set to 1.
       applicationRelockPayload = Object.fromEntries(
         Object.entries(applicationRelockPayload).filter(([_, v]) => v == 1),
       );

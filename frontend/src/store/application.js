@@ -7,7 +7,7 @@ import { useAppStore } from '@/store/app.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { checkApplicationUnlocked, filterFacilityListForPCF } from '@/utils/common.js';
-import { APPLICATION_STATUSES, APPLICATION_TYPES, ApiRoutes, DECLARATION_VERSIONS } from '@/utils/constants.js';
+import { APPLICATION_STATUSES, APPLICATION_TYPES, ApiRoutes } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 import { formatFiscalYearName } from '@/utils/format';
 
@@ -90,6 +90,7 @@ export const useApplicationStore = defineStore('application', {
     setUnlockSupportingDocuments(value) {
       this.unlockSupportingDocuments = value;
     },
+
     setIsEceweComplete(value) {
       this.isEceweComplete = value;
     },
