@@ -72,6 +72,7 @@ public class TestAdjudicatePlannedClosure extends BaseTest {
 		ClosurePage closurePage = new ClosurePage(driver);
 
         // set closure type to planned closure
+        logger.info("Setting closure type to: Planned Closures");
 		closurePage.clickClosureType();
 		Thread.sleep(2000);
 		utils.selectDropdownValue("Planned Closures", closurePage.getClosureTypeOptions());
