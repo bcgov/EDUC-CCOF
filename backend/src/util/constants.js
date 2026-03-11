@@ -93,11 +93,6 @@ const CCFRI_STATUS_CODES = Object.freeze({
   'MTFI Action Required': 13,
 });
 
-const ECE_REPORT_TYPES = Object.freeze({
-  BASE: 1,
-  ADJUSTMENT: 2,
-});
-
 const ECEWE_STATUS_CODES = Object.freeze({
   SUBMITTED: 1,
   APPROVED: 3,
@@ -106,6 +101,14 @@ const ECEWE_STATUS_CODES = Object.freeze({
   'ACTION REQUIRED': 5,
   'Opt-Out': 6,
   NEW: 7,
+});
+
+const ENROLMENT_REPORT_STATUSES = Object.freeze({
+  ACTIVE: 1,
+});
+
+const ENROLMENT_REPORT_TYPES = Object.freeze({
+  ADJUSTMENT: 100000001,
 });
 
 const PROGRAM_YEAR_STATUS_CODES = Object.freeze({
@@ -223,9 +226,20 @@ const PERMISSIONS = Object.freeze({
   VIEW_ECE_STAFF: '62',
 });
 
+const ECE_REPORT_STAFF_STATUS_CODES = Object.freeze({
+  ACTIVE: 1,
+  REJECTED: 2,
+  VERIFIED: 101510001,
+});
+
 const ECE_REPORT_STATUS_CODES = Object.freeze({
   DRAFT: 1,
   SUBMITTED: 3,
+});
+
+const ECE_REPORT_TYPES = Object.freeze({
+  BASE: 1,
+  ADJUSTMENT: 2,
 });
 
 const UUID_VALIDATOR_VERSION = 'loose';
@@ -241,9 +255,12 @@ module.exports = {
   CHANGE_REQUEST_TYPES,
   CHILD_AGE_CATEGORY_ORDER,
   CHILD_AGE_CATEGORY_TYPES,
+  ECE_REPORT_STAFF_STATUS_CODES,
   ECE_REPORT_STATUS_CODES,
   ECE_REPORT_TYPES,
   ECEWE_STATUS_CODES,
+  ENROLMENT_REPORT_STATUSES,
+  ENROLMENT_REPORT_TYPES,
   FACILITY_AGE_GROUP_CODES,
   LICENCE_CATEGORIES,
   LICENCE_STATUS_CODES,

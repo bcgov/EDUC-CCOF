@@ -32,41 +32,38 @@
                 v-model="item.totalHoursWorked"
                 :decimal="true"
                 :disabled="readonly"
-                :rules="[
-                  rules.greaterThan(0, 'Hours must be greater than 0'),
-                  rules.max(195, 'Hours cannot be more than 195'),
-                ]"
+                :rules="getTotalHoursWorkedRules(item)"
                 hide-details="auto"
                 max-width="120"
                 variant="outlined"
               />
-              <p v-if="showStaffVerifiedAmounts(item)">
+              <p v-if="showStaffApprovedAmounts(item)">
                 <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
               </p>
             </div>
           </template>
           <template #item.weAmount="{ item }">
             <p>{{ formatCurrency(item.weAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedWeAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedWeAmount) }}
             </p>
           </template>
           <template #item.statutoryBenefitAmount="{ item }">
             <p>{{ formatCurrency(item.statutoryBenefitAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedSbAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedSbAmount) }}
             </p>
           </template>
           <template #item.totalAmount="{ item }">
             <p>{{ formatCurrency(item.totalAmount) }}</p>
-            <p v-if="showStaffVerifiedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.verifiedTotalAmount) }}
+            <p v-if="showStaffApprovedAmounts(item)">
+              <strong>Approved:</strong> {{ formatCurrency(item.approvedTotalAmount) }}
             </p>
           </template>
           <template #item.actions="{ item }">
             <v-row class="action-buttons justify-end justify-lg-start">
               <AppButton
-                v-if="showRemoveButton"
+                v-if="showRemoveButton(item)"
                 :loading="loading"
                 :primary="false"
                 color="red"
@@ -79,42 +76,45 @@
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
-        <div class="calculation-summary px-4 ml-lg-auto" :class="{ 'calculation-summary--verified': isReportVerified }">
-          <v-table>
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col" class="font-weight-bold text-right">Reported</th>
-                <th v-if="isReportVerified" scope="col" class="font-weight-bold text-right">Approved</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row" class="font-weight-bold">WE Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.weSubtotal) }}</td>
-                <td v-if="isReportVerified" class="text-right">
-                  {{ formatCurrency(reportVerifiedTotals.weSubtotal) }}
+        <v-table
+          class="calculation-summary px-4 ml-lg-auto"
+          :class="{ 'calculation-summary--adjustment': isAdjustmentReport }"
+        >
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col" class="font-weight-bold text-right">
+                {{ isDraftReport ? 'Current $' : 'Reported $' }}
+              </th>
+              <th v-if="isReportApproved" scope="col" class="font-weight-bold text-right">Approved $</th>
+              <template v-if="isAdjustmentReport">
+                <th scope="col" class="font-weight-bold text-right">Prev Paid $</th>
+                <th scope="col" class="font-weight-bold text-right">Difference $</th>
+              </template>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in calculationSummaryRows" :key="row.label">
+              <th scope="row" class="font-weight-bold">
+                {{ row.label }}
+              </th>
+              <td :class="getCalculationSummaryRowClass(row)">
+                {{ formatCurrency(row.reportedAmount) }}
+              </td>
+              <td v-if="isReportApproved" :class="getCalculationSummaryRowClass(row)">
+                {{ formatCurrency(row.approvedAmount) }}
+              </td>
+              <template v-if="isAdjustmentReport">
+                <td :class="getCalculationSummaryRowClass(row)">
+                  {{ formatCurrency(row.previousPaidAmount) }}
                 </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">SB Subtotal</th>
-                <td class="text-right">{{ formatCurrency(reportTotals.sbSubtotal) }}</td>
-                <td v-if="isReportVerified" class="text-right">
-                  {{ formatCurrency(reportVerifiedTotals.sbSubtotal) }}
+                <td :class="getCalculationSummaryRowClass(row)">
+                  {{ formatCurrency(row.adjustmentDifference) }}
                 </td>
-              </tr>
-              <tr>
-                <th scope="row" class="font-weight-bold">Total</th>
-                <td class="text-right font-weight-bold">
-                  {{ formatCurrency(reportTotals.total) }}
-                </td>
-                <td v-if="isReportVerified" class="text-right font-weight-bold">
-                  {{ formatCurrency(reportVerifiedTotals.total) }}
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
-        </div>
+              </template>
+            </tr>
+          </tbody>
+        </v-table>
       </v-form>
     </v-card>
   </div>
@@ -177,7 +177,6 @@ export default {
       eceReport: null,
       addDialogOpen: false,
       reportTotals: {},
-      reportVerifiedTotals: {},
       eceFacilityStaff: [],
       originalECEReportStaff: [],
       eceReportStaff: [],
@@ -193,6 +192,7 @@ export default {
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
       publicSector: globalThis.history?.state?.publicSector ?? null,
+      previousReportApprovedAmounts: {},
     };
   },
   computed: {
@@ -219,13 +219,48 @@ export default {
     eceFacilityStaffById() {
       return new Map((this.eceFacilityStaff ?? []).map((staff) => [staff.eceStaffId, staff]));
     },
-    isReportVerified() {
+    isAdjustmentReport() {
+      return this.eceReport?.isAdjustment;
+    },
+    isDraftReport() {
+      return this.eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.DRAFT;
+    },
+    isReportApproved() {
       return [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
         this.eceReport?.externalStatus,
       );
     },
-    showRemoveButton() {
-      return !this.eceReport?.isAdjustment && !this.readonly;
+    calculationSummaryRows() {
+      const previousReport = this.previousReportApprovedAmounts ?? {};
+      const rows = [
+        {
+          label: 'WE Subtotal',
+          reportedAmount: this.reportTotals.weSubtotal ?? 0,
+          approvedAmount: this.eceReport?.approvedWeSubtotal ?? 0,
+          previousPaidAmount: previousReport.approvedWeSubtotal ?? 0,
+          bold: false,
+        },
+        {
+          label: 'SB Subtotal',
+          reportedAmount: this.reportTotals.sbSubtotal ?? 0,
+          approvedAmount: this.eceReport?.approvedSbSubtotal ?? 0,
+          previousPaidAmount: previousReport.approvedSbSubtotal ?? 0,
+          bold: false,
+        },
+        {
+          label: 'Total',
+          reportedAmount: this.reportTotals.total ?? 0,
+          approvedAmount: this.eceReport?.approvedTotalAmount ?? 0,
+          previousPaidAmount: previousReport.approvedTotalAmount ?? 0,
+          bold: true,
+        },
+      ];
+      return rows.map((row) => ({
+        ...row,
+        adjustmentDifference: this.isReportApproved
+          ? row.approvedAmount - row.previousPaidAmount
+          : row.reportedAmount - row.previousPaidAmount,
+      }));
     },
     isPartialRejection() {
       return (
@@ -235,7 +270,6 @@ export default {
     },
   },
   async created() {
-    this.rules = rules;
     await this.loadData();
     this.$refs.form?.resetValidation();
   },
@@ -245,7 +279,18 @@ export default {
     async loadData() {
       try {
         this.loading = true;
-        this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+
+        try {
+          this.eceReport = await ECEReportService.getECEReport(this.eceReportId);
+        } catch (error) {
+          if (error.response?.status === 503) {
+            this.setWarningAlert('The report is still being finalized. Please try again later.');
+            this.previous();
+            return;
+          }
+          throw error;
+        }
+
         const programYearId = this.eceReport?.programYearId;
         const applicationId = programYearId ? this.getApplicationIdByProgramYearId(programYearId) : null;
         if (this.publicSector === null && applicationId) {
@@ -257,19 +302,24 @@ export default {
           return {
             ...staff,
             eceFacilityStaffId: facilityStaff?.eceFacilityStaffId,
+            hourlyWage: facilityStaff?.hourlyWage ?? 0,
             lastName: facilityStaff?.lastName ?? '',
             firstName: facilityStaff?.firstName ?? '',
             registrationNumber: facilityStaff?.registrationNumber ?? '',
           };
         });
         this.initializeStaffChangeState();
+        if (this.isAdjustmentReport) {
+          this.previousReportApprovedAmounts = await ECEReportService.getECEReportApprovedAmounts(
+            this.eceReport.previousReportId,
+          );
+        }
         this.calculate();
       } catch (error) {
         console.error(error);
-        this.setFailureAlert('Failed to load ECE report');
-      } finally {
-        this.loading = false;
+        this.setFailureAlert('Failed to load ECE report.');
       }
+      this.loading = false;
     },
     async loadECEFacilityStaff() {
       this.eceFacilityStaff = await ECEStaffService.getECEFacilityStaff({
@@ -279,6 +329,20 @@ export default {
     initializeStaffChangeState() {
       this.eceReportStaffToDelete = [];
       this.originalECEReportStaff = deepCloneObject(this.eceReportStaff);
+    },
+    getTotalHoursWorkedRules(staff) {
+      const maxHoursRule = rules.max(195, 'Hours cannot be more than 195');
+      const greaterThanZeroRule = rules.greaterThan(0, 'Hours must be greater than 0');
+      if (this.isAdjustmentReport && staff.isInheritedFromPreviousReport) {
+        return [...rules.required, maxHoursRule];
+      }
+      return [greaterThanZeroRule, maxHoursRule];
+    },
+    getCalculationSummaryRowClass(row) {
+      return {
+        'text-right': true,
+        'font-weight-bold': row.bold,
+      };
     },
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_ECE_REPORTS);
@@ -293,8 +357,8 @@ export default {
     isStaffVerified(staff) {
       return staff?.statusCode === ECE_REPORT_STAFF_STATUSES.VERIFIED;
     },
-    showStaffVerifiedAmounts(staff) {
-      return this.isReportVerified && this.isStaffVerified(staff);
+    showStaffApprovedAmounts(staff) {
+      return this.isReportApproved && this.isStaffVerified(staff);
     },
     calculateReportedAmounts(weRate, sbRate) {
       let weSubtotal = 0;
@@ -320,44 +384,19 @@ export default {
       this.reportTotals = { weSubtotal, sbSubtotal, total };
     },
 
-    calculateVerifiedAmounts(weRate, sbRate) {
-      let weSubtotal = 0;
-      let sbSubtotal = 0;
-      let total = 0;
-
-      for (let staff of this.eceReportStaff) {
-        if (!this.isStaffVerified(staff)) continue;
-        const hours = formatDecimalNumberToNumber(staff.verifiedHours) ?? 0;
-
-        const weAmount = weRate * hours;
-        const sbAmount = sbRate * hours;
-        const totalAmount = weAmount + sbAmount;
-
-        staff.verifiedWeAmount = weAmount;
-        staff.verifiedSbAmount = sbAmount;
-        staff.verifiedTotalAmount = totalAmount;
-
-        weSubtotal += weAmount;
-        sbSubtotal += sbAmount;
-        total += totalAmount;
-      }
-
-      this.reportVerifiedTotals = { weSubtotal, sbSubtotal, total };
-    },
-
     calculate() {
       const { weRate, sbRate } = this.rates;
       if (weRate == null || sbRate == null) {
         throw new Error('Missing WE or SB rate for calculation.');
       }
       this.calculateReportedAmounts(weRate, sbRate);
-      if (this.isReportVerified) {
-        this.calculateVerifiedAmounts(weRate, sbRate);
-      }
     },
 
     addECEStaff(newStaff) {
       this.eceReportStaff.push(newStaff);
+    },
+    showRemoveButton(staff) {
+      return !this.readonly && !staff.isInheritedFromPreviousReport;
     },
     removeStaff(staff) {
       const index = this.eceReportStaff.findIndex((s) => s.registrationNumber === staff.registrationNumber);
@@ -416,7 +455,6 @@ export default {
           return {
             eceReportId: this.eceReportId,
             eceStaffId,
-            hourlyWage: staff.hourlyWage,
             totalHoursWorked: staff.totalHoursWorked,
           };
         });
@@ -449,7 +487,7 @@ export default {
   font-size: 1.1rem;
   max-width: 500px;
 }
-.calculation-summary--verified {
-  max-width: 700px;
+.calculation-summary--adjustment {
+  max-width: 800px;
 }
 </style>

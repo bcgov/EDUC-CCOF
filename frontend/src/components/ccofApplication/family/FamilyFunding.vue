@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container class="mx-lg-16">
+    <v-container class="px-lg-16">
       <FamilyFundingV1 v-if="showApplicationTemplateV1" />
       <FamilyFundingV2 v-else />
     </v-container>

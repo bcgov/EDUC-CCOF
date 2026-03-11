@@ -9,12 +9,12 @@ import org.testng.annotations.Test;
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
 import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
-import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAdjudicateApplicationCcfri extends BaseTest {
@@ -53,10 +53,11 @@ public class TestAdjudicateApplicationCcfri extends BaseTest {
 
 		// searching the contact
 		deleteApp.searchAndOpenContact(contactName);
+        Thread.sleep(3000);
 
-		BCeIDPage bceidPage = new BCeIDPage(driver);
-		bceidPage.clickSelectOrganization();
-		// Thread.sleep(3000);
+        // switches view to organization information page
+        OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
+        orgOverview.clickOrgInformation();
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 

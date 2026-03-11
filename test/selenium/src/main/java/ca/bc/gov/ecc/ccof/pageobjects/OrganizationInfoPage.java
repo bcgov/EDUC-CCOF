@@ -38,6 +38,16 @@ public class OrganizationInfoPage {
 	@FindBy(xpath = "//*[@title= 'Ignore and save']")
 	WebElement ignoreAndSaveBtn;
 
+    @FindBy(xpath = "//*[@data-id='tablist-tab_5']")
+    WebElement closuresTab;
+
+	@FindBy(xpath = "(//*[@col-id='ccof_name']//div//a)[1]")
+	WebElement closuresRecord;
+
+	// COMPLETE - APPROVED status indicator
+	@FindBy(xpath = "//*[@aria-label='COMPLETE - APPROVED']")
+	WebElement completedApprovedStatus;
+
 	public OrganizationInfoPage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -77,6 +87,27 @@ public class OrganizationInfoPage {
 
 	public void enterOrgId(String orgId) {
 		organizationID.sendKeys(orgId);
+	}
+
+	public void clickClosuresTab() {
+		closuresTab.click();
+	}
+
+	public WebElement waitBeforeClickClosuresTab() {
+		return closuresTab;
+	}
+
+	public void doubleClickClosuresRecord() {
+		Actions action = new Actions(driver);
+		action.moveToElement(closuresRecord).doubleClick().build().perform();
+	}
+
+	public WebElement waitBeforeClickClosuresRecord() {
+		return closuresRecord;
+	}
+
+	public WebElement getCompletedApprovedStatus() {
+		return completedApprovedStatus;
 	}
 
 	public void clickSaveBtn() {

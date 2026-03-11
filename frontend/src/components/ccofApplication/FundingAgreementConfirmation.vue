@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container fluid class="mx-lg-16">
+    <v-container fluid class="px-lg-16">
       <v-form ref="form" v-model="isValidForm">
         <ApplicationPCFHeader :program-year="formattedProgramYear" :organization-name="organizationName" />
         <div class="my-8">
