@@ -119,6 +119,7 @@ import {
   ORGANIZATION_PROVIDER_TYPES,
   PAGE_TITLES,
   PATHS,
+  DECLARATION_VERSIONS,
 } from '@/utils/constants.js';
 
 let positionIndex = 0;
@@ -154,6 +155,7 @@ export default {
       'applicationId',
       'renewalApplicationCCOF',
       'showApplicationTemplateV1',
+      'applicationDeclarationVersion',
     ]),
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules', 'getCCFRIById']),
@@ -307,13 +309,19 @@ export default {
         const currentCR = this.changeRequestMap.get(this.changeRequestId);
         checkbox = ['SUBMITTED', 'APPROVED'].includes(this.changeRequestStatus) && !currentCR?.unlockDeclaration;
         if (this.changeType === CHANGE_TYPES.NEW_FACILITY) {
-          linkName = 'Summary and Declaration New Facility';
+          linkName =
+            this.applicationDeclarationVersion === DECLARATION_VERSIONS.V2.value
+              ? 'Summary and Declaration New Facility V2'
+              : 'Summary and Declaration New Facility';
         } else if (this.changeType === CHANGE_TYPES.MTFI) {
           linkName = 'Summary and Declaration MTFI';
         }
       } else {
         checkbox = this.applicationStatus === 'SUBMITTED' && !this.unlockDeclaration;
-        linkName = 'Summary and Declaration';
+        linkName =
+          this.applicationDeclarationVersion === DECLARATION_VERSIONS.V2.value
+            ? 'Summary and Declaration V2'
+            : 'Summary and Declaration';
       }
       this.items.push({
         title: 'Declaration',

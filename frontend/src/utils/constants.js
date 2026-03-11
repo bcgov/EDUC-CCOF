@@ -159,6 +159,7 @@ export const PATHS = {
   SUPPORTING_DOCS: '/supporting-documents',
 
   SUMMARY_DECLARATION: '/summary-declaration',
+  SUMMARY_DECLARATION_V2: '/summary-declaration-v2',
 
   //Report Change suffixes's
   CHANGE_NOTIFICATION_FORM: '/notification-form',
