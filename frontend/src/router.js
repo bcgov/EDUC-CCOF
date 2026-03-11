@@ -18,7 +18,6 @@ import CCFRIRequestMoreInfo from '@/components/RFI/RFILanding.vue';
 import SessionExpired from '@/components/SessionExpired.vue';
 import SubmissionHistory from '@/components/SubmissionHistory.vue';
 import SummaryDeclaration from '@/components/SummaryDeclaration.vue';
-import SummaryDeclarationV2 from '@/components/SummaryDeclarationV2.vue';
 import SupportingDocumentUpload from '@/components/SupportingDocumentUpload.vue';
 import UnauthorizedView from '@/components/UnauthorizedView.vue';
 import ManageUsers from '@/components/accountMgmt/ManageUsers.vue';
@@ -406,22 +405,6 @@ const router = createRouter({
       path: pcfUrl(PATHS.SUMMARY_DECLARATION),
       name: 'Summary and Declaration',
       component: SummaryDeclaration,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: true,
-        subtitleBanner: SUBTITLE_BANNERS.APPLICATION,
-        permission: [
-          PERMISSIONS.CREATE_NEW_APPLICATION,
-          PERMISSIONS.CREATE_RENEWAL_PCF,
-          PERMISSIONS.VIEW_SUBMITTED_PCF,
-        ],
-      },
-    },
-    {
-      path: pcfUrl(PATHS.SUMMARY_DECLARATION_V2),
-      name: 'Summary and Declaration V2',
-      component: SummaryDeclarationV2,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
@@ -865,18 +848,6 @@ const router = createRouter({
       path: changeUrl(PATHS.SUMMARY_DECLARATION),
       name: 'Summary and Declaration New Facility',
       component: SummaryDeclaration,
-      meta: {
-        pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
-        requiresAuth: true,
-        showNavBar: true,
-        subtitleBanner: SUBTITLE_BANNERS.ADDFACILITY,
-        permission: [PERMISSIONS.ADD_NEW_FACILITY, PERMISSIONS.VIEW_A_CR],
-      },
-    },
-    {
-      path: changeUrl(PATHS.SUMMARY_DECLARATION),
-      name: 'Summary and Declaration New Facility V2',
-      component: SummaryDeclarationV2,
       meta: {
         pageTitle: PAGE_TITLES.SUMMARY_DECLARATION,
         requiresAuth: true,
