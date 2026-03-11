@@ -228,7 +228,7 @@
       </div>
 
       <div class="my-8">
-        <h4 class="my-2">Direct Care Staff Wages Increases</h4>
+        <h4 class="my-2">Direct Care Staff Wage Increases</h4>
         <p class="summary-label">Is your fee increase due to a wage increase for Direct Care Staff?</p>
         <v-text-field
           placeholder="Required"

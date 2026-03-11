@@ -231,7 +231,7 @@ export default {
       return (eceReport) => VIEW_STATUSES.has(eceReport?.externalStatus);
     },
     canAdjust() {
-      return (eceReport) => !this.hasNextReportCreated(eceReport) && ADJUST_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) => !eceReport.hasNextReportCreated && ADJUST_STATUSES.has(eceReport?.externalStatus);
     },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
@@ -359,15 +359,6 @@ export default {
           return null;
       }
     },
-    hasNextReportCreated(eceReport) {
-      return this.eceReports?.some(
-        (item) =>
-          item.facilityId === eceReport.facilityId &&
-          item.month === eceReport.month &&
-          item.year === eceReport.year &&
-          item.version > eceReport.version,
-      );
-    },
     async edit(eceReport) {
       try {
         this.loading = true;
@@ -387,9 +378,24 @@ export default {
         this.loading = false;
       }
     },
-    // TODO (vietle-cgi): Implement Adjust functionality
-    adjust() {
-      window.alert('Adjust button is clicked');
+    async adjust(eceReport) {
+      try {
+        this.loading = true;
+        const adjustmentReportId = await ECEReportService.createAdjustmentReport(eceReport.eceReportId);
+        this.setSuccessAlert('Adjustment report created successfully.');
+        this.$router.push(`${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${adjustmentReportId}`);
+      } catch (error) {
+        console.error(error);
+        if (error.response?.status === 504) {
+          this.setWarningAlert(
+            'The adjustment report is currently being created. Please refresh the page in a few minutes.',
+          );
+        } else {
+          this.setFailureAlert('An error occurred while creating the adjustment report.');
+        }
+      } finally {
+        this.loading = false;
+      }
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
