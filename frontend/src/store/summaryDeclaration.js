@@ -14,6 +14,7 @@ import {
   ApiRoutes,
   CCFRI_FEE_CORRECT_TYPES,
   CHANGE_REQUEST_TYPES,
+  DECLARATION_VERSIONS,
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
@@ -191,6 +192,11 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
     setSummaryModel(value) {
       this.summaryModel = value;
     },
+    resolveDeclarationVersion(declarationVersion) {
+      return Number(declarationVersion) === Number(DECLARATION_VERSIONS.V2.value)
+        ? DECLARATION_VERSIONS.V2.value
+        : DECLARATION_VERSIONS.V1.value;
+    },
     async loadDeclaration() {
       checkSession();
       const applicationStore = useApplicationStore();
@@ -198,6 +204,9 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         const payload = (
           await ApiService.apiAxios.get(`${ApiRoutes.APPLICATION_DECLARATION}/${applicationStore.applicationId}`)
         ).data;
+        if (payload) {
+          payload.declarationVersion = this.resolveDeclarationVersion(payload.declarationVersion);
+        }
         if (payload && applicationStore.unlockDeclaration) {
           payload.agreeConsentCertify = null;
           payload.orgContactName = null;
@@ -234,6 +243,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
         orgContactName: this.declarationModel?.orgContactName,
         declarationAStatus: this.declarationModel?.declarationAStatus ?? null,
         declarationBStatus: this.declarationModel?.declarationBStatus ?? null,
+        declarationVersion: DECLARATION_VERSIONS.V2.value,
         summaryDeclarationApplicationName: this.summaryModel?.application?.name,
       };
       try {

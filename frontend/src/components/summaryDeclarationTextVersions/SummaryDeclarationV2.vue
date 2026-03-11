@@ -9,8 +9,8 @@
       <v-container fluid class="px-6">
         <template v-if="showDeclarationA">
           <p>
-            I hereby confirm that the information I have provided in this application is complete and accurate. I
-            certify that I have read and understand the following requirements:
+            this is 2. I hereby confirm that the information I have provided in this application is complete and
+            accurate. I certify that I have read and understand the following requirements:
           </p>
 
           <ul class="ml-5 pt-5">

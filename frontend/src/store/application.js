@@ -17,7 +17,6 @@ export const useApplicationStore = defineStore('application', {
     applicationStatus: null,
     applicationType: null,
     applicationTemplateVersion: null,
-    applicationDeclarationVersion: null,
     ccofApplicationStatus: null,
     programYearId: null,
     programYearLabel: null,
@@ -54,9 +53,6 @@ export const useApplicationStore = defineStore('application', {
     },
     setApplicationTemplateVersion(value) {
       this.applicationTemplateVersion = Number(value);
-    },
-    setDeclarationVersion(value) {
-      this.applicationDeclarationVersion = value;
     },
     setCcofApplicationStatus(value) {
       this.ccofApplicationStatus = value;
@@ -127,15 +123,6 @@ export const useApplicationStore = defineStore('application', {
       });
       this.applicationMap = map;
     },
-    getDeclarationVersion(applicationStatus, declarationVersion) {
-      if ([APPLICATION_STATUSES.DRAFT, APPLICATION_STATUSES.ACTION_REQUIRED].includes(applicationStatus)) {
-        return DECLARATION_VERSIONS.V2.value;
-      }
-
-      return Number(declarationVersion) === Number(DECLARATION_VERSIONS.V2.value)
-        ? DECLARATION_VERSIONS.V2.value
-        : DECLARATION_VERSIONS.V1.value;
-    },
     removeFacilityFromMap(facilityId) {
       let app = this.applicationMap?.get(this.programYearId);
       //it should almost always have an app.. this just solves for the case where it's a brand new PCF application, and they haven't refreshed yet
@@ -156,10 +143,6 @@ export const useApplicationStore = defineStore('application', {
         this.setApplicationId(application.applicationId);
         this.setApplicationStatus(application.applicationStatus);
         this.setApplicationTemplateVersion(application.applicationTemplateVersion);
-        this.setDeclarationVersion(2);
-        /*this.setDeclarationVersion(
-          this.getDeclarationVersion(application.applicationStatus, application.declarationVersion),
-        );*/
         this.setApplicationType(application.applicationType);
         this.setCcofApplicationStatus(application.ccofApplicationStatus);
         this.setProgramYearId(application.ccofProgramYearId);

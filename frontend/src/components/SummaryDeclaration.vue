@@ -128,7 +128,7 @@
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </div>
       <SummaryDeclarationV2
-        v-if="isDeclarationV2"
+        v-if="showDeclarationV2"
         :model="model"
         :is-application-processing="isApplicationProcessing"
         :is-change-request="isChangeRequest"
@@ -251,7 +251,6 @@ export default {
       'applicationUploadedDocuments',
       'applicationStatus',
       'applicationTemplateVersion',
-      'applicationDeclarationVersion',
       'formattedProgramYear',
       'isApplicationProcessing',
       'isRenewal',
@@ -309,8 +308,8 @@ export default {
       }
       return false;
     },
-    isDeclarationV2() {
-      return this.applicationDeclarationVersion === DECLARATION_VERSIONS.V2.value;
+    showDeclarationV2() {
+      return !this.isReadOnly || this.declarationModel?.declarationVersion === DECLARATION_VERSIONS.V2.value;
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
