@@ -3,7 +3,6 @@ package ca.bc.gov.ecc.ccof.pageobjects;
 import java.time.Duration;
 import java.util.List;
 
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
