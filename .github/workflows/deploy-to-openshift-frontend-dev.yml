@@ -196,6 +196,10 @@ jobs:
     runs-on: ubuntu-24.04
     environment: dev
     steps:
+      - name: Check out repository with branch [${{ env.BRANCH }}]
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH }}
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
@@ -203,4 +207,4 @@ jobs:
           artifact_name: ccof_frontend_zap
           fail_action: true              # fail the job if alerts found
           allow_issue_writing: false     # don't open/update a GitHub Issue
-          cmd_options: -l FAIL
+          rules_file_name: .zap/rules-frontend.tsv
