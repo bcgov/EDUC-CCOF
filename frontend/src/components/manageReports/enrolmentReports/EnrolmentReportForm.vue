@@ -1827,7 +1827,6 @@ export default {
         }
         await this.saveEnrolmentReport();
         await this.saveDailyEnrolments();
-        this.originalEnrolmentReport = cloneDeep(this.enrolmentReport);
         this.originalPaymentEligibleDaysCount = cloneDeep(this.paymentEligibleDaysCount);
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
