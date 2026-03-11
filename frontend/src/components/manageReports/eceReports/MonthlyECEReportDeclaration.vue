@@ -60,8 +60,8 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
-import { formatUTCtoPacificTime } from '@/utils/format';
-import { isReportReadOnly } from '@/utils/eceReport.js';
+import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
+import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -99,10 +99,15 @@ export default {
       const currentYear = today?.year;
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
+    currentDate() {
+      return formatUTCDate(this.userInfo?.serverTime);
+    },
     isSubmitDisabled() {
+      const isAfterSubmissionDeadline = this.currentDate > this.submissionDeadline;
       return (
         !this.hasReportingMonthEnded ||
         isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) ||
+        (!this.eceReport.isAdjustment && isAfterSubmissionDeadline) ||
         this.isMinistryUser
       );
     },
@@ -121,6 +126,9 @@ export default {
         if (this.publicSector === null && applicationId) {
           this.publicSector = await ApplicationService.getEceweHeader(applicationId);
         }
+        this.submissionDeadline = formatUTCDate(
+          getSubmissionDeadlineUTCDate(this.eceReport.year, this.eceReport.month),
+        );
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE report');
