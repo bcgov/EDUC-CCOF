@@ -318,9 +318,9 @@ Redis.init()
     });
 
     // ZAP Scan Proxy Disclosure Alert fix
-    const blockedMethods = ['TRACE', 'TRACK', 'OPTIONS'];
+    const blockedMethods = new Set(['TRACE', 'TRACK', 'OPTIONS']);
     app.use((req, res, next) => {
-      if (blockedMethods.includes(req.method)) return res.sendStatus(HttpStatus.METHOD_NOT_ALLOWED);
+      if (blockedMethods.has(req.method)) return res.sendStatus(HttpStatus.METHOD_NOT_ALLOWED);
       return next();
     });
     app.disable('x-powered-by');
