@@ -29,6 +29,12 @@ public class TestAdjudicatePlannedClosure extends BaseTest {
 		Utilities utils = new Utilities(driver);
         contactName = utils.getDataFromJson("contact");
 
+		// load labels from test data
+		String closureTypeLabel = utils.getDataFromJson("planned_closureType");
+		String approvedAsLabel = utils.getDataFromJson("planned_approvedAs");
+		String paymentEligibilityLabel = utils.getDataFromJson("paymentEligibility");
+		String closureStatusLabel = utils.getDataFromJson("closureStatusOptions");
+
 		// login to application
 		Thread.sleep(3000);
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
@@ -72,22 +78,22 @@ public class TestAdjudicatePlannedClosure extends BaseTest {
 		ClosurePage closurePage = new ClosurePage(driver);
 
         // set closure type to planned closure
-        logger.info("Setting closure type to: Planned Closures");
+        logger.info("Setting closure type to: " + closureTypeLabel);
 		closurePage.clickClosureType();
 		Thread.sleep(2000);
-		utils.selectDropdownValue("Planned Closures", closurePage.getClosureTypeOptions());
+		utils.selectDropdownValue(closureTypeLabel, closurePage.getClosureTypeOptions());
 		Thread.sleep(3000);
 
-		// set approved as to CCFRI
+		// set approved as
 		closurePage.clickApprovedAsField();
 		Thread.sleep(2000);
-		utils.selectDropdownValue("CCFRI", closurePage.getApprovedAsOptions());
+		utils.selectDropdownValue(approvedAsLabel, closurePage.getApprovedAsOptions());
 		Thread.sleep(3000);
 
-		// set payment eligibility to CCOF Base Funding
+		// set payment eligibility
 		closurePage.clickPaymentEligibilityField();
 		Thread.sleep(2000);
-		utils.selectDropdownValue("CCOF Base Funding", closurePage.getPaymentEligibilityOptions());
+		utils.selectDropdownValue(paymentEligibilityLabel, closurePage.getPaymentEligibilityOptions());
 		Thread.sleep(3000);
 
 		// click the arrow dropdown to reveal closure status
@@ -98,7 +104,7 @@ public class TestAdjudicatePlannedClosure extends BaseTest {
 		// set closure status to Complete - Approved
 		closurePage.clickClosureStatusField();
 		Thread.sleep(2000);
-		utils.selectDropdownValue("COMPLETE - APPROVED", closurePage.getClosureStatusOptions());
+		utils.selectDropdownValue(closureStatusLabel, closurePage.getClosureStatusOptions());
 		Thread.sleep(3000);
 
 		// save the record
@@ -110,4 +116,3 @@ public class TestAdjudicatePlannedClosure extends BaseTest {
 		Assert.assertTrue(orgInfo.getCompletedApprovedStatus().isDisplayed(), "Expected 'COMPLETE - APPROVED' status to be displayed after save.");
 	}
 }
-
