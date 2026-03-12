@@ -1019,7 +1019,6 @@ const router = createRouter({
         permission: PERMISSIONS.VIEW_ER,
       },
     },
-    // TODO: Implement ECE Reports permission
     {
       path: PATHS.ROOT.MANAGE_ECE_REPORTS,
       name: 'manage-ece-reports',
@@ -1028,15 +1027,16 @@ const router = createRouter({
         pageTitle: PAGE_TITLES.MANAGE_ECE_REPORTS,
         showNavBar: false,
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ECE_REPORT,
       },
     },
-    // TODO: Implement ECE Reports permission
     {
       path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/:eceReportId`,
       name: 'monthly-ece-report',
       component: MonthlyECEReport,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.VIEW_ECE_REPORT,
       },
     },
     {
@@ -1045,6 +1045,7 @@ const router = createRouter({
       component: MonthlyECEReportDeclaration,
       meta: {
         requiresAuth: true,
+        permission: PERMISSIONS.SUBMIT_ECE_REPORT,
       },
     },
     {

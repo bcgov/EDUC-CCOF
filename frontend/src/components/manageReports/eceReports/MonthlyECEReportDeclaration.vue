@@ -42,7 +42,7 @@
   <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
   <ReportNavButtons
     :loading="isBusy"
-    :is-submit-displayed="true"
+    :is-submit-displayed="hasPermission(PERMISSIONS.SUBMIT_ECE_REPORT)"
     :is-submit-disabled="isSubmitDisabled"
     @previous="previous"
     @submit="submit"
@@ -55,6 +55,7 @@ import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import SubmitConfirmationDialog from '@/components/manageReports/eceReports/SubmitConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
@@ -70,7 +71,7 @@ export default {
     ReportNavButtons,
     SubmitConfirmationDialog,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       eceReport: null,
