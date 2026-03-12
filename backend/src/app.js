@@ -316,6 +316,15 @@ Redis.init()
     process.on('unhandledRejection', (err) => {
       log.error('Unhandled Rejection at:', err?.stack || err);
     });
+
+    // ZAP Scan Proxy Disclosure Alert fix
+    const blockedMethods = ['TRACE', 'TRACK']
+    app.use((req, res, next) => {
+      if (blockedMethods.includes(req.method)) return res.sendStatus(HttpStatus.METHOD_NOT_ALLOWED)
+      return next()
+    })
+    app.disable('x-powered-by')
+
   });
 
 module.exports = app;
