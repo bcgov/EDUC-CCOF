@@ -208,6 +208,10 @@ jobs:
     runs-on: ubuntu-24.04
     environment: dev
     steps:
+      - name: Check out repository with branch [${{ env.BRANCH }}]
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH }}
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
