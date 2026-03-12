@@ -10,7 +10,7 @@ root * /srv
 file_server
 
 @blocked_methods {
-	method TRACE TRACK
+	method TRACE TRACK OPTIONS
 }
 respond @blocked_methods 405
 
