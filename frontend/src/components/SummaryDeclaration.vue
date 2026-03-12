@@ -432,29 +432,6 @@ export default {
         if (!isEmpty(this.declarationModel)) {
           this.model = cloneDeep(this.declarationModel);
         }
-        if (!this.isChangeRequest && (this.isRenewal || (this.unlockDeclaration && this.organizationAccountNumber))) {
-          // Establish the server time
-          const serverTime = new Date(this.userInfo.serverTime);
-
-          // Determine declaration b start date
-          let declarationBStart = null;
-          this.programYearList.list.find((item) => {
-            if (item.programYearId == this.programYearId) {
-              declarationBStart = new Date(item.declarationbStart);
-            }
-          });
-          // Determine:
-          //   - which user declaration text version (status a or b) will display
-          //   - which declaration status (a or b) will be saved on submit.
-          // saved as part of submission.
-          if (serverTime < declarationBStart) {
-            this.model.declarationAStatus = 1;
-            this.model.declarationBStatus = undefined;
-          } else {
-            this.model.declarationBStatus = 1;
-            this.model.declarationAStatus = undefined;
-          }
-        }
       } catch (error) {
         console.error('Error loading application Summary Declaration.', error);
         this.setFailureAlert('Error loading application Summary Declaration.');

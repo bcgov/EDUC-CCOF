@@ -205,11 +205,9 @@ export const NAV_BAR_GROUPS = {
 export const DECLARATION_VERSIONS = {
   V1: {
     value: null,
-    isActive: false,
   },
   V2: {
     value: 2,
-    isActive: true,
   },
 };
 
