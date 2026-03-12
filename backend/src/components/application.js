@@ -342,10 +342,7 @@ async function updateECEWEFacilityApplication(req, res) {
 /* Get the user declaration for a given application id. */
 async function getDeclaration(req, res) {
   try {
-    const operation =
-      'ccof_applications(' +
-      req.params.applicationId +
-      ')?$select=ccof_consent,ccof_submittedby,ccof_latestsubmissiondate,ccof_declarationastatus,ccof_declarationbstatus,statuscode,ccof_declaration_version';
+    const operation = `ccof_applications(${req.params.applicationId})?$select=ccof_consent,ccof_submittedby,ccof_latestsubmissiondate,ccof_declarationastatus,ccof_declarationbstatus,statuscode,ccof_declaration_version`;
     let declaration = await getOperation(operation);
     declaration = new MappableObjectForFront(declaration, DeclarationMappings);
     return res.status(HttpStatus.OK).json(declaration);

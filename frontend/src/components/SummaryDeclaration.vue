@@ -127,28 +127,46 @@
       <div v-if="getFundingAgreementNumber && !isChangeRequest" class="my-8 text-h5 text-center text-primary">
         Funding Agreement Number: {{ getFundingAgreementNumber }}
       </div>
-      <SummaryDeclarationV2
-        v-if="showDeclarationV2"
-        :model="model"
-        :is-application-processing="isApplicationProcessing"
-        :is-change-request="isChangeRequest"
-        :is-renewal="isRenewal"
-        :is-read-only="isReadOnly"
-        :submission-timestamp="submissionTimestamp"
-        @update:model="model = $event"
-      />
-      <SummaryDeclarationV1
-        v-else
-        :model="model"
-        :is-application-processing="isApplicationProcessing"
-        :is-change-request="isChangeRequest"
-        :is-renewal="isRenewal"
-        :is-read-only="isReadOnly"
-        :organization-account-number="organizationAccountNumber"
-        :get-funding-agreement-number="getFundingAgreementNumber"
-        :submission-timestamp="submissionTimestamp"
-        @update:model="model = $event"
-      />
+      <v-card class="my-8 rounded-lg" elevation="4">
+        <v-card-title class="rounded-t-lg py-3 card-title font-weight-bold">Declaration</v-card-title>
+
+        <v-skeleton-loader
+          :loading="isApplicationProcessing"
+          type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
+        >
+          <v-container fluid class="px-6">
+            <DeclarationTextV2 v-if="showDeclarationV2" :model="model" />
+            <DeclarationTextV1 v-else :model="model" />
+
+            <div class="my-2">
+              <v-checkbox
+                v-if="!isRenewal"
+                v-model="model.agreeConsentCertify"
+                :disabled="isReadOnly"
+                :value="1"
+                label="I, the applicant, do hereby certify that all the information provided is true and complete to the best of my knowledge and belief. By clicking this check-box, I indicate that I agree to the foregoing terms and conditions."
+              />
+              <v-checkbox
+                v-else
+                v-model="model.agreeConsentCertify"
+                :disabled="isReadOnly"
+                :value="1"
+                label="I agree, consent, and certify"
+              />
+              <v-text-field
+                id="signatureTextField"
+                v-model="model.orgContactName"
+                variant="outlined"
+                :disabled="isReadOnly"
+                label="Your Organization's Authorized Signing Authority"
+              />
+            </div>
+            <div v-if="isReadOnly && submissionTimestamp" class="text-grey mt-2">
+              Last Submitted on: {{ submissionTimestamp }}
+            </div>
+          </v-container>
+        </v-skeleton-loader>
+      </v-card>
     </div>
     <NavButton
       :is-submit-displayed="!isReadOnly"
@@ -185,8 +203,8 @@ import ChangeNotificationFormSummary from '@/components/summary/changeRequest/Ch
 import CCOFBaseFundingSummary from '@/components/summary/group/CCOFBaseFundingSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
-import SummaryDeclarationV1 from '@/components/summaryDeclarationTextVersions/SummaryDeclarationV1.vue';
-import SummaryDeclarationV2 from '@/components/summaryDeclarationTextVersions/SummaryDeclarationV2.vue';
+import DeclarationTextV1 from '@/components/declarationTextVersions/DeclarationTextV1.vue';
+import DeclarationTextV2 from '@/components/declarationTextVersions/DeclarationTextV2.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
@@ -201,7 +219,6 @@ import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useCcfriAppStore } from '@/store/ccfriApp.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 import ApplicationService from '@/services/applicationService';
@@ -211,7 +228,7 @@ import {
   AFS_STATUSES,
   CHANGE_REQUEST_TYPES,
   DOCUMENT_TYPES,
-  DECLARATION_VERSIONS,
+  DECLARATION_TEXT_VERSIONS,
   FUNDING_AGREEMENT_EXTERNAL_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
@@ -231,8 +248,8 @@ export default {
     FacilityInformationSummaryDialog,
     NavButton,
     OrganizationSummary,
-    SummaryDeclarationV1,
-    SummaryDeclarationV2,
+    DeclarationTextV1,
+    DeclarationTextV2,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {
@@ -268,7 +285,6 @@ export default {
     ...mapState(useAuthStore, ['isMinistryUser', 'userInfo']),
     ...mapState(useCcfriAppStore, ['approvableFeeSchedules']),
     ...mapState(useNavBarStore, ['changeRequestId', 'isChangeRequest', 'navBarList', 'previousPath']),
-    ...mapState(useOrganizationStore, ['organizationAccountNumber']),
     ...mapState(useReportChangesStore, ['hasActiveChangeRequest', 'isChangeNotificationFormComplete']),
     ...mapState(useSummaryDeclarationStore, ['declarationModel', 'facilities', 'summaryModel']),
     languageYearLabel() {
@@ -309,7 +325,7 @@ export default {
       return false;
     },
     showDeclarationV2() {
-      return !this.isReadOnly || this.declarationModel?.declarationVersion === DECLARATION_VERSIONS.V2.value;
+      return !this.isReadOnly || this.declarationModel?.declarationVersion === DECLARATION_TEXT_VERSIONS.V2;
     },
     isSomeApplicationUnlocked() {
       const applicationList = Array.from(this.applicationMap?.values());
@@ -445,7 +461,6 @@ export default {
         this.setIsApplicationProcessing(true);
         this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
-          // await this.updateDeclaration({changeRequestId: this.$route.params?.changeRecGuid, reLockPayload:this.createChangeRequestRelockPayload()});
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
           await this.updateRenewalFundingAgreementBeforeSubmit();
@@ -465,30 +480,6 @@ export default {
       if (Object.keys(ccrfiRelockPayload).length > 0) {
         applicationRelockPayload['facilities'] = ccrfiRelockPayload;
       }
-      return applicationRelockPayload;
-    },
-    createChangeRequestRelockPayload() {
-      let applicationRelockPayload = {
-        unlockDeclaration: this.model.unlockDeclaration,
-        unlockChangeRequestDocument: this.model.unlockChangeRequestDocument,
-        unlockChangeRequest: this.model.unlockChangeRequest,
-      };
-
-      let ccrfiRelockPayload = this.createRelockPayloadForCCFRI(); //mentioned that we might need this, but actually I think no.. TODO: ask rob
-      if (Object.keys(ccrfiRelockPayload).length > 0) {
-        applicationRelockPayload['facilities'] = ccrfiRelockPayload;
-      }
-      // Create payload with only unlock propteries set to 1.
-
-      applicationRelockPayload = Object.fromEntries(
-        Object.entries(applicationRelockPayload).filter(([_, v]) => v == true),
-      );
-
-      // Update payload unlock properties from true to false for change request
-      Object.keys(applicationRelockPayload).forEach((key) => {
-        applicationRelockPayload[key] = false;
-      });
-
       return applicationRelockPayload;
     },
     createRelockPayloadForApplication() {
