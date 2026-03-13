@@ -476,6 +476,7 @@ const DeclarationMappings = [
   { back: 'ccof_latestsubmissiondate', front: 'latestSubmissionDate' },
   { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+  { back: 'ccof_declaration_version', front: 'declarationVersion' },
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
