@@ -102,7 +102,7 @@ router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  validatePermission(PERMISSIONS.VIEW_ECE_STAFF),
+  validatePermission(PERMISSIONS.VIEW_ECE_REPORT, PERMISSIONS.VIEW_ECE_STAFF),
   query('facilityId', 'Query param: [facilityId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
@@ -165,7 +165,6 @@ router.post(
   },
 );
 
-// TODO: Implement ECE Reports permission
 /**
  * Create ECE Report Staff records
  */
@@ -173,6 +172,7 @@ router.post(
   '/report-staff',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_ECE_REPORT, PERMISSIONS.EDIT_ECE_REPORT, PERMISSIONS.ADJUST_ECE_REPORT),
   body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
   checkSchema(createECEReportStaffSchema),
   (req, res) => {
@@ -181,7 +181,6 @@ router.post(
   },
 );
 
-// TODO: Implement ECE Reports permission
 /**
  * Update ECE Report Staff records
  */
@@ -189,7 +188,7 @@ router.patch(
   '/report-staff',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
-  //TODO: Add permissions here
+  validatePermission(PERMISSIONS.CREATE_ECE_REPORT, PERMISSIONS.EDIT_ECE_REPORT, PERMISSIONS.ADJUST_ECE_REPORT),
   body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'),
   checkSchema(updateECEReportStaffSchema),
   (req, res) => {
@@ -198,7 +197,6 @@ router.patch(
   },
 );
 
-// TODO: Implement ECE Reports permission
 /**
  * Delete ECE Report Staff records
  */
@@ -206,6 +204,7 @@ router.delete(
   '/report-staff',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.EDIT_ECE_REPORT),
   [body().isArray({ min: 1 }).withMessage('Request body must be a non-empty array'), body('*').isUUID(UUID_VALIDATOR_VERSION).withMessage('Each ID must be a valid UUID')],
   (req, res) => {
     validationResult(req).throw();
