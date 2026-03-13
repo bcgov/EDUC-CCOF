@@ -212,7 +212,7 @@ export default {
         { title: 'Version Number', key: 'version' },
         { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Status', key: 'externalStatus' },
-        { title: 'Rejected', key: 'rejected' },
+        { title: 'Rejected', key: 'rejected', sortable: false },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       eceReports: [],

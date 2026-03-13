@@ -842,8 +842,8 @@ export const ECE_CERTIFICATE_LEVELS = Object.freeze({
   ECE_ASSISTANT: 'ECE Assistant',
 });
 
-export const REJECTION_TYPES = {
+export const REJECTION_TYPES = Object.freeze({
   FULL_REJECTION: 'Yes - Full rejection',
   PARTIAL_REJECTION: 'Yes - Partial rejection',
   NO_REJECTION: 'No',
-};
+});
