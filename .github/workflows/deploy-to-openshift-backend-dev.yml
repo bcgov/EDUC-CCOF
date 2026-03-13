@@ -208,7 +208,7 @@ jobs:
   zap:
     name: Run Zap Scan
     permissions:
-      content: read
+      contents: read
     needs: openshift-ci-cd
     runs-on: ubuntu-24.04
     environment: dev
