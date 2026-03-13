@@ -44,6 +44,9 @@ on:
 jobs:
   openshift-ci-cd:
     name: Build and deploy Backend to DEV
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: dev
 
@@ -204,10 +207,16 @@ jobs:
 
   zap:
     name: Run Zap Scan
+    permissions:
+      contents: read
     needs: openshift-ci-cd
     runs-on: ubuntu-24.04
     environment: dev
     steps:
+      - name: Check out repository with branch [${{ env.BRANCH }}]
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.BRANCH }}
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
@@ -215,3 +224,4 @@ jobs:
           artifact_name: ccof_backend_zap
           fail_action: true              # fail the job if alerts found
           allow_issue_writing: false     # don't open/update a GitHub Issue
+          rules_file_name: .zap/rules-backend.tsv

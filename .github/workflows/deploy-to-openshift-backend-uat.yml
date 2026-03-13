@@ -49,6 +49,9 @@ on:
 jobs:
   openshift-ci-cd:
     name: Deploy Backend to TEST
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: test
 
