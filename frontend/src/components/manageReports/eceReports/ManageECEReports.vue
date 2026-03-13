@@ -105,7 +105,7 @@
           </span>
         </template>
         <template #item.rejected="{ item }">
-          {{ getRejectedValue(item) }}
+          {{ getECEReportRejectionType(item) }}
         </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
@@ -162,7 +162,7 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { buildFiscalYearMonths } from '@/utils/common.js';
+import { buildFiscalYearMonths, getECEReportRejectionType } from '@/utils/common.js';
 import {
   ECE_REPORT_EXTERNAL_STATUSES,
   ECE_REPORT_INTERNAL_STATUSES,
@@ -177,12 +177,6 @@ const EDIT_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.REJECTED,
   ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED,
 ]);
-
-const REJECTION_TYPES = {
-  FULL_REJECTION: 'Yes - Full rejection',
-  PARTIAL_REJECTION: 'Yes - Partial rejection',
-  NO_REJECTION: 'No',
-};
 
 const VIEW_STATUSES = new Set([
   ECE_REPORT_EXTERNAL_STATUSES.APPROVED,
@@ -288,6 +282,7 @@ export default {
   },
   methods: {
     formatMonthYearToString,
+    getECEReportRejectionType,
     async loadData() {
       try {
         this.loading = true;

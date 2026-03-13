@@ -50,7 +50,7 @@ async function createECEReport(req, res) {
 
 async function getRawECEReport(eceReportId) {
   const response = await getOperation(
-    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode)`,
+    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode,ccof_reason_for_rejection)`,
   );
   return response;
 }

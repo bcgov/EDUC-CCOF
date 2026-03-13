@@ -11,12 +11,14 @@ import {
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CCOF_STATUS,
+  ECE_REPORT_EXTERNAL_STATUSES,
   ECE_STAFF_CERT_STATUSES,
   LICENCE_STATUSES,
   OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
+  REJECTION_TYPES,
 } from '@/utils/constants.js';
 import { formatMonthYearToString, formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
@@ -497,4 +499,23 @@ export function parseNumber(value) {
   if (value == null || value === '') return Number.NaN;
   if (typeof value === 'number') return value;
   return Number(String(value).replace(/,/g, ''));
+}
+
+/**
+ * Determines the rejection type of an ECE report.
+ *
+ * @param {Object} eceReport - The ECE report object
+ * @returns {string} - One of REJECTION_TYPES: FULL_REJECTION, PARTIAL_REJECTION, NO_REJECTION
+ */
+export function getECEReportRejectionType(eceReport) {
+  if (eceReport.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED) {
+    return REJECTION_TYPES.FULL_REJECTION;
+  }
+  if (
+    eceReport.rejectedStaffCount > 0 &&
+    [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(eceReport.externalStatus)
+  ) {
+    return REJECTION_TYPES.PARTIAL_REJECTION;
+  }
+  return REJECTION_TYPES.NO_REJECTION;
 }

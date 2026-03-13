@@ -950,6 +950,7 @@ const ECEReportMappings = [
   { back: 'statuscode', front: 'statusCode' },
   { back: 'ccof_external_status', front: 'externalStatus' },
   { back: 'ccof_rejected_ece_staff', front: 'rejectedStaffCount' },
+  { back: 'ccof_reason_for_rejection', front: 'reportRejectionReason' },
 ];
 
 const ECEReportStaffMappings = [
@@ -962,6 +963,7 @@ const ECEReportStaffMappings = [
   { back: 'ccof_total_amount', front: 'approvedTotalAmount' },
   { back: 'ccof_is_inherited_from_parent_report', front: 'isInheritedFromPreviousReport' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_reason_for_rejection', front: 'staffRejectionReason' },
 ];
 
 const ECEStaffMappings = [
