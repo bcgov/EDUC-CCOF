@@ -10,6 +10,7 @@ const atob = require('atob');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
+const HttpStatus = require('http-status-codes');
 const utils = require('./components/utils');
 const auth = require('./components/auth');
 const { getUserProfile } = require('./components/user');
