@@ -52,6 +52,9 @@ on:
 jobs:
   openshift-ci-cd:
     name: Deploy Frontend to EFX
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: efx
 

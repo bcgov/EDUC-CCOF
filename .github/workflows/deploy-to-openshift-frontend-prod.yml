@@ -53,7 +53,10 @@ on:
 
 jobs:
   openshift-ci-cd:
-    name: Deploy  Frontend to PROD
+    name: Deploy Frontend to PROD
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: prod
 

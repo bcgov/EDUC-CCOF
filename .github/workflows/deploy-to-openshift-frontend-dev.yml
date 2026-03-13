@@ -54,6 +54,9 @@ jobs:
 
   openshift-ci-cd:
     name: Build and deploy Frontend to DEV
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: dev
     needs: cypress-component
