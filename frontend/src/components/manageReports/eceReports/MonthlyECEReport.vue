@@ -154,6 +154,7 @@ import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
@@ -175,7 +176,7 @@ export default {
     MonthlyECEReportHeader,
     ReportNavButtons,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       loading: false,
@@ -209,7 +210,10 @@ export default {
       return this.loading || this.processing;
     },
     readonly() {
-      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport });
+      return (
+        !this.hasPermission(this.PERMISSIONS.EDIT_ECE_REPORT) ||
+        isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport })
+      );
     },
     eceReportId() {
       return this.$route.params.eceReportId;
