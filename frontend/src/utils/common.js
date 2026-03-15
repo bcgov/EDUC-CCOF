@@ -508,12 +508,14 @@ export function parseNumber(value) {
  * @returns {string} - One of REJECTION_TYPES: FULL_REJECTION, PARTIAL_REJECTION, NO_REJECTION
  */
 export function getECEReportRejectionType(eceReport) {
-  if (eceReport.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED) {
+  const { externalStatus, rejectedStaffCount } = eceReport;
+
+  if (externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED) {
     return REJECTION_TYPES.FULL_REJECTION;
   }
   if (
-    eceReport.rejectedStaffCount > 0 &&
-    [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(eceReport.externalStatus)
+    rejectedStaffCount > 0 &&
+    [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(externalStatus)
   ) {
     return REJECTION_TYPES.PARTIAL_REJECTION;
   }

@@ -24,7 +24,7 @@
       <v-skeleton-loader v-if="processing" type="table-tbody" />
       <v-form v-else ref="form" v-model="isValidForm">
         <v-data-table :items="eceReportStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
-          <template v-slot:item="{ item }">
+          <template #item="{ item }">
             <tr :class="{ 'rejected-row': isRejectedStaffVisible(item) }">
               <td>{{ getStaffFullName(item) }}</td>
               <td>{{ item.registrationNumber }}</td>
@@ -77,7 +77,7 @@
                 </v-row>
               </td>
             </tr>
-            <tr v-if="isRejectedStaffVisible(item)">
+            <tr v-if="isRejectedStaffVisible(item)" class="rejection-reason-row">
               <td colspan="8"><strong>Rejected:</strong> {{ item.staffRejectionReason }}</td>
             </tr>
           </template>
@@ -491,12 +491,7 @@ export default {
       await ECEStaffService.deleteECEReportStaff(this.eceReportStaffToDelete);
     },
     isRejectedStaffVisible(item) {
-      return (
-        item.statusCode === ECE_REPORT_STAFF_STATUSES.REJECTED &&
-        [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(
-          this.eceReport?.externalStatus,
-        )
-      );
+      return item.statusCode === ECE_REPORT_STAFF_STATUSES.REJECTED && this.isReportApproved;
     },
   },
 };
@@ -511,5 +506,10 @@ export default {
 }
 .rejected-row {
   background-color: #ffe6e6 !important;
+}
+.rejection-reason-row td {
+  border-top: 2px solid #ff0000 !important;
+  border-bottom: 2px solid #ff0000 !important;
+  padding: 8px 16px;
 }
 </style>
