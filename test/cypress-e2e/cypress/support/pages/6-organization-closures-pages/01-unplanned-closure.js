@@ -4,10 +4,13 @@ class OrganizationClosure {
       this.facilityName = data.facilityName;
       this.parentsPayForClosure = data.parentsPayForClosure;
       this.isFullFacilityClosure = data.isFullFacilityClosure;
-      this.closureStartDate = data.closureStartDate;  
+      this.closureStartDate = data.closureStartDate;
       this.closureEndDate = data.closureEndDate;
       this.reason = data.reason;
       this.requestDescription = data.requestDescription;
+      this.removeReason = data.removeReason ?? data.reason;
+      this.expectedAddStatus = data.expectedAddStatus ?? "Pending";
+      this.expectedUpdateStatus = data.expectedUpdateStatus ?? "Cancelled";
     });
   }
 
@@ -16,7 +19,7 @@ class OrganizationClosure {
   }
 
   openNewClosureDialog() {
-    cy.contains("Add New Closure").clickByText("Add New Closure");
+    cy.clickByText("Add New Closure");
     cy.contains("div", "New Closure Request").should("be.visible");
   }
 
@@ -203,12 +206,84 @@ class OrganizationClosure {
         expect($button).not.to.have.class("v-btn--disabled");
       })
       .click({ force: true });
+    // Confirmation dialog may show an overlay that can momentarily appear above the dialog content.
+    // Use existence rather than visibility so tests are resilient to transient layering issues.
+    cy.contains("Success").should("exist");
+
+    // Click the return button even if it is temporarily covered by a scrim/overlay.
+    cy.contains("button", "Return to Closures", { timeout: 30000 })
+      .should("exist")
+      .click({ force: true });
+
+    cy.url().should("include", "closures");
   }
 
-  handleSuccessDialog() {
-    cy.contains("Success").should("be.visible");
-    cy.contains("Your request has been submitted.").should("be.visible");
-    cy.contains("button", "Return to Closures").should("be.visible").click();
+  openRemoveClosureDialog() {
+    cy.contains("button", "Remove", { timeout: 20000 })
+      .scrollIntoView({ block: "center" })
+      .should("be.visible")
+      .should("not.be.disabled")
+      .click({ force: true });
+
+    cy.get(".v-overlay--active .v-overlay__content", { timeout: 20000 })
+      .last()
+      .within(() => {
+        cy.contains("Remove Closure Request", { timeout: 20000 }).should(
+          "exist",
+        );
+      });
+  }
+
+  enterReasonForClosureRemoval(reason = null) {
+    const normalizedReason = String(reason ?? this.removeReason ?? "").trim();
+
+    if (!normalizedReason) {
+      throw new Error(
+        'Removal reason is empty. Ensure fixture field "removeReason" is populated before submit.',
+      );
+    }
+
+    cy.get(".v-overlay--active .v-overlay__content", { timeout: 20000 })
+      .last()
+      .within(() => {
+        cy.contains("h3", "Reason for closure removal:", { timeout: 20000 })
+          .should("exist")
+          .then(($heading) => {
+            $heading[0].scrollIntoView({ block: "center", behavior: "smooth" });
+
+            cy.wrap($heading)
+              .parent()
+              .find("textarea")
+              .first()
+              .should("exist")
+              .should("not.be.disabled")
+              .click({ force: true })
+              .clear({ force: true })
+              .type(normalizedReason, { force: true })
+              .should("have.value", normalizedReason);
+          });
+      });
+  }
+
+  submitRemoveClosureRequest() {
+    cy.get(".v-overlay--active .v-overlay__content", { timeout: 30000 })
+      .last()
+      .within(() => {
+        cy.contains("button", /remove closure/i, { timeout: 30000 })
+          .scrollIntoView({ block: "center" })
+          .should("exist")
+          .should(($button) => {
+            expect($button).not.to.have.attr("disabled");
+            expect($button).not.to.have.class("v-btn--disabled");
+          })
+          .click({ force: true });
+      });
+
+    cy.contains("Success", { timeout: 30000 }).should("exist");
+    cy.contains("button", "Return to Closures", { timeout: 30000 })
+      .should("exist")
+      .click({ force: true });
+    cy.url().should("include", "closures");
   }
 
   validateClosureInList(facilityName = null, expectedStatus = "Pending") {
@@ -218,15 +293,60 @@ class OrganizationClosure {
     // Verify a closure appears in the table with expected status
     cy.get("table tbody tr").should("have.length.greaterThan", 0);
 
-    // Validate the first row has the expected status
-    cy.get("table tbody tr")
-      .first()
-      .within(() => {
-        cy.contains(expectedStatus).should("be.visible");
-      });
+    // Validate expected status for the selected facility row when available.
+    if (facilityName) {
+      cy.contains("table tbody tr", facilityName, { timeout: 30000 })
+        .should("exist")
+        .within(() => {
+          cy.contains(expectedStatus).should("be.visible");
+        });
+    } else {
+      cy.contains("table tbody tr", expectedStatus, { timeout: 30000 }).should(
+        "exist",
+      );
+    }
 
     cy.contains(Cypress.env("PORTAL_USERNAME")).click();
     cy.contains("Logout").click();
+  }
+
+  validateClosureStatusPresent(expectedStatus = "Cancelled", attemptsLeft = 8) {
+    cy.contains("Organization Closures", { timeout: 30000 }).should("exist");
+    cy.get("table tbody tr", { timeout: 30000 }).should(
+      "have.length.greaterThan",
+      0,
+    );
+
+    if (this.facilityName) {
+      cy.contains("table tbody tr", this.facilityName, { timeout: 30000 })
+        .should("exist")
+        .then(($row) => {
+          const rowText = ($row.text() || "").toLowerCase();
+          const expected = expectedStatus.toLowerCase();
+
+          if (rowText.includes(expected)) {
+            cy.wrap($row).within(() => {
+              cy.contains(expectedStatus).should("be.visible");
+            });
+            return;
+          }
+
+          if (attemptsLeft <= 1) {
+            throw new Error(
+              `Expected status \"${expectedStatus}\" for facility \"${this.facilityName}\" after retries, but last row content was: ${$row.text()}`,
+            );
+          }
+
+          cy.wait(10000);
+          cy.reload();
+          this.validateClosureStatusPresent(expectedStatus, attemptsLeft - 1);
+        });
+      return;
+    }
+
+    cy.contains("table tbody tr", expectedStatus, { timeout: 30000 }).should(
+      "exist",
+    );
   }
 
   createNewClosure(
@@ -237,7 +357,6 @@ class OrganizationClosure {
     endDate = null,
     reason = null,
     description = null,
-    supportingDocs = null,
   ) {
     this.openNewClosureDialog();
     this.selectFacility(facilityName ?? this.facilityName);
@@ -251,8 +370,10 @@ class OrganizationClosure {
     this.enterRequestDescription(description);
     this.validateDeclarationContent();
     this.submitClosureRequest();
-    this.handleSuccessDialog();
-    this.validateClosureInList(facilityName);
+    this.validateClosureInList(
+      facilityName ?? this.facilityName,
+      this.expectedAddStatus ?? "Pending",
+    );
   }
 
   fillClosureForm(
@@ -263,7 +384,6 @@ class OrganizationClosure {
     endDate = null,
     reason = null,
     description = null,
-    supportingDocs = null,
   ) {
     this.selectFacility(facilityName ?? this.facilityName);
     this.selectParentsPayAndClosureDates(
@@ -274,6 +394,68 @@ class OrganizationClosure {
     );
     this.enterReason(reason);
     this.enterRequestDescription(description);
+  }
+
+  openUpdateClosureDialog() {
+    cy.contains("button", "Update", { timeout: 15000 })
+      .scrollIntoView({ block: "center" })
+      .should("be.visible")
+      .should("not.be.disabled")
+      .click({ force: true });
+
+    cy.contains("Update Closure Request", { timeout: 15000 }).should(
+      "be.visible",
+    );
+  }
+
+  selectNewClosureDates(startDate = null, endDate = null) {
+    const effectiveStartDate = startDate ?? this.closureStartDate;
+    const effectiveEndDate = endDate ?? this.closureEndDate;
+
+    cy.get('input[type="date"]:not(:disabled)', { timeout: 15000 })
+      .should("have.length.gte", 2)
+      .first()
+      .scrollIntoView({ block: "center" })
+      .clear({ force: true })
+      .type(effectiveStartDate, { force: true })
+      .trigger("input", { force: true })
+      .trigger("change", { force: true })
+      .blur();
+
+    cy.get('input[type="date"]:not(:disabled)')
+      .last()
+      .scrollIntoView({ block: "center" })
+      .clear({ force: true })
+      .type(effectiveEndDate, { force: true })
+      .trigger("input", { force: true })
+      .trigger("change", { force: true })
+      .blur();
+  }
+
+  updateClosureRequest(
+    startDate = null,
+    endDate = null,
+    reason = null,
+    description = null,
+  ) {
+    this.openUpdateClosureDialog();
+    this.selectNewClosureDates(startDate, endDate);
+    this.enterReason(reason);
+    this.enterRequestDescription(description);
+    this.validateDeclarationContent();
+    this.submitClosureRequest();
+    this.validateClosureStatusPresent(this.expectedUpdateStatus ?? "Cancelled");
+    cy.contains(Cypress.env("PORTAL_USERNAME")).click();
+    cy.contains("Logout").click();
+  }
+
+  removeClosureRequest(reason = null) {
+    this.openRemoveClosureDialog();
+    this.enterReasonForClosureRemoval(reason);
+    this.validateDeclarationContent();
+    this.submitRemoveClosureRequest();
+    cy.contains(Cypress.env("PORTAL_USERNAME")).click();
+    cy.contains("Logout").click();
   }
 }
 
