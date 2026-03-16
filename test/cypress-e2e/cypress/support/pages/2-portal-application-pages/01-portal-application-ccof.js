@@ -8,7 +8,7 @@ class CcofApplication {
       this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
     })
   }
-  
+
   loadFixturesAndVariables(file) {
     this.loadFixtures(file)
     cy.then(()=> {
@@ -59,7 +59,7 @@ class CcofApplication {
         cy.getByLabel('Business Phone').typeAndAssert(this.orgInfo.phone)
         cy.getByLabel('Email Address').typeAndAssert(this.orgInfo.email)
         break;
-      
+
       case 'familyOld':
         cy.getByLabel('Legal Name (first, middle and last) or Organization (as it appears in BC corporate Registry)').typeAndAssert(this.orgInfo.legalOrgName)
         cy.getByLabel('Incorporation Number (as it appears in BC Corporate Registry)').typeAndAssert(this.orgInfo.incorporationNumber)
@@ -101,7 +101,7 @@ class CcofApplication {
         cy.contains('Type of Organization').should('be.visible')
         cy.getByLabel(this.orgType).click()
         break;
-      } 
+      }
 
     cy.clickByText('Save')
     cy.contains('Success! Organization information has been saved.').should('be.visible')
@@ -149,26 +149,26 @@ class CcofApplication {
         cy.getByLabel('Facility Licence Number').typeAndAssert(this.facilityData.facilityLicence)
         cy.getByLabel('Effective Date of Current Licence').typeAndAssert(this.facilityData.licenceEffectiveDate)
         break;
-    } 
+    }
 
     cy.contains('div', 'Has this facility or you as the applicant ever received funding under the Child Care Operating Funding Program?').within(()=> {
       cy.getByLabel('No').click()
     })
-    
+
     cy.clickByText('Save')
     cy.contains('Success! Facility information has been saved.').should('be.visible')
     cy.clickByText('Next')
   }
 
-  
+
 
   licenceAndServiceDeliveryDetails(appType) {
     switch (appType) {
       case 'groupOld':
-      case 'familyOld': 
+      case 'familyOld':
         this.monthsClosed = this.licenceInfo.closedMonthsOld
         break;
-      case 'group': 
+      case 'group':
       case 'family':
         this.monthsClosed = this.licenceInfo.closedMonths
         cy.contains('Facility Licence and Service Details')
@@ -176,8 +176,12 @@ class CcofApplication {
     }
       cy.getByLabel("Maximum number of days per week you provide child care").typeAndAssert(this.licenceInfo.maxDaysPerWeek)
       cy.getByLabel("Maximum number of weeks per year you provide child care").typeAndAssert(this.licenceInfo.maxWeeksPerYear)
-      cy.getByLabel("Facility hours of operation from").should('be.visible').typeAndAssert(this.licenceInfo.hoursFrom)
-      cy.getByLabel("Facility hours of operation to").should('exist').typeAndAssert(this.licenceInfo.hoursTo)
+      const hoursFrom = this.licenceInfo.hoursFrom
+      const hoursTo = this.licenceInfo.hoursTo
+
+      // set both values using shared helper
+      cy.setTimeByLabel("Facility hours of operation from", hoursFrom)
+      cy.setTimeByLabel("Facility hours of operation to", hoursTo)
       cy.getByLabel(this.licenceInfo.closedEntireMonths).check().should('be.checked')
       if (this.licenceInfo.closedEntireMonths === "Yes") {
         this.monthsClosed.forEach((month)=> {
@@ -189,7 +193,7 @@ class CcofApplication {
   groupLicenses(appType) {
     let licenceCategory
     switch (appType) {
-      case 'group': 
+      case 'group':
         licenceCategory = this.facilityLicenceDetailsData.groupLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
           if (value.checked) {
@@ -199,14 +203,14 @@ class CcofApplication {
         });
         break;
 
-      case 'groupOld': 
+      case 'groupOld':
         licenceCategory = this.facilityLicenceDetailsData.oldGroupLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
           if (category === "Multi-Age Child Care") {
             cy.getByLabel(`Maximum ${category}`).typeAndAssert(value.max);
           } else {
             cy.getByLabel(`Maximum Number for ${category}`).typeAndAssert(value.max);
-          } 
+          }
         });
         break;
     };
@@ -232,7 +236,7 @@ class CcofApplication {
   familyLicences(appType) {
     let licenceCategory
     switch (appType) {
-      case 'family': 
+      case 'family':
         licenceCategory = this.facilityLicenceDetailsData.familyLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
           if (value.checked) {
@@ -245,7 +249,7 @@ class CcofApplication {
         });
         break;
 
-      case 'familyOld': 
+      case 'familyOld':
         licenceCategory = this.facilityLicenceDetailsData.oldFamilyLicenceCategories
         Object.entries(licenceCategory).forEach(([category, value]) => {
           if (value.checked) {
@@ -259,7 +263,7 @@ class CcofApplication {
     }
   }
 
-  // TODO  [CCFRI-6767] - (Hedie-cgi) implement offerExtendedHours for the new template. 
+  // TODO  [CCFRI-6767] - (Hedie-cgi) implement offerExtendedHours for the new template.
   oldOfferExtendedHours(appType) {
     cy.contains('div', 'Do you regularly offer extended daily hours of child care (before 6 am, after 7 pm or overnight)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
@@ -272,7 +276,7 @@ class CcofApplication {
           extendedHoursLicence = this.facilityLicenceDetailsData.oldFamilyLicenceCategoriesExtendedHours
           cy.getByLabel('Maximum number of spaces you offer extended hours of child care?').typeAndAssert(this.extendedMaxSpaces)
           break;
-        case 'groupOld': 
+        case 'groupOld':
           extendedHoursLicence = this.facilityLicenceDetailsData.oldGroupLicenceCategoriesExtendedHours
           break;
       }
@@ -299,13 +303,13 @@ class CcofApplication {
         })
       })
     }
-  
+
     cy.clickByText('Save')
     cy.contains('Application saved successfully.').should('be.visible')
     cy.clickByText('Next')
   }
 
-  // NOTE: please implement offerExtendedHours for the new template. 
+  // NOTE: please implement offerExtendedHours for the new template.
   offerExtendedHours(appType) {
     cy.contains('div', 'Do you regularly offer extended hours of child care (care before 6:00 AM, after 7:00 PM, or overnight service)?').within(()=> {
       cy.getByLabel(this.extendedHours).click()
@@ -317,7 +321,7 @@ class CcofApplication {
         case 'group':
           extendedHoursLicence = this.facilityLicenceDetailsData.groupLicenceCategories
           break;
-        case 'family': 
+        case 'family':
           extendedHoursLicence = this.facilityLicenceDetailsData.familyLicenceCategories
           break;
       }
@@ -325,7 +329,7 @@ class CcofApplication {
       cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
       cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
       cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
-      
+
       Object.entries(extendedHoursLicence).forEach(([category, value]) => {
         if (value.extended) {
           cy.getByLabel(category).check()
@@ -333,7 +337,7 @@ class CcofApplication {
         }
         cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
       });
-      
+
 
       cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
         Object.entries(extendedHoursLicence).forEach(([category, value]) => {
@@ -370,7 +374,7 @@ class CcofApplication {
     if (files.length > 0) {
       cy.clickByText('Yes')
       cy.wrap(files).each((file, index)=> {
-        
+
         this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
         cy.then(()=> {
           this.inputFacilityInfo(appType)
@@ -407,16 +411,16 @@ class CcofApplication {
           .attachFile(currFile)
         cy.contains(`${licenceFiles[index]}`)
       })
-    
+
       cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
         cy.contains('button', 'Save').should('have.class', 'blueButton')
           .clickByText('Save')
         cy.contains('Changes Successfully Saved')
-      }) 
+      })
       cy.clickByText('Next')
     })
 
-    
+
   }
 }
 
