@@ -1,8 +1,8 @@
 <template>
   <v-container class="pa-0 text-body-1" fluid>
     <div class="d-flex flex-column flex-md-row justify-space-between align-start align-md-center mb-4">
-      <!-- TODO (vietle-cgi) - Implement ECE Reports permission -->
       <AppButton
+        v-if="hasPermission(PERMISSIONS.CREATE_ECE_REPORT)"
         :primary="false"
         size="small"
         :loading="isLoading"
