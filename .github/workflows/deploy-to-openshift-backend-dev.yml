@@ -94,9 +94,11 @@ jobs:
             }
 
       - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
+          persist-credentials: false
+
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
@@ -214,9 +216,10 @@ jobs:
     environment: dev
     steps:
       - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
+          persist-credentials: false
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.13.0
         with:
