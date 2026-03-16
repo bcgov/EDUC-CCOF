@@ -109,8 +109,6 @@ import { mapState } from 'pinia';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
-
 export default {
   name: 'DeclarationTextV1',
   props: {
