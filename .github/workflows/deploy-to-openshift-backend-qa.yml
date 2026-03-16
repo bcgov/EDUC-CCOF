@@ -105,9 +105,10 @@ jobs:
             }
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
+          persist-credentials: false
 
       - name: Setup Keycloak Client
         uses: actions/github-script@v7
