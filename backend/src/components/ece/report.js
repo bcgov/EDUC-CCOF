@@ -163,7 +163,6 @@ async function createAdjustmentReport(report) {
     ccof_month: String(report.ccof_month),
     ccof_year: String(report.ccof_year),
     ccof_report_type: ECE_REPORT_TYPES.ADJUSTMENT,
-    ccof_version: Number(report.ccof_version) + 1,
   };
   const adjustmentReportId = await postOperation('ccof_ece_monthly_reports', payload);
   return adjustmentReportId;

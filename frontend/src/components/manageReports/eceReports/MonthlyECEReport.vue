@@ -25,14 +25,13 @@
       <v-form v-else ref="form" v-model="isValidForm">
         <v-data-table :items="eceReportStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
           <template #item="{ item }">
-            <tr :class="{ 'rejected-row': isRejectedStaffVisible(item) }">
+            <tr class="row-padding" :class="{ 'rejected-row': isRejectedStaffVisible(item) }">
               <td>{{ getStaffFullName(item) }}</td>
               <td>{{ item.registrationNumber }}</td>
               <td>{{ formatCurrency(item.hourlyWage) }}</td>
               <td>
                 <AppNumberInput
                   v-model="item.totalHoursWorked"
-                  class="mt-2"
                   :decimal="true"
                   :disabled="readonly"
                   :rules="getTotalHoursWorkedRules(item)"
@@ -504,12 +503,14 @@ export default {
 .calculation-summary--adjustment {
   max-width: 800px;
 }
+.row-padding > td {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
 .rejected-row {
   background-color: #ffe6e6 !important;
 }
-.rejection-reason-row td {
-  border-top: 2px solid #ff0000 !important;
-  border-bottom: 2px solid #ff0000 !important;
-  padding: 8px 16px;
+.rejection-reason-row > td {
+  border: 2px solid #d8292f !important;
 }
 </style>
