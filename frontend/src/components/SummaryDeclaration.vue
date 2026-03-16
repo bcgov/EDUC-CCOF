@@ -135,8 +135,8 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         >
           <v-container fluid class="px-6">
-            <DeclarationTextV2 v-if="showDeclarationV2" :enabled-declaration-b="model.enabledDeclarationB" />
-            <DeclarationTextV1 v-else />
+            <ApplicationDeclarationTextV2 v-if="showDeclarationV2" :enabled-declaration-b="model.enabledDeclarationB" />
+            <ApplicationDeclarationTextV1 v-else />
 
             <div class="my-2">
               <v-checkbox
@@ -203,8 +203,8 @@ import ChangeNotificationFormSummary from '@/components/summary/changeRequest/Ch
 import CCOFBaseFundingSummary from '@/components/summary/group/CCOFBaseFundingSummary.vue';
 import ECEWESummary from '@/components/summary/group/ECEWESummary.vue';
 import OrganizationSummary from '@/components/summary/group/OrganizationSummary.vue';
-import DeclarationTextV1 from '@/components/declarationTextVersions/DeclarationTextV1.vue';
-import DeclarationTextV2 from '@/components/declarationTextVersions/DeclarationTextV2.vue';
+import ApplicationDeclarationTextV1 from '@/components/applicationDeclarationTextVersions/ApplicationDeclarationTextV1.vue';
+import ApplicationDeclarationTextV2 from '@/components/applicationDeclarationTextVersions/ApplicationDeclarationTextV2.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import ApplicationChangeRequestInProgressAlert from '@/components/util/ApplicationChangeRequestInProgressAlert.vue';
@@ -240,11 +240,11 @@ export default {
     AppButton,
     AppDialog,
     ApplicationChangeRequestInProgressAlert,
+    ApplicationDeclarationTextV1,
+    ApplicationDeclarationTextV2,
     ApplicationPCFHeader,
     CCOFBaseFundingSummary,
     ChangeNotificationFormSummary,
-    DeclarationTextV1,
-    DeclarationTextV2,
     ECEWESummary,
     FacilityInformationSummaryCard,
     FacilityInformationSummaryDialog,
