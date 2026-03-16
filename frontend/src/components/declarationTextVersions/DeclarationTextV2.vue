@@ -1,5 +1,5 @@
 <template>
-  <template v-if="showDeclarationA">
+  <template v-if="showDeclarationThree">
     <p>
       I hereby confirm that the information I have provided in this application is complete and accurate. I certify that
       I have read and understand the following requirements:
@@ -44,7 +44,7 @@
     </p>
   </template>
 
-  <template v-else-if="showDeclarationB">
+  <template v-else-if="showDeclarationTwo">
     <p>
       I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information
       provided is true and complete to the best of my knowledge and belief.
@@ -118,21 +118,14 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 
 export default {
   name: 'DeclarationTextV2',
-  props: {
-    model: {
-      type: Object,
-      required: true,
-    },
-  },
   computed: {
     ...mapState(useApplicationStore, ['isRenewal']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
-    ...mapState(useSummaryDeclarationStore, ['declarationModel']),
 
-    showDeclarationA() {
+    showDeclarationThree() {
       return !this.isRenewal || this.isChangeRequest;
     },
-    showDeclarationB() {
+    showDeclarationTwo() {
       return this.isRenewal;
     },
   },

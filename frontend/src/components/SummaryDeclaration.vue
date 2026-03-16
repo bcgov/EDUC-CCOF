@@ -135,8 +135,8 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         >
           <v-container fluid class="px-6">
-            <DeclarationTextV2 v-if="showDeclarationV2" :model="model" />
-            <DeclarationTextV1 v-else :model="model" />
+            <DeclarationTextV2 v-if="showDeclarationV2" :enabled-declaration-b="model.enabledDeclarationB" />
+            <DeclarationTextV1 v-else />
 
             <div class="my-2">
               <v-checkbox
@@ -227,8 +227,8 @@ import FundingAgreementService from '@/services/fundingAgreementService.js';
 import {
   AFS_STATUSES,
   CHANGE_REQUEST_TYPES,
-  DOCUMENT_TYPES,
   DECLARATION_TEXT_VERSIONS,
+  DOCUMENT_TYPES,
   FUNDING_AGREEMENT_EXTERNAL_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
@@ -243,13 +243,13 @@ export default {
     ApplicationPCFHeader,
     CCOFBaseFundingSummary,
     ChangeNotificationFormSummary,
+    DeclarationTextV1,
+    DeclarationTextV2,
     ECEWESummary,
     FacilityInformationSummaryCard,
     FacilityInformationSummaryDialog,
     NavButton,
     OrganizationSummary,
-    DeclarationTextV1,
-    DeclarationTextV2,
   },
   mixins: [alertMixin, permissionsMixin],
   data() {

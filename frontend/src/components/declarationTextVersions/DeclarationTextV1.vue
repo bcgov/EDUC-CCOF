@@ -114,23 +114,22 @@ import { useSummaryDeclarationStore } from '@/store/summaryDeclaration.js';
 export default {
   name: 'DeclarationTextV1',
   props: {
-    model: {
-      type: Object,
-      required: true,
+    enabledDeclarationB: {
+      type: Boolean,
+      default: false,
     },
   },
   computed: {
     ...mapState(useApplicationStore, ['applicationMap', 'isRenewal', 'programYearId']),
     ...mapState(useNavBarStore, ['isChangeRequest']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber']),
-    ...mapState(useSummaryDeclarationStore, ['declarationModel']),
 
     getFundingAgreementNumber() {
       return this.applicationMap?.get(this.programYearId)?.fundingAgreementNumber;
     },
     isDeclarationBDisplayed() {
       if (this.isChangeRequest) {
-        return this.model?.enabledDeclarationB;
+        return this.enabledDeclarationB;
       }
 
       return this.getFundingAgreementNumber && this.organizationAccountNumber;
