@@ -9,6 +9,14 @@
       Only staff who hold an active Early Childhood Educator, Infant and Toddler Educator, or Special Needs Educator
       certificate are eligible for the ECE Wage Enhancement.
     </v-alert>
+
+    <AppAlertBanner v-if="isFullRejection" type="error" class="mb-8 w-100">
+      This report has been fully rejected - {{ eceReport.reportRejectionReason }}
+    </AppAlertBanner>
+    <AppAlertBanner v-if="isPartialRejection" type="warning" class="mb-4 w-100">
+      One or more ECE hours entries have been rejected. Review the highlighted row(s) below.
+    </AppAlertBanner>
+
     <div v-if="!readonly" class="d-flex justify-end mb-4">
       <AppButton size="medium" :loading="processing" @click="addDialogOpen = true"> Add ECE Staff </AppButton>
     </div>
@@ -16,59 +24,61 @@
       <v-skeleton-loader v-if="processing" type="table-tbody" />
       <v-form v-else ref="form" v-model="isValidForm">
         <v-data-table :items="eceReportStaff" :headers="eceStaffTableHeaders" :items-per-page="10">
-          <template #item.fullName="{ item }">
-            <span>{{ getStaffFullName(item) }}</span>
-          </template>
-          <template #item.hourlyWage="{ item }">
-            <span>{{ formatCurrency(item.hourlyWage) }}</span>
-          </template>
-          <template #item.totalHoursWorked="{ item }">
-            <div class="py-2">
-              <AppNumberInput
-                v-model="item.totalHoursWorked"
-                :decimal="true"
-                :disabled="readonly"
-                :rules="getTotalHoursWorkedRules(item)"
-                hide-details="auto"
-                max-width="120"
-                variant="outlined"
-              />
-              <p v-if="showStaffApprovedAmounts(item)">
-                <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
-              </p>
-            </div>
-          </template>
-          <template #item.weAmount="{ item }">
-            <p>{{ formatCurrency(item.weAmount) }}</p>
-            <p v-if="showStaffApprovedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.approvedWeAmount) }}
-            </p>
-          </template>
-          <template #item.statutoryBenefitAmount="{ item }">
-            <p>{{ formatCurrency(item.statutoryBenefitAmount) }}</p>
-            <p v-if="showStaffApprovedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.approvedSbAmount) }}
-            </p>
-          </template>
-          <template #item.totalAmount="{ item }">
-            <p>{{ formatCurrency(item.totalAmount) }}</p>
-            <p v-if="showStaffApprovedAmounts(item)">
-              <strong>Approved:</strong> {{ formatCurrency(item.approvedTotalAmount) }}
-            </p>
-          </template>
-          <template #item.actions="{ item }">
-            <v-row class="action-buttons justify-end justify-lg-start">
-              <AppButton
-                v-if="showRemoveButton(item)"
-                :loading="loading"
-                :primary="false"
-                color="red"
-                size="small"
-                @click="removeStaff(item)"
-              >
-                Remove
-              </AppButton>
-            </v-row>
+          <template #item="{ item }">
+            <tr class="row-padding" :class="{ 'rejected-row': isRejectedStaffVisible(item) }">
+              <td>{{ getStaffFullName(item) }}</td>
+              <td>{{ item.registrationNumber }}</td>
+              <td>{{ formatCurrency(item.hourlyWage) }}</td>
+              <td>
+                <AppNumberInput
+                  v-model="item.totalHoursWorked"
+                  :decimal="true"
+                  :disabled="readonly"
+                  :rules="getTotalHoursWorkedRules(item)"
+                  hide-details="auto"
+                  max-width="120"
+                  variant="outlined"
+                />
+                <p v-if="showStaffApprovedAmounts(item)" class="mt-2">
+                  <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
+                </p>
+              </td>
+              <td>
+                {{ formatCurrency(item.weAmount) }}
+                <p v-if="showStaffApprovedAmounts(item)" class="mt-2">
+                  <strong>Approved:</strong> {{ formatCurrency(item.approvedWeAmount) }}
+                </p>
+              </td>
+              <td>
+                {{ formatCurrency(item.statutoryBenefitAmount) }}
+                <p v-if="showStaffApprovedAmounts(item)" class="mt-2">
+                  <strong>Approved:</strong> {{ formatCurrency(item.approvedSbAmount) }}
+                </p>
+              </td>
+              <td>
+                {{ formatCurrency(item.totalAmount) }}
+                <p v-if="showStaffApprovedAmounts(item)" class="mt-2">
+                  <strong>Approved:</strong> {{ formatCurrency(item.approvedTotalAmount) }}
+                </p>
+              </td>
+              <td>
+                <v-row class="action-buttons justify-end justify-lg-start">
+                  <AppButton
+                    v-if="showRemoveButton(item)"
+                    :loading="loading"
+                    :primary="false"
+                    color="red"
+                    size="small"
+                    @click="removeStaff(item)"
+                  >
+                    Remove
+                  </AppButton>
+                </v-row>
+              </td>
+            </tr>
+            <tr v-if="isRejectedStaffVisible(item)" class="rejection-reason-row">
+              <td colspan="8"><strong>Rejected:</strong> {{ item.staffRejectionReason }}</td>
+            </tr>
           </template>
         </v-data-table>
         <v-divider class="mt-2" />
@@ -137,26 +147,35 @@
 import { isEmpty, pick } from 'lodash';
 import { mapState } from 'pinia';
 import AddECEStaffDialog from '@/components/eceStaff/AddECEStaffDialog.vue';
+import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import AppNumberInput from '@/components/guiComponents/AppNumberInput.vue';
 import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import ECEStaffService from '@/services/eceStaffService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
-import { deepCloneObject, getUpdatedObjectsByKeys } from '@/utils/common.js';
-import { ECE_REPORT_STAFF_STATUSES, ECE_REPORT_EXTERNAL_STATUSES, PATHS } from '@/utils/constants.js';
+import { deepCloneObject, getUpdatedObjectsByKeys, getECEReportRejectionType } from '@/utils/common.js';
+import { ECE_REPORT_STAFF_STATUSES, ECE_REPORT_EXTERNAL_STATUSES, PATHS, REJECTION_TYPES } from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 import rules from '@/utils/rules.js';
 
 export default {
   name: 'MonthlyECEReport',
-  components: { AddECEStaffDialog, AppButton, AppNumberInput, MonthlyECEReportHeader, ReportNavButtons },
-  mixins: [alertMixin],
+  components: {
+    AddECEStaffDialog,
+    AppAlertBanner,
+    AppButton,
+    AppNumberInput,
+    MonthlyECEReportHeader,
+    ReportNavButtons,
+  },
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       loading: false,
@@ -190,7 +209,10 @@ export default {
       return this.loading || this.processing;
     },
     readonly() {
-      return isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport });
+      return (
+        !this.hasPermission(this.PERMISSIONS.EDIT_ECE_REPORT) ||
+        isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport })
+      );
     },
     eceReportId() {
       return this.$route.params.eceReportId;
@@ -249,6 +271,12 @@ export default {
           ? row.approvedAmount - row.previousPaidAmount
           : row.reportedAmount - row.previousPaidAmount,
       }));
+    },
+    isFullRejection() {
+      return getECEReportRejectionType(this.eceReport) === REJECTION_TYPES.FULL_REJECTION;
+    },
+    isPartialRejection() {
+      return getECEReportRejectionType(this.eceReport) === REJECTION_TYPES.PARTIAL_REJECTION;
     },
   },
   async created() {
@@ -461,6 +489,9 @@ export default {
       if (isEmpty(this.eceReportStaffToDelete)) return;
       await ECEStaffService.deleteECEReportStaff(this.eceReportStaffToDelete);
     },
+    isRejectedStaffVisible(item) {
+      return item.statusCode === ECE_REPORT_STAFF_STATUSES.REJECTED && this.isReportApproved;
+    },
   },
 };
 </script>
@@ -471,5 +502,15 @@ export default {
 }
 .calculation-summary--adjustment {
   max-width: 800px;
+}
+.row-padding > td {
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+.rejected-row {
+  background-color: #ffe6e6 !important;
+}
+.rejection-reason-row > td {
+  border: 2px solid #d8292f !important;
 }
 </style>

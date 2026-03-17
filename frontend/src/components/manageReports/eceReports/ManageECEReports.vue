@@ -9,8 +9,13 @@
       Edit, submit, view, or adjust your Monthly ECE Reports. To ensure accurate wage enhancement payments, keep your
       ECE staff information, wage rates, and facility details up to date. Review the Monthly ECE Report Instructions.
     </p>
-    <!-- TODO: Implement ECE Reports permission -->
-    <AppButton size="medium" @click="showCreateECEReportDialog = true"> Create ECE Report </AppButton>
+    <AppButton
+      v-if="hasPermission(PERMISSIONS.CREATE_ECE_REPORT)"
+      size="medium"
+      @click="showCreateECEReportDialog = true"
+    >
+      Create ECE Report
+    </AppButton>
     <v-card variant="outlined" class="pa-6 my-6 soft-outline">
       <v-row no-gutters class="pb-4">
         <v-col cols="12" md="4" lg="2">
@@ -104,6 +109,9 @@
             {{ getStatusText(item.externalStatus) }}
           </span>
         </template>
+        <template #item.rejected="{ item }">
+          {{ getECEReportRejectionType(item) }}
+        </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
@@ -154,12 +162,13 @@ import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import CreateECEReportDialog from '@/components/manageReports/eceReports/CreateECEReportDialog.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { buildFiscalYearMonths } from '@/utils/common.js';
+import { buildFiscalYearMonths, getECEReportRejectionType } from '@/utils/common.js';
 import {
   ECE_REPORT_EXTERNAL_STATUSES,
   ECE_REPORT_INTERNAL_STATUSES,
@@ -197,7 +206,7 @@ export default {
     FiscalYearSlider,
     NavButton,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       loading: false,
@@ -206,9 +215,10 @@ export default {
         { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
-        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Version Number', key: 'version' },
+        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Status', key: 'externalStatus' },
+        { title: 'Rejected', key: 'rejected', sortable: false },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       eceReports: [],
@@ -225,13 +235,18 @@ export default {
     ...mapState(useApplicationStore, ['getFacilityListForPCFByProgramYearId', 'getApplicationIdByProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationAccountNumber', 'organizationId', 'organizationName']),
     canEdit() {
-      return (eceReport) => EDIT_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) =>
+        this.hasPermission(this.PERMISSIONS.EDIT_ECE_REPORT) && EDIT_STATUSES.has(eceReport?.externalStatus);
     },
     canView() {
-      return (eceReport) => VIEW_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) =>
+        this.hasPermission(this.PERMISSIONS.VIEW_ECE_REPORT) && VIEW_STATUSES.has(eceReport?.externalStatus);
     },
     canAdjust() {
-      return (eceReport) => !eceReport.hasNextReportCreated && ADJUST_STATUSES.has(eceReport?.externalStatus);
+      return (eceReport) =>
+        this.hasPermission(this.PERMISSIONS.ADJUST_ECE_REPORT) &&
+        !eceReport.hasNextReportCreated &&
+        ADJUST_STATUSES.has(eceReport?.externalStatus);
     },
     selectedApplicationId() {
       return this.getApplicationIdByProgramYearId(this.selectedProgramYearId);
@@ -278,6 +293,7 @@ export default {
   },
   methods: {
     formatMonthYearToString,
+    getECEReportRejectionType,
     async loadData() {
       try {
         this.loading = true;
