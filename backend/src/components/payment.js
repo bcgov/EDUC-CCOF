@@ -10,8 +10,9 @@ const log = require('./logger');
 async function getPayments(req, res) {
   try {
     const operation =
-      'ofm_payments?$select=ofm_amount,_ofm_facility_value,ccof_facilityid,ofm_invoice_received_date,ofm_invoice_date,ofm_payment_type,statuscode,ofm_invoice_number,ccof_base_or_adjustment' +
+      'ofm_payments?$select=ofm_amount,_ofm_facility_value,ccof_facilityid,ofm_invoice_received_date,ofm_invoice_date,ofm_payment_type,statuscode,ofm_invoice_number,ccof_baselineoradjustment' +
       '&$expand=ccof_monthly_enrollment_report($select=ccof_month,ccof_year),' +
+      'ccof_monthly_ecewe_report($select=ccof_month,ccof_year,ccof_report_type),' +
       'ofm_facility($select=ccof_facilitylicencenumber)' +
       `&${buildFilterQuery(req.query, PaymentMappings)}`;
     const response = await getOperation(operation);
@@ -20,8 +21,8 @@ async function getPayments(req, res) {
       new MappableObjectForFront(
         {
           ...payment,
-          ccof_month: payment.ccof_monthly_enrollment_report?.ccof_month,
-          ccof_year: payment.ccof_monthly_enrollment_report?.ccof_year,
+          ccof_month: payment.ccof_monthly_enrollment_report?.ccof_month ?? payment.ccof_monthly_ecewe_report?.ccof_month,
+          ccof_year: payment.ccof_monthly_enrollment_report?.ccof_year ?? payment.ccof_monthly_ecewe_report?.ccof_year,
           ccof_facilitylicencenumber: payment.ofm_facility?.ccof_facilitylicencenumber,
         },
         PaymentMappings,
