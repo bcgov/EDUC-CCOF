@@ -459,7 +459,7 @@ export default {
       try {
         if (this.isSubmitDisabled) return;
         this.setIsApplicationProcessing(true);
-        this.model.declarationBStatus = this.isRenewal ? 1 : undefined;
+        this.model.declarationBStatus = this.isRenewal ? 1 : undefined; //currently CMS is using this value for Full Approval Automation Calculations/flows
         this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
