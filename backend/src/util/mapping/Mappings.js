@@ -474,7 +474,6 @@ const DeclarationMappings = [
   { back: 'ccof_consent', front: 'agreeConsentCertify' },
   { back: 'ccof_submittedby', front: 'orgContactName' },
   { back: 'ccof_latestsubmissiondate', front: 'latestSubmissionDate' },
-  { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
   { back: 'ccof_declaration_version', front: 'declarationVersion' },
   { back: 'statuscode', front: 'applicationStatus' },
@@ -508,7 +507,6 @@ const ApplicationSummaryMappings = [
 
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,
-  { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' }, //1,
   { back: 'ccof_submittedby', front: 'orgContactName' }, //"agree",
   // ECE-WE Details

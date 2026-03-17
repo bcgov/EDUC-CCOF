@@ -459,6 +459,7 @@ export default {
       try {
         if (this.isSubmitDisabled) return;
         this.setIsApplicationProcessing(true);
+        this.model.declarationBStatus = this.isRenewal ? 1 : undefined;
         this.setDeclarationModel(this.model);
         if (this.isChangeRequest) {
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
