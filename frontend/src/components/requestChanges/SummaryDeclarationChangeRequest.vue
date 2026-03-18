@@ -130,11 +130,8 @@
         />
         <div v-else class="px-8 py-4">
           <div class="mb-4">
-            <ChangeRequestDeclarationTextV2
-              v-if="showDeclarationV2"
-              :enabled-declaration-b="model.enabledDeclarationB"
-            />
-            <ChangeRequestDeclarationTextV1 v-else />
+            <ChangeRequestDeclarationTextV2 v-if="showDeclarationV2" />
+            <ChangeRequestDeclarationTextV1 v-else :enabled-declaration-b="model.enabledDeclarationB" />
           </div>
           <div>
             <v-checkbox
