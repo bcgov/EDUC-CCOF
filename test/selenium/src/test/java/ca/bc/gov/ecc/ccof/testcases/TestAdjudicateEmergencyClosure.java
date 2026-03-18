@@ -62,6 +62,11 @@ public class TestAdjudicateEmergencyClosure extends BaseTest {
 		deleteApp.searchAndOpenContact(contactName);
         Thread.sleep(3000);
 
+        // switches view to organization
+        BCeIDPage bceidPage = new BCeIDPage(driver);
+        bceidPage.clickSelectOrganization();
+        Thread.sleep(3000)
+
         // switches view to organization information page
         OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
         orgOverview.clickOrgInformation();
