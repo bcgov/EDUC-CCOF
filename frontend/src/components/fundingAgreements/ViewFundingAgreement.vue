@@ -232,7 +232,7 @@ export default {
           signedOn: new Date().toISOString(),
           signedBy: this.fundingAgreement.signedBy,
           externalStatusCode: FUNDING_AGREEMENT_EXTERNAL_STATUSES.DRAFTED_WITH_MINISTRY,
-          //declarationVersion: DECLARATION_TEXT_VERSIONS.V2,
+          declarationVersion: DECLARATION_TEXT_VERSIONS.V2,
         };
         await FundingAgreementService.updateFundingAgreement(this.fundingAgreement.fundingAgreementId, payload);
         this.showSubmissionConfirmationDialog = true;

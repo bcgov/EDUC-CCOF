@@ -1,7 +1,7 @@
 <template>
   <div class="pa-lg-7 pa-5 overflow-y-auto grey-div-with-border">
     <p>
-      V2I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information
+      I do hereby certify that I am the <strong>authorized signing authority</strong> and that all of the information
       provided is true and complete to the best of my knowledge and belief.
     </p>
 
