@@ -113,7 +113,7 @@ const createApplicationStore = (extras = {}) => {
   return {
     application: {
       applicationMap: new Map([[programYearId, { facilityList, ccofProgramYearName: '2025-2026' }]]),
-      latestProgramYearId: programYearId,
+      latestProgramYearId: () => programYearId,
       getApplicationIdByProgramYearId: () => programYearId,
       getFacilityListForPCFByProgramYearId: () => facilityList,
       ...extras,
