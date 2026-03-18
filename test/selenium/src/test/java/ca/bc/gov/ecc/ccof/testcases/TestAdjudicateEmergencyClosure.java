@@ -14,11 +14,12 @@ import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
+import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAdjudicateEmergencyClosure extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestAdjudicatePlannedClosure.class);
+	private static final Logger logger = LogManager.getLogger(TestAdjudicateEmergencyClosure.class);
     String contactName;
 
 	@Test(priority = 1)
@@ -65,7 +66,7 @@ public class TestAdjudicateEmergencyClosure extends BaseTest {
         // switches view to organization
         BCeIDPage bceidPage = new BCeIDPage(driver);
         bceidPage.clickSelectOrganization();
-        Thread.sleep(3000)
+        Thread.sleep(3000);
 
         // switches view to organization information page
         OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
