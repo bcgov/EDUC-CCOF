@@ -540,5 +540,6 @@ export function getDefaultReportingProgramYear() {
   if (currentYear && applicationStore.getApplicationIdByProgramYearId(currentYear.programYearId)) {
     return currentYear;
   }
-  return programYearList?.newApp;
+  const latestProgramYearId = applicationStore.latestProgramYearId;
+  return appStore.programYearList.list?.find((year) => year.programYearId === latestProgramYearId);
 }
