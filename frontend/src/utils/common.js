@@ -6,6 +6,8 @@ import moment from 'moment';
 import useRfdc from 'rfdc';
 
 import ApplicationService from '@/services/applicationService';
+import { useAppStore } from '@/store/app.js';
+import { useApplicationStore } from '@/store/application.js';
 import {
   APPLICATION_CCOF_STATUSES,
   APPLICATION_STATUSES,
@@ -520,4 +522,23 @@ export function getECEReportRejectionType(eceReport) {
     return REJECTION_TYPES.PARTIAL_REJECTION;
   }
   return REJECTION_TYPES.NO_REJECTION;
+}
+
+/**
+ * Returns the default reporting program year.
+ * Automatically reads from Pinia stores.
+ *
+ * @returns {Object} Default program year
+ */
+export function getDefaultReportingProgramYear() {
+  const appStore = useAppStore();
+  const applicationStore = useApplicationStore();
+
+  const currentYear = appStore.currentProgramYear;
+  const programYearList = appStore.programYearList;
+
+  if (currentYear && applicationStore.getApplicationIdByProgramYearId(currentYear.programYearId)) {
+    return currentYear;
+  }
+  return programYearList?.newApp;
 }

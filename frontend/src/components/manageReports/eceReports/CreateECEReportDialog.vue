@@ -108,6 +108,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization';
+import { getDefaultReportingProgramYear } from '@/utils/common.js';
 import {
   ECE_CERTIFICATE_LEVELS,
   ECE_STAFF_STATUSES,
@@ -270,7 +271,7 @@ export default {
     this.DEFAULT_MAX_MONTHS = 7;
     this.EMPTY_PLACEHOLDER = EMPTY_PLACEHOLDER;
     this.rules = rules;
-    this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
+    this.selectedProgramYear = getDefaultReportingProgramYear(); // default to current program year
   },
   methods: {
     async loadData() {
