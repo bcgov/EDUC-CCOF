@@ -249,8 +249,12 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           }
 
           const response = await ApiService.apiAxios.patch(`${ApiRoutes.CHANGE_REQUEST}/${changeRequestId}`, payload);
-          this.declarationModel.externalStatus = 'SUBMITTED';
-          this.setDeclarationModel(this.declarationModel);
+          this.setDeclarationModel({
+            ...this.declarationModel,
+            externalStatus: 'SUBMITTED',
+            declarationVersion: DECLARATION_TEXT_VERSIONS.V2,
+          });
+
           reportChangesStore.updateExternalStatusInChangeRequestStore({
             changeRequestId: changeRequestId,
             newStatus: 2,
