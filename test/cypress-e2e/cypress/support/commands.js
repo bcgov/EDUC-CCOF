@@ -34,7 +34,7 @@ import { ccofApp } from './pages/2-portal-application-pages/01-portal-applicatio
 import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
 import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
 import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js"
-import { organizationClosure } from "./pages/6-organization-closures-pages/01-add-new-closure.js"
+import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js"
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   'textarea',
@@ -48,8 +48,8 @@ const CONTROL_SELECTOR = [
  *  - Finds a form control associated with a visual/accessible label.
  *  - Returns a Cypress chainable to the **real input** whenever possible.
  *  - If the label uses `for="id"`, returns `cy.get('#id')` (re-queries each time).
-   */
- 
+ */
+
 Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
   const {
     timeout = 20000,
@@ -202,7 +202,7 @@ Cypress.Commands.add("startChangeRequest", (changeType) => {
   cy.contains("Request a change").clickByText("Request a change");
   cy.contains("Child Care Operating Funding Program");
   cy.url().should("include", `/change/landing#change-request-history`);
-  
+
   if (changeType === "addNewFacility") {
     cy.contains("Add a new facility to an existing organization").should("be.visible");
     cy.contains("Add new facility").clickByText("Add new facility");
@@ -218,9 +218,20 @@ Cypress.Commands.add("startChangeRequest", (changeType) => {
   }
 });
 
+Cypress.Commands.add("dismissEnrolmentReportDueDialog", () => {
+  cy.contains("Would you like to take action now?").should("be.visible");
+  cy.contains("button", "Not now").should("be.visible").click();
+});
+
 Cypress.Commands.add("startOrganizationClosures", () => {
   cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
+
+  // If the Enrolment Report modal is present, dismiss it before continuing.
+  cy.dismissEnrolmentReportDueDialog();
+
+  // Wait for the home page content to be visible after any modal is closed
   cy.contains("What would you like to do?").should("be.visible");
+
   cy.contains("Organization Closures").clickByText("Organization Closures");
   cy.contains("Organization Closures");
   cy.url().should("include", `/closures/`);
@@ -230,7 +241,7 @@ Cypress.Commands.add("startOrganizationClosures", () => {
 
 /*
  * Method to Cancel the application if the button is present
-**/
+ **/
 Cypress.Commands.add('cancelApplicationIfPresent', () => {
   cy.wait(10000);
   cy.document({ timeout: 30000 }).then((doc) => {
@@ -251,19 +262,19 @@ Cypress.Commands.add('cancelApplicationIfPresent', () => {
   });
 });
 /*
-* Method to type a value into an input field and assert its value
-**/
+ * Method to type a value into an input field and assert its value
+ **/
 Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) => {
-  const v = String(value);
+    const v = String(value);
 
-  return cy.wrap(subject).then(($el) => {
-    cy.wrap($el).clear().type(v);
-  });
+    return cy.wrap(subject).then(($el) => {
+      cy.wrap($el).clear().type(v);
+    });
 });
 
 /*
  ** Method to assert that an input field is auto-filled
-**/
+ **/
 Cypress.Commands.add('assertAutoFilled', (label) => {
   cy.getByLabel(label)
     .invoke('val')
@@ -274,7 +285,7 @@ Cypress.Commands.add('assertAutoFilled', (label) => {
 
 /*
  * Method to assert that an input field is auto-filled
-**/
+ **/
 Cypress.Commands.add('assertAutoFilledNotEmpty', (labels) => {
   labels.forEach((l) => cy.assertAutoFilled(l))
 })
@@ -282,7 +293,7 @@ Cypress.Commands.add('assertAutoFilledNotEmpty', (labels) => {
 
 /*
  ** Method to set a time value in a time input field
-**/
+ **/
 Cypress.Commands.add('setTime', (hook, hhmm) => {
   const v = String(hhmm);
   cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`, { timeout: 20000 })
@@ -308,7 +319,7 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
 
 /*
  * Method to Continue the application if the button is present
-**/
+ **/
 Cypress.Commands.add('continueApplicationIfPresent', () => {
   cy.wait(10000)
   cy.document({ timeout: 30000 }).then((doc) => {
