@@ -30,10 +30,8 @@
     <h4 id="declaration" class="lg-px-10">Declaration</h4>
     <v-skeleton-loader :loading="isLoading" type="table-tbody">
       <div>
-        <v-col cols="12" class="pt-0">
-          <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
-          <FundingAgreementDeclarationTextV1 v-else />
-        </v-col>
+        <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
+        <FundingAgreementDeclarationTextV1 v-else />
         <template v-if="displaySignFundingAgreementSection">
           <v-checkbox
             v-model="fundingAgreement.consentCheck"
