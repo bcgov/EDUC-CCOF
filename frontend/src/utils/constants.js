@@ -202,6 +202,11 @@ export const NAV_BAR_GROUPS = {
   MTFI: 'MTFI',
 };
 
+export const DECLARATION_TEXT_VERSIONS = {
+  V1: null,
+  V2: 2,
+};
+
 export const CCFRI_HAS_CLOSURE_FEE_TYPES = {
   YES: 100000000,
   NO: 100000001,
