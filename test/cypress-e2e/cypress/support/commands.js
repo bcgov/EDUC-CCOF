@@ -323,8 +323,8 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
 Cypress.Commands.add('setTimeByLabel', (labelText, hhmm) => {
   const v = String(hhmm);
   return cy.getByLabel(labelText, { timeout: 10000 }).then(($label) => {
-    const lbl = $label && $label[0];
-    const doc = lbl && lbl.ownerDocument ? lbl.ownerDocument : document;
+    const lbl = $label?.[0];
+    const doc = lbl?.ownerDocument || document;
 
     const fieldContainer = (lbl && (lbl.closest('.v-field, .v-input, .v-text-field') || lbl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') || lbl.parentElement?.nextElementSibling)) || null;
 
