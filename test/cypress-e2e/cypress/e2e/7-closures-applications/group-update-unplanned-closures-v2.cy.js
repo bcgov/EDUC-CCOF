@@ -1,6 +1,5 @@
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
 import { organizationClosure } from "../../support/pages/6-organization-closures-pages/01-unplanned-closure.js";
-import { APP_TYPE } from "../../support/constants.js";
 
 describe("Group Unplanned Closure Update Test", () => {
   it("Should run through Group Unplanned Closure update request flow", () => {

@@ -333,7 +333,7 @@ class OrganizationClosure {
 
           if (attemptsLeft <= 1) {
             throw new Error(
-              `Expected status \"${expectedStatus}\" for facility \"${this.facilityName}\" after retries, but last row content was: ${$row.text()}`,
+              `Expected status "${expectedStatus}" for facility "${this.facilityName}" after retries, but last row content was: ${$row.text()}`,
             );
           }
 
