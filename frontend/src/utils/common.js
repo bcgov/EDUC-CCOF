@@ -535,7 +535,6 @@ export function getDefaultReportingProgramYear() {
   const applicationStore = useApplicationStore();
 
   const currentYear = appStore.currentProgramYear;
-  const programYearList = appStore.programYearList;
 
   if (currentYear && applicationStore.getApplicationIdByProgramYearId(currentYear.programYearId)) {
     return currentYear;
