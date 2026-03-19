@@ -5,7 +5,7 @@ const HttpStatus = require('http-status-codes');
 const log = require('../logger');
 const { ECECertificateMappings, ECEFacilityStaffMappings, ECEReportStaffMappings, ECEStaffMappings } = require('../../util/mapping/Mappings');
 const { MappableObjectForBack, MappableObjectForFront } = require('../../util/mapping/MappableObject');
-const { sanitizeODataFilterValue } = require('../../util/common');
+const { restrictFacilities, sanitizeODataFilterValue } = require('../../util/common');
 
 function mapECEFacilityStaffForFront(eceFacilityStaff) {
   const result = [];
@@ -21,6 +21,24 @@ function mapECEFacilityStaffForFront(eceFacilityStaff) {
     });
   });
   return result;
+}
+
+async function getOrganizationECEStaff(req, res) {
+  try {
+    const userOrganizationId = req.session?.passport?.user?.organizationId;
+    if (!userOrganizationId) {
+      throw new Error('Organization ID is missing from the authenticated user.');
+    }
+    const response = await getOperation(
+      `ccof_ece_staff_information_facilities?$select=_ccof_facility_value,_ccof_ece_staff_value&$expand=ccof_ece_staff($select=ccof_first_name,ccof_middle_name,ccof_last_name,ccof_registration_no)&$filter=_ccof_organization_value eq ${userOrganizationId}`,
+    );
+    let staff = mapECEFacilityStaffForFront(response?.value || []);
+    staff = restrictFacilities(req, staff);
+    return res.status(HttpStatus.OK).json(staff);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
 }
 
 async function getECEFacilityStaff(req, res) {
@@ -159,6 +177,7 @@ module.exports = {
   deleteECEReportStaff,
   getECEFacilityStaff,
   getECEStaffCertificates,
+  getOrganizationECEStaff,
   updateECEFacilityStaff,
   updateECEReportStaff,
 };

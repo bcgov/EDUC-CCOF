@@ -4,7 +4,7 @@ const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
 const { ECE_REPORT_STATUS_CODES, PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { adjustECEReport, createECEReport, getECEReport, getECEReports, getECEReportApprovedAmounts, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { adjustECEReport, createECEReport, getECEReport, getECEReports, getECEReportApprovedAmounts, getECETopUpReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
 const validatePermission = require('../../middlewares/validatePermission');
 
@@ -59,6 +59,55 @@ const updateECEReportSchema = {
     },
   },
 };
+const topUpReportsSchema = {
+  year: {
+    in: ['body'],
+    notEmpty: {
+      errorMessage: 'year is required',
+    },
+    isInt: {
+      options: { min: 2000, max: 2200 },
+      errorMessage: 'year must be between 2000 and 2200',
+    },
+  },
+  fromMonth: {
+    in: ['body'],
+    optional: true,
+    isInt: {
+      options: { min: 1, max: 12 },
+      errorMessage: 'fromMonth must be between 1 and 12',
+    },
+  },
+  toMonth: {
+    in: ['body'],
+    optional: true,
+    isInt: {
+      options: { min: 1, max: 12 },
+      errorMessage: 'toMonth must be between 1 and 12',
+    },
+  },
+  facilityIds: {
+    in: ['body'],
+    isArray: {
+      options: { min: 1 },
+      errorMessage: 'facilityIds must be a non-empty array',
+    },
+  },
+  'facilityIds.*': {
+    in: ['body'],
+    isUUID: {
+      options: UUID_VALIDATOR_VERSION,
+      errorMessage: 'Each facilityId must be a valid UUID',
+    },
+  },
+  'eceStaffIds.*': {
+    in: ['body'],
+    isUUID: {
+      options: UUID_VALIDATOR_VERSION,
+      errorMessage: 'Each eceStaffId must be a valid UUID',
+    },
+  },
+};
 
 router.get(
   '/',
@@ -74,6 +123,11 @@ router.get(
     return getECEReports(req, res);
   },
 );
+
+router.post('/top-up', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.VIEW_ECE_REPORT), checkSchema(topUpReportsSchema), (req, res) => {
+  validationResult(req).throw();
+  return getECETopUpReports(req, res);
+});
 
 router.get(
   '/:eceReportId',

@@ -6,7 +6,7 @@ const { createRawECEReportStaff } = require('./staff');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
 const { getCurrentPacificDate, restrictFacilities } = require('../../util/common');
-const { ECE_REPORT_STAFF_STATUS_CODES, ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES } = require('../../util/constants');
+const { ECE_REPORT_EXTERNAL_STATUS_CODES, ECE_REPORT_STAFF_STATUS_CODES, ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES } = require('../../util/constants');
 const { MappableObjectForBack, MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(reportType) {
@@ -26,6 +26,19 @@ function mapECEReportForFront(report) {
   mappedReport.eceStaffInformation = eceStaffInformation?.map((staffInfo) => {
     return new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON();
   });
+  return mappedReport;
+}
+
+function mapECETopUpReportForFront(report, eceStaffIdSet) {
+  const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
+  const eceStaffInformation = report.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report.filter(
+    (staff) => staff.statuscode === ECE_REPORT_STAFF_STATUS_CODES.VERIFIED && eceStaffIdSet.has(staff._ccof_ece_staff_value),
+  );
+  mappedReport.eceStaffInformation = eceStaffInformation.map((staffInfo) => new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON());
+  mappedReport.approvedTotalHours = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.verifiedHours || 0), 0);
+  mappedReport.approvedWeSubtotal = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedWeAmount || 0), 0);
+  mappedReport.approvedSbSubtotal = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedSbAmount || 0), 0);
+  mappedReport.approvedTotalAmount = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedTotalAmount || 0), 0);
   return mappedReport;
 }
 
@@ -100,10 +113,47 @@ async function getECEReportApprovedAmounts(req, res) {
 async function getECEReports(req, res) {
   try {
     const response = await getOperation(`ccof_ece_monthly_reports?${buildFilterQuery(req.query, ECEReportMappings)}`);
-    let eceReports = [];
-    response?.value?.forEach((report) => eceReports.push(mapECEReportForFront(report)));
+    let eceReports = response?.value?.map(mapECEReportForFront) ?? [];
     eceReports = restrictFacilities(req, eceReports);
     return res.status(HttpStatus.OK).json(eceReports);
+  } catch (e) {
+    log.error(e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+function getLatestReports(reports) {
+  const latestMap = new Map();
+  for (const report of reports) {
+    const key = `${report.facilityId}|${report.year}|${report.month}`;
+    const existing = latestMap.get(key);
+    if (!existing || report.version > existing.version) {
+      latestMap.set(key, report);
+    }
+  }
+  return [...latestMap.values()];
+}
+
+async function getECETopUpReports(req, res) {
+  try {
+    const { year, fromMonth, toMonth, facilityIds, eceStaffIds } = req.body;
+    const userOrganizationId = req.session?.passport?.user?.organizationId;
+    if (!userOrganizationId) {
+      throw new Error('Organization ID is missing from the authenticated user.');
+    }
+    let filter = `_ccof_organization_value eq ${userOrganizationId} and ccof_year eq '${year}' and (ccof_external_status eq ${ECE_REPORT_EXTERNAL_STATUS_CODES.APPROVED} or ccof_external_status eq ${ECE_REPORT_EXTERNAL_STATUS_CODES.PAID})`;
+    if (fromMonth != null && toMonth != null) {
+      filter += ` and Microsoft.Dynamics.CRM.Between(PropertyName='ccof_month',PropertyValues=['${fromMonth}','${toMonth}'])`;
+    }
+    const response = await getOperation(
+      `ccof_ece_monthly_reports?$select=ccof_ece_monthly_reportid,_ccof_facility_value,ccof_ece_rate,ccof_ece_sb_rate,ccof_month,ccof_year,ccof_approval_date&$filter=(${filter})&$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,statuscode)`,
+    );
+    const facilityIdSet = new Set(facilityIds);
+    const eceStaffIdSet = new Set(eceStaffIds);
+    let eceReports = response?.value?.filter((report) => facilityIdSet.has(report._ccof_facility_value)) ?? [];
+    eceReports = eceReports.map((report) => mapECETopUpReportForFront(report, eceStaffIdSet)).filter((report) => report.approvedTotalHours > 0);
+    eceReports = restrictFacilities(req, eceReports);
+    return res.status(HttpStatus.OK).json(getLatestReports(eceReports));
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -186,4 +236,4 @@ async function adjustECEReport(req, res) {
   }
 }
 
-module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReportApprovedAmounts, getECEReports, submitECEReport, updateECEReport };
+module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReportApprovedAmounts, getECEReports, getECETopUpReports, submitECEReport, updateECEReport };

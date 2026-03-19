@@ -946,6 +946,7 @@ const ECEReportMappings = [
   { back: 'ccof_we_subtotal', front: 'approvedWeSubtotal' },
   { back: 'ccof_total_amount', front: 'approvedTotalAmount' },
   { back: 'ccof_submit_date', front: 'submittedDate' },
+  { back: 'ccof_approval_date', front: 'approvedDate' },
   { back: 'ccof_has_next_report_created', front: 'hasNextReportCreated' },
   { back: 'statuscode', front: 'statusCode' },
   { back: 'ccof_external_status', front: 'externalStatus' },

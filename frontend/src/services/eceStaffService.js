@@ -5,6 +5,16 @@ import { buildQueryString } from '@/utils/common.js';
 import { ApiRoutes } from '@/utils/constants';
 
 export default {
+  async getOrganizationECEStaff() {
+    try {
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_STAFF}/organization`);
+      return response?.data;
+    } catch (error) {
+      console.error(`Failed to get ECE Organization Staff - ${error}`);
+      throw error;
+    }
+  },
+
   async getECEFacilityStaff(query) {
     try {
       const queryString = buildQueryString(query);
