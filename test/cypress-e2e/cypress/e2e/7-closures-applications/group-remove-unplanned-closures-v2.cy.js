@@ -1,8 +1,8 @@
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
 import { organizationClosure } from "../../support/pages/6-organization-closures-pages/01-unplanned-closure.js";
 
-describe("Group Unplanned Closure Application Test", () => {
-  it("Should run through Group Unplanned Closure, submit , validate pending status and logout", () => {
+describe("Group Unplanned Closure Remove Test", () => {
+  it("Should run through Group Unplanned Closure remove request flow", () => {
     loginPage.visitLoginPage();
     loginPage.clickLoginButton();
     loginPage.loginThroughExternalProvider(
@@ -12,9 +12,9 @@ describe("Group Unplanned Closure Application Test", () => {
     cy.startOrganizationClosures();
 
     organizationClosure
-      .loadFixturesAndVariables("closureData.json")
+      .loadFixturesAndVariables("remove-closureData.json")
       .then(() => {
-        organizationClosure.createNewClosure();
+        organizationClosure.removeClosureRequest();
       });
   });
 });

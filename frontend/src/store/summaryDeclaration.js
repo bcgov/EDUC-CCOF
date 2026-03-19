@@ -14,6 +14,7 @@ import {
   ApiRoutes,
   CCFRI_FEE_CORRECT_TYPES,
   CHANGE_REQUEST_TYPES,
+  DECLARATION_TEXT_VERSIONS,
   ORGANIZATION_PROVIDER_TYPES,
   PROGRAM_YEAR_LANGUAGE_TYPES,
 } from '@/utils/constants.js';
@@ -232,8 +233,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
       let payload = {
         agreeConsentCertify: this.declarationModel?.agreeConsentCertify,
         orgContactName: this.declarationModel?.orgContactName,
-        declarationAStatus: this.declarationModel?.declarationAStatus ?? null,
         declarationBStatus: this.declarationModel?.declarationBStatus ?? null,
+        declarationVersion: DECLARATION_TEXT_VERSIONS.V2,
         summaryDeclarationApplicationName: this.summaryModel?.application?.name,
       };
       try {
@@ -342,8 +343,7 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
           orgContactName: payload?.unlockDeclaration ? null : payload?.orgContactName,
           externalStatus: payload?.externalStatus,
           enabledDeclarationB: payload?.enabledDeclarationB,
-          declarationAStatus: payload?.declarationAStatus,
-          declarationBStatus: payload?.declarationBStatus,
+          declarationVersion: payload?.declarationVersion,
           latestSubmissionDate: payload?.latestSubmissionDate,
         };
         this.setDeclarationModel(declarationModel);

@@ -63,7 +63,7 @@ async function createECEReport(req, res) {
 
 async function getRawECEReport(eceReportId) {
   const response = await getOperation(
-    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode)`,
+    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode,ccof_reason_for_rejection)`,
   );
   return response;
 }
@@ -213,7 +213,6 @@ async function createAdjustmentReport(report) {
     ccof_month: String(report.ccof_month),
     ccof_year: String(report.ccof_year),
     ccof_report_type: ECE_REPORT_TYPES.ADJUSTMENT,
-    ccof_version: Number(report.ccof_version) + 1,
   };
   const adjustmentReportId = await postOperation('ccof_ece_monthly_reports', payload);
   return adjustmentReportId;

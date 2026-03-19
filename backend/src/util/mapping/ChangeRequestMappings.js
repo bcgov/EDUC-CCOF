@@ -29,6 +29,7 @@ const ChangeRequestMappings = [
   { back: 'ccof_public_sector_employer', front: 'publicSector' },
   { back: 'ccof_union_agreement_reached', front: 'isUnionAgreementReached' },
   { back: 'ccof_describe_your_org', front: 'describeOrgCSSEA' },
+  { back: 'ccof_declaration_version', front: 'declarationVersion' },
 
   ...UserProfileChangeRequestMappings,
 ];

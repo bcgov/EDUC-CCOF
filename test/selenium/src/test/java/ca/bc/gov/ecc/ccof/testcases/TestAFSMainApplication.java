@@ -17,6 +17,7 @@ import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.FacilityInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
+import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestAFSMainApplication extends BaseTest {
@@ -55,6 +56,11 @@ public class TestAFSMainApplication extends BaseTest {
 
 		// searching the contact
 		deleteApp.searchAndOpenContact(contactName);
+        Thread.sleep(3000);
+
+        // switches view to organization
+        BCeIDPage bceidPage = new BCeIDPage(driver);
+        bceidPage.clickSelectOrganization();
         Thread.sleep(3000);
 
         // switches view to organization information page

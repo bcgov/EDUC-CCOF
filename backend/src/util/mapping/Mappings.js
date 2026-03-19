@@ -474,8 +474,8 @@ const DeclarationMappings = [
   { back: 'ccof_consent', front: 'agreeConsentCertify' },
   { back: 'ccof_submittedby', front: 'orgContactName' },
   { back: 'ccof_latestsubmissiondate', front: 'latestSubmissionDate' },
-  { back: 'ccof_declarationastatus', front: 'declarationAStatus' },
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' },
+  { back: 'ccof_declaration_version', front: 'declarationVersion' },
   { back: 'statuscode', front: 'applicationStatus' },
   { back: 'ccof_unlock_renewal', front: 'unlockRenewal' },
   { back: 'ccof_unlock_declaration', front: 'unlockDeclaration' },
@@ -507,7 +507,6 @@ const ApplicationSummaryMappings = [
 
   // Declaration Details
   { back: 'ccof_consent', front: 'hasConsent' }, //1,
-  { back: 'ccof_declarationastatus', front: 'declarationAStatus' }, //1,
   { back: 'ccof_declarationbstatus', front: 'declarationBStatus' }, //1,
   { back: 'ccof_submittedby', front: 'orgContactName' }, //"agree",
   // ECE-WE Details
@@ -920,7 +919,7 @@ const PaymentMappings = [
   { back: 'ccof_month', front: 'paymentMonth' },
   { back: 'ccof_year', front: 'paymentYear' },
   { back: 'ofm_payment_type@OData.Community.Display.V1.FormattedValue', front: 'fundingTypeText' },
-  { back: 'ccof_base_or_adjustment@OData.Community.Display.V1.FormattedValue', front: 'reportTypeText' },
+  { back: 'ccof_baselineoradjustment', front: 'reportTypeText' },
   { back: 'ofm_amount', front: 'paymentAmount' },
   { back: 'ofm_invoice_received_date', front: 'paidDate' },
   { back: 'ofm_invoice_date', front: 'approvedDate' },
@@ -950,6 +949,8 @@ const ECEReportMappings = [
   { back: 'ccof_has_next_report_created', front: 'hasNextReportCreated' },
   { back: 'statuscode', front: 'statusCode' },
   { back: 'ccof_external_status', front: 'externalStatus' },
+  { back: 'ccof_rejected_ece_staff', front: 'rejectedStaffCount' },
+  { back: 'ccof_reason_for_rejection', front: 'reportRejectionReason' },
 ];
 
 const ECEReportStaffMappings = [
@@ -962,6 +963,7 @@ const ECEReportStaffMappings = [
   { back: 'ccof_total_amount', front: 'approvedTotalAmount' },
   { back: 'ccof_is_inherited_from_parent_report', front: 'isInheritedFromPreviousReport' },
   { back: 'statuscode', front: 'statusCode' },
+  { back: 'ccof_reason_for_rejection', front: 'staffRejectionReason' },
 ];
 
 const ECEStaffMappings = [
