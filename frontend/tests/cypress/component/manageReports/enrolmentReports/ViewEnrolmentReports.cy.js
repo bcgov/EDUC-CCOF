@@ -89,7 +89,6 @@ const createAppStore = () => {
             {
               programYearId,
               financialYear: programYear.endYear,
-              status: 'CURRENT',
             },
           ],
         },
@@ -100,20 +99,27 @@ const createAppStore = () => {
             programYearId,
             financialYear: programYear.endYear,
             status: 'CURRENT',
+            order: 1,
           },
         ],
       },
     },
   };
 };
-
 const createApplicationStore = (extras = {}) => {
   return {
     application: {
-      applicationMap: new Map([[programYearId, { facilityList, ccofProgramYearName: '2025-2026' }]]),
-      latestProgramYearId: programYearId,
-      getApplicationIdByProgramYearId: (id) => id,
-      getFacilityListForPCFByProgramYearId: () => facilityList,
+      applicationMap: new Map([
+        [
+          programYearId,
+          {
+            ccofProgramYearId: programYearId,
+            ccofProgramYearStatus: 'CURRENT',
+            ccofProgramYearName: '2025-2026',
+            facilityList,
+          },
+        ],
+      ]),
       ...extras,
     },
   };
@@ -145,14 +151,7 @@ function interceptAPI(enrolmentReport) {
 function mountWithPinia({ initialState = {} } = {}) {
   const pushStub = cy.stub().as('routerPush');
 
-  const normalizedState = {
-    app: initialState.app || createAppStore().app,
-    application: initialState.application || createApplicationStore().application,
-    organization: initialState.organization || createOrganizationStore().organization,
-    auth: initialState.auth || {},
-  };
-
-  cy.setupPinia({ initialState: normalizedState, stubActions: false }).then((pinia) => {
+  cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     cy.mount(ViewEnrolmentReports, {
       global: {
         plugins: [pinia, vuetify],
