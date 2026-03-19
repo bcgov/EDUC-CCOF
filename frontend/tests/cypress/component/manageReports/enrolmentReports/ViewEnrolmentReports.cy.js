@@ -89,6 +89,7 @@ const createAppStore = () => {
             {
               programYearId,
               financialYear: programYear.endYear,
+              status: 'CURRENT',
             },
           ],
         },
@@ -98,12 +99,9 @@ const createAppStore = () => {
           {
             programYearId,
             financialYear: programYear.endYear,
+            status: 'CURRENT',
           },
         ],
-      },
-      currentProgramYear: {
-        programYearId,
-        financialYear: programYear.endYear,
       },
     },
   };
@@ -113,8 +111,8 @@ const createApplicationStore = (extras = {}) => {
   return {
     application: {
       applicationMap: new Map([[programYearId, { facilityList, ccofProgramYearName: '2025-2026' }]]),
-      latestProgramYearId: () => programYearId,
-      getApplicationIdByProgramYearId: () => programYearId,
+      latestProgramYearId: programYearId,
+      getApplicationIdByProgramYearId: (id) => id,
       getFacilityListForPCFByProgramYearId: () => facilityList,
       ...extras,
     },
