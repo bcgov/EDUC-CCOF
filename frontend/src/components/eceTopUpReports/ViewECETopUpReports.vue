@@ -9,7 +9,6 @@
           </v-col>
           <v-col cols="12" md="8" lg="10">
             <v-row no-gutters>
-              <!-- TODO: Add fromMonth < toMonth validation -->
               <v-col cols="12" md="6" class="mb-2 mb-md-0 pr-md-4">
                 <v-select
                   v-model="selectedFromMonth"
@@ -25,11 +24,12 @@
               </v-col>
               <v-col cols="12" md="6" class="pl-md-4">
                 <v-select
+                  ref="toMonthSelect"
                   v-model="selectedToMonth"
                   :loading="loading"
                   :disabled="loading"
                   :items="allReportingMonths"
-                  :rules="rules.required"
+                  :rules="[...rules.required, rules.validToMonth(selectedFromMonth)]"
                   item-title="label"
                   item-value="value"
                   label="To"
@@ -250,6 +250,13 @@ export default {
           return facA.localeCompare(facB);
         }),
       );
+    },
+  },
+  watch: {
+    selectedFromMonth() {
+      this.$nextTick(() => {
+        this.$refs.toMonthSelect?.validate();
+      });
     },
   },
   async created() {
