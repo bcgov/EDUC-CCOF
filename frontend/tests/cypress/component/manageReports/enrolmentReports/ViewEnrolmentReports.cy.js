@@ -99,7 +99,6 @@ const createAppStore = () => {
             programYearId,
             financialYear: programYear.endYear,
             status: 'CURRENT',
-            order: 1,
           },
         ],
       },
