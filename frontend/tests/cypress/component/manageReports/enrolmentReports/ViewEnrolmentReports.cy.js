@@ -145,7 +145,14 @@ function interceptAPI(enrolmentReport) {
 function mountWithPinia({ initialState = {} } = {}) {
   const pushStub = cy.stub().as('routerPush');
 
-  cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
+  const normalizedState = {
+    app: initialState.app || createAppStore().app,
+    application: initialState.application || createApplicationStore().application,
+    organization: initialState.organization || createOrganizationStore().organization,
+    auth: initialState.auth || {},
+  };
+
+  cy.setupPinia({ initialState: normalizedState, stubActions: false }).then((pinia) => {
     cy.mount(ViewEnrolmentReports, {
       global: {
         plugins: [pinia, vuetify],
