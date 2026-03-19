@@ -10,24 +10,24 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class BCeIDPage {
 
-	WebDriverWait wait;
-	WebDriver driver;
+    WebDriverWait wait;
+    WebDriver driver;
 
-	@FindBy(xpath = "//*[@data-id='parentcustomerid.fieldControl-LookupResultsDropdown_parentcustomerid_selected_tag_text']")
-	WebElement selectOrganization;
+    @FindBy(xpath = "//*[@data-id='parentcustomerid.fieldControl-LookupResultsDropdown_parentcustomerid_selected_tag_text']")
+    WebElement selectOrganization;
 
-	public BCeIDPage(WebDriver driver) {
-		this.driver = driver;
-		PageFactory.initElements(driver, this);
-		wait = new WebDriverWait(driver, Duration.ofMillis(10000));
-	}
+    public BCeIDPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+        wait = new WebDriverWait(driver, Duration.ofMillis(10000));
+    }
 
-	public void clickSelectOrganization() {
-		selectOrganization.click();
-	}
+    public void clickSelectOrganization() {
+        selectOrganization.click();
+    }
 
-	public WebElement waitBeforeClickSelectOrganization() {
-		return selectOrganization;
-	}
+    public WebElement waitBeforeClickSelectOrganization() {
+        return selectOrganization;
+    }
 
 }

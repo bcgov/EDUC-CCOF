@@ -329,7 +329,7 @@
       <!--end page 1 RFI landing-->
 
       <v-card elevation="6" class="my-10 rounded-lg">
-        <p class="px-6 py-3 card-title font-weight-bold">Direct Care Staff Wages Increases</p>
+        <p class="px-6 py-3 card-title font-weight-bold">Direct Care Staff Wage Increases</p>
         <div class="px-8 py-4">
           <AppAlertBanner type="info" class="my-2">
             <strong>
@@ -430,7 +430,7 @@
 
           <template v-if="model.feeIncreaseDueToWage === 1">
             <div>
-              <p class="text-h5 text-primary my-4">Direct Care Staff Wages Increases</p>
+              <p class="text-h5 text-primary my-4">Direct Care Staff Wage Increases</p>
               <AppAlertBanner type="info" class="my-4">
                 <strong>
                   Note: If two or more staff have the same information for every column, they can be included in one

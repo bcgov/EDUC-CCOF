@@ -1,15 +1,23 @@
+import { defineConfig } from 'eslint/config';
 import js from '@eslint/js';
+import globals from 'globals';
 import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import pluginVue from 'eslint-plugin-vue';
+import pluginCypress from 'eslint-plugin-cypress';
 
-export default [
-  ...pluginVue.configs['flat/recommended'],
-  js.configs.recommended,
-  eslintPluginPrettier,
+export default defineConfig([
   {
     ignores: ['dist/', 'tests/'],
   },
   {
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+    plugins: { js },
+    files: ['src/**/*.{vue,js}', 'tests/cypress/**/*.js'],
+    extends: ['js/recommended', ...pluginVue.configs['flat/recommended'], eslintPluginPrettier],
     rules: {
       semi: 'off',
       'eol-last': ['error', 'always'],
@@ -28,4 +36,8 @@ export default [
       ],
     },
   },
-];
+  {
+    files: ['tests/cypress/**/*.js'],
+    extends: [pluginCypress.configs.recommended],
+  },
+]);

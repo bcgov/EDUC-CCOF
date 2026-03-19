@@ -42,7 +42,7 @@
   <SubmitConfirmationDialog v-model="showSubmitConfirmationDialog" />
   <ReportNavButtons
     :loading="isBusy"
-    :is-submit-displayed="true"
+    :is-submit-displayed="hasPermission(PERMISSIONS.SUBMIT_ECE_REPORT)"
     :is-submit-disabled="isSubmitDisabled"
     @previous="previous"
     @submit="submit"
@@ -55,13 +55,14 @@ import ReportNavButtons from '@/components/guiComponents/ReportNavButtons.vue';
 import MonthlyECEReportHeader from '@/components/manageReports/eceReports/MonthlyECEReportHeader.vue';
 import SubmitConfirmationDialog from '@/components/manageReports/eceReports/SubmitConfirmationDialog.vue';
 import alertMixin from '@/mixins/alertMixin.js';
+import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService.js';
 import ECEReportService from '@/services/eceReportService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { PATHS } from '@/utils/constants.js';
-import { formatUTCtoPacificTime } from '@/utils/format';
-import { isReportReadOnly } from '@/utils/eceReport.js';
+import { getSubmissionDeadlineUTCDate, isReportReadOnly } from '@/utils/eceReport.js';
+import { formatUTCDate, formatUTCtoPacificTime } from '@/utils/format';
 
 export default {
   name: 'MonthlyECEReportDeclaration',
@@ -70,7 +71,7 @@ export default {
     ReportNavButtons,
     SubmitConfirmationDialog,
   },
-  mixins: [alertMixin],
+  mixins: [alertMixin, permissionsMixin],
   data() {
     return {
       eceReport: null,
@@ -99,10 +100,15 @@ export default {
       const currentYear = today?.year;
       return currentYear > reportingYear || (currentYear === reportingYear && currentMonth > reportingMonth);
     },
+    currentDate() {
+      return formatUTCDate(this.userInfo?.serverTime);
+    },
     isSubmitDisabled() {
+      const isAfterSubmissionDeadline = this.currentDate > this.submissionDeadline;
       return (
         !this.hasReportingMonthEnded ||
         isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport }) ||
+        (!this.eceReport.isAdjustment && isAfterSubmissionDeadline) ||
         this.isMinistryUser
       );
     },
@@ -121,6 +127,9 @@ export default {
         if (this.publicSector === null && applicationId) {
           this.publicSector = await ApplicationService.getEceweHeader(applicationId);
         }
+        this.submissionDeadline = formatUTCDate(
+          getSubmissionDeadlineUTCDate(this.eceReport.year, this.eceReport.month),
+        );
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to load ECE report');

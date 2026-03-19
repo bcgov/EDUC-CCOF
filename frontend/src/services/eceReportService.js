@@ -27,6 +27,17 @@ export default {
     }
   },
 
+  async getECEReportApprovedAmounts(eceReportId) {
+    try {
+      if (!eceReportId) return null;
+      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/approved-amounts`);
+      return response?.data;
+    } catch (error) {
+      console.error(`Failed to get ECE report approved amounts - ${error}`);
+      throw error;
+    }
+  },
+
   async getECEReports(query) {
     try {
       const queryString = buildQueryString(query);
@@ -47,6 +58,32 @@ export default {
       await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/submit`);
     } catch (error) {
       console.error(`Failed to submit ECE report - ${error}`);
+      throw error;
+    }
+  },
+
+  async updateECEReport(eceReportId, payload) {
+    try {
+      if (!eceReportId || isEmpty(payload)) return;
+
+      await ApiService.apiAxios.patch(`${ApiRoutes.ECE_REPORTS}/${eceReportId}`, payload);
+    } catch (error) {
+      console.error(`Failed to update ECE report - ${error}`);
+      throw error;
+    }
+  },
+
+  async createAdjustmentReport(eceReportId) {
+    try {
+      if (!eceReportId) return;
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/adjustment`);
+      return response?.data;
+    } catch (error) {
+      if (error.response?.status === 504) {
+        console.error(`Adjustment report request timed out - ${error}`);
+      } else {
+        console.error(`Failed to create adjustment report - ${error}`);
+      }
       throw error;
     }
   },

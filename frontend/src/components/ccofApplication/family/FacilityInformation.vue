@@ -1,6 +1,6 @@
 <template>
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
-    <v-container fluid class="pa-4 mx-lg-16">
+    <v-container fluid class="pa-4 px-lg-16">
       <Eligibility v-if="showApplicationTemplateV1" />
       <FacilityInformationV2 v-else />
     </v-container>

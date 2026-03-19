@@ -26,7 +26,7 @@ jobs:
           echo "Updating package lists..."
           sudo apt update
           echo "Installing required dependencies..."
-          sudo apt install -y wget fonts-liberation libasound2 libnss3 libgbm1 xdg-utils
+          sudo apt install -y wget fonts-liberation libasound2t64 libnss3 libgbm1 xdg-utils
           echo "Attempting to download google-chrome-stable..."
           wget -O /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           echo "Installing google-chrome-stable..."
@@ -39,19 +39,16 @@ jobs:
           CRM_URL: ${{ secrets.CRM_URL }}
           CRM_USERNAME: ${{ secrets.CRM_USERNAME }}
           CRM_PASSWORD: ${{ secrets.CRM_PASSWORD }}
+        working-directory: test/selenium
         run: |
           set -eux
           echo "Creating config.properties file with QA credentials..."
-          cat > config.properties <<EOL
-          crm_url=$CRM_URL
-          crm_username=$CRM_USERNAME
-          crm_password=$CRM_PASSWORD
-          browser=chrome
-          headless=true
-          EOL
+          printf "env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n" \
+            "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
           echo "config.properties created successfully."
 
       - name: Build & run tests
+        working-directory: test/selenium
         run: |
           echo "Starting Maven build and running Selenium tests..."
           mvn -B -ntp clean test

@@ -11,12 +11,14 @@ import {
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CCOF_STATUS,
+  ECE_REPORT_EXTERNAL_STATUSES,
   ECE_STAFF_CERT_STATUSES,
   LICENCE_STATUSES,
   OLD_TO_NEW_CC_CATEGORY_LABEL_MAP,
   OPT_STATUSES,
   ORGANIZATION_TYPES,
   PATHS,
+  REJECTION_TYPES,
 } from '@/utils/constants.js';
 import { formatMonthYearToString, formatTime12to24, getDateFormatter } from '@/utils/format.js';
 import { LocalDate } from '@js-joda/core';
@@ -435,13 +437,13 @@ export function buildQueryString(query) {
  * @param {string|Date} fiscalYearEnd - Fiscal year end date
  * @returns {Array<{ label: string, value: { month: number, year: number } }>}
  */
-export function buildFiscalYearMonths(fiscalYearStart, fiscalYearEnd) {
-  if (!fiscalYearStart || !fiscalYearEnd) {
-    return [];
+export function buildFiscalYearMonths(financialYear) {
+  const endYear = Number(financialYear);
+  if (!endYear || Number.isNaN(endYear)) {
+    throw new Error(`Invalid financial year: ${financialYear}`);
   }
+  const startYear = endYear - 1;
   const months = [];
-  const startYear = moment(fiscalYearStart).year();
-  const endYear = moment(fiscalYearEnd).year();
   // April–December (start year)
   for (let month = 4; month <= 12; month++) {
     months.push({
@@ -497,4 +499,25 @@ export function parseNumber(value) {
   if (value == null || value === '') return Number.NaN;
   if (typeof value === 'number') return value;
   return Number(String(value).replace(/,/g, ''));
+}
+
+/**
+ * Determines the rejection type of an ECE report.
+ *
+ * @param {Object} eceReport - The ECE report object
+ * @returns {string} - One of REJECTION_TYPES: FULL_REJECTION, PARTIAL_REJECTION, NO_REJECTION
+ */
+export function getECEReportRejectionType(eceReport) {
+  const { externalStatus, rejectedStaffCount } = eceReport;
+
+  if (externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED) {
+    return REJECTION_TYPES.FULL_REJECTION;
+  }
+  if (
+    rejectedStaffCount > 0 &&
+    [ECE_REPORT_EXTERNAL_STATUSES.APPROVED, ECE_REPORT_EXTERNAL_STATUSES.PAID].includes(externalStatus)
+  ) {
+    return REJECTION_TYPES.PARTIAL_REJECTION;
+  }
+  return REJECTION_TYPES.NO_REJECTION;
 }

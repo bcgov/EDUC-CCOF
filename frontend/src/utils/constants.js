@@ -202,6 +202,11 @@ export const NAV_BAR_GROUPS = {
   MTFI: 'MTFI',
 };
 
+export const DECLARATION_TEXT_VERSIONS = {
+  V1: null,
+  V2: 2,
+};
+
 export const CCFRI_HAS_CLOSURE_FEE_TYPES = {
   YES: 100000000,
   NO: 100000001,
@@ -776,59 +781,47 @@ export const PAYMENT_STATUS_TEXTS = Object.freeze({
   CANCELLED: 'Cancelled',
 });
 
-export const ECE_REPORT_STATUSES = Object.freeze({
+export const ECE_REPORT_INTERNAL_STATUSES = Object.freeze({
   DRAFT: 1,
-  INACTIVE: 2,
-  SUBMITTED: 3,
-  IN_REVIEW: 4,
-  VERIFIED: 5,
-  APPROVED: 6,
-  PAID: 7,
-  REJECTED: 8,
-  PROCESSING_ERROR: 9,
-  EXPIRED: 10,
+});
+export const ECE_REPORT_EXTERNAL_STATUSES = Object.freeze({
+  DRAFT: 101510000,
+  SUBMITTED: 101510001,
+  WITH_MINISTRY: 101510002,
+  APPROVED: 101510003,
+  PAID: 101510004,
+  REJECTED: 101510005,
+  EXPIRED: 101510006,
 });
 
 export const ECE_REPORT_STATUS_OPTIONS = Object.freeze([
   {
     label: 'Draft',
-    value: ECE_REPORT_STATUSES.DRAFT,
-  },
-  {
-    label: 'Inactive',
-    value: ECE_REPORT_STATUSES.INACTIVE,
+    value: ECE_REPORT_EXTERNAL_STATUSES.DRAFT,
   },
   {
     label: 'Submitted',
-    value: ECE_REPORT_STATUSES.SUBMITTED,
+    value: ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED,
   },
   {
     label: 'With Ministry',
-    value: ECE_REPORT_STATUSES.IN_REVIEW,
-  },
-  {
-    label: 'Verified',
-    value: ECE_REPORT_STATUSES.VERIFIED,
+    value: ECE_REPORT_EXTERNAL_STATUSES.WITH_MINISTRY,
   },
   {
     label: 'Approved',
-    value: ECE_REPORT_STATUSES.APPROVED,
+    value: ECE_REPORT_EXTERNAL_STATUSES.APPROVED,
   },
   {
     label: 'Paid',
-    value: ECE_REPORT_STATUSES.PAID,
+    value: ECE_REPORT_EXTERNAL_STATUSES.PAID,
   },
   {
     label: 'Rejected',
-    value: ECE_REPORT_STATUSES.REJECTED,
-  },
-  {
-    label: 'Processing Error',
-    value: ECE_REPORT_STATUSES.PROCESSING_ERROR,
+    value: ECE_REPORT_EXTERNAL_STATUSES.REJECTED,
   },
   {
     label: 'Expired',
-    value: ECE_REPORT_STATUSES.EXPIRED,
+    value: ECE_REPORT_EXTERNAL_STATUSES.EXPIRED,
   },
 ]);
 
@@ -836,11 +829,6 @@ export const ECE_REPORT_STAFF_STATUSES = Object.freeze({
   ACTIVE: 1,
   REJECTED: 2,
   VERIFIED: 101510001,
-});
-
-export const ECE_REPORT_TYPES = Object.freeze({
-  BASE: 1,
-  ADJUSTMENT: 2,
 });
 
 export const ECE_STAFF_STATUSES = Object.freeze({
@@ -853,4 +841,14 @@ export const FISCAL_YEAR_MONTHS = Object.freeze([4, 5, 6, 7, 8, 9, 10, 11, 12, 1
 
 export const ECE_STAFF_CERT_STATUSES = Object.freeze({
   EXPIRED: 'Expired',
+});
+
+export const ECE_CERTIFICATE_LEVELS = Object.freeze({
+  ECE_ASSISTANT: 'ECE Assistant',
+});
+
+export const REJECTION_TYPES = Object.freeze({
+  FULL_REJECTION: 'Yes - Full rejection',
+  PARTIAL_REJECTION: 'Yes - Partial rejection',
+  NO_REJECTION: 'No',
 });

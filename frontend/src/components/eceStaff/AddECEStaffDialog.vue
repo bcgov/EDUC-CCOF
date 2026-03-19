@@ -76,7 +76,7 @@
                   rules.min(1, 'Wage cannot be less than $1.00'),
                   rules.max(1000, 'Wage cannot be more than $1000'),
                 ]"
-                :disabled="isStaffDuplicate"
+                :disabled="foundStaff?.isFacilityStaffDuplicate"
                 required
                 class="py-2"
               />
@@ -158,7 +158,7 @@ import alertMixin from '@/mixins/alertMixin.js';
 import ECEStaffService from '@/services/eceStaffService';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { getECECertStatusClass } from '@/utils/common.js';
-import { ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
+import { ECE_CERTIFICATE_LEVELS, ECE_STAFF_CERT_STATUSES, ECE_STAFF_STATUSES } from '@/utils/constants.js';
 import { formatCurrency, formatDecimalNumberToNumber, formatName } from '@/utils/format';
 import rules from '@/utils/rules';
 
@@ -279,7 +279,7 @@ export default {
         throw new TypeError('Expected certificates to be an array.');
       }
       if (this.isEceReport) {
-        certificates = certificates.filter((c) => c.certificateLevel !== 'ECE Assistant');
+        certificates = certificates.filter((c) => c.certificateLevel !== ECE_CERTIFICATE_LEVELS.ECE_ASSISTANT);
       }
       if (!certificates.length) return [];
       const staff = certificates[0];
@@ -301,7 +301,7 @@ export default {
           isFacilityStaffActive: isFacilityStaffActive,
           isFacilityStaffDuplicate: Boolean(facilityStaffMatch),
           isReportStaffDuplicate: Boolean(reportStaffMatch),
-          hourlyWage: facilityStaffMatch?.hourlyWage ?? reportStaffMatch?.hourlyWage ?? null,
+          hourlyWage: facilityStaffMatch?.hourlyWage ?? null,
         },
       ];
     },
