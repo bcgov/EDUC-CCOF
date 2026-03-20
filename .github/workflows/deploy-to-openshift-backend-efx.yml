@@ -48,6 +48,9 @@ on:
 jobs:
   openshift-ci-cd:
     name: Deploy Backend to EFX
+    permissions:
+      contents: write
+      packages: write
     runs-on: ubuntu-24.04
     environment: efx
 
@@ -101,9 +104,10 @@ jobs:
             }
 
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
+          persist-credentials: false
 
       - name: Setup Keycloak Client
         uses: actions/github-script@v7
