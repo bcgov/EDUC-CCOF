@@ -14,7 +14,7 @@
                   v-model="selectedFromMonth"
                   :loading="loading"
                   :disabled="loading"
-                  :items="allReportingMonths"
+                  :items="monthSelectOptions"
                   :rules="rules.required"
                   item-title="label"
                   item-value="value"
@@ -28,7 +28,7 @@
                   v-model="selectedToMonth"
                   :loading="loading"
                   :disabled="loading"
-                  :items="allReportingMonths"
+                  :items="monthSelectOptions"
                   :rules="[...rules.required, rules.validToMonth(selectedFromMonth)]"
                   item-title="label"
                   item-value="value"
@@ -67,7 +67,7 @@
               v-model="selectedECEStaffIds"
               :loading="loading"
               :disabled="loading"
-              :items="mappedECEStaff"
+              :items="staffSelectOptions"
               :rules="rules.required"
               all-selected-label="All ECEs"
               item-title="label"
@@ -90,7 +90,7 @@
       </v-card>
       <v-expansion-panels v-else v-model="expandedPanels" multiple elevation="3">
         <v-expansion-panel
-          v-for="[facilityId, { facility, reports, summary }] in Array.from(facilityReportSummaries)"
+          v-for="[facilityId, { facility, reports, summary }] in Array.from(facilityReportDetails)"
           :key="facilityId"
           :value="facilityId"
         >
@@ -103,49 +103,78 @@
             <div class="report-table-wrapper">
               <div class="report-table">
                 <v-row class="font-weight-bold">
-                  <v-col></v-col>
-                  <v-col>Approved Date for Latest Report</v-col>
-                  <v-col>Approved Hours</v-col>
-                  <v-col>WE Rate</v-col>
-                  <v-col>WE Subtotal</v-col>
-                  <v-col>SB Rate</v-col>
-                  <v-col>SB Subtotal</v-col>
-                  <v-col>Total</v-col>
+                  <v-col cols="2"></v-col>
+                  <v-col cols="1">Approved Date for Latest Report</v-col>
+                  <v-col cols="1" class="text-right">Approved Hours</v-col>
+                  <v-col cols="1" class="text-right">WE Rate</v-col>
+                  <v-col cols="2" class="text-right">WE Subtotal</v-col>
+                  <v-col cols="1" class="text-right">SB Rate</v-col>
+                  <v-col cols="2" class="text-right">SB Subtotal</v-col>
+                  <v-col cols="2" class="text-right">Total</v-col>
                 </v-row>
+
                 <div v-for="report in reports" :key="report.eceReportId">
-                  <v-row class="monthly-report-header">
-                    <v-col>{{ formatMonthYearToString(report.month, report.year) }}</v-col>
-                    <v-col>{{ report.approvedDate }}</v-col>
-                    <v-col>{{ report.approvedHours }}</v-col>
-                    <v-col>{{ formatCurrency(report.weRate) }}</v-col>
-                    <v-col>{{ formatCurrency(report.approvedWeSubtotal) }}</v-col>
-                    <v-col>{{ formatCurrency(report.sbRate) }}</v-col>
-                    <v-col>{{ formatCurrency(report.approvedSbSubtotal) }}</v-col>
-                    <v-col>{{ formatCurrency(report.approvedTotalAmount) }}</v-col>
+                  <v-row class="month-header">
+                    <v-col cols="2" class="font-weight-bold">
+                      {{ formatMonthYearToString(report.month, report.year) }}
+                    </v-col>
+                    <v-col cols="1">
+                      {{ report.approvedDate }}
+                    </v-col>
+                    <v-col cols="1" class="text-right">
+                      {{ report.totalHours }}
+                    </v-col>
+                    <v-col cols="1" class="text-right">
+                      {{ formatCurrency(report.weRate) }}
+                    </v-col>
+                    <v-col cols="2" class="text-right">
+                      {{ formatCurrency(report.weSubtotal) }}
+                    </v-col>
+                    <v-col cols="1" class="text-right">
+                      {{ formatCurrency(report.sbRate) }}
+                    </v-col>
+                    <v-col cols="2" class="text-right">
+                      {{ formatCurrency(report.sbSubtotal) }}
+                    </v-col>
+                    <v-col cols="2" class="text-right font-weight-bold">
+                      {{ formatCurrency(report.totalAmount) }}
+                    </v-col>
                   </v-row>
+
                   <v-row v-for="staff in report.eceStaffInformation" :key="staff.eceReportStaffId">
-                    <v-col>{{ getStaffFullName(staff.eceStaffId) }}</v-col>
-                    <v-col></v-col>
-                    <v-col>{{ staff.verifiedHours }}</v-col>
-                    <v-col></v-col>
-                    <v-col>{{ formatCurrency(staff.approvedWeAmount) }}</v-col>
-                    <v-col></v-col>
-                    <v-col>{{ formatCurrency(staff.approvedSbAmount) }}</v-col>
-                    <v-col>{{ formatCurrency(staff.approvedTotalAmount) }}</v-col>
+                    <v-col cols="2" class="pl-6">
+                      {{ getStaffFullName(staff.eceStaffId) }}
+                    </v-col>
+                    <v-col cols="1"></v-col>
+                    <v-col cols="1" class="text-right">
+                      {{ staff.totalHoursWorkedAllReports }}
+                    </v-col>
+                    <v-col cols="1"></v-col>
+                    <v-col cols="2" class="text-right">
+                      {{ formatCurrency(staff.weAmount) }}
+                    </v-col>
+                    <v-col cols="1"></v-col>
+                    <v-col cols="2" class="text-right">
+                      {{ formatCurrency(staff.sbAmount) }}
+                    </v-col>
+                    <v-col cols="2" class="text-right">
+                      {{ formatCurrency(staff.totalAmount) }}
+                    </v-col>
                   </v-row>
                 </div>
+
                 <v-row class="facility-footer font-weight-bold">
                   <v-col cols="5" />
-                  <v-col cols="2">
+                  <v-col cols="2" class="text-right">
                     <span class="pr-1">Facility WE Subtotal:</span>
                     {{ formatCurrency(summary.weSubtotal) }}
                   </v-col>
                   <v-col cols="1" />
-                  <v-col cols="2">
+                  <v-col cols="2" class="text-right">
                     <span class="pr-1">Facility SB Subtotal:</span>
                     {{ formatCurrency(summary.sbSubtotal) }}
                   </v-col>
-                  <v-col cols="2">
+                  <v-col cols="2" class="text-right">
                     <span class="pr-1">Facility Total:</span>
                     {{ formatCurrency(summary.total) }}
                   </v-col>
@@ -202,33 +231,41 @@ export default {
     ...mapState(useAppStore, ['getProgramYearById', 'lookupInfo', 'programYearList']),
     ...mapState(useApplicationStore, ['latestProgramYearId']),
     ...mapState(useOrganizationStore, ['organizationId']),
-    allReportingMonths() {
+    monthSelectOptions() {
       const startYear = 2025; // Only data from April 2024 onward was migrated
       const endYear = this.programYearList?.renewal?.financialYear;
-      const allMonths = [];
+      if (!endYear) return [];
+      const months = [];
       for (let year = startYear; year <= endYear; year++) {
-        const period = buildFiscalYearMonths(year);
-        allMonths.push(...period);
+        months.push(...buildFiscalYearMonths(year));
       }
-      return allMonths;
+      return months;
     },
     defaultPeriod() {
-      const latestApplicationProgramYear = this.getProgramYearById(this.latestProgramYearId);
-      return buildFiscalYearMonths(latestApplicationProgramYear?.financialYear);
+      const programYear = this.getProgramYearById(this.latestProgramYearId);
+      if (!programYear?.financialYear) {
+        return this.monthSelectOptions;
+      }
+      return buildFiscalYearMonths(programYear.financialYear);
     },
-    mappedECEStaff() {
+    staffLookup() {
+      return new Map(this.eceStaff.map((staff) => [staff.eceStaffId, staff]));
+    },
+    staffSelectOptions() {
       return this.eceStaff.map((staff) => ({
         value: staff.eceStaffId,
         label: this.formatStaffFullName(staff),
       }));
     },
-    facilityReportSummaries() {
-      const facilityMap = new Map();
+    facilityReportDetails() {
+      const facilityLookup = new Map(this.facilities.map((facility) => [facility.facilityId, facility]));
+      const detailsMap = new Map();
       for (const report of this.eceReports) {
-        const facility = this.facilities.find((facility) => facility.facilityId === report.facilityId);
-        if (!facilityMap.has(report.facilityId)) {
-          facilityMap.set(report.facilityId, {
-            facility,
+        const { facilityId, weSubtotal = 0, sbSubtotal = 0, totalAmount = 0 } = report;
+
+        if (!detailsMap.has(facilityId)) {
+          detailsMap.set(facilityId, {
+            facility: facilityLookup.get(facilityId),
             reports: [],
             summary: {
               weSubtotal: 0,
@@ -237,18 +274,18 @@ export default {
             },
           });
         }
-        const facilityData = facilityMap.get(report.facilityId);
-        facilityData.reports.push(report);
-        facilityData.summary.weSubtotal += report.approvedWeSubtotal || 0;
-        facilityData.summary.sbSubtotal += report.approvedSbSubtotal || 0;
-        facilityData.summary.total += report.approvedTotalAmount || 0;
+
+        const facilityDetails = detailsMap.get(facilityId);
+        facilityDetails.reports.push(report);
+        facilityDetails.summary.weSubtotal += weSubtotal;
+        facilityDetails.summary.sbSubtotal += sbSubtotal;
+        facilityDetails.summary.total += totalAmount;
       }
+
       return new Map(
-        [...facilityMap.entries()].sort(([, a], [, b]) => {
-          const facA = a.facility?.facilityAccountNumber || '';
-          const facB = b.facility?.facilityAccountNumber || '';
-          return facA.localeCompare(facB);
-        }),
+        [...detailsMap.entries()].sort(([, a], [, b]) =>
+          (a.facility?.facilityAccountNumber || '').localeCompare(b.facility?.facilityAccountNumber || ''),
+        ),
       );
     },
   },
@@ -281,7 +318,7 @@ export default {
     },
     resetFilters() {
       this.selectedFacilityIds = this.facilities?.map((facility) => facility.facilityId) || [];
-      this.selectedECEStaffIds = this.mappedECEStaff.map((staff) => staff.value);
+      this.selectedECEStaffIds = this.staffSelectOptions.map((staff) => staff.value);
       this.selectedFromMonth = this.defaultPeriod[0]?.value;
       this.selectedToMonth = this.defaultPeriod[this.defaultPeriod.length - 1]?.value;
     },
@@ -289,7 +326,7 @@ export default {
       return staff ? `${staff.lastName} ${staff.firstName}`.trim() : '';
     },
     getStaffFullName(eceStaffId) {
-      const staff = this.eceStaff.find((s) => s.eceStaffId === eceStaffId);
+      const staff = this.staffLookup.get(eceStaffId);
       if (!staff) return '';
       return this.formatStaffFullName(staff);
     },
@@ -306,7 +343,7 @@ export default {
           facilityIds: this.selectedFacilityIds,
           eceStaffIds: this.selectedECEStaffIds,
         });
-        this.expandedPanels = Array.from(this.facilityReportSummaries.keys());
+        this.expandedPanels = Array.from(this.facilityReportDetails.keys());
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while generating the report. Please try again later.');
@@ -339,7 +376,7 @@ export default {
   padding: 6px 0px;
   background-color: #e0e0e0;
 }
-.monthly-report-header {
+.month-header {
   background-color: #d8f0ff;
   font-weight: bold;
   font-size: 14px;

@@ -957,6 +957,7 @@ const ECEReportStaffMappings = [
   { back: 'ccof_ece_staff_informationid', front: 'eceReportStaffId' },
   { back: '_ccof_ece_staff_value', front: 'eceStaffId' },
   { back: 'ccof_total_hours_worked', front: 'totalHoursWorked' },
+  { back: 'ccof_total_hours_worked_previous_reports', front: 'totalHoursWorkedAllReports' },
   { back: 'ccof_verified_hours', front: 'verifiedHours' },
   { back: 'ccof_ece_sb_amount', front: 'approvedSbAmount' },
   { back: 'ccof_ece_we_amount', front: 'approvedWeAmount' },

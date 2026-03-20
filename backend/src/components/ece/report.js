@@ -31,14 +31,37 @@ function mapECEReportForFront(report) {
 
 function mapECETopUpReportForFront(report, eceStaffIdSet) {
   const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
-  const eceStaffInformation = report.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report.filter(
-    (staff) => staff.statuscode === ECE_REPORT_STAFF_STATUS_CODES.VERIFIED && eceStaffIdSet.has(staff._ccof_ece_staff_value),
-  );
-  mappedReport.eceStaffInformation = eceStaffInformation.map((staffInfo) => new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON());
-  mappedReport.approvedTotalHours = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.verifiedHours || 0), 0);
-  mappedReport.approvedWeSubtotal = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedWeAmount || 0), 0);
-  mappedReport.approvedSbSubtotal = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedSbAmount || 0), 0);
-  mappedReport.approvedTotalAmount = mappedReport.eceStaffInformation.reduce((sum, staff) => sum + (staff.approvedTotalAmount || 0), 0);
+
+  const selectedStaff = report.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report.filter((staff) => eceStaffIdSet.has(staff._ccof_ece_staff_value));
+
+  const mappedStaffInformation = selectedStaff.map((staffInfo) => {
+    const mappedStaff = new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON();
+    const totalHours = mappedStaff.totalHoursWorkedAllReports || 0;
+    const sbAmount = totalHours * mappedReport.sbRate;
+    const weAmount = totalHours * mappedReport.weRate;
+    return {
+      ...mappedStaff,
+      sbAmount,
+      weAmount,
+      totalAmount: sbAmount + weAmount,
+    };
+  });
+
+  let totalHours = 0;
+  let weSubtotal = 0;
+  let sbSubtotal = 0;
+  for (const staff of mappedStaffInformation) {
+    totalHours += staff.totalHoursWorkedAllReports || 0;
+    weSubtotal += staff.weAmount || 0;
+    sbSubtotal += staff.sbAmount || 0;
+  }
+
+  mappedReport.eceStaffInformation = mappedStaffInformation;
+  mappedReport.totalHours = totalHours;
+  mappedReport.weSubtotal = weSubtotal;
+  mappedReport.sbSubtotal = sbSubtotal;
+  mappedReport.totalAmount = weSubtotal + sbSubtotal;
+
   return mappedReport;
 }
 
@@ -146,12 +169,14 @@ async function getECETopUpReports(req, res) {
       filter += ` and Microsoft.Dynamics.CRM.Between(PropertyName='ccof_month',PropertyValues=['${fromMonth}','${toMonth}'])`;
     }
     const response = await getOperation(
-      `ccof_ece_monthly_reports?$select=ccof_ece_monthly_reportid,_ccof_facility_value,ccof_ece_rate,ccof_ece_sb_rate,ccof_month,ccof_year,ccof_approval_date&$filter=(${filter})&$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,statuscode)`,
+      'ccof_ece_monthly_reports?$select=ccof_ece_monthly_reportid,_ccof_facility_value,ccof_version,ccof_ece_rate,ccof_ece_sb_rate,ccof_month,ccof_year,ccof_approval_date' +
+        `&$filter=(${filter})` +
+        '&$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked_previous_reports)',
     );
     const facilityIdSet = new Set(facilityIds);
     const eceStaffIdSet = new Set(eceStaffIds);
     let eceReports = response?.value?.filter((report) => facilityIdSet.has(report._ccof_facility_value)) ?? [];
-    eceReports = eceReports.map((report) => mapECETopUpReportForFront(report, eceStaffIdSet)).filter((report) => report.approvedTotalHours > 0);
+    eceReports = eceReports.map((report) => mapECETopUpReportForFront(report, eceStaffIdSet)).filter((report) => report.totalHours > 0);
     eceReports = restrictFacilities(req, eceReports);
     return res.status(HttpStatus.OK).json(getLatestReports(eceReports));
   } catch (e) {

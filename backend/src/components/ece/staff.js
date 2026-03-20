@@ -23,6 +23,16 @@ function mapECEFacilityStaffForFront(eceFacilityStaff) {
   return result;
 }
 
+function getUniqueStaff(staffList) {
+  const staffMap = new Map();
+  for (const staff of staffList) {
+    if (!staffMap.has(staff.eceStaffId)) {
+      staffMap.set(staff.eceStaffId, staff);
+    }
+  }
+  return Array.from(staffMap.values());
+}
+
 async function getOrganizationECEStaff(req, res) {
   try {
     const userOrganizationId = req.session?.passport?.user?.organizationId;
@@ -34,6 +44,7 @@ async function getOrganizationECEStaff(req, res) {
     );
     let staff = mapECEFacilityStaffForFront(response?.value || []);
     staff = restrictFacilities(req, staff);
+    staff = getUniqueStaff(staff);
     return res.status(HttpStatus.OK).json(staff);
   } catch (e) {
     log.error(e);
