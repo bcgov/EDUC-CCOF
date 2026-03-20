@@ -316,41 +316,90 @@ class CcofApplication {
     })
 
     if (this.extendedHours === 'Yes') {
-      let extendedHoursLicence
-      switch (appType) {
-        case 'group':
-          extendedHoursLicence = this.facilityLicenceDetailsData.groupLicenceCategories
-          break;
-        case 'family':
-          extendedHoursLicence = this.facilityLicenceDetailsData.familyLicenceCategories
-          break;
-      }
-
       cy.getByLabel('Maximum number of days per week you offer extended hours of child care?').typeAndAssert(this.extendedMaxDays)
       cy.getByLabel('Maximum number of weeks per year you offer extended hours of child care?').typeAndAssert(this.extendedMaxWeeks)
-      cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
 
-      Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-        if (value.extended) {
-          cy.getByLabel(category).check()
-          // NOTE - There is no DIV that wraps around each licence category for extended hours - you will need to check if the input already has a value
+      if (appType === 'group') {
+        const extendedHoursSelections = this.facilityLicenceDetailsData.groupLicenceCategories
+
+        const fillGroupExtendedHours = (label, hoursData) => {
+          cy.getByLabel(label)
+            .closest('.v-input')
+            .next('.v-row')
+            .within(() => {
+              if (hoursData?.maxUnderFourHours !== undefined) {
+                cy.contains('.v-card-subtitle', '4 hours or less extended child care')
+                  .parent()
+                  .within(() => {
+                    cy.getByLabel('Maximum Spaces Offered').typeAndAssert(hoursData.maxUnderFourHours)
+                  })
+              }
+
+              if (hoursData?.maxOverFourHours !== undefined) {
+                cy.contains('.v-card-subtitle', 'Over 4 hours extended child care')
+                  .parent()
+                  .within(() => {
+                    cy.getByLabel('Maximum Spaces Offered').typeAndAssert(hoursData.maxOverFourHours)
+                  })
+              }
+            })
         }
-        cy.getByLabel(category).typeAndAssert(value.maxUnderFourHours)
-      });
 
+        cy.contains('Select each licence category for which you offer extended hours (care before 6:00 AM, after 7:00 PM, or overnight service)')
+          .parents('.cc-top-level-card')
+          .first()
+          .within(() => {
+            Object.entries(extendedHoursSelections).forEach(([category, value]) => {
+              const label = category
+              const hoursData = value
 
-      cy.contains('.v-col-md-6', 'More than 4 extended child care').within(()=> {
-        Object.entries(extendedHoursLicence).forEach(([category, value]) => {
-          // NOTE: Slight difference between character spacing for licence categories on less than vs. more than 4 hours extended child care
-          if (category === "Group Child Care (School Age / School Age Care on School Grounds)") {
-            category = "Group Child Care (School Age/ School Age Care on School Grounds)"
-          }
-          if (category === "Family Child Care (School Age / School Age Care on School Grounds)") {
-            category = "Family Child Care (School Age/ School Age Care on School Grounds)"
-          }
-          cy.getByLabel(category).typeAndAssert(value.maxOverFourHours)
-        })
-      })
+              if (value.extended) {
+                cy.getByLabel(label).check()
+
+                fillGroupExtendedHours(label, hoursData)
+              }
+            })
+          })
+      } else if (appType === 'family') {
+        const extendedHoursSelections = this.facilityLicenceDetailsData.familyLicenceCategories
+
+        const fillFamilyExtendedHours = (category, hoursData) => {
+          cy.getByLabel(category)
+            .closest('.v-selection-control')
+            .parent()
+            .find('> .v-row')
+            .first()
+            .within(() => {
+              cy.get('input[type="number"]').then((inputs) => {
+                if (hoursData?.maxUnderFourHours !== undefined && inputs[0]) {
+                  cy.wrap(inputs[0])
+                    .clear({ force: true })
+                    .type(`${hoursData.maxUnderFourHours}`, { force: true })
+                }
+
+                if (hoursData?.maxOverFourHours !== undefined && inputs[1]) {
+                  cy.wrap(inputs[1])
+                    .clear({ force: true })
+                    .type(`${hoursData.maxOverFourHours}`, { force: true })
+                }
+              })
+            })
+        }
+
+        cy.contains('Enter the number of spaces for which you offer extended hours (care before 6:00 AM, after 7:00 PM or overnight service regularly offered)')
+          .parents('.cc-top-level-card')
+          .first()
+          .within(() => {
+            Object.entries(extendedHoursSelections).forEach(([category, value]) => {
+              const hoursData = value
+              if (!value.checked) {
+                return
+              }
+
+              fillFamilyExtendedHours(category, hoursData)
+            })
+          })
+      }
     }
 
     if (appType === "group") {
