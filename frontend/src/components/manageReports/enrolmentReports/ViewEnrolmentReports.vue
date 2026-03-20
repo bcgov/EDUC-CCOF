@@ -171,7 +171,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { buildFiscalYearMonths } from '@/utils/common.js';
+import { buildFiscalYearMonths, getDefaultReportingProgramYear } from '@/utils/common.js';
 import { ENROLMENT_REPORT_INTERNAL_STATUSES, ENROLMENT_REPORT_STATUSES, PATHS } from '@/utils/constants.js';
 import { formatDateToStandardFormat, formatMonthYearToString, formatYearMonthYYYYMM } from '@/utils/format';
 
@@ -239,7 +239,7 @@ export default {
   },
   async created() {
     this.PATHS = PATHS;
-    this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
+    this.selectedProgramYear = getDefaultReportingProgramYear(); // default to current program year
     await this.loadData();
   },
   methods: {

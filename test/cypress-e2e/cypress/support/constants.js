@@ -10,6 +10,6 @@ export const APP_TYPE = Object.freeze({
 });
 
 export const PROGRAM_YEAR = Object.freeze({
-  CURRENT: "2025-26",
-  FUTURE: "2026-27",
+  CURRENT: "2026-27",
+  FUTURE: "2027-28",
 });
