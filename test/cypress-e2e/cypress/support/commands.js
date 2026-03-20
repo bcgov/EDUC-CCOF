@@ -318,6 +318,39 @@ Cypress.Commands.add('setTime', (hook, hhmm) => {
 });
 
 /*
+ ** Method to set a time value in a time input field located by label text
+ */
+Cypress.Commands.add('setTimeByLabel', (labelText, hhmm) => {
+  const v = String(hhmm);
+  return cy.getByLabel(labelText, { timeout: 10000 }).then(($label) => {
+    const lbl = $label?.[0];
+    const doc = lbl?.ownerDocument || document;
+
+    const fieldContainer = (lbl && (lbl.closest('.v-field, .v-input, .v-text-field') || lbl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') || lbl.parentElement?.nextElementSibling)) || null;
+
+    let inputEl = null;
+    if (fieldContainer) {
+      inputEl = fieldContainer.querySelector('input[type="time"], .v-field__input input[type="time"], .v-field__input input');
+    }
+
+    if (!inputEl) {
+      inputEl = doc.querySelector(`input[aria-label="${labelText}"], input[data-label="${labelText}"]`) || null;
+    }
+
+    if (!inputEl) {
+      throw new Error(`setTimeByLabel: could not find time input for label "${labelText}"`);
+    }
+
+    return cy.wrap(inputEl).invoke('val', v).then(() => {
+      cy.wrap(inputEl).trigger('input');
+      cy.wrap(inputEl).trigger('change');
+      cy.wrap(inputEl).trigger('blur');
+      return cy.wrap(inputEl).should('have.value', v);
+    });
+  });
+});
+
+/*
  * Method to Continue the application if the button is present
  **/
 Cypress.Commands.add('continueApplicationIfPresent', () => {
@@ -403,7 +436,7 @@ Cypress.Commands.add('runCcfriApp', (appType, term, files = []) => {
     ccfriApp.optInFacilities(files)
     switch(appType) {
       case 'group':
-      case 'family': 
+      case 'family':
         ccfriApp.addParentFees(appType, term,'ccfriData')
         ccfriApp.addClosures(appType, term)
         break;

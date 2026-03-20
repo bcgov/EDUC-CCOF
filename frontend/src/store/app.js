@@ -120,8 +120,8 @@ export const useAppStore = defineStore('app', {
     },
   },
   getters: {
-    currentYearLabel: (state) => {
-      return formatFiscalYearName(state.programYearList?.newApp?.name);
+    currentProgramYear: (state) => {
+      return state.programYearList?.list?.find((year) => year.status === 'CURRENT');
     },
     renewalYearLabel: (state) => {
       return formatFiscalYearName(state.programYearList?.renewal?.name);

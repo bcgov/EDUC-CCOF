@@ -55,6 +55,27 @@ public class ClosurePage {
 	@FindBy(xpath = "//*[@aria-label='Save & Close']")
 	WebElement saveBtn;
 
+	// Closure is approved under emergency type field
+	@FindBy(xpath = "//*[@aria-label='Closure is approved under emergency type?']")
+	WebElement closureIsApprovedUnderEmergencyTypeField;
+
+	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
+	List<WebElement> closureIsApprovedUnderEmergencyTypeOptions;
+
+	// Emergency Closure Type field
+	@FindBy(xpath = "//*[@aria-label='Emergency Closure Type']")
+	WebElement emergencyClosureTypeField;
+
+	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
+	List<WebElement> emergencyClosureTypeOption;
+
+	// Enrollment Report is submitted and reviewed field
+	@FindBy(xpath = "//*[@aria-label='Enrollment Report is submitted and reviewed?']")
+	WebElement enrollmentReportIsSubmittedAndReviewedField;
+
+	@FindBy(xpath = "//*[contains(@id,'fluent-listbox')]//div[contains(@id,'fluent-option')]")
+	List<WebElement> enrollmentReportIsSubmittedAndReviewedOptions;
+
 	public ClosurePage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
@@ -87,6 +108,30 @@ public class ClosurePage {
 
 	public List<WebElement> getPaymentEligibilityOptions() {
 		return paymentEligibilityOptions;
+	}
+
+	public void clickEmergencyClosureIsApprovedUnderEmergencyTypeField() {
+		closureIsApprovedUnderEmergencyTypeField.click();
+	}
+
+	public List<WebElement> getEmergenyApprovedUnderEmergencyTypeOptions() {
+		return closureIsApprovedUnderEmergencyTypeOptions;
+	}
+
+	public void clickEmergencyClosureTypeField() {
+		emergencyClosureTypeField.click();
+	}
+
+	public List<WebElement> getEmergencyClosureTypeOptions() {
+		return emergencyClosureTypeOption;
+	}
+
+	public void clickEnrollmentReportIsSubmittedAndReviewedField() {
+		enrollmentReportIsSubmittedAndReviewedField.click();
+	}
+
+	public List<WebElement> getEnrollmentReportIsSubmittedAndReviewedOptions() {
+		return enrollmentReportIsSubmittedAndReviewedOptions;
 	}
 
 	// Arrow dropdown
