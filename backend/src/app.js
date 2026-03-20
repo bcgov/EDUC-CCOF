@@ -10,6 +10,7 @@ const atob = require('atob');
 const passport = require('passport');
 const helmet = require('helmet');
 const cors = require('cors');
+const HttpStatus = require('http-status-codes');
 const utils = require('./components/utils');
 const auth = require('./components/auth');
 const { getUserProfile } = require('./components/user');
@@ -316,6 +317,14 @@ Redis.init()
     process.on('unhandledRejection', (err) => {
       log.error('Unhandled Rejection at:', err?.stack || err);
     });
+
+    // ZAP Scan Proxy Disclosure Alert fix
+    const blockedMethods = new Set(['TRACE', 'TRACK']);
+    app.use((req, res, next) => {
+      if (blockedMethods.has(req.method)) return res.sendStatus(HttpStatus.METHOD_NOT_ALLOWED);
+      return next();
+    });
+    app.disable('x-powered-by');
   });
 
 module.exports = app;
