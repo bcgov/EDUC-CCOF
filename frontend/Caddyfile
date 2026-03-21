@@ -9,6 +9,11 @@ root * /srv
 
 file_server
 
+@blocked_methods {
+	method TRACE TRACK
+}
+respond @blocked_methods 405
+
 @www_host {
 	host www.{$HOST_ROUTE}
 }

@@ -202,6 +202,11 @@ export const NAV_BAR_GROUPS = {
   MTFI: 'MTFI',
 };
 
+export const DECLARATION_TEXT_VERSIONS = {
+  V1: null,
+  V2: 2,
+};
+
 export const CCFRI_HAS_CLOSURE_FEE_TYPES = {
   YES: 100000000,
   NO: 100000001,
@@ -826,11 +831,6 @@ export const ECE_REPORT_STAFF_STATUSES = Object.freeze({
   VERIFIED: 101510001,
 });
 
-export const ECE_REPORT_TYPES = Object.freeze({
-  BASE: 1,
-  ADJUSTMENT: 2,
-});
-
 export const ECE_STAFF_STATUSES = Object.freeze({
   ACTIVE: 0,
   INACTIVE: 1,
@@ -845,4 +845,10 @@ export const ECE_STAFF_CERT_STATUSES = Object.freeze({
 
 export const ECE_CERTIFICATE_LEVELS = Object.freeze({
   ECE_ASSISTANT: 'ECE Assistant',
+});
+
+export const REJECTION_TYPES = Object.freeze({
+  FULL_REJECTION: 'Yes - Full rejection',
+  PARTIAL_REJECTION: 'Yes - Partial rejection',
+  NO_REJECTION: 'No',
 });

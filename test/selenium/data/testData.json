@@ -6,7 +6,7 @@
   "ccfriQcDecision":"Stage 1 (NRC)",
   "ccfriStatusOptions": "Complete - Approved",
   "baseFundingProgressStatusOptions": "Confirmed - Active",
-  "ccofStatusOptions":"Active", 
+  "ccofStatusOptions":"Active",
   "fundingAgreementStartDate": "04/01/2025",
   "organizationId": "EFXORG_",
   "facilityId": "EFXFAC_",
@@ -14,4 +14,13 @@
   "adjudicatorRecommendation": "Stage 3 (AFC)",
   "mtfiQCDecision": "Stage 3 (AFC)",
   "mtfiStatusReasonOptions": "Complete - Approved",
+  "paymentEligibility": "CCOF Base Funding",
+  "emergency_closureType": "Emergency Closures",
+  "emergency_approvedAs": "Emergency Closure",
+  "emergency_isApprovedUnderEmergencyType": "Yes",
+  "emergency_emergencyClosureType": "Natural Disaster",
+  "emergency_enrollmentReportSubmittedReviewed": "Yes",
+  "planned_closureType": "Planned Closures",
+  "planned_approvedAs": "CCFRI",
+  "closureStatusOptions": "COMPLETE - APPROVED"
 }

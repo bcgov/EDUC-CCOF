@@ -94,19 +94,31 @@ const createAppStore = () => {
         },
       },
       programYearList: {
-        newApp: {
-          programYearId,
-          financialYear: programYear.endYear,
-        },
+        list: [
+          {
+            programYearId,
+            financialYear: programYear.endYear,
+            status: 'CURRENT',
+          },
+        ],
       },
     },
   };
 };
-
 const createApplicationStore = (extras = {}) => {
   return {
     application: {
-      applicationMap: new Map([[programYearId, { facilityList, ccofProgramYearName: '2025-2026' }]]),
+      applicationMap: new Map([
+        [
+          programYearId,
+          {
+            ccofProgramYearId: programYearId,
+            ccofProgramYearStatus: 'CURRENT',
+            ccofProgramYearName: '2025-2026',
+            facilityList,
+          },
+        ],
+      ]),
       ...extras,
     },
   };

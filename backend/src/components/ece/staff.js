@@ -100,19 +100,21 @@ async function createECEFacilityStaff(req, res) {
   }
 }
 
+async function createRawECEReportStaff(staff) {
+  const payload = {
+    'ccof_ece_monthly_report@odata.bind': `/ccof_ece_monthly_reports(${staff.eceReportId})`,
+    'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${staff.eceStaffId})`,
+    ccof_total_hours_worked: staff.totalHoursWorked,
+  };
+  if (staff.isInheritedFromPreviousReport) {
+    payload.ccof_is_inherited_from_parent_report = staff.isInheritedFromPreviousReport;
+  }
+  await postOperation('ccof_ece_staff_informations', payload);
+}
+
 async function createECEReportStaff(req, res) {
   try {
-    await Promise.all(
-      req.body.map(async (eceStaff) => {
-        const payload = {
-          'ccof_ece_monthly_report@odata.bind': `/ccof_ece_monthly_reports(${eceStaff.eceReportId})`,
-          'ccof_ece_staff@odata.bind': `/ccof_ece_provider_employees(${eceStaff.eceStaffId})`,
-          ccof_hourly_wage: eceStaff.hourlyWage,
-          ccof_total_hours_worked: eceStaff.totalHoursWorked,
-        };
-        await postOperation('ccof_ece_staff_informations', payload);
-      }),
-    );
+    await Promise.all(req.body.map(async (eceStaff) => await createRawECEReportStaff(eceStaff)));
     return res.status(HttpStatus.CREATED).json();
   } catch (e) {
     log.error(e);
@@ -150,4 +152,13 @@ async function deleteECEReportStaff(req, res) {
   }
 }
 
-module.exports = { createECEFacilityStaff, createECEReportStaff, deleteECEReportStaff, getECEFacilityStaff, getECEStaffCertificates, updateECEFacilityStaff, updateECEReportStaff };
+module.exports = {
+  createECEFacilityStaff,
+  createECEReportStaff,
+  createRawECEReportStaff,
+  deleteECEReportStaff,
+  getECEFacilityStaff,
+  getECEStaffCertificates,
+  updateECEFacilityStaff,
+  updateECEReportStaff,
+};

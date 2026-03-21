@@ -252,7 +252,6 @@ router.post(
   },
 );
 
-// TODO: Implement ECE Reports permission
 /**
  * Get Adjudication ECEWE facilities
  */
@@ -260,6 +259,7 @@ router.get(
   '/:applicationId/adj-ecewe-facilities',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.CREATE_ECE_REPORT),
   [param('applicationId', 'URL param: [applicationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();

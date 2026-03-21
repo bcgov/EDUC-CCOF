@@ -3,9 +3,10 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES, UUID_VALIDATOR_VERSION } = require('../../util/constants');
-const { createECEReport, getECEReport, getECEReports, submitECEReport, updateECEReport } = require('../../components/ece/report');
+const { ECE_REPORT_STATUS_CODES, PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../../util/constants');
+const { adjustECEReport, createECEReport, getECEReport, getECEReports, getECEReportApprovedAmounts, submitECEReport, updateECEReport } = require('../../components/ece/report');
 const { body, checkSchema, oneOf, param, query, validationResult } = require('express-validator');
+const validatePermission = require('../../middlewares/validatePermission');
 
 const createECEReportSchema = {
   organizationId: {
@@ -39,18 +40,6 @@ const createECEReportSchema = {
       errorMessage: '[year] must be an integer between 2000 and 2200',
     },
   },
-  reportType: {
-    in: ['body'],
-    exists: {
-      options: { checkFalsy: true },
-      errorMessage: '[reportType] is required',
-    },
-    toInt: true,
-    isIn: {
-      options: [Object.values(ECE_REPORT_TYPES)],
-      errorMessage: '[reportType] must be a valid report type',
-    },
-  },
 };
 const updateECEReportSchema = {
   statusCode: {
@@ -71,11 +60,11 @@ const updateECEReportSchema = {
   },
 };
 
-// TODO: Implement ECE Reports permission
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ECE_REPORT),
   [
     query('organizationId', 'URL param: [organizationId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
     query('programYearId', 'URL param: [programYearId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
@@ -86,22 +75,35 @@ router.get(
   },
 );
 
-// TODO: Implement ECE Reports permission
 router.get(
   '/:eceReportId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ECE_REPORT),
   [param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION)],
   (req, res) => {
     validationResult(req).throw();
     return getECEReport(req, res);
   },
 );
-// TODO: Implement ECE Reports permission
+
+router.get(
+  '/:eceReportId/approved-amounts',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ECE_REPORT),
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  (req, res) => {
+    validationResult(req).throw();
+    return getECEReportApprovedAmounts(req, res);
+  },
+);
+
 router.patch(
   '/:eceReportId',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.EDIT_ECE_REPORT),
   param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   oneOf([body('statusCode').exists(), body('version').exists()], {
     message: 'At least one updatable field is required',
@@ -113,21 +115,32 @@ router.patch(
   },
 );
 
-// TODO: Implement ECE Reports permission
-router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, [checkSchema(createECEReportSchema)], (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.CREATE_ECE_REPORT), [checkSchema(createECEReportSchema)], (req, res) => {
   validationResult(req).throw();
   return createECEReport(req, res);
 });
 
-// TODO: Implement ECE Reports permission
 router.post(
   '/:eceReportId/submit',
   passport.authenticate('jwt', { session: false }),
   isValidBackendToken,
+  validatePermission(PERMISSIONS.SUBMIT_ECE_REPORT),
   param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
     return submitECEReport(req, res);
+  },
+);
+
+router.post(
+  '/:eceReportId/adjustment',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.ADJUST_ECE_REPORT),
+  param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  (req, res) => {
+    validationResult(req).throw();
+    return adjustECEReport(req, res);
   },
 );
 
