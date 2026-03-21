@@ -30,7 +30,7 @@ function mapECEReportForFront(report) {
 }
 
 function mapECETopUpReportForFront(report, eceStaffIdSet) {
-  const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
+  let mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
 
   const selectedStaff = report.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report.filter((staff) => eceStaffIdSet.has(staff._ccof_ece_staff_value));
 

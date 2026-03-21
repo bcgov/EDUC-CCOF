@@ -100,6 +100,13 @@ const topUpReportsSchema = {
       errorMessage: 'Each facilityId must be a valid UUID',
     },
   },
+  eceStaffIds: {
+    in: ['body'],
+    isArray: {
+      options: { min: 1 },
+      errorMessage: 'eceStaffIds must be a non-empty array',
+    },
+  },
   'eceStaffIds.*': {
     in: ['body'],
     isUUID: {

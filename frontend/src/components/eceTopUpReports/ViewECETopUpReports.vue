@@ -275,7 +275,7 @@ export default {
           });
         }
 
-        const facilityDetails = detailsMap.get(facilityId);
+        let facilityDetails = detailsMap.get(facilityId);
         facilityDetails.reports.push(report);
         facilityDetails.summary.weSubtotal += weSubtotal;
         facilityDetails.summary.sbSubtotal += sbSubtotal;
