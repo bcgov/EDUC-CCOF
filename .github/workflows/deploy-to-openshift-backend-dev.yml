@@ -210,5 +210,6 @@ jobs:
   zap:
     name: Run Zap Scan
     uses: ./.github/workflows/zap-scan-node.yml
+    needs: openshift-ci-cd
     with:
       env: 'dev'

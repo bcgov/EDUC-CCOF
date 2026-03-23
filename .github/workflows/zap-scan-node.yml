@@ -28,7 +28,6 @@ jobs:
     name: Run Zap Scan
     permissions:
       contents: read
-    needs: openshift-ci-cd
     runs-on: ubuntu-24.04
     environment: ${{ inputs.env }}
     steps:
