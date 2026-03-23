@@ -35,8 +35,8 @@ import { ccfriApp } from "./pages/2-portal-application-pages/02-portal-applicati
 import { eceWeApp } from "./pages/2-portal-application-pages/03-portal-application-ecewe.js";
 import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js";
 import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js";
-import { newAndModifiedFacilities } from "./pages/7-ccfri-rfi-afs-nmf-pages/02-new-and-modified-facilities.js";
 import { reportFeeIncrease } from "./pages/7-ccfri-rfi-nmf-afs-pages/01-report-fee-increase.js";
+import { newAndModifiedFacilities } from "./pages/7-ccfri-rfi-nmf-afs-pages/02-new-and-modified-facilities.js";
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   "textarea",
