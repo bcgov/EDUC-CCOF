@@ -1,0 +1,11 @@
+{
+  "_NOTE": "Fixture for update closure flow.",
+  "facilityName": "Auto Test Facility 1",
+  "parentsPayForClosure": "No",
+  "isFullFacilityClosure": "Yes",
+  "closureStartDate": "2026-02-03",
+  "closureEndDate": "2026-02-08",
+  "reason": "Updated closure details for schedule adjustment",
+  "requestDescription": "The closure request has been updated to reflect the revised maintenance schedule.",
+  "expectedUpdateStatus": "Cancelled"
+}

@@ -109,6 +109,9 @@
             {{ getStatusText(item.externalStatus) }}
           </span>
         </template>
+        <template #item.rejected="{ item }">
+          {{ getECEReportRejectionType(item) }}
+        </template>
         <template #item.actions="{ item }">
           <v-row class="action-buttons justify-end justify-lg-start">
             <AppButton
@@ -165,7 +168,7 @@ import ECEReportService from '@/services/eceReportService.js';
 import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
-import { buildFiscalYearMonths } from '@/utils/common.js';
+import { buildFiscalYearMonths, getDefaultReportingProgramYear, getECEReportRejectionType } from '@/utils/common.js';
 import {
   ECE_REPORT_EXTERNAL_STATUSES,
   ECE_REPORT_INTERNAL_STATUSES,
@@ -212,9 +215,10 @@ export default {
         { title: 'Facility ID', key: 'facilityAccountNumber' },
         { title: 'Licence Number', key: 'licenceNumber' },
         { title: 'Month of Service', key: 'reportingMonth' },
-        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Version Number', key: 'version' },
+        { title: 'Submission Deadline', key: 'submissionDeadline' },
         { title: 'Status', key: 'externalStatus' },
+        { title: 'Rejected', key: 'rejected', sortable: false },
         { title: 'Actions', key: 'actions', width: '12%', sortable: false },
       ],
       eceReports: [],
@@ -285,10 +289,11 @@ export default {
   },
   created() {
     this.ECE_REPORT_STATUS_OPTIONS = ECE_REPORT_STATUS_OPTIONS;
-    this.selectedProgramYear = this.programYearList?.newApp; // default to current program year
+    this.selectedProgramYear = getDefaultReportingProgramYear(); // default to current program year
   },
   methods: {
     formatMonthYearToString,
+    getECEReportRejectionType,
     async loadData() {
       try {
         this.loading = true;
