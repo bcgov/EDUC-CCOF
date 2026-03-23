@@ -35,6 +35,8 @@ import { ccfriApp } from "./pages/2-portal-application-pages/02-portal-applicati
 import { eceWeApp } from "./pages/2-portal-application-pages/03-portal-application-ecewe.js";
 import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js";
 import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js";
+import { reportFeeIncrease } from "./pages/7-ccfri-rfi-nmf-afs-pages/01-report-fee-increase.js";
+import { newAndModifiedFacilities } from "./pages/7-ccfri-rfi-nmf-afs-pages/02-new-and-modified-facilities.js";
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   "textarea",
@@ -201,6 +203,13 @@ Cypress.Commands.add("startNewRenewalApp", () => {
     cy.getByLabel("No").click();
   });
   cy.clickByText("Next");
+});
+
+Cypress.Commands.add("updatePCFApp", (provider) => {
+  cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
+  cy.contains("What would you like to do?").should("be.visible");
+  cy.contains("Update 2026-27 PCF").should("be.visible").click();
+  cy.url().should("include", "/pcf");
 });
 
 Cypress.Commands.add("startChangeRequest", (changeType) => {
@@ -536,6 +545,62 @@ Cypress.Commands.add("licenceUpload", () => {
   ccofApp.loadFixturesAndVariables("ccofData");
   cy.then(() => {
     ccofApp.licenceUpload();
+  });
+});
+Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
+  let attempt = 0;
+
+  function clickNext() {
+    attempt++;
+
+    if (attempt > maxAttempts) {
+      throw new Error("Clicked Next too many times.");
+    }
+
+    cy.get("body").then(($body) => {
+      const nextBtn = $body
+
+        .find("button, .v-btn")
+
+        .filter((_, el) => el.innerText.trim() === "Next");
+
+      if (!nextBtn.length) {
+        return;
+      }
+
+      const isDisabled =
+        nextBtn.prop("disabled") ||
+        nextBtn.attr("disabled") !== undefined ||
+        nextBtn.attr("aria-disabled") === "true";
+
+      if (isDisabled) {
+        return;
+      }
+
+      cy.contains("button, .v-btn", "Next").click();
+
+      cy.wait(500);
+
+      clickNext();
+    });
+  }
+
+  clickNext();
+});
+
+Cypress.Commands.add("runNMF", (file = "ccfriNMFData.json") => {
+  newAndModifiedFacilities.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    newAndModifiedFacilities.completeNmfPage();
+  });
+});
+
+Cypress.Commands.add("runRFI", (file = "ccfriRFIData.json") => {
+  reportFeeIncrease.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    reportFeeIncrease.completeRfiPage();
   });
 });
 Cypress.Commands.add("runAFS", (file = "ccfriAFSData.json") => {

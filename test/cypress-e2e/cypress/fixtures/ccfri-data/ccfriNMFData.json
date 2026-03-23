@@ -1,0 +1,14 @@
+{
+  "nmf": {
+    "appliedForNewSpacesFunding": "No",
+    "_optionsAppliedForNewSpacesFunding": "Yes OR No",
+
+    "providesAdditionalServices": "No",
+    "_optionsProvidesAdditionalServices": "Yes OR No",
+
+    "providesTransportation": "No",
+    "_optionsProvidesTransportation": "Yes OR No",
+
+    "additionalInformation": "Facility operates specialized programming for underserved families."
+  }
+}
