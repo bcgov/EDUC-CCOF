@@ -9,6 +9,7 @@ on:
       env:
         description: 'The openshift environment to scan'
         default: 'dev'
+        type: choice
         options:
         - 'dev'
         - 'qa'
@@ -20,6 +21,8 @@ on:
       env:
         description: 'The openshift environment to scan'
         default: 'dev'
+        type: string
+        required: true
         options:
         - 'dev'
         - 'qa'
