@@ -6,7 +6,7 @@ const { createRawECEReportStaff } = require('./staff');
 const log = require('../logger');
 const { ECEReportMappings, ECEReportStaffMappings } = require('../../util/mapping/Mappings');
 const { getCurrentPacificDate, restrictFacilities } = require('../../util/common');
-const { ECE_REPORT_EXTERNAL_STATUS_CODES, ECE_REPORT_STAFF_STATUS_CODES, ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES } = require('../../util/constants');
+const { ECE_REPORT_EXTERNAL_STATUS_CODES, ECE_REPORT_STATUS_CODES, ECE_REPORT_TYPES } = require('../../util/constants');
 const { MappableObjectForBack, MappableObjectForFront } = require('../../util/mapping/MappableObject');
 
 function isAdjustmentReport(reportType) {
@@ -18,32 +18,57 @@ function getReportVersionText(report) {
   return isAdjustmentReport(report?.reportType) ? `${version}-Adjustment` : `${version}-Base`;
 }
 
+function calculateStaffAmounts(staff, weRate, sbRate) {
+  const totalHours = staff.totalHoursWorkedAllReports ?? 0;
+  const weAmount = totalHours * (weRate ?? 0);
+  const sbAmount = totalHours * (sbRate ?? 0);
+  return {
+    totalHours,
+    weAmount,
+    sbAmount,
+    totalAmount: weAmount + sbAmount,
+  };
+}
+
 function mapECEReportForFront(report) {
   const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
   mappedReport.isAdjustment = isAdjustmentReport(mappedReport.reportType);
   mappedReport.versionText = getReportVersionText(mappedReport);
-  const eceStaffInformation = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report;
-  mappedReport.eceStaffInformation = eceStaffInformation?.map((staffInfo) => {
-    return new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON();
+
+  const eceStaffInformation = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report ?? [];
+  const mappedStaffInformation = eceStaffInformation.map((staffInfo) => {
+    const mappedStaff = new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON();
+    const { weAmount, sbAmount, totalAmount } = calculateStaffAmounts(mappedStaff, mappedReport.weRate, mappedReport.sbRate);
+    mappedStaff.approvedWeAmount = weAmount;
+    mappedStaff.approvedSbAmount = sbAmount;
+    mappedStaff.approvedTotalAmount = totalAmount;
+    return mappedStaff;
   });
+
+  let approvedWeSubtotal = 0;
+  let approvedSbSubtotal = 0;
+  for (const staff of mappedStaffInformation) {
+    approvedWeSubtotal += staff.approvedWeAmount;
+    approvedSbSubtotal += staff.approvedSbAmount;
+  }
+
+  mappedReport.eceStaffInformation = mappedStaffInformation;
+  mappedReport.approvedWeSubtotal = approvedWeSubtotal;
+  mappedReport.approvedSbSubtotal = approvedSbSubtotal;
+  mappedReport.approvedTotalAmount = approvedWeSubtotal + approvedSbSubtotal;
+
   return mappedReport;
 }
 
 function mapECETopUpReportForFront(report, eceStaffIdSet) {
-  let mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
-
-  const selectedStaff = report.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report.filter((staff) => eceStaffIdSet.has(staff._ccof_ece_staff_value));
-
+  const mappedReport = new MappableObjectForFront(report, ECEReportMappings).toJSON();
+  const selectedStaff = report?.ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report?.filter((staff) => eceStaffIdSet.has(staff._ccof_ece_staff_value)) ?? [];
   const mappedStaffInformation = selectedStaff.map((staffInfo) => {
     const mappedStaff = new MappableObjectForFront(staffInfo, ECEReportStaffMappings).toJSON();
-    const totalHours = mappedStaff.totalHoursWorkedAllReports || 0;
-    const sbAmount = totalHours * mappedReport.sbRate;
-    const weAmount = totalHours * mappedReport.weRate;
+    const amounts = calculateStaffAmounts(mappedStaff, mappedReport.weRate, mappedReport.sbRate);
     return {
       ...mappedStaff,
-      sbAmount,
-      weAmount,
-      totalAmount: sbAmount + weAmount,
+      ...amounts,
     };
   });
 
@@ -51,9 +76,9 @@ function mapECETopUpReportForFront(report, eceStaffIdSet) {
   let weSubtotal = 0;
   let sbSubtotal = 0;
   for (const staff of mappedStaffInformation) {
-    totalHours += staff.totalHoursWorkedAllReports || 0;
-    weSubtotal += staff.weAmount || 0;
-    sbSubtotal += staff.sbAmount || 0;
+    totalHours += staff.totalHours;
+    weSubtotal += staff.weAmount;
+    sbSubtotal += staff.sbAmount;
   }
 
   mappedReport.eceStaffInformation = mappedStaffInformation;
@@ -86,7 +111,7 @@ async function createECEReport(req, res) {
 
 async function getRawECEReport(eceReportId) {
   const response = await getOperation(
-    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_verified_hours,ccof_ece_sb_amount,ccof_ece_we_amount,ccof_total_amount,ccof_is_inherited_from_parent_report,statuscode,ccof_reason_for_rejection)`,
+    `ccof_ece_monthly_reports(${eceReportId})?$expand=ccof_ece_staff_information_ece_monthly_report_ccof_ece_monthly_report($select=_ccof_ece_staff_value,ccof_total_hours_worked,ccof_total_hours_worked_previous_reports,ccof_is_inherited_from_parent_report,statuscode,ccof_reason_for_rejection)`,
   );
   return response;
 }
@@ -117,16 +142,6 @@ async function getECEReport(req, res) {
       code: 'RATES_PENDING',
       message: 'Rates are still being processed. Please try again shortly.',
     });
-  } catch (e) {
-    log.error(e);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
-  }
-}
-
-async function getECEReportApprovedAmounts(req, res) {
-  try {
-    const response = await getOperation(`ccof_ece_monthly_reports(${req.params.eceReportId})?$select=ccof_sb_subtotal,ccof_we_subtotal,ccof_total_amount`);
-    return res.status(HttpStatus.OK).json(new MappableObjectForFront(response, ECEReportMappings).toJSON());
   } catch (e) {
     log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -221,7 +236,7 @@ async function createStaffFromPreviousReport(staffFromPreviousReport, adjustment
   const mappedStaff = staffFromPreviousReport.map((staff) => ({
     eceReportId: adjustmentReportId,
     eceStaffId: staff._ccof_ece_staff_value,
-    totalHoursWorked: staff.statuscode === ECE_REPORT_STAFF_STATUS_CODES.VERIFIED ? staff.ccof_verified_hours : staff.ccof_total_hours_worked,
+    totalHoursWorked: staff.ccof_total_hours_worked_previous_reports,
     isInheritedFromPreviousReport: true,
   }));
   await Promise.all(mappedStaff.map(async (staff) => await createRawECEReportStaff(staff)));
@@ -260,4 +275,4 @@ async function adjustECEReport(req, res) {
   }
 }
 
-module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReportApprovedAmounts, getECEReports, getECETopUpReports, submitECEReport, updateECEReport };
+module.exports = { adjustECEReport, createECEReport, getECEReport, getECEReports, getECETopUpReports, submitECEReport, updateECEReport };
