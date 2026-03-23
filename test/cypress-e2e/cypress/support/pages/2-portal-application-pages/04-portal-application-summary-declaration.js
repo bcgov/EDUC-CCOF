@@ -23,6 +23,7 @@ class SubmitApplication {
 
     const isRenewal = appType.includes("Renewal");
     const isChangeRequest = appType.includes("ChangeRequest");
+    const isResubmission = appType.includes("appResubmission");
 
     if (isChangeRequest) {
       // Common navigation for all change requests
@@ -58,6 +59,10 @@ class SubmitApplication {
       cy.contains("Renew my Funding Agreement").wrap(() => {
         cy.get(".smallCardDisabled").should("exist");
       });
+    } else if (isResubmission) {
+      cy.contains("button, .v-btn", "View Recent Application").should(
+        "be.visible",
+      );
     } else {
       cy.contains(
         ".v-card",
