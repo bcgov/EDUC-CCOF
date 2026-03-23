@@ -156,6 +156,9 @@ export default {
     displaySignFundingAgreementSection() {
       const status = this.fundingAgreement?.externalStatusText;
       const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
+      if (this.fundingAgreement?.allowWithoutSignature) {
+        return false;
+      }
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
     licenceToDisplay() {

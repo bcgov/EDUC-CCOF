@@ -586,6 +586,7 @@ const FundingAgreementMappings = [
   { back: 'ccof_start_date', front: 'fundingAgreementStartDate' },
   { back: 'ccof_funding_agreementid', front: 'fundingAgreementId' },
   { back: '_ccof_organization_value', front: 'organizationId' },
+  { back: 'ccof_approve_without_signatures', front: 'allowWithoutSignature' },
   { back: 'ccof_declaration', front: 'consentCheck' },
   { back: 'ccof_date_signed_sp', front: 'signedOn' },
   { back: 'ccof_fa_signed_by', front: 'signedBy' },
