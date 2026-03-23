@@ -11,8 +11,7 @@ class ReportFeeIncrease {
         data.parentFeeIncreaseRfi.feeIncreaseExtendedHours;
       this.IndigenousConnection =
         data.parentFeeIncreaseRfi.IndigenousConnection;
-      this.underservedPop =
-        data.parentFeeIncreaseRfi.underservedPop;
+      this.underservedPop = data.parentFeeIncreaseRfi.underservedPop;
     });
   }
 
@@ -22,33 +21,33 @@ class ReportFeeIncrease {
 
   selectRadioByName(name, value) {
     cy.get(`input[name="${name}"][aria-label="${value}"]`, { timeout: 10000 })
-      .should('exist')
+      .should("exist")
       .check({ force: true });
   }
 
   answerExceptionalCircumstances(value = null) {
     const effectiveValue = value ?? this.exceptionalCircumstances;
-    this.selectRadioByName('exceptionalCircumstances', effectiveValue);
+    this.selectRadioByName("exceptionalCircumstances", effectiveValue);
   }
 
   answerFeeIncreaseDueToWage(value = null) {
     const effectiveValue = value ?? this.feeIncreaseDueToWage;
-    this.selectRadioByName('feeIncreaseDueToWage', effectiveValue);
+    this.selectRadioByName("feeIncreaseDueToWage", effectiveValue);
   }
 
   answerFeeIncreaseExtendedHours(value = null) {
     const effectiveValue = value ?? this.feeIncreaseExtendedHours;
-    this.selectRadioByName('feeIncreaseExtendedHours', effectiveValue);
+    this.selectRadioByName("feeIncreaseExtendedHours", effectiveValue);
   }
 
   answerIndigenousConnection(value = null) {
     const effectiveValue = value ?? this.IndigenousConnection;
-    this.selectRadioByName('IndigenousConnection', effectiveValue);
+    this.selectRadioByName("IndigenousConnection", effectiveValue);
   }
 
   answerUnderservedPop(value = null) {
     const effectiveValue = value ?? this.underservedPop;
-    this.selectRadioByName('underservedPop', effectiveValue);
+    this.selectRadioByName("underservedPop", effectiveValue);
   }
 
   fillParentFeeIncreaseRfi(
@@ -66,12 +65,14 @@ class ReportFeeIncrease {
   }
 
   save() {
-    cy.clickByText('Save');
-    cy.contains('Success').should('be.visible');
+    cy.clickByText("Save");
+    cy.contains("Success! Request for Information has been saved.").should(
+      "be.visible",
+    );
   }
 
   next() {
-    cy.clickByText('Next');
+    cy.clickByText("Next");
   }
 
   completeRfiPage(

@@ -547,3 +547,59 @@ Cypress.Commands.add("licenceUpload", () => {
     ccofApp.licenceUpload();
   });
 });
+Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
+  let attempt = 0;
+
+  function clickNext() {
+    attempt++;
+
+    if (attempt > maxAttempts) {
+      throw new Error("Clicked Next too many times.");
+    }
+
+    cy.get("body").then(($body) => {
+      const nextBtn = $body
+
+        .find("button, .v-btn")
+
+        .filter((_, el) => el.innerText.trim() === "Next");
+
+      if (!nextBtn.length) {
+        return;
+      }
+
+      const isDisabled =
+        nextBtn.prop("disabled") ||
+        nextBtn.attr("disabled") !== undefined ||
+        nextBtn.attr("aria-disabled") === "true";
+
+      if (isDisabled) {
+        return;
+      }
+
+      cy.contains("button, .v-btn", "Next").click();
+
+      cy.wait(500);
+
+      clickNext();
+    });
+  }
+
+  clickNext();
+});
+
+Cypress.Commands.add("runNMF", (file = "ccfriNMFData.json") => {
+  newAndModifiedFacilities.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    newAndModifiedFacilities.completeNmfPage();
+  });
+});
+
+Cypress.Commands.add("runRFI", (file = "ccfriRFIData.json") => {
+  reportFeeIncrease.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    reportFeeIncrease.completeRfiPage();
+  });
+});

@@ -27,7 +27,7 @@ class NewAndModifiedFacilities {
   answerNmfQuestions(
     appliedForNewSpacesFunding = null,
     providesAdditionalServices = null,
-    providesTransportation = null
+    providesTransportation = null,
   ) {
     const effectiveApplied =
       appliedForNewSpacesFunding ?? this.appliedForNewSpacesFunding;
@@ -40,23 +40,23 @@ class NewAndModifiedFacilities {
 
     this.selectYesNoByQuestion(
       "Did you apply for Ministry funding to create new licensed spaces prior to April 1, 2021",
-      effectiveApplied
+      effectiveApplied,
     );
 
     this.selectYesNoByQuestion(
       "Does your facility provide additional services",
-      effectiveServices
+      effectiveServices,
     );
 
     this.selectYesNoByQuestion(
       "Do you provide transportation to/from your facility",
-      effectiveTransportation
+      effectiveTransportation,
     );
   }
 
   enterAdditionalInformation(text = null) {
     const normalizedText = String(
-      text ?? this.additionalInformation ?? ""
+      text ?? this.additionalInformation ?? "",
     ).trim();
 
     cy.get("textarea")
@@ -74,12 +74,12 @@ class NewAndModifiedFacilities {
     appliedForNewSpacesFunding = null,
     providesAdditionalServices = null,
     providesTransportation = null,
-    additionalInformation = null
+    additionalInformation = null,
   ) {
     this.answerNmfQuestions(
       appliedForNewSpacesFunding,
       providesAdditionalServices,
-      providesTransportation
+      providesTransportation,
     );
 
     this.enterAdditionalInformation(additionalInformation);
@@ -87,6 +87,7 @@ class NewAndModifiedFacilities {
 
   save() {
     cy.clickByText("Save");
+    cy.contains("Success! RFI information has been saved.");
   }
 
   next() {
@@ -97,13 +98,13 @@ class NewAndModifiedFacilities {
     appliedForNewSpacesFunding = null,
     providesAdditionalServices = null,
     providesTransportation = null,
-    additionalInformation = null
+    additionalInformation = null,
   ) {
     this.fillNmfPage(
       appliedForNewSpacesFunding,
       providesAdditionalServices,
       providesTransportation,
-      additionalInformation
+      additionalInformation,
     );
 
     this.save();
