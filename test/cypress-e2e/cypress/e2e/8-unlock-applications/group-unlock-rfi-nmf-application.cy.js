@@ -1,4 +1,4 @@
-import { APP_TYPE, PROGRAM_YEAR } from "../../support/constants.js";
+import { APP_TYPE } from "../../support/constants.js";
 import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-login.js";
 import { submitApp } from "../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js";
 
