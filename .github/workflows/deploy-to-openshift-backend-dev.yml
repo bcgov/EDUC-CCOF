@@ -209,6 +209,6 @@ jobs:
 
   zap:
     name: Run Zap Scan
-    uses: bcgov/EDUC-CCOF/.github/workflows/zap-scan-node.yml
+    uses: ./.github/workflows/zap-scan-node.yml
     with:
       env: 'dev'
