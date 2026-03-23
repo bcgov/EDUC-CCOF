@@ -22,13 +22,6 @@ on:
         description: 'The openshift environment to scan'
         default: 'dev'
         type: string
-        required: true
-        options:
-        - 'dev'
-        - 'qa'
-        - 'uat'
-        - 'efx'
-        - 'prod'
 
 jobs:
   zap:
