@@ -37,6 +37,7 @@ import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-
 import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js";
 import { reportFeeIncrease } from "./pages/7-ccfri-rfi-nmf-afs-pages/01-report-fee-increase.js";
 import { newAndModifiedFacilities } from "./pages/7-ccfri-rfi-nmf-afs-pages/02-new-and-modified-facilities.js";
+import { approvableFeeSchedule } from "./pages/7-ccfri-rfi-nmf-afs-pages/03-approvable-fee-schedule.js";
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
   "textarea",

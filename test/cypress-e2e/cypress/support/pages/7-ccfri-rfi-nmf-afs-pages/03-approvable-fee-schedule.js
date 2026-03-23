@@ -21,11 +21,15 @@ class ApprovableFeeSchedule {
 
   save() {
     cy.clickByText("Save");
-    cy.contains("Success!").should("be.visible");
+    cy.contains("Changes Successfully Saved").should("be.visible");
   }
 
   next() {
     cy.clickByText("Next");
+    cy.contains("button, .v-btn", "Next").should(
+      "not.have.class",
+      "v-btn--loading",
+    );
   }
 
   completeAfsPage(value = null) {
