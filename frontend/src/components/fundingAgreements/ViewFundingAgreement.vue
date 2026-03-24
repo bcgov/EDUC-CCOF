@@ -27,52 +27,54 @@
 
     <br />
     <br />
-    <h4 v-if="isSignatureRequired" id="declaration" class="lg-px-10">Declaration</h4>
-    <v-skeleton-loader v-if="isSignatureRequired" :loading="isLoading" type="table-tbody">
-      <div>
-        <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
-        <FundingAgreementDeclarationTextV1 v-else />
-        <template v-if="displaySignFundingAgreementSection">
-          <v-checkbox
-            v-model="fundingAgreement.consentCheck"
-            class="ml-3"
-            color="primary"
-            :disabled="isReadOnly || processing"
-            label="I agree, consent and certify"
-          />
-          <v-text-field
-            v-model.trim="fundingAgreement.signedBy"
-            variant="outlined"
-            :disabled="isReadOnly || processing"
-            label="Your Organization's Authorized Signing Authority"
-          />
-        </template>
-        <AppDialog
-          v-model="showSubmissionConfirmationDialog"
-          persistent
-          max-width="510px"
-          title="Submission Complete"
-          @close="goBackToManageFundingAgreement"
-        >
-          <template #content>
-            <p>
-              Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for updates
-              to your agreement.
-            </p>
+    <template v-if="isSignatureRequired">
+      <h4 id="declaration" class="lg-px-10">Declaration</h4>
+      <v-skeleton-loader :loading="isLoading" type="table-tbody">
+        <div>
+          <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
+          <FundingAgreementDeclarationTextV1 v-else />
+          <template v-if="displaySignFundingAgreementSection">
+            <v-checkbox
+              v-model="fundingAgreement.consentCheck"
+              class="ml-3"
+              color="primary"
+              :disabled="isReadOnly || processing"
+              label="I agree, consent and certify"
+            />
+            <v-text-field
+              v-model.trim="fundingAgreement.signedBy"
+              variant="outlined"
+              :disabled="isReadOnly || processing"
+              label="Your Organization's Authorized Signing Authority"
+            />
           </template>
+          <AppDialog
+            v-model="showSubmissionConfirmationDialog"
+            persistent
+            max-width="510px"
+            title="Submission Complete"
+            @close="goBackToManageFundingAgreement"
+          >
+            <template #content>
+              <p>
+                Your funding agreement has been signed. Refer to the Funding Agreements in Account Management for
+                updates to your agreement.
+              </p>
+            </template>
 
-          <template #button>
-            <div class="center-button">
-              <AppButton color="primary" @click="goBackToManageFundingAgreement">
-                Return to Funding Agreements
-              </AppButton>
-            </div>
-          </template>
-        </AppDialog>
-      </div>
-    </v-skeleton-loader>
+            <template #button>
+              <div class="center-button">
+                <AppButton color="primary" @click="goBackToManageFundingAgreement">
+                  Return to Funding Agreements
+                </AppButton>
+              </div>
+            </template>
+          </AppDialog>
+        </div>
+      </v-skeleton-loader>
+    </template>
     <NavButton
-      :is-submit-displayed="displaySignFundingAgreementSection"
+      :is-submit-displayed="displaySignFundingAgreementSection && isSignatureRequired"
       :is-submit-disabled="isSubmitDisabled"
       :is-processing="processing || isLoading"
       @previous="goBackToManageFundingAgreement"
