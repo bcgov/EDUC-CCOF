@@ -72,14 +72,20 @@ class CcfriApplication{
             cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
             cy.contains(this.facilityName)
             cy.then(()=> {
-                cy.get('.v-card.my-10').each((card, index) => {
-                    const category = parentFeeCategories[index]
-                    cy.wrap(card)
-                        .should('contain', `${category}`)
-                        .contains('label', `${this.paymentFrequency}`)
-                        .click()
-                    handleCardWithin(card, this.parentFees.months)
-                })
+                parentFeeCategories
+                    .filter(Boolean)
+                    .forEach((category) => {
+                        const categoryNoLeadSpace = category.replace(/^\s+/, '')
+                        cy.contains('.card-title', `${categoryNoLeadSpace}`)
+                            .closest('.v-card.my-10')
+                            .as('feeCard')
+                        cy.get('@feeCard')
+                            .contains('label', `${this.paymentFrequency}`)
+                            .click()
+                        cy.get('@feeCard').then((card) => {
+                            handleCardWithin(card, this.parentFees.months)
+                        })
+                    })
 
                 if (appType === "groupOld" || appType === 'familyOld'){
                     this.addClosures(appType, term)

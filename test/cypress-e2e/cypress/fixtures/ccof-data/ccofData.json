@@ -115,14 +115,14 @@
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age)": {
-        "checked": false,
+        "checked": true,
         "max": 20,
-        "extended": false,
+        "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "School Age Care on School Grounds": {
-        "checked": false,
+        "checked": true,
         "max": 16,
         "extended": false,
         "maxUnderFourHours": 4,

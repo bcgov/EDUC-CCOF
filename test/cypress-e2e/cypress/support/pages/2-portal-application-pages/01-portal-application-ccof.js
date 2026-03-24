@@ -222,13 +222,18 @@ class CcofApplication {
       });
     }
 
-    if (Number(licenceCategory["Group Child Care (School Age / School Age Care on School Grounds)"]).max > 0) {
+    if (licenceCategory["Group Child Care (School Age)"]?.checked || licenceCategory["School Age Care on School Grounds"]?.checked) {
       cy.contains('div', 'Is the facility located on school property?').within(()=> {
         cy.getByLabel('Yes').click()
       })
-      this.schoolAgedCare.forEach(label => {
-        cy.contains(label).click()
-      })
+      cy.contains('School Age Care Service Details')
+        .parents('.cc-top-level-card')
+        .first()
+        .within(() => {
+          this.schoolAgedCare.forEach((label) => {
+            cy.getByLabel(label).check()
+          })
+        })
     }
 
   }
