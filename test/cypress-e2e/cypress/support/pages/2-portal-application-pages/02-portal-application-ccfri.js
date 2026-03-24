@@ -59,41 +59,53 @@ class CcfriApplication{
 
     addParentFees(appType, term, file) {
         this.loadFixturesAndVariables(file)
-        cy.then(()=> {
-            let parentFeeCategories
+        const getParentFeeCategories = () => {
             switch (appType) {
-                case 'group': 
-                case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
-                case 'family': 
-                case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
-                case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
-                case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
+                case 'group':
+                case 'groupOld':
+                    return this.parentFees.groupParentFeeCategories
+                case 'family':
+                case 'familyOld':
+                    return this.parentFees.familyParentFeeCategories
+                case 'groupRenewal':
+                    return this.parentFees.groupRenewalParentFeeCategories
+                case 'familyRenewal':
+                    return this.parentFees.familyRenewalParentFeeCategories
+                default:
+                    return []
             }
+        }
+
+        const fillFeeCard = (category) => {
+            const categoryNoLeadSpace = category.replace(/^\s+/, '')
+            cy.contains('.card-title', `${categoryNoLeadSpace}`)
+                .closest('.v-card.my-10')
+                .as('feeCard')
+            cy.get('@feeCard')
+                .contains('label', `${this.paymentFrequency}`)
+                .click()
+            cy.get('@feeCard').then((card) => {
+                handleCardWithin(card, this.parentFees.months)
+            })
+        }
+
+        const fillAllFees = (categories) => {
+            categories.filter(Boolean).forEach((category) => {
+                fillFeeCard(category)
+            })
+        }
+
+        cy.then(() => {
             cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
             cy.contains(this.facilityName)
-            cy.then(()=> {
-                parentFeeCategories
-                    .filter(Boolean)
-                    .forEach((category) => {
-                        const categoryNoLeadSpace = category.replace(/^\s+/, '')
-                        cy.contains('.card-title', `${categoryNoLeadSpace}`)
-                            .closest('.v-card.my-10')
-                            .as('feeCard')
-                        cy.get('@feeCard')
-                            .contains('label', `${this.paymentFrequency}`)
-                            .click()
-                        cy.get('@feeCard').then((card) => {
-                            handleCardWithin(card, this.parentFees.months)
-                        })
-                    })
+            fillAllFees(getParentFeeCategories())
 
-                if (appType === "groupOld" || appType === 'familyOld'){
-                    this.addClosures(appType, term)
-                }
-                cy.clickByText('Save')
-                cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
-                cy.clickByText('Next')
-            })
+            if (appType === "groupOld" || appType === 'familyOld'){
+                this.addClosures(appType, term)
+            }
+            cy.clickByText('Save')
+            cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
+            cy.clickByText('Next')
         })
     }
 
