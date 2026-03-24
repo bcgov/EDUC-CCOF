@@ -7,6 +7,7 @@ export const APP_TYPE = Object.freeze({
   FAMILY_RENEWAL: "familyRenewal",
   GROUP_CHANGE_REQUEST_V2: "groupChangeRequest",
   FAMILY_CHANGE_REQUEST_V2: "familyChangeRequest",
+  UNLOCKED_APP_RESUBMISSION: "appResubmission",
 });
 
 export const PROGRAM_YEAR = Object.freeze({

@@ -30,18 +30,21 @@
 //<reference types="cypress" />
 // cypress/support/commands.js
 // cypress/support/e2e.js  (or e2e.ts)
-import { ccofApp } from './pages/2-portal-application-pages/01-portal-application-ccof.js'
-import { ccfriApp } from './pages/2-portal-application-pages/02-portal-application-ccfri.js'
-import { eceWeApp } from './pages/2-portal-application-pages/03-portal-application-ecewe.js'
-import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js"
-import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js"
+import { ccofApp } from "./pages/2-portal-application-pages/01-portal-application-ccof.js";
+import { ccfriApp } from "./pages/2-portal-application-pages/02-portal-application-ccfri.js";
+import { eceWeApp } from "./pages/2-portal-application-pages/03-portal-application-ecewe.js";
+import { reportMtfiChange } from "./pages/5-mid-term-fee-increase-mtfi-pages/01-mid-term-fee-increase.js";
+import { organizationClosure } from "./pages/6-organization-closures-pages/01-unplanned-closure.js";
+import { reportFeeIncrease } from "./pages/7-ccfri-rfi-nmf-afs-pages/01-report-fee-increase.js";
+import { newAndModifiedFacilities } from "./pages/7-ccfri-rfi-nmf-afs-pages/02-new-and-modified-facilities.js";
+import { approvableFeeSchedule } from "./pages/7-ccfri-rfi-nmf-afs-pages/03-approvable-fee-schedule.js";
 const CONTROL_SELECTOR = [
   'input:not([type="hidden"])',
-  'textarea',
-  'select',
+  "textarea",
+  "select",
   '[contenteditable="true"]',
-    '[role="textbox"]'
-].join(', ');
+  '[role="textbox"]',
+].join(", ");
 
 /**
  * getByLabel(labelText, options?)
@@ -50,7 +53,7 @@ const CONTROL_SELECTOR = [
  *  - If the label uses `for="id"`, returns `cy.get('#id')` (re-queries each time).
  */
 
-Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
+Cypress.Commands.add("getByLabel", (labelText, options = {}) => {
   const {
     timeout = 20000,
     matchCase = false,
@@ -58,42 +61,46 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
   } = options;
 
   return cy
-    .contains('label, [aria-label], [data-label]', labelText, {
+    .contains("label, [aria-label], [data-label]", labelText, {
       timeout,
       matchCase,
       includeShadowDom,
     })
 
-    .should('exist')
+    .should("exist")
     .then(($label) => {
       const labelEl = $label[0];
       const doc = labelEl.ownerDocument;
       const body = doc.body;
 
       // 1) Label with for="id" → prefer re-queryable selector (survives rerenders)
-      const forId = labelEl.getAttribute?.('for');
+      const forId = labelEl.getAttribute?.("for");
       if (forId) {
         return cy.get(`#${CSS.escape(forId)}`, { timeout });
       }
 
       // 2) Control nested inside the label (common HTML pattern)
       const nestedControl =
-        labelEl.querySelector('.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]') ||
-        labelEl.querySelector(CONTROL_SELECTOR);
+        labelEl.querySelector(
+          '.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]',
+        ) || labelEl.querySelector(CONTROL_SELECTOR);
       if (nestedControl) {
         return cy.wrap(nestedControl);
       }
 
       // 3) Vuetify pattern: find the closest field container then the real control
       const fieldContainer =
-        labelEl.closest('.v-field, .v-input, .v-text-field') ||
-        labelEl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') ||
+        labelEl.closest(".v-field, .v-input, .v-text-field") ||
+        labelEl.parentElement?.querySelector?.(
+          ".v-field, .v-input, .v-text-field",
+        ) ||
         labelEl.parentElement?.nextElementSibling;
 
       if (fieldContainer) {
         const realControl =
-          fieldContainer.querySelector('.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]') ||
-          fieldContainer.querySelector(CONTROL_SELECTOR);
+          fieldContainer.querySelector(
+            '.v-field__input input, .v-field__input textarea, .v-field__input [contenteditable="true"]',
+          ) || fieldContainer.querySelector(CONTROL_SELECTOR);
         if (realControl) {
           return cy.wrap(realControl);
         }
@@ -103,10 +110,13 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
       if (!labelEl.id) {
         labelEl.id = `lbl-${Date.now()}-${Math.random().toString(36).slice(2)}`;
       }
-      const targetViaAria = Array.from(body.querySelectorAll('[aria-labelledby]'))
-        .find((el) => (el.getAttribute('aria-labelledby') || '')
+      const targetViaAria = Array.from(
+        body.querySelectorAll("[aria-labelledby]"),
+      ).find((el) =>
+        (el.getAttribute("aria-labelledby") || "")
           .split(/\s+/)
-       .includes(labelEl.id));
+          .includes(labelEl.id),
+      );
       if (targetViaAria) {
         return cy.wrap(targetViaAria);
       }
@@ -119,18 +129,18 @@ Cypress.Commands.add('getByLabel', (labelText, options = {}) => {
 /* NOTE: use of {force:true} due to dropdowns being dynamically created on webpage, making it difficult
 to pick up an item in the dropdown without forcing the selection.
 */
-Cypress.Commands.add('selectByLabel', (labelText, optionText) => {
-  cy.getByLabel(labelText).click({ force: true })
+Cypress.Commands.add("selectByLabel", (labelText, optionText) => {
+  cy.getByLabel(labelText).click({ force: true });
   return cy
-    .get('.v-overlay-container .v-list-item__content', { timeout: 10000 })
+    .get(".v-overlay-container .v-list-item__content", { timeout: 10000 })
     .contains(optionText)
-      .should('be.visible')
-    .click()
-})
+    .should("be.visible")
+    .click();
+});
 
-Cypress.Commands.add('clickByText', (text, selector = 'button') => {
-  cy.contains(selector, text, { matchCase: false }, {timeout: 10000})
-    .should('be.visible', {timeout: 20000})
+Cypress.Commands.add("clickByText", (text, selector = "button") => {
+  cy.contains(selector, text, { matchCase: false }, { timeout: 10000 })
+    .should("be.visible", { timeout: 20000 })
 
     .should(($btn) => {
       const el = $btn[0];
@@ -151,7 +161,7 @@ Cypress.Commands.add("startNewApp", (provider) => {
   cy.contains("Start Application").should("be.visible").click();
   cy.url().should("include", "/new-application");
   cy.contains("p", "Welcome to Child Care Operating Funding (CCOF)").should(
-    "be.visible"
+    "be.visible",
   );
   cy.contains("Start Application").should("be.visible").click();
   cy.url().should("include", "/select-application-type");
@@ -174,19 +184,19 @@ Cypress.Commands.add("startNewApp", (provider) => {
 Cypress.Commands.add("startNewRenewalApp", () => {
   cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
   cy.contains(
-    "Status of your funding agreement for the current fiscal year: Active"
+    "Status of your funding agreement for the current fiscal year: Active",
   );
   cy.contains("What would you like to do?").should("be.visible");
   cy.contains("Renew my Funding Agreement 2026-27").clickByText(
-    "Renew my Funding Agreement"
+    "Renew my Funding Agreement",
   );
   cy.contains(
-    "Child Care Operating Funding Program - 2026-27 Program Confirmation Form"
+    "Child Care Operating Funding Program - 2026-27 Program Confirmation Form",
   );
   cy.url().should("include", `/group/renew`);
   cy.contains(
     ".v-card",
-    "Do your current licence and service details match the information found in Schedule A of your most recent Funding Agreement?"
+    "Do your current licence and service details match the information found in Schedule A of your most recent Funding Agreement?",
   ).within(() => {
     cy.getByLabel("Yes").click();
   });
@@ -194,6 +204,13 @@ Cypress.Commands.add("startNewRenewalApp", () => {
     cy.getByLabel("No").click();
   });
   cy.clickByText("Next");
+});
+
+Cypress.Commands.add("updatePCFApp", (provider) => {
+  cy.url().should("eq", Cypress.env("PORTAL_BASE_URL"));
+  cy.contains("What would you like to do?").should("be.visible");
+  cy.contains("Update 2026-27 PCF").should("be.visible").click();
+  cy.url().should("include", "/pcf");
 });
 
 Cypress.Commands.add("startChangeRequest", (changeType) => {
@@ -204,13 +221,18 @@ Cypress.Commands.add("startChangeRequest", (changeType) => {
   cy.url().should("include", `/change/landing#change-request-history`);
 
   if (changeType === "addNewFacility") {
-    cy.contains("Add a new facility to an existing organization").should("be.visible");
+    cy.contains("Add a new facility to an existing organization").should(
+      "be.visible",
+    );
     cy.contains("Add new facility").clickByText("Add new facility");
   } else if (changeType === "reportLicenceChange") {
-    cy.contains("Report changes to your Licence or service").should("be.visible");
-    cy.contains("Upload a Change Notification Form ").clickByText("Upload a Change Notification Form ");
-  }
-   else if (changeType === "mtfi") {
+    cy.contains("Report changes to your Licence or service").should(
+      "be.visible",
+    );
+    cy.contains("Upload a Change Notification Form ").clickByText(
+      "Upload a Change Notification Form ",
+    );
+  } else if (changeType === "mtfi") {
     cy.contains("Mid-Term Fee Increase (MTFI)").should("be.visible");
     cy.contains("Request change to parent fees").clickByText(
       "Request change to parent fees",
@@ -237,133 +259,159 @@ Cypress.Commands.add("startOrganizationClosures", () => {
   cy.url().should("include", `/closures/`);
 });
 
-
-
 /*
  * Method to Cancel the application if the button is present
  **/
-Cypress.Commands.add('cancelApplicationIfPresent', () => {
+Cypress.Commands.add("cancelApplicationIfPresent", () => {
   cy.wait(10000);
   cy.document({ timeout: 30000 }).then((doc) => {
-    const btn = Array.from(doc.querySelectorAll('button')).find(
-      (el) => el.textContent.trim() === 'Cancel Application'
+    const btn = Array.from(doc.querySelectorAll("button")).find(
+      (el) => el.textContent.trim() === "Cancel Application",
     );
 
     if (btn) {
       cy.wrap(btn).click();
 
-      cy.get('#cancel-application-button .text-wrap', { timeout: 20000 })
-        .should('be.visible')
+      cy.get("#cancel-application-button .text-wrap", { timeout: 20000 })
+        .should("be.visible")
         .click();
 
-     cy.contains('What would you like to do?', { timeout: 50000 })
-        .should('be.visible');
+      cy.contains("What would you like to do?", { timeout: 50000 }).should(
+        "be.visible",
+      );
     }
   });
 });
 /*
  * Method to type a value into an input field and assert its value
  **/
-Cypress.Commands.add('typeAndAssert', { prevSubject: true }, (subject, value) => {
+Cypress.Commands.add(
+  "typeAndAssert",
+  { prevSubject: true },
+  (subject, value) => {
     const v = String(value);
 
     return cy.wrap(subject).then(($el) => {
       cy.wrap($el).clear().type(v);
     });
-});
+  },
+);
 
 /*
  ** Method to assert that an input field is auto-filled
  **/
-Cypress.Commands.add('assertAutoFilled', (label) => {
+Cypress.Commands.add("assertAutoFilled", (label) => {
   cy.getByLabel(label)
-    .invoke('val')
+    .invoke("val")
     .then((val) => {
-       expect(val && val.trim(), `Value for ${label}`).to.not.be.empty
-    })
-})
+      expect(val && val.trim(), `Value for ${label}`).to.not.be.empty;
+    });
+});
 
 /*
  * Method to assert that an input field is auto-filled
  **/
-Cypress.Commands.add('assertAutoFilledNotEmpty', (labels) => {
-  labels.forEach((l) => cy.assertAutoFilled(l))
-})
-
+Cypress.Commands.add("assertAutoFilledNotEmpty", (labels) => {
+  labels.forEach((l) => cy.assertAutoFilled(l));
+});
 
 /*
  ** Method to set a time value in a time input field
  **/
-Cypress.Commands.add('setTime', (hook, hhmm) => {
+Cypress.Commands.add("setTime", (hook, hhmm) => {
   const v = String(hhmm);
-  cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`, { timeout: 20000 })
+  cy.get(
+    `[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`,
+    { timeout: 20000 },
+  )
     .first()
-    .as('timeInput');
-  cy.get('@timeInput').then($input => {
-    cy.wrap($input).invoke('val', v);
+    .as("timeInput");
+  cy.get("@timeInput").then(($input) => {
+    cy.wrap($input).invoke("val", v);
   });
-  cy.get('@timeInput').then($input => {
-    cy.wrap($input).trigger('input');
+  cy.get("@timeInput").then(($input) => {
+    cy.wrap($input).trigger("input");
   });
-  cy.get('@timeInput').then($input => {
-    cy.wrap($input).trigger('change');
+  cy.get("@timeInput").then(($input) => {
+    cy.wrap($input).trigger("change");
   });
-  cy.get('@timeInput').then($input => {
+  cy.get("@timeInput").then(($input) => {
     cy.wrap($input).blur();
   });
   cy.wait(1000);
-   cy.get(`[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`)
+  cy.get(
+    `[data-cy="${hook}"] input[type="time"], [data-cy="${hook}"] .v-field__input input`,
+  )
     .first()
-    .should('have.value', v);
+    .should("have.value", v);
 });
 
 /*
  ** Method to set a time value in a time input field located by label text
  */
-Cypress.Commands.add('setTimeByLabel', (labelText, hhmm) => {
+Cypress.Commands.add("setTimeByLabel", (labelText, hhmm) => {
   const v = String(hhmm);
   return cy.getByLabel(labelText, { timeout: 10000 }).then(($label) => {
     const lbl = $label?.[0];
     const doc = lbl?.ownerDocument || document;
 
-    const fieldContainer = (lbl && (lbl.closest('.v-field, .v-input, .v-text-field') || lbl.parentElement?.querySelector?.('.v-field, .v-input, .v-text-field') || lbl.parentElement?.nextElementSibling)) || null;
+    const fieldContainer =
+      (lbl &&
+        (lbl.closest(".v-field, .v-input, .v-text-field") ||
+          lbl.parentElement?.querySelector?.(
+            ".v-field, .v-input, .v-text-field",
+          ) ||
+          lbl.parentElement?.nextElementSibling)) ||
+      null;
 
     let inputEl = null;
     if (fieldContainer) {
-      inputEl = fieldContainer.querySelector('input[type="time"], .v-field__input input[type="time"], .v-field__input input');
+      inputEl = fieldContainer.querySelector(
+        'input[type="time"], .v-field__input input[type="time"], .v-field__input input',
+      );
     }
 
     if (!inputEl) {
-      inputEl = doc.querySelector(`input[aria-label="${labelText}"], input[data-label="${labelText}"]`) || null;
+      inputEl =
+        doc.querySelector(
+          `input[aria-label="${labelText}"], input[data-label="${labelText}"]`,
+        ) || null;
     }
 
     if (!inputEl) {
-      throw new Error(`setTimeByLabel: could not find time input for label "${labelText}"`);
+      throw new Error(
+        `setTimeByLabel: could not find time input for label "${labelText}"`,
+      );
     }
 
-    return cy.wrap(inputEl).invoke('val', v).then(() => {
-      cy.wrap(inputEl).trigger('input');
-      cy.wrap(inputEl).trigger('change');
-      cy.wrap(inputEl).trigger('blur');
-      return cy.wrap(inputEl).should('have.value', v);
-    });
+    return cy
+      .wrap(inputEl)
+      .invoke("val", v)
+      .then(() => {
+        cy.wrap(inputEl).trigger("input");
+        cy.wrap(inputEl).trigger("change");
+        cy.wrap(inputEl).trigger("blur");
+        return cy.wrap(inputEl).should("have.value", v);
+      });
   });
 });
 
 /*
  * Method to Continue the application if the button is present
  **/
-Cypress.Commands.add('continueApplicationIfPresent', () => {
-  cy.wait(10000)
+Cypress.Commands.add("continueApplicationIfPresent", () => {
+  cy.wait(10000);
   cy.document({ timeout: 30000 }).then((doc) => {
-   cy.get('.pb-12.text-h4.text-center').contains('What would you like to do?', {timeout: 10000}).should('be.visible')
-    const btn = Array.from(doc.querySelectorAll('button')).find(
-      (el) => el.textContent.trim() === 'Continue Application'
+    cy.get(".pb-12.text-h4.text-center")
+      .contains("What would you like to do?", { timeout: 10000 })
+      .should("be.visible");
+    const btn = Array.from(doc.querySelectorAll("button")).find(
+      (el) => el.textContent.trim() === "Continue Application",
     );
 
     if (btn) {
       cy.wrap(btn).click();
-      cy.wait(10000)
+      cy.wait(10000);
     }
   });
 });
@@ -375,23 +423,23 @@ Cypress.Commands.add("runCcofAppChangeRequest", (appType, files = []) => {
     ccofApp.licenceAndServiceDeliveryDetails(appType);
 
     switch (appType) {
-      case 'group':
-        ccofApp.groupLicenses(appType)
-        ccofApp.offerExtendedHours(appType)
-        ccofApp.addAnotherFacility(appType, files)
+      case "group":
+        ccofApp.groupLicenses(appType);
+        ccofApp.offerExtendedHours(appType);
+        ccofApp.addAnotherFacility(appType, files);
         break;
-      case 'groupOld':
-        ccofApp.groupLicenses(appType)
-        ccofApp.oldOfferExtendedHours(appType)
-        ccofApp.addAnotherFacility(appType, files)
+      case "groupOld":
+        ccofApp.groupLicenses(appType);
+        ccofApp.oldOfferExtendedHours(appType);
+        ccofApp.addAnotherFacility(appType, files);
         break;
-      case 'family':
-        ccofApp.familyLicences(appType)
-        ccofApp.offerExtendedHours(appType)
+      case "family":
+        ccofApp.familyLicences(appType);
+        ccofApp.offerExtendedHours(appType);
         break;
-      case 'familyOld':
-        ccofApp.familyLicences(appType)
-        ccofApp.oldOfferExtendedHours(appType)
+      case "familyOld":
+        ccofApp.familyLicences(appType);
+        ccofApp.oldOfferExtendedHours(appType);
         break;
     }
     ccofApp.licenceUpload();
@@ -430,41 +478,41 @@ Cypress.Commands.add("runCcofApp", (appType, files = []) => {
   });
 });
 
-Cypress.Commands.add('runCcfriApp', (appType, term, files = []) => {
-  ccfriApp.loadFixturesAndVariables('ccfriData')
-  cy.then(()=> {
-    ccfriApp.optInFacilities(files)
-    switch(appType) {
-      case 'group':
-      case 'family':
-        ccfriApp.addParentFees(appType, term,'ccfriData')
-        ccfriApp.addClosures(appType, term)
+Cypress.Commands.add("runCcfriApp", (appType, term, files = []) => {
+  ccfriApp.loadFixturesAndVariables("ccfriData");
+  cy.then(() => {
+    ccfriApp.optInFacilities(files);
+    switch (appType) {
+      case "group":
+      case "family":
+        ccfriApp.addParentFees(appType, term, "ccfriData");
+        ccfriApp.addClosures(appType, term);
         break;
-     case 'groupRenewal':
-      case 'familyRenewal':
-        ccfriApp.parentFeesRenewal()
-        ccfriApp.addParentFees(appType, term)
-        ccfriApp.addClosures(appType, term)
+      case "groupRenewal":
+      case "familyRenewal":
+        ccfriApp.parentFeesRenewal();
+        ccfriApp.addParentFees(appType, term);
+        ccfriApp.addClosures(appType, term);
         break;
-      case 'groupOld':
-      case 'familyOld':
+      case "groupOld":
+      case "familyOld":
         // Reload original data to prepare for parentFees
-        ccfriApp.addParentFees(appType, term, 'ccfriData');
+        ccfriApp.addParentFees(appType, term, "ccfriData");
         if (files) {
           cy.wrap(files).each((file) => {
-             ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`)
-          })
+            ccfriApp.addParentFees(appType, term, `extra-facs-ccfri/${file}`);
+          });
         }
     }
-  })
+  });
 });
 
-Cypress.Commands.add('runEceWeApp', (appType, term, files = []) => {
-  eceWeApp.loadFixturesAndVariables('eceweData')
-  cy.then(()=> {
-    eceWeApp.optInEceWe(term)
+Cypress.Commands.add("runEceWeApp", (appType, term, files = []) => {
+  eceWeApp.loadFixturesAndVariables("eceweData");
+  cy.then(() => {
+    eceWeApp.optInEceWe(term);
     if (appType.includes("family")) {
-      eceWeApp.familyEceWe()
+      eceWeApp.familyEceWe();
     } else {
       eceWeApp.groupEceWe(appType, files);
     }
@@ -491,12 +539,79 @@ Cypress.Commands.add(
       }
       eceWeApp.supportingDocUpload();
     });
-  }
+  },
 );
 
 Cypress.Commands.add("licenceUpload", () => {
   ccofApp.loadFixturesAndVariables("ccofData");
   cy.then(() => {
     ccofApp.licenceUpload();
+  });
+});
+Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
+  let attempt = 0;
+
+  function clickNext() {
+    attempt++;
+
+    if (attempt > maxAttempts) {
+      throw new Error("Clicked Next too many times.");
+    }
+
+    cy.get("body").then(($body) => {
+      const nextBtn = $body
+
+        .find("button, .v-btn")
+
+        .filter((_, el) => el.innerText.trim() === "Next");
+
+      if (!nextBtn.length) {
+        return;
+      }
+
+      const isDisabled =
+        nextBtn.prop("disabled") ||
+        nextBtn.attr("disabled") !== undefined ||
+        nextBtn.attr("aria-disabled") === "true";
+
+      if (isDisabled) {
+        return;
+      }
+
+      cy.contains("button, .v-btn", "Next").click();
+
+      cy.wait(500);
+
+      clickNext();
+    });
+  }
+
+  clickNext();
+});
+
+Cypress.Commands.add("runNMF", (file = "ccfriNMFData.json") => {
+  newAndModifiedFacilities.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    newAndModifiedFacilities.completeNmfPage();
+  });
+});
+
+Cypress.Commands.add("runRFI", (file = "ccfriRFIData.json") => {
+  reportFeeIncrease.loadFixturesAndVariables(file);
+
+  cy.then(() => {
+    reportFeeIncrease.completeRfiPage();
+  });
+});
+Cypress.Commands.add("runAFS", (file = "ccfriAFSData.json") => {
+  approvableFeeSchedule.loadFixturesAndVariables(file);
+
+  cy.get("body").then(($body) => {
+    if ($body.text().includes("Approvable Fee Schedule")) {
+      cy.then(() => {
+        approvableFeeSchedule.completeAfsPage();
+      });
+    }
   });
 });
