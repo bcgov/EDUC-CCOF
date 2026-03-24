@@ -23,22 +23,29 @@ public class TestValidLogin extends BaseTest {
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
 		Thread.sleep(2000);
+        logger.info("Enter username");
 		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
+        logger.info("Click next");
 		objCRMSignInCredentialPage.clickNext();
 		Thread.sleep(2000);
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+        logger.info("Enter password");
 		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
 		Thread.sleep(2000);
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+        logger.info("Click sign in");
 		objCRMSignInCredentialPage.clickSignIn();
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+        logger.info("Click yes");
 		objCRMSignInCredentialPage.clickYes();
 		Thread.sleep(2000);
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+        logger.info("Click sign in again");
 		objCRMSignInCredentialPage.clickSignInAgain();
 		Thread.sleep(5000);
 		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+        logger.info("Click org facilities");
 		objCRMSignInCredentialPage.clickOrgFacilities();
 	}
 
