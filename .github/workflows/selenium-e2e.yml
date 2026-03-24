@@ -2,6 +2,11 @@ name: Selenium end-to-end tests
 
 on:
   workflow_dispatch:
+    inputs:
+      testFile:
+        description: 'Path to Selenium test file'
+        required: true
+        default: 'test/selenium/src/test/java/ca/bc/gov/ecc/ccof/testcases/TestValidLogin.java'
 
 jobs:
   selenium-run:
@@ -36,9 +41,9 @@ jobs:
 
       - name: Create root-level config.properties (QA only)
         env:
-          CRM_URL: ${{ secrets.CRM_URL }}
-          CRM_USERNAME: ${{ secrets.CRM_USERNAME }}
-          CRM_PASSWORD: ${{ secrets.CRM_PASSWORD }}
+          CRM_URL: ${{ secrets.E2E_CRM_URL }}
+          CRM_USERNAME: ${{ secrets.E2E_CRM_USERNAME }}
+          CRM_PASSWORD: ${{ secrets.E2E_CRM_PASSWORD }}
         working-directory: test/selenium
         run: |
           set -eux
@@ -51,5 +56,19 @@ jobs:
         working-directory: test/selenium
         run: |
           echo "Starting Maven build and running Selenium tests..."
-          mvn -B -ntp clean test
+          # Determine test class name from the workflow_dispatch input.
+          INPUT="${{ github.event.inputs.testFile }}"
+          echo "Received testFile input: $INPUT"
+          # If input is a path or ends with .java, extract basename without extension.
+          if [[ "$INPUT" == *.java ]] || [[ "$INPUT" == */* ]]; then
+            TEST_CLASS="$(basename "$INPUT" .java)"
+          elif [[ "$INPUT" == *.* ]]; then
+            # If input looks like a fully-qualified class name, take the simple class name.
+            TEST_CLASS="${INPUT##*.}"
+          else
+            # Otherwise assume it's already a class name or pattern.
+            TEST_CLASS="$INPUT"
+          fi
+          echo "Running Maven for test class/pattern: $TEST_CLASS"
+          mvn -B -ntp -Dtest="$TEST_CLASS" test
           echo "Maven build and tests completed."
