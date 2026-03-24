@@ -27,8 +27,8 @@
 
     <br />
     <br />
-    <h4 id="declaration" class="lg-px-10">Declaration</h4>
-    <v-skeleton-loader :loading="isLoading" type="table-tbody">
+    <h4 v-if="isSignatureRequired" id="declaration" class="lg-px-10">Declaration</h4>
+    <v-skeleton-loader v-if="isSignatureRequired" :loading="isLoading" type="table-tbody">
       <div>
         <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
         <FundingAgreementDeclarationTextV1 v-else />
@@ -156,9 +156,6 @@ export default {
     displaySignFundingAgreementSection() {
       const status = this.fundingAgreement?.externalStatusText;
       const hasPerm = this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT);
-      if (this.fundingAgreement?.allowWithoutSignature) {
-        return false;
-      }
       return hasPerm || status !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
     },
     licenceToDisplay() {
@@ -168,6 +165,9 @@ export default {
         const end = l.recordEndDate ? new Date(l.recordEndDate) : null;
         return start <= faStart && (!end || end > faStart);
       });
+    },
+    isSignatureRequired() {
+      return !this.fundingAgreement?.allowWithoutSignature;
     },
   },
   async created() {
