@@ -55,6 +55,16 @@ export const rules = {
   ) {
     return (v) => !v || validateHourDifference(hourFrom, v, difference) || message;
   },
+  validToMonth(fromMonth, message = 'To month cannot be before From month') {
+    return (toMonth) => {
+      if (!toMonth || !fromMonth) return true;
+      return (
+        toMonth.year > fromMonth.year ||
+        (toMonth.year === fromMonth.year && toMonth.month >= fromMonth.month) ||
+        message
+      );
+    };
+  },
   notRequired: [() => true],
   max(number, message = number != null ? `Maximum entry: ${number}` : 'Max exceeded') {
     return (v) => !v || parseNumber(v) <= number || message;
