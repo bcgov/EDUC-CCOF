@@ -139,7 +139,8 @@ objects:
             labels:
               name: redis
           spec:
-            accessModes: [ "ReadWriteOnce" ]
+            accessModes: [ "ReadWriteMany" ]
+            storageClassName: netapp-file-standard
             resources:
               requests:
                 storage: "100Mi"
