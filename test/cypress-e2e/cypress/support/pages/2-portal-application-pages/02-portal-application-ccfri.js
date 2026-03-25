@@ -77,13 +77,36 @@ class CcfriApplication{
         }
 
         const fillFeeCard = (category) => {
-            const categoryNoLeadSpace = category.replace(/^\s+/, '')
-            cy.contains('.card-title', `${categoryNoLeadSpace}`)
+            const normalizedCategory = category.trim()
+
+            // Find the .card-title whose visible text matches the normalized category
+            cy.get('.card-title').filter((i, el) => {
+                const txt = Cypress.$(el).text().trim()
+                return txt === normalizedCategory
+            }).first()
                 .closest('.v-card.my-10')
                 .as('feeCard')
+
+            // Debug: log raw fixture value and normalized expected category
+            cy.log(`Raw fixture category: ${category}`)
+            cy.log(`Normalized expected category: ${normalizedCategory}`)
+
+            // Log the card title text/html and char codes to help diagnose whitespace/nbsp issues
+            cy.get('@feeCard').then($card => {
+                const $title = $card.find('.card-title').first()
+                const titleText = $title.text()
+                cy.log(`Card title text: ${titleText}`)
+                // Browser console prints are useful for char codes and innerHTML
+                // eslint-disable-next-line no-console
+                console.log('card innerHTML:', $title.html())
+                // eslint-disable-next-line no-console
+                console.log('card char codes:', titleText.split('').map(c => c.charCodeAt(0)))
+            })
+
             cy.get('@feeCard')
                 .contains('label', `${this.paymentFrequency}`)
                 .click()
+
             cy.get('@feeCard').then((card) => {
                 handleCardWithin(card, this.parentFees.months)
             })
