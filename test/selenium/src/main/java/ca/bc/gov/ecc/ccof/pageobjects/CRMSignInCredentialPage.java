@@ -29,7 +29,7 @@ public class CRMSignInCredentialPage {
 	@FindBy(id = "lightbox")
 	WebElement lightboxForm;
 
-	@FindBy(id = "idSIButton9")
+	@FindBy(xpath = "//*[@value='Yes']")
 	WebElement yesBtn;
 
 	@FindBy(id = "okButton_1")
