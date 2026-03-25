@@ -37,7 +37,6 @@ public class OrganizationOverviewPage {
 		if (!alreadySelected.isEmpty()) {
 			return;
 		}
-
 		wait.until(ExpectedConditions.elementToBeClickable(orgOverviewDropdown));
 		orgOverviewDropdown.click();
 		wait.until(ExpectedConditions.elementToBeClickable(orgInformationOption));
