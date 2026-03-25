@@ -23,13 +23,13 @@ public class CRMSignInCredentialPage {
 	@FindBy(id = "idSIButton9")
 	WebElement nextBtn;
 
-	@FindBy(xpath = "//*[@value='Sign in']")
+	@FindBy(id = "idSIButton9")
 	WebElement signInBtn;
 
 	@FindBy(id = "lightbox")
 	WebElement lightboxForm;
 
-	@FindBy(xpath = "//*[@value='Yes']")
+	@FindBy(id = "idSIButton9")
 	WebElement yesBtn;
 
 	@FindBy(id = "okButton_1")
