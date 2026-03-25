@@ -161,6 +161,12 @@ export const useAppStore = defineStore('app', {
         //Ministry may come back to add new wording for the upcoming fiscal year
       }
     },
+    getProgramYearById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear;
+      };
+    },
     getPreviousProgramYearId: (state) => {
       return (id) => {
         const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);

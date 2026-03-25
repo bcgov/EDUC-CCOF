@@ -26,6 +26,9 @@
             <v-tab v-if="hasPermission(PERMISSIONS.VIEW_PAYMENT_INFORMATION)" value="payments-tab">
               Payment Information
             </v-tab>
+            <v-tab v-if="hasPermission(PERMISSIONS.VIEW_ECE_REPORT)" value="wage-enhancement-payments-tab">
+              Wage Enhancement Payment by ECE
+            </v-tab>
           </v-tabs>
           <v-card-text>
             <v-tabs-window v-model="tab">
@@ -33,6 +36,7 @@
               <v-tabs-window-item value="funding-agreement-tab"><ManageFundingAgreements /></v-tabs-window-item>
               <v-tabs-window-item value="facilities-tab"><ManageFacilities /></v-tabs-window-item>
               <v-tabs-window-item value="payments-tab"><ViewPayments /></v-tabs-window-item>
+              <v-tabs-window-item value="wage-enhancement-payments-tab"><ViewECETopUpReports /></v-tabs-window-item>
             </v-tabs-window>
           </v-card-text>
         </v-card>
@@ -53,6 +57,7 @@ import { useOrganizationStore } from '@/store/ccof/organization.js';
 import ManageFundingAgreements from '@/components/fundingAgreements/ManageFundingAgreements.vue';
 import ManageFacilities from '@/components/orgFacilities/ManageFacilities.vue';
 import ManageOrganization from '@/components/orgFacilities/ManageOrganization.vue';
+import ViewECETopUpReports from '@/components/eceTopUpReports/ViewECETopUpReports.vue';
 import ViewPayments from '@/components/payments/ViewPayments.vue';
 import NavButton from '@/components/util/NavButton.vue';
 
@@ -60,7 +65,14 @@ import permissionsMixin from '@/mixins/permissionsMixin.js';
 
 export default {
   name: 'AccountManagement',
-  components: { ManageOrganization, ManageFacilities, NavButton, ManageFundingAgreements, ViewPayments },
+  components: {
+    ManageOrganization,
+    ManageFacilities,
+    NavButton,
+    ManageFundingAgreements,
+    ViewECETopUpReports,
+    ViewPayments,
+  },
   mixins: [permissionsMixin],
   data() {
     return {

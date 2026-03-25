@@ -27,17 +27,6 @@ export default {
     }
   },
 
-  async getECEReportApprovedAmounts(eceReportId) {
-    try {
-      if (!eceReportId) return null;
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/approved-amounts`);
-      return response?.data;
-    } catch (error) {
-      console.error(`Failed to get ECE report approved amounts - ${error}`);
-      throw error;
-    }
-  },
-
   async getECEReports(query) {
     try {
       const queryString = buildQueryString(query);
@@ -50,6 +39,30 @@ export default {
       console.error(`Failed to get ECE Reports - ${error}`);
       throw error;
     }
+  },
+
+  async getECETopUpReports({ fromMonth, fromYear, toMonth, toYear, facilityIds, eceStaffIds }) {
+    const requests = [];
+    for (let year = fromYear; year <= toYear; year++) {
+      let body = {
+        year,
+        facilityIds,
+        eceStaffIds,
+      };
+      if (fromYear === toYear) {
+        body.fromMonth = fromMonth;
+        body.toMonth = toMonth;
+      } else if (year === fromYear) {
+        body.fromMonth = fromMonth;
+        body.toMonth = 12;
+      } else if (year === toYear) {
+        body.fromMonth = 1;
+        body.toMonth = toMonth;
+      }
+      requests.push(ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/top-up`, body));
+    }
+    const responses = await Promise.all(requests);
+    return responses.flatMap((r) => r.data);
   },
 
   async submitECEReport(eceReportId) {
