@@ -18,15 +18,15 @@ import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
-public class TestPCFMainApplication extends BaseTest {
+public class TestRFINMFMainApplication extends BaseTest {
 
-	private static final Logger logger = LogManager.getLogger(TestPCFMainApplication.class);
+	private static final Logger logger = LogManager.getLogger(TestRFINMFMainApplication.class);
 	String contactName;
 
 	@Test(priority = 1)
-	public void unlockPCFApplication(Method method) throws Throwable {
-		ExtentTestManager.startTest(method.getName(), "TestPCFMainApplication");
-		logger.info("Starting the TestPCFMainApplication test...");
+	public void unlockRFINMFApplication(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), " TestRFINMFMainApplication");
+		logger.info("Starting the  TestRFINMFMainApplication test...");
 
 		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
 		Utilities utils = new Utilities(driver);
@@ -59,7 +59,7 @@ public class TestPCFMainApplication extends BaseTest {
 		// switches view to organization
 		BCeIDPage bceidPage = new BCeIDPage(driver);
 		bceidPage.clickSelectOrganization();
-		Thread.sleep(3000);
+		Thread.sleep(8000);
 
 		// switches view to organization information page
 		OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
@@ -93,7 +93,11 @@ public class TestPCFMainApplication extends BaseTest {
 		// filling the unlock form
 		utils.javaScriptExecutorAction(ccfriUnlock.clickDeclarationUnlockBtn());
 		Thread.sleep(3000);
-		ccfriUnlock.enterUnlockReasonTxtBox("PCFUnlock");
+		utils.javaScriptExecutorAction(ccfriUnlock.clickRfiUnlockBtn());
+		Thread.sleep(3000);
+		utils.javaScriptExecutorAction(ccfriUnlock.clickNmfUnlockBtn());
+		Thread.sleep(5000);
+		ccfriUnlock.enterUnlockReasonTxtBox("RFINMFUnlock");
 		Thread.sleep(3000);
 		utils.scrollToElement(ccfriUnlock.scrollToConfirmAndCloseBtn());
 		ccfriUnlock.clickConfirmAndCloseBtn();
@@ -108,7 +112,7 @@ public class TestPCFMainApplication extends BaseTest {
 		// Assert they are equal
 		utils.compareValues(statusreason, "PCF - Awaiting Provider");
 
-		logger.info("Ending the TestPCFMainApplication test...");
+		logger.info("Ending the TestRFINMFMainApplication test...");
 
 	}
 

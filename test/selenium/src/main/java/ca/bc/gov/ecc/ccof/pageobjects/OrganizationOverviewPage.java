@@ -32,16 +32,15 @@ public class OrganizationOverviewPage {
 
 	public void clickOrgInformation() {
 		// if already on Organization Information, no need to switch
-		List<WebElement> alreadySelected = driver.findElements(
-				By.xpath("//*[@aria-label='Organization-Facility entity, Organization Information']"));
+		List<WebElement> alreadySelected = driver
+				.findElements(By.xpath("//*[@aria-label='Organization-Facility entity, Organization Information']"));
 		if (!alreadySelected.isEmpty()) {
 			return;
 		}
 
-        wait.until(ExpectedConditions.elementToBeClickable(orgOverviewDropdown));
+		wait.until(ExpectedConditions.elementToBeClickable(orgOverviewDropdown));
 		orgOverviewDropdown.click();
 		wait.until(ExpectedConditions.elementToBeClickable(orgInformationOption));
 		orgInformationOption.click();
 	}
 }
-
