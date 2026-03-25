@@ -65,6 +65,7 @@ public class TestAdjudicateMTFIChangeRequest extends BaseTest {
         // switches view to organization information page
         OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
         orgOverview.clickOrgInformation();
+        Thread.sleep(3000);
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
