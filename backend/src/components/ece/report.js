@@ -19,9 +19,12 @@ function getReportVersionText(report) {
 }
 
 function calculateStaffAmounts(staff, weRate, sbRate) {
-  const totalHours = staff.totalHoursWorkedAllReports ?? 0;
-  const weAmount = totalHours * (weRate ?? 0);
-  const sbAmount = totalHours * (sbRate ?? 0);
+  const totalHours = staff.totalHoursWorkedAllReports;
+  const weAmount = totalHours * weRate;
+  const sbAmount = totalHours * sbRate;
+  if (Number.isNaN(weAmount) || Number.isNaN(sbAmount)) {
+    throw new Error('Invalid staff amount calculation.');
+  }
   return {
     totalHours,
     weAmount,
