@@ -36,23 +36,6 @@ public class TestValidLogin extends BaseTest {
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
         logger.info("Click sign in");
 		objCRMSignInCredentialPage.clickSignIn();
-
-		try {
-			logger.info("After clickSignIn - current URL: " + driver.getCurrentUrl());
-			logger.info("After clickSignIn - page title: " + driver.getTitle());
-			int idButtonCount = driver.findElements(By.id("idSIButton9")).size();
-			logger.info("After clickSignIn - count of elements with id 'idSIButton9': " + idButtonCount);
-			int iframeCount = driver.findElements(By.tagName("iframe")).size();
-			logger.info("After clickSignIn - iframe count on page: " + iframeCount);
-			// If present, log the text of the element (shortened) for extra debug
-			if (idButtonCount > 0) {
-				String btnText = driver.findElement(By.id("idSIButton9")).getText();
-				logger.info("After clickSignIn - idSIButton9 text (first 200 chars): " + (btnText.length() > 200 ? btnText.substring(0,200) : btnText));
-			}
-		} catch (Exception e) {
-			logger.info("After clickSignIn - failed to log additional diagnostics", e);
-		}
-
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
         logger.info("Click yes");
 		objCRMSignInCredentialPage.clickYes();
