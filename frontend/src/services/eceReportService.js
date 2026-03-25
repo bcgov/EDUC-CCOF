@@ -27,17 +27,6 @@ export default {
     }
   },
 
-  async getECEReportApprovedAmounts(eceReportId) {
-    try {
-      if (!eceReportId) return null;
-      const response = await ApiService.apiAxios.get(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/approved-amounts`);
-      return response?.data;
-    } catch (error) {
-      console.error(`Failed to get ECE report approved amounts - ${error}`);
-      throw error;
-    }
-  },
-
   async getECEReports(query) {
     try {
       const queryString = buildQueryString(query);

@@ -40,7 +40,7 @@
                   variant="outlined"
                 />
                 <p v-if="showStaffApprovedAmounts(item)" class="mt-2">
-                  <strong>Approved:</strong> {{ formatDecimalNumber(item.verifiedHours) }}
+                  <strong>Approved:</strong> {{ formatDecimalNumber(item.totalHoursWorkedAllReports) }}
                 </p>
               </td>
               <td>
@@ -199,7 +199,7 @@ export default {
         { title: 'Actions', value: 'actions', width: 200, sortable: false },
       ],
       publicSector: globalThis.history?.state?.publicSector ?? null,
-      previousReportApprovedAmounts: {},
+      previousECEReport: {},
     };
   },
   computed: {
@@ -241,7 +241,7 @@ export default {
       );
     },
     calculationSummaryRows() {
-      const previousReport = this.previousReportApprovedAmounts ?? {};
+      const previousReport = this.previousECEReport ?? {};
       const rows = [
         {
           label: 'WE Subtotal',
@@ -320,9 +320,7 @@ export default {
         });
         this.initializeStaffChangeState();
         if (this.isAdjustmentReport) {
-          this.previousReportApprovedAmounts = await ECEReportService.getECEReportApprovedAmounts(
-            this.eceReport.previousReportId,
-          );
+          this.previousECEReport = await ECEReportService.getECEReport(this.eceReport.previousReportId);
         }
         this.calculate();
       } catch (error) {
