@@ -25,22 +25,19 @@
       <v-card elevation="4" class="px-4 px-lg-8 py-4 my-10 rounded-lg">
         <div>
           <p class="pa-2">Which of the following describes your organization?</p>
-          <v-radio-group v-model="model.describeOrgCSSEA" :disabled="isReadOnly" :rules="rules.required">
+          <v-radio-group
+            v-model="model.describeOrgCSSEA"
+            :disabled="isReadOnly"
+            :rules="rules.required"
+            @update:modelValue="onDescribeOrgChange"
+          >
             <v-radio
               label="We are not a member of the Community Social Services Employers' Association (CSSEA)."
               :value="ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA"
-              @click="
-                model.isUnionAgreementReached = null;
-                model.applicableSector = null;
-              "
             />
             <v-radio
               label="We are a member of the Community Social Services Employers' Association (CSSEA)."
               :value="ECEWE_DESCRIBE_ORG_TYPES.MEMBER_OF_CSSEA"
-              @click="
-                model.isUnionAgreementReached = null;
-                model.applicableSector = null;
-              "
             />
           </v-radio-group>
         </div>
@@ -59,16 +56,19 @@
 
         <template v-else-if="model.describeOrgCSSEA === ECEWE_DESCRIBE_ORG_TYPES.NOT_A_MEMBER_OF_CSSEA">
           <p class="pa-2">Please select a response</p>
-          <v-radio-group v-model="model.applicableSector" :disabled="isReadOnly" :rules="rules.required">
+          <v-radio-group
+            v-model="model.applicableSector"
+            :disabled="isReadOnly"
+            :rules="rules.required"
+            @update:modelValue="onApplicableSectorChange"
+          >
             <v-radio
               label="None of our facilities are unionized."
               :value="ECEWE_SECTOR_TYPES.NO_FACILITIES_UNIONIZED"
-              @click="model.isUnionAgreementReached = null"
             />
             <v-radio
               label="Some or all of our facilities are unionized."
               :value="ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED"
-              @click="model.isUnionAgreementReached = null"
             />
           </v-radio-group>
           <template v-if="model.applicableSector === ECEWE_SECTOR_TYPES.SOME_FACILITIES_UNIONIZED">
@@ -136,6 +136,8 @@ export default {
   data() {
     return {
       model: {},
+      previousDescribeOrgCSSEA: null,
+      previousApplicableSector: null,
     };
   },
   computed: {
@@ -157,11 +159,34 @@ export default {
     this.ECEWE_IS_PUBLIC_SECTOR_EMPLOYER = ECEWE_IS_PUBLIC_SECTOR_EMPLOYER;
     this.ECEWE_UNION_AGREEMENT_REACHED = ECEWE_UNION_AGREEMENT_REACHED;
     this.model = { ...this.eceweModel };
+    this.previousDescribeOrgCSSEA = this.model.describeOrgCSSEA;
+    this.previousApplicableSector = this.model.applicableSector;
   },
 
   methods: {
     getFormData() {
       return this.model;
+    },
+
+    onDescribeOrgChange(newValue) {
+      if (this.previousDescribeOrgCSSEA === newValue) {
+        return;
+      }
+
+      this.model.isUnionAgreementReached = null;
+      this.model.applicableSector = null;
+
+      this.previousDescribeOrgCSSEA = newValue;
+      this.previousApplicableSector = this.model.applicableSector;
+    },
+
+    onApplicableSectorChange(newValue) {
+      if (this.previousApplicableSector === newValue) {
+        return;
+      }
+
+      this.model.isUnionAgreementReached = null;
+      this.previousApplicableSector = newValue;
     },
 
     //For change requests - if a facility has previously opted-in or said yes to having a union on their CORE application
