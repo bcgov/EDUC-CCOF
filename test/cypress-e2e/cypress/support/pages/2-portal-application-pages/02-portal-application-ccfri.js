@@ -100,7 +100,7 @@ class CcfriApplication{
                 // eslint-disable-next-line no-console
                 console.log('card innerHTML:', $title.html())
                 // eslint-disable-next-line no-console
-                console.log('card char codes:', titleText.split('').map(c => c.charCodeAt(0)))
+                console.log('card char codes:', titleText.split('').map(c => c.codePointAt(0)))
             })
 
             cy.get('@feeCard')
