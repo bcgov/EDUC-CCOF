@@ -48,6 +48,11 @@ jobs:
         run: |
           set -eu
           set +H
+
+          # temp logging:
+          echo "CRM_1 length: ${#CRM_USERNAME}"
+          echo "CRM_2 length: ${#CRM_PASSWORD}"
+
           echo "Creating config.properties file with QA credentials..."
           printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
             "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
