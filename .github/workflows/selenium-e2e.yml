@@ -49,7 +49,7 @@ jobs:
           set -eu
           set +H
           echo "Creating config.properties file with QA credentials..."
-          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=false\n' \
+          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
             "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
           echo "config.properties created successfully."
 
