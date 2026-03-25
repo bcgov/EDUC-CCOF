@@ -549,21 +549,14 @@ Cypress.Commands.add("licenceUpload", () => {
   });
 });
 Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
-  let attempt = 0;
+  let clickAttempts = 0;
 
   function clickNext() {
-    attempt++;
-
-    if (attempt > maxAttempts) {
-      throw new Error("Clicked Next too many times.");
-    }
-
     cy.get("body").then(($body) => {
       const nextBtn = $body
-
         .find("button, .v-btn")
-
-        .filter((_, el) => el.innerText.trim() === "Next");
+        .filter((_, el) => Cypress.$(el).is(":visible") && el.innerText.trim() === "Next")
+        .first();
 
       if (!nextBtn.length) {
         return;
@@ -572,16 +565,25 @@ Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
       const isDisabled =
         nextBtn.prop("disabled") ||
         nextBtn.attr("disabled") !== undefined ||
-        nextBtn.attr("aria-disabled") === "true";
+        nextBtn.attr("aria-disabled") === "true" ||
+        nextBtn.hasClass("disabledButton") ||
+        nextBtn.hasClass("v-btn--disabled");
 
-      if (isDisabled) {
+      const isLoading =
+        nextBtn.hasClass("v-btn--loading") ||
+        nextBtn.find(".v-progress-circular").length > 0;
+
+      if (isDisabled || isLoading) {
         return;
       }
 
-      cy.contains("button, .v-btn", "Next").click();
+      if (clickAttempts >= maxAttempts) {
+        throw new Error("Clicked Next too many times.");
+      }
 
-      cy.wait(500);
-
+      clickAttempts++;
+      cy.wrap(nextBtn).click({ force: true });
+      cy.wait(2000);
       clickNext();
     });
   }

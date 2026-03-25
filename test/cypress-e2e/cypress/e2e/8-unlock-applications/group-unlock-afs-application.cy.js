@@ -3,7 +3,7 @@ import { loginPage } from "../../support/pages/1-portal-login-pages/01-portal-lo
 import { submitApp } from "../../support/pages/2-portal-application-pages/04-portal-application-summary-declaration.js";
 
 describe("Unlocked PCF Application Submission Test", () => {
-  it("Should run through unlocked PCF (Declaration only) for Group Application, submit and logout", () => {
+  it("Should run through AFS for Group Application, submit and logout", () => {
     loginPage.visitLoginPage();
     loginPage.clickLoginButton();
     loginPage.loginThroughExternalProvider(
