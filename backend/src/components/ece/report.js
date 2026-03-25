@@ -23,7 +23,7 @@ function calculateStaffAmounts(staff, weRate, sbRate) {
   const weAmount = totalHours * weRate;
   const sbAmount = totalHours * sbRate;
   if (Number.isNaN(weAmount) || Number.isNaN(sbAmount)) {
-    throw new Error('Invalid staff amount calculation.');
+    throw new TypeError('Invalid staff amount calculation.');
   }
   return {
     totalHours,
