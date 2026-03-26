@@ -49,10 +49,10 @@ jobs:
           set -eu
           set +H
           echo "Creating config.properties file with QA credentials (sanitizing secrets)..."
-          # Sanitize inputs to remove stray CR/LF and trim leading/trailing whitespace for username
-          CRM_URL_S=$(printf '%s' "$CRM_URL" | tr -d '\r\n')
+          # Sanitize inputs to remove stray CR/LF and trim leading/trailing whitespace
+          CRM_URL_S=$(printf '%s' "$CRM_URL" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
           CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n')
+          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
           # Write headless=true so tests run in headless browser mode on the runner.
           printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
@@ -69,63 +69,58 @@ jobs:
           set -eu
           set +H
           echo "Verifying CRM_USERNAME and CRM_PASSWORD parsing (safe checks)..."
+          # Compute sanitized variants (same sanitization applied when creating config.properties)
+          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
-          # CRM_USERNAME checks (non-leaking boolean outputs)
-          U_RAW=$(printf '%s' "$CRM_USERNAME")
-
-          # Check leading/trailing whitespace
-          U_TRIMMED=$(printf '%s' "$U_RAW" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-          if [ "$(printf '%s' "$U_RAW" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != "$U_RAW" ]; then
-            echo "CRM_USERNAME has leading or trailing whitespace: YES"
+          # CRM_USERNAME checks against sanitized value (non-leaking boolean outputs)
+          if [ "$(printf '%s' "$CRM_USERNAME_S" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != "$(printf '%s' "$CRM_USERNAME_S")" ]; then
+            echo "(sanitized) CRM_USERNAME has leading or trailing whitespace: YES"
           else
-            echo "CRM_USERNAME has leading or trailing whitespace: NO"
+            echo "(sanitized) CRM_USERNAME has leading or trailing whitespace: NO"
           fi
 
-          if printf '%s' "$U_RAW" | grep -q '@'; then
-            echo "CRM_USERNAME contains '@': YES"
+          if printf '%s' "$CRM_USERNAME_S" | grep -q '@'; then
+            echo "(sanitized) CRM_USERNAME contains '@': YES"
           else
-            echo "CRM_USERNAME contains '@': NO"
+            echo "(sanitized) CRM_USERNAME contains '@': NO"
           fi
 
-          # Case-insensitive domain match to be robust
-          if printf '%s' "$U_RAW" | grep -qi '@gov\.bc\.ca$'; then
-            echo "CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): YES"
+          if printf '%s' "$CRM_USERNAME_S" | grep -qi '@gov\.bc\.ca$'; then
+            echo "(sanitized) CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): YES"
           else
-            echo "CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): NO"
+            echo "(sanitized) CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): NO"
           fi
 
-          if printf '%s' "$U_RAW" | grep -q $'\n'; then
-            echo "CRM_USERNAME contains newline/control characters: YES"
+          if printf '%s' "$CRM_USERNAME_S" | grep -q $'\n'; then
+            echo "(sanitized) CRM_USERNAME contains newline/control characters: YES"
           else
-            echo "CRM_USERNAME contains newline/control characters: NO"
+            echo "(sanitized) CRM_USERNAME contains newline/control characters: NO"
           fi
 
-          if printf '%s' "$U_RAW" | grep -q '[[:space:]]'; then
-            echo "CRM_USERNAME contains spaces: YES"
+          if printf '%s' "$CRM_USERNAME_S" | grep -q '[[:space:]]'; then
+            echo "(sanitized) CRM_USERNAME contains spaces: YES"
           else
-            echo "CRM_USERNAME contains spaces: NO"
+            echo "(sanitized) CRM_USERNAME contains spaces: NO"
           fi
 
-          # CRM_PASSWORD checks (non-leaking boolean outputs only)
-          P_RAW=$(printf '%s' "$CRM_PASSWORD")
-
-          if printf '%s' "$P_RAW" | grep -q $'\n'; then
-            echo "CRM_PASSWORD contains newline/control characters: YES"
+          # CRM_PASSWORD checks against sanitized value (non-leaking boolean outputs only)
+          if printf '%s' "$CRM_PASSWORD_S" | grep -q $'\n'; then
+            echo "(sanitized) CRM_PASSWORD contains newline/control characters: YES"
           else
-            echo "CRM_PASSWORD contains newline/control characters: NO"
+            echo "(sanitized) CRM_PASSWORD contains newline/control characters: NO"
           fi
 
-          if printf '%s' "$P_RAW" | grep -q '[[:space:]]'; then
-            echo "CRM_PASSWORD contains spaces: YES"
+          if printf '%s' "$CRM_PASSWORD_S" | grep -q '[[:space:]]'; then
+            echo "(sanitized) CRM_PASSWORD contains spaces: YES"
           else
-            echo "CRM_PASSWORD contains spaces: NO"
+            echo "(sanitized) CRM_PASSWORD contains spaces: NO"
           fi
 
-          # Check whether password ends with an exclamation mark (no character leakage)
-          if printf '%s' "$P_RAW" | grep -q '!$'; then
-            echo "CRM_PASSWORD ends with '!': YES"
+          if printf '%s' "$CRM_PASSWORD_S" | grep -q '!$'; then
+            echo "(sanitized) CRM_PASSWORD ends with '!': YES"
           else
-            echo "CRM_PASSWORD ends with '!': NO"
+            echo "(sanitized) CRM_PASSWORD ends with '!': NO"
           fi
 
           echo "Safe parsing verification complete."
