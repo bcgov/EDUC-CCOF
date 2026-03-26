@@ -49,21 +49,10 @@ jobs:
           set -eu
           set +H
           echo "Creating config.properties file with QA credentials..."
-          # Write headless=false so tests run in headed mode (visible browser). The runner will start Xvfb below.
-          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=false\n' \
+          # Write headless=true so tests run in headless browser mode on the runner.
+          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
             "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
           echo "config.properties created successfully."
-
-      - name: Install and start Xvfb (virtual display for headed browser)
-        run: |
-          echo "Installing and starting Xvfb so Chrome can run in headed mode..."
-          sudo apt-get update
-          sudo apt-get install -y xvfb
-          # Start Xvfb on display :99 in background and set DISPLAY for subsequent steps
-          nohup Xvfb :99 -screen 0 1920x1080x24 >/tmp/xvfb.log 2>&1 &
-          # Export DISPLAY in this step's shell; subsequent steps in the same job will inherit the environment from the runner
-          echo "DISPLAY=:99" >> $GITHUB_ENV
-          sleep 1
 
       - name: Build & run tests
         working-directory: test/selenium
@@ -83,5 +72,33 @@ jobs:
             TEST_CLASS="$INPUT"
           fi
           echo "Running Maven for test class/pattern: $TEST_CLASS"
-          mvn -B -ntp -Dtest="$TEST_CLASS" test
-          echo "Maven build and tests completed."
+
+          # Ensure screenshots directory exists (TestListener writes here)
+          mkdir -p screenshots
+
+          # Run mvn directly (headless Chrome). Capture exit code so artifacts can still be uploaded on failure.
+          mvn -B -ntp -Dtest="$TEST_CLASS" test; EXIT_CODE=$?; echo $EXIT_CODE > maven-exit-code.txt
+          echo "Maven finished with exit code $(cat maven-exit-code.txt)"
+
+      - name: Upload screenshots and test reports (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-test-artifacts
+          path: |
+            test/selenium/screenshots
+            test/selenium/target/surefire-reports
+            test/selenium/target/*-reports
+
+      - name: Fail job if tests failed
+        if: always()
+        working-directory: test/selenium
+        run: |
+          EXIT_CODE=$(cat maven-exit-code.txt || echo 0)
+          echo "Maven exit code: $EXIT_CODE"
+          if [ "$EXIT_CODE" -ne 0 ]; then
+            echo "Tests failed (exit code $EXIT_CODE). Failing the job now after uploading artifacts."
+            exit $EXIT_CODE
+          else
+            echo "Tests passed."
+          fi
