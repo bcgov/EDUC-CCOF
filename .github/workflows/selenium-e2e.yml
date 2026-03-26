@@ -49,9 +49,21 @@ jobs:
           set -eu
           set +H
           echo "Creating config.properties file with QA credentials..."
-          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
+          # Write headless=false so tests run in headed mode (visible browser). The runner will start Xvfb below.
+          printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=false\n' \
             "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
           echo "config.properties created successfully."
+
+      - name: Install and start Xvfb (virtual display for headed browser)
+        run: |
+          echo "Installing and starting Xvfb so Chrome can run in headed mode..."
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+          # Start Xvfb on display :99 in background and set DISPLAY for subsequent steps
+          nohup Xvfb :99 -screen 0 1920x1080x24 >/tmp/xvfb.log 2>&1 &
+          # Export DISPLAY in this step's shell; subsequent steps in the same job will inherit the environment from the runner
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+          sleep 1
 
       - name: Build & run tests
         working-directory: test/selenium
@@ -73,52 +85,3 @@ jobs:
           echo "Running Maven for test class/pattern: $TEST_CLASS"
           mvn -B -ntp -Dtest="$TEST_CLASS" test
           echo "Maven build and tests completed."
-          # Temp screenshot save
-      - name: Create screenshot index (if any)
-        if: always()
-        working-directory: test/selenium
-        run: |
-          # Ensure screenshots directory exists so upload step won't fail
-          mkdir -p target/screenshots
-
-          # Create a simple index.html listing screenshots for easier viewing after download
-          INDEX=target/screenshots/index.html
-          echo "<html><body><h1>Screenshots</h1>" > "$INDEX"
-          for img in target/screenshots/*.png; do
-            if [ -f "$img" ]; then
-              name=$(basename "$img")
-              echo "<div style='margin:12px'><a href=\"$name\"><img src=\"$name\" style='max-width:800px'></a><br>$name</div>" >> "$INDEX"
-            fi
-          done
-          echo "</body></html>" >> "$INDEX"
-
-      - name: List screenshots (debug)
-        if: always()
-        working-directory: test/selenium
-        run: |
-          echo "Screenshot dir contents (for debug):"
-          ls -la target/screenshots || echo "(no screenshots found)"
-
-      - name: Upload Selenium screenshots
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: selenium-screenshots
-          path: test/selenium/target/screenshots/**
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Upload Surefire reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: surefire-reports
-          path: test/selenium/target/surefire-reports/**
-          if-no-files-found: warn
-          retention-days: 7
-
-      - name: Add job summary note
-        if: always()
-        run: |
-          echo "Screenshots (if any) and test reports uploaded as artifacts: 'selenium-screenshots' and 'surefire-reports'." >> $GITHUB_STEP_SUMMARY
-
