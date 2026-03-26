@@ -73,3 +73,52 @@ jobs:
           echo "Running Maven for test class/pattern: $TEST_CLASS"
           mvn -B -ntp -Dtest="$TEST_CLASS" test
           echo "Maven build and tests completed."
+          # Temp screenshot save
+      - name: Create screenshot index (if any)
+        if: always()
+        working-directory: test/selenium
+        run: |
+          # Ensure screenshots directory exists so upload step won't fail
+          mkdir -p target/screenshots
+
+          # Create a simple index.html listing screenshots for easier viewing after download
+          INDEX=target/screenshots/index.html
+          echo "<html><body><h1>Screenshots</h1>" > "$INDEX"
+          for img in target/screenshots/*.png; do
+            if [ -f "$img" ]; then
+              name=$(basename "$img")
+              echo "<div style='margin:12px'><a href=\"$name\"><img src=\"$name\" style='max-width:800px'></a><br>$name</div>" >> "$INDEX"
+            fi
+          done
+          echo "</body></html>" >> "$INDEX"
+
+      - name: List screenshots (debug)
+        if: always()
+        working-directory: test/selenium
+        run: |
+          echo "Screenshot dir contents (for debug):"
+          ls -la target/screenshots || echo "(no screenshots found)"
+
+      - name: Upload Selenium screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-screenshots
+          path: test/selenium/target/screenshots/**
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload Surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: test/selenium/target/surefire-reports/**
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Add job summary note
+        if: always()
+        run: |
+          echo "Screenshots (if any) and test reports uploaded as artifacts: 'selenium-screenshots' and 'surefire-reports'." >> $GITHUB_STEP_SUMMARY
+
