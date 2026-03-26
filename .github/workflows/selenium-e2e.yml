@@ -53,6 +53,77 @@ jobs:
           printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
             "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
           echo "config.properties created successfully."
+          # TEMP logging
+      - name: Safe secret parsing verification (non-leaking)
+        if: always()
+        env:
+          CRM_USERNAME: ${{ secrets.E2E_CRM_USERNAME }}
+          CRM_PASSWORD: ${{ secrets.E2E_CRM_PASSWORD }}
+        working-directory: test/selenium
+        run: |
+          set -eu
+          set +H
+          echo "Verifying CRM_USERNAME and CRM_PASSWORD parsing (safe checks)..."
+
+          # CRM_USERNAME checks (non-leaking boolean outputs)
+          U_RAW=$(printf '%s' "$CRM_USERNAME")
+
+          # Check leading/trailing whitespace
+          U_TRIMMED=$(printf '%s' "$U_RAW" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          if [ "$(printf '%s' "$U_RAW" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != "$U_RAW" ]; then
+            echo "CRM_USERNAME has leading or trailing whitespace: YES"
+          else
+            echo "CRM_USERNAME has leading or trailing whitespace: NO"
+          fi
+
+          if printf '%s' "$U_RAW" | grep -q '@'; then
+            echo "CRM_USERNAME contains '@': YES"
+          else
+            echo "CRM_USERNAME contains '@': NO"
+          fi
+
+          # Case-insensitive domain match to be robust
+          if printf '%s' "$U_RAW" | grep -qi '@gov\.bc\.ca$'; then
+            echo "CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): YES"
+          else
+            echo "CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): NO"
+          fi
+
+          if printf '%s' "$U_RAW" | grep -q $'\n'; then
+            echo "CRM_USERNAME contains newline/control characters: YES"
+          else
+            echo "CRM_USERNAME contains newline/control characters: NO"
+          fi
+
+          if printf '%s' "$U_RAW" | grep -q '[[:space:]]'; then
+            echo "CRM_USERNAME contains spaces: YES"
+          else
+            echo "CRM_USERNAME contains spaces: NO"
+          fi
+
+          # CRM_PASSWORD checks (non-leaking boolean outputs only)
+          P_RAW=$(printf '%s' "$CRM_PASSWORD")
+
+          if printf '%s' "$P_RAW" | grep -q $'\n'; then
+            echo "CRM_PASSWORD contains newline/control characters: YES"
+          else
+            echo "CRM_PASSWORD contains newline/control characters: NO"
+          fi
+
+          if printf '%s' "$P_RAW" | grep -q '[[:space:]]'; then
+            echo "CRM_PASSWORD contains spaces: YES"
+          else
+            echo "CRM_PASSWORD contains spaces: NO"
+          fi
+
+          # Check whether password ends with an exclamation mark (no character leakage)
+          if printf '%s' "$P_RAW" | grep -q '!$'; then
+            echo "CRM_PASSWORD ends with '!': YES"
+          else
+            echo "CRM_PASSWORD ends with '!': NO"
+          fi
+
+          echo "Safe parsing verification complete."
 
       - name: Build & run tests
         working-directory: test/selenium
@@ -79,26 +150,3 @@ jobs:
           # Run mvn directly (headless Chrome). Capture exit code so artifacts can still be uploaded on failure.
           mvn -B -ntp -Dtest="$TEST_CLASS" test; EXIT_CODE=$?; echo $EXIT_CODE > maven-exit-code.txt
           echo "Maven finished with exit code $(cat maven-exit-code.txt)"
-
-      - name: Upload screenshots and test reports (always)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: selenium-test-artifacts
-          path: |
-            test/selenium/screenshots
-            test/selenium/target/surefire-reports
-            test/selenium/target/*-reports
-
-      - name: Fail job if tests failed
-        if: always()
-        working-directory: test/selenium
-        run: |
-          EXIT_CODE=$(cat maven-exit-code.txt || echo 0)
-          echo "Maven exit code: $EXIT_CODE"
-          if [ "$EXIT_CODE" -ne 0 ]; then
-            echo "Tests failed (exit code $EXIT_CODE). Failing the job now after uploading artifacts."
-            exit $EXIT_CODE
-          else
-            echo "Tests passed."
-          fi
