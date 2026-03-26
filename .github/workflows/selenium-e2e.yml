@@ -48,11 +48,16 @@ jobs:
         run: |
           set -eu
           set +H
-          echo "Creating config.properties file with QA credentials..."
+          echo "Creating config.properties file with QA credentials (sanitizing secrets)..."
+          # Sanitize inputs to remove stray CR/LF and trim leading/trailing whitespace for username
+          CRM_URL_S=$(printf '%s' "$CRM_URL" | tr -d '\r\n')
+          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n')
+
           # Write headless=true so tests run in headless browser mode on the runner.
           printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
-            "$CRM_URL" "$CRM_USERNAME" "$CRM_PASSWORD" > config.properties
-          echo "config.properties created successfully."
+            "$CRM_URL_S" "$CRM_USERNAME_S" "$CRM_PASSWORD_S" > config.properties
+          echo "config.properties created successfully (sanitized)."
           # TEMP logging
       - name: Safe secret parsing verification (non-leaking)
         if: always()
