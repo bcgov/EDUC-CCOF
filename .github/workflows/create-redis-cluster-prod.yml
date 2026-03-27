@@ -7,7 +7,7 @@ env:
   OPENSHIFT_TOKEN: ${{ secrets.OPENSHIFT_TOKEN }}
   OPENSHIFT_NAMESPACE: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}-prod
   DOCKER_ARTIFACTORY_REPO: artifacts.developer.gov.bc.ca/docker-remote
-  REDIS_VERSION: ${{ vars.REDIS_VERSION }}
+  REDIS_VERSION: 8.4.0
   REPLICAS: 6
 on:
   workflow_dispatch:
