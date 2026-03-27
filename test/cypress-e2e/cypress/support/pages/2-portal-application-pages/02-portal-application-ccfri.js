@@ -59,35 +59,76 @@ class CcfriApplication{
 
     addParentFees(appType, term, file) {
         this.loadFixturesAndVariables(file)
-        cy.then(()=> {
-            let parentFeeCategories
+        const getParentFeeCategories = () => {
             switch (appType) {
-                case 'group': 
-                case 'groupOld': parentFeeCategories = this.parentFees.groupParentFeeCategories; break;
-                case 'family': 
-                case 'familyOld': parentFeeCategories = this.parentFees.familyParentFeeCategories; break;
-                case 'groupRenewal': parentFeeCategories = this.parentFees.groupRenewalParentFeeCategories; break;
-                case 'familyRenewal': parentFeeCategories = this.parentFees.familyRenewalParentFeeCategories; break;
+                case 'group':
+                case 'groupOld':
+                    return this.parentFees.groupParentFeeCategories
+                case 'family':
+                case 'familyOld':
+                    return this.parentFees.familyParentFeeCategories
+                case 'groupRenewal':
+                    return this.parentFees.groupRenewalParentFeeCategories
+                case 'familyRenewal':
+                    return this.parentFees.familyRenewalParentFeeCategories
+                default:
+                    return []
             }
+        }
+
+        const fillFeeCard = (category) => {
+            const normalizedCategory = category.trim()
+
+            // Find the .card-title whose visible text matches the normalized category
+            cy.get('.card-title').filter((i, el) => {
+                const txt = Cypress.$(el).text().trim()
+                return txt === normalizedCategory
+            }).first()
+                .closest('.v-card.my-10')
+                .as('feeCard')
+
+            // Debug: log raw fixture value and normalized expected category
+            cy.log(`Raw fixture category: ${category}`)
+            cy.log(`Normalized expected category: ${normalizedCategory}`)
+
+            // Log the card title text/html and char codes to help diagnose whitespace/nbsp issues
+            cy.get('@feeCard').then($card => {
+                const $title = $card.find('.card-title').first()
+                const titleText = $title.text()
+                cy.log(`Card title text: ${titleText}`)
+                // Browser console prints are useful for char codes and innerHTML
+                // eslint-disable-next-line no-console
+                console.log('card innerHTML:', $title.html())
+                // eslint-disable-next-line no-console
+                console.log('card char codes:', titleText.split('').map(c => c.codePointAt(0)))
+            })
+
+            cy.get('@feeCard')
+                .contains('label', `${this.paymentFrequency}`)
+                .click()
+
+            cy.get('@feeCard').then((card) => {
+                handleCardWithin(card, this.parentFees.months)
+            })
+        }
+
+        const fillAllFees = (categories) => {
+            categories.filter(Boolean).forEach((category) => {
+                fillFeeCard(category)
+            })
+        }
+
+        cy.then(() => {
             cy.contains('Enter the fees you would charge a new parent for full-time care at this facility for the months below.').should('be.visible')
             cy.contains(this.facilityName)
-            cy.then(()=> {
-                cy.get('.v-card.my-10').each((card, index) => {
-                    const category = parentFeeCategories[index]
-                    cy.wrap(card)
-                        .should('contain', `${category}`)
-                        .contains('label', `${this.paymentFrequency}`)
-                        .click()
-                    handleCardWithin(card, this.parentFees.months)
-                })
+            fillAllFees(getParentFeeCategories())
 
-                if (appType === "groupOld" || appType === 'familyOld'){
-                    this.addClosures(appType, term)
-                }
-                cy.clickByText('Save')
-                cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
-                cy.clickByText('Next')
-            })
+            if (appType === "groupOld" || appType === 'familyOld'){
+                this.addClosures(appType, term)
+            }
+            cy.clickByText('Save')
+            cy.contains('Success! CCFRI Parent fees have been saved.').should('be.visible')
+            cy.clickByText('Next')
         })
     }
 
