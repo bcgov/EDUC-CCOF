@@ -97,13 +97,13 @@ class Redis {
         Redis.client = createCluster({
           rootNodes: [
             {
-              url: `redis://redis-0.${config.get('redis:host')}`,
+              url: `redis://redis-0.${config.get('redis:host')}:${config.get('redis:port')}`,
             },
             {
-              url: `redis://redis-1.${config.get('redis:host')}`,
+              url: `redis://redis-1.${config.get('redis:host')}:${config.get('redis:port')}`,
             },
             {
-              url: `redis://redis-2.${config.get('redis:host')}`,
+              url: `redis://redis-2.${config.get('redis:host')}:${config.get('redis:port')}`,
             },
           ],
         });
