@@ -1,29 +1,57 @@
 import 'cypress-file-upload';
 
 class CcofApplication {
+      constructor() {
+        this.facilityCount = 0;
+      }
   loadFixtures(file) {
     return cy.fixture(`/ccof-data/${file}`).then((data) => {
-      this.orgData = data.orgData
-      this.facilityData = data.facilityData
-      this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
+      // Only set properties that are present in the fixture to avoid wiping
+      // previously-loaded base data (e.g. orgData from the main fixture).
+      if (data.hasOwnProperty('orgData')) {
+        this.orgData = data.orgData
+      }
+      if (data.hasOwnProperty('facilityData')) {
+        this.facilityData = data.facilityData
+      }
+      if (data.hasOwnProperty('facilityLicenceDetailsData')) {
+        this.facilityLicenceDetailsData = data.facilityLicenceDetailsData
+      }
+      // Return the data to allow for proper promise chaining.
+      return data;
     })
   }
 
   loadFixturesAndVariables(file) {
-    this.loadFixtures(file)
-    cy.then(()=> {
-      this.orgType = this.orgData.typeOfOrganization
-      this.orgInfo = this.orgData.orgInfo
-      this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
-      this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
-      this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
-      this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
-      this.maxChildCareSpaces = this.facilityLicenceDetailsData.maxChildCareSpaces
-      this.extendedHours = this.facilityLicenceDetailsData.offerExtendedHoursChildCare
-      this.extendedMaxDays = this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours
-      this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
-      this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
-      this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
+    // Chain off the promise returned by loadFixtures to ensure data is loaded before proceeding.
+    return this.loadFixtures(file).then((fixtureData)=> {
+      // Increment facility count and update facility name
+      this.facilityCount = this.facilityCount + 1;
+      if (this.facilityData && this.facilityData.facilityName !== undefined) {
+        this.facilityData.facilityName = `Auto Test Facility ${this.facilityCount}`;
+      }
+      // If the fixture includes organization-level data, update org vars.
+      // Extra-facility fixtures may only include facility-specific data, so guard access.
+      if (this.orgData) {
+        this.orgType = this.orgData.typeOfOrganization
+        this.orgInfo = this.orgData.orgInfo
+      }
+
+      // Facility-level data (licence details) may be present; update only if available.
+      if (this.facilityLicenceDetailsData) {
+        this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo
+        this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty
+        this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions
+        this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity
+        this.maxChildCareSpaces = this.facilityLicenceDetailsData.maxChildCareSpaces
+        this.extendedHours = this.facilityLicenceDetailsData.offerExtendedHoursChildCare
+        this.extendedMaxDays = this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours
+        this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours
+        this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours
+        this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails
+      }
+      // Pass the data along the chain.
+      return fixtureData;
     })
   }
 
@@ -374,9 +402,9 @@ class CcofApplication {
     if (files.length > 0) {
       cy.clickByText('Yes')
       cy.wrap(files).each((file, index)=> {
-
-        this.loadFixturesAndVariables(`extra-facs-ccof/${file}`)
-        cy.then(()=> {
+        // Chain a .then() to ensure the fixture is loaded and variables are set before filling out the form.
+        // This prevents a race condition.
+        this.loadFixturesAndVariables(`extra-facs-ccof/${file}`).then(()=> {
           this.inputFacilityInfo(appType)
           this.licenceAndServiceDeliveryDetails(appType)
           this.groupLicenses(appType)
@@ -384,7 +412,6 @@ class CcofApplication {
             case "group": this.offerExtendedHours(appType); break;
             case "groupOld": this.oldOfferExtendedHours(appType); break;
           }
-
           if (index < files.length - 1) {
             cy.clickByText('Yes')
           } else {
@@ -402,23 +429,29 @@ class CcofApplication {
     cy.contains('Licence Upload')
 
     cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
-      licenceFiles = files
+      licenceFiles = files;
 
-      cy.get('input[placeholder="Select your file"]').should('have.length', licenceFiles.length).each((input, index) => {
-        cy.log(licenceFiles.length)
-        let currFile = `ccof-data/licence-files/${licenceFiles[index]}`
-        cy.wrap(input)
-          .attachFile(currFile)
-        cy.contains(`${licenceFiles[index]}`)
-      })
+      cy.get('input[placeholder="Select your file"]').then((inputs) => {
+        const numInputs = inputs.length;
+        if (licenceFiles.length < numInputs) {
+          throw new Error(`Not enough license files: found ${licenceFiles.length}, but there are ${numInputs} facilities. Please add more files to ccof-data/licence-files.`);
+        }
+        // Only use as many files as there are inputs
+        for (let i = 0; i < numInputs; i++) {
+          const currFile = `ccof-data/licence-files/${licenceFiles[i]}`;
+          cy.wrap(inputs[i])
+            .attachFile(currFile);
+          cy.contains(`${licenceFiles[i]}`);
+        }
+      });
 
       cy.contains('button', 'Next').should('have.class', 'blueButton').then(()=> {
         cy.contains('button', 'Save').should('have.class', 'blueButton')
           .clickByText('Save')
         cy.contains('Changes Successfully Saved')
-      })
-      cy.clickByText('Next')
-    })
+      });
+      cy.clickByText('Next');
+    });
 
 
   }
