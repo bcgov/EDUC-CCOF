@@ -49,15 +49,11 @@ jobs:
           set -eu
           set +H
           echo "Creating config.properties file with QA credentials (sanitizing secrets)..."
-          # Sanitize inputs to remove stray CR/LF and trim leading/trailing whitespace
-          # Robust sanitization without requiring perl: first remove literal backslash-escaped sequences
-          # ("\\r", "\\n") that may come from copy/paste, then remove any actual CR/LF characters,
-          # then trim leading/trailing whitespace.
-          # Remove literal backslash-escaped sequences ("\\r","\\n"), then remove any real CR/LF
-          # characters in one go with tr, then trim whitespace.
-          CRM_URL_S=$(printf '%s' "$CRM_URL" | sed -e 's/\\r//g' -e 's/\\n//g' | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | sed -e 's/\\r//g' -e 's/\\n//g' | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | sed -e 's/\\r//g' -e 's/\\n//g' | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          # Sanitize inputs to remove stray CR/LF and trim leading/trailing whitespace.
+          # This is done by removing CR/LF characters and then trimming whitespace.
+          CRM_URL_S=$(printf '%s' "$CRM_URL" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
           # Write headless=true so tests run in headless browser mode on the runner.
           printf 'env=QA\nQA.url=%s\ncrm_username=%s\ncrm_password=%s\nbrowser=CHROME\nheadless=true\n' \
@@ -75,9 +71,8 @@ jobs:
           set +H
           echo "Verifying CRM_USERNAME and CRM_PASSWORD parsing (safe checks)..."
           # Compute sanitized variants (same sanitization applied when creating config.properties)
-          # Same robust sanitization without perl: remove literal "\\r"/"\\n" then real CR/LF, then trim.
-          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | sed -e 's/\\r//g' -e 's/\\n//g' | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
-          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | sed -e 's/\\r//g' -e 's/\\n//g' | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+          CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '\r\n' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
           # CRM_USERNAME checks against sanitized value (non-leaking boolean outputs)
           if [ "$(printf '%s' "$CRM_USERNAME_S" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != "$(printf '%s' "$CRM_USERNAME_S")" ]; then
