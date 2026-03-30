@@ -1,0 +1,119 @@
+package ca.bc.gov.ecc.ccof.testcases;
+
+import java.lang.reflect.Method;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.testng.annotations.Test;
+
+import ca.bc.gov.ecc.ccof.base.BaseTest;
+import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
+import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
+import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
+import ca.bc.gov.ecc.ccof.pageobjects.CcfriUnlockForm;
+import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
+import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
+import ca.bc.gov.ecc.ccof.utils.Utilities;
+
+public class TestRFINMFMainApplication extends BaseTest {
+
+	private static final Logger logger = LogManager.getLogger(TestRFINMFMainApplication.class);
+	String contactName;
+
+	@Test(priority = 1)
+	public void unlockRFINMFApplication(Method method) throws Throwable {
+		ExtentTestManager.startTest(method.getName(), " TestRFINMFMainApplication");
+		logger.info("Starting the  TestRFINMFMainApplication test...");
+
+		CRMSignInCredentialPage objCRMSignInCredentialPage = new CRMSignInCredentialPage(driver);
+		Utilities utils = new Utilities(driver);
+		contactName = utils.getDataFromJson("contact");
+
+		// login to application
+		Thread.sleep(3000);
+		objCRMSignInCredentialPage.enterUserId(CRM_USERNAME);
+		objCRMSignInCredentialPage.clickNext();
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforePasswordEntered());
+		objCRMSignInCredentialPage.enterPassword(CRM_PASSWORD);
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignIn());
+		objCRMSignInCredentialPage.clickSignIn();
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
+		objCRMSignInCredentialPage.clickYes();
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickSignInAgain());
+		objCRMSignInCredentialPage.clickSignInAgain();
+		Thread.sleep(5000);
+		objCRMSignInCredentialPage.switchToAppsDashboardIFrame();
+		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickOrgFacilities());
+		objCRMSignInCredentialPage.clickOrgFacilities();
+		Thread.sleep(3000);
+
+		DeleteApplicationPage deleteApp = new DeleteApplicationPage(driver);
+
+		// searching the contact
+		deleteApp.searchAndOpenContact(contactName);
+		Thread.sleep(3000);
+
+		// switches view to organization
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
+		Thread.sleep(8000);
+
+		// switches view to organization information page
+		OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
+		orgOverview.clickOrgInformation();
+		Thread.sleep(3000);
+
+		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
+
+		// selecting the application
+		orgInfo.clickMainApplication();
+		Thread.sleep(5000);
+
+		ApplicationInfoPage appInfo = new ApplicationInfoPage(driver);
+
+		// navigating to related tab
+		appInfo.clickRelatedTab();
+		Thread.sleep(5000);
+
+		// navigating to CCFRIs in related Tab
+		appInfo.clickCCFRISLink();
+		Thread.sleep(5000);
+		appInfo.clickCcfri();
+		Thread.sleep(5000);
+
+		CcfrisInfoPage ccfriInfo = new CcfrisInfoPage(driver);
+
+		ccfriInfo.clickUnlockBtn();
+		Thread.sleep(5000);
+
+		CcfriUnlockForm ccfriUnlock = new CcfriUnlockForm(driver);
+		// filling the unlock form
+		utils.javaScriptExecutorAction(ccfriUnlock.clickDeclarationUnlockBtn());
+		Thread.sleep(3000);
+		utils.javaScriptExecutorAction(ccfriUnlock.clickRfiUnlockBtn());
+		Thread.sleep(3000);
+		utils.javaScriptExecutorAction(ccfriUnlock.clickNmfUnlockBtn());
+		Thread.sleep(5000);
+		ccfriUnlock.enterUnlockReasonTxtBox("RFINMFUnlock");
+		Thread.sleep(3000);
+		utils.scrollToElement(ccfriUnlock.scrollToConfirmAndCloseBtn());
+		ccfriUnlock.clickConfirmAndCloseBtn();
+		Thread.sleep(5000);
+
+		// Validate the ccfri status reason is updated to "PCF - Awaiting Provider"
+		ccfriInfo.clickExpandIconBtn();
+		utils.waitForElement(ccfriInfo.waitForStatusReasonField());
+		String statusreason = ccfriInfo.getStatusReason();
+		logger.info("Status Reason is: {}", statusreason);
+
+		// Assert they are equal
+		utils.compareValues(statusreason, "PCF - Awaiting Provider");
+
+		logger.info("Ending the TestRFINMFMainApplication test...");
+
+	}
+
+}

@@ -101,8 +101,8 @@
     },
     "groupLicenceCategories": {
       "Group Child Care (Under 36 Months)": {
-        "checked": false,
-        "max": 1,
+        "checked": true,
+        "max": 5,
         "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
@@ -110,21 +110,21 @@
       "Group Child Care (30 Months to School Age)": {
         "checked": false,
         "max": 24,
-        "extended": true,
+        "extended": false,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "Group Child Care (School Age)": {
-        "checked": false,
+        "checked": true,
         "max": 20,
         "extended": true,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "School Age Care on School Grounds": {
-        "checked": false,
+        "checked": true,
         "max": 16,
-        "extended": true,
+        "extended": false,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
@@ -134,11 +134,11 @@
         "extended": false
       },
       "Multi-Age Child Care": {
-        "checked": false,
+        "checked": true,
         "max": 50,
         "extended": true,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "maxUnderFourHours": 30,
+        "maxOverFourHours": 20
       }
     },
     "oldFamilyLicenceCategories": {
@@ -157,16 +157,16 @@
     },
     "familyLicenceCategories": {
       "Family Child Care": {
-        "checked": true,
+        "checked": false,
         "max": 50,
         "maxUnderFourHours": 4,
         "maxOverFourHours": 4
       },
       "In-Home Multi-Age Child Care": {
-        "checked": false,
-        "max": 50,
-        "maxUnderFourHours": 4,
-        "maxOverFourHours": 4
+        "checked": true,
+        "max": 60,
+        "maxUnderFourHours": 12,
+        "maxOverFourHours": 11
       },
       "Multi-Age Child Care": {
         "checked": false,
@@ -196,7 +196,7 @@
       "Before Kindergarten",
       "After Kindergarten"
     ],
-    "offerExtendedHoursChildCare": "No",
+    "offerExtendedHoursChildCare": "Yes",
     "_optionsOfferExtendedHoursChildCare": {
       "optIn": "Yes",
       "optOut": "No"

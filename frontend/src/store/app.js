@@ -120,8 +120,8 @@ export const useAppStore = defineStore('app', {
     },
   },
   getters: {
-    currentYearLabel: (state) => {
-      return formatFiscalYearName(state.programYearList?.newApp?.name);
+    currentProgramYear: (state) => {
+      return state.programYearList?.list?.find((year) => year.status === 'CURRENT');
     },
     renewalYearLabel: (state) => {
       return formatFiscalYearName(state.programYearList?.renewal?.name);
@@ -160,6 +160,12 @@ export const useAppStore = defineStore('app', {
         //default to last updated year for wording so pages like ECE-WE don't break.
         //Ministry may come back to add new wording for the upcoming fiscal year
       }
+    },
+    getProgramYearById: (state) => {
+      return (id) => {
+        const programYear = state.programYearList?.list?.find((item) => item.programYearId === id);
+        return programYear;
+      };
     },
     getPreviousProgramYearId: (state) => {
       return (id) => {

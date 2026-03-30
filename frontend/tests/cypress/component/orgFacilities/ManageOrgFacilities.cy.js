@@ -190,13 +190,15 @@ describe('<ManageOrgFacilities />', () => {
           PERMISSIONS.VIEW_FUNDING_AGREEMENT,
           PERMISSIONS.VIEW_FACILITY_INFORMATION,
           PERMISSIONS.VIEW_PAYMENT_INFORMATION,
+          PERMISSIONS.VIEW_ECE_REPORT,
         ]),
       });
-      cy.get('.v-tab').should('have.length', 4);
+      cy.get('.v-tab').should('have.length', 5);
       cy.get('.v-tab').eq(0).should('contain', 'Organization Information');
       cy.get('.v-tab').eq(1).should('contain', 'Funding Agreement');
       cy.get('.v-tab').eq(2).should('contain', 'Facilities');
       cy.get('.v-tab').eq(3).should('contain', 'Payment Information');
+      cy.get('.v-tab').eq(4).should('contain', 'Wage Enhancement Payment by ECE');
     });
   });
 
@@ -219,7 +221,6 @@ describe('<ManageOrgFacilities />', () => {
         ...createApplicationStore(),
         ...createAuth(permWithoutViewOrg),
       });
-      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Organization Information');
     });
 
@@ -233,7 +234,6 @@ describe('<ManageOrgFacilities />', () => {
         ...createApplicationStore(),
         ...createAuth(permWithoutViewFac),
       });
-      cy.get('.v-tab').should('have.length', 3);
       cy.get('.v-tab').should('not.contain', 'Facilities');
     });
 

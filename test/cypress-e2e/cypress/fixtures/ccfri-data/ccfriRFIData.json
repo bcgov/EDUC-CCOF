@@ -1,0 +1,19 @@
+{
+  "_NOTE": "Sample data for Parent Fee Increase Request for Information test cases. Modify Yes/No values as needed for different scenarios.",
+  "parentFeeIncreaseRfi": {
+    "exceptionalCircumstances": "No",
+    "_optionsExceptionalCircumstances": "Yes OR No",
+
+    "feeIncreaseDueToWage": "No",
+    "_optionsFeeIncreaseDueToWage": "Yes OR No",
+
+    "feeIncreaseExtendedHours": "No",
+    "_optionsFeeIncreaseExtendedHours": "Yes OR No",
+
+    "IndigenousConnection": "No",
+    "_optionsIndigenousConnection": "Yes OR No",
+
+    "underservedPop": "No",
+    "_optionsUnderservedPop": "Yes OR No"
+  }
+}

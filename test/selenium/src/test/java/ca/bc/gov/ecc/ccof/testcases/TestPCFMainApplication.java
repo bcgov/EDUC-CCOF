@@ -9,13 +9,13 @@ import org.testng.annotations.Test;
 import ca.bc.gov.ecc.ccof.base.BaseTest;
 import ca.bc.gov.ecc.ccof.extentreport.ExtentTestManager;
 import ca.bc.gov.ecc.ccof.pageobjects.ApplicationInfoPage;
+import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CRMSignInCredentialPage;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfriUnlockForm;
 import ca.bc.gov.ecc.ccof.pageobjects.CcfrisInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.DeleteApplicationPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationInfoPage;
 import ca.bc.gov.ecc.ccof.pageobjects.OrganizationOverviewPage;
-import ca.bc.gov.ecc.ccof.pageobjects.BCeIDPage;
 import ca.bc.gov.ecc.ccof.utils.Utilities;
 
 public class TestPCFMainApplication extends BaseTest {
@@ -54,16 +54,17 @@ public class TestPCFMainApplication extends BaseTest {
 
 		// searching the contact
 		deleteApp.searchAndOpenContact(contactName);
-        Thread.sleep(3000);
+		Thread.sleep(3000);
 
-        // switches view to organization
-        BCeIDPage bceidPage = new BCeIDPage(driver);
-        bceidPage.clickSelectOrganization();
-        Thread.sleep(3000);
+		// switches view to organization
+		BCeIDPage bceidPage = new BCeIDPage(driver);
+		bceidPage.clickSelectOrganization();
+		Thread.sleep(3000);
 
-        // switches view to organization information page
-        OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
-        orgOverview.clickOrgInformation();
+		// switches view to organization information page
+		OrganizationOverviewPage orgOverview = new OrganizationOverviewPage(driver);
+		orgOverview.clickOrgInformation();
+		Thread.sleep(3000);
 
 		OrganizationInfoPage orgInfo = new OrganizationInfoPage(driver);
 
@@ -92,20 +93,6 @@ public class TestPCFMainApplication extends BaseTest {
 		// filling the unlock form
 		utils.javaScriptExecutorAction(ccfriUnlock.clickDeclarationUnlockBtn());
 		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickCcofNewOrgBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickLicenceUploadBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickEceweBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickSupportingDocBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickCcfriUnlockBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickRfiUnlockBtn());
-		Thread.sleep(3000);
-		utils.javaScriptExecutorAction(ccfriUnlock.clickNmfUnlockBtn());
-		Thread.sleep(5000);
 		ccfriUnlock.enterUnlockReasonTxtBox("PCFUnlock");
 		Thread.sleep(3000);
 		utils.scrollToElement(ccfriUnlock.scrollToConfirmAndCloseBtn());

@@ -7,9 +7,10 @@ export const APP_TYPE = Object.freeze({
   FAMILY_RENEWAL: "familyRenewal",
   GROUP_CHANGE_REQUEST_V2: "groupChangeRequest",
   FAMILY_CHANGE_REQUEST_V2: "familyChangeRequest",
+  UNLOCKED_APP_RESUBMISSION: "appResubmission",
 });
 
 export const PROGRAM_YEAR = Object.freeze({
-  CURRENT: "2025-26",
-  FUTURE: "2026-27",
+  CURRENT: "2026-27",
+  FUTURE: "2027-28",
 });

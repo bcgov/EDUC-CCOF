@@ -8,6 +8,7 @@ const {
   createECEReportStaff,
   deleteECEReportStaff,
   getECEFacilityStaff,
+  getOrganizationECEStaff,
   getECEStaffCertificates,
   updateECEFacilityStaff,
   updateECEReportStaff,
@@ -108,6 +109,17 @@ router.get(
     validationResult(req).throw();
     return getECEFacilityStaff(req, res);
   },
+);
+
+/**
+ * Returns all ECE staff belonging to the authenticated user's organization
+ */
+router.get(
+  '/organization',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.VIEW_ECE_REPORT, PERMISSIONS.VIEW_ECE_STAFF),
+  getOrganizationECEStaff,
 );
 
 /**

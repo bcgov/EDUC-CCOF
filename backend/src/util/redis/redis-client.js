@@ -27,10 +27,6 @@ class Redis {
     return config.get('redis:clustered') == 'true';
   }
 
-  static get rootNode() {
-    return `redis://${config.get('redis:host')}:${config.get('redis:port')}`;
-  }
-
   static encodeKey(string) {
     return Buffer.from(string).toString('hex');
   }
@@ -101,13 +97,19 @@ class Redis {
         Redis.client = createCluster({
           rootNodes: [
             {
-              url: Redis.rootNode,
+              url: `redis://redis-0.${config.get('redis:host')}:${config.get('redis:port')}`,
+            },
+            {
+              url: `redis://redis-1.${config.get('redis:host')}:${config.get('redis:port')}`,
+            },
+            {
+              url: `redis://redis-2.${config.get('redis:host')}:${config.get('redis:port')}`,
             },
           ],
         });
       } else {
         log.info('using STANDALONE Redis implementation');
-        Redis.client = createClient({ url: Redis.rootNode });
+        Redis.client = createClient({ url: `redis://${config.get('redis:host')}:${config.get('redis:port')}` });
       }
 
       Redis.client.on('error', (error) => {
