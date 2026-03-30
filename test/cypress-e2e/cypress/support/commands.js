@@ -446,38 +446,48 @@ Cypress.Commands.add("runCcofAppChangeRequest", (appType, files = []) => {
   });
 });
 
-Cypress.Commands.add("runCcofApp", (appType, files = []) => {
-  ccofApp.loadFixturesAndVariables("ccofData");
-  cy.then(() => {
-    ccofApp.validateGroupUrl(appType);
-    ccofApp.inputOrganizationInfo(appType);
-    ccofApp.inputFacilityInfo(appType);
-    ccofApp.licenceAndServiceDeliveryDetails(appType);
+Cypress.Commands.add(
+  "runCcofApp",
+  (appType, orgTypeOverride = null, files = []) => {
+    ccofApp.loadFixturesAndVariables("ccofData");
 
-    switch (appType) {
-      case "group":
-        ccofApp.groupLicenses(appType);
-        ccofApp.offerExtendedHours(appType);
-        ccofApp.addAnotherFacility(appType, files);
-        break;
-      case "groupOld":
-        ccofApp.groupLicenses(appType);
-        ccofApp.oldOfferExtendedHours(appType);
-        ccofApp.addAnotherFacility(appType, files);
-        break;
-      case "family":
-        ccofApp.familyLicences(appType);
-        ccofApp.offerExtendedHours(appType);
-        break;
-      case "familyOld":
-        ccofApp.familyLicences(appType);
-        ccofApp.oldOfferExtendedHours(appType);
-        break;
-    }
-    ccofApp.licenceUpload();
-  });
-});
+    cy.then(() => {
+      if (orgTypeOverride) {
+        ccofApp.orgType = orgTypeOverride;
+      } else {
+        ccofApp.orgType = ccofApp.orgData.typeOfOrganization;
+      }
 
+      ccofApp.validateGroupUrl(appType);
+      ccofApp.inputOrganizationInfo(appType);
+      ccofApp.inputFacilityInfo(appType);
+      ccofApp.licenceAndServiceDeliveryDetails(appType);
+
+      switch (appType) {
+        case "group":
+          ccofApp.groupLicenses(appType);
+          ccofApp.offerExtendedHours(appType);
+          ccofApp.addAnotherFacility(appType, files);
+          break;
+        case "groupOld":
+          ccofApp.groupLicenses(appType);
+          ccofApp.oldOfferExtendedHours(appType);
+          ccofApp.addAnotherFacility(appType, files);
+          break;
+        case "family":
+          ccofApp.familyLicences(appType);
+          ccofApp.offerExtendedHours(appType);
+          break;
+        case "familyOld":
+          ccofApp.familyLicences(appType);
+          ccofApp.oldOfferExtendedHours(appType);
+          break;
+      }
+
+      ccofApp.licenceUpload();
+    });
+  },
+);
 Cypress.Commands.add("runCcfriApp", (appType, term, files = []) => {
   ccfriApp.loadFixturesAndVariables("ccfriData");
   cy.then(() => {
@@ -555,7 +565,10 @@ Cypress.Commands.add("clickNextUntilNotPossible", (maxAttempts = 20) => {
     cy.get("body").then(($body) => {
       const nextBtn = $body
         .find("button, .v-btn")
-        .filter((_, el) => Cypress.$(el).is(":visible") && el.innerText.trim() === "Next")
+        .filter(
+          (_, el) =>
+            Cypress.$(el).is(":visible") && el.innerText.trim() === "Next",
+        )
         .first();
 
       if (!nextBtn.length) {
