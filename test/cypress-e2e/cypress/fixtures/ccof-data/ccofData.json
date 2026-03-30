@@ -12,6 +12,19 @@
     },
     "orgInfo": {
       "legalOrgName": "Hello Testing",
+      "doingBusinessAs": "Tester101",
+      "partners": [
+        {
+          "firstName": "John",
+          "middleName": "test",
+          "lastName": "Doe"
+        },
+        {
+          "firstName": "Doe",
+          "middleName": "test",
+          "lastName": "John"
+        }
+      ],
       "incorporationNumber": "BC654321",
       "streetAddress": "506 John Street",
       "city": "Vancouver",
