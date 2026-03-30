@@ -40,7 +40,7 @@ public class TestValidLogin extends BaseTest {
 		objCRMSignInCredentialPage.clickSignIn();
         logger.info("Sign in clicked");
         logger.info("Wait for YES");
-        Thread.sleep(2000);
+        Thread.sleep(8000);
 		utils.waitForElement(objCRMSignInCredentialPage.waitBeforeClickYes());
         logger.info("Yes found");
         logger.info("Click yes");
