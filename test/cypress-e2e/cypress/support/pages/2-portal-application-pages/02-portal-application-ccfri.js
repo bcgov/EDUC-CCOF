@@ -8,24 +8,18 @@ function handleCardWithin(card, data) {
 
 class CcfriApplication{
     loadFixtures(file) {
-        // The path to fixtures is different for the main fixture vs. the extra facility fixtures.
-        // The extra facility files are not in the `ccfri-data` subdirectory.
-        // This conditional ensures the correct path is used for both cases.
         const path = file.startsWith('extra-facs-ccfri') ? file : `/ccfri-data/${file}`;
         return cy.fixture(path).then((data)=> {
             this.optInOrOut = data.optInOrOut;
             this.parentFees = data.parentFees;
             this.closures = data.closures;
             this.facilityName = data.facilityName;
-            // Also return the data itself to be used in promise chains, preventing race conditions.
             return data;
         })
     }
 
     loadFixturesAndVariables(file) {
-        // Chain the .then() to ensure commands wait for the fixture to be loaded.
         return this.loadFixtures(file).then((fixtureData)=> {
-            // For Opt-Out facilities, parentFees and closures may not be present in the fixture.
             if (this.parentFees) {
                 this.paymentFrequency = this.parentFees.frequency;
             }
@@ -34,7 +28,6 @@ class CcfriApplication{
                 this.closureReason = this.closures.closureReason;
                 this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus;
             }
-            // Pass the data along the chain.
             return fixtureData;
         })
     }
@@ -42,16 +35,12 @@ class CcfriApplication{
     optInFacilities(files) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         cy.contains('Child Care Fee Reduction Initiative (CCFRI)')
-        // Use a more robust selector to ensure we are scoping within the correct facility card.
-        // This gets all cards, filters to the one containing the facility name, and then acts within it.
         cy.get('.v-card').filter(`:contains("${this.facilityName}")`).first().within(()=> {
             cy.clickByText('UPDATE')
             cy.contains('label',this.optInOrOut).click()
         })
 
         if (files) {
-            // Use .then() chained off of loadFixturesAndVariables to prevent race conditions.
-            // This ensures that for each file in the loop, we use the data from that specific file.
             cy.wrap(files).each((file)=>  {
                 this.loadFixturesAndVariables(`extra-facs-ccfri/${file}`).then((fixtureData) => {
                     cy.get('.v-card').filter(`:contains("${fixtureData.facilityName}")`).first().within(()=> {

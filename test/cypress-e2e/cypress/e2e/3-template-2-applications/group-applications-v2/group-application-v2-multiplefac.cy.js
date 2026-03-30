@@ -11,8 +11,6 @@ describe('Group Application Test Template 2', () => {
             Cypress.env("PORTAL_PASSWORD"))
         cy.startNewApp(APP_TYPE.GROUP_V2)
 
-        // Currently Template 2 uses "Future" program year
-        // On 2/15/2026 update "Current" year in Constants to 2026-27 and update parameter here to "PROGRAM_YEAR.CURRENT"
         cy.task('countFiles', 'cypress/fixtures/ccof-data/extra-facs-ccof').then((files)=> {
             cy.runCcofApp(APP_TYPE.GROUP_V2, "Registered Company", files)
         })

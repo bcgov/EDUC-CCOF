@@ -6,8 +6,6 @@ class CcofApplication {
       }
   loadFixtures(file) {
     return cy.fixture(`/ccof-data/${file}`).then((data) => {
-      // Only set properties that are present in the fixture to avoid wiping
-      // previously-loaded base data (e.g. orgData from the main fixture).
       if (data.hasOwnProperty('orgData')) {
         this.orgData = data.orgData;
       }
@@ -17,27 +15,21 @@ class CcofApplication {
       if (data.hasOwnProperty('facilityLicenceDetailsData')) {
         this.facilityLicenceDetailsData = data.facilityLicenceDetailsData;
       }
-      // Return the data to allow for proper promise chaining.
       return data;
     })
   }
 
   loadFixturesAndVariables(file) {
-    // Chain off the promise returned by loadFixtures to ensure data is loaded before proceeding.
     return this.loadFixtures(file).then((fixtureData)=> {
-      // Increment facility count and update facility name
       this.facilityCount = this.facilityCount + 1;
       if (this.facilityData && this.facilityData.facilityName !== undefined) {
         this.facilityData.facilityName = `Auto Test Facility ${this.facilityCount}`;
       }
-      // If the fixture includes organization-level data, update org vars.
-      // Extra-facility fixtures may only include facility-specific data, so guard access.
       if (this.orgData) {
         this.orgType = this.orgData.typeOfOrganization
         this.orgInfo = this.orgData.orgInfo
       }
 
-      // Facility-level data (licence details) may be present; update only if available.
       if (this.facilityLicenceDetailsData) {
         this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo;
         this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty;
@@ -767,7 +759,6 @@ class CcofApplication {
         if (licenceFiles.length < numInputs) {
           throw new Error(`Not enough license files: found ${licenceFiles.length}, but there are ${numInputs} facilities. Please add more files to ccof-data/licence-files.`);
         }
-        // Only use as many files as there are inputs
         for (let i = 0; i < numInputs; i++) {
           const currFile = `ccof-data/licence-files/${licenceFiles[i]}`;
           cy.wrap(inputs[i])
