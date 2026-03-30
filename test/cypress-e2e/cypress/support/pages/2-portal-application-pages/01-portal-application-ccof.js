@@ -1,9 +1,6 @@
 import "cypress-file-upload";
 
 class CcofApplication {
-      constructor() {
-        this.facilityCount = 0;
-      }
   loadFixtures(file) {
     return cy.fixture(`/ccof-data/${file}`).then((data) => {
       if (data.hasOwnProperty('orgData')) {
@@ -21,10 +18,6 @@ class CcofApplication {
 
   loadFixturesAndVariables(file) {
     return this.loadFixtures(file).then((fixtureData)=> {
-      this.facilityCount = this.facilityCount + 1;
-      if (this.facilityData && this.facilityData.facilityName !== undefined) {
-        this.facilityData.facilityName = `Auto Test Facility ${this.facilityCount}`;
-      }
       if (this.orgData) {
         this.orgType = this.orgData.typeOfOrganization
         this.orgInfo = this.orgData.orgInfo
