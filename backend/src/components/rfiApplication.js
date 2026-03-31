@@ -1,5 +1,5 @@
 'use strict';
-const { sleep, getOperation, postOperation, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
+const { sleep, getOperation, postOperation, postOperationsInBatches, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -22,10 +22,7 @@ async function deleteChildTable(rfipfiid, entityName, selectorName, filterName) 
   const query = `${entityName}?$select=${selectorName}&$filter=(${filterName} eq ${rfipfiid})`;
   try {
     const resp = await getOperation(query);
-    resp.value?.forEach(async (el) => {
-      await deleteOperationWithObjectId(entityName, el[selectorName]);
-      await sleep(100);
-    });
+    await Promise.all(resp.value.map((el) => deleteOperationWithObjectId(entityName, el[selectorName])));
   } catch (e) {
     log.error(`error while trying to delete child table [${entityName}]`, e);
     throw e;
@@ -152,70 +149,60 @@ async function updateRFIApplication(req, res) {
       });
     }
 
-    //update funding
-    if (req.body.fundingList) {
+    const { fundingList, wageList, expansionList, expenseList, indigenousExpenseList } = req.body;
+    if (fundingList) {
       await deleteChildTable(rfipfiid, 'ccof_rfi_pfi_other_fundings', 'ccof_rfi_pfi_other_fundingid');
-      const fundingListPayload = req.body.fundingList?.map((el) => new MappableObjectForBack(el, OtherFundingProgramMappings).data);
-
-      fundingListPayload?.forEach(async (payload) => {
-        payload.ccof_applicationdate = formatDateForBack(payload.ccof_applicationdate);
-        payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
-        await postOperation('ccof_rfi_pfi_other_fundings', payload);
-        await sleep(100);
+      const fundingListPayload = fundingList.map((el) => {
+        const mappedFunding = new MappableObjectForBack(el, OtherFundingProgramMappings).data;
+        mappedFunding.ccof_applicationdate = formatDateForBack(mappedFunding.ccof_applicationdate);
+        mappedFunding['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        return mappedFunding;
       });
+      await postOperationsInBatches('ccof_rfi_pfi_other_fundings', fundingListPayload);
     }
 
-    //update wageList
-    if (req.body.wageList) {
+    if (wageList) {
       await deleteChildTable(rfipfiid, 'ccof_rfi_pfi_dcs_wi_details', 'ccof_rfi_pfi_dcs_wi_detailid');
-      const wageListPayload = req.body.wageList?.map((el) => new MappableObjectForBack(el, DCSWageIncreaseMappings).data);
-
-      wageListPayload?.forEach(async (payload) => {
-        payload.ccof_wageincreasedate = formatDateForBack(payload.ccof_wageincreasedate);
-        payload['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
-        await postOperation('ccof_rfi_pfi_dcs_wi_details', payload);
-        await sleep(100);
+      const wageListPayload = wageList.map((el) => {
+        const mappedWage = new MappableObjectForBack(el, DCSWageIncreaseMappings).data;
+        mappedWage.ccof_wageincreasedate = formatDateForBack(mappedWage.ccof_wageincreasedate);
+        mappedWage['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        return mappedWage;
       });
+      await postOperationsInBatches('ccof_rfi_pfi_dcs_wi_details', wageListPayload);
     }
 
-    //update expansion details
-    if (req.body.expansionList) {
+    if (expansionList) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiserviceexpansiondetails', 'ccof_rfipfiserviceexpansiondetailid', '_ccof_rfipfi_value');
-      const expansionListPayload = req.body.expansionList?.map((el) => new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data);
-
-      expansionListPayload?.forEach(async (payload) => {
-        payload.ccof_dateofchange = formatDateForBack(payload.ccof_dateofchange);
-        payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
-        await postOperation('ccof_rfipfiserviceexpansiondetails', payload);
-        await sleep(100);
+      const expansionListPayload = expansionList.map((el) => {
+        const mappedExpansion = new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data;
+        mappedExpansion.ccof_dateofchange = formatDateForBack(mappedExpansion.ccof_dateofchange);
+        mappedExpansion['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        return mappedExpansion;
       });
+      await postOperationsInBatches('ccof_rfipfiserviceexpansiondetails', expansionListPayload);
     }
 
-    //update expense details
-    if (req.body.expenseList) {
+    if (expenseList) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiexpenseinfos', 'ccof_rfipfiexpenseinfoid', '_ccof_rfipfi_value');
-      const expenseListPayload = req.body.expenseList?.map((el) => new MappableObjectForBack(el, ExpenseInformationMappings).data);
-
-      expenseListPayload?.forEach(async (payload) => {
-        payload.ccof_dateofexpense = formatDateForBack(payload.ccof_dateofexpense);
-
-        payload['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
-        await postOperation('ccof_rfipfiexpenseinfos', payload);
-        await sleep(100);
+      const expenseListPayload = expenseList.map((el) => {
+        const mappedExpense = new MappableObjectForBack(el, ExpenseInformationMappings).data;
+        mappedExpense.ccof_dateofexpense = formatDateForBack(mappedExpense.ccof_dateofexpense);
+        mappedExpense['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        return mappedExpense;
       });
+      await postOperationsInBatches('ccof_rfipfiexpenseinfos', expenseListPayload);
     }
 
-    //rfipfiid, entityName, selectorName, filterName) {
-    //update indigenous Expense details
-    if (req.body.indigenousExpenseList) {
+    if (indigenousExpenseList) {
       await deleteChildTable(rfipfiid, 'ccof_rfipfiserviceexpansionindigenouscommunities', 'ccof_rfipfiserviceexpansionindigenouscommunityid', '_ccof_rfipfi_indegenousserviceexpansion_value');
-      const indigenousExpensePayload = req.body.indigenousExpenseList?.map((el) => new MappableObjectForBack(el, IndigenousExpenseMappings).data);
-      indigenousExpensePayload?.forEach(async (payload) => {
-        payload.ccof_date = formatDateForBack(payload.ccof_date);
-        payload['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
-        await postOperation('ccof_rfipfiserviceexpansionindigenouscommunities', payload);
-        await sleep(100);
+      const indigenousExpensePayload = indigenousExpenseList.map((el) => {
+        const mappedIndigenousExpense = new MappableObjectForBack(el, IndigenousExpenseMappings).data;
+        mappedIndigenousExpense.ccof_date = formatDateForBack(mappedIndigenousExpense.ccof_date);
+        mappedIndigenousExpense['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        return mappedIndigenousExpense;
       });
+      await postOperationsInBatches('ccof_rfipfiserviceexpansionindigenouscommunities', indigenousExpensePayload);
     }
 
     return res.status(HttpStatus.OK).json(friApplicationResponse);
