@@ -1,5 +1,5 @@
 'use strict';
-const { sleep, getOperation, postOperation, postOperationInBatches, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
+const { sleep, getOperation, postOperation, postOperationsInBatches, patchOperationWithObjectId, deleteOperationWithObjectId } = require('./utils');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
@@ -158,7 +158,7 @@ async function updateRFIApplication(req, res) {
         mappedFunding['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedFunding;
       });
-      await postOperationInBatches('ccof_rfi_pfi_other_fundings', fundingListPayload);
+      await postOperationsInBatches('ccof_rfi_pfi_other_fundings', fundingListPayload);
     }
 
     if (wageList) {
@@ -169,7 +169,7 @@ async function updateRFIApplication(req, res) {
         mappedWage['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedWage;
       });
-      await postOperationInBatches('ccof_rfi_pfi_dcs_wi_details', wageListPayload);
+      await postOperationsInBatches('ccof_rfi_pfi_dcs_wi_details', wageListPayload);
     }
 
     if (expansionList) {
@@ -180,7 +180,7 @@ async function updateRFIApplication(req, res) {
         mappedExpansion['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedExpansion;
       });
-      await postOperationInBatches('ccof_rfipfiserviceexpansiondetails', expansionListPayload);
+      await postOperationsInBatches('ccof_rfipfiserviceexpansiondetails', expansionListPayload);
     }
 
     if (expenseList) {
@@ -191,7 +191,7 @@ async function updateRFIApplication(req, res) {
         mappedExpense['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedExpense;
       });
-      await postOperationInBatches('ccof_rfipfiexpenseinfos', expenseListPayload);
+      await postOperationsInBatches('ccof_rfipfiexpenseinfos', expenseListPayload);
     }
 
     if (indigenousExpenseList) {
@@ -202,7 +202,7 @@ async function updateRFIApplication(req, res) {
         mappedIndigenousExpense['ccof_rfipfi_IndegenousServiceExpansion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedIndigenousExpense;
       });
-      await postOperationInBatches('ccof_rfipfiserviceexpansionindigenouscommunities', indigenousExpensePayload);
+      await postOperationsInBatches('ccof_rfipfiserviceexpansionindigenouscommunities', indigenousExpensePayload);
     }
 
     return res.status(HttpStatus.OK).json(friApplicationResponse);

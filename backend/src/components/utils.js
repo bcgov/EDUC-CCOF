@@ -197,7 +197,7 @@ async function postOperation(operation, payload) {
   }
 }
 
-async function postOperationInBatches(entityName, payloadList, batchSize = 5) {
+async function postOperationsInBatches(entityName, payloadList, batchSize = 5) {
   for (let i = 0; i < payloadList.length; i += batchSize) {
     const batch = payloadList.slice(i, i + batchSize);
     await Promise.all(batch.map((payload) => postOperation(entityName, payload)));
@@ -421,7 +421,7 @@ const utils = {
   getOperationWithObjectId,
   getOperation,
   postOperation,
-  postOperationInBatches,
+  postOperationsInBatches,
   patchOperationWithObjectId,
   generateJWTToken,
   formatCommentTimestamp,
