@@ -73,58 +73,6 @@ jobs:
           CRM_USERNAME_S=$(printf '%s' "$CRM_USERNAME" | tr -d '[:cntrl:]' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
           CRM_PASSWORD_S=$(printf '%s' "$CRM_PASSWORD" | tr -d '[:cntrl:]' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
-          # CRM_USERNAME checks against sanitized value (non-leaking boolean outputs)
-          if [ "$(printf '%s' "$CRM_USERNAME_S" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')" != "$(printf '%s' "$CRM_USERNAME_S")" ]; then
-            echo "(sanitized) CRM_USERNAME has leading or trailing whitespace: YES"
-          else
-            echo "(sanitized) CRM_USERNAME has leading or trailing whitespace: NO"
-          fi
-
-          if printf '%s' "$CRM_USERNAME_S" | grep -q '@'; then
-            echo "(sanitized) CRM_USERNAME contains '@': YES"
-          else
-            echo "(sanitized) CRM_USERNAME contains '@': NO"
-          fi
-
-          if printf '%s' "$CRM_USERNAME_S" | grep -qi '@gov\.bc\.ca$'; then
-            echo "(sanitized) CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): YES"
-          else
-            echo "(sanitized) CRM_USERNAME ends with '@gov.bc.ca' (case-insensitive): NO"
-          fi
-
-          if printf '%s' "$CRM_USERNAME_S" | grep -q '[[:cntrl:]]'; then
-            echo "(sanitized) CRM_USERNAME contains newline/control characters: YES"
-          else
-            echo "(sanitized) CRM_USERNAME contains newline/control characters: NO"
-          fi
-
-          if printf '%s' "$CRM_USERNAME_S" | grep -q '[[:space:]]'; then
-            echo "(sanitized) CRM_USERNAME contains spaces: YES"
-          else
-            echo "(sanitized) CRM_USERNAME contains spaces: NO"
-          fi
-
-          # CRM_PASSWORD checks against sanitized value (non-leaking boolean outputs only)
-          if printf '%s' "$CRM_PASSWORD_S" | grep -q '[[:cntrl:]]'; then
-            echo "(sanitized) CRM_PASSWORD contains newline/control characters: YES"
-          else
-            echo "(sanitized) CRM_PASSWORD contains newline/control characters: NO"
-          fi
-
-          if printf '%s' "$CRM_PASSWORD_S" | grep -q '[[:space:]]'; then
-            echo "(sanitized) CRM_PASSWORD contains spaces: YES"
-          else
-            echo "(sanitized) CRM_PASSWORD contains spaces: NO"
-          fi
-
-          if printf '%s' "$CRM_PASSWORD_S" | grep -q '!$'; then
-            echo "(sanitized) CRM_PASSWORD ends with '!': YES"
-          else
-            echo "(sanitized) CRM_PASSWORD ends with '!': NO"
-          fi
-
-          echo "Safe parsing verification complete."
-
       - name: Build & run tests
         working-directory: test/selenium
         run: |
