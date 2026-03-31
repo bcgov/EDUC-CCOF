@@ -73,7 +73,7 @@ Running different test cases is a matter of editing the data files in cypress/e2
 
 The data in these files is represented as JSON which has a "Key": "Value" pair. When editing the data, ensure you ONLY edit the VALUE (right side of the colon).
 
-For example, you can change the type of organization for an application by going to fixtures/ccofData.json -> and updating the key to "typeOfOrganization" from "Registered Company" to "Non-Profit Society".
+For example, you can change the legalOrgName of organization for an application by going to fixtures/ccofData.json -> and updating the key to "legalOrgName" from "Hello Testing"" to "name you like"
 
 All possible values for different keys are indicated by the wording "\_options". Please ensure you NEVER change the values listed under this key.
 
@@ -87,7 +87,7 @@ If updating the Program Year in CMS, please ensure you update the _ccfriData_ fi
 
 ### Adding Multiple Facilities
 
-Currently, Multiple Facilities only works for Group Applications in Template 1. To create additional facilities, please do the following:
+To create additional facilities, please do the following:
 
 1. Create additional fixture .json files for EACH FACILITY under ccof-data/extra-facs-ccof, ccfri-data/extra-facs-ccfri, and ecewe-data/extra-facs-ecewe. This means, each facility needs 3 additional fixture files.
 2. Each facility will need its own file under ccof-data/licence-files for the Licence Upload. If your organization has 3 facilities, you should have 3 files under ccof-data/licence-files.
@@ -112,6 +112,8 @@ NOTE: Current program year setup will NOT show the renewal button until January 
 ### Add new facility change request (Version 2 only)
 
 The group application in version 2 needs to be submitted and adjudicated and funding needs to be active in order to submit the change request . The test case currently is designed to add a single facility for group application version 2
+
+### all the closure test cases are designed for happy path and user will need to update the facility name if using a specific application other than the one created with automation flow to update for closures.
 
 ### Automation Bugs & Enhancements
 
