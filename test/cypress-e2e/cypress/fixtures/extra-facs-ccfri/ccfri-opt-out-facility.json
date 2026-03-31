@@ -1,0 +1,12 @@
+{
+  "facilityName": "Auto Test Facility 2",
+  "optInOrOut": "Opt-Out",
+  "parentFees": {
+    "frequency": "Monthly",
+    "groupParentFeeCategories": [],
+    "months": {}
+  },
+  "closures": {
+    "closureCharges": "No"
+  }
+}

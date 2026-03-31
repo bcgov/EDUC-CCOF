@@ -8,47 +8,51 @@ function handleCardWithin(card, data) {
 
 class CcfriApplication{
     loadFixtures(file) {
-        return cy.fixture(`/ccfri-data/${file}`).then((data)=> {
-            this.optInOrOut = data.optInOrOut
-            this.parentFees = data.parentFees
-            this.closures = data.closures
-            this.facilityName = data.facilityName
+        const path = file.startsWith('extra-facs-ccfri') ? file : `/ccfri-data/${file}`;
+        return cy.fixture(path).then((data)=> {
+            this.optInOrOut = data.optInOrOut;
+            this.parentFees = data.parentFees;
+            this.closures = data.closures;
+            this.facilityName = data.facilityName;
+            return data;
         })
     }
 
     loadFixturesAndVariables(file) {
-        this.loadFixtures(file)
-        cy.then(()=> {
-            this.paymentFrequency = this.parentFees.frequency
-            this.closureCharges = this.closures.closureCharges
-            this.closureReason = this.closures.closureReason
-            this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus
+        return this.loadFixtures(file).then((fixtureData)=> {
+            if (this.parentFees) {
+                this.paymentFrequency = this.parentFees.frequency;
+            }
+            if (this.closures) {
+                this.closureCharges = this.closures.closureCharges;
+                this.closureReason = this.closures.closureReason;
+                this.fullFacilityClosureStatus = this.closures.fullFacilityClosureStatus;
+            }
+            return fixtureData;
         })
     }
 
     optInFacilities(files) {
         cy.url().should('include', '/ccfri', {timeout: 10000})
         cy.contains('Child Care Fee Reduction Initiative (CCFRI)')
-        cy.contains('.v-card', this.facilityName).within(()=> {
+        cy.get('.v-card').filter(`:contains("${this.facilityName}")`).first().within(()=> {
             cy.clickByText('UPDATE')
             cy.contains('label',this.optInOrOut).click()
         })
-        
+
         if (files) {
             cy.wrap(files).each((file)=>  {
-                this.loadFixturesAndVariables(`/extra-facs-ccfri/${file}`)
-                cy.then(()=> {
-                    cy.contains('.v-card', this.facilityName).within(()=> {
+                this.loadFixturesAndVariables(`extra-facs-ccfri/${file}`).then((fixtureData) => {
+                    cy.get('.v-card').filter(`:contains("${fixtureData.facilityName}")`).first().within(()=> {
                         cy.clickByText('UPDATE')
-                        cy.contains('label', this.optInOrOut).click()
-                    })
+                        cy.contains('label', fixtureData.optInOrOut).click()
+                    });
                 })
             })
         }
         cy.clickByText('Save')
         cy.contains('Success! CCFRI Opt-In status has been saved.').should('be.visible')
         cy.clickByText('Next')
-        
     }
 
     parentFeesRenewal() {
@@ -137,14 +141,14 @@ class CcfriApplication{
         let endDate
         switch (appType) {
             case 'group':
-            case 'family': 
+            case 'family':
             case 'familyOld':
             case 'groupOld':
                 startDate = this.closures.startDate
                 endDate = this.closures.endDate
                 break;
             case 'groupRenewal':
-            case 'familyRenewal': 
+            case 'familyRenewal':
                 startDate = this.closures.renewalStartDate
                 endDate = this.closures.renewalEndDate
         }
@@ -152,11 +156,11 @@ class CcfriApplication{
         if (appType != "groupOld" && appType != "familyOld"){
             cy.contains(`It is important to tell us your planned closures for the ${term} funding term to avoid any impacts on payments.`)
         }
-        
+
         cy.contains('div', 'Do you charge parent fees at this facility for any closures on business days (other than provincial statutory holidays)? Only indicate the date of closures where parent fees are charged.').within(()=> {
             cy.contains('label', `${this.closureCharges}`).click()
         })
-        
+
         // Opt-Out Path
         if (this.closureCharges === "No") {
             cy.clickByText('Save')
@@ -165,7 +169,7 @@ class CcfriApplication{
         }
 
         // Opt-In (Full Closure) -> TODO [CCFRI-6111] (Hedie-cgi) Implement option to add Multiple Closures to a Group App
-        cy.getByLabel('Start Date').typeAndAssert(startDate)                        
+        cy.getByLabel('Start Date').typeAndAssert(startDate)
         cy.getByLabel('End Date').typeAndAssert(endDate)
         cy.getByLabel('Closure Reason').typeAndAssert(this.closureReason)
 

@@ -10,24 +10,38 @@ function optInAndUnionize(attr, opt, union, csseaMember, facilityName) {
 
 class EceWeApplication {
   loadFixtures(file) {
+    // This pathing was incorrect. All ECE-WE fixtures are located within the /ecewe-data directory.
     return cy.fixture(`/ecewe-data/${file}`).then((data) => {
-      this.cssea = data.cssea;
-      this.publicSectorEmployer = data.publicSectorEmployer;
-      this.optInOrOut = data.optInOrOut;
-      this.facility = data.facility;
+      // Only set properties that are present in the fixture to avoid overwriting org-level data.
+      if (data.cssea) {
+        this.cssea = data.cssea;
+      }
+      if (data.publicSectorEmployer) {
+        this.publicSectorEmployer = data.publicSectorEmployer;
+      }
+      if (data.optInOrOut) {
+        this.optInOrOut = data.optInOrOut;
+      }
+      if (data.facility) {
+        this.facility = data.facility;
+      }
+      // Return for chaining.
+      return data;
     });
   }
 
   loadFixturesAndVariables(file) {
-    this.loadFixtures(file);
-    cy.then(() => {
-      this.csseaMember = this.cssea.csseaMember;
-      this.csseaSelection = this.cssea.status;
-      this.fundingType = this.cssea.fundingModel;
-      this.unionStatus = this.cssea.unionStatus;
-      this.facilityName = this.facility.facilityName;
-      this.facilityOpt = this.facility.facilityOptInOrOut;
-      this.facilityUnionStatus = this.facility.facilityUnionStatus;
+    // Chain off the promise returned by loadFixtures to ensure data is loaded before proceeding.
+    return this.loadFixtures(file).then((fixtureData) => {
+      // Org-level data might not be in every fixture, so guard access.
+      if (fixtureData.cssea) {
+        this.csseaMember = fixtureData.cssea.csseaMember;
+        this.csseaSelection = fixtureData.cssea.status;
+        this.fundingType = fixtureData.cssea.fundingModel;
+        this.unionStatus = fixtureData.cssea.unionStatus;
+      }
+      // Return for chaining.
+      return fixtureData;
     });
   }
 
@@ -81,21 +95,21 @@ class EceWeApplication {
       // Opt In Facilities
       optInAndUnionize(
         ".v-card",
-        this.facilityOpt,
-        this.facilityUnionStatus,
+        this.facility.facilityOptInOrOut,
+        this.facility.facilityUnionStatus,
         this.csseaMember,
-        this.facilityName
+        this.facility.facilityName,
       );
       if (files) {
         cy.wrap(files).each((file) => {
-          this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`);
-          cy.then(() => {
+          // Use .then() to prevent race conditions, ensuring fixture data is loaded before use.
+          this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`).then((fixtureData) => {
             optInAndUnionize(
               ".v-card",
-              this.facilityOpt,
-              this.facilityUnionStatus,
+              fixtureData.facility.facilityOptInOrOut,
+              fixtureData.facility.facilityUnionStatus,
               this.csseaMember,
-              this.facilityName
+              fixtureData.facility.facilityName,
             );
           });
         });
@@ -117,21 +131,21 @@ class EceWeApplication {
     // Opt In Facilities
     optInAndUnionize(
       ".v-card",
-      this.facilityOpt,
-      this.facilityUnionStatus,
+      this.facility.facilityOptInOrOut,
+      this.facility.facilityUnionStatus,
       this.csseaMember,
-      this.facilityName
+      this.facility.facilityName,
     );
     if (files) {
       cy.wrap(files).each((file) => {
-        this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`);
-        cy.then(() => {
+        // Use .then() to prevent race conditions, ensuring fixture data is loaded before use.
+        this.loadFixturesAndVariables(`extra-facs-ecewe/${file}`).then((fixtureData) => {
           optInAndUnionize(
             ".v-card",
-            this.facilityOpt,
-            this.facilityUnionStatus,
+            fixtureData.facility.facilityOptInOrOut,
+            fixtureData.facility.facilityUnionStatus,
             this.csseaMember,
-            this.facilityName
+            fixtureData.facility.facilityName,
           );
         });
       });

@@ -3,36 +3,41 @@ import "cypress-file-upload";
 class CcofApplication {
   loadFixtures(file) {
     return cy.fixture(`/ccof-data/${file}`).then((data) => {
-      this.orgData = data.orgData;
-      this.facilityData = data.facilityData;
-      this.facilityLicenceDetailsData = data.facilityLicenceDetailsData;
-    });
+      if (data.hasOwnProperty('orgData')) {
+        this.orgData = data.orgData;
+      }
+      if (data.hasOwnProperty('facilityData')) {
+        this.facilityData = data.facilityData;
+      }
+      if (data.hasOwnProperty('facilityLicenceDetailsData')) {
+        this.facilityLicenceDetailsData = data.facilityLicenceDetailsData;
+      }
+      return data;
+    })
   }
 
   loadFixturesAndVariables(file) {
-    this.loadFixtures(file);
-    cy.then(() => {
-      this.orgType = this.orgData.typeOfOrganization;
-      this.orgInfo = this.orgData.orgInfo;
-      this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo;
-      this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty;
-      this.preschoolSessions =
-        this.facilityLicenceDetailsData.PreschoolSessions;
-      this.maxLicensedCap =
-        this.facilityLicenceDetailsData.maximumLicensedCapacity;
-      this.maxChildCareSpaces =
-        this.facilityLicenceDetailsData.maxChildCareSpaces;
-      this.extendedHours =
-        this.facilityLicenceDetailsData.offerExtendedHoursChildCare;
-      this.extendedMaxDays =
-        this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours;
-      this.extendedMaxWeeks =
-        this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours;
-      this.extendedMaxSpaces =
-        this.facilityLicenceDetailsData.maxSpacesExtendedHours;
-      this.schoolAgedCare =
-        this.facilityLicenceDetailsData.schoolAgedCareServiceDetails;
-    });
+    return this.loadFixtures(file).then((fixtureData)=> {
+      if (this.orgData) {
+        this.orgType = this.orgData.typeOfOrganization
+        this.orgInfo = this.orgData.orgInfo
+      }
+
+      if (this.facilityLicenceDetailsData) {
+        this.licenceInfo = this.facilityLicenceDetailsData.licenceInfo;
+        this.schoolProperty = this.facilityLicenceDetailsData.isOnSchoolProperty;
+        this.preschoolSessions = this.facilityLicenceDetailsData.PreschoolSessions;
+        this.maxLicensedCap = this.facilityLicenceDetailsData.maximumLicensedCapacity;
+        this.maxChildCareSpaces = this.facilityLicenceDetailsData.maxChildCareSpaces;
+        this.extendedHours = this.facilityLicenceDetailsData.offerExtendedHoursChildCare;
+        this.extendedMaxDays = this.facilityLicenceDetailsData.maxDaysPerWeekExtendedHours;
+        this.extendedMaxWeeks = this.facilityLicenceDetailsData.maxWeeksPerYearExtendedHours;
+        this.extendedMaxSpaces = this.facilityLicenceDetailsData.maxSpacesExtendedHours;
+        this.schoolAgedCare = this.facilityLicenceDetailsData.schoolAgedCareServiceDetails;
+      }
+      // Pass the data along the chain.
+      return fixtureData;
+    })
   }
 
   validateGroupUrl(path) {
@@ -723,7 +728,6 @@ class CcofApplication {
               this.oldOfferExtendedHours(appType);
               break;
           }
-
           if (index < files.length - 1) {
             cy.clickByText("Yes");
           } else {
@@ -738,20 +742,20 @@ class CcofApplication {
 
   licenceUpload() {
     let licenceFiles = [];
-    cy.contains("Licence Upload");
+    cy.contains('Licence Upload')
 
-    cy.task("countFiles", "cypress/fixtures/ccof-data/licence-files").then(
-      (files) => {
-        licenceFiles = files;
+    cy.task('countFiles', 'cypress/fixtures/ccof-data/licence-files').then((files)=> {
+      licenceFiles = files;
 
-        cy.get('input[placeholder="Select your file"]')
-          .should("have.length", licenceFiles.length)
-          .each((input, index) => {
-            cy.log(licenceFiles.length);
-            let currFile = `ccof-data/licence-files/${licenceFiles[index]}`;
-            cy.wrap(input).attachFile(currFile);
-            cy.contains(`${licenceFiles[index]}`);
-          });
+      cy.get('input[placeholder="Select your file"]').then((inputs) => {
+        const numInputs = inputs.length;
+        for (let i = 0; i < numInputs; i++) {
+          const currFile = `ccof-data/licence-files/${licenceFiles[i]}`;
+          cy.wrap(inputs[i])
+            .attachFile(currFile);
+          cy.contains(`${licenceFiles[i]}`);
+        }
+      });
 
         cy.contains("button", "Next")
           .should("have.class", "blueButton")

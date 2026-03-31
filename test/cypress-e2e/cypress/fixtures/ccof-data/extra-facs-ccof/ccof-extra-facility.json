@@ -1,0 +1,55 @@
+{
+  "facilityData": {
+    "facilityName": "Auto Test Facility 2",
+    "yearFacilityBegan": "2020",
+    "facilityLicence": "FC#654321",
+    "licenceEffectiveDate": "2020-01-01",
+    "healthAuthority": "Fraser Health"
+  },
+  "facilityLicenceDetailsData": {
+    "licenceInfo": {
+      "maxDaysPerWeek": "5",
+      "maxWeeksPerYear": "50",
+      "hoursFrom": "08:00",
+      "hoursTo": "18:00",
+      "closedEntireMonths": "No",
+      "closedMonths": [],
+      "closedMonthsOld": []
+    },
+    "groupLicenceCategories": {
+      "Group Child Care (Under 36 Months)": {
+        "checked": true,
+        "max": 12,
+        "extended": false
+      },
+      "Group Child Care (30 Months to School Age)": {
+        "checked": true,
+        "max": 24,
+        "extended": false
+      },
+      "Group Child Care (School Age)": {
+        "checked": false,
+        "max": 0
+      },
+      "School Age Care on School Grounds": {
+        "checked": false,
+        "max": 0
+      },
+      "Preschool": {
+        "checked": false,
+        "max": 0
+      },
+      "Multi-Age Child Care": {
+        "checked": false,
+        "max": 0
+      }
+    },
+    "maximumLicensedCapacity": "36",
+    "PreschoolSessions": {},
+    "schoolAgedCareServiceDetails": [],
+    "offerExtendedHoursChildCare": "No",
+    "maxDaysPerWeekExtendedHours": "0",
+    "maxWeeksPerYearExtendedHours": "0",
+    "maxSpacesExtendedHours": "0"
+  }
+}
