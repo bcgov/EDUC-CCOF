@@ -749,9 +749,6 @@ class CcofApplication {
 
       cy.get('input[placeholder="Select your file"]').then((inputs) => {
         const numInputs = inputs.length;
-        if (licenceFiles.length < numInputs) {
-          throw new Error(`Not enough license files: found ${licenceFiles.length}, but there are ${numInputs} facilities. Please add more files to ccof-data/licence-files.`);
-        }
         for (let i = 0; i < numInputs; i++) {
           const currFile = `ccof-data/licence-files/${licenceFiles[i]}`;
           cy.wrap(inputs[i])
@@ -759,15 +756,6 @@ class CcofApplication {
           cy.contains(`${licenceFiles[i]}`);
         }
       });
-
-        cy.get('input[placeholder="Select your file"]')
-          .should("have.length", licenceFiles.length)
-          .each((input, index) => {
-            cy.log(licenceFiles.length);
-            let currFile = `ccof-data/licence-files/${licenceFiles[index]}`;
-            cy.wrap(input).attachFile(currFile);
-            cy.contains(`${licenceFiles[index]}`);
-          });
 
         cy.contains("button", "Next")
           .should("have.class", "blueButton")
