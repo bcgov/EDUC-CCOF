@@ -197,6 +197,13 @@ async function postOperation(operation, payload) {
   }
 }
 
+async function postOperationInBatches(entityName, payloadList, batchSize = 5) {
+  for (let i = 0; i < payloadList.length; i += batchSize) {
+    const batch = payloadList.slice(i, i + batchSize);
+    await Promise.all(batch.map((payload) => postOperation(entityName, payload)));
+  }
+}
+
 async function postApplicationDocument(payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/ApplicationDocument';
   log.info('postApplicationDocument Url', url);
@@ -414,6 +421,7 @@ const utils = {
   getOperationWithObjectId,
   getOperation,
   postOperation,
+  postOperationInBatches,
   patchOperationWithObjectId,
   generateJWTToken,
   formatCommentTimestamp,
