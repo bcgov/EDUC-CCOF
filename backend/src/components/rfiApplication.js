@@ -177,7 +177,7 @@ async function updateRFIApplication(req, res) {
       const expansionListPayload = expansionList.map((el) => {
         const mappedExpansion = new MappableObjectForBack(el, ServiceExpansionDetailsMappings).data;
         mappedExpansion.ccof_dateofchange = formatDateForBack(mappedExpansion.ccof_dateofchange);
-        mappedExpansion['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        mappedExpansion['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedExpansion;
       });
       await postOperationsInBatches('ccof_rfipfiserviceexpansiondetails', expansionListPayload);
@@ -188,7 +188,7 @@ async function updateRFIApplication(req, res) {
       const expenseListPayload = expenseList.map((el) => {
         const mappedExpense = new MappableObjectForBack(el, ExpenseInformationMappings).data;
         mappedExpense.ccof_dateofexpense = formatDateForBack(mappedExpense.ccof_dateofexpense);
-        mappedExpense['ccof_RFIParentFeeIncrease@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+        mappedExpense['ccof_rfipfi@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
         return mappedExpense;
       });
       await postOperationsInBatches('ccof_rfipfiexpenseinfos', expenseListPayload);
