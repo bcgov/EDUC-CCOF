@@ -499,7 +499,6 @@ class CcofApplication {
     }
   }
 
-  // TODO  [CCFRI-6767] - (Hedie-cgi) implement offerExtendedHours for the new template.
   oldOfferExtendedHours(appType) {
     cy.contains(
       "div",
@@ -572,7 +571,6 @@ class CcofApplication {
     cy.clickByText("Next");
   }
 
-  // NOTE: please implement offerExtendedHours for the new template.
   offerExtendedHours(appType) {
     cy.contains(
       "div",
@@ -705,7 +703,6 @@ class CcofApplication {
     cy.clickByText("Next");
   }
 
-  // NOTE: Currently only setup for Template 1
   addAnotherFacility(appType, files) {
     cy.contains(
       "You have successfully applied for CCOF for the following facilities:",

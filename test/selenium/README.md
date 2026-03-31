@@ -53,6 +53,10 @@ headless=false
 
    TestNG default: /test-output/
 
+   All the test will work as the main application is submitted from portal and then user can run ccfri,ccof,fa adjudication test
+   Also the RFI,NMF,PCFas well AFS test need the submitted application from the portal(cypress) scripts
+   For closure scripts to run the user need the closure request for unplanned closures to be submitted from Portal
+
 Note: config.properties, logs, extent-reports and test-output are ignored from Git.
 Each developer must maintain their own local config.properties file.
 Run tests from testng in order to generate reports
