@@ -69,7 +69,7 @@ async function getUserInfo(req, res) {
   if (isIdir) {
     if (queryUserName) {
       try {
-        log.info(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
+        log.verbose(`Ministry user [${userName}] is impersonating with username: [${queryUserName}].`);
         // dynamics api requires a userID. if userID not found then it wil use the query name
         // put a random userID so that we only search by queryname
         userResponse = await getUserProfile(null, queryUserName);
@@ -100,7 +100,7 @@ async function getUserInfo(req, res) {
     log.verbose('getUserProfile response:', minify(userResponse));
   }
 
-  log.info('getUserProfile response:', minify(userResponse));
+  log.verbose('getUserProfile response:', minify(userResponse));
 
   // There are two scenarios under which the userResponse is empty
   // 1. A null response means no user found, so create a new BCeID user with a default Organization Admin role

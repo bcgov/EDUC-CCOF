@@ -72,7 +72,7 @@ async function createNMFApplication(req, res) {
     await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, { ccof_has_nmf: true, ccof_nmf_formcomplete: isNmfComplete });
 
     nmfApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
-    log.info('createNMFApplication payload:', nmfApplication);
+    log.verbose('createNMFApplication payload:', nmfApplication);
     const nmfApplicationGuid = await postOperation('ccof_rfi_pfi_nmfs', nmfApplication);
     return res.status(HttpStatus.CREATED).json({ nmfApplicationGuid: nmfApplicationGuid });
   } catch (e) {

@@ -29,7 +29,7 @@ async function getFacilities(req, res) {
     log.verbose('search query: ' + JSON.stringify(params));
     const response = await axios.post(url, params, getHttpHeader());
     log.info(`get Data Status for url ${url} :: is :: `, response.status);
-    log.info(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
+    log.verbose(`get Data StatusText for url ${url}  :: is :: `, response.statusText);
     log.verbose(`get Data Response for url ${url}  :: is :: `, minify(response.data));
     let results = [];
     if (response.data?.value) {

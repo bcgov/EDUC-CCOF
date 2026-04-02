@@ -28,7 +28,7 @@ async function getAllMessages(req, res) {
       'emails?$select=activityid,createdon,description,lastopenedtime,ccof_program_year,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' +
       req.params.organizationId +
       ' and statecode eq 1)';
-    log.info('operation: ', operation);
+    log.verbose('operation: ', operation);
     let operationResponse = await getOperation(operation);
     operationResponse.value.sort(sortByPropertyDesc('createdon'));
     let allMessages = [];
