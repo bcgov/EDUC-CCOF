@@ -178,7 +178,7 @@ async function postOperation(operation, payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
   log.info('postOperation Url', url);
 
-  if (log.isInfoEnabled) {
+  if (log.isVerboseEnabled) {
     log.verbose(`postOperation post data for ${url}  :: is :: `, minify(payload));
   }
   try {
@@ -268,7 +268,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operationWithObject;
   log.info('patchOperationWithObjectId Url', url);
 
-  if (log.isInfoEnabled) {
+  if (log.isVerboseEnabled) {
     log.verbose(`patchOperationWithObjectId post data for ${url}  :: is :: `, minify(payload));
   }
   try {
