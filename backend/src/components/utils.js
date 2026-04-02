@@ -131,11 +131,9 @@ function getAccessToken(req) {
 }
 
 function logResponse(methodName, response) {
-  if (log.isVerboseEnabled) {
-    log.verbose(`Status for ${methodName} :: is :: `, response.status);
-    log.verbose(`StatusText for ${methodName}  :: is :: `, response.statusText);
-    log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
-  }
+  log.verbose(`Status for ${methodName} :: is :: `, response.status);
+  log.verbose(`StatusText for ${methodName}  :: is :: `, response.statusText);
+  log.verbose(`Response for ${methodName}  :: is :: `, minify(response.data));
 }
 
 async function deleteOperationWithObjectId(operation, objectId) {
@@ -180,16 +178,15 @@ async function postOperation(operation, payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
   log.info('postOperation Url', url);
 
-  if (log.isInfoEnabled) {
+  if (log.isVerboseEnabled) {
     log.verbose(`postOperation post data for ${url}  :: is :: `, minify(payload));
   }
   try {
     const response = await axios.post(url, payload, getHttpHeader());
-    if (log.isVerboseEnabled) {
-      log.verbose('Status for postOperation :: is :: ', response.status);
-      log.verbose('StatusText for postOperation  :: is :: ', response.statusText);
-      log.verbose('Response for postOperation  :: is :: ', response.data);
-    }
+    log.verbose('Status for postOperation :: is :: ', response.status);
+    log.verbose('StatusText for postOperation  :: is :: ', response.statusText);
+    log.verbose('Response for postOperation  :: is :: ', response.data);
+
     return response.data;
   } catch (e) {
     log.error('postOperation Error', e.response ? e.response.status : e.message);
@@ -271,7 +268,7 @@ async function patchOperationWithObjectId(operation, objectId, payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operationWithObject;
   log.info('patchOperationWithObjectId Url', url);
 
-  if (log.isInfoEnabled) {
+  if (log.isVerboseEnabled) {
     log.verbose(`patchOperationWithObjectId post data for ${url}  :: is :: `, minify(payload));
   }
   try {

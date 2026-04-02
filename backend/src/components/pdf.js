@@ -26,7 +26,7 @@ async function getPdfs(req, res) {
   try {
     const response = await getSubmissionPDFHistory(req.params.organizationId);
     log.info('getSubmissionPDFHistory for organization: ' + req.params.organizationId);
-    log.info(response);
+    log.verbose(response);
     let documentList = [];
     response?.forEach((document) => documentList.push(new MappableObjectForFront(document, PdfDocumentMappings)));
     return res.status(HttpStatus.OK).json(documentList);
