@@ -100,8 +100,6 @@ async function getUserInfo(req, res) {
     log.verbose('getUserProfile response:', minify(userResponse));
   }
 
-  log.verbose('getUserProfile response:', minify(userResponse));
-
   // There are two scenarios under which the userResponse is empty
   // 1. A null response means no user found, so create a new BCeID user with a default Organization Admin role
   // 2. An empty ({}) userResponse means no Organization and/or Applications
