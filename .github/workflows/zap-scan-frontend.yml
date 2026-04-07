@@ -1,0 +1,46 @@
+name: Zap Scan Portal
+
+env:
+  BRANCH: ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'The openshift environment to scan'
+        default: 'dev'
+        type: choice
+        options:
+        - 'dev'
+        - 'qa'
+        - 'uat'
+        - 'efx'
+        - 'prod'
+  workflow_call:
+    inputs:
+      env:
+        description: 'The openshift environment to scan'
+        default: 'dev'
+        type: string
+
+jobs:
+  zap:
+    name: Run Zap Scan
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.env }}
+    steps:
+      - name: Check out repository with branch [${{ env.BRANCH }}]
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+          persist-credentials: false
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.13.0
+        with:
+          target: "https://${{ secrets.SITE_URL }}"
+          artifact_name: ccof_frontend_${{ inputs.env }}
+          fail_action: true              # fail the job if alerts found
+          allow_issue_writing: false     # don't open/update a GitHub Issue
+          rules_file_name: .zap/rules-frontend.tsv
