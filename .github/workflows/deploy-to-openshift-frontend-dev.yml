@@ -196,20 +196,7 @@ jobs:
 
   zap:
     name: Run Zap Scan
+    uses: ./.github/workflows/zap-scan-frontend.yml
     needs: openshift-ci-cd
-    runs-on: ubuntu-24.04
-    environment: dev
-    steps:
-      - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.BRANCH }}
-          persist-credentials: false
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.13.0
-        with:
-          target: "https://${{ secrets.SITE_URL }}"
-          artifact_name: ccof_frontend_zap
-          fail_action: true              # fail the job if alerts found
-          allow_issue_writing: false     # don't open/update a GitHub Issue
-          rules_file_name: .zap/rules-frontend.tsv
+    with:
+      env: 'dev'
