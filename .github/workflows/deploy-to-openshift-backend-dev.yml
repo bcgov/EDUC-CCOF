@@ -213,3 +213,4 @@ jobs:
     needs: openshift-ci-cd
     with:
       env: 'dev'
+    secrets: inherit
