@@ -13,7 +13,7 @@ on:
         options:
         - 'dev'
         - 'qa'
-        - 'uat'
+        - 'test'
         - 'efx'
         - 'prod'
   workflow_call:
