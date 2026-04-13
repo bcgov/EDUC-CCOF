@@ -65,6 +65,15 @@ objects:
       clusterIP: None
       selector:
         app: redis
+  - apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    metadata:
+      name: redis-pdb
+    spec:
+      minAvailable: 5
+      selector:
+        matchLabels:
+          app: redis
   - apiVersion: apps/v1
     kind: StatefulSet
     metadata:

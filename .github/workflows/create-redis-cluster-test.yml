@@ -105,7 +105,7 @@ jobs:
       - name: Cleanup
         run : |
           echo "Cleaning up previous installation (if any)..."
-          oc delete all,rc,svc,route,pvc,secret,configmap,sa -l app=redis
+          oc delete all,pdb,rc,svc,route,pvc,secret,configmap,sa -l app=redis
 
       - name: Deploy Redis Pods
         run: |
