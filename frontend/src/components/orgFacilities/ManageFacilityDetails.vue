@@ -434,8 +434,9 @@ export default {
       this.facilityCopy[key] = this.workingFields[key];
       this.isProcessing = true;
       try {
-        await FacilityService.updateFacility(this.facility.facilityId, this.facilityCopy);
-        this.$emit('facility-updated', this.facilityCopy);
+        const updatePayload = { ...this.facility, [key]: this.workingFields[key] };
+        await FacilityService.updateFacility(this.facility.facilityId, updatePayload);
+        this.$emit('facility-updated', { [key]: this.workingFields[key] });
         this.setSuccessAlert('Facility updated successfully.');
       } catch {
         this.setFailureAlert('An error occurred while updating the facility.');
