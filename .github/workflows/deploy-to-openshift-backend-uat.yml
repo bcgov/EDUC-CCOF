@@ -129,6 +129,8 @@ jobs:
           oc: 4.16
 
       - name: Deploy
+        env:
+          TAG: ${{ inputs.tag }}
         run: |
           set -eux
           # Login to OpenShift and select project
@@ -140,8 +142,8 @@ jobs:
 
           # Create tag for TEST env from DEV env image
           oc tag \
-             ${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ inputs.tag }} \
-             ${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ inputs.tag }}
+             "${{ env.NAMESPACE }}-dev/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:$TAG" \
+             "${{ env.NAMESPACE }}-test/${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:$TAG"
 
           # Process and apply deployment template
           oc process \
@@ -150,7 +152,7 @@ jobs:
              -p REPO_NAME=${{ env.REPO_NAME }} \
              -p BRANCH=${{ env.BRANCH }} \
              -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-             -p TAG=${{ inputs.tag }} \
+             -p "TAG=$TAG" \
              -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
              -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
              -p MIN_CPU=${{ env.MIN_CPU }} \
