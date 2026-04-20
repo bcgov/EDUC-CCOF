@@ -91,12 +91,12 @@ function minify(obj, keys = ['documentData']) {
 function getSessionUser(req) {
   log.verbose('getSessionUser', req.session);
   const session = req.session;
-  return session && session.passport && session.passport.user;
+  return session?.passport?.user;
 }
 
 function getUserGuid(req) {
   const userInfo = req.session?.passport?.user;
-  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+  if (!userInfo?.jwt || !userInfo?._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
 
@@ -105,7 +105,7 @@ function getUserGuid(req) {
 
 function isIdirUser(req) {
   const userInfo = req.session?.passport?.user;
-  if (!userInfo || !userInfo.jwt || !userInfo._json) {
+  if (!userInfo?.jwt || !userInfo?._json) {
     throw new ApiError(HttpStatus.UNAUTHORIZED, { message: 'API Get error' });
   }
   const isIdir = !!req.session?.passport?.user?._json?.idir_username;
@@ -127,7 +127,7 @@ function getUserName(req) {
 }
 function getAccessToken(req) {
   const user = getSessionUser(req);
-  return user && user.jwt;
+  return user?.jwt;
 }
 
 function logResponse(methodName, response) {
@@ -138,7 +138,6 @@ function logResponse(methodName, response) {
 
 async function deleteOperationWithObjectId(operation, objectId) {
   const operationWithObject = `${operation}(${objectId})`;
-  //log.info('del OPERATION:' , operationWithObject);
   return await deleteOperation(operationWithObject);
 }
 
@@ -160,7 +159,6 @@ async function getOperation(operation) {
     const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
     log.info('get Data Url', url);
     const response = await axios.get(url, getHttpHeader());
-    //logResponse('getOperation', response);
     return response.data;
   } catch (e) {
     log.info(e);
