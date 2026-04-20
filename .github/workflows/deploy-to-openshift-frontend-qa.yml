@@ -40,7 +40,6 @@ env:
   CA_CERT: ${{ secrets.CA_CERT }}
   CERTIFICATE: ${{ secrets.CERTIFICATE }}
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-
 on:
   workflow_dispatch:
     inputs:
@@ -119,6 +118,8 @@ jobs:
         oc: 4.16
 
     - name: Deploy
+      env:
+        TAG: ${{ inputs.tag }}
       run: |
         set -eux
         # Login to OpenShift and select project
@@ -135,7 +136,7 @@ jobs:
           -p REPO_NAME=${{ env.REPO_NAME }} \
           -p BRANCH=${{ env.BRANCH }} \
           -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-          -p TAG=${{ inputs.tag }} \
+          -p "TAG=$TAG" \
           -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
           -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
           -p MIN_CPU=${{ env.MIN_CPU }} \
