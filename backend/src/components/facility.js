@@ -32,7 +32,9 @@ function buildNewFacilityPayload(req) {
 
 function mapFacilityObjectForBack(data) {
   const facilityForBack = new MappableObjectForBack(data, FacilityMappings).toJSON();
-  facilityForBack.ccof_facilitystartdate = facilityForBack.ccof_facilitystartdate ? `${facilityForBack.ccof_facilitystartdate}-01-01` : null;
+  if (facilityForBack.ccof_facilitystartdate) {
+    facilityForBack.ccof_facilitystartdate = `${facilityForBack.ccof_facilitystartdate}-01-01`;
+  }
   return facilityForBack;
 }
 
