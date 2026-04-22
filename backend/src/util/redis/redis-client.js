@@ -140,12 +140,16 @@ class Redis {
         log.info('A Redis cluster node has connected.', node);
       });
 
-      Redis.client.on('reconnect', () => {
+      Redis.client.on('reconnecting', () => {
         log.warn('Redis attempting to reconnect...');
       });
 
       Redis.client.on('node-reconnecting', (node) => {
         log.info('A Redis cluster node is attempting to re-connect to a node.', node);
+      });
+
+      Redis.client.on('disconnect', () => {
+        log.info('The Redis cluster has disconnected.');
       });
 
       Redis.client.on('node-disconnect', (node) => {
