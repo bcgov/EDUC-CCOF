@@ -116,7 +116,7 @@ Redis.init()
       cookie: cookie,
     };
     if (Redis.isReady) {
-      sessionConfig.store = new ConnectRedis({ client: Redis.client, prefix: 'ccof-sess:', ttl: 1800 });
+      sessionConfig.store = new ConnectRedis({ client: Redis.client, prefix: 'ccof-sess:' });
     }
     app.use(session(sessionConfig));
 
