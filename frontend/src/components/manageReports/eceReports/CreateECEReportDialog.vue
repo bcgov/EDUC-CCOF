@@ -203,6 +203,7 @@ export default {
         const currentMonth = currentTime?.month;
         const currentYear = currentTime?.year;
         const currentMonthFirstDate = formatFirstDateOfMonth(currentMonth, currentYear);
+        const fiscalYearStartDate = formatFirstDateOfMonth(FISCAL_YEAR_MONTHS[0], startYear);
         return this.getTrailingMonths(currentMonth)
           .map((month) => {
             const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
@@ -212,7 +213,7 @@ export default {
               firstDate: formatFirstDateOfMonth(month, year),
             };
           })
-          .filter((month) => month.firstDate <= currentMonthFirstDate);
+          .filter((month) => month.firstDate <= currentMonthFirstDate && month.firstDate >= fiscalYearStartDate);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
@@ -303,7 +304,7 @@ export default {
         return [];
       }
       const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
-      const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
+      const startIndex = Math.max(0, currentIndex - maxMonths);
       return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
     },
     getReportingMonthsByFacilityId(facilityId) {
