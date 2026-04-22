@@ -128,6 +128,10 @@ class Redis {
         log.info('Connected to Redis.');
       });
 
+      Redis.client.on('reconnect', () => {
+        log.warn('Redis attempting to reconnect...');
+      });
+
       process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
       process.on('SIGINT', () => Redis.shutdown('SIGINT'));
 
