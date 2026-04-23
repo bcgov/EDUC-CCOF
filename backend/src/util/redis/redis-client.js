@@ -118,7 +118,7 @@ class Redis {
 
       Redis.client.on('node-error', async (error) => {
         log.error('A Redis cluster node has encountered an error: ', error);
-        if (error.includes('EHOSTUNREACH')) {
+        if (error.message.includes('EHOSTUNREACH')) {
           log.info('A Redis master pod has been given a new IP. Attempting cluster reconnect');
           await Redis.shutdown();
           await Redis.client.connect();
