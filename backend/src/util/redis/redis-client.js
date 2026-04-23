@@ -6,13 +6,13 @@ class Redis {
   static client;
   static prefix = config.get('redis:prefix');
 
-  static async shutdown(signal = 'quit') {
+  static async shutdown(signal = 'close') {
     log.info(`Received ${signal}, closing Redis connection`);
     try {
-      await Redis.client.quit();
+      await Redis.client.close();
     } catch (err) {
       log.error('Redis had to force quit', err);
-      await Redis.client.disconnect();
+      await Redis.client.destroy();
     }
   }
 
@@ -116,8 +116,13 @@ class Redis {
         log.error(`Error occurred in Redis client. ${error}`);
       });
 
-      Redis.client.on('node-error', (error) => {
-        log.error('A Redis cluster node has encountered an error', error);
+      Redis.client.on('node-error', async (error) => {
+        log.error('A Redis cluster node has encountered an error: ', error);
+        if (error.includes('EHOSTUNREACH')) {
+          log.info('A Redis master pod has been given a new IP. Attempting cluster reconnect');
+          await Redis.shutdown();
+          await Redis.client.connect();
+        }
       });
 
       Redis.client.on('end', () => {
