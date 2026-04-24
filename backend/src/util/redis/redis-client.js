@@ -123,6 +123,55 @@ class Redis {
     }
   }
 
+  static setupListeners() {
+    Redis.client.on('error', (error) => {
+      log.error(`Error occurred in Redis client. ${error}`);
+    });
+
+    Redis.client.on('node-error', async (error) => {
+      log.error('A Redis cluster node has encountered an error: ', error);
+      if (error.message.includes('EHOSTUNREACH') && !Redis.isRepairing) {
+        Redis.repairConnection();
+      }
+    });
+
+    Redis.client.on('end', () => {
+      log.info('Redis client closed.');
+    });
+
+    Redis.client.on('ready', () => {
+      log.info('Redis Ready.');
+    });
+
+    Redis.client.on('node-ready', (node) => {
+      log.info('A Redis cluster node is ready', node);
+    });
+
+    Redis.client.on('connect', () => {
+      log.info('Connected to Redis.');
+    });
+
+    Redis.client.on('node-connect', (node) => {
+      log.info('A Redis cluster node has connected.', node);
+    });
+
+    Redis.client.on('reconnecting', () => {
+      log.warn('Redis attempting to reconnect...');
+    });
+
+    Redis.client.on('node-reconnecting', (node) => {
+      log.info('A Redis cluster node is attempting to re-connect to a node.', node);
+    });
+
+    Redis.client.on('disconnect', () => {
+      log.info('The Redis cluster has disconnected.');
+    });
+
+    Redis.client.on('node-disconnect', (node) => {
+      log.info('A Redis cluster node has disconnected.', node);
+    });
+  }
+
   static async areNodesDown() {
     const nodeString = await Redis.client.CLUSTER_NODES();
     return nodeString.includes('fail');
@@ -140,6 +189,8 @@ class Redis {
         try {
           await Redis.shutdown();
           await Redis.create();
+          Redis.setupListeners();
+          await Redis.client.connect();
           repaired = true;
           Redis.isRepairing = false;
           log.info('Redis nodes should be reconnected.');
@@ -161,52 +212,7 @@ class Redis {
   static async init() {
     if (!Redis.client) {
       await Redis.create();
-      Redis.client.on('error', (error) => {
-        log.error(`Error occurred in Redis client. ${error}`);
-      });
-
-      Redis.client.on('node-error', async (error) => {
-        log.error('A Redis cluster node has encountered an error: ', error);
-        if (error.message.includes('EHOSTUNREACH') && !Redis.isRepairing) {
-          Redis.repairConnection();
-        }
-      });
-
-      Redis.client.on('end', () => {
-        log.info('Redis client closed.');
-      });
-
-      Redis.client.on('ready', () => {
-        log.info('Redis Ready.');
-      });
-
-      Redis.client.on('node-ready', (node) => {
-        log.info('A Redis cluster node is ready', node);
-      });
-
-      Redis.client.on('connect', () => {
-        log.info('Connected to Redis.');
-      });
-
-      Redis.client.on('node-connect', (node) => {
-        log.info('A Redis cluster node has connected.', node);
-      });
-
-      Redis.client.on('reconnecting', () => {
-        log.warn('Redis attempting to reconnect...');
-      });
-
-      Redis.client.on('node-reconnecting', (node) => {
-        log.info('A Redis cluster node is attempting to re-connect to a node.', node);
-      });
-
-      Redis.client.on('disconnect', () => {
-        log.info('The Redis cluster has disconnected.');
-      });
-
-      Redis.client.on('node-disconnect', (node) => {
-        log.info('A Redis cluster node has disconnected.', node);
-      });
+      Redis.setupListeners();
 
       process.on('SIGTERM', () => Redis.shutdown('SIGTERM'));
       process.on('SIGINT', () => Redis.shutdown('SIGINT'));
