@@ -192,7 +192,8 @@ class Redis {
         log.warn('Could not check node status, assuming many nodes are down.', error);
         retries += 1;
         await delay(retries * 2000);
-        continue;
+        // If Redis is even alive, try again, otherwise, carry on to attempt a new client
+        if (Redis.isReady) continue;
       }
 
       if (!downedNodes) {
