@@ -7,13 +7,18 @@ class Redis {
   static isRepairing = false;
   static prefix = config.get('redis:prefix');
 
-  static async shutdown(signal = 'close') {
+  static async shutdown(signal = 'close', force = false) {
     log.info(`Received ${signal}, closing Redis connection`);
     try {
-      await Redis.client.close();
-    } catch (err) {
-      log.error('Redis had to force quit', err);
-      await Redis.client.destroy();
+      const fn = force ? Redis.client.destroy : Redis.client.close;
+      await fn();
+    } catch (error) {
+      if (!force) {
+        log.error('Redis had to force quit', error);
+        await Redis.client.destroy();
+      } else {
+        log.error('There were problems shutting down the client', error);
+      }
     }
   }
 
@@ -198,7 +203,7 @@ class Redis {
 
       if (!downedNodes) {
         try {
-          await Redis.shutdown();
+          await Redis.shutdown('repair cluster', true);
           await Redis.create();
           Redis.setupListeners();
           await Redis.client.connect();
