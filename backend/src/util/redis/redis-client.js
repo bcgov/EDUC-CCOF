@@ -182,14 +182,14 @@ class Redis {
     Redis.isRepairing = true;
     let retries = 0;
     let repaired = false;
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    while(retries <= maxRetries) {
+    while (retries <= maxRetries) {
       let downedNodes;
       try {
         downedNodes = await Redis.areNodesDown();
       } catch (error) {
-        log.warn('Could not check node status, assuming many nodes are down.');
+        log.warn('Could not check node status, assuming many nodes are down.', error);
         retries += 1;
         await delay(retries * 2000);
         continue;
@@ -205,8 +205,8 @@ class Redis {
           Redis.isRepairing = false;
           log.info('Redis nodes should be reconnected.');
           break;
-        } catch (e) {
-          log.error(`There was a problem repairing the redis connection. Retries left: ${maxRetries - retries}`);
+        } catch (error) {
+          log.error(`There was a problem repairing the redis connection. Retries left: ${maxRetries - retries}`, error);
         }
       }
       retries += 1;
