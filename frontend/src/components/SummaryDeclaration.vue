@@ -135,8 +135,8 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         >
           <v-container fluid class="px-6">
-            <ApplicationDeclarationTextV2 v-if="showDeclarationV2" :enabled-declaration-b="model.enabledDeclarationB" />
-            <ApplicationDeclarationTextV1 v-else />
+            <ApplicationDeclarationTextV2 v-if="showDeclarationV2" />
+            <ApplicationDeclarationTextV1 v-else :enabled-declaration-b="model.enabledDeclarationB" />
 
             <div class="my-2">
               <v-checkbox
@@ -270,10 +270,10 @@ export default {
       'applicationTemplateVersion',
       'formattedProgramYear',
       'isApplicationProcessing',
+      'isApplicationTemplateV3OrHigher',
       'isRenewal',
       'renewalFundingAgreementId',
       'programYearId',
-      'showApplicationTemplateV1',
       'unlockBaseFunding',
       'unlockRenewal',
       'unlockDeclaration',
@@ -399,7 +399,7 @@ export default {
       );
     },
     showCCOFBaseFundingSummary() {
-      return !this.showApplicationTemplateV1 && this.isRenewal && !this.isChangeRequest;
+      return this.isApplicationTemplateV3OrHigher && this.isRenewal && !this.isChangeRequest;
     },
     showOrganizationSummary() {
       return !this.isRenewal && !this.isChangeRequest;

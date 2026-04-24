@@ -470,6 +470,7 @@ export default {
       'programYearLabel',
       'ccofApplicationStatus',
       'unlockBaseFunding',
+      'isApplicationTemplateV3OrHigher',
       'isRenewal',
       'unlockDeclaration',
       'unlockEcewe',
@@ -477,7 +478,6 @@ export default {
       'unlockSupportingDocuments',
       'applicationStatus',
       'applicationId',
-      'showApplicationTemplateV1',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
     ...mapState(useNavBarStore, ['navBarList']),
@@ -486,7 +486,6 @@ export default {
       'organizationProviderType',
       'organizationId',
       'organizationName',
-      'organizationAccountNumber',
     ]),
     ...mapState(useReportChangesStore, ['changeRequestStore']),
     nextProgramYear() {
@@ -785,7 +784,7 @@ export default {
         this.isLoadingComplete = false;
         await this.renewApplication();
         this.setIsRenewal(true);
-        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.nextProgramYear?.programYearId));
+        this.goToBankingInformation(this.nextProgramYear?.programYearId);
       } catch (error) {
         console.error('Failed to renew application.', error);
         this.setFailureAlert('An error occurred while processing. Please try again later.');
@@ -795,10 +794,10 @@ export default {
       this.$router.push(PATHS.ROOT.CHANGE_LANDING + '#change-request-history');
     },
     goToRenewalApplication() {
-      if (this.showApplicationTemplateV1) {
-        this.goToLicenseUpload();
+      if (this.isApplicationTemplateV3OrHigher) {
+        this.goToBankingInformation(this.programYearId);
       } else {
-        this.$router.push(pcfUrl(PATHS.CCOF_RENEWAL_BANKING_INFORMATION, this.programYearId));
+        this.goToLicenseUpload();
       }
     },
     goToCCOFOrganizationInfo() {
@@ -869,15 +868,18 @@ export default {
       this.$router.push(`${PATHS.ROOT.CLOSURES}/${this.selectedProgramYearId}`);
     },
     actionRequiredOrganizationRoute(programYearId = this.programYearId) {
-      let application = this.applicationMap?.get(programYearId);
+      const application = this.applicationMap?.get(programYearId);
       const facilityList = this.getFacilityListForPCFByProgramYearId(programYearId);
       const unlockCCFRIList = getUnlockCCFRIList(facilityList);
       const unlockRFIList = getUnlockRFIList(facilityList);
       const unlockNMFList = getUnlockNMFList(facilityList);
       const unlockAFSList = getUnlockAFSList(facilityList);
       const unlockClosuresList = getUnlockClosuresList(facilityList);
-      const isTemplateV1 = ApplicationService.showApplicationTemplateV1(application?.applicationTemplateVersion);
-      if (!isTemplateV1 && application?.unlockRenewal && application?.applicationType === APPLICATION_TYPES.RENEWAL) {
+      const isRenewalCCOFBaseFundingUnlock =
+        ApplicationService.isApplicationTemplateV3OrHigher(application?.applicationTemplateVersion) &&
+        application?.unlockRenewal &&
+        application?.applicationType === APPLICATION_TYPES.RENEWAL;
+      if (isRenewalCCOFBaseFundingUnlock) {
         this.goToBankingInformation(programYearId);
       } else if (application?.unlockBaseFunding && application?.applicationType === APPLICATION_TYPES.NEW_ORG) {
         this.goToCCOFFunding(programYearId, facilityList);

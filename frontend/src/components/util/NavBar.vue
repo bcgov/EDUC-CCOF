@@ -149,6 +149,7 @@ export default {
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
+      'isApplicationTemplateV3OrHigher',
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
@@ -338,7 +339,7 @@ export default {
       };
     },
     getRenewalCCOFNavigation() {
-      if (this.showApplicationTemplateV1) {
+      if (!this.isApplicationTemplateV3OrHigher) {
         return this.createNavItem({
           title: 'Licence Upload',
           link: { name: 'Licence Upload' },
