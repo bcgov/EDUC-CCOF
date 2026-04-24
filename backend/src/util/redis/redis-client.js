@@ -43,7 +43,9 @@ class Redis {
    * @param {args} args - The rest of the command args
    */
   static async get(key, ...args) {
-    return Redis.client.get(`${Redis.prefix}${key}`, ...args);
+    if (Redis.isReady) {
+      return Redis.client.get(`${Redis.prefix}${key}`, ...args);
+    }
   }
 
   /**
@@ -54,7 +56,9 @@ class Redis {
    * @param {args} args - The rest of the command args
    */
   static async set(key, ...args) {
-    return Redis.client.set(`${Redis.prefix}${key}`, ...args);
+    if (Redis.isReady) {
+      return Redis.client.set(`${Redis.prefix}${key}`, ...args);
+    }
   }
 
   /**
@@ -65,7 +69,9 @@ class Redis {
    * @param {args} args - The rest of the command args
    */
   static async jsonGet(key, ...args) {
-    return Redis.client.json.get(`${Redis.prefix}${key}`, ...args);
+    if (Redis.isReady) {
+      return Redis.client.json.get(`${Redis.prefix}${key}`, ...args);
+    }
   }
 
   /**
@@ -76,7 +82,9 @@ class Redis {
    * @param {args} args - The rest of the command args
    */
   static async jsonSet(key, ...args) {
-    return Redis.client.json.set(`${Redis.prefix}${key}`, ...args);
+    if (Redis.isReady) {
+      return Redis.client.json.set(`${Redis.prefix}${key}`, ...args);
+    }
   }
 
   /**
@@ -87,7 +95,9 @@ class Redis {
    * @param {args} args - The rest of the command args
    */
   static async expire(key, ...args) {
-    return Redis.client.expire(`${Redis.prefix}${key}`, ...args);
+    if (Redis.isReady) {
+      return Redis.client.expire(`${Redis.prefix}${key}`, ...args);
+    }
   }
 
   static async init() {
