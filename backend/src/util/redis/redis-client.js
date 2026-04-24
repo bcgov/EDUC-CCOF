@@ -4,6 +4,7 @@ const log = require('../../components/logger');
 
 class Redis {
   static client;
+  static isRepairing = false;
   static prefix = config.get('redis:prefix');
 
   static async shutdown(signal = 'close') {
@@ -100,38 +101,74 @@ class Redis {
     }
   }
 
+  static async create() {
+    if (Redis.clustered) {
+      log.info('using CLUSTERED Redis implementation');
+      Redis.client = createCluster({
+        rootNodes: [
+          {
+            url: `redis://redis-0.${config.get('redis:host')}:${config.get('redis:port')}`,
+          },
+          {
+            url: `redis://redis-1.${config.get('redis:host')}:${config.get('redis:port')}`,
+          },
+          {
+            url: `redis://redis-2.${config.get('redis:host')}:${config.get('redis:port')}`,
+          },
+        ],
+      });
+    } else {
+      log.info('using STANDALONE Redis implementation');
+      Redis.client = createClient({ url: `redis://${config.get('redis:host')}:${config.get('redis:port')}` });
+    }
+  }
+
+  static async areNodesDown() {
+    const nodeString = await Redis.client.CLUSTER_NODES();
+    return nodeString.includes('fail');
+  }
+
+  static async repairConnection(maxRetries = 5) {
+    Redis.isRepairing = true;
+    let retries = 0;
+    let repaired = false;
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    while(retries <= maxRetries) {
+      const downedNodes = await Redis.areNodesDown();
+      if (!downedNodes) {
+        try {
+          await Redis.shutdown();
+          await Redis.create();
+          repaired = true;
+          Redis.isRepairing = false;
+          log.info('Redis nodes should be reconnected.');
+          break;
+        } catch (e) {
+          log.error(`There was a problem repairing the redis connection. Retries left: ${maxRetries - retries}`);
+        }
+      }
+      retries += 1;
+      await delay(retries * 2000);
+    }
+
+    if (!repaired) {
+      log.error('Unable to repair Redis connection.');
+      Redis.isRepairing = false;
+    }
+  }
+
   static async init() {
     if (!Redis.client) {
-      if (Redis.clustered) {
-        log.info('using CLUSTERED Redis implementation');
-        Redis.client = createCluster({
-          rootNodes: [
-            {
-              url: `redis://redis-0.${config.get('redis:host')}:${config.get('redis:port')}`,
-            },
-            {
-              url: `redis://redis-1.${config.get('redis:host')}:${config.get('redis:port')}`,
-            },
-            {
-              url: `redis://redis-2.${config.get('redis:host')}:${config.get('redis:port')}`,
-            },
-          ],
-        });
-      } else {
-        log.info('using STANDALONE Redis implementation');
-        Redis.client = createClient({ url: `redis://${config.get('redis:host')}:${config.get('redis:port')}` });
-      }
-
+      await Redis.create();
       Redis.client.on('error', (error) => {
         log.error(`Error occurred in Redis client. ${error}`);
       });
 
       Redis.client.on('node-error', async (error) => {
         log.error('A Redis cluster node has encountered an error: ', error);
-        if (error.message.includes('EHOSTUNREACH')) {
-          log.info('A Redis master pod has been given a new IP. Attempting cluster reconnect');
-          await Redis.shutdown();
-          await Redis.client.connect();
+        if (error.message.includes('EHOSTUNREACH') && !Redis.isRepairing) {
+          Redis.repairConnection();
         }
       });
 
