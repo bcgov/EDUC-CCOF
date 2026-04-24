@@ -173,6 +173,7 @@ class Redis {
   }
 
   static async areNodesDown() {
+    if (!Redis.clustered) return false;
     const nodeString = await Redis.client.CLUSTER_NODES();
     return nodeString.includes('fail');
   }
@@ -184,7 +185,16 @@ class Redis {
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     while(retries <= maxRetries) {
-      const downedNodes = await Redis.areNodesDown();
+      let downedNodes;
+      try {
+        downedNodes = await Redis.areNodesDown();
+      } catch (error) {
+        log.warn('Could not check node status, assuming many nodes are down.');
+        retries += 1;
+        await delay(retries * 2000);
+        continue;
+      }
+
       if (!downedNodes) {
         try {
           await Redis.shutdown();
@@ -219,7 +229,7 @@ class Redis {
 
       await Redis.client.connect();
     } else {
-      log.warning('Redis.init() called after it was already initialized');
+      log.warn('Redis.init() called after it was already initialized');
     }
   }
 }
