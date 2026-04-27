@@ -141,6 +141,21 @@ export default {
       selectedFacilityId: null,
       selectedReportingMonth: null,
       selectedProgramYear: null,
+      debugMode: true, // toggle ON/OFF
+      debugOverrides: {
+        currentMonth: 8,
+        currentYear: 2026,
+
+        // ✅ per FY overrides
+        optInByFY: {
+          2027: 5,
+          2026: 5,
+        },
+        optOutByFY: {
+          2026: null,
+          2027: null,
+        },
+      },
     };
   },
   computed: {
@@ -176,8 +191,10 @@ export default {
       return this.facilities
         ?.filter((facility) => {
           const ecewe = this.eceweFacilities.get(facility.facilityId);
-          const reportingMonths = this.allReportingMonths.get(facility.facilityId);
-          return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);
+          /* const reportingMonths = this.allReportingMonths.get(facility.facilityId);
+          return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);*/
+          // ✅ ONLY check opt-in status (remove reportingMonths dependency)
+          return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN;
         })
         .sort((a, b) =>
           (a.facilityAccountNumber ?? '').localeCompare(b.facilityAccountNumber ?? '', undefined, {
@@ -190,33 +207,55 @@ export default {
     },
     reportingMonthCandidates() {
       try {
-        if (!this.selectedProgramYear) {
-          return [];
-        }
+        if (!this.selectedProgramYear) return [];
+
         const { financialYear } = this.selectedProgramYear;
-        const endYear = Number(financialYear);
-        if (!endYear || Number.isNaN(endYear)) {
-          throw new Error(`Invalid financial year: ${financialYear}`);
-        }
-        const startYear = endYear - 1;
+        const fyEndYear = Number(financialYear);
+        const fyStartYear = fyEndYear - 1;
+
         const currentTime = formatUTCtoPacificTime(this.userInfo?.serverTime);
-        const currentMonth = currentTime?.month;
-        const currentYear = currentTime?.year;
-        const currentMonthFirstDate = formatFirstDateOfMonth(currentMonth, currentYear);
-        const fiscalYearStartDate = formatFirstDateOfMonth(FISCAL_YEAR_MONTHS[0], startYear);
-        return this.getTrailingMonths(currentMonth)
-          .map((month) => {
-            const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
-            return {
-              month,
-              year,
-              firstDate: formatFirstDateOfMonth(month, year),
-            };
-          })
-          .filter((month) => month.firstDate <= currentMonthFirstDate && month.firstDate >= fiscalYearStartDate);
+
+        let currentMonth = currentTime?.month;
+        let currentYear = currentTime?.year;
+
+        if (this.debugMode) {
+          if (this.debugOverrides.currentMonth) currentMonth = this.debugOverrides.currentMonth;
+          if (this.debugOverrides.currentYear) currentYear = this.debugOverrides.currentYear;
+        }
+
+        const months = [];
+
+        // ✅ TRUE rolling window (current + 6 back)
+        for (let i = 0; i < 7; i++) {
+          let month = currentMonth - i;
+          let year = currentYear;
+
+          if (month <= 0) {
+            month += 12;
+            year -= 1;
+          }
+
+          months.push({
+            month,
+            year,
+            firstDate: formatFirstDateOfMonth(month, year),
+          });
+        }
+
+        // -----------------------------
+        // ✅ FILTER to selected FY ONLY
+        // -----------------------------
+        const filtered = months.filter((item) => {
+          return (
+            (item.month >= 4 && item.year === fyStartYear) || // Apr–Dec
+            (item.month < 4 && item.year === fyEndYear) // Jan–Mar
+          );
+        });
+
+        return filtered.reverse(); // oldest → newest
       } catch (error) {
         console.error(error);
-        this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
+        this.setFailureAlert('Error computing reporting months.');
         return [];
       }
     },
@@ -304,23 +343,90 @@ export default {
         return [];
       }
       const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
-      const startIndex = Math.max(0, currentIndex - maxMonths);
+      const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
       return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
     },
-    getReportingMonthsByFacilityId(facilityId) {
+    /*getReportingMonthsByFacilityId(facilityId) {
+      if (this.debugMode) {
+        console.log('================ DEBUG START ================');
+        console.log('Selected FY:', this.selectedProgramYear);
+        console.log('Facility ID:', facilityId);
+      }
       const eceweFacility = this.eceweFacilities.get(facilityId);
       if (!eceweFacility) {
         return [];
       }
+      //debug
+      if (this.debugMode) {
+        console.log('ECEWE Facility Raw:', eceweFacility);
+      }
       const existingReportMonths = new Set(
         this.eceReports.filter((report) => report.facilityId === facilityId).map((report) => report.month),
       );
-      const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-31` : null;
+
+      // ✅ Ensure month belongs to selected fiscal year
+      const fyEndYear = Number(this.selectedProgramYear.financialYear);
+      const fyStartYear = fyEndYear - 1;
+
+      const isMonthInSelectedFY =
+        (item.month >= 4 && item.year === fyStartYear) || // Apr–Dec
+        (item.month < 4 && item.year === fyEndYear); // Jan–Mar
+      if (!isMonthInSelectedFY) {
+        return false;
+      }
+      if (this.debugMode) {
+        console.log('Is in Selected FY:', isMonthInSelectedFY);
+      }
+      // ✅ Convert Opt-in month → correct fiscal date (1st of month)
+      let paymentEligibilityStartDate = null;
+      let optInMonth = null;
+      let optOutMonth = null;
+      if (eceweFacility.paymentEligibilityStartDate) {
+        /!*const optInMonth = Number(eceweFacility.paymentEligibilityStartDate);*!/
+        // ✅ DEBUG override
+        optInMonth = Number(eceweFacility.paymentEligibilityStartDate);
+        if (this.debugMode && this.debugOverrides.optInMonth) {
+          optInMonth = this.debugOverrides.optInMonth;
+        }
+        const year = optInMonth >= 4 ? fyStartYear : fyEndYear;
+        paymentEligibilityStartDate = formatFirstDateOfMonth(optInMonth, year);
+      }
+
+      // ✅ Convert Opt-out month → correct fiscal date (last day of month)
+      let midYearOptOutDate = null;
+      if (eceweFacility.midYearOptOutDate) {
+        /!* const optOutMonth = Number(eceweFacility.midYearOptOutDate);*!/
+        // ✅ DEBUG override
+        optOutMonth = Number(eceweFacility.midYearOptOutDate);
+        if (this.debugMode && this.debugOverrides.optOutMonth) {
+          optOutMonth = this.debugOverrides.optOutMonth;
+        }
+        const year = optOutMonth >= 4 ? fyStartYear : fyEndYear;
+
+        const lastDate = new Date(year, optOutMonth, 0); // last day of month
+        midYearOptOutDate = lastDate.toISOString().split('T')[0];
+      }
+      //debug
+      if (this.debugMode) {
+        console.log('Computed Opt-In Month:', optInMonth);
+        console.log('Computed Opt-In Date:', paymentEligibilityStartDate);
+        console.log('Computed Opt-Out Month:', optOutMonth);
+        console.log('Computed Opt-Out Date:', midYearOptOutDate);
+      }
+      /!*const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-31` : null;
       const paymentEligibilityStartDate = eceweFacility.paymentEligibilityStartDate
         ? `${eceweFacility.paymentEligibilityStartDate}-01`
-        : null;
+        : null;*!/
+
       const isFullyApproved = eceweFacility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
       const reportingMonths = this.reportingMonthCandidates.filter((item) => {
+        //debug
+        if (this.debugMode) {
+          console.log('--- Checking Month ---');
+          console.log('Month:', item.month, 'Year:', item.year);
+          console.log('First Date:', item.firstDate);
+        }
+
         const hasNoReportCreated = !existingReportMonths.has(item.month);
         const isTempApproved =
           eceweFacility.tempApprovalStartDate &&
@@ -328,13 +434,35 @@ export default {
           item.firstDate >= eceweFacility.tempApprovalStartDate &&
           item.firstDate <= eceweFacility.tempApprovalEndDate;
         const isECEWEFacilityApproved = isFullyApproved || isTempApproved;
-        const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
+        /!*const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
           ? item.firstDate >= paymentEligibilityStartDate
-          : true;
-        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate < midYearOptOutDate : true;
+          : true;*!/
+        // ✅ STRICT opt-in enforcement
+        if (paymentEligibilityStartDate && item.firstDate < paymentEligibilityStartDate) {
+          if (this.debugMode) {
+            console.log(
+              '❌ Rejected due to OPT-IN rule',
+              `(Payment Eligibility Start Date: ${paymentEligibilityStartDate})`,
+              `(Item first Date: ${item.firstDate})`,
+              `(${item.firstDate < paymentEligibilityStartDate})`,
+            );
+          }
+          return false;
+        }
+        // ❗ If opt-in is in future → NO REPORTS at all
+        if (paymentEligibilityStartDate && paymentEligibilityStartDate > item.firstDate) {
+          return false;
+        }
+        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate <= midYearOptOutDate : true;
+        //debug
+        if (this.debugMode) {
+          console.log('Is ECEWE Facility Approved:', isECEWEFacilityApproved);
+          console.log('Is Before Mid-Year Opt-Out Date:', isBeforeMidYearOptOutDate);
+          console.log('Has No Report Created:', hasNoReportCreated);
+        }
         return (
           isECEWEFacilityApproved &&
-          isAfterPaymentEligibilityStartDate &&
+          /!*isAfterPaymentEligibilityStartDate &&*!/
           isBeforeMidYearOptOutDate &&
           hasNoReportCreated
         );
@@ -345,6 +473,155 @@ export default {
           value: { month: item.month, year: item.year },
         };
       });
+      //debug
+      if (this.debugMode) {
+        console.log('Final Reporting Months:', reportingMonths);
+        console.log('================ DEBUG END ================');
+      }
+    },*/
+    getReportingMonthsByFacilityId(facilityId) {
+      const log = (...args) => this.debugMode && console.log(...args);
+
+      log('================ DEBUG START ================');
+      log('Selected FY:', this.selectedProgramYear);
+      log('Facility ID:', facilityId);
+
+      const eceweFacility = this.eceweFacilities.get(facilityId);
+      if (!eceweFacility) return [];
+
+      log('ECEWE Facility Raw:', eceweFacility);
+
+      const existingReportMonths = new Set(
+        this.eceReports.filter((r) => r.facilityId === facilityId).map((r) => `${r.month}-${r.year}`),
+      );
+
+      const fyEndYear = Number(this.selectedProgramYear.financialYear);
+      const fyStartYear = fyEndYear - 1;
+
+      // -----------------------------
+      // ✅ SAFE DATE PARSER
+      // -----------------------------
+      const parseDate = (dateStr) => {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? null : d;
+      };
+
+      const getMonthYear = (date) => {
+        if (!date) return null;
+        return {
+          month: date.getMonth() + 1,
+          year: date.getFullYear(),
+        };
+      };
+
+      // -----------------------------
+      // ✅ OPT-IN (REAL + OVERRIDE)
+      // -----------------------------
+      let optIn = getMonthYear(parseDate(eceweFacility.paymentEligibilityStartDate));
+
+      // ✅ override ALWAYS wins
+      const overrideOptInMonth = this.debugOverrides.optInByFY?.[fyEndYear];
+      if (this.debugMode && overrideOptInMonth !== undefined) {
+        optIn = {
+          month: overrideOptInMonth,
+          year: overrideOptInMonth >= 4 ? fyStartYear : fyEndYear,
+        };
+      }
+
+      // -----------------------------
+      // ✅ OPT-OUT (REAL + OVERRIDE)
+      // -----------------------------
+      let optOut = getMonthYear(parseDate(eceweFacility.midYearOptOutDate));
+
+      const overrideOptOutMonth = this.debugOverrides.optOutByFY?.[fyEndYear];
+      if (this.debugMode && overrideOptOutMonth !== undefined) {
+        optOut = {
+          month: overrideOptOutMonth,
+          year: overrideOptOutMonth >= 4 ? fyStartYear : fyEndYear,
+        };
+      }
+
+      log('Computed Opt-In:', optIn);
+      log('Computed Opt-Out:', optOut);
+
+      const isFullyApproved = eceweFacility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
+
+      const reportingMonths = this.reportingMonthCandidates.filter((item) => {
+        log('--- Checking Month ---', item);
+
+        // -----------------------------
+        // ✅ 1. Fiscal Year Guard
+        // -----------------------------
+        const isInFY = (item.month >= 4 && item.year === fyStartYear) || (item.month < 4 && item.year === fyEndYear);
+
+        if (!isInFY) {
+          log('❌ FY mismatch');
+          return false;
+        }
+
+        // -----------------------------
+        // ✅ 2. OPT-IN (STRICT)
+        // -----------------------------
+        if (optIn) {
+          const beforeOptIn = item.year < optIn.year || (item.year === optIn.year && item.month < optIn.month);
+
+          if (beforeOptIn) {
+            log('❌ OPT-IN reject', item, optIn);
+            return false;
+          }
+        }
+
+        // -----------------------------
+        // ✅ 3. OPT-OUT
+        // -----------------------------
+        if (optOut) {
+          const afterOptOut = item.year > optOut.year || (item.year === optOut.year && item.month > optOut.month);
+
+          if (afterOptOut) {
+            log('❌ OPT-OUT reject', item, optOut);
+            return false;
+          }
+        }
+
+        // -----------------------------
+        // ✅ 4. APPROVAL WINDOW
+        // -----------------------------
+        const tempStart = parseDate(eceweFacility.tempApprovalStartDate);
+        const tempEnd = parseDate(eceweFacility.tempApprovalEndDate);
+
+        const itemDate = new Date(item.year, item.month - 1, 1);
+
+        const isTempApproved = tempStart && tempEnd && itemDate >= tempStart && itemDate <= tempEnd;
+
+        const isApproved = isFullyApproved || isTempApproved;
+
+        if (!isApproved) {
+          log('❌ Not approved');
+          return false;
+        }
+
+        // -----------------------------
+        // ✅ 5. EXISTING REPORT CHECK
+        // -----------------------------
+        const key = `${item.month}-${item.year}`;
+        if (existingReportMonths.has(key)) {
+          log('❌ Already reported');
+          return false;
+        }
+
+        return true;
+      });
+
+      const result = reportingMonths.map((item) => ({
+        label: formatMonthYearToString(item.month, item.year),
+        value: { month: item.month, year: item.year },
+      }));
+
+      log('Final Reporting Months:', result);
+      log('================ DEBUG END ================');
+
+      return result;
     },
     selectProgramYear(programYear) {
       this.selectedProgramYear = this.lookupInfo?.programYear?.list?.find(
