@@ -224,7 +224,7 @@ export default {
         return filtered.reverse(); // oldest → newest
       } catch (error) {
         console.error(error);
-        this.setFailureAlert('Error computing reporting months.');
+        this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
         return [];
       }
     },
