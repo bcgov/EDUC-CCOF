@@ -2,7 +2,7 @@
   <v-skeleton-loader :loading="isApplicationProcessing" type="table-tbody" class="mb-12">
     <v-container fluid class="px-lg-16">
       <v-form ref="form" v-model="isValidForm">
-        <ApplicationPCFHeader :program-year="renewalYearLabel" />
+        <ApplicationPCFHeader :program-year="formattedProgramYear" />
         <ApplicationChangeRequestInProgressAlert
           v-if="hasActiveChangeRequest"
           :loading="isApplicationProcessing"
@@ -21,7 +21,7 @@
             </v-card-title>
             <div class="px-8 py-4">
               <p>
-                Once these changes have been processed, you may complete your {{ renewalYearLabel }} Program
+                Once these changes have been processed, you may complete your {{ formattedProgramYear }} Program
                 Confirmation Form.
               </p>
               <p class="py-2">
@@ -67,7 +67,6 @@ import NavButton from '@/components/util/NavButton.vue';
 import alertMixin from '@/mixins/alertMixin.js';
 import permissionsMixin from '@/mixins/permissionsMixin.js';
 import ApplicationService from '@/services/applicationService';
-import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
@@ -88,9 +87,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAppStore, ['renewalYearLabel']),
     ...mapState(useApplicationStore, [
       'applicationId',
+      'formattedProgramYear',
       'isApplicationProcessing',
       'isApplicationSubmitted',
       'renewalApplicationCCOF',

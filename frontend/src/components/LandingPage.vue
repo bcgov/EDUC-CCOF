@@ -458,7 +458,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useAppStore, ['renewalYearLabel', 'programYearList']),
+    ...mapState(useAppStore, ['programYearList']),
     ...mapState(useApplicationStore, [
       'latestProgramYearId',
       'applicationIds',

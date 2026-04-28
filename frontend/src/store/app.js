@@ -123,9 +123,6 @@ export const useAppStore = defineStore('app', {
     currentProgramYear: (state) => {
       return state.programYearList?.list?.find((year) => year.status === 'CURRENT');
     },
-    renewalYearLabel: (state) => {
-      return formatFiscalYearName(state.programYearList?.renewal?.name);
-    },
     getApplicationTemplateVersion: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
     },
