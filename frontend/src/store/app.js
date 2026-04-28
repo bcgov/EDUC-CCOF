@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
