@@ -200,14 +200,8 @@ export default {
 
         const currentTime = formatUTCtoPacificTime(this.userInfo?.serverTime);
 
-        let currentMonth = currentTime?.month;
-        let currentYear = currentTime?.year;
-
-        if (this.debugMode) {
-          if (this.debugOverrides.currentMonth) currentMonth = this.debugOverrides.currentMonth;
-          if (this.debugOverrides.currentYear) currentYear = this.debugOverrides.currentYear;
-        }
-
+        const currentMonth = currentTime?.month;
+        const currentYear = currentTime?.year;
         const months = [];
 
         // ✅ TRUE rolling window (current + 6 back)
@@ -228,7 +222,7 @@ export default {
         }
 
         // -----------------------------
-        // ✅ FILTER to selected FY ONLY
+        // FILTER to selected FY ONLY
         // -----------------------------
         const filtered = months.filter((item) => {
           return (
@@ -489,9 +483,9 @@ export default {
         };
       };
 
-      let optIn = getMonthYear(parseDate(eceweFacility.paymentEligibilityStartDate));
+      const optIn = getMonthYear(parseDate(eceweFacility.paymentEligibilityStartDate));
 
-      let optOut = getMonthYear(parseDate(eceweFacility.midYearOptOutDate));
+      const optOut = getMonthYear(parseDate(eceweFacility.midYearOptOutDate));
 
       const isFullyApproved = eceweFacility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
 
