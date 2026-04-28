@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 import ApiService from '@/common/apiService.js';
 import { useApplicationStore } from '@/store/application.js';
 import { PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
-import { formatFiscalYearName } from '@/utils/format';
 
 export const useAppStore = defineStore('app', {
   state: () => ({
@@ -122,9 +121,6 @@ export const useAppStore = defineStore('app', {
   getters: {
     currentProgramYear: (state) => {
       return state.programYearList?.list?.find((year) => year.status === 'CURRENT');
-    },
-    renewalYearLabel: (state) => {
-      return formatFiscalYearName(state.programYearList?.renewal?.name);
     },
     getApplicationTemplateVersion: (state) => (programYearId) => {
       return state?.programYearList.list.find((el) => el.programYearId === programYearId)?.applicationTemplateVersion;
