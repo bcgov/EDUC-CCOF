@@ -299,7 +299,7 @@ async function createUser(req, roleId) {
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
       // Add a role for new users
-      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${roleId})`,
+      'ccof_ccof_portal_id@odata.bind': `/ofm_portal_roles(${roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {
