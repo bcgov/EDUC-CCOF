@@ -176,9 +176,6 @@ export default {
       return this.facilities
         ?.filter((facility) => {
           const ecewe = this.eceweFacilities.get(facility.facilityId);
-          /* const reportingMonths = this.allReportingMonths.get(facility.facilityId);
-          return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN && !isEmpty(reportingMonths);*/
-          // ✅ ONLY check opt-in status (remove reportingMonths dependency)
           return ecewe?.optInECEWE === OPT_STATUSES.OPT_IN;
         })
         .sort((a, b) =>
@@ -203,8 +200,6 @@ export default {
         const currentMonth = currentTime?.month;
         const currentYear = currentTime?.year;
         const months = [];
-
-        // ✅ TRUE rolling window (current + 6 back)
         for (let i = 0; i < 7; i++) {
           let month = currentMonth - i;
           let year = currentYear;
@@ -220,10 +215,6 @@ export default {
             firstDate: formatFirstDateOfMonth(month, year),
           });
         }
-
-        // -----------------------------
-        // FILTER to selected FY ONLY
-        // -----------------------------
         const filtered = months.filter((item) => {
           return (
             (item.month >= 4 && item.year === fyStartYear) || // Apr–Dec
@@ -317,147 +308,6 @@ export default {
       const response = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
       this.eceweFacilities = new Map((response ?? []).map((f) => [f.facilityId, f]));
     },
-    getTrailingMonths(currentMonth, maxMonths = this.DEFAULT_MAX_MONTHS) {
-      if (!currentMonth) {
-        return [];
-      }
-      const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
-      const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
-      return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
-    },
-    /*getReportingMonthsByFacilityId(facilityId) {
-      if (this.debugMode) {
-        console.log('================ DEBUG START ================');
-        console.log('Selected FY:', this.selectedProgramYear);
-        console.log('Facility ID:', facilityId);
-      }
-      const eceweFacility = this.eceweFacilities.get(facilityId);
-      if (!eceweFacility) {
-        return [];
-      }
-      //debug
-      if (this.debugMode) {
-        console.log('ECEWE Facility Raw:', eceweFacility);
-      }
-      const existingReportMonths = new Set(
-        this.eceReports.filter((report) => report.facilityId === facilityId).map((report) => report.month),
-      );
-
-      // ✅ Ensure month belongs to selected fiscal year
-      const fyEndYear = Number(this.selectedProgramYear.financialYear);
-      const fyStartYear = fyEndYear - 1;
-
-      const isMonthInSelectedFY =
-        (item.month >= 4 && item.year === fyStartYear) || // Apr–Dec
-        (item.month < 4 && item.year === fyEndYear); // Jan–Mar
-      if (!isMonthInSelectedFY) {
-        return false;
-      }
-      if (this.debugMode) {
-        console.log('Is in Selected FY:', isMonthInSelectedFY);
-      }
-      // ✅ Convert Opt-in month → correct fiscal date (1st of month)
-      let paymentEligibilityStartDate = null;
-      let optInMonth = null;
-      let optOutMonth = null;
-      if (eceweFacility.paymentEligibilityStartDate) {
-        /!*const optInMonth = Number(eceweFacility.paymentEligibilityStartDate);*!/
-        // ✅ DEBUG override
-        optInMonth = Number(eceweFacility.paymentEligibilityStartDate);
-        if (this.debugMode && this.debugOverrides.optInMonth) {
-          optInMonth = this.debugOverrides.optInMonth;
-        }
-        const year = optInMonth >= 4 ? fyStartYear : fyEndYear;
-        paymentEligibilityStartDate = formatFirstDateOfMonth(optInMonth, year);
-      }
-
-      // ✅ Convert Opt-out month → correct fiscal date (last day of month)
-      let midYearOptOutDate = null;
-      if (eceweFacility.midYearOptOutDate) {
-        /!* const optOutMonth = Number(eceweFacility.midYearOptOutDate);*!/
-        // ✅ DEBUG override
-        optOutMonth = Number(eceweFacility.midYearOptOutDate);
-        if (this.debugMode && this.debugOverrides.optOutMonth) {
-          optOutMonth = this.debugOverrides.optOutMonth;
-        }
-        const year = optOutMonth >= 4 ? fyStartYear : fyEndYear;
-
-        const lastDate = new Date(year, optOutMonth, 0); // last day of month
-        midYearOptOutDate = lastDate.toISOString().split('T')[0];
-      }
-      //debug
-      if (this.debugMode) {
-        console.log('Computed Opt-In Month:', optInMonth);
-        console.log('Computed Opt-In Date:', paymentEligibilityStartDate);
-        console.log('Computed Opt-Out Month:', optOutMonth);
-        console.log('Computed Opt-Out Date:', midYearOptOutDate);
-      }
-      /!*const midYearOptOutDate = eceweFacility.midYearOptOutDate ? `${eceweFacility.midYearOptOutDate}-31` : null;
-      const paymentEligibilityStartDate = eceweFacility.paymentEligibilityStartDate
-        ? `${eceweFacility.paymentEligibilityStartDate}-01`
-        : null;*!/
-
-      const isFullyApproved = eceweFacility.statusCode === ECEWE_FACILITY_STATUSES.COMPLETE_APPROVED;
-      const reportingMonths = this.reportingMonthCandidates.filter((item) => {
-        //debug
-        if (this.debugMode) {
-          console.log('--- Checking Month ---');
-          console.log('Month:', item.month, 'Year:', item.year);
-          console.log('First Date:', item.firstDate);
-        }
-
-        const hasNoReportCreated = !existingReportMonths.has(item.month);
-        const isTempApproved =
-          eceweFacility.tempApprovalStartDate &&
-          eceweFacility.tempApprovalEndDate &&
-          item.firstDate >= eceweFacility.tempApprovalStartDate &&
-          item.firstDate <= eceweFacility.tempApprovalEndDate;
-        const isECEWEFacilityApproved = isFullyApproved || isTempApproved;
-        /!*const isAfterPaymentEligibilityStartDate = paymentEligibilityStartDate
-          ? item.firstDate >= paymentEligibilityStartDate
-          : true;*!/
-        // ✅ STRICT opt-in enforcement
-        if (paymentEligibilityStartDate && item.firstDate < paymentEligibilityStartDate) {
-          if (this.debugMode) {
-            console.log(
-              '❌ Rejected due to OPT-IN rule',
-              `(Payment Eligibility Start Date: ${paymentEligibilityStartDate})`,
-              `(Item first Date: ${item.firstDate})`,
-              `(${item.firstDate < paymentEligibilityStartDate})`,
-            );
-          }
-          return false;
-        }
-        // ❗ If opt-in is in future → NO REPORTS at all
-        if (paymentEligibilityStartDate && paymentEligibilityStartDate > item.firstDate) {
-          return false;
-        }
-        const isBeforeMidYearOptOutDate = midYearOptOutDate ? item.firstDate <= midYearOptOutDate : true;
-        //debug
-        if (this.debugMode) {
-          console.log('Is ECEWE Facility Approved:', isECEWEFacilityApproved);
-          console.log('Is Before Mid-Year Opt-Out Date:', isBeforeMidYearOptOutDate);
-          console.log('Has No Report Created:', hasNoReportCreated);
-        }
-        return (
-          isECEWEFacilityApproved &&
-          /!*isAfterPaymentEligibilityStartDate &&*!/
-          isBeforeMidYearOptOutDate &&
-          hasNoReportCreated
-        );
-      });
-      return reportingMonths.map((item) => {
-        return {
-          label: formatMonthYearToString(item.month, item.year),
-          value: { month: item.month, year: item.year },
-        };
-      });
-      //debug
-      if (this.debugMode) {
-        console.log('Final Reporting Months:', reportingMonths);
-        console.log('================ DEBUG END ================');
-      }
-    },*/
     getReportingMonthsByFacilityId(facilityId) {
       const eceweFacility = this.eceweFacilities.get(facilityId);
       if (!eceweFacility) return [];
@@ -467,8 +317,6 @@ export default {
 
       const fyEndYear = Number(this.selectedProgramYear.financialYear);
       const fyStartYear = fyEndYear - 1;
-
-      // SAFE DATE PARSER
       const parseDate = (dateStr) => {
         if (!dateStr) return null;
         const d = new Date(dateStr);
