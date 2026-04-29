@@ -250,12 +250,24 @@ export function formatUTCtoPacificTime(utcTime) {
 /**
  * Format the first date of a month as a YYYY-MM-DD string
  *
- * @param {number|string} year - Full year (e.g., 2025)
  * @param {number|string} month - 1-based month (1–12)
- * @returns {string | null}
+ * @param {number|string} year - Full year (e.g., 2025)
+ * @returns {string}
  */
 export function formatFirstDateOfMonth(month, year) {
   return `${year}-${padString(month, 2, '0')}-01`;
+}
+
+/**
+ * Format the last date of a month as a YYYY-MM-DD string.
+ *
+ * @param {number|string} month - 1-based month (1–12)
+ * @param {number|string} year - Full year (e.g., 2025)
+ * @returns {string}
+ */
+export function formatLastDateOfMonth(month, year) {
+  const lastDay = new Date(year, month, 0).getDate();
+  return `${year}-${padString(month, 2, '0')}-${padString(lastDay, 2, '0')}`;
 }
 
 // Formats year and month values into a YYYY-MM string for display
