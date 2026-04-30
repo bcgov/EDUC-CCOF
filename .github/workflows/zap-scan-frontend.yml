@@ -32,12 +32,12 @@ jobs:
     environment: ${{ inputs.env }}
     steps:
       - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.13.0
+        uses: zaproxy/action-full-scan@a4825dd9648c57da8437a4885c3fcad58beac69c #v0.13
         with:
           target: "https://${{ secrets.SITE_URL }}"
           artifact_name: ccof_frontend_${{ inputs.env }}

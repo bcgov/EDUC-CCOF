@@ -13,16 +13,16 @@ jobs:
     environment: dev
     steps:
       - name: Print Workflow Dispatch Inputs and Env Vars
-        uses: shayki5/print-workflow-dispatch-inputs@v1
+        uses: shayki5/print-workflow-dispatch-inputs@d33d9a2262e8c0b8c726540184b654402705a87f #v1.0.1
         with:
           add_to_summary: "true"
           print_env_vars: "false"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
 
       - name: Cypress run
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@f790eee7a50d9505912f50c2095510be7de06aa7 #v6.10.9
         with:
           working-directory: ./test/cypress-e2e
           browser: electron
@@ -34,7 +34,7 @@ jobs:
           CYPRESS_PORTAL_BASE_URL: ${{ secrets.CYPRESS_PORTAL_BASE_URL }}
 
       - name: Upload screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 #v4.6.2
         if: always()
         with:
           name: cypress-screenshots

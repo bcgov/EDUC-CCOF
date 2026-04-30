@@ -29,16 +29,16 @@ jobs:
 
     steps:
     - name: Print Workflow Dispatch Inputs and Env Vars
-      uses: shayki5/print-workflow-dispatch-inputs@v1
+      uses: shayki5/print-workflow-dispatch-inputs@d33d9a2262e8c0b8c726540184b654402705a87f #v1.0.1
       with:
         add_to_summary: 'true'
         print_env_vars: 'false'
 
     - name: Check out repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 #v2.7.0
 
     - name: Create tag
-      uses: actions/github-script@v5
+      uses: actions/github-script@211cb3fefb35a799baa5156f9321bb774fe56294 #v5.2.0
       with:
         script: |
           github.rest.git.createRef({
@@ -49,12 +49,12 @@ jobs:
           })
 
     - name: Install oc
-      uses: redhat-actions/openshift-tools-installer@v1
+      uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 #v1.13.1
       with:
         oc: 4.16
 
       # https://github.com/redhat-actions/oc-login#readme
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 #v2.7.0
     - name: Tag in OpenShift
       run: |
         set -eux

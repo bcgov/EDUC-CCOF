@@ -61,13 +61,13 @@ jobs:
 
     steps:
       - name: Print Workflow Dispatch Inputs and Env Vars
-        uses: shayki5/print-workflow-dispatch-inputs@v1
+        uses: shayki5/print-workflow-dispatch-inputs@d33d9a2262e8c0b8c726540184b654402705a87f #v1.0.1
         with:
           add_to_summary: "true"
           print_env_vars: "false"
 
       - name: Check for required secrets
-        uses: actions/github-script@v4
+        uses: actions/github-script@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536 #v4.2.0
         with:
           script: |
             const secrets = {
@@ -105,13 +105,13 @@ jobs:
             }
 
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false
 
       - name: Setup Keycloak Client
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b #v7.1.0
         env:
           KC_REALM_ID: ${{ secrets.KC_REALM_ID }}
           KC_CLIENT_ID: ${{ secrets.KC_ADMIN_CLIENT_ID }}
@@ -124,7 +124,7 @@ jobs:
             await main();
 
       - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
+        uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 #v1.13.1
         with:
           oc: 4.16
 
@@ -179,7 +179,7 @@ jobs:
               ${{ secrets.D365_API_KEY_HEADER }} \
               ${{ secrets.D365_API_KEY_VALUE }} \
               ${{ secrets.CANADA_POST_API_ENDPOINT }} \
-              ${{ secrets.CANADA_POST_API_KEY }} 
+              ${{ secrets.CANADA_POST_API_KEY }}
 
           # Start rollout (if necessary) and follow it
           oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}} 2> /dev/null \
