@@ -25,7 +25,7 @@ header {
 	Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate"
 	X-Content-Type-Options "nosniff"
 	Strict-Transport-Security "max-age=31536000"
-	Content-Security-Policy ""
+	Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' unsafe-inline; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
 	Referrer-Policy "same-origin"
 	Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
 }
