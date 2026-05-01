@@ -24,7 +24,13 @@
             <v-col cols="10" class="pt-5 text-left">
               <div
                 color="#313131"
-                style="padding-left: 24px; font-style: normal; font-weight: 500; font-family: BCSans, sans-serif; font-size: 16px"
+                style="
+                  padding-left: 24px;
+                  font-style: normal;
+                  font-weight: 500;
+                  font-family: BCSans, sans-serif;
+                  font-size: 16px;
+                "
               >
                 Enter a facility name or city of a licensed child care provider participating in CCFRI
               </div>
@@ -150,11 +156,23 @@
                               "
                             >
                               <td style="padding-bottom: 10px; padding-top: 10px">
-                                <span style="font-weight: 600; color: #431782; font-size: 16px; font-family: BCSans, sans-serif">{{
-                                  item.facilityName
-                                }}</span>
+                                <span
+                                  style="
+                                    font-weight: 600;
+                                    color: #431782;
+                                    font-size: 16px;
+                                    font-family: BCSans, sans-serif;
+                                  "
+                                  >{{ item.facilityName }}</span
+                                >
                                 <br />
-                                <span style="font-weight: 600; color: #000; font-size: 14px; font-family: BCSans, sans-serif"
+                                <span
+                                  style="
+                                    font-weight: 600;
+                                    color: #000;
+                                    font-size: 14px;
+                                    font-family: BCSans, sans-serif;
+                                  "
                                   >City: </span
                                 >{{ item.city }}
                               </td>
@@ -186,10 +204,10 @@
                             <tr v-show="!loading && searchResults.length === 50">
                               <td colspan="2">
                                 <span style="font-style: italic; font-size: small">
-                                <span style="color: #0fc3ed; font-size: small">*</span>
-                                  Only the first 50 results of your search are viewable. Try narrowing down your
-                                  search by using additional keywords.
-b                                </span>
+                                  <span style="color: #0fc3ed; font-size: small">*</span>
+                                  Only the first 50 results of your search are viewable. Try narrowing down your search
+                                  by using additional keywords.
+                                </span>
                               </td>
                             </tr>
                           </template>
