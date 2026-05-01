@@ -67,7 +67,7 @@ jobs:
 
     steps:
       - name: Check for required secrets
-        uses: actions/github-script@v4
+        uses: actions/github-script@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536 #v4.2.0
         with:
           script: |
             const secrets = {
@@ -105,13 +105,13 @@ jobs:
             }
 
       - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 #v4.1.0
         with:
           registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -119,7 +119,7 @@ jobs:
 
       - name: Build frontend from Dockerfile
         id: build-image-frontend
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: "latest"
@@ -134,7 +134,7 @@ jobs:
         # https://github.com/redhat-actions/push-to-registry#readme
       - name: Push frontend to registry
         id: push-image-frontend
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c #v2.8
         with:
           image: ${{ steps.build-image-frontend.outputs.image }}
           tags: ${{ steps.build-image-frontend.outputs.tags }}
@@ -143,56 +143,61 @@ jobs:
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
       - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
+        uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 #v1.13.1
         with:
           oc: 4.16
 
         # https://github.com/redhat-actions/oc-login#readme
-      #    - uses: actions/checkout@v2
+      #    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 #v2.7.0
       - name: Deploy
+        env:
+          REGISTRY_PATH: ${{ steps.push-image-frontend.outputs.registry-path }}
+          BANNER_COLOR: ${{ vars.BANNER_COLOR }}
+          BANNER_ENVIRONMENT: ${{ vars.BANNER_ENVIRONMENT }}
+          VUE_APP_BCEID_REG_URL: ${{ secrets.VUE_APP_BCEID_REG_URL }}
         run: |
           set -eux
           # Login to OpenShift and select project
-          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          oc login --token="$OPENSHIFT_TOKEN" --server="$OPENSHIFT_SERVER"
+          oc project "$OPENSHIFT_NAMESPACE"
           # Cancel any rollouts in progress
-          oc rollout cancel deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+          oc rollout cancel "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT" 2> /dev/null \
               || true && echo "No rollout in progress"
 
           oc tag \
-             ${{ steps.push-image-frontend.outputs.registry-path }} \
-             ${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ env.TAG }}
+             "$REGISTRY_PATH" \
+             "$REPO_NAME-$IMAGE_NAME-$BRANCH:$TAG"
 
           # Process and apply deployment template
           oc process \
             -f tools/openshift/frontend.deployment.yaml \
-            -p APP_NAME=${{ env.APP_NAME }} \
-            -p REPO_NAME=${{ env.REPO_NAME }} \
-            -p BRANCH=${{ env.BRANCH }} \
-            -p CA_CERT="${{ env.CA_CERT }}" \
-            -p CERTIFICATE="${{ env.CERTIFICATE }}" \
-            -p PRIVATE_KEY="${{ env.PRIVATE_KEY }}" \
-            -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-            -p TAG=${{ env.TAG }} \
-            -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
-            -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
-            -p MIN_CPU=${{ env.MIN_CPU }} \
-            -p MAX_CPU=${{ env.MAX_CPU }} \
-            -p MIN_MEM=${{ env.MIN_MEM }} \
-            -p MAX_MEM=${{ env.MAX_MEM }} \
-            -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
-            -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
-            -p BANNER_COLOR=${{ vars.BANNER_COLOR }} \
-            -p BANNER_ENVIRONMENT=${{ vars.BANNER_ENVIRONMENT }} \
-            -p VUE_APP_BCEID_REG_URL='${{ secrets.VUE_APP_BCEID_REG_URL }}' \
+            -p APP_NAME="$APP_NAME" \
+            -p REPO_NAME="$REPO_NAME" \
+            -p BRANCH="$BRANCH" \
+            -p CA_CERT="$CA_CERT" \
+            -p CERTIFICATE="$CERTIFICATE" \
+            -p PRIVATE_KEY="$PRIVATE_KEY" \
+            -p NAMESPACE="$OPENSHIFT_NAMESPACE" \
+            -p TAG="$TAG" \
+            -p MIN_REPLICAS="$MIN_REPLICAS" \
+            -p MAX_REPLICAS="$MAX_REPLICAS" \
+            -p MIN_CPU="$MIN_CPU" \
+            -p MAX_CPU="$MAX_CPU" \
+            -p MIN_MEM="$MIN_MEM" \
+            -p MAX_MEM="$MAX_MEM" \
+            -p HOST_ROUTE="$HOST_ROUTE" \
+            -p APP_ENVIRONMENT="$APP_ENVIRONMENT" \
+            -p BANNER_COLOR="$BANNER_COLOR" \
+            -p BANNER_ENVIRONMENT="$BANNER_ENVIRONMENT" \
+            -p VUE_APP_BCEID_REG_URL="$VUE_APP_BCEID_REG_URL" \
             | oc apply -f -
 
           # Start rollout (if necessary) and follow it
-          oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+          oc rollout restart "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT" 2> /dev/null \
               || true && echo "Rollout in progress"
 
           # Get status, returns 0 if rollout is successful
-          oc rollout status deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
+          oc rollout status "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT"
 
   zap:
     name: Run Zap Scan

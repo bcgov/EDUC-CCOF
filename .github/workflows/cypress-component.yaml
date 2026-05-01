@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
 
       - name: Cypress component tests
         uses: cypress-io/github-action@b8ba51a856ba5f4c15cf39007636d4ab04f23e3c
