@@ -20,7 +20,7 @@ class PagekKeyCloakLogin {
 class PageLogin {
 
   constructor() {
-    this.loginBtn = Selector('#login-button');
+    this.loginBtn = Selector('.login-button');
   }
 
   async bceIdLogin(t) {

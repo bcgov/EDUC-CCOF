@@ -10,7 +10,7 @@
             </v-card-title>
             <v-card-text id="session-expired-descriptor">
               <v-row style="margin: 0.5rem"> An error occurred while you were logging in </v-row>
-              <a id="login-button" :href="authRoutes.LOGIN" class="ma-1" dark color="#003366" @click="clearStorage">
+              <a class="login-button ma-1" :href="authRoutes.LOGIN" dark color="#003366" @click="clearStorage">
                 Log In
               </a>
               <span>again to continue.</span>

@@ -5,7 +5,7 @@
         <v-col cols="12" class="pt-0" align="center">
           <v-img :src="crayonsImage" max-height="300" max-width="1448">
             <span class="banner-title">
-              <p class="banner-title-heading my-2" style="font-family: BCSans">
+              <p class="banner-title-heading my-2" style="font-family: BCSans, sans-serif">
                 Child Care Fee Reduction Initiative Estimator
               </p>
             </span>
@@ -19,7 +19,7 @@
               <span style="float: left">
                 <v-icon size="x-large" color="rgb(0 51 102)" class="py-1 px-3"> mdi-information </v-icon>
               </span>
-              <span class="pa-1" style="font-family: BCSans">
+              <span class="pa-1" style="font-family: BCSans, sans-serif">
                 The estimation provided in this service is not a guarantee of payments. The estimation does not take
                 into account all of your circumstances and should be used as a guide only.
               </span>
@@ -38,7 +38,7 @@
                     color: #39598a;
                     font-style: normal;
                     font-weight: 700;
-                    font-family: BCSans;
+                    font-family: BCSans, sans-serif;
                     font-size: 20px;
                     padding-top: 8px;
                     padding-bottom: 8px;
@@ -138,7 +138,7 @@
                   color: #39598a;
                   font-style: normal;
                   font-weight: 700;
-                  font-family: BCSans;
+                  font-family: BCSans, sans-serif;
                   font-size: 20px;
                   padding-top: 8px;
                   padding-bottom: 8px;
@@ -377,7 +377,13 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom: 0px; padding-top: 16px">
                   <div
-                    style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
+                    style="
+                      padding-left: 24px;
+                      color: #7b7c7e;
+                      font-family: BCSans, sans-serif;
+                      font-weight: 600;
+                      font-size: 16px;
+                    "
                   >
                     <span class="text-red"><strong> *</strong></span>
                     Approved full-time parent fee before fee reduction applied
@@ -426,7 +432,13 @@
               <v-row>
                 <v-col cols="5" style="padding-bottom: 0px; padding-top: 16px">
                   <div
-                    style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
+                    style="
+                      padding-left: 24px;
+                      color: #7b7c7e;
+                      font-family: BCSans, sans-serif;
+                      font-weight: 600;
+                      font-size: 16px;
+                    "
                   >
                     <span v-if="child.careSchedule == 'Full Time'">
                       Actual parent fee before reduction applied (Optional)
@@ -475,13 +487,6 @@
                   />
                 </v-col>
               </v-row>
-              <v-row v-show="showParentFeeApprovedFor">
-                <!-- <v-col cols="12" style="padding-top:0px;">
-                  <div style="padding-left:36px;color:#336799;font-style:normal;font-weight:600;font-family:BCSans;font-size:16px">
-                    Parent Fee Approved for {{form.careProviderSearch}}: ${{(results === undefined || results.length == 0) ? '' : results[child.number-1].actualParentFeePerChild}}
-                  </div>
-                </v-col> -->
-              </v-row>
               <v-row>
                 <v-col class="py-0">
                   <v-divider />
@@ -498,7 +503,7 @@
                 color: #39598a;
                 font-style: normal;
                 font-weight: 700;
-                font-family: BCSans;
+                font-family: BCSans, sans-serif;
                 font-size: 20px;
                 padding-top: 8px;
                 padding-bottom: 8px;
@@ -511,9 +516,8 @@
                 <v-btn
                   style="
                     color: #39598a;
-                    font-family: BCSans;
+                    font-family: BCSans, sans-serif;
                     font-weight: 600;
-                    font-family: BCSans;
                     font-size: 16px;
                     padding-left: 60px;
                     padding-right: 60px;
@@ -531,7 +535,13 @@
               <v-row>
                 <v-col cols="12">
                   <div
-                    style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 500; font-size: 16px"
+                    style="
+                      padding-left: 24px;
+                      color: #7b7c7e;
+                      font-family: BCSans, sans-serif;
+                      font-weight: 500;
+                      font-size: 16px;
+                    "
                   >
                     Based on the information you have provided, you may be eligible for the following monthly
                     ChildCareBC fee reduction:
@@ -541,7 +551,13 @@
               <v-row>
                 <v-col cols="2" style="padding-bottom: 0px">
                   <div
-                    style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
+                    style="
+                      padding-left: 24px;
+                      color: #7b7c7e;
+                      font-family: BCSans, sans-serif;
+                      font-weight: 600;
+                      font-size: 16px;
+                    "
                   >
                     Child
                   </div>
@@ -549,7 +565,13 @@
                 <v-col cols="4" style="padding-bottom: 0px">
                   <div class="d-flex flex-nowrap">
                     <div
-                      style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
+                      style="
+                        padding-left: 24px;
+                        color: #7b7c7e;
+                        font-family: BCSans, sans-serif;
+                        font-weight: 600;
+                        font-size: 16px;
+                      "
                     >
                       Estimated child care fee reduction amount
                       <!--Reduction Amount Per Child-->
@@ -559,7 +581,13 @@
                 <v-col cols="4" style="padding-bottom: 0px">
                   <div class="d-flex flex-nowrap">
                     <div
-                      style="padding-left: 24px; color: #7b7c7e; font-family: BCSans; font-weight: 600; font-size: 16px"
+                      style="
+                        padding-left: 24px;
+                        color: #7b7c7e;
+                        font-family: BCSans, sans-serif;
+                        font-weight: 600;
+                        font-size: 16px;
+                      "
                     >
                       Estimated parent fee after reduction
                       <!--Actual Parent Fee Per Child-->
@@ -575,19 +603,21 @@
                 </v-row>
                 <v-row>
                   <v-col cols="2" style="padding-bottom: 0px; padding-top: 0px">
-                    <div style="padding-left: 24px; font-family: BCSans; font-weight: 500; font-size: 16px">
+                    <div style="padding-left: 24px; font-family: BCSans, sans-serif; font-weight: 500; font-size: 16px">
                       {{ result.number }}
                     </div>
                   </v-col>
                   <v-col cols="4" style="padding-bottom: 0px; padding-top: 0px">
                     <div class="d-flex flex-nowrap">
-                      <div style="padding-left: 24px; font-family: BCSans; font-weight: 500; font-size: 16px">
+                      <div
+                        style="padding-left: 24px; font-family: BCSans, sans-serif; font-weight: 500; font-size: 16px"
+                      >
                         ${{ result.reductionAmountPerChild }}
                       </div>
                     </div>
                   </v-col>
                   <v-col cols="4" style="padding-bottom: 0px; padding-top: 0px">
-                    <div style="padding-left: 24px; font-family: BCSans; font-weight: 500; font-size: 16px">
+                    <div style="padding-left: 24px; font-family: BCSans, sans-serif; font-weight: 500; font-size: 16px">
                       ${{ result.actualParentFeePerChild }}
                     </div>
                   </v-col>
@@ -1096,13 +1126,13 @@ span.banner-title {
   left: 45px;
   color: white;
   font-size: 24px;
-  font-family: 'BCSans';
+  font-family: BCSans, sans-serif;
 }
 
 .v-input,
 .v-select-list {
   font-size: 16px !important;
-  font-family: 'BCSans' !important;
+  font-family: BCSans, sans-serif !important;
 }
 
 div.v-select__selection.v-select__selection--comma {
@@ -1117,7 +1147,7 @@ div.v-select__selection.v-select__selection--comma {
   padding-left: 34px;
   padding-top: 20px;
   color: #7b7c7e;
-  font-family: BCSans;
+  font-family: BCSans, sans-serif;
   font-weight: 600;
   font-size: 16px;
 }
@@ -1126,7 +1156,7 @@ div.v-select__selection.v-select__selection--comma {
   font-size: 14px !important;
   color: #39598a;
   font-weight: 600;
-  font-family: 'BCSans' !important;
+  font-family: BCSans, sans-serif !important;
 }
 
 .v-list-item__title {
