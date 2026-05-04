@@ -649,8 +649,6 @@ export default {
       FAMILY_REDUCTION_RATES: null,
       results: null,
       showEstimatorResults: false,
-      showParentFeeApprovedFor: false,
-      showPartTimeCareSchedule: false,
       careTypes: [{ type: 'No Care' }, { type: 'Half Day' }, { type: 'Full Day' }],
       numberOfBusinessDaysByMonth: [
         { month: 'January', days: 20 },
