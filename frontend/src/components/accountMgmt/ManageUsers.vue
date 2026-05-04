@@ -12,12 +12,12 @@
             <v-col cols="12" md="4">
               <div class="info-text">
                 <p class="mt-2"><strong>Portal User</strong> can log in to the portal. A Business BCeID is required.</p>
-                <p><strong>Contact Only</strong> cannot log in to the portal. No BCeID is required.</p>
+                <p class="mt-2"><strong>Contact Only</strong> cannot log in to the portal. No BCeID is required.</p>
               </div>
             </v-col>
             <v-col cols="12" md="8">
               <div class="info-text">
-                <p class="mt-2">
+                <p>
                   <strong>Organization Administrator</strong> has full access to all facilities in your organization.
                   Can manage users, submit change requests, and take all actions on the portal.
                 </p>
@@ -342,12 +342,12 @@ export default {
   margin: 2px 0;
   font-size: 0.95rem;
   line-height: 1.4;
-  color: #424242;
+  color: #474543;
 }
 
 .info-box {
-  border: 1px solid #1976d2;
-  background-color: #f4f8ff;
+  border: 1px solid #003366;
+  background-color: #f1f8fe;
   border-radius: 4px;
 }
 </style>
