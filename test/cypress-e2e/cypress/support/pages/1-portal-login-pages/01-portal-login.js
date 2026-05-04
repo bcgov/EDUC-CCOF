@@ -4,7 +4,7 @@ class LoginPage {
   }
 
   clickLoginButton() {
-    cy.get("#login-button").click();
+    cy.get(".login-button").click();
   }
 
   loginThroughExternalProvider(

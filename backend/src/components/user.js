@@ -262,7 +262,7 @@ async function getDynamicsUserByEmail(req) {
     email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
 
-  email.includes("'") ? (email = email.replace("'", "''")) : email;
+  email = email.replaceAll("'", "''");
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;

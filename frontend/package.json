@@ -9,7 +9,6 @@
     "serve": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:unit": "vue-cli-service test:unit",
     "test:component": "cypress open",
     "test:component:headless": "cypress run --component --headless",
     "lint": "eslint .",

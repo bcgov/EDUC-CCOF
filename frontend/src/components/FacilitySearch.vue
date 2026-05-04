@@ -10,7 +10,7 @@
                 style="
                   color: white;
                   font-style: normal;
-                  font-family: BCSans;
+                  font-family: BCSans, sans-serif;
                   font-weight: 700;
                   font-size: 20px;
                   background-color: #431782;
@@ -24,7 +24,13 @@
             <v-col cols="10" class="pt-5 text-left">
               <div
                 color="#313131"
-                style="padding-left: 24px; font-style: normal; font-weight: 500; font-family: BCSans; font-size: 16px"
+                style="
+                  padding-left: 24px;
+                  font-style: normal;
+                  font-weight: 500;
+                  font-family: BCSans, sans-serif;
+                  font-size: 16px;
+                "
               >
                 Enter a facility name or city of a licensed child care provider participating in CCFRI
               </div>
@@ -54,7 +60,7 @@
                     style="
                       font-style: normal;
                       font-weight: 700;
-                      font-family: BCSans;
+                      font-family: BCSans, sans-serif;
                       font-size: 16px;
                       margin-left: 10px;
                     "
@@ -75,7 +81,7 @@
                             color: white;
                             font-style: normal;
                             font-weight: 700;
-                            font-family: BCSans;
+                            font-family: BCSans, sans-serif;
                             font-size: 20px;
                             padding-top: 0px;
                             padding-bottom: 0px;
@@ -150,11 +156,23 @@
                               "
                             >
                               <td style="padding-bottom: 10px; padding-top: 10px">
-                                <span style="font-weight: 600; color: #431782; font-size: 16px; font-family: BCSans">{{
-                                  item.facilityName
-                                }}</span>
+                                <span
+                                  style="
+                                    font-weight: 600;
+                                    color: #431782;
+                                    font-size: 16px;
+                                    font-family: BCSans, sans-serif;
+                                  "
+                                  >{{ item.facilityName }}</span
+                                >
                                 <br />
-                                <span style="font-weight: 600; color: #000; font-size: 14px; font-family: BCSans"
+                                <span
+                                  style="
+                                    font-weight: 600;
+                                    color: #000;
+                                    font-size: 14px;
+                                    font-family: BCSans, sans-serif;
+                                  "
                                   >City: </span
                                 >{{ item.city }}
                               </td>
@@ -163,7 +181,7 @@
                                   style="
                                     font-style: normal;
                                     font-weight: 500;
-                                    font-family: BCSans;
+                                    font-family: BCSans, sans-serif;
                                     font-size: 14px;
                                     padding-left: 24px;
                                     padding-right: 24px;
@@ -185,22 +203,11 @@
                           <template #body.append>
                             <tr v-show="!loading && searchResults.length === 50">
                               <td colspan="2">
-                                <table>
-                                  <tbody>
-                                    <!--//NOSONAR-->
-                                    <tr>
-                                      <td colspan="1" with="10%" style="vertical-align: top">
-                                        <span style="color: #0fc3ed; font-weight: bold; font-size: x-large">*</span>
-                                      </td>
-                                      <td style="padding-top: 2px">
-                                        <span style="font-style: italic; font-size: small">
-                                          Only the first 50 results of your search are viewable. Try narrowing down your
-                                          search by using additional keywords.
-                                        </span>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
+                                <span style="font-style: italic; font-size: small">
+                                  <span style="color: #0fc3ed; font-size: small">*</span>
+                                  Only the first 50 results of your search are viewable. Try narrowing down your search
+                                  by using additional keywords.
+                                </span>
                               </td>
                             </tr>
                           </template>
