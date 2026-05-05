@@ -11,7 +11,7 @@
           <v-row dense>
             <v-col cols="12" md="4">
               <div class="info-text">
-                <p class="mt-2"><strong>Portal User</strong> can log in to the portal. A Business BCeID is required.</p>
+                <p><strong>Portal User</strong> can log in to the portal. A Business BCeID is required.</p>
                 <p class="mt-2"><strong>Contact Only</strong> cannot log in to the portal. No BCeID is required.</p>
               </div>
             </v-col>
