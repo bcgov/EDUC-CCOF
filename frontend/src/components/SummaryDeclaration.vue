@@ -398,8 +398,11 @@ export default {
         !this.isApplicationFormComplete
       );
     },
+    isRenewalApplicationTemplateV3OrHigher() {
+      return this.isRenewal && this.isApplicationTemplateV3OrHigher;
+    },
     showCCOFBaseFundingSummary() {
-      return this.isApplicationTemplateV3OrHigher && this.isRenewal && !this.isChangeRequest;
+      return this.isRenewalApplicationTemplateV3OrHigher && !this.isChangeRequest;
     },
     showOrganizationSummary() {
       return !this.isRenewal && !this.isChangeRequest;
@@ -437,7 +440,9 @@ export default {
         this.setIsApplicationProcessing(true);
 
         await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
-        await this.loadRenewalFundingAgreementId();
+        if (this.isRenewalApplicationTemplateV3OrHigher) {
+          await this.loadRenewalFundingAgreementId();
+        }
 
         if (this.isChangeRequest) {
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
@@ -465,7 +470,9 @@ export default {
         if (this.isChangeRequest) {
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
-          await this.updateRenewalFundingAgreementBeforeSubmit();
+          if (this.isRenewalApplicationTemplateV3OrHigher) {
+            await this.updateRenewalFundingAgreementBeforeSubmit();
+          }
           await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
@@ -554,7 +561,6 @@ export default {
       );
     },
     async updateRenewalFundingAgreementBeforeSubmit() {
-      if (!this.isRenewal) return;
       if (!this.renewalFundingAgreementId) {
         throw new Error('Funding Agreement not found');
       }
@@ -567,7 +573,7 @@ export default {
       await FundingAgreementService.updateFundingAgreement(this.renewalFundingAgreementId, payload);
     },
     async loadRenewalFundingAgreementId() {
-      if (!this.isRenewal || this.renewalFundingAgreementId) return;
+      if (this.renewalFundingAgreementId) return;
 
       const response = await FundingAgreementService.getFundingAgreements({
         organizationId: this.summaryModel?.application?.organizationId,
