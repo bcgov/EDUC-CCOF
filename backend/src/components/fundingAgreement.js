@@ -13,7 +13,7 @@ async function getFundingAgreements(req, res) {
     const query = `${buildFilterQuery(req.query, FundingAgreementMappings)} and statuscode ne 101510002`; // 101510002 = 'Drafted'
     const response = await getOperation(`ccof_funding_agreements?${query}`);
     const fundingAgreements = response?.value?.map((item) => new MappableObjectForFront(item, FundingAgreementMappings).toJSON()).filter((fa) => isProgramYear2024OrLater(fa.fundingAgreementTerm));
-    if (req.query.includePdf) {
+    if (req.query.includePdf === 'true') {
       await Promise.all(
         fundingAgreements.map(async (fundingAgreement) => {
           const pdfResponse = await getOperation(`ccof_funding_agreements(${fundingAgreement.fundingAgreementId})/ccof_funding_pdf`);
