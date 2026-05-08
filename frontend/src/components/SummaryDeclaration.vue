@@ -579,7 +579,6 @@ export default {
         organizationId: this.summaryModel?.application?.organizationId,
         programYearId: this.programYearId,
         fundingAgreementOrderNumber: 0,
-        includePdf: false,
       });
 
       const fa = response?.[0];
