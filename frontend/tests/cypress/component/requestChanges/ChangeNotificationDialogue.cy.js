@@ -73,26 +73,12 @@ describe('<ChangeNotificationDialogue />', () => {
     );
   });
 
-  it('should render group change dialog', () => {
+  it('should render group or family change dialog', () => {
     mountWithPinia({
       ...createAuthStore(),
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
     });
     cy.contains('li', 'Preschool age programs');
     cy.contains('li', 'School age programs');
-  });
-
-  it('should render family change dialog', () => {
-    mountWithPinia({
-      ...createAuthStore(),
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-      },
-    });
-    cy.contains('Report Changes');
-    cy.contains('li', 'Preschool age programs').should('not.exist');
   });
 
   it('should render `Next` button', () => {
