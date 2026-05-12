@@ -66,7 +66,7 @@ describe('<ChangeNotificationDialogue />', () => {
       ...createAuthStore(),
     });
 
-    cy.contains('visit the Child Care Operating Funding Website').should(
+    cy.contains('Child Care Operating Funding Website').should(
       'have.attr',
       'href',
       'https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes ',
