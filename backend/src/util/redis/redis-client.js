@@ -117,7 +117,7 @@ class Redis {
       });
 
       Redis.client.on('node-error', (error) => {
-        log.error('A Redis cluster node has encountered an error', error);
+        log.verbose('A Redis cluster node has encountered an error', error);
       });
 
       Redis.client.on('end', () => {
@@ -129,7 +129,7 @@ class Redis {
       });
 
       Redis.client.on('node-ready', (node) => {
-        log.info('A Redis cluster node is ready', node);
+        log.verbose('A Redis cluster node is ready', node);
       });
 
       Redis.client.on('connect', () => {
@@ -137,7 +137,7 @@ class Redis {
       });
 
       Redis.client.on('node-connect', (node) => {
-        log.info('A Redis cluster node has connected.', node);
+        log.verbose('A Redis cluster node has connected.', node);
       });
 
       Redis.client.on('reconnecting', () => {
@@ -145,7 +145,7 @@ class Redis {
       });
 
       Redis.client.on('node-reconnecting', (node) => {
-        log.info('A Redis cluster node is attempting to re-connect to a node.', node);
+        log.verbose('A Redis cluster node is attempting to re-connect to a node.', node);
       });
 
       Redis.client.on('disconnect', () => {
