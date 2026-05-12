@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
+import { ApiRoutes, CHANGE_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
 
 const ORGANIZATION_NAME = 'TEST_ORG_NAME';
 const CHANGE_REQUEST_ID = '000';
