@@ -44,6 +44,7 @@ const ChangeActionRequestMappings = [
 
 const ChangeActionClosureMappings = [
   { back: '_ccof_closure_value', front: 'closureId' },
+  { back: '_ccof_organization_value', front: 'organizationId' },
   { back: '_ccof_facility_value', front: 'facilityId' },
   { back: '_ccof_program_year_value', front: 'programYearId' },
   { back: 'ccof_closure_start_date', front: 'startDate' },

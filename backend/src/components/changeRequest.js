@@ -2,6 +2,7 @@
 
 const log = require('./logger');
 const { getUserGuid } = require('./utils');
+const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront, MappableObjectForBack, getMappingString } = require('../util/mapping/MappableObject');
 const { ChangeActionClosureMappings, ChangeActionRequestMappings, ChangeRequestMappings, MtfiMappings, NewFacilityMappings } = require('../util/mapping/ChangeRequestMappings');
 const { DocumentsMappings, UserProfileBaseCCFRIMappings, UserProfileBaseFundingMappings, UserProfileECEWEMappings } = require('../util/mapping/Mappings');
@@ -354,7 +355,8 @@ async function getChangeActionClosure(req, res) {
 async function getChangeActionClosures(req, res) {
   try {
     const response = await getOperation(`ccof_change_action_closures?$select=${getMappingString(ChangeActionClosureMappings)}&${buildFilterQuery(req.query, ChangeActionClosureMappings)}`);
-    const changeActionClosures = response?.value?.map((changeActionClosure) => new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON());
+    let changeActionClosures = response?.value?.map((changeActionClosure) => new MappableObjectForFront(changeActionClosure, ChangeActionClosureMappings).toJSON());
+    changeActionClosures = restrictFacilities(req, changeActionClosures);
     return res.status(HttpStatus.OK).json(changeActionClosures);
   } catch (e) {
     log.error(e);
