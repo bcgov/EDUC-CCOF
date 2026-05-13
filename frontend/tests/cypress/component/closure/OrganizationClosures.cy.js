@@ -1,6 +1,6 @@
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, CLOSURE_STATUSES } from '@/utils/constants.js';
+import { ApiRoutes, CHANGE_ACTION_CLOSURE_STATUSES, CLOSURE_STATUSES } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
 const programYearGuid = '43242';
@@ -33,7 +33,16 @@ function interceptAPI() {
   cy.intercept('GET', `${ApiRoutes.CLOSURES}?organizationId=${organizationId}&programYearId=${programYearGuid}`, {
     statusCode: 200,
     body: [closureData],
-  }).as('getLicenseCategories');
+  }).as('getOrganizationClosures');
+
+  cy.intercept(
+    'GET',
+    `${ApiRoutes.CHANGE_ACTION_CLOSURE}?organizationId=${organizationId}&programYearId=${programYearGuid}&statusCode=${CHANGE_ACTION_CLOSURE_STATUSES.SUBMITTED}`,
+    {
+      statusCode: 200,
+      body: [],
+    },
+  ).as('getPendingClosureRequests');
 }
 
 function mountWithPinia({ initialState = {} } = {}) {
@@ -102,7 +111,7 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutReqClosure],
+          permissions: permWithoutReqClosure,
         },
       },
     });
@@ -129,16 +138,6 @@ describe('<OrganizationClosures /> ', () => {
   });
 
   it('should render table content', () => {
-    const expectedCells = [
-      ['Facility ID'],
-      ['Facility Name', closureData.facilityName],
-      ['Start Date', closureData.startDate],
-      ['End Date', closureData.endDate],
-      ['Status', 'Pending'],
-      ['Payment Eligibility', 'CCFRI'],
-      ['Actions', 'View Details'],
-    ];
-
     interceptAPI();
 
     mountWithPinia({
@@ -150,19 +149,27 @@ describe('<OrganizationClosures /> ', () => {
       },
     });
 
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
+
+    cy.contains('th', 'Facility ID');
+    cy.contains('th', 'Facility Name');
+    cy.contains('th', 'Start Date');
+    cy.contains('th', 'End Date');
+    cy.contains('th', 'Status');
+    cy.contains('th', 'Payment Eligibility');
+    cy.contains('th', 'Actions');
+
     cy.get('tbody tr')
       .first()
       .within(() => {
-        cy.get('td').should('have.length', expectedCells.length);
-
-        cy.get('td').then((cells) => {
-          for (let index = 0; index < cells.length; index++) {
-            const cell = cells[index];
-            for (const text of expectedCells[index]) {
-              cy.wrap(cell).contains(text);
-            }
-          }
-        });
+        cy.get('td').should('have.length', 7);
+        cy.contains('td', closureData.facilityName);
+        cy.contains('td', closureData.startDate);
+        cy.contains('td', closureData.endDate);
+        cy.contains('td', 'Pending');
+        cy.contains('td', 'CCFRI');
+        cy.contains('button', 'View Details');
       });
   });
 
@@ -180,6 +187,8 @@ describe('<OrganizationClosures /> ', () => {
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Update');
   });
 
@@ -194,13 +203,15 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutEditClosure],
+          permissions: permWithoutEditClosure,
         },
         organization: {
           organizationId,
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Update').should('not.exist');
   });
 
@@ -218,6 +229,8 @@ describe('<OrganizationClosures /> ', () => {
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Remove');
   });
 
@@ -232,13 +245,15 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutRemoveClosure],
+          permissions: permWithoutRemoveClosure,
         },
         organization: {
           organizationId,
         },
       },
     });
-    cy.contains('button', 'Update').should('not.exist');
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
+    cy.contains('button', 'Remove').should('not.exist');
   });
 });
