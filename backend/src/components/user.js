@@ -31,7 +31,7 @@ const {
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { getRoles } = require('../components/lookup');
 const { getRawContactFacilities } = require('./contact');
-const { isFacilityAdmin } = require('../util/common');
+const { isFacilityAdmin, isProgramYear2024OrLater } = require('../util/common');
 
 async function getUserInfo(req, res) {
   const userInfo = getSessionUser(req);
@@ -145,8 +145,8 @@ async function getUserInfo(req, res) {
     //call the funding agreement table and load that to the application
     let operation = `ccof_funding_agreements?$filter=_ccof_organization_value eq '${organization.organizationId}'`;
     let fundingAgreementDetails = (await getOperation(operation)).value;
-
-    userResponse.application.forEach((ap) => {
+    const filteredApplications = userResponse.application.filter((application) => isProgramYear2024OrLater(application.ccof_ProgramYear?.ccof_name));
+    filteredApplications.forEach((ap) => {
       let application = new MappableObjectForFront(ap, UserProfileApplicationMappings).data;
       application.organizationProviderType = getLabelFromValue(application.organizationProviderType, ORGANIZATION_PROVIDER_TYPES);
       application.applicationStatus = getLabelFromValue(application.applicationStatus, APPLICATION_STATUS_CODES, 'NEW');
@@ -262,7 +262,7 @@ async function getDynamicsUserByEmail(req) {
     email = `${req.session.passport.user._json.idir_username}@gov.bc.ca`;
   }
 
-  email.includes("'") ? (email = email.replace("'", "''")) : email;
+  email = email.replaceAll("'", "''");
   try {
     let response = await getOperation(`systemusers?$select=firstname,domainname,lastname&$filter=internalemailaddress eq '${email}'`);
     return response;
@@ -299,7 +299,7 @@ async function createUser(req, roleId) {
       emailaddress1: req.session.passport.user._json.email,
       ccof_username: getUserName(req),
       // Add a role for new users
-      'ofm_portal_role_id@odata.bind': `/ofm_portal_roles(${roleId})`,
+      'ccof_ccof_portal_id@odata.bind': `/ofm_portal_roles(${roleId})`,
     };
     postOperation('contacts', payload);
   } catch (e) {

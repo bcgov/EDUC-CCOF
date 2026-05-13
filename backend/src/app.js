@@ -69,7 +69,7 @@ Redis.init()
   .catch((error) => {
     log.error('Redis init failed at the app.js level ::', error);
   })
-  .finally(() => {
+  .then(() => {
     app.set('trust proxy', 1);
     //sets security measures (headers, etc)
     app.use(cors());
@@ -112,11 +112,11 @@ Redis.init()
       name: 'ccof_cookie',
       secret: config.get('oidc:clientSecret'),
       resave: false,
-      saveUninitialized: true,
+      saveUninitialized: false,
       cookie: cookie,
     };
     if (Redis.isReady) {
-      sessionConfig.store = new ConnectRedis({ client: Redis.client, prefix: 'ccof-sess:' });
+      sessionConfig.store = new ConnectRedis({ client: Redis.client, prefix: `${Redis.prefix}ccof-sess:` });
     }
     app.use(session(sessionConfig));
 

@@ -1,6 +1,7 @@
 'use strict';
 const { isEmpty } = require('lodash');
 const { getOperation, patchOperationWithObjectId } = require('./utils');
+const { isProgramYear2024OrLater } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
 const { MessageMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
@@ -11,7 +12,9 @@ function mapMessageObjectForFront(data) {
   if (data.createdon) {
     data.createdon = new moment(data.createdon).format('YYYY/MM/DD');
   }
-  return new MappableObjectForFront(data, MessageMappings).toJSON();
+  let mappedMessage = new MappableObjectForFront(data, MessageMappings).toJSON();
+  mappedMessage.isRead = !isEmpty(mappedMessage.lastOpenedTime);
+  return mappedMessage;
 }
 
 function sortByPropertyDesc(property) {
@@ -24,31 +27,28 @@ function sortByPropertyDesc(property) {
 
 async function getAllMessages(req, res) {
   try {
-    let operation =
-      'emails?$select=activityid,createdon,description,lastopenedtime,ccof_program_year,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq ' +
-      req.params.organizationId +
-      ' and statecode eq 1)';
+    const operation = `emails?$select=activityid,createdon,description,lastopenedtime,ccof_program_year,_regardingobjectid_value,subject&$expand=regardingobjectid_account_email($select=accountid,accountnumber,name)&$filter=(regardingobjectid_account_email/accountid eq
+      ${req.params.organizationId}
+       and statecode eq 1)`;
     log.verbose('operation: ', operation);
-    let operationResponse = await getOperation(operation);
-    operationResponse.value.sort(sortByPropertyDesc('createdon'));
-    let allMessages = [];
-    operationResponse.value.forEach((item) => {
-      let message = mapMessageObjectForFront(item);
-      message.isRead = !isEmpty(message.lastOpenedTime);
-      allMessages.push(message);
-    });
-    return res.status(HttpStatus.OK).json(allMessages);
+    const response = await getOperation(operation);
+    const messages = response.value
+      .filter((message) => isProgramYear2024OrLater(message.ccof_program_year))
+      .sort(sortByPropertyDesc('createdon'))
+      .map((item) => mapMessageObjectForFront(item));
+    return res.status(HttpStatus.OK).json(messages);
   } catch (e) {
-    log.error('failed with error', e);
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }
 
 async function updateMessageLastOpenedTime(req, res) {
   try {
-    let response = await patchOperationWithObjectId('emails', req.params.messageId, req.body);
-    return res.status(HttpStatus.OK).json(response);
+    await patchOperationWithObjectId('emails', req.params.messageId, req.body);
+    return res.status(HttpStatus.OK).json();
   } catch (e) {
+    log.error(e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
   }
 }

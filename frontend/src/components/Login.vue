@@ -51,16 +51,15 @@
             <!-- Add height="100%" to div directly below to have the buttons line up with each other on desktop.-->
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">Log in to My ChildCareBC Services with your primary Business BCeID</h4>
+                <h4 class="login-text">Log in to My ChildCareBC Services with your primary Business BCeID</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor"> Enter your user ID and password to continue. </v-card-text>
+              <v-card-text class="login-descriptor"> Enter your user ID and password to continue. </v-card-text>
               <v-spacer />
               <v-card-actions class="mt-auto">
                 <v-row>
                   <v-btn
-                    id="login-button"
                     :href="authRoutes.LOGIN"
-                    class="ma-5 px-4 bg-dark text-white"
+                    class="ma-5 px-4 bg-dark text-white login-button"
                     theme="dark"
                     color="#003366"
                     variant="elevated"
@@ -77,9 +76,9 @@
             <v-divider />
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">Don't have a BCeID?</h4>
+                <h4 class="login-text">Don't have a BCeID?</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor">
+              <v-card-text class="login-descriptor">
                 BCeID is a user ID and password. You can use it to log into many participating government services.
                 <br /><br />
                 If you have logged into other B.C. government services before, you may already have an account.
@@ -111,9 +110,9 @@
             <v-divider />
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">CCFRI Estimator</h4>
+                <h4 class="login-text">CCFRI Estimator</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor" class="pb-0">
+              <v-card-text class="login-descriptor pb-0">
                 <p>
                   The ministry has made enhancements to the
                   <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
@@ -130,8 +129,7 @@
               <v-card-actions>
                 <v-row>
                   <v-btn
-                    id="login-button"
-                    class="ma-5 px-4 bg-dark text-white"
+                    class="ma-5 px-4 bg-dark text-white login-button"
                     theme="dark"
                     color="#003366"
                     variant="elevated"

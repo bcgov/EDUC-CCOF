@@ -149,6 +149,7 @@ export default {
       'isEceweComplete',
       'unlockDeclaration',
       'programYearId',
+      'isApplicationTemplateV3OrHigher',
       'isLicenseUploadComplete',
       'isRenewal',
       'applicationId',
@@ -209,8 +210,8 @@ export default {
       return this.$route.path?.includes(`${PATHS.PREFIX.PCF}/`);
     },
 
-    isRenewalV1() {
-      return this.isRenewal && this.showApplicationTemplateV1;
+    isRenewalApplicationTemplatePreV3() {
+      return this.isRenewal && !this.isApplicationTemplateV3OrHigher;
     },
   },
   watch: {
@@ -338,7 +339,7 @@ export default {
       };
     },
     getRenewalCCOFNavigation() {
-      if (this.showApplicationTemplateV1) {
+      if (!this.isApplicationTemplateV3OrHigher) {
         return this.createNavItem({
           title: 'Licence Upload',
           link: { name: 'Licence Upload' },
@@ -381,7 +382,7 @@ export default {
       this.items.push({
         title: 'Supporting Document',
         link: { name: 'Supporting Document Upload' },
-        isAccessible: this.isRenewalV1 ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewalApplicationTemplatePreV3 ? true : isCCOFGroupComplete,
         icon: 'mdi-information',
         isActive: 'Supporting Document Upload' === this.$route.name,
         expanded: false,
@@ -589,7 +590,7 @@ export default {
       items.push({
         title: 'Opt-In / Opt-Out',
         link: { name: 'ccfri-home' },
-        isAccessible: this.isRenewalV1 ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewalApplicationTemplatePreV3 ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isCCFRIOptInComplete()),
         isActive: 'ccfri-home' === this.$route.name,
         position: positionIndex++,
@@ -1076,7 +1077,7 @@ export default {
       items.push({
         title: 'Eligibility',
         link: { name: 'ECEWE Eligibility' },
-        isAccessible: this.isRenewalV1 ? true : isCCOFGroupComplete,
+        isAccessible: this.isRenewalApplicationTemplatePreV3 ? true : isCCOFGroupComplete,
         icon: this.getCheckbox(this.isEceweComplete),
         isActive: 'ECEWE Eligibility' === this.$route.name,
         position: positionIndex++,
@@ -1085,7 +1086,9 @@ export default {
       items.push({
         title: 'Facility',
         link: { name: 'ECEWE Facilities' },
-        isAccessible: this.isRenewalV1 ? this.isEceweComplete : isCCOFGroupComplete && this.isEceweComplete,
+        isAccessible: this.isRenewalApplicationTemplatePreV3
+          ? this.isEceweComplete
+          : isCCOFGroupComplete && this.isEceweComplete,
         icon: this.getCheckbox(this.isEceweFacilitiesComplete()),
         isActive: 'ECEWE Facilities' === this.$route.name,
         position: positionIndex++,

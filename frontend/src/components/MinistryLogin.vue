@@ -25,16 +25,15 @@
             <v-divider />
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">Use your IDIR Account</h4>
+                <h4 class="login-text">Use your IDIR Account</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor"> Enter your user ID and password to continue. </v-card-text>
+              <v-card-text class="login-descriptor"> Enter your user ID and password to continue. </v-card-text>
               <v-spacer />
               <v-card-actions class="mt-auto">
                 <v-row>
                   <v-btn
-                    id="login-button"
+                    class="login-button ma-5"
                     :href="authRoutes.LOGIN_IDIR"
-                    class="ma-5"
                     variant="elevated"
                     color="#003366"
                     @click="clearStorage"
@@ -50,9 +49,9 @@
             <v-divider />
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">Ministry Login</h4>
+                <h4 class="login-text">Ministry Login</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor">
+              <v-card-text class="login-descriptor">
                 This login is for Ministry users only. You must be authorized to use this login.
               </v-card-text>
             </v-card>
@@ -67,9 +66,9 @@
             <v-divider />
             <v-card flat class="d-flex flex-column">
               <v-card-title class="gov-header">
-                <h4 id="login_text">CCFRI Estimator</h4>
+                <h4 class="login-text">CCFRI Estimator</h4>
               </v-card-title>
-              <v-card-text id="login_descriptor" class="pb-0">
+              <v-card-text class="login-descriptor pb-0">
                 <p>
                   The ministry has made enhancements to the
                   <a href="https://mychildcareservices.gov.bc.ca/ccfri-estimator">CCFRI Estimator</a>
@@ -85,7 +84,7 @@
               <v-spacer />
               <v-card-actions>
                 <v-row>
-                  <v-btn id="login-button" class="ma-5" color="#003366" variant="elevated" @click="toEstimator">
+                  <v-btn class="login-button ma-5" color="#003366" variant="elevated" @click="toEstimator">
                     Go to Estimator
                   </v-btn>
                 </v-row>

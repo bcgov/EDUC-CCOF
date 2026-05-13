@@ -5,7 +5,46 @@
       <b>{{ organizationName }}</b> <br />
       ID: {{ organizationAccountNumber }}
     </p>
-    <v-row>
+    <v-row class="mb-6 align-start">
+      <v-col cols="12" md="10" class="pr-md-4">
+        <v-card variant="outlined" class="mb-0 info-box pa-4">
+          <v-row dense>
+            <v-col cols="12" md="4">
+              <div class="info-text">
+                <p><strong>Portal User</strong> can log in to the portal. A Business BCeID is required.</p>
+                <p class="mt-2"><strong>Contact Only</strong> cannot log in to the portal. No BCeID is required.</p>
+              </div>
+            </v-col>
+            <v-col cols="12" md="8">
+              <div class="info-text">
+                <p>
+                  <strong>Organization Administrator</strong> has full access to all facilities in your organization.
+                  Can manage users, submit change requests, and take all actions on the portal.
+                </p>
+                <p class="mt-2">
+                  <strong>Facility Administrator Advanced</strong> can access assigned facilities. Can submit Enrolment
+                  Reports, Closure requests, and update the facility's phone number and email address.
+                </p>
+                <p class="mt-2">
+                  <strong>Facility Administrator Basic</strong> can access assigned facilities and fill out Enrolment
+                  Reports and Closure requests, but cannot submit them. Cannot update facility contact information.
+                </p>
+                <p class="mt-2">
+                  <strong>Read Only</strong> users can view all facilities and search records, but cannot make any
+                  changes or submit requests.
+                </p>
+              </div>
+            </v-col>
+          </v-row>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <p class="mb-2">
+        <v-icon size="x-large" class="mr-2" color="primary"> mdi-information </v-icon>
+        <strong>Note:</strong>
+        To update someone's access type, click Remove, then use Add New User to re-add them with a new role.
+      </p>
       <v-col class="d-flex justify-end">
         <AppButton
           v-if="hasPermission(PERMISSIONS.ADD_USERS)"
@@ -297,5 +336,18 @@ export default {
 
 .primary-contact {
   border: 2px solid;
+}
+
+.info-text p {
+  margin: 2px 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #474543;
+}
+
+.info-box {
+  border: 1px solid #003366;
+  background-color: #f1f8fe;
+  border-radius: 4px;
 }
 </style>

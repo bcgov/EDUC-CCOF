@@ -135,8 +135,8 @@
           type="paragraph, text@3, paragraph, text@3, paragraph, paragraph, text@2, paragraph"
         >
           <v-container fluid class="px-6">
-            <ApplicationDeclarationTextV2 v-if="showDeclarationV2" :enabled-declaration-b="model.enabledDeclarationB" />
-            <ApplicationDeclarationTextV1 v-else />
+            <ApplicationDeclarationTextV2 v-if="showDeclarationV2" />
+            <ApplicationDeclarationTextV1 v-else :enabled-declaration-b="model.enabledDeclarationB" />
 
             <div class="my-2">
               <v-checkbox
@@ -270,10 +270,10 @@ export default {
       'applicationTemplateVersion',
       'formattedProgramYear',
       'isApplicationProcessing',
+      'isApplicationTemplateV3OrHigher',
       'isRenewal',
       'renewalFundingAgreementId',
       'programYearId',
-      'showApplicationTemplateV1',
       'unlockBaseFunding',
       'unlockRenewal',
       'unlockDeclaration',
@@ -398,8 +398,11 @@ export default {
         !this.isApplicationFormComplete
       );
     },
+    isRenewalApplicationTemplateV3OrHigher() {
+      return this.isRenewal && this.isApplicationTemplateV3OrHigher;
+    },
     showCCOFBaseFundingSummary() {
-      return !this.showApplicationTemplateV1 && this.isRenewal && !this.isChangeRequest;
+      return this.isRenewalApplicationTemplateV3OrHigher && !this.isChangeRequest;
     },
     showOrganizationSummary() {
       return !this.isRenewal && !this.isChangeRequest;
@@ -437,7 +440,9 @@ export default {
         this.setIsApplicationProcessing(true);
 
         await Promise.all([this.getChangeRequestList(), this.loadSummary()]);
-        await this.loadRenewalFundingAgreementId();
+        if (this.isRenewalApplicationTemplateV3OrHigher) {
+          await this.loadRenewalFundingAgreementId();
+        }
 
         if (this.isChangeRequest) {
           await this.loadChangeRequestSummaryDeclaration(this.$route.params?.changeRecGuid);
@@ -465,7 +470,9 @@ export default {
         if (this.isChangeRequest) {
           await this.updateDeclaration({ changeRequestId: this.$route.params?.changeRecGuid, reLockPayload: [] });
         } else {
-          await this.updateRenewalFundingAgreementBeforeSubmit();
+          if (this.isRenewalApplicationTemplateV3OrHigher) {
+            await this.updateRenewalFundingAgreementBeforeSubmit();
+          }
           await this.updateAfsSupportingDocuments();
           await this.updateDeclaration({ changeRequestId: undefined, reLockPayload: this.createRelockPayload() });
         }
@@ -554,7 +561,6 @@ export default {
       );
     },
     async updateRenewalFundingAgreementBeforeSubmit() {
-      if (!this.isRenewal) return;
       if (!this.renewalFundingAgreementId) {
         throw new Error('Funding Agreement not found');
       }
@@ -567,13 +573,12 @@ export default {
       await FundingAgreementService.updateFundingAgreement(this.renewalFundingAgreementId, payload);
     },
     async loadRenewalFundingAgreementId() {
-      if (!this.isRenewal || this.renewalFundingAgreementId) return;
+      if (this.renewalFundingAgreementId) return;
 
       const response = await FundingAgreementService.getFundingAgreements({
         organizationId: this.summaryModel?.application?.organizationId,
         programYearId: this.programYearId,
         fundingAgreementOrderNumber: 0,
-        includePdf: false,
       });
 
       const fa = response?.[0];

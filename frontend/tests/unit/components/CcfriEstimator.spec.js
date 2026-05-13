@@ -178,10 +178,12 @@ describe('CcfriEstimator.js', () => {
             row: index + 5,
           };
           if (hasFailed(result)) {
-            (result.result = 'FAIL'), results.push(result);
+            result.result = 'FAIL';
+            results.push(result);
             errors++;
           } else {
-            (result.result = 'PASS'), results.push(result);
+            result.result = 'PASS';
+            results.push(result);
           }
 
           // expect(result).toBeCorrect();

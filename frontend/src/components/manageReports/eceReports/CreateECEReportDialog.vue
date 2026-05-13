@@ -118,7 +118,12 @@ import {
   OPT_STATUSES,
   PATHS,
 } from '@/utils/constants';
-import { formatFirstDateOfMonth, formatMonthYearToString, formatUTCtoPacificTime } from '@/utils/format';
+import {
+  formatFirstDateOfMonth,
+  formatLastDateOfMonth,
+  formatMonthYearToString,
+  formatUTCtoPacificTime,
+} from '@/utils/format';
 import { rules } from '@/utils/rules';
 
 export default {
@@ -194,25 +199,38 @@ export default {
           return [];
         }
         const { financialYear } = this.selectedProgramYear;
-        const endYear = Number(financialYear);
-        if (!endYear || Number.isNaN(endYear)) {
+        const fiscalEndYear = Number(financialYear);
+        if (!fiscalEndYear || Number.isNaN(fiscalEndYear)) {
           throw new Error(`Invalid financial year: ${financialYear}`);
         }
-        const startYear = endYear - 1;
+        const fiscalStartYear = fiscalEndYear - 1;
+        const fiscalYearStartDate = formatFirstDateOfMonth(FISCAL_YEAR_MONTHS[0], fiscalStartYear);
+        const fiscalYearEndDate = formatLastDateOfMonth(
+          FISCAL_YEAR_MONTHS[FISCAL_YEAR_MONTHS.length - 1],
+          fiscalEndYear,
+        );
+
         const currentTime = formatUTCtoPacificTime(this.userInfo?.serverTime);
-        const currentMonth = currentTime?.month;
-        const currentYear = currentTime?.year;
+        const currentMonth = currentTime.month;
+        const currentYear = currentTime.year;
         const currentMonthFirstDate = formatFirstDateOfMonth(currentMonth, currentYear);
-        return this.getTrailingMonths(currentMonth)
-          .map((month) => {
-            const year = month >= FISCAL_YEAR_MONTHS[0] ? startYear : endYear;
-            return {
-              month,
-              year,
-              firstDate: formatFirstDateOfMonth(month, year),
-            };
-          })
-          .filter((month) => month.firstDate <= currentMonthFirstDate);
+
+        const result = [];
+        for (let i = this.DEFAULT_MAX_MONTHS - 1; i >= 0; i--) {
+          const date = new Date(currentYear, currentMonth - 1 - i, 1);
+          const month = date.getMonth() + 1;
+          const year = date.getFullYear();
+          const firstDate = formatFirstDateOfMonth(month, year);
+          if (
+            firstDate >= fiscalYearStartDate &&
+            firstDate <= fiscalYearEndDate &&
+            firstDate <= currentMonthFirstDate
+          ) {
+            result.push({ month, year, firstDate });
+          }
+        }
+
+        return result;
       } catch (error) {
         console.error(error);
         this.setFailureAlert('An error occurred while processing month of service. Please try again later.');
@@ -256,9 +274,9 @@ export default {
     selectedProgramYearId: {
       async handler() {
         this.$refs.form?.resetValidation();
+        this.clearForm();
         await this.loadData();
         this.selectedFacilityId = this.defaultFacilityId;
-        this.selectedReportingMonth = null;
       },
     },
     selectedFacilityId: {
@@ -298,13 +316,9 @@ export default {
       const response = await ApplicationService.getAdjudicationECEWEFacilities(application?.applicationId);
       this.eceweFacilities = new Map((response ?? []).map((f) => [f.facilityId, f]));
     },
-    getTrailingMonths(currentMonth, maxMonths = this.DEFAULT_MAX_MONTHS) {
-      if (!currentMonth) {
-        return [];
-      }
-      const currentIndex = FISCAL_YEAR_MONTHS.indexOf(currentMonth);
-      const startIndex = Math.max(0, currentIndex - (maxMonths - 1));
-      return FISCAL_YEAR_MONTHS.slice(startIndex, currentIndex + 1);
+    clearForm() {
+      this.selectedFacilityId = null;
+      this.selectedReportingMonth = null;
     },
     getReportingMonthsByFacilityId(facilityId) {
       const eceweFacility = this.eceweFacilities.get(facilityId);

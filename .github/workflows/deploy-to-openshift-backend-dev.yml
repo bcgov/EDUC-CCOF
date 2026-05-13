@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Check for required secrets
-        uses: actions/github-script@v4
+        uses: actions/github-script@10b53a9ec6c222bb4ce97aa6bd2b5f739696b536 #v4.2.0
         with:
           script: |
             const secrets = {
@@ -94,14 +94,14 @@ jobs:
             }
 
       - name: Check out repository with branch [${{ env.BRANCH }}]
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5a #v4.3.1
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false
 
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 #v4.1.0
         with:
           registry: ${{ env.DOCKER_ARTIFACTORY_REPO }}
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
@@ -109,7 +109,7 @@ jobs:
 
       - name: Build backend from Dockerfile
         id: build-image-backend
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 #v2.13
         with:
           image: ${{ env.IMAGE_NAME }}
           tags: "latest"
@@ -124,7 +124,7 @@ jobs:
         # https://github.com/redhat-actions/push-to-registry#readme
       - name: Push backend to registry
         id: push-image-backend
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c #v2.8
         with:
           image: ${{ steps.build-image-backend.outputs.image }}
           tags: ${{ steps.build-image-backend.outputs.tags }}
@@ -133,7 +133,7 @@ jobs:
           password: ${{ env.IMAGE_REGISTRY_PASSWORD }}
 
       - name: Setup Keycloak Client
-        uses: actions/github-script@v7
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b #v7.1.0
         env:
           KC_REALM_ID: ${{ secrets.KC_REALM_ID }}
           KC_CLIENT_ID: ${{ secrets.KC_ADMIN_CLIENT_ID }}
@@ -146,66 +146,79 @@ jobs:
             await main();
 
       - name: Install oc
-        uses: redhat-actions/openshift-tools-installer@v1
+        uses: redhat-actions/openshift-tools-installer@144527c7d98999f2652264c048c7a9bd103f8a82 #v1.13.1
         with:
           oc: 4.16
 
       - name: Deploy
+        env:
+          CCOF_NAMESPACE_NO_ENV: ${{ secrets.CCOF_NAMESPACE_NO_ENV }}
+          COMMON_NAMESPACE_NO_ENV: ${{ secrets.COMMON_NAMESPACE_NO_ENV }}
+          SOAM_CLIENT_ID: ${{ secrets.SOAM_CLIENT_ID }}
+          SOAM_CLIENT_SECRET: ${{ secrets.SOAM_CLIENT_SECRET }}
+          SOAM_IDP_HINT_BCEID: ${{ secrets.SOAM_IDP_HINT_BCEID }}
+          SOAM_IDP_HINT_IDIR: ${{ secrets.SOAM_IDP_HINT_IDIR }}
+          SPLUNK_TOKEN: ${{ secrets.SPLUNK_TOKEN }}
+          D365_API_PREFIX: ${{ secrets.D365_API_PREFIX }}
+          D365_API_KEY_HEADER: ${{ secrets.D365_API_KEY_HEADER }}
+          D365_API_KEY_VALUE: ${{ secrets.D365_API_KEY_VALUE }}
+          CANADA_POST_API_ENDPOINT: ${{ secrets.CANADA_POST_API_ENDPOINT }}
+          CANADA_POST_API_KEY: ${{ secrets.CANADA_POST_API_KEY }}
         run: |
           set -eux
           # Login to OpenShift and select project
-          oc login --token=${{ env.OPENSHIFT_TOKEN }} --server=${{ env.OPENSHIFT_SERVER }}
-          oc project ${{ env.OPENSHIFT_NAMESPACE }}
+          oc login --token="$OPENSHIFT_TOKEN" --server="$OPENSHIFT_SERVER"
+          oc project "$OPENSHIFT_NAMESPACE"
           # Cancel any rollouts in progress
-          oc rollout cancel deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+          oc rollout cancel "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT" 2> /dev/null \
               || true && echo "No rollout in progress"
 
           oc tag \
              ${{ steps.push-image-backend.outputs.registry-path }} \
-             ${{ env.REPO_NAME }}-${{ env.IMAGE_NAME }}-${{ env.BRANCH }}:${{ env.TAG }}
+             "$REPO_NAME-$IMAGE_NAME-$BRANCH:$TAG"
 
           # Process and apply deployment template
           oc process \
              -f tools/openshift/backend.deployment.yaml \
-             -p APP_NAME=${{ env.APP_NAME }} \
-             -p REPO_NAME=${{ env.REPO_NAME }} \
-             -p BRANCH=${{ env.BRANCH }} \
-             -p NAMESPACE=${{ env.OPENSHIFT_NAMESPACE }} \
-             -p TAG=${{ env.TAG }} \
-             -p MIN_REPLICAS=${{ env.MIN_REPLICAS }} \
-             -p MAX_REPLICAS=${{ env.MAX_REPLICAS }} \
-             -p MIN_CPU=${{ env.MIN_CPU }} \
-             -p MAX_CPU=${{ env.MAX_CPU }} \
-             -p MIN_MEM=${{ env.MIN_MEM }} \
-             -p MAX_MEM=${{ env.MAX_MEM }} \
-             -p HOST_ROUTE=${{ env.HOST_ROUTE }} \
-             -p APP_ENVIRONMENT=${{ env.APP_ENVIRONMENT }} \
+             -p APP_NAME="$APP_NAME" \
+             -p REPO_NAME="$REPO_NAME" \
+             -p BRANCH="$BRANCH" \
+             -p NAMESPACE="$OPENSHIFT_NAMESPACE" \
+             -p TAG="$TAG" \
+             -p MIN_REPLICAS="$MIN_REPLICAS" \
+             -p MAX_REPLICAS="$MAX_REPLICAS" \
+             -p MIN_CPU="$MIN_CPU" \
+             -p MAX_CPU="$MAX_CPU" \
+             -p MIN_MEM="$MIN_MEM" \
+             -p MAX_MEM="$MAX_MEM" \
+             -p HOST_ROUTE="$HOST_ROUTE" \
+             -p APP_ENVIRONMENT="$APP_ENVIRONMENT" \
               | oc apply -f -
 
           # Process update-configmap
-          curl -s https://raw.githubusercontent.com/bcgov/${{ env.REPO_NAME }}/${{ env.BRANCH }}/tools/config/update-configmap.sh \
+          curl -s "https://raw.githubusercontent.com/bcgov/$REPO_NAME/$BRANCH/tools/config/update-configmap.sh" \
             | bash /dev/stdin \
-              ${{ env.APP_ENVIRONMENT }} \
-              ${{ env.APP_NAME }} \
-              ${{ secrets.CCOF_NAMESPACE_NO_ENV }} \
-              ${{ secrets.COMMON_NAMESPACE_NO_ENV }} \
-              ${{ secrets.SOAM_CLIENT_ID }} \
-              ${{ secrets.SOAM_CLIENT_SECRET }} \
-              ${{ secrets.SOAM_IDP_HINT_BCEID }} \
-              ${{ secrets.SOAM_IDP_HINT_IDIR }} \
-              ${{ secrets.SPLUNK_TOKEN }} \
-              ${{ secrets.D365_API_PREFIX }} \
-              ${{ secrets.D365_API_KEY_HEADER }} \
-              ${{ secrets.D365_API_KEY_VALUE }} \
-              ${{ secrets.CANADA_POST_API_ENDPOINT }} \
-              ${{ secrets.CANADA_POST_API_KEY }}
+              "$APP_ENVIRONMENT" \
+              "$APP_NAME" \
+              "$CCOF_NAMESPACE_NO_ENV" \
+              "$COMMON_NAMESPACE_NO_ENV" \
+              "$SOAM_CLIENT_ID" \
+              "$SOAM_CLIENT_SECRET" \
+              "$SOAM_IDP_HINT_BCEID" \
+              "$SOAM_IDP_HINT_IDIR" \
+              "$SPLUNK_TOKEN" \
+              "$D365_API_PREFIX" \
+              "$D365_API_KEY_HEADER" \
+              "$D365_API_KEY_VALUE" \
+              "$CANADA_POST_API_ENDPOINT" \
+              "$CANADA_POST_API_KEY"
 
           # Start rollout of the application
-          oc rollout restart deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }} 2> /dev/null \
+          oc rollout restart "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT" 2> /dev/null \
               || true && echo "Rollout in progress"
 
           # Get status, returns 0 if rollout is successful
-          oc rollout status deployment/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-${{ env.APP_ENVIRONMENT }}
+          oc rollout status "deployment/$APP_NAME-$IMAGE_NAME-$APP_ENVIRONMENT"
 
   zap:
     name: Run Zap Scan

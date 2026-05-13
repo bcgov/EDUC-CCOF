@@ -5,7 +5,7 @@
       <template #text>
         You have Logged out.
         <br />
-        <a id="login-button" :href="loginUrl" @click="clearStorage">Log In</a>
+        <a class="login-button" :href="loginUrl" @click="clearStorage">Log In</a>
         again if you wish to continue.
       </template>
     </AppSimpleCard>

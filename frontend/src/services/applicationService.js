@@ -75,6 +75,11 @@ export default {
   showApplicationTemplateV1(version) {
     return !version || version === 1;
   },
+
+  isApplicationTemplateV3OrHigher(version) {
+    return version >= 3;
+  },
+
   isOrganizationComplete(organization, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [

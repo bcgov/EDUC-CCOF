@@ -51,4 +51,9 @@ function getCurrentPacificDate() {
   }).format(new Date());
 }
 
-module.exports = { formatDateForBack, getCurrentPacificDate, isFacilityAdmin, restrictFacilities, sanitizeODataFilterValue };
+// CCFRI-7680 - Check whether the record belongs to program year 2024/25 or later.
+function isProgramYear2024OrLater(programYearName) {
+  return Number(programYearName?.slice(0, 4)) >= 2024;
+}
+
+module.exports = { formatDateForBack, getCurrentPacificDate, isFacilityAdmin, isProgramYear2024OrLater, restrictFacilities, sanitizeODataFilterValue };

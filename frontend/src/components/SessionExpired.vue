@@ -5,7 +5,7 @@
       <template #text>
         Your secure session has ended as a result of inactivity.
         <br />
-        <a id="login-button" :href="loginUrl" @click="clearStorage">Log In</a>
+        <a class="login-button" :href="loginUrl" @click="clearStorage">Log In</a>
         again to continue.
       </template>
     </AppSimpleCard>
