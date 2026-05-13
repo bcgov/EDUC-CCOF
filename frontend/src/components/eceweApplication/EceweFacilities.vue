@@ -39,7 +39,7 @@
         <v-container fluid class="pa-0">
           <v-btn
             v-if="organizationProviderType === ORGANIZATION_PROVIDER_TYPES.GROUP"
-            class="mx-0 justify-end"
+            class="mx-0 mt-4 justify-end"
             dark
             color="#003366"
             :disabled="isReadOnly"
@@ -142,7 +142,7 @@
     :is-save-displayed="true"
     :is-save-disabled="isSaveBtnDisabled || isReadOnly"
     :is-next-disabled="isNextBtnDisabled"
-    :is-processing="isProcessing"
+    :is-processing="isApplicationProcessing"
     @previous="previous"
     @next="next"
     @validate-form="validateForm()"
@@ -179,6 +179,9 @@ export default {
   components: { ApplicationPCFHeader, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
+    if (this.isApplicationProcessing || this.isLoading) {
+      return next(false);
+    }
     await this.saveFacilities(false);
     next();
   },
@@ -188,7 +191,6 @@ export default {
       uiFacilities: [],
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
-      isProcessing: false, // flag to UI if screen is saving/processing data or not.
     };
   },
   computed: {
@@ -210,6 +212,7 @@ export default {
       'applicationStatus',
       'unlockEcewe',
       'applicationId',
+      'isApplicationProcessing',
     ]),
     ...mapState(useReportChangesStore, ['isEceweUnlocked', 'changeRequestStatus']),
     isNextBtnDisabled() {
@@ -264,6 +267,7 @@ export default {
     this.ECEWE_FACILITY_UNION_TYPES = ECEWE_FACILITY_UNION_TYPES;
   },
   methods: {
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing']),
     ...mapActions(useEceweAppStore, [
       'loadECEWE',
       'saveECEWEFacilities',
@@ -348,11 +352,11 @@ export default {
       });
     },
     async saveFacilities(showConfirmation) {
-      if (this.isReadOnly) {
+      if (this.isReadOnly || this.isApplicationProcessing) {
         return;
       }
-      this.isProcessing = true;
       try {
+        this.setIsApplicationProcessing(true);
         if (this.showUnionQuestion) {
           this.resetUnionResponse();
         }
@@ -391,7 +395,7 @@ export default {
           'An error occurred while saving ECEWE facility applications. Please try again later.' + error,
         );
       }
-      this.isProcessing = false;
+      this.setIsApplicationProcessing(false);
     },
   },
 };

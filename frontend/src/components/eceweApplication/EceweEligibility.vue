@@ -39,7 +39,7 @@
     :is-save-displayed="true"
     :is-save-disabled="isReadOnly"
     :is-next-disabled="!enableButtons"
-    :is-processing="isProcessing"
+    :is-processing="isApplicationProcessing"
     class="mt-12"
     @previous="previous"
     @next="next"
@@ -83,6 +83,9 @@ export default {
   components: { ApplicationPCFHeader, EceweEligibilityQuestionsV1, EceweEligibilityQuestionsV2, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
+    if (this.isApplicationProcessing || this.isLoading) {
+      return next(false);
+    }
     this.setIsStarted(true);
     await this.saveECEWEApplication(false);
     next();
@@ -92,7 +95,6 @@ export default {
       rules,
       model: {},
       isLoading: false, // flag to UI if screen is getting data or not.
-      isProcessing: false, // flag to UI if screen is saving/processing data or not. We do not hide questions when saving, so we need this flag.
       isValidForm: false,
     };
   },
@@ -107,6 +109,7 @@ export default {
       'applicationStatus',
       'unlockEcewe',
       'applicationId',
+      'isApplicationProcessing',
       'showApplicationTemplateV1',
     ]),
     ...mapState(useOrganizationStore, ['organizationProviderType']),
@@ -184,7 +187,7 @@ export default {
       'setFundingModelTypes',
       'setLoadedFacilities',
     ]),
-    ...mapActions(useApplicationStore, ['setIsEceweCompleteInMap', 'setIsEceweComplete']),
+    ...mapActions(useApplicationStore, ['setIsApplicationProcessing', 'setIsEceweCompleteInMap', 'setIsEceweComplete']),
     ...mapActions(useReportChangesStore, ['setCRIsEceweComplete', 'getChangeRequest']),
     ...mapActions(useNavBarStore, ['forceNavBarRefresh']),
 
@@ -295,12 +298,11 @@ export default {
       });
     },
     async saveECEWEApplication(showConfirmation = true) {
-      if (this.isReadOnly) {
+      if (this.isReadOnly || this.isApplicationProcessing) {
         return;
       }
-
+      this.setIsApplicationProcessing(true);
       this.model = this.$refs.eligibilityQuestions.getFormData();
-      this.isProcessing = true;
       try {
         this.updateQuestions();
         this.setEceweModel(this.model);
@@ -361,7 +363,7 @@ export default {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.');
         console.log(error);
       } finally {
-        this.isProcessing = false;
+        this.setIsApplicationProcessing(false);
       }
     },
   },
