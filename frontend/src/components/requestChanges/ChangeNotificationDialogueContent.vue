@@ -31,6 +31,8 @@
           <div class="mt-4">
             <a
               class="text-decoration-underline"
+              target="_blank"
+              rel="noopener noreferrer"
               href="https://www2.gov.bc.ca/assets/gov/british-columbians-our-governments/services-policies-for-government/internal-corporate-services/finance-forms/fin-312-direct-deposit-application.pdf"
               >Direct Deposit Application</a
             >
@@ -54,7 +56,7 @@
 
 <script>
 export default {
-  name: 'GroupNFamilyChangeDialogueContent',
+  name: 'ChangeNotificationDialogueContent',
   computed: {
     borderClass() {
       return this.$vuetify.display.smAndUp ? 'border-right' : 'border-bottom';

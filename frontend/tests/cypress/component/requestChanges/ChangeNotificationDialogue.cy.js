@@ -73,7 +73,7 @@ describe('<ChangeNotificationDialogue />', () => {
     );
   });
 
-  it('should render group or family change dialog', () => {
+  it('should render change dialog content', () => {
     mountWithPinia({
       ...createAuthStore(),
     });

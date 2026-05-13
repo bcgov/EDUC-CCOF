@@ -8,13 +8,17 @@
           {{ userInfo.organizationName }}
         </div>
       </div>
-      <GroupNFamilyChangeDialogueContent />
+      <ChangeNotificationDialogueContent />
 
       <div class="text-center mt-4 mb-8">
         For more information about reporting changes, visit the
         <a
+          class="text-decoration-underline"
+          target="_blank"
+          rel="noopener noreferrer"
           href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes "
-          >Child Care Operating Funding Website</a
+        >
+          Child Care Operating Funding Website </a
         >.
       </div>
 
@@ -34,11 +38,11 @@ import { PATHS, CHANGE_TYPES, changeUrlGuid } from '@/utils/constants.js';
 import NavButton from '@/components/util/NavButton.vue';
 import { ORGANIZATION_PROVIDER_TYPES } from '@/utils/constants.js';
 import alertMixin from '@/mixins/alertMixin.js';
-import GroupNFamilyChangeDialogueContent from '@/components/requestChanges/GroupNFamilyChangeDialogueContent.vue';
+import ChangeNotificationDialogueContent from '@/components/requestChanges/ChangeNotificationDialogueContent.vue';
 
 export default {
   name: 'ChangeNotificationDialogue',
-  components: { NavButton, GroupNFamilyChangeDialogueContent },
+  components: { ChangeNotificationDialogueContent, NavButton },
   mixins: [alertMixin],
   data() {
     return {
