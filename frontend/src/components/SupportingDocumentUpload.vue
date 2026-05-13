@@ -109,7 +109,7 @@
         </v-skeleton-loader>
       </div>
       <v-row v-if="otherChanges == 'Yes'" class="d-flex justify-center">
-        <GroupChangeDialogueContent style="max-width: 1200px" class="pb-4" />
+        <ChangeNotificationDialogueContent style="max-width: 1200px" class="pb-4" />
       </v-row>
       <NavButton
         :is-next-displayed="true"
@@ -166,7 +166,7 @@ import { useReportChangesStore } from '@/store/reportChanges.js';
 import { useSupportingDocumentUploadStore } from '@/store/supportingDocumentUpload.js';
 
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import GroupChangeDialogueContent from '@/components/requestChanges/GroupChangeDialogueContent.vue';
+import ChangeNotificationDialogueContent from '@/components/requestChanges/ChangeNotificationDialogueContent.vue';
 import NavButton from '@/components/util/NavButton.vue';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 
@@ -178,7 +178,7 @@ import { deepCloneObject } from '@/utils/common.js';
 import { PATHS, DOCUMENT_TYPES, FILE_REQUIREMENTS_TEXT, FILE_TYPES_ACCEPT, changeUrlGuid } from '@/utils/constants.js';
 
 export default {
-  components: { AppButton, AppDialog, NavButton, GroupChangeDialogueContent },
+  components: { AppButton, AppDialog, ChangeNotificationDialogueContent, NavButton },
   mixins: [alertMixin],
   async beforeRouteLeave(_to, _from, next) {
     if (!this.isLocked) {

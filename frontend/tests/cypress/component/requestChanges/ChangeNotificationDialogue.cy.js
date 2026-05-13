@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 
 import ChangeNotificationDialogue from '@/components/requestChanges/ChangeNotificationDialogue.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, CHANGE_TYPES, ORGANIZATION_PROVIDER_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
+import { ApiRoutes, CHANGE_TYPES, PATHS, changeUrlGuid } from '@/utils/constants.js';
 
 const ORGANIZATION_NAME = 'TEST_ORG_NAME';
 const CHANGE_REQUEST_ID = '000';
@@ -66,33 +66,19 @@ describe('<ChangeNotificationDialogue />', () => {
       ...createAuthStore(),
     });
 
-    cy.contains('visit the Child Care Operating Funding Website').should(
+    cy.contains('Child Care Operating Funding Website').should(
       'have.attr',
       'href',
       'https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/report-changes ',
     );
   });
 
-  it('should render group change dialog', () => {
+  it('should render change dialog content', () => {
     mountWithPinia({
       ...createAuthStore(),
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.GROUP,
-      },
     });
     cy.contains('li', 'Preschool age programs');
     cy.contains('li', 'School age programs');
-  });
-
-  it('should render family change dialog', () => {
-    mountWithPinia({
-      ...createAuthStore(),
-      organization: {
-        organizationProviderType: ORGANIZATION_PROVIDER_TYPES.FAMILY,
-      },
-    });
-    cy.contains('Report Changes');
-    cy.contains('li', 'Preschool age programs').should('not.exist');
   });
 
   it('should render `Next` button', () => {
