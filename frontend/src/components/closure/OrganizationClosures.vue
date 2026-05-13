@@ -242,24 +242,17 @@ export default {
         this.closures = this.closures?.filter((closure) => {
           return closure.closureStatus && closure.closureStatus !== CLOSURE_STATUSES.MINISTRY_REMOVED;
         });
-        await this.getPendingClosureRequestsForApprovedClosures();
+        await this.getPendingClosureRequests();
         this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.setFailureAlert('Failed to load closures');
       }
     },
-    async getPendingClosureRequestsForApprovedClosures() {
-      this.pendingClosureRequests = [];
-      const approvedClosures = this.closures?.filter((closure) => this.hasApprovedStatus(closure));
-      await Promise.all(
-        approvedClosures?.map(async (closure) => {
-          const response = await ClosureService.getPendingChangeActionClosures(
-            closure.facilityId,
-            this.$route.params.programYearGuid,
-          );
-          this.pendingClosureRequests.push(...response);
-        }),
+    async getPendingClosureRequests() {
+      this.pendingClosureRequests = await ClosureService.getPendingChangeActionClosures(
+        this.organizationId,
+        this.$route.params.programYearGuid,
       );
     },
     setClosureToView(closure) {

@@ -1,6 +1,6 @@
 import OrganizationClosures from '@/components/closure/OrganizationClosures.vue';
 import vuetify from '@/plugins/vuetify';
-import { ApiRoutes, CLOSURE_STATUSES } from '@/utils/constants.js';
+import { ApiRoutes, CHANGE_ACTION_CLOSURE_STATUSES, CLOSURE_STATUSES } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
 const programYearGuid = '43242';
@@ -33,7 +33,16 @@ function interceptAPI() {
   cy.intercept('GET', `${ApiRoutes.CLOSURES}?organizationId=${organizationId}&programYearId=${programYearGuid}`, {
     statusCode: 200,
     body: [closureData],
-  }).as('getLicenseCategories');
+  }).as('getOrganizationClosures');
+
+  cy.intercept(
+    'GET',
+    `${ApiRoutes.CHANGE_ACTION_CLOSURE}?organizationId=${organizationId}&programYearId=${programYearGuid}&statusCode=${CHANGE_ACTION_CLOSURE_STATUSES.SUBMITTED}`,
+    {
+      statusCode: 200,
+      body: [],
+    },
+  ).as('getPendingClosureRequests');
 }
 
 function mountWithPinia({ initialState = {} } = {}) {
@@ -102,7 +111,7 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutReqClosure],
+          permissions: permWithoutReqClosure,
         },
       },
     });
@@ -150,6 +159,9 @@ describe('<OrganizationClosures /> ', () => {
       },
     });
 
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
+
     cy.get('tbody tr')
       .first()
       .within(() => {
@@ -180,6 +192,8 @@ describe('<OrganizationClosures /> ', () => {
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Update');
   });
 
@@ -194,13 +208,15 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutEditClosure],
+          permissions: permWithoutEditClosure,
         },
         organization: {
           organizationId,
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Update').should('not.exist');
   });
 
@@ -218,6 +234,8 @@ describe('<OrganizationClosures /> ', () => {
         },
       },
     });
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
     cy.contains('button', 'Remove');
   });
 
@@ -232,13 +250,15 @@ describe('<OrganizationClosures /> ', () => {
         ...createAppStore(),
         auth: {
           isAuthenticated: true,
-          permissions: [permWithoutRemoveClosure],
+          permissions: permWithoutRemoveClosure,
         },
         organization: {
           organizationId,
         },
       },
     });
-    cy.contains('button', 'Update').should('not.exist');
+    cy.wait('@getOrganizationClosures');
+    cy.wait('@getPendingClosureRequests');
+    cy.contains('button', 'Remove').should('not.exist');
   });
 });
