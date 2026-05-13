@@ -138,6 +138,16 @@ describe('<OrganizationClosures /> ', () => {
   });
 
   it('should render table content', () => {
+    const expectedCells = [
+      ['Facility ID'],
+      ['Facility Name', closureData.facilityName],
+      ['Start Date', closureData.startDate],
+      ['End Date', closureData.endDate],
+      ['Status', 'Pending'],
+      ['Payment Eligibility', 'CCFRI'],
+      ['Actions', 'View Details'],
+    ];
+
     interceptAPI();
 
     mountWithPinia({
@@ -152,24 +162,19 @@ describe('<OrganizationClosures /> ', () => {
     cy.wait('@getOrganizationClosures');
     cy.wait('@getPendingClosureRequests');
 
-    cy.contains('th', 'Facility ID');
-    cy.contains('th', 'Facility Name');
-    cy.contains('th', 'Start Date');
-    cy.contains('th', 'End Date');
-    cy.contains('th', 'Status');
-    cy.contains('th', 'Payment Eligibility');
-    cy.contains('th', 'Actions');
-
     cy.get('tbody tr')
       .first()
       .within(() => {
-        cy.get('td').should('have.length', 7);
-        cy.contains('td', closureData.facilityName);
-        cy.contains('td', closureData.startDate);
-        cy.contains('td', closureData.endDate);
-        cy.contains('td', 'Pending');
-        cy.contains('td', 'CCFRI');
-        cy.contains('button', 'View Details');
+        cy.get('td').should('have.length', expectedCells.length);
+
+        cy.get('td').then((cells) => {
+          for (let index = 0; index < cells.length; index++) {
+            const cell = cells[index];
+            for (const text of expectedCells[index]) {
+              cy.wrap(cell).contains(text);
+            }
+          }
+        });
       });
   });
 
