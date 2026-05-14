@@ -8,11 +8,9 @@
 
 <script>
 // Fixes CSP problems with inline pdf scripts.
-import { GlobalWorkerOptions } from 'vue-pdf-embed/dist/index.essential.mjs';
+import VuePdfEmbed, { GlobalWorkerOptions } from 'vue-pdf-embed/dist/index.essential.mjs';
 import PdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
 GlobalWorkerOptions.workerSrc = PdfWorker;
-
-import VuePdfEmbed from 'vue-pdf-embed';
 
 export default {
   name: 'AppPDFViewer',
