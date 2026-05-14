@@ -15,14 +15,10 @@ GlobalWorkerOptions.workerSrc = PdfWorker;
 export default {
   name: 'AppPDFViewer',
   components: { VuePdfEmbed },
-
   props: {
     pdfFile: {
       type: [String, Object],
       required: true,
-      default: () => {
-        return {};
-      },
     },
   },
 };
