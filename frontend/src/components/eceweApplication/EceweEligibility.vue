@@ -361,7 +361,7 @@ export default {
         }
       } catch (error) {
         this.setFailureAlert('An error occurred while saving ECEWE application. Please try again later.');
-        console.log(error);
+        console.error(error);
       } finally {
         this.setIsApplicationProcessing(false);
       }

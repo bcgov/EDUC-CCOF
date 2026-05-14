@@ -391,9 +391,8 @@ export default {
           this.setSuccessAlert('Success! ECEWE Facility applications have been saved.');
         }
       } catch (error) {
-        this.setFailureAlert(
-          'An error occurred while saving ECEWE facility applications. Please try again later.' + error,
-        );
+        this.setFailureAlert('An error occurred while saving ECEWE facility applications. Please try again later.');
+        console.error(error);
       }
       this.setIsApplicationProcessing(false);
     },
