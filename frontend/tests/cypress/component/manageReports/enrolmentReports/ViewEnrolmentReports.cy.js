@@ -184,7 +184,7 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains(organizationName);
     cy.contains(organizationAccountNumber);
     cy.contains('p', 'Select fiscal year:');
-    cy.contains('View, create and update monthly enrolment reports for your facility(ies).');
+    cy.contains('Edit, submit, view, or adjust your Enrolment Reports.');
   });
 
   it('should render reporting month, facility, sort, page inputs', () => {
