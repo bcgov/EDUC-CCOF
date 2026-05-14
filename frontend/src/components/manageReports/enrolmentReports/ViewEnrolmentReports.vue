@@ -7,7 +7,7 @@
     </div>
     <p class="my-8">
       Edit, submit, view, or adjust your Enrolment Reports. To ensure accurate payments, keep your licence and service
-      details, parent fees, and closure days upto date. Review the
+      details, parent fees, and closure days up to date. Review the
       <a
         class="text-decoration-underline"
         target="_blank"
