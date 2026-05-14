@@ -10,6 +10,17 @@
       <p class="py-2">Month of service: {{ formatMonthYearToString(enrolmentReport?.month, enrolmentReport?.year) }}</p>
       <p>Version number: {{ enrolmentReport.versionText }}</p>
     </div>
+    <div>
+      <p class="py-2">
+        <a
+          class="text-decoration-underline"
+          target="_blank"
+          rel="noopener noreferrer"
+          href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/enrolment-reporting"
+          >Enrolment Report Instructions</a
+        >
+      </p>
+    </div>
   </div>
 </template>
 
