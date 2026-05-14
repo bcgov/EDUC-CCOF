@@ -5,7 +5,17 @@
       <p class="font-weight-bold my-2">{{ organizationName }}</p>
       <p>{{ organizationAccountNumber }}</p>
     </div>
-    <p class="my-8">View, create and update monthly enrolment reports for your facility(ies).</p>
+    <p class="my-8">
+      Edit, submit, view, or adjust your Enrolment Reports. To ensure accurate payments, keep your licence and service
+      details, parent fees, and closure days upto date. Review the
+      <a
+        class="text-decoration-underline"
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/enrolment-reporting"
+        >Enrolment Report Instructions.</a
+      >
+    </p>
     <v-card variant="outlined" class="pa-6 my-6 soft-outline">
       <v-row no-gutters class="mb-8">
         <v-col cols="12" md="8">
