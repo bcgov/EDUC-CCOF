@@ -7,19 +7,18 @@
 </template>
 
 <script>
-import VuePdfEmbed from 'vue-pdf-embed';
+// Fixes CSP problems with inline pdf scripts.
+import VuePdfEmbed, { GlobalWorkerOptions } from 'vue-pdf-embed/dist/index.essential.mjs';
+import PdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+GlobalWorkerOptions.workerSrc = PdfWorker;
 
 export default {
   name: 'AppPDFViewer',
   components: { VuePdfEmbed },
-
   props: {
     pdfFile: {
       type: [String, Object],
       required: true,
-      default: () => {
-        return {};
-      },
     },
   },
 };
