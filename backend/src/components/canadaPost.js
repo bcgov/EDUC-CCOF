@@ -46,10 +46,23 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, headers);
+
+    if (response.data[0]?.Error) {
+      const errorObj = response.data[0];
+      log.error('Canada Post address object contains an error', {
+        searchTerm: req?.query?.searchTerm,
+        errorCode: errorObj.Error,
+        description: errorObj.Description,
+        cause: errorObj.Cause,
+      });
+      throw new Error(`Canada Post error: ${errorObj.Description}`);
+    }
+
     if (req?.query?.searchTerm && Redis.isReady) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
       Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
     }
+
     log.verbose(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
