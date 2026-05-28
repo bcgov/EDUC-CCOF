@@ -44,18 +44,15 @@ async function findAddresses(req, res) {
       Accept: 'text/plain',
       'Content-Type': 'application/json',
     };
-    const response = await axios.get(url, headers);
-    if (response.data[0]?.Error) {
-      const errorObj = response.data[0];
-      log.error('Canada Post address object contains an error', {
-        searchTerm: req?.query?.searchTerm,
-        errorCode: errorObj.Error,
-        description: errorObj.Description,
-        cause: errorObj.Cause,
-      });
-      throw new Error(`Canada Post error: ${errorObj.Description}`);
-    }
+    const response = await axios.get(url, { headers });
+    if (Array.isArray(response.data)) {
+      const errorObj = response.data.find((item) => item?.Error);
 
+      if (errorObj) {
+        log.error('Canada Post address object contains an error', errorObj);
+        throw new Error('Canada Post error');
+      }
+    }
     if (req?.query?.searchTerm && Redis.isReady) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
       Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
@@ -68,11 +65,8 @@ async function findAddresses(req, res) {
       searchTerm: req?.query?.searchTerm,
       error: e.message,
     });
-
-    return res.status(HttpStatus.BAD_REQUEST).json({
-      success: false,
-      message: "We couldn't verify that address. Please check the spelling or enter it manually.",
-      isError: true,
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Address lookup failed. Please try again later.',
     });
   }
 }
