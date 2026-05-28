@@ -4,7 +4,6 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const HttpStatus = require('http-status-codes');
-const { ApiError } = require('./error');
 
 const Redis = require('../util/redis/redis-client');
 const { isEmpty } = require('lodash');
@@ -46,7 +45,7 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, headers);
-    if (Array.isArray(response.data) && response.data[0]?.Error) {
+    if (response.data[0]?.Error) {
       const errorObj = response.data[0];
       log.error('Canada Post address object contains an error', {
         searchTerm: req?.query?.searchTerm,
