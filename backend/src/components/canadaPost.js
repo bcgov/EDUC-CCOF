@@ -70,8 +70,6 @@ async function findAddresses(req, res) {
     log.error('AddressComplete API lookup failed', {
       searchTerm: req?.query?.searchTerm,
       error: e.message,
-      statusCode: e.response?.status,
-      errorData: e.response?.data,
     });
 
     return res.status(HttpStatus.BAD_REQUEST).json({
