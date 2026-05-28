@@ -255,6 +255,7 @@ function mapChangeActionClosureObjectForBack(req) {
   delete changeActionClosureMapp._ccof_closure_value;
   delete changeActionClosureMapp._ccof_facility_value;
   delete changeActionClosureMapp._ccof_program_year_value;
+  delete changeActionClosureMapp._ccof_organization_value;
   return changeActionClosureMapp;
 }
 
