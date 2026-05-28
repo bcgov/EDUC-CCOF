@@ -46,10 +46,8 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, headers);
-    console.log('response.data' + response.data);
     if (Array.isArray(response.data) && response.data[0]?.Error) {
       const errorObj = response.data[0];
-      console.log('errorObj' + errorObj);
       log.error('Canada Post address object contains an error', {
         searchTerm: req?.query?.searchTerm,
         errorCode: errorObj.Error,
