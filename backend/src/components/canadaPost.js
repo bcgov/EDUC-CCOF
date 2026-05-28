@@ -46,9 +46,10 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, headers);
-
-    if (response.data[0]?.Error) {
+    console.log('response.data' + response.data);
+    if (Array.isArray(response.data) && response.data[0]?.Error) {
       const errorObj = response.data[0];
+      console.log('errorObj' + errorObj);
       log.error('Canada Post address object contains an error', {
         searchTerm: req?.query?.searchTerm,
         errorCode: errorObj.Error,
@@ -66,8 +67,18 @@ async function findAddresses(req, res) {
     log.verbose(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
-    log.error(e);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Find error' }, e);
+    log.error('AddressComplete API lookup failed', {
+      searchTerm: req?.query?.searchTerm,
+      error: e.message,
+      statusCode: e.response?.status,
+      errorData: e.response?.data,
+    });
+
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      message: "We couldn't verify that address. Please check the spelling or enter it manually.",
+      isError: true,
+    });
   }
 }
 
