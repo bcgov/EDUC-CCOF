@@ -4,6 +4,7 @@ const axios = require('axios');
 const config = require('../config/index');
 const log = require('./logger');
 const HttpStatus = require('http-status-codes');
+const { ApiError } = require('./error');
 
 const Redis = require('../util/redis/redis-client');
 const { isEmpty } = require('lodash');
@@ -25,7 +26,8 @@ async function findAddresses(req, res) {
 
     if (req?.query?.searchTerm) {
       try {
-        const cachedSearchResult = Redis.isReady ? await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` }) : false;
+        const cachedSearchResult = await getCachedSearchResult(req.query.searchTerm);
+
         if (!isEmpty(cachedSearchResult)) {
           log.verbose(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
           return res.status(HttpStatus.OK).json(cachedSearchResult);
@@ -45,13 +47,11 @@ async function findAddresses(req, res) {
       'Content-Type': 'application/json',
     };
     const response = await axios.get(url, { headers });
-    if (Array.isArray(response.data)) {
-      const errorObj = response.data.find((item) => item?.Error);
+    const errorObj = response.data.find((item) => item?.Error);
 
-      if (errorObj) {
-        log.error('Canada Post address object contains an error', errorObj);
-        throw new Error('Canada Post error');
-      }
+    if (errorObj) {
+      log.error('Canada Post address object contains an error', errorObj);
+      throw new ApiError('Canada post error', errorObj);
     }
     if (req?.query?.searchTerm && Redis.isReady) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
@@ -70,7 +70,21 @@ async function findAddresses(req, res) {
     });
   }
 }
+async function getCachedSearchResult(searchTerm) {
+  if (!Redis.isReady) {
+    return null;
+  }
 
+  try {
+    return await Redis.client.json.get(
+      REDIS_MAP,
+      { path: `.${Redis.encodeKey(searchTerm)}` }
+    );
+  } catch {
+    log.verbose('Unable to find cached search term');
+    return null;
+  }
+}
 module.exports = {
   findAddresses,
 };
