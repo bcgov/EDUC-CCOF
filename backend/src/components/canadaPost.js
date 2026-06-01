@@ -76,10 +76,7 @@ async function getCachedSearchResult(searchTerm) {
   }
 
   try {
-    return await Redis.client.json.get(
-      REDIS_MAP,
-      { path: `.${Redis.encodeKey(searchTerm)}` }
-    );
+    return await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(searchTerm)}` });
   } catch {
     log.verbose('Unable to find cached search term');
     return null;
