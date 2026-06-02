@@ -26,7 +26,8 @@ async function findAddresses(req, res) {
 
     if (req?.query?.searchTerm) {
       try {
-        const cachedSearchResult = Redis.isReady ? await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(req?.query?.searchTerm)}` }) : false;
+        const cachedSearchResult = await getCachedSearchResult(req.query.searchTerm);
+
         if (!isEmpty(cachedSearchResult)) {
           log.verbose(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
           return res.status(HttpStatus.OK).json(cachedSearchResult);
@@ -45,19 +46,42 @@ async function findAddresses(req, res) {
       Accept: 'text/plain',
       'Content-Type': 'application/json',
     };
-    const response = await axios.get(url, headers);
+    const response = await axios.get(url, { headers });
+    const errorObj = response.data.find((item) => item?.Error);
+
+    if (errorObj) {
+      log.error('Canada Post address object contains an error', errorObj);
+      throw new ApiError('Canada post error', errorObj);
+    }
     if (req?.query?.searchTerm && Redis.isReady) {
       Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
       Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
     }
+
     log.verbose(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
-    log.error(e);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Find error' }, e);
+    log.error('AddressComplete API lookup failed', {
+      searchTerm: req?.query?.searchTerm,
+      error: e.message,
+    });
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Address lookup failed. Please try again later.',
+    });
   }
 }
+async function getCachedSearchResult(searchTerm) {
+  if (!Redis.isReady) {
+    return null;
+  }
 
+  try {
+    return await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(searchTerm)}` });
+  } catch {
+    log.verbose('Unable to find cached search term');
+    return null;
+  }
+}
 module.exports = {
   findAddresses,
 };
