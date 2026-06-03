@@ -1,39 +1,27 @@
 'use strict';
 
 const axios = require('axios');
+const cache = require('memory-cache');
 const config = require('../config/index');
 const log = require('./logger');
 const HttpStatus = require('http-status-codes');
 const { ApiError } = require('./error');
 
-const Redis = require('../util/redis/redis-client');
-const { isEmpty } = require('lodash');
-const REDIS_EXPIRE_ARGS = [3600, 'NX'];
-const REDIS_MAP = 'postalQueries';
+const addressSearchResultsCache = new cache.Cache();
+const ONE_DAY_MS = 24 * 60 * 60 * 1000; // Cache timeout set for one day
 
 /*
   The documentation of the Canada Post's AddressComplete API: https://www.canadapost-postescanada.ca/ac/support/api/
 */
 async function findAddresses(req, res) {
-  if (Redis.isReady) {
-    await Redis.client.json.set(REDIS_MAP, '$', {}, { condition: 'NX' });
-  } else {
-    log.error('Redis is not working for Canada Post lookups, this should not have happened.');
-  }
-
   try {
     let url = `${config.get('canadaPostApi:apiEndpoint')}?key=${config.get('canadaPostApi:apiKey')}`;
 
     if (req?.query?.searchTerm) {
-      try {
-        const cachedSearchResult = await getCachedSearchResult(req.query.searchTerm);
-
-        if (!isEmpty(cachedSearchResult)) {
-          log.verbose(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
-          return res.status(HttpStatus.OK).json(cachedSearchResult);
-        }
-      } catch {
-        log.verbose('Unable to find cached search term');
+      const cachedSearchResult = addressSearchResultsCache.get(req?.query?.searchTerm);
+      if (cachedSearchResult) {
+        log.info(`Canada Post findAddresses :: Cache hit for search term: '${req?.query?.searchTerm}'`);
+        return res.status(HttpStatus.OK).json(cachedSearchResult);
       }
       url += `&SearchTerm=${req.query.searchTerm}`;
     }
@@ -53,12 +41,10 @@ async function findAddresses(req, res) {
       log.error('Canada Post address object contains an error', errorObj);
       throw new ApiError('Canada post error', errorObj);
     }
-    if (req?.query?.searchTerm && Redis.isReady) {
-      Redis.client.json.set(REDIS_MAP, `$.${Redis.encodeKey(req?.query?.searchTerm)}`, response.data);
-      Redis.client.expire(REDIS_MAP, ...REDIS_EXPIRE_ARGS);
+    if (req?.query?.searchTerm) {
+      addressSearchResultsCache.put(req?.query?.searchTerm, response.data, ONE_DAY_MS);
     }
-
-    log.verbose(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
+    log.info(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
     log.error('AddressComplete API lookup failed', {
@@ -70,18 +56,7 @@ async function findAddresses(req, res) {
     });
   }
 }
-async function getCachedSearchResult(searchTerm) {
-  if (!Redis.isReady) {
-    return null;
-  }
 
-  try {
-    return await Redis.client.json.get(REDIS_MAP, { path: `.${Redis.encodeKey(searchTerm)}` });
-  } catch {
-    log.verbose('Unable to find cached search term');
-    return null;
-  }
-}
 module.exports = {
   findAddresses,
 };
