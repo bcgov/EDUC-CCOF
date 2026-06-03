@@ -10,7 +10,7 @@ const { ApiError } = require('./error');
 const addressSearchResultsCache = new cache.Cache();
 const ONE_DAY_MS = 24 * 60 * 60 * 1000; // Cache timeout set for one day
 
-/* 
+/*
   The documentation of the Canada Post's AddressComplete API: https://www.canadapost-postescanada.ca/ac/support/api/
 */
 async function findAddresses(req, res) {
@@ -34,15 +34,26 @@ async function findAddresses(req, res) {
       Accept: 'text/plain',
       'Content-Type': 'application/json',
     };
-    const response = await axios.get(url, headers);
+    const response = await axios.get(url, { headers });
+    const errorObj = response.data.find((item) => item?.Error);
+
+    if (errorObj) {
+      log.error('Canada Post address object contains an error', errorObj);
+      throw new ApiError('Canada post error', errorObj);
+    }
     if (req?.query?.searchTerm) {
       addressSearchResultsCache.put(req?.query?.searchTerm, response.data, ONE_DAY_MS);
     }
     log.info(`Canada Post findAddresses :: Cache miss for search term: '${req?.query?.searchTerm}'. Calling AddressComplete API.`);
     return res.status(HttpStatus.OK).json(response.data);
   } catch (e) {
-    log.error(e);
-    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Find error' }, e);
+    log.error('AddressComplete API lookup failed', {
+      searchTerm: req?.query?.searchTerm,
+      error: e.message,
+    });
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+      message: 'Address lookup failed. Please try again later.',
+    });
   }
 }
 
