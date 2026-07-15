@@ -43,7 +43,7 @@
       <p class="mb-2">
         <v-icon size="x-large" class="mr-2" color="primary"> mdi-information </v-icon>
         <strong>Note:</strong>
-        To update someone's access type, click Remove, then use Add New User to re-add them with a new role.
+        To update someone's access type, click Edit, then use the User Role drop-down to select a new role.
       </p>
       <v-col class="d-flex justify-end">
         <AppButton
