@@ -46,7 +46,7 @@ function getKcBaseClientMap(envVars) {
   let redirectUris = [];
   if (env === "dev") {
     redirectUris = [
-      "http://localhost*",
+      "http://localhost:8082/*",
       "https://dev.mychildcareservices.gov.bc.ca/*",
       ...getExplicitRedirectEndpoints("https://qa.mychildcareservices.gov.bc.ca")
     ];
