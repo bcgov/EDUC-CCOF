@@ -4,7 +4,8 @@
   <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
     <AppAlertBanner type="info">
-      Thank you for logging in to the enhanced My ChildCareBC Services. Some organization and licence information is still being updated. If the information displayed for your organization has inaccuracies, please review your details again in 2 business days.
+      Thank you for logging in to the enhanced My ChildCareBC Services. Some organization and licence information is still being updated.
+      If the information displayed for your organization has inaccuracies, please review your details again in 2 business days.
     </AppAlertBanner>
     <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
 
