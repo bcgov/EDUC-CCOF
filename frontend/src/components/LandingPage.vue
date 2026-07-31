@@ -3,8 +3,12 @@
   <Spinner v-if="!isLoadingComplete" />
   <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
+    <AppAlertBanner type="info">
+      Thank you for logging in to the enhanced My ChildCareBC Services. Some organization and licence information is
+      still being updated. If the information displayed for your organization has inaccuracies, please review your
+      details again in 2 business days.
+    </AppAlertBanner>
     <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
-
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
       <p v-if="organizationName">Organization Name: {{ organizationName }}</p>
