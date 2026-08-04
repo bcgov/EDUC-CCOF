@@ -117,7 +117,9 @@ async function createRawContactFacility(contactId, facilityId) {
 
 async function syncContactFacilities(contactId, incomingFacilityIds = []) {
   try {
-    const response = await getOperation(`ccof_bceid_organizations?$select=ccof_bceid_organizationid,_ccof_facility_value,statecode&$filter=_ccof_businessbceid_value eq ${contactId}`);
+    const response = await getOperation(
+      `ccof_bceid_organizations?$select=ccof_bceid_organizationid,_ccof_facility_value,statecode&$filter=_ccof_businessbceid_value eq ${contactId} and _ccof_facility_value ne null`,
+    );
     const existingLinks = response?.value ?? [];
     const existingFacilityMap = new Map(existingLinks.map((item) => [item._ccof_facility_value, { id: item.ccof_bceid_organizationid, statecode: item.statecode }]));
 
