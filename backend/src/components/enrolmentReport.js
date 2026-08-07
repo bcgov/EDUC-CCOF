@@ -130,7 +130,7 @@ async function updateEnrolmentReport(req, res) {
 async function getDailyEnrolments(req, res) {
   try {
     const response = await getOperation(`ccof_dailyenrollments?$filter=_ccof_monthlyenrollmentreport_value eq ${req.params.enrolmentReportId}`);
-    const dailyEnrolments = response?.value?.map((day) => new MappableObjectForFront(day, DailyEnrolmentMappings).toJSON());
+    const dailyEnrolments = response?.value?.map((day) => new MappableObjectForFront(day, DailyEnrolmentMappings).toJSON())?.sort((a, b) => Number(a.day) - Number(b.day));
     return res.status(HttpStatus.OK).json(dailyEnrolments);
   } catch (e) {
     log.error(e);
