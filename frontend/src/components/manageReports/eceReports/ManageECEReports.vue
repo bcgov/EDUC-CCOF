@@ -7,7 +7,15 @@
     </div>
     <p class="my-4">
       Edit, submit, view, or adjust your Monthly ECE Reports. To ensure accurate wage enhancement payments, keep your
-      ECE staff information, wage rates, and facility details up to date. Review the Monthly ECE Report Instructions.
+      ECE staff information, wage rates, and facility details up to date. Review the
+      <a
+        class="text-decoration-underline"
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/ece_report_instructions.pdf"
+      >
+        Enrolment ECE Report Instructions.</a
+      >
     </p>
     <AppButton
       v-if="hasPermission(PERMISSIONS.CREATE_ECE_REPORT)"
