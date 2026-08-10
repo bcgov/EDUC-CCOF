@@ -175,6 +175,7 @@ router.post(
   isValidBackendToken,
   validatePermission(PERMISSIONS.SUBMIT_ECE_REPORT),
   param('eceReportId', 'URL param: [eceReportId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
+  body('contactId', 'Body param: [contactId] is required').notEmpty().isUUID(UUID_VALIDATOR_VERSION),
   (req, res) => {
     validationResult(req).throw();
     return submitECEReport(req, res);

@@ -1,6 +1,6 @@
 'use strict';
 
-const { buildFilterQuery, getOperation, getUserGuid, padString, patchOperationWithObjectId, postOperation, sleep } = require('../utils');
+const { buildFilterQuery, getOperation, padString, patchOperationWithObjectId, postOperation, sleep } = require('../utils');
 const HttpStatus = require('http-status-codes');
 const { createRawECEReportStaff } = require('./staff');
 const log = require('../logger');
@@ -206,7 +206,7 @@ async function getECETopUpReports(req, res) {
 async function submitECEReport(req, res) {
   try {
     const payload = {
-      'ccof_submitted_by@odata.bind': `/contacts(ccof_userid='${getUserGuid(req)}')`,
+      'ccof_submitted_by@odata.bind': `/contacts(${req.body.contactId})`,
       ccof_submit_date: getCurrentPacificDate(),
       statuscode: ECE_REPORT_STATUS_CODES.SUBMITTED,
     };

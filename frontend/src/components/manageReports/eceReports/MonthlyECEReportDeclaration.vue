@@ -144,7 +144,7 @@ export default {
       if (this.isSubmitDisabled) return;
       try {
         this.processing = true;
-        await ECEReportService.submitECEReport(this.eceReportId);
+        await ECEReportService.submitECEReport(this.eceReportId, { contactId: this.userInfo?.contactId });
         this.showSubmitConfirmationDialog = true;
       } catch (error) {
         console.error(error);
