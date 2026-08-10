@@ -12,7 +12,7 @@
         class="text-decoration-underline"
         target="_blank"
         rel="noopener noreferrer"
-        href="https://www2.gov.bc.ca/gov/content/family-social-supports/caring-for-young-children/childcarebc-programs/child-care-operating-funding/enrolment-reporting"
+        href="https://www2.gov.bc.ca/assets/gov/family-and-social-supports/child-care/childcarebc-programs/ccof/enrolment_report_instructions.pdf"
         >Enrolment Report Instructions.</a
       >
     </p>
