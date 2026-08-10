@@ -65,10 +65,10 @@ export default {
     return responses.flatMap((r) => r.data);
   },
 
-  async submitECEReport(eceReportId) {
+  async submitECEReport(eceReportId, payload) {
     try {
       if (!eceReportId) return;
-      await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/submit`);
+      await ApiService.apiAxios.post(`${ApiRoutes.ECE_REPORTS}/${eceReportId}/submit`, payload);
     } catch (error) {
       console.error(`Failed to submit ECE report - ${error}`);
       throw error;
