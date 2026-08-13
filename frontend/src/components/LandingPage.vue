@@ -10,14 +10,6 @@
     </div>
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
-
-    <!--   ccfri-8204 temporary fix, can be enabled later.
-     <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
-      Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
-      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve. Please
-      disregard this message if you have already resolved your status.
-    </AppAlertBanner>-->
-
     <v-row>
       <v-col v-if="hasPermission(PERMISSIONS.DOWNLOAD_PCF_PDF)" cols="12" :lg="isCCOFStatusNew ? 6 : 4">
         <SmallCard>
@@ -679,13 +671,6 @@ export default {
     isCCOFStatusNew() {
       return this.ccofStatus === this.CCOF_STATUS.NEW;
     },
-    /*ccfri-8204 temporary fix, can be enabled later.
-    showNotGoodStandingWarning() {
-      return (
-        this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.userInfo.organizationBypassGoodStandingCheck
-      );
-    },*/
     showOrganizationClosuresButton() {
       if (!this.hasPermission(this.PERMISSIONS.VIEW_CLOSURES)) {
         return false;
