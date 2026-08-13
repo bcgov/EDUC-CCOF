@@ -10,13 +10,6 @@
     </div>
 
     <div class="pb-12 text-h4 text-center">What would you like to do?</div>
-
-    <AppAlertBanner v-if="showNotGoodStandingWarning" type="warning" class="mb-4 w-100">
-      Your organization is not in good standing with BC Registries and Online Services. Being in good standing is a
-      requirement to receive CCOF Funding. Contact BC Registries and Online Services immediately to resolve. Please
-      disregard this message if you have already resolved your status.
-    </AppAlertBanner>
-
     <v-row>
       <v-col v-if="hasPermission(PERMISSIONS.DOWNLOAD_PCF_PDF)" cols="12" :lg="isCCOFStatusNew ? 6 : 4">
         <SmallCard>
@@ -386,7 +379,6 @@ import { mapState, mapActions } from 'pinia';
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
 import Spinner from '@/components/common/Spinner.vue';
-import AppAlertBanner from '@/components/guiComponents/AppAlertBanner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
 import MessagesToolbar from '@/components/guiComponents/MessagesToolbar.vue';
@@ -410,7 +402,6 @@ import {
   APPLICATION_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
   FUNDING_AGREEMENT_INTERNAL_STATUS_CODES,
-  ORGANIZATION_GOOD_STANDING_STATUSES,
   ORGANIZATION_PROVIDER_TYPES,
   PATHS,
   pcfUrl,
@@ -435,7 +426,6 @@ import { formatFiscalYearName } from '@/utils/format';
 export default {
   name: 'LandingPage',
   components: {
-    AppAlertBanner,
     AppButton,
     CancelApplicationDialog,
     EnrolmentReportDueDialog,
@@ -680,12 +670,6 @@ export default {
     },
     isCCOFStatusNew() {
       return this.ccofStatus === this.CCOF_STATUS.NEW;
-    },
-    showNotGoodStandingWarning() {
-      return (
-        this.userInfo?.organizationGoodStandingStatus === ORGANIZATION_GOOD_STANDING_STATUSES.FAIL &&
-        !this.userInfo.organizationBypassGoodStandingCheck
-      );
     },
     showOrganizationClosuresButton() {
       if (!this.hasPermission(this.PERMISSIONS.VIEW_CLOSURES)) {
