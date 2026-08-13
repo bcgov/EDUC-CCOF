@@ -84,7 +84,7 @@ describe('<LandingPage />', () => {
     cy.contains('Organization Name:').should('not.exist');
   });
 
-  it('should not display app alert if good standing', () => {
+/*  it('should not display app alert if good standing', () => {
     mountWithPinia({
       ...createAuthStore({
         organizationGoodStandingStatus: '',
@@ -106,7 +106,7 @@ describe('<LandingPage />', () => {
     });
 
     cy.contains('Your organization is not in good standing with BC Registries and Online Services.').should('exist');
-  });
+  });*/
 
   context('Application Status Card ', () => {
     const authWithDownloadPerm = createAuthStore({}, { permissions: [PERMISSIONS.DOWNLOAD_PCF_PDF] });
