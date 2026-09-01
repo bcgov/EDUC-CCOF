@@ -307,8 +307,9 @@ export default {
         (item) => item.programYearId === programYear.programYearId,
       );
     },
-    goToEnrolmentReport(enrolmentReportId) {
-      this.$router.push(`${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`);
+    goToEnrolmentReport(enrolmentReportId, editing = false) {
+      const query = editing ? { editing: 'true' } : {};
+      this.$router.push({ path: `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportId}`, query });
     },
     getStatusClass(status) {
       switch (status) {
@@ -401,26 +402,23 @@ export default {
           internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
           internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
         };
-      } else if (
-        status === ENROLMENT_REPORT_INTERNAL_STATUSES.SUBMITTED ||
-        status === ENROLMENT_REPORT_INTERNAL_STATUSES.REJECTED
-      ) {
-        payload = {
-          internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
-          internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
-          externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
-          externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
-        };
-      } else {
-        return;
       }
       await EnrolmentReportService.updateEnrolmentReport(report.enrolmentReportId, payload);
     },
+
+    isSubmittedOrRejected(report) {
+      return (
+        report.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.SUBMITTED ||
+        report.externalCcofStatusCode === ENROLMENT_REPORT_STATUSES.REJECTED
+      );
+    },
+
     async editEnrolmentReport(report) {
       try {
         this.loading = true;
         await this.prepareEnrolmentReportForEditing(report);
-        this.goToEnrolmentReport(report.enrolmentReportId);
+        const editing = this.isSubmittedOrRejected(report);
+        this.goToEnrolmentReport(report.enrolmentReportId, editing);
       } catch (error) {
         console.error(error);
         this.setFailureAlert('Failed to edit enrolment report.');

@@ -16,6 +16,7 @@ export default {
       loading: true,
       processing: false,
       enrolmentReport: {},
+      isEditingSubmittedReport: false,
     };
   },
   computed: {
@@ -23,7 +24,8 @@ export default {
       return (
         this.loading ||
         this.processing ||
-        this.enrolmentReport?.externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT ||
+        (!this.isEditingSubmittedReport &&
+          this.enrolmentReport?.externalCcofStatusCode !== ENROLMENT_REPORT_STATUSES.DRAFT) ||
         EnrolmentReportService.isSubmissionDeadlinePassed(this.enrolmentReport) ||
         !this.hasPermission([this.PERMISSIONS.EDIT_DRAFT_ER, this.PERMISSIONS.ADJUST_EXISTING_ER])
       );
@@ -31,5 +33,8 @@ export default {
   },
   created() {
     this.PATHS = PATHS;
+    if (this.$route?.query?.editing === 'true') {
+      this.isEditingSubmittedReport = true;
+    }
   },
 };

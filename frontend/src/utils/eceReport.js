@@ -1,8 +1,11 @@
 import { ECE_REPORT_INTERNAL_STATUSES } from '@/utils/constants.js';
 
-export function isReportReadOnly({ loading, eceReport }) {
+export function isReportReadOnly({ loading, eceReport, isEditingSubmittedReport }) {
   if (loading || !eceReport) {
     return true;
+  }
+  if (isEditingSubmittedReport) {
+    return false;
   }
   return eceReport.statusCode !== ECE_REPORT_INTERNAL_STATUSES.DRAFT;
 }
