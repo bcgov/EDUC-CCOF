@@ -279,7 +279,7 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('.view-report', 'View').click();
     cy.get('@routerPush').should(
       'have.been.calledWith',
-      `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportApproved.enrolmentReportId}`,
+      { path: `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportApproved.enrolmentReportId}`, query: {} },
     );
   });
 
@@ -327,7 +327,7 @@ describe('<ViewEnrolmentReports />', () => {
     cy.contains('button', 'Edit').click();
     cy.get('@routerPush').should(
       'have.been.calledWith',
-      `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportDraft.enrolmentReportId}`,
+      { path: `${PATHS.ROOT.ENROLMENT_REPORTS}/${enrolmentReportDraft.enrolmentReportId}`, query: {} },
     );
   });
 
