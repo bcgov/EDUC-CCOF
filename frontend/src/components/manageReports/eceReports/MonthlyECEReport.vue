@@ -161,7 +161,13 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { formatCurrency, formatDecimalNumber, formatDecimalNumberToNumber } from '@/utils/format';
 import { deepCloneObject, getUpdatedObjectsByKeys, getECEReportRejectionType } from '@/utils/common.js';
-import { ECE_REPORT_STAFF_STATUSES, ECE_REPORT_EXTERNAL_STATUSES, PATHS, REJECTION_TYPES } from '@/utils/constants.js';
+import {
+  ECE_REPORT_STAFF_STATUSES,
+  ECE_REPORT_EXTERNAL_STATUSES,
+  ECE_REPORT_INTERNAL_STATUSES,
+  PATHS,
+  REJECTION_TYPES,
+} from '@/utils/constants.js';
 import { isReportReadOnly } from '@/utils/eceReport.js';
 import rules from '@/utils/rules.js';
 
@@ -200,6 +206,7 @@ export default {
       ],
       publicSector: globalThis.history?.state?.publicSector ?? null,
       previousECEReport: {},
+      isEditingSubmittedReport: false,
     };
   },
   computed: {
@@ -211,7 +218,11 @@ export default {
     readonly() {
       return (
         !this.hasPermission(this.PERMISSIONS.EDIT_ECE_REPORT) ||
-        isReportReadOnly({ loading: this.isBusy, eceReport: this.eceReport })
+        isReportReadOnly({
+          loading: this.isBusy,
+          eceReport: this.eceReport,
+          isEditingSubmittedReport: this.isEditingSubmittedReport,
+        })
       );
     },
     eceReportId() {
@@ -280,6 +291,9 @@ export default {
     },
   },
   async created() {
+    if (this.$route?.query?.editing === 'true') {
+      this.isEditingSubmittedReport = true;
+    }
     await this.loadData();
     this.$refs.form?.resetValidation();
   },
@@ -422,8 +436,11 @@ export default {
       try {
         this.processing = true;
         this.calculate();
-        await this.createECEFacilityStaff();
-        await this.saveECEReportStaff();
+        const facilityStaffSaved = await this.createECEFacilityStaff();
+        const reportStaffSaved = await this.saveECEReportStaff();
+        if (this.isEditingSubmittedReport && (facilityStaffSaved || reportStaffSaved)) {
+          await this.transitionSubmittedReportToDraft();
+        }
         await this.loadData();
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
@@ -434,6 +451,13 @@ export default {
       } finally {
         this.processing = false;
       }
+    },
+    async transitionSubmittedReportToDraft() {
+      await ECEReportService.updateECEReport(this.eceReportId, {
+        statusCode: ECE_REPORT_INTERNAL_STATUSES.DRAFT,
+      });
+      this.eceReport.statusCode = ECE_REPORT_INTERNAL_STATUSES.DRAFT;
+      this.isEditingSubmittedReport = false;
     },
     async createECEFacilityStaff() {
       const staffToCreate = this.eceReportStaff
@@ -446,14 +470,16 @@ export default {
           facilityId: this.eceReport.facilityId,
           organizationId: this.organizationId,
         }));
-      if (isEmpty(staffToCreate)) return;
+      if (isEmpty(staffToCreate)) return false;
       await ECEStaffService.createECEFacilityStaff(staffToCreate);
       await this.loadECEFacilityStaff();
+      return true;
     },
     async saveECEReportStaff() {
-      await this.createECEReportStaff();
-      await this.updateECEReportStaff();
-      await this.deleteECEReportStaff();
+      const created = await this.createECEReportStaff();
+      const updated = await this.updateECEReportStaff();
+      const deleted = await this.deleteECEReportStaff();
+      return created || updated || deleted;
     },
     async createECEReportStaff() {
       const staffToCreate = this.eceReportStaff
@@ -466,8 +492,9 @@ export default {
             totalHoursWorked: staff.totalHoursWorked,
           };
         });
-      if (isEmpty(staffToCreate)) return;
+      if (isEmpty(staffToCreate)) return false;
       await ECEStaffService.createECEReportStaff(staffToCreate);
+      return true;
     },
     async updateECEReportStaff() {
       const keysForBackend = ['eceReportStaffId', 'totalHoursWorked'];
@@ -480,12 +507,14 @@ export default {
       const payload = updatedECEStaff
         .filter((staff) => staff.eceReportStaffId)
         .map((staff) => pick(staff, keysForBackend));
-      if (isEmpty(payload)) return;
+      if (isEmpty(payload)) return false;
       await ECEStaffService.updateECEReportStaff(payload);
+      return true;
     },
     async deleteECEReportStaff() {
-      if (isEmpty(this.eceReportStaffToDelete)) return;
+      if (isEmpty(this.eceReportStaffToDelete)) return false;
       await ECEStaffService.deleteECEReportStaff(this.eceReportStaffToDelete);
+      return true;
     },
     isRejectedStaffVisible(item) {
       return item.statusCode === ECE_REPORT_STAFF_STATUSES.REJECTED && this.isReportApproved;

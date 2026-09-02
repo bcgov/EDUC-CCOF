@@ -1356,6 +1356,8 @@ import {
   CLOSURE_PAYMENT_ELIGIBILITIES,
   DAY_TYPES,
   EMPTY_PLACEHOLDER,
+  ENROLMENT_REPORT_INTERNAL_STATUSES,
+  ENROLMENT_REPORT_STATUSES,
   ORGANIZATION_PROVIDER_TYPES_IDS,
   PARENT_FEE_FREQUENCIES,
   PATHS,
@@ -1825,8 +1827,11 @@ export default {
         if (this.enrolmentReport.isAdjustment) {
           this.flagDailyEnrolmentChanges();
         }
-        await this.saveEnrolmentReport();
-        await this.saveDailyEnrolments();
+        const enrolmentReportSaved = await this.saveEnrolmentReport();
+        const dailyEnrolmentsSaved = await this.saveDailyEnrolments();
+        if (this.isEditingSubmittedReport && (enrolmentReportSaved || dailyEnrolmentsSaved)) {
+          await this.transitionSubmittedReportToDraft();
+        }
         this.originalPaymentEligibleDaysCount = cloneDeep(this.paymentEligibleDaysCount);
         if (showMessage) {
           this.setSuccessAlert('Report saved successfully.');
@@ -1837,6 +1842,21 @@ export default {
       } finally {
         this.processing = false;
       }
+    },
+
+    async transitionSubmittedReportToDraft() {
+      const payload = {
+        internalCcofStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+        internalCcfriStatusCode: ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE,
+        externalCcofStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+        externalCcfriStatusCode: ENROLMENT_REPORT_STATUSES.DRAFT,
+      };
+      await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
+      this.enrolmentReport.externalCcofStatusCode = ENROLMENT_REPORT_STATUSES.DRAFT;
+      this.enrolmentReport.externalCcfriStatusCode = ENROLMENT_REPORT_STATUSES.DRAFT;
+      this.enrolmentReport.internalCcofStatusCode = ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE;
+      this.enrolmentReport.internalCcfriStatusCode = ENROLMENT_REPORT_INTERNAL_STATUSES.INCOMPLETE;
+      this.isEditingSubmittedReport = false;
     },
 
     buildEnrolmentReportKeysForBackend() {
@@ -1893,7 +1913,7 @@ export default {
         this.enrolmentReport.isAdjustment &&
         !isEqual(this.originalEnrolmentReport.differences || {}, this.enrolmentReport.differences || {});
       if (!enrolmentReportChanged && !paymentEligibleDaysChanged && !differencesChanged) {
-        return;
+        return false;
       }
 
       const payload = pick(this.enrolmentReport, enrolmentReportKeysForBackend);
@@ -1908,6 +1928,7 @@ export default {
       }
       await EnrolmentReportService.updateEnrolmentReport(this.$route.params.enrolmentReportId, payload);
       await this.loadEnrolmentReport();
+      return true;
     },
 
     async saveDailyEnrolments() {
@@ -1921,10 +1942,11 @@ export default {
         keysForBackend,
         'dailyEnrolmentId',
       );
-      if (isEmpty(updatedDailyEnrolments)) return;
+      if (isEmpty(updatedDailyEnrolments)) return false;
       const payload = updatedDailyEnrolments?.map((item) => pick(item, keysForBackend));
       await EnrolmentReportService.updateDailyEnrolments(this.$route.params.enrolmentReportId, payload);
       await this.loadDailyEnrolments();
+      return true;
     },
   },
 };

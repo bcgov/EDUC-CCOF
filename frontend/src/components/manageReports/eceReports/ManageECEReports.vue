@@ -177,12 +177,7 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { buildFiscalYearMonths, getDefaultReportingProgramYear, getECEReportRejectionType } from '@/utils/common.js';
-import {
-  ECE_REPORT_EXTERNAL_STATUSES,
-  ECE_REPORT_INTERNAL_STATUSES,
-  ECE_REPORT_STATUS_OPTIONS,
-  PATHS,
-} from '@/utils/constants.js';
+import { ECE_REPORT_EXTERNAL_STATUSES, ECE_REPORT_STATUS_OPTIONS, PATHS } from '@/utils/constants.js';
 import { getSubmissionDeadlineUTCDate } from '@/utils/eceReport';
 import { formatMonthYearToString, formatUTCDate, formatYearMonthYYYYMM } from '@/utils/format';
 
@@ -353,9 +348,11 @@ export default {
     previous() {
       this.$router.push(PATHS.ROOT.MANAGE_REPORTS);
     },
-    goToECEReport(eceReportId) {
+    goToECEReport(eceReportId, editing = false) {
+      const query = editing ? { editing: 'true' } : {};
       this.$router.push({
         path: `${PATHS.ROOT.MONTHLY_ECE_REPORTS}/${eceReportId}`,
+        query,
         state: { publicSector: this.publicSector },
       });
     },
@@ -386,15 +383,10 @@ export default {
     async edit(eceReport) {
       try {
         this.loading = true;
-        if (
+        const editing =
           eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.SUBMITTED ||
-          eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED
-        ) {
-          await ECEReportService.updateECEReport(eceReport.eceReportId, {
-            statusCode: ECE_REPORT_INTERNAL_STATUSES.DRAFT,
-          });
-        }
-        this.goToECEReport(eceReport.eceReportId);
+          eceReport?.externalStatus === ECE_REPORT_EXTERNAL_STATUSES.REJECTED;
+        this.goToECEReport(eceReport.eceReportId, editing);
       } catch (e) {
         console.error(e);
         this.setFailureAlert('Unable to open report for editing.');
