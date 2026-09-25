@@ -1,7 +1,7 @@
 'use strict';
 const { isEmpty } = require('lodash');
 const HttpStatus = require('http-status-codes');
-const { getOperation, patchOperationWithObjectId, postOperation, deleteOperationWithObjectId } = require('./utils');
+const { getOperation, patchOperationWithObjectId, postOperation, deleteOperationWithObjectId, getUserName } = require('./utils');
 const { MappableObjectForFront, MappableObjectForBack } = require('../util/mapping/MappableObject');
 const { ContactMappings, ContactFacilityMappings, FacilityMappings } = require('../util/mapping/Mappings');
 const { getRoles } = require('../components/lookup');
@@ -82,9 +82,22 @@ async function createContact(req, res) {
       const existingContact = (await getOperation(`contacts?$filter=ccof_username eq '${req.body.bceid}'`))?.value?.[0];
 
       if (existingContact) {
-        return res.status(HttpStatus.PRECONDITION_FAILED).json({
-          message: 'A contact with this BCeID already exists.',
+        const existingOrganizationId = existingContact._parentcustomerid_value;
+        if (existingOrganizationId) {
+          return res.status(HttpStatus.PRECONDITION_FAILED).json({
+            message: 'This BCeID is already associated with another organization.',
+            contactId: existingContact.contactid,
+            organizationId: existingOrganizationId,
+          });
+        }
+        return res.status(HttpStatus.OK).json({
+          exists: true,
+          orphaned: true,
           contactId: existingContact.contactid,
+          firstName: existingContact.firstname,
+          lastName: existingContact.lastname,
+          deactivated: existingContact.statecode === 1,
+          message: 'This BCeID exists but is not associated with any organization.',
         });
       }
     }
@@ -101,6 +114,50 @@ async function createContact(req, res) {
       await createRawContactFacility(createdContact, req.body.facilities);
     }
     return res.status(HttpStatus.CREATED).json(createdContact);
+  } catch (e) {
+    log.error('failed with error', e);
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
+  }
+}
+
+async function linkExistingContactWithAnOrg(req, res) {
+  try {
+    const { contactId, organizationId, role, facilities } = req.body;
+
+    const existingContact = (await getOperation(`contacts?$select=contactid,firstname,lastname,_parentcustomerid_value,statecode&$filter=contactid eq ${contactId}`))?.value?.[0];
+
+    if (!existingContact) {
+      return res.status(HttpStatus.NOT_FOUND).json({ message: 'Contact not found.' });
+    }
+
+    const existingOrganizationId = existingContact._parentcustomerid_value;
+    if (existingOrganizationId) {
+      return res.status(HttpStatus.PRECONDITION_FAILED).json({
+        message: 'This BCeID is already associated with another organization.',
+        contactId: existingContact.contactid,
+        organizationId: existingOrganizationId,
+      });
+    }
+
+    const wasDeactivated = existingContact.statecode === 1;
+
+    const payload = {};
+    payload['parentcustomerid_account@odata.bind'] = `/accounts(${organizationId})`;
+    if (role?.roleId) {
+      payload['ccof_ccof_portal_id@odata.bind'] = `/ofm_portal_roles(${role.roleId})`;
+    }
+    if (wasDeactivated) {
+      payload.statecode = 0;
+    }
+    await patchOperationWithObjectId('contacts', contactId, payload);
+
+    if (!isEmpty(facilities)) {
+      await syncContactFacilities(contactId, facilities);
+    }
+
+    log.info(`Linked orphaned BCeID contact [${contactId}] to organization [${organizationId}] by user [${getUserName(req)}]${wasDeactivated ? ' (contact was reactivated)' : ''}`);
+
+    return res.status(HttpStatus.OK).json({ contactId, organizationId });
   } catch (e) {
     log.error('failed with error', e);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(e.data ? e.data : e?.status);
@@ -166,6 +223,7 @@ module.exports = {
   deactivateContact,
   getRawContactFacilities,
   createContact,
+  linkExistingContactWithAnOrg,
   createRawContactFacility,
   updateContact,
 };

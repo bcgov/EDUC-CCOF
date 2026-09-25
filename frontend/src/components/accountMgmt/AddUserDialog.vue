@@ -140,6 +140,40 @@
     </template>
   </AppDialog>
   <AppDialog
+    v-model="showLinkConfirmationDialog"
+    title="Link Existing BCeID"
+    max-width="500px"
+    text-alignment="left"
+    @close="cancelLinkContact"
+  >
+    <template #content>
+      <div class="text-center">
+        <p><strong>This BCeID exists but is not associated with any organization.</strong></p>
+        <p v-if="pendingLinkContact?.deactivated" class="mt-2">
+          This account is currently deactivated and will be reactivated when linked.
+        </p>
+        <p class="mt-4">
+          Would you like to link
+          <strong>{{ pendingLinkContact?.firstName }} {{ pendingLinkContact?.lastName }}</strong> ({{
+            userFields.bceid
+          }}) to your organization?
+        </p>
+      </div>
+    </template>
+    <template #button>
+      <v-row justify="center">
+        <v-col cols="auto">
+          <AppButton :primary="false" size="small" @click="cancelLinkContact">Cancel</AppButton>
+        </v-col>
+        <v-col cols="auto">
+          <AppButton size="small" :loading="isProcessing" :disabled="isProcessing" @click="confirmLinkContact">
+            Link User
+          </AppButton>
+        </v-col>
+      </v-row>
+    </template>
+  </AppDialog>
+  <AppDialog
     v-model="showSuccessDialog"
     title="User Added"
     max-width="500px"
@@ -223,6 +257,8 @@ export default {
       },
       isProcessing: false,
       showSuccessDialog: false,
+      showLinkConfirmationDialog: false,
+      pendingLinkContact: null,
     };
   },
   computed: {
@@ -267,6 +303,8 @@ export default {
       }
     },
     closeDialog() {
+      this.showLinkConfirmationDialog = false;
+      this.pendingLinkContact = null;
       this.clearFields();
       this.$emit('close-add-dialog');
       setTimeout(() => (this.step = 1), 350);
@@ -309,13 +347,23 @@ export default {
             payload.facilities = [];
           }
           const response = await contactService.addContact(payload);
+
+          if (response?.orphaned) {
+            this.pendingLinkContact = response;
+            this.dialog = false;
+            this.showLinkConfirmationDialog = true;
+            return;
+          }
+
           this.clearFields();
           this.dialog = false;
           this.showSuccessDialog = true;
           this.$emit('contact-created', response);
         } catch (e) {
           if (e.response?.status === 412) {
-            this.setFailureAlert('This BCeID already exists in the system');
+            this.setFailureAlert(
+              e.response?.data?.message || 'This BCeID is already associated with another organization.',
+            );
             return;
           }
           this.setFailureAlert('Failed to Add User');
@@ -324,6 +372,43 @@ export default {
           this.isProcessing = false;
         }
       }
+    },
+    async confirmLinkContact() {
+      try {
+        this.isProcessing = true;
+        const payload = {
+          contactId: this.pendingLinkContact.contactId,
+          organizationId: this.organizationId,
+          role: this.portalRoles.find((role) => role.roleNumber === this.portalRole) || null,
+          facilities: this.isFacilityAdmin ? this.selectedFacilities : [],
+        };
+
+        await contactService.linkContactWithOrg(payload);
+
+        this.showLinkConfirmationDialog = false;
+        this.pendingLinkContact = null;
+        this.clearFields();
+        this.dialog = false;
+        this.showSuccessDialog = true;
+        this.$emit('contact-created');
+      } catch (e) {
+        if (e.response?.status === 412) {
+          this.setFailureAlert(
+            e.response?.data?.message || 'This BCeID is already associated with another organization.',
+          );
+          return;
+        }
+        this.setFailureAlert('Failed to Link User');
+        console.error(e);
+      } finally {
+        this.isProcessing = false;
+      }
+    },
+    cancelLinkContact() {
+      this.showLinkConfirmationDialog = false;
+      this.pendingLinkContact = null;
+      this.dialog = true;
+      this.isProcessing = false;
     },
     goToManageUsers() {
       this.showSuccessDialog = false;
