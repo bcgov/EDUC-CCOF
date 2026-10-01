@@ -53,6 +53,19 @@ function goToStepTwoAndSubmit(userFields = getFilledUserFields()) {
   cy.contains('button', 'Add').click();
 }
 
+function interceptAddContact(statusCode, body) {
+  return cy.intercept('POST', `${ApiRoutes.CONTACTS}`, { statusCode, body }).as('addUserRequest');
+}
+
+function interceptLinkContact(statusCode, body) {
+  return cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, { statusCode, body }).as('linkRequest');
+}
+
+function submitAndWaitForAddUser(userFields) {
+  goToStepTwoAndSubmit(userFields);
+  return cy.wait('@addUserRequest');
+}
+
 function expectFailureAlert(expectedText) {
   cy.get('@pinia').then((pinia) => {
     const queue = pinia.state.value.app.alertNotificationQueue;
@@ -168,14 +181,9 @@ describe('<AddUserDialog />', () => {
     });
 
     it('shows link confirmation dialog when BCeID exists without an organization', () => {
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedResponse,
-      }).as('addUserRequest');
+      interceptAddContact(200, orphanedResponse);
+      submitAndWaitForAddUser();
 
-      goToStepTwoAndSubmit();
-
-      cy.wait('@addUserRequest');
       cy.contains('Link Existing BCeID').should('be.visible');
       cy.contains('This BCeID exists but is not associated with any organization.').should('be.visible');
       cy.contains('This account is currently deactivated and will be reactivated when linked.').should('not.exist');
@@ -185,17 +193,10 @@ describe('<AddUserDialog />', () => {
     });
 
     it('links the orphaned BCeID when the admin confirms', () => {
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedResponse,
-      }).as('addUserRequest');
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, {
-        statusCode: 200,
-        body: { contactId: CONTACT_ID, organizationId: ORGANIZATION_ID },
-      }).as('linkRequest');
+      interceptAddContact(200, orphanedResponse);
+      interceptLinkContact(200, { contactId: CONTACT_ID, organizationId: ORGANIZATION_ID });
 
-      goToStepTwoAndSubmit();
-      cy.wait('@addUserRequest');
+      submitAndWaitForAddUser();
       cy.contains('button', 'Link User').click();
 
       cy.wait('@linkRequest').then(({ request }) => {
@@ -207,17 +208,10 @@ describe('<AddUserDialog />', () => {
     });
 
     it('keeps the add dialog open and does not call link when the admin cancels', () => {
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedResponse,
-      }).as('addUserRequest');
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, {
-        statusCode: 200,
-        body: { contactId: CONTACT_ID, organizationId: ORGANIZATION_ID },
-      }).as('linkRequest');
+      interceptAddContact(200, orphanedResponse);
+      interceptLinkContact(200, { contactId: CONTACT_ID, organizationId: ORGANIZATION_ID });
 
-      goToStepTwoAndSubmit();
-      cy.wait('@addUserRequest');
+      submitAndWaitForAddUser();
       cy.contains('.v-card', 'Link Existing BCeID').within(() => {
         cy.contains('button', 'Cancel').click();
       });
@@ -230,31 +224,19 @@ describe('<AddUserDialog />', () => {
 
     it('shows a meaningful error when the BCeID already belongs to another organization', () => {
       const message = 'This BCeID is already associated with another organization.';
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 412,
-        body: { message, contactId: CONTACT_ID, organizationId: '99999999-9999-9999-9999-999999999999' },
-      }).as('addUserRequest');
+      interceptAddContact(412, { message, contactId: CONTACT_ID, organizationId: '99999999-9999-9999-9999-999999999999' });
 
-      goToStepTwoAndSubmit();
-
-      cy.wait('@addUserRequest');
+      submitAndWaitForAddUser();
       expectFailureAlert(message);
       cy.contains('p', 'User Added Successfully').should('not.exist');
       cy.contains('Link Existing BCeID').should('not.exist');
     });
 
     it('shows a failure alert when the link request fails', () => {
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedResponse,
-      }).as('addUserRequest');
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, {
-        statusCode: 500,
-        body: { message: 'Internal Server Error' },
-      }).as('linkRequest');
+      interceptAddContact(200, orphanedResponse);
+      interceptLinkContact(500, { message: 'Internal Server Error' });
 
-      goToStepTwoAndSubmit();
-      cy.wait('@addUserRequest');
+      submitAndWaitForAddUser();
       cy.contains('button', 'Link User').click();
 
       cy.wait('@linkRequest');
@@ -264,17 +246,10 @@ describe('<AddUserDialog />', () => {
 
     it('shows the backend message when the link request returns 412', () => {
       const message = 'This BCeID is already associated with another organization.';
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedResponse,
-      }).as('addUserRequest');
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, {
-        statusCode: 412,
-        body: { message, contactId: CONTACT_ID },
-      }).as('linkRequest');
+      interceptAddContact(200, orphanedResponse);
+      interceptLinkContact(412, { message, contactId: CONTACT_ID });
 
-      goToStepTwoAndSubmit();
-      cy.wait('@addUserRequest');
+      submitAndWaitForAddUser();
       cy.contains('button', 'Link User').click();
 
       cy.wait('@linkRequest');
@@ -283,14 +258,9 @@ describe('<AddUserDialog />', () => {
     });
 
     it('shows a reactivation notice when the orphaned BCeID is deactivated', () => {
-      cy.intercept('POST', `${ApiRoutes.CONTACTS}`, {
-        statusCode: 200,
-        body: orphanedDeactivatedResponse,
-      }).as('addUserRequest');
+      interceptAddContact(200, orphanedDeactivatedResponse);
+      submitAndWaitForAddUser();
 
-      goToStepTwoAndSubmit();
-
-      cy.wait('@addUserRequest');
       cy.contains('Link Existing BCeID').should('be.visible');
       cy.contains('This account is currently deactivated and will be reactivated when linked.').should('be.visible');
     });
