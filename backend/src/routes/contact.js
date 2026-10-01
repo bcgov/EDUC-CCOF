@@ -2,7 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
-const { createContact, deactivateContact, getActiveContactsInOrganization, updateContact } = require('../components/contact');
+const { createContact, deactivateContact, getActiveContactsInOrganization, linkExistingContactWithAnOrg, updateContact } = require('../components/contact');
 const validatePermission = require('../middlewares/validatePermission');
 const validateUpdateContact = require('../middlewares/validateUpdateContact');
 const isValidBackendToken = auth.isValidBackendToken();
@@ -57,6 +57,16 @@ const contactValidators = [
 router.post('/', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), contactValidators, (req, res) => {
   validationResult(req).throw();
   return createContact(req, res);
+});
+
+const linkContactValidators = [body('contactId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), body('organizationId').notEmpty().isUUID(UUID_VALIDATOR_VERSION), body('facilities').optional().isArray()];
+
+/**
+ * Link an existing orphaned BCeID contact to an organization.
+ */
+router.post('/linkContactWithAnOrg', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), linkContactValidators, (req, res) => {
+  validationResult(req).throw();
+  return linkExistingContactWithAnOrg(req, res);
 });
 
 /**
