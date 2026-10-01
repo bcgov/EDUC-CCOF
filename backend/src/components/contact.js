@@ -15,7 +15,9 @@ async function getActiveContactsByOrgID(orgId) {
 function setContactType(contact) {
   return { ...contact.data, isPortalUser: !isEmpty(contact.data.bceid) };
 }
-
+function sanitizeForLog(value) {
+  return String(value).replace(/[\r\n]/g, '');
+}
 async function getActiveContactsInOrganization(req, res) {
   try {
     const contactsData = await getActiveContactsByOrgID(req.params.organizationId);
@@ -155,7 +157,9 @@ async function linkExistingContactWithAnOrg(req, res) {
       await syncContactFacilities(contactId, facilities);
     }
 
-    log.info(`Linked orphaned BCeID contact [${contactId}] to organization [${organizationId}] by user [${getUserName(req)}]${wasDeactivated ? ' (contact was reactivated)' : ''}`);
+    log.info(
+      `Linked orphaned BCeID contact [${sanitizeForLog(contactId)}] to organization [${sanitizeForLog(organizationId)}] by user [${getUserName(req)}]${wasDeactivated ? ' (contact was reactivated)' : ''}`,
+    );
 
     return res.status(HttpStatus.OK).json({ contactId, organizationId });
   } catch (e) {
