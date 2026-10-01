@@ -58,7 +58,7 @@ function interceptAddContact(statusCode, body) {
 }
 
 function interceptLinkContact(statusCode, body) {
-  return cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkcontactwithanorg`, { statusCode, body }).as('linkRequest');
+  return cy.intercept('POST', `${ApiRoutes.CONTACTS}/linkContactWithAnOrg`, { statusCode, body }).as('linkRequest');
 }
 
 function submitAndWaitForAddUser(userFields) {

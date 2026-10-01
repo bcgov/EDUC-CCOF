@@ -64,7 +64,7 @@ const linkContactValidators = [body('contactId').notEmpty().isUUID(UUID_VALIDATO
 /**
  * Link an existing orphaned BCeID contact to an organization.
  */
-router.post('/linkcontactwithanorg', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), linkContactValidators, (req, res) => {
+router.post('/linkContactWithAnOrg', passport.authenticate('jwt', { session: false }), isValidBackendToken, validatePermission(PERMISSIONS.ADD_USERS), linkContactValidators, (req, res) => {
   validationResult(req).throw();
   return linkExistingContactWithAnOrg(req, res);
 });

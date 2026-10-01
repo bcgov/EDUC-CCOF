@@ -35,7 +35,7 @@ export default {
 
   async linkContactWithOrg(payload) {
     try {
-      const response = await ApiService.apiAxios.post(`${ApiRoutes.CONTACTS}/linkcontactwithanorg`, payload);
+      const response = await ApiService.apiAxios.post(`${ApiRoutes.CONTACTS}/linkContactWithAnOrg`, payload);
       return response.data;
     } catch (error) {
       console.log(`Failed to link contact - ${error}`);
