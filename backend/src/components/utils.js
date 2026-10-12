@@ -180,7 +180,7 @@ function sanitizeForLog(text) {
   return String(text)
     .split('')
     .filter((ch) => {
-      const code = ch.charCodeAt(0);
+      const code = ch.codePointAt(0);
       return code >= 32 && code !== 127;
     })
     .join('')
