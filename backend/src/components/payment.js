@@ -1,8 +1,7 @@
 'use strict';
-const { getOperation } = require('./utils');
+const { getOperationAllPages, buildFilterQuery } = require('./utils');
 const { restrictFacilities } = require('../util/common');
 const { MappableObjectForFront } = require('../util/mapping/MappableObject');
-const { buildFilterQuery } = require('./utils');
 const { PaymentMappings } = require('../util/mapping/Mappings');
 const HttpStatus = require('http-status-codes');
 const log = require('./logger');
@@ -14,8 +13,8 @@ async function getPayments(req, res) {
       '&$expand=ccof_monthly_enrollment_report($select=ccof_month,ccof_year),' +
       'ccof_monthly_ecewe_report($select=ccof_month,ccof_year,ccof_report_type),' +
       'ofm_facility($select=ccof_facilitylicencenumber)' +
-      `&${buildFilterQuery(req.query, PaymentMappings)}`;
-    const response = await getOperation(operation);
+      `&${buildFilterQuery(req.query, PaymentMappings)}&pageSize=500`;
+    const response = await getOperationAllPages(operation);
 
     const mappedPayments = response.value.map((payment) =>
       new MappableObjectForFront(

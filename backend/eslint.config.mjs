@@ -3,6 +3,7 @@ import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 
 export default [
+  { ignores: ['dist/', 'tests/'] },
   js.configs.recommended,
   eslintPluginPrettier,
   {
@@ -11,7 +12,6 @@ export default [
         ...globals.node,
       },
     },
-    ignores: ['dist/', 'tests/'],
     rules: {
       semi: ['error', 'always'],
       'eol-last': ['error', 'always'],
