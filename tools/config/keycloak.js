@@ -47,13 +47,13 @@ function getKcBaseClientMap(envVars) {
   if (env === "dev") {
     redirectUris = [
       "http://localhost:8082/*",
-      "https://dev.mychildcareservices.gov.bc.ca/*",
-      ...getExplicitRedirectEndpoints("https://qa.mychildcareservices.gov.bc.ca")
+      "https://ccof-frontend-dev-b43d2d-dev.apps.silver.devops.gov.bc.ca/*",
+      ...getExplicitRedirectEndpoints("https://ccof-frontend-qa-b43d2d-dev.apps.silver.devops.gov.bc.ca")
     ];
   } else if (env === "test") {
     redirectUris = [
-      ...getExplicitRedirectEndpoints("https://test.mychildcareservices.gov.bc.ca"),
-      ...getExplicitRedirectEndpoints("https://efx.mychildcareservices.gov.bc.ca"),
+      ...getExplicitRedirectEndpoints("https://ccof-frontend-uat-b43d2d-test.apps.silver.devops.gov.bc.ca"),
+      ...getExplicitRedirectEndpoints("https://ccof-frontend-efx-b43d2d-test.apps.silver.devops.gov.bc.ca"),
     ];
   } else if (env === "prod") {
     redirectUris = getExplicitRedirectEndpoints("https://mychildcareservices.gov.bc.ca");
