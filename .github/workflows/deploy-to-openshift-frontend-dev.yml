@@ -40,9 +40,6 @@ env:
   MAX_MEM: "250Mi"
   # SITE_URL should have no scheme or port. It will be prepended with https://
   HOST_ROUTE: ${{ secrets.SITE_URL }}
-  CA_CERT: ${{ secrets.CA_CERT }}
-  CERTIFICATE: ${{ secrets.CERTIFICATE }}
-  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
 on:
   workflow_dispatch:
@@ -170,13 +167,10 @@ jobs:
 
           # Process and apply deployment template
           oc process \
-            -f tools/openshift/frontend.deployment.yaml \
+            -f tools/openshift/frontend-no-tls.deployment.yaml \
             -p APP_NAME="$APP_NAME" \
             -p REPO_NAME="$REPO_NAME" \
             -p BRANCH="$BRANCH" \
-            -p CA_CERT="$CA_CERT" \
-            -p CERTIFICATE="$CERTIFICATE" \
-            -p PRIVATE_KEY="$PRIVATE_KEY" \
             -p NAMESPACE="$OPENSHIFT_NAMESPACE" \
             -p TAG="$TAG" \
             -p MIN_REPLICAS="$MIN_REPLICAS" \
