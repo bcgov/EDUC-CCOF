@@ -104,7 +104,6 @@ objects:
         app: "${APP_NAME}-frontend-${APP_ENVIRONMENT}-deployment"
       name: "${APP_NAME}-frontend-${APP_ENVIRONMENT}"
     spec:
-      host: "${HOST_ROUTE}"
       port:
         targetPort: 2015-tcp
       tls:
@@ -180,9 +179,6 @@ parameters:
     required: true
   - name: APP_NAME
     description: Application name
-    required: true
-  - name: HOST_ROUTE
-    description: The host the route will use to expose service outside cluster
     required: true
   - name: TAG
     description: The identifying tag for this specific deployment
