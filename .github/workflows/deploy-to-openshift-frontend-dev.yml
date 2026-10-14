@@ -38,7 +38,6 @@ env:
   MAX_CPU: "100m"
   MIN_MEM: "200Mi"
   MAX_MEM: "250Mi"
-  # SITE_URL should have no scheme or port. It will be prepended with https://
 
 on:
   workflow_dispatch:
