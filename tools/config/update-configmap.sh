@@ -29,6 +29,8 @@ elif [ "$ENV_VAL" = "prod" ]; then
 fi
 readonly NAMESPACE_SUFFIX
 
+readonly OPENSHIFT_NAMESPACE="$NAMESPACE_PREFIX-$NAMESPACE_SUFFIX"
+
 SITE_MINDER_LOGOUT_URL=""
 if [ "$ENV_VAL" != "prod" ]
 then
@@ -39,15 +41,11 @@ fi
 readonly SITE_MINDER_LOGOUT_URL
 
 SOAM_KC="loginproxy.gov.bc.ca"
-SERVER_FRONTEND='https://mychildcareservices.gov.bc.ca'
-if [ "$ENV_VAL" != "prod" ]; then
+SERVER_FRONTEND="https://$APP_NAME-frontend-$ENV_VAL-$OPENSHIFT_NAMESPACE.apps.silver.devops.gov.bc.ca"
+if [ "$ENV_VAL" = "prod" ]; then
+  SERVER_FRONTEND='https://mychildcareservices.gov.bc.ca'
+else
   SOAM_KC="$NAMESPACE_SUFFIX.loginproxy.gov.bc.ca"
-
-  if [ "$ENV_VAL" = "uat" ]; then
-    SERVER_FRONTEND="https://test.mychildcareservices.gov.bc.ca"
-  else
-    SERVER_FRONTEND="https://$ENV_VAL.mychildcareservices.gov.bc.ca"
-  fi
 fi
 readonly SOAM_KC
 readonly SERVER_FRONTEND
@@ -57,8 +55,6 @@ if [ "$ENV_VAL" = "prod" ]; then
   LOG_LEVEL="info"
 fi
 readonly LOG_LEVEL
-
-readonly OPENSHIFT_NAMESPACE="$NAMESPACE_PREFIX-$NAMESPACE_SUFFIX"
 
 echo Fetching one-liner public key from SOAM
 SOAM_ONE_LINE_KEY=$(curl -sX GET "https://$SOAM_KC/auth/realms/$SOAM_KC_REALM_ID" \

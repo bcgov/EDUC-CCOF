@@ -35,9 +35,6 @@ env:
   MIN_MEM: "200Mi"
   MAX_MEM: "700Mi"
 
-  # SITE_URL should have no scheme or port. It will be prepended with https://
-  HOST_ROUTE: ${{ secrets.SITE_URL }}
-
 on:
   workflow_dispatch:
 
@@ -191,7 +188,7 @@ jobs:
              -p MAX_CPU="$MAX_CPU" \
              -p MIN_MEM="$MIN_MEM" \
              -p MAX_MEM="$MAX_MEM" \
-             -p HOST_ROUTE="$HOST_ROUTE" \
+             -p HOST_ROUTE="$APP_NAME-frontend-$APP_ENVIRONMENT-$OPENSHIFT_NAMESPACE.apps.silver.devops.gov.bc.ca" \
              -p APP_ENVIRONMENT="$APP_ENVIRONMENT" \
               | oc apply -f -
 

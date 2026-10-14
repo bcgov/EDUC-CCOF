@@ -36,9 +36,6 @@ objects:
             - image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${REPO_NAME}-frontend-${BRANCH}:${TAG}
               imagePullPolicy: Always
               volumeMounts:
-                - name: tls-certs
-                  mountPath: "/etc/tls-certs"
-                  readOnly: true
                 - name: config-env
                   mountPath: "/srv/js/config"
               livenessProbe:
@@ -71,9 +68,6 @@ objects:
                   cpu: "${MAX_CPU}"
                   memory: "${MAX_MEM}"
           volumes:
-            - name: tls-certs
-              secret:
-                secretName: ccof-frontend-cert
             - name: config-env
               configMap:
                 name: ccof-frontend-${APP_ENVIRONMENT}-config-map
