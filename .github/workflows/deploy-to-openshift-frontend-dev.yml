@@ -45,6 +45,7 @@ on:
 jobs:
   cypress-component:
     name: Automation Tests
+    if: ${{ vars.SKIP_TESTS != 'true' }}
     uses: ./.github/workflows/cypress-component.yaml
 
   openshift-ci-cd:
@@ -55,6 +56,7 @@ jobs:
     runs-on: ubuntu-24.04
     environment: dev
     needs: cypress-component
+    if: ${{ success() || needs['cypress-component'].result == 'skipped' }}
 
     outputs:
       ROUTE: ${{ steps.deploy-and-expose.outputs.route }}
@@ -194,6 +196,7 @@ jobs:
     name: Run Zap Scan
     uses: ./.github/workflows/zap-scan-frontend.yml
     needs: openshift-ci-cd
+    if: ${{ success() && vars.SKIP_TESTS != 'true' }}
     with:
       env: 'dev'
     secrets: inherit

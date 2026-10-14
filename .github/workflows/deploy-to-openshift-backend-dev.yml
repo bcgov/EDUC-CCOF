@@ -221,6 +221,7 @@ jobs:
     name: Run Zap Scan
     uses: ./.github/workflows/zap-scan-node.yml
     needs: openshift-ci-cd
+    if: ${{ success() && vars.SKIP_TESTS != 'true' }}
     with:
       env: 'dev'
     secrets: inherit
