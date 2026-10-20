@@ -172,6 +172,78 @@ async function getOperationWithObjectId(operation, objectId) {
   return await getOperation(operationWithObject);
 }
 
+const D365_WEB_API_PREFIX = '/api/data/v9.2/';
+const GET_OPERATION_ALL_PAGES_MAX = 50;
+
+// Statement/nextLink values embed user-controlled query content, so always log them through this.
+function sanitizeForLog(text) {
+  return String(text)
+    .split('')
+    .filter((ch) => {
+      const code = ch.codePointAt(0);
+      return code >= 32 && code !== 127;
+    })
+    .join('')
+    .slice(0, 2000);
+}
+
+// Returns null (caller stops looping) if the nextLink format is not recognized.
+function operationStatementFromNextLink(nextLink) {
+  try {
+    const url = new URL(nextLink);
+    const idx = url.pathname.indexOf(D365_WEB_API_PREFIX);
+    if (idx === -1) {
+      log.error('operationStatementFromNextLink: unexpected nextLink format', sanitizeForLog(nextLink));
+      return null;
+    }
+    return url.pathname.slice(idx + D365_WEB_API_PREFIX.length) + url.search;
+  } catch {
+    log.error('operationStatementFromNextLink: invalid nextLink', sanitizeForLog(nextLink));
+    return null;
+  }
+}
+
+async function collectOperationPages(statement, pages, maxPages, allRows) {
+  if (pages >= maxPages) {
+    return { rows: allRows, pages, limitReached: true };
+  }
+  const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + statement;
+  log.info('getOperationAllPages Data Url', sanitizeForLog(url));
+  const response = await axios.get(url, getHttpHeader());
+  const value = Array.isArray(response.data?.value) ? response.data.value : [];
+  allRows.push(...value);
+  const pageCount = pages + 1;
+  const nextLink = response.data?.['@odata.nextLink'];
+  if (!nextLink) {
+    return { rows: allRows, pages: pageCount, limitReached: false };
+  }
+  const nextStatement = operationStatementFromNextLink(nextLink);
+  if (!nextStatement) {
+    log.warn('getOperationAllPages: unparseable nextLink, returning partial results', { pages: pageCount, rows: allRows.length });
+    return { rows: allRows, pages: pageCount, limitReached: false };
+  }
+  return collectOperationPages(nextStatement, pageCount, maxPages, allRows);
+}
+
+async function getOperationAllPages(operation, maxPages = GET_OPERATION_ALL_PAGES_MAX) {
+  try {
+    const { rows, pages, limitReached } = await collectOperationPages(operation, 0, maxPages, []);
+    if (limitReached) {
+      log.warn('getOperationAllPages: page limit reached, returning partial results', {
+        operation: sanitizeForLog(operation),
+        maxPages,
+        rows: rows.length,
+      });
+    }
+    log.info('getOperationAllPages complete', { pages, rows: rows.length });
+    return { value: rows };
+  } catch (e) {
+    log.info(e);
+    log.error('getOperationAllPages Error', e.response ? e.response.status : e.message);
+    throw new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, { message: 'API Get error' }, e);
+  }
+}
+
 async function postOperation(operation, payload) {
   const url = config.get('dynamicsApi:apiEndpoint') + '/api/Operations?statement=' + operation;
   log.info('postOperation Url', url);
@@ -415,6 +487,7 @@ const utils = {
   getUserName,
   getOperationWithObjectId,
   getOperation,
+  getOperationAllPages,
   postOperation,
   postOperationsInBatches,
   patchOperationWithObjectId,
