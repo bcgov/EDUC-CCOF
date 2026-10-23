@@ -125,7 +125,7 @@
         :headers="paymentTableHeaders"
         :items="filteredPayments"
         :items-per-page="20"
-        :items-per-page-options="[10, 20, 50]"
+        :items-per-page-options="[10, 20, 50, 100]"
         :mobile="null"
         mobile-breakpoint="md"
         class="elevation-2"
@@ -244,17 +244,22 @@ export default {
       const invoiceSearchTerm = (this.invoiceNumberSearch || '').toLowerCase();
 
       return this.payments.filter((payment) => {
-        const isMonthSelected = this.selectedPaymentMonths?.some(
-          (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
-        );
+        // rows with no month/year data (both report expands null) cannot be month-filtered — always include them
+        const hasMonthData = payment.paymentMonth != null && payment.paymentYear != null;
+        const isMonthSelected =
+          !hasMonthData ||
+          this.selectedPaymentMonths?.some(
+            (item) => Number(payment.paymentMonth) === item.month && Number(payment.paymentYear) === item.year,
+          );
 
         const isFacilitySelected = this.selectedFacilities?.includes(payment.facilityId);
 
         const fundingSelected = this.selectedFundingTypes?.includes(payment.fundingTypeText);
 
-        const facilityIdMatch = payment.facilityAccountNumber?.toLowerCase().includes(facilityIdSearchTerm);
+        const facilityIdMatch = (payment.facilityAccountNumber ?? '').toLowerCase().includes(facilityIdSearchTerm);
 
-        const invoiceMatch = payment.invoiceNumber?.toLowerCase().includes(invoiceSearchTerm);
+        // null-coalesce so payments with no invoice number are not dropped when the search box is empty
+        const invoiceMatch = (payment.invoiceNumber ?? '').toLowerCase().includes(invoiceSearchTerm);
 
         const paidStartMatch = !this.paidStartDate || new Date(payment.paidDate) >= new Date(this.paidStartDate);
 
