@@ -52,7 +52,7 @@
     "@pinia/testing": "^0.1.7",
     "@vitejs/plugin-vue": "^5.2.1",
     "csv-writer": "^1.6.0",
-    "cypress": "^14.5.4",
+    "cypress": "^15.19.0",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-formatter-unix": "^8.40.0",
