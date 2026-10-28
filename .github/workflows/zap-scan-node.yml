@@ -42,7 +42,7 @@ jobs:
         run: |
           echo "Waiting for $TARGET to be ready..."
           for i in $(seq 1 30); do
-            status=$(curl -s -k -o /dev/null -w "%{http_code}" "$TARGET" || echo "000")
+            status=$(curl -s  -o /dev/null -w "%{http_code}" "$TARGET" || echo "000")
             echo "Attempt $i: HTTP $status"
             if [ "$status" != "000" ] && [ "$status" -lt 500 ]; then
               echo "Target is ready (HTTP $status)."
