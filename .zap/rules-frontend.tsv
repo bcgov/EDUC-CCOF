@@ -1,3 +1,5 @@
+10035	IGNORE	(Strict-Transport-Security Header Not Set)
+10038	IGNORE	(Content Security Policy (CSP) Header Not Set)
 10049	IGNORE	(Non-Storable Content)
 10054	IGNORE	(Cookie with SameSite Attribute None)
 10055	IGNORE	(CSP: Failure to Define Directive with No Fallback)

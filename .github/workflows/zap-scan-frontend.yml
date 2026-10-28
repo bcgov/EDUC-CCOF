@@ -36,6 +36,22 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
           persist-credentials: false
+      - name: Wait for target to be ready
+        env:
+          TARGET: "https://${{ secrets.SITE_URL }}"
+        run: |
+          echo "Waiting for $TARGET to be ready..."
+          for i in $(seq 1 30); do
+            status=$(curl -s -k -o /dev/null -w "%{http_code}" "$TARGET" || echo "000")
+            echo "Attempt $i: HTTP $status"
+            if [ "$status" != "000" ] && [ "$status" -lt 500 ]; then
+              echo "Target is ready (HTTP $status)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Target did not become ready after 5 minutes (last status: $status)."
+          exit 1
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@3c58388149901b9a03b7718852c5ba889646c27c #v0.13
         with:
