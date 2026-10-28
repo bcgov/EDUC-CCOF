@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment-timezone');
 const { ROLES } = require('./constants');
 
 /**
@@ -43,12 +44,7 @@ function sanitizeODataFilterValue(value) {
 }
 
 function getCurrentPacificDate() {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Vancouver',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).format(new Date());
+  return moment.tz('America/Vancouver').format('YYYY-MM-DD');
 }
 
 // CCFRI-7680 - Check whether the record belongs to program year 2024/25 or later.
