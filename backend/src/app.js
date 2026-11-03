@@ -113,6 +113,7 @@ Redis.init()
       secret: config.get('oidc:clientSecret'),
       resave: false,
       saveUninitialized: false,
+      rolling: true,
       cookie: cookie,
     };
     if (Redis.isReady) {

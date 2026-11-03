@@ -11,6 +11,8 @@ const safeStringify = require('fast-safe-stringify');
 const { ApiError } = require('./error');
 const { pick } = require('lodash');
 
+const pendingRenewals = new Map();
+
 const auth = {
   // Check if JWT Access Token has expired
   isTokenExpired(token) {
@@ -28,9 +30,16 @@ const auth = {
     return (typeof payload.exp !== 'undefined' && payload.exp !== null && payload.exp === 0) || payload.exp > now;
   },
 
-  // Get new JWT and Refresh tokens
-  async renew(refreshToken) {
-    let result = {};
+  // Get new JWT and Refresh tokens. Returns { jwt, refreshToken } on success, otherwise null.
+  renew(refreshToken) {
+    if (!pendingRenewals.has(refreshToken)) {
+      const renewal = auth.requestRenewal(refreshToken).finally(() => pendingRenewals.delete(refreshToken));
+      pendingRenewals.set(refreshToken, renewal);
+    }
+    return pendingRenewals.get(refreshToken);
+  },
+
+  async requestRenewal(refreshToken) {
     let clientId = config.get('oidc:clientId');
     let clientSecret = config.get('oidc:clientSecret');
     try {
@@ -54,19 +63,14 @@ const auth = {
       );
 
       log.verbose('renew', utils.prettyStringify(response.data));
-      if (response && response.data && response.data.access_token && response.data.refresh_token) {
-        result.jwt = response.data.access_token;
-        result.refreshToken = response.data.refresh_token;
-      } else {
-        log.error('Access token or refresh token not retreived properly');
+      if (response?.data?.access_token && response?.data?.refresh_token) {
+        return { jwt: response.data.access_token, refreshToken: response.data.refresh_token };
       }
+      log.error('renew', 'Access token or refresh token not retrieved properly');
     } catch (error) {
-      log.error('renew', error.message);
-      log.error('renew', error);
-      result = error.response && error.response.data;
+      log.error('renew', `Token renewal failed: ${error.message}`, error.response?.data);
     }
-
-    return result;
+    return null;
   },
 
   // Update or remove token based on JWT and user state
@@ -83,10 +87,15 @@ const auth = {
 
             // Get new JWT and Refresh Tokens and update the request
             const result = await auth.renew(req.user.refreshToken);
-            req.user.jwt = result.jwt;
-            req.user.refreshToken = result.refreshToken;
+            if (result) {
+              req.user.jwt = result.jwt;
+              req.user.refreshToken = result.refreshToken;
+            } else {
+              log.info('refreshJWT', 'Token renewal failed, removing user from request');
+              delete req.user;
+            }
           } else {
-            log.verbose('refreshJWT', 'Cannot refresh JWT token');
+            log.info('refreshJWT', 'Refresh token expired, removing user from request');
             delete req.user;
           }
         }

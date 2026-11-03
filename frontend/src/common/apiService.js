@@ -2,59 +2,54 @@ import axios from 'axios';
 
 import { ApiRoutes } from '../utils/constants.js';
 import AuthService from './authService.js';
-//
-// Buffer concurrent requests while refresh token is being acquired
-let failedQueue = [];
 
-function processQueue(error, token = null) {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
+// Concurrent 401s share a single in-flight refresh so the session's refresh token is only rotated once
+let pendingRefresh = null;
 
-  failedQueue = [];
+function refreshToken() {
+  if (!pendingRefresh) {
+    pendingRefresh = AuthService.refreshAuthToken(localStorage.getItem('jwtToken'))
+      .then((response) => {
+        if (!response?.jwtFrontend) {
+          throw new Error('No jwtFrontend returned from token refresh');
+        }
+        localStorage.setItem('jwtToken', response.jwtFrontend);
+        apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
+        return response.jwtFrontend;
+      })
+      .finally(() => {
+        pendingRefresh = null;
+      });
+  }
+  return pendingRefresh;
 }
 
 // Create new non-global axios instance and intercept strategy
 const apiAxios = axios.create();
 const intercept = apiAxios.interceptors.response.use(
   (config) => config,
-  (error) => {
+  async (error) => {
     const originalRequest = error.config;
     console.log('ERROR', error);
-    if (error.response?.status !== 401) {
+    if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
       return Promise.reject(error);
     }
-    axios.interceptors.response.eject(intercept);
-    return new Promise((resolve, reject) => {
-      AuthService.refreshAuthToken(localStorage.getItem('jwtToken'))
-        .then((response) => {
-          if (response.jwtFrontend) {
-            localStorage.setItem('jwtToken', response.jwtFrontend);
-            apiAxios.defaults.headers.common['Authorization'] = `Bearer ${response.jwtFrontend}`;
-            originalRequest.headers['Authorization'] = `Bearer ${response.jwtFrontend}`;
-          }
-          processQueue(null, response.jwtFrontend);
-          resolve(axios(originalRequest));
-        })
-        .catch((e) => {
-          processQueue(e, null);
-          localStorage.removeItem('jwtToken');
-          window.location = '/token-expired';
-          reject(e);
-        });
-    });
+    originalRequest._retry = true;
+    try {
+      const token = await refreshToken();
+      originalRequest.headers['Authorization'] = `Bearer ${token}`;
+    } catch (e) {
+      localStorage.removeItem('jwtToken');
+      window.location = '/token-expired';
+      throw e;
+    }
+    return apiAxios(originalRequest);
   },
 );
 
 export default {
   apiAxios: apiAxios,
   intercept: intercept,
-  processQueue,
-  failedQueue,
 
   //Adds required headers to the Auth request
   setAuthHeader(token) {

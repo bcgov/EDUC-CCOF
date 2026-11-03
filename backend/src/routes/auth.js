@@ -97,12 +97,14 @@ router.post('/refresh', [body('refreshToken').exists()], async (req, res) => {
     });
   }
   if (!req['user'] || !req['user'].refreshToken || !req?.user?.jwt) {
+    log.info('refresh', 'No user or tokens in session, responding 401');
     res.status(401).json(UnauthorizedRsp);
   } else {
     if (auth.isTokenExpired(req.user.jwt)) {
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
         return generateTokens(req, res);
       } else {
+        log.info('refresh', 'Refresh token expired, responding 401');
         res.status(401).json(UnauthorizedRsp);
       }
     } else {
@@ -136,7 +138,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
 });
 async function generateTokens(req, res) {
   const result = await auth.renew(req.user.refreshToken);
-  if (result && result.jwt && result.refreshToken) {
+  if (result) {
     req.user.jwt = result.jwt;
     req.user.refreshToken = result.refreshToken;
     req.user.jwtFrontend = auth.generateUiToken();
@@ -145,6 +147,7 @@ async function generateTokens(req, res) {
     };
     res.status(200).json(responseJson);
   } else {
+    log.info('generateTokens', 'Token renewal failed, responding 401');
     res.status(401).json(UnauthorizedRsp);
   }
 }
