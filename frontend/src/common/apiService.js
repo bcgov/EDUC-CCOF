@@ -32,7 +32,7 @@ const intercept = apiAxios.interceptors.response.use(
     const originalRequest = error.config;
     console.log('ERROR', error);
     if (error.response?.status !== 401 || !originalRequest || originalRequest._retry) {
-      return Promise.reject(error);
+      throw error;
     }
     originalRequest._retry = true;
     try {

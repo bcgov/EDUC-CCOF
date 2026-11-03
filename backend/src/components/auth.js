@@ -73,34 +73,32 @@ const auth = {
     return null;
   },
 
+  async renewUserTokensIfExpired(user) {
+    if (!user?.jwt) {
+      log.verbose('refreshJWT', 'No existing User or JWT');
+      return false;
+    }
+    if (!auth.isTokenExpired(user.jwt)) {
+      return true;
+    }
+    if (!user.refreshToken || !auth.isRenewable(user.refreshToken)) {
+      log.info('refreshJWT', 'Refresh token expired, removing user from request');
+      return false;
+    }
+    const result = await auth.renew(user.refreshToken);
+    if (!result) {
+      log.info('refreshJWT', 'Token renewal failed, removing user from request');
+      return false;
+    }
+    user.jwt = result.jwt;
+    user.refreshToken = result.refreshToken;
+    return true;
+  },
+
   // Update or remove token based on JWT and user state
   async refreshJWT(req, _res, next) {
     try {
-      if (!!req && !!req.user && !!req.user.jwt) {
-        log.verbose('refreshJWT', 'User & JWT exists');
-
-        if (auth.isTokenExpired(req.user.jwt)) {
-          log.verbose('refreshJWT', 'JWT has expired');
-
-          if (!!req.user.refreshToken && auth.isRenewable(req.user.refreshToken)) {
-            log.verbose('refreshJWT', 'Can refresh JWT token');
-
-            // Get new JWT and Refresh Tokens and update the request
-            const result = await auth.renew(req.user.refreshToken);
-            if (result) {
-              req.user.jwt = result.jwt;
-              req.user.refreshToken = result.refreshToken;
-            } else {
-              log.info('refreshJWT', 'Token renewal failed, removing user from request');
-              delete req.user;
-            }
-          } else {
-            log.info('refreshJWT', 'Refresh token expired, removing user from request');
-            delete req.user;
-          }
-        }
-      } else {
-        log.verbose('refreshJWT', 'No existing User or JWT');
+      if (!(await auth.renewUserTokensIfExpired(req?.user))) {
         delete req.user;
       }
     } catch (error) {
