@@ -76,7 +76,7 @@ export default {
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
           // Remaining time is a duration computed by the server, so it is unaffected by the client clock
           if (response.data > 0) {
-            const timeOutValue = parseInt(response.data);
+            const timeOutValue = Number.parseInt(response.data);
 
             if (timeOutValue < 190000) {
               this.showDialog();
