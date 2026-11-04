@@ -59,7 +59,7 @@ describe('payment component getPayments', () => {
     restrictFacilities.mockImplementation((request, payments) => payments);
   });
 
-  it('uses getOperationAllPages (not single-page getOperation) with pageSize=500 and returns mapped payments', async () => {
+  it('uses getOperationAllPages (not single-page getOperation) with maxPageSize=500 and returns mapped payments', async () => {
     const res = mockRes();
     getOperationAllPages.mockResolvedValue({ value: [paymentRow()] });
 
@@ -68,7 +68,9 @@ describe('payment component getPayments', () => {
     expect(getOperationAllPages).toHaveBeenCalledTimes(1);
     const operation = getOperationAllPages.mock.calls[0][0];
     expect(operation).toContain('ofm_payments?$select=');
-    expect(operation).toContain('&pageSize=500');
+    // CMS strips everything from "&maxPageSize" onward, so it must be the last parameter
+    expect(operation).toMatch(/&maxPageSize=500$/);
+    expect(operation).not.toContain('&pageSize=');
     expect(operation).toContain('$filter=_ofm_organization_value eq 778ad039-3ade-ed11-8847-000d3af36bac');
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith([expect.objectContaining({ paymentAmount: 2850.96 })]);
