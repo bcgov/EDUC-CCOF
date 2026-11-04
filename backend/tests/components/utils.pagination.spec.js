@@ -16,10 +16,11 @@ const config = require('../../src/config/index');
 const log = require('../../src/components/logger');
 const { getOperationAllPages } = require('../../src/components/utils');
 
-const OPERATION = 'ofm_payments?$select=ofm_amount&$filter=_ofm_organization_value eq 111&pageSize=500';
+const OPERATION = 'ofm_payments?$select=ofm_amount&$filter=_ofm_organization_value eq 111&maxPageSize=500';
+const PS = '&maxPageSize=500';
 // D365 nextLinks are percent-encoded; the converter must round-trip them without double-decoding
 const PAGE_2_STATEMENT =
-  'ofm_payments?$select=ofm_amount&$filter=_ofm_organization_value%20eq%20111&pageSize=500&$skiptoken=%3Ccookie%20msprop%3D%22x%22%3E5%3C%2Fcookie%3E';
+  'ofm_payments?$select=ofm_amount&$filter=_ofm_organization_value%20eq%20111&$skiptoken=%3Ccookie%20msprop%3D%22x%22%3E5%3C%2Fcookie%3E';
 
 function nextLink(statement) {
   return `https://d365.example.com/api/data/v9.2/${statement}`;
@@ -67,7 +68,7 @@ describe('getOperationAllPages', () => {
     const result = await getOperationAllPages(OPERATION);
 
     expect(axios.get).toHaveBeenCalledTimes(2);
-    expect(statementOf(1)).toBe(page2);
+    expect(statementOf(1)).toBe(page2 + PS);
     expect(result.value).toEqual([{ ofm_amount: 1 }, { ofm_amount: 999 }]);
     expect(log.warn).not.toHaveBeenCalled();
     expect(log.info).toHaveBeenCalledWith('getOperationAllPages complete', { pages: 2, rows: 2 });
@@ -82,8 +83,8 @@ describe('getOperationAllPages', () => {
     const result = await getOperationAllPages(OPERATION);
 
     expect(axios.get).toHaveBeenCalledTimes(3);
-    expect(statementOf(1)).toBe('ofm_payments?$skiptoken=page2');
-    expect(statementOf(2)).toBe('ofm_payments?$skiptoken=page3');
+    expect(statementOf(1)).toBe('ofm_payments?$skiptoken=page2' + PS);
+    expect(statementOf(2)).toBe('ofm_payments?$skiptoken=page3' + PS);
     expect(result.value).toEqual([{ ofm_amount: 1 }, { ofm_amount: 2 }, { ofm_amount: 3 }]);
     expect(log.info).toHaveBeenCalledWith('getOperationAllPages complete', { pages: 3, rows: 3 });
   });
@@ -104,7 +105,7 @@ describe('getOperationAllPages', () => {
     expect(axios.get).toHaveBeenCalledTimes(TOTAL_PAGES);
     // every call after the first must carry the statement from the previous nextLink
     for (let i = 1; i < TOTAL_PAGES; i++) {
-      expect(statementOf(i)).toBe(`ofm_payments?$skiptoken=page${i + 1}`);
+      expect(statementOf(i)).toBe(`ofm_payments?$skiptoken=page${i + 1}${PS}`);
     }
     expect(result.value).toHaveLength(5000);
     // order preserved: first row of page 1, last row of page 10
@@ -112,6 +113,27 @@ describe('getOperationAllPages', () => {
     expect(result.value[4999]).toEqual({ ofm_amount: 10000 + (PAGE_SIZE - 1) });
     expect(log.warn).not.toHaveBeenCalled();
     expect(log.info).toHaveBeenCalledWith('getOperationAllPages complete', { pages: 10, rows: 5000 });
+  });
+
+  it('does not append maxPageSize to nextLink statements when the operation has none', async () => {
+    axios.get
+      .mockResolvedValueOnce(page([{ ofm_amount: 1 }], 'ofm_payments?$skiptoken=page2'))
+      .mockResolvedValueOnce(page([{ ofm_amount: 2 }]));
+
+    await getOperationAllPages('ofm_payments?$select=ofm_amount');
+
+    expect(statementOf(1)).toBe('ofm_payments?$skiptoken=page2');
+  });
+
+  it('defaults to a 100 page limit', async () => {
+    for (let i = 0; i < 110; i++) {
+      axios.get.mockResolvedValueOnce(page([{ ofm_amount: i }], 'ofm_payments?$skiptoken=page' + i));
+    }
+
+    const result = await getOperationAllPages(OPERATION);
+
+    expect(axios.get).toHaveBeenCalledTimes(100);
+    expect(result.value).toHaveLength(100);
   });
 
   it('preserves URL encoding of the skiptoken when converting nextLink', async () => {

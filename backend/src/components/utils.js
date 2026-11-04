@@ -173,7 +173,8 @@ async function getOperationWithObjectId(operation, objectId) {
 }
 
 const D365_WEB_API_PREFIX = '/api/data/v9.2/';
-const GET_OPERATION_ALL_PAGES_MAX = 50;
+const GET_OPERATION_ALL_PAGES_MAX = 100;
+const MAX_PAGE_SIZE_PARAM = /&maxPageSize=\d+$/;
 
 function sanitizeForLog(text) {
   return String(text)
@@ -201,7 +202,7 @@ function operationStatementFromNextLink(nextLink) {
   }
 }
 
-async function collectOperationPages(statement, pages, maxPages, allRows) {
+async function collectOperationPages(statement, pages, maxPages, allRows, pageSizeParam = '') {
   if (pages >= maxPages) {
     return { rows: allRows, pages, limitReached: true };
   }
@@ -220,12 +221,14 @@ async function collectOperationPages(statement, pages, maxPages, allRows) {
     log.warn('getOperationAllPages: unparseable nextLink, returning partial results', { pages: pageCount, rows: allRows.length });
     return { rows: allRows, pages: pageCount, limitReached: false };
   }
-  return collectOperationPages(nextStatement, pageCount, maxPages, allRows);
+  // nextLink does not carry the page size; re-append it last so CMS strips it and applies it to every page
+  return collectOperationPages(`${nextStatement}${pageSizeParam}`, pageCount, maxPages, allRows, pageSizeParam);
 }
 
 async function getOperationAllPages(operation, maxPages = GET_OPERATION_ALL_PAGES_MAX) {
   try {
-    const { rows, pages, limitReached } = await collectOperationPages(operation, 0, maxPages, []);
+    const pageSizeParam = operation.match(MAX_PAGE_SIZE_PARAM)?.[0] ?? '';
+    const { rows, pages, limitReached } = await collectOperationPages(operation, 0, maxPages, [], pageSizeParam);
     if (limitReached) {
       log.warn('getOperationAllPages: page limit reached, returning partial results', {
         operation: sanitizeForLog(operation),

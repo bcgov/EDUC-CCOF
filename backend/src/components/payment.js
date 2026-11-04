@@ -13,7 +13,7 @@ async function getPayments(req, res) {
       '&$expand=ccof_monthly_enrollment_report($select=ccof_month,ccof_year),' +
       'ccof_monthly_ecewe_report($select=ccof_month,ccof_year,ccof_report_type),' +
       'ofm_facility($select=ccof_facilitylicencenumber)' +
-      `&${buildFilterQuery(req.query, PaymentMappings)}&pageSize=500`;
+      `&${buildFilterQuery(req.query, PaymentMappings)}&maxPageSize=500`;
     const response = await getOperationAllPages(operation);
 
     const mappedPayments = response.value.map((payment) =>
