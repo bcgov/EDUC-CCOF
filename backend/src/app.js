@@ -17,6 +17,7 @@ const { getUserProfile } = require('./components/user');
 const { ROLES } = require('./util/constants');
 const { MappableObjectForFront } = require('./util/mapping/MappableObject');
 const { RoleMappings } = require('./util/mapping/Mappings');
+const cookieMaxAge = require('./middlewares/cookieMaxAge');
 
 const bodyParser = require('body-parser');
 dotenv.config();
@@ -119,6 +120,7 @@ Redis.init()
     if (Redis.isReady) {
       sessionConfig.store = new ConnectRedis({ client: Redis.client, prefix: `${Redis.prefix}ccof-sess:` });
     }
+    app.use(cookieMaxAge(sessionConfig.name, cookie.maxAge));
     app.use(session(sessionConfig));
 
     // Setup Rate limit for the number of frontend requests allowed per windowMs to avoid DDOS attack

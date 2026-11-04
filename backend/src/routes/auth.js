@@ -88,6 +88,11 @@ const UnauthorizedRsp = {
   error_description: 'Not logged in',
 };
 
+// serverTime lets the frontend evaluate token/session expiry against server time instead of the client clock
+function tokenResponse(req) {
+  return { jwtFrontend: req.user.jwtFrontend, serverTime: Date.now() };
+}
+
 //refreshes jwt on refresh if refreshToken is valid
 router.post('/refresh', [body('refreshToken').exists()], async (req, res) => {
   const errors = validationResult(req);
@@ -109,10 +114,7 @@ router.post('/refresh', [body('refreshToken').exists()], async (req, res) => {
         res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
       }
     } else {
-      const responseJson = {
-        jwtFrontend: req.user.jwtFrontend,
-      };
-      return res.status(HttpStatus.OK).json(responseJson);
+      return res.status(HttpStatus.OK).json(tokenResponse(req));
     }
   }
 });
@@ -129,10 +131,7 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       };
       log.info('created correlation id and stored in session', correlation);
     }
-    const responseJson = {
-      jwtFrontend: req.user.jwtFrontend,
-    };
-    res.status(HttpStatus.OK).json(responseJson);
+    res.status(HttpStatus.OK).json(tokenResponse(req));
   } else {
     res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
   }
@@ -149,10 +148,7 @@ async function generateTokens(req, res) {
     req.user.jwt = result.jwt;
     req.user.refreshToken = result.refreshToken;
     req.user.jwtFrontend = auth.generateUiToken();
-    const responseJson = {
-      jwtFrontend: req.user.jwtFrontend,
-    };
-    res.status(HttpStatus.OK).json(responseJson);
+    res.status(HttpStatus.OK).json(tokenResponse(req));
   } else {
     log.info('generateTokens', 'Token renewal failed, responding 401');
     res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);

@@ -41,9 +41,10 @@ import { AuthRoutes } from '@/utils/constants.js';
 import ApiService from '@/common/apiService.js';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
+import { serverNow } from '@/utils/serverClock.js';
 
 function getTokenExpiredTime(jwtToken) {
-  const now = Date.now().valueOf();
+  const now = serverNow();
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
   // console.log(

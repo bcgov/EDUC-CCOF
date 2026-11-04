@@ -7,9 +7,10 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { ROLES } from '@/utils/constants.js';
+import { serverNow } from '@/utils/serverClock.js';
 
 function isExpiredToken(jwtToken) {
-  const now = Date.now().valueOf() / 1000;
+  const now = serverNow() / 1000;
   const jwtPayload = jwtToken.split('.')[1];
   const payload = JSON.parse(window.atob(jwtPayload));
   return payload.exp <= now;
