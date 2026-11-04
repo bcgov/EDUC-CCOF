@@ -41,17 +41,6 @@ import { AuthRoutes } from '@/utils/constants.js';
 import ApiService from '@/common/apiService.js';
 import AppDialog from '@/components/guiComponents/AppDialog.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
-import { serverNow } from '@/utils/serverClock.js';
-
-function getTokenExpiredTime(jwtToken) {
-  const now = serverNow();
-  const jwtPayload = jwtToken.split('.')[1];
-  const payload = JSON.parse(window.atob(jwtPayload));
-  // console.log(
-  //   `getTokenExpiredTime: [${payload.exp}], with now: [${now}], token expire time is [${payload.exp * 1000 - now}]`,
-  // );
-  return payload.exp * 1000 - now;
-}
 
 export default {
   components: { AppButton, AppDialog },
@@ -62,7 +51,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAuthStore, ['isAuthenticated', 'jwtToken']),
+    ...mapState(useAuthStore, ['isAuthenticated']),
     ...mapState(useAppStore, ['logoutCounter']),
   },
   watch: {
@@ -85,12 +74,9 @@ export default {
       if (this.isAuthenticated) {
         try {
           const response = await ApiService.apiAxios.get(AuthRoutes.SESSION_REMAINING_TIME);
+          // Remaining time is a duration computed by the server, so it is unaffected by the client clock
           if (response.data > 0) {
-            let timeOutValue = parseInt(response.data);
-            const tokenExpire = getTokenExpiredTime(this.jwtToken);
-            if (timeOutValue > tokenExpire) {
-              timeOutValue = tokenExpire;
-            }
+            const timeOutValue = parseInt(response.data);
 
             if (timeOutValue < 190000) {
               this.showDialog();
