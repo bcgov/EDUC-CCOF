@@ -4,6 +4,7 @@ const config = require('../config/index');
 const passport = require('passport');
 const express = require('express');
 const auth = require('../components/auth');
+const HttpStatus = require('http-status-codes');
 const log = require('../components/logger');
 const { v4: uuidv4 } = require('uuid');
 const { getUserGuid } = require('../components/utils');
@@ -12,7 +13,7 @@ const { body, validationResult } = require('express-validator');
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  res.status(200).json({
+  res.status(HttpStatus.OK).json({
     endpoints: ['/callback', '/callback_idir', '/login', '/logout', '/refresh', '/token'],
   });
 });
@@ -92,24 +93,23 @@ router.post('/refresh', [body('refreshToken').exists()], async (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return res.status(400).json({
+    return res.status(HttpStatus.BAD_REQUEST).json({
       errors: errors.array(),
     });
   }
   if (!req['user'] || !req['user'].refreshToken || !req?.user?.jwt) {
-    res.status(401).json(UnauthorizedRsp);
+    log.info('refresh', 'No user or tokens in session, responding 401');
+    res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
   } else {
     if (auth.isTokenExpired(req.user.jwt)) {
       if (req?.user?.refreshToken && auth.isRenewable(req.user.refreshToken)) {
         return generateTokens(req, res);
       } else {
-        res.status(401).json(UnauthorizedRsp);
+        log.info('refresh', 'Refresh token expired, responding 401');
+        res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
       }
     } else {
-      const responseJson = {
-        jwtFrontend: req.user.jwtFrontend,
-      };
-      return res.status(200).json(responseJson);
+      return res.status(HttpStatus.OK).json({ jwtFrontend: req.user.jwtFrontend });
     }
   }
 });
@@ -126,35 +126,36 @@ router.get('/token', auth.refreshJWT, (req, res) => {
       };
       log.info('created correlation id and stored in session', correlation);
     }
-    const responseJson = {
-      jwtFrontend: req.user.jwtFrontend,
-    };
-    res.status(200).json(responseJson);
+    res.status(HttpStatus.OK).json({ jwtFrontend: req.user.jwtFrontend });
   } else {
-    res.status(401).json(UnauthorizedRsp);
+    res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
   }
 });
 async function generateTokens(req, res) {
-  const result = await auth.renew(req.user.refreshToken);
-  if (result && result.jwt && result.refreshToken) {
+  let result;
+  try {
+    result = await auth.renew(req.user.refreshToken);
+  } catch (error) {
+    log.error('generateTokens', `Token renewal unavailable, responding 503: ${error.message}`);
+    return res.sendStatus(HttpStatus.SERVICE_UNAVAILABLE);
+  }
+  if (result) {
     req.user.jwt = result.jwt;
     req.user.refreshToken = result.refreshToken;
     req.user.jwtFrontend = auth.generateUiToken();
-    const responseJson = {
-      jwtFrontend: req.user.jwtFrontend,
-    };
-    res.status(200).json(responseJson);
+    res.status(HttpStatus.OK).json({ jwtFrontend: req.user.jwtFrontend });
   } else {
-    res.status(401).json(UnauthorizedRsp);
+    log.info('generateTokens', 'Token renewal failed, responding 401');
+    res.status(HttpStatus.UNAUTHORIZED).json(UnauthorizedRsp);
   }
 }
 router.get('/user-session-remaining-time', passport.authenticate('jwt', { session: false }), (req, res) => {
   if (req?.session?.cookie && req?.session?.passport?.user) {
     const remainingTime = req.session.cookie.maxAge;
     log.info(`session remaining time is :: ${remainingTime} for user`, req.session?.passport?.user?.displayName);
-    return res.status(200).json(req.session.cookie.maxAge);
+    return res.status(HttpStatus.OK).json(req.session.cookie.maxAge);
   } else {
-    return res.sendStatus(401);
+    return res.sendStatus(HttpStatus.UNAUTHORIZED);
   }
 });
 

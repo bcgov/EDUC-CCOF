@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import HttpStatus from 'http-status-codes';
 
 import ApiService from '@/common/apiService.js';
 import AuthService from '@/common/authService.js';
@@ -7,13 +8,6 @@ import { useApplicationStore } from '@/store/application.js';
 import { useOrganizationStore } from '@/store/ccof/organization.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { ROLES } from '@/utils/constants.js';
-
-function isExpiredToken(jwtToken) {
-  const now = Date.now().valueOf() / 1000;
-  const jwtPayload = jwtToken.split('.')[1];
-  const payload = JSON.parse(window.atob(jwtPayload));
-  return payload.exp <= now;
-}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -138,11 +132,17 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async refreshToken() {
-      if (isExpiredToken(this.jwtToken)) {
-        this.logout();
-        return;
+      let response;
+      try {
+        response = await AuthService.refreshAuthToken(this.jwtToken);
+      } catch (e) {
+        // The server is authoritative on session expiry (the client clock may be wrong), so treat 401 as logged out
+        if (e.response?.status === HttpStatus.UNAUTHORIZED) {
+          this.logout();
+          return;
+        }
+        throw e;
       }
-      const response = await AuthService.refreshAuthToken(this.jwtToken);
       if (response.jwtFrontend) {
         this.setJwtToken(response.jwtFrontend);
         ApiService.setAuthHeader(response.jwtFrontend);

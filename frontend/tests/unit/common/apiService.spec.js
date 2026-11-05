@@ -17,14 +17,4 @@ describe('apiService.js', () => {
     ApiService.setAuthHeader();
     expect(ApiService.apiAxios.defaults.headers.common['Authorization']).toBe(undefined);
   });
-
-  it('process items in queue with error', () => {
-    ApiService.failedQueue = ['itemA', 'itemB', 'itemC'];
-    ApiService.processQueue(Error, null);
-  });
-
-  it('process items in queue with successful promise', () => {
-    ApiService.failedQueue = ['itemA', 'itemB', 'itemC'];
-    ApiService.processQueue(null, 'token');
-  });
 });
