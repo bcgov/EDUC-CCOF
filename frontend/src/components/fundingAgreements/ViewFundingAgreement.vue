@@ -29,6 +29,10 @@
     <br />
     <template v-if="isSignatureRequired">
       <h4 id="declaration" class="lg-px-10">Declaration</h4>
+      <v-alert v-if="isRenewalRequiredBeforeSigning" type="info" variant="tonal" class="my-4">
+        This funding agreement must be signed as part of your renewal application. Go to the dashboard to renew your
+        funding agreement.
+      </v-alert>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <div>
           <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
@@ -74,7 +78,9 @@
       </v-skeleton-loader>
     </template>
     <NavButton
-      :is-submit-displayed="displaySignFundingAgreementSection && isSignatureRequired"
+      :is-submit-displayed="
+        displaySignFundingAgreementSection && isSignatureRequired && !isRenewalRequiredBeforeSigning
+      "
       :is-submit-disabled="isSubmitDisabled"
       :is-processing="processing || isLoading"
       @previous="goBackToManageFundingAgreement"
@@ -98,8 +104,10 @@ import FundingAgreementDeclarationTextV1 from '@/components/fundingAgreements/fu
 import FundingAgreementDeclarationTextV2 from '@/components/fundingAgreements/fundingAgreementDeclarationTextVersions/FundingAgreementDeclarationTextV2.vue';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import LicenceService from '@/services/licenceService.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import {
+  APPLICATION_STATUSES,
   DECLARATION_TEXT_VERSIONS,
   FUNDING_AGREEMENTS_STATUS,
   FUNDING_AGREEMENT_EXTERNAL_STATUSES,
@@ -139,13 +147,26 @@ export default {
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['applicationMap']),
     ...mapState(useAuthStore, ['isMinistryUser']),
-    isReadOnly() {
+    isStatusReadOnly() {
       if (this.isMinistryUser) return true;
       return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
+    // Version 00 FAs are signed through the renewal application (SummaryDeclaration), so providers cannot sign them
+    // here until they have submitted an application for that program year.
+    isRenewalRequiredBeforeSigning() {
+      const fa = this.fundingAgreement;
+      if (fa?.fundingAgreementOrderNumber == null || Number(fa.fundingAgreementOrderNumber) !== 0) return false;
+      if (fa.externalStatusText !== FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED) return false;
+      const application = this.applicationMap?.get(fa.programYearId);
+      return !application || application.applicationStatus === APPLICATION_STATUSES.DRAFT;
+    },
+    isReadOnly() {
+      return this.isStatusReadOnly || this.isRenewalRequiredBeforeSigning;
+    },
     showDeclarationV2() {
-      return !this.isReadOnly || this.fundingAgreement?.declarationVersion === DECLARATION_TEXT_VERSIONS.V2;
+      return !this.isStatusReadOnly || this.fundingAgreement?.declarationVersion === DECLARATION_TEXT_VERSIONS.V2;
     },
     fundingAgreementNumber() {
       return this.fundingAgreement?.fundingAgreementNumber;
