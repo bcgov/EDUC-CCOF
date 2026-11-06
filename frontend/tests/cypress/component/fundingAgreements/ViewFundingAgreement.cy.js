@@ -163,14 +163,12 @@ describe('<ViewFundingAgreement />', () => {
       assertSigningBlocked();
     });
 
-    it('should allow signing when the application for the program year is submitted', () => {
+    it('should block signing even when the application for the program year is submitted', () => {
       interceptAPI(renewalFundingAgreement);
       mountWithPinia({
         initialState: renewalState(new Map([[programYearId, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }]])),
       });
-      cy.contains('button', 'Submit').should('exist');
-      cy.contains(renewalMessage).should('not.exist');
-      cy.get('.v-checkbox input').should('not.be.disabled');
+      assertSigningBlocked();
     });
 
     it('should allow signing a non-00 version without an application for the program year', () => {
