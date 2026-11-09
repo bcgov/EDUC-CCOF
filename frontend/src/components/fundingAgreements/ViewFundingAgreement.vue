@@ -29,7 +29,7 @@
     <br />
     <template v-if="isSignatureRequired">
       <h4 id="declaration" class="lg-px-10">Declaration</h4>
-      <v-alert v-if="isVersion00SigningBlocked" type="info" variant="tonal" class="my-4">
+      <v-alert v-if="showRenewalSigningNotice" type="info" variant="tonal" class="my-4">
         This funding agreement must be signed as part of your renewal application. Go to the dashboard to renew your
         funding agreement.
       </v-alert>
@@ -150,9 +150,14 @@ export default {
     },
     // Version 00 FAs are signed through the application declaration (SummaryDeclaration), never in this tab.
     isVersion00SigningBlocked() {
-      const fa = this.fundingAgreement;
-      if (fa?.fundingAgreementOrderNumber == null || Number(fa.fundingAgreementOrderNumber) !== 0) return false;
-      return fa.externalStatusText === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED;
+      const orderNumber = this.fundingAgreement?.fundingAgreementOrderNumber;
+      return orderNumber != null && Number(orderNumber) === 0;
+    },
+    showRenewalSigningNotice() {
+      return (
+        this.isVersion00SigningBlocked &&
+        this.fundingAgreement?.externalStatusText === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
+      );
     },
     isReadOnly() {
       return this.isStatusReadOnly || this.isVersion00SigningBlocked;

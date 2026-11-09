@@ -171,6 +171,15 @@ describe('<ViewFundingAgreement />', () => {
       assertSigningBlocked();
     });
 
+    it('should block signing a suspended version 00 agreement without showing the renewal notice', () => {
+      interceptAPI({ ...renewalFundingAgreement, externalStatusText: FUNDING_AGREEMENTS_STATUS.SUSPENDED });
+      mountWithPinia({ initialState: renewalState() });
+      cy.get('.v-checkbox input').should('be.disabled');
+      cy.get('.v-text-field input').should('be.disabled');
+      cy.contains('button', 'Submit').should('not.exist');
+      cy.contains(renewalMessage).should('not.exist');
+    });
+
     it('should allow signing a non-00 version without an application for the program year', () => {
       interceptAPI({ ...renewalFundingAgreement, fundingAgreementOrderNumber: 1 });
       mountWithPinia({ initialState: renewalState() });
