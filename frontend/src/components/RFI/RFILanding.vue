@@ -195,9 +195,14 @@
             />
 
             <div class="my-4">
-              <p class="text-h5 text-primary my-2">Other Sources of Ministry Funding</p>
+              <p v-if="isApplicationTemplateV4OrHigher" class="text-h5 text-primary my-2">Other Sources of Funding</p>
+              <p v-else class="text-h5 text-primary my-2">Other Sources of Ministry Funding</p>
               <div>
-                <label for="q3">
+                <label v-if="isApplicationTemplateV4OrHigher" for="q3">
+                  Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
+                  or submitted an insurance claim for any of the expenses you listed?
+                </label>
+                <label v-else for="q3">
                   Have you applied for any other sources of Ministry Funding (e.g. BC Maintenance Fund, Start-Up Grants)
                   for any of the expenses you listed?
                 </label>
@@ -220,13 +225,17 @@
                   <v-row class="hidden-lg-and-down">
                     <v-col cols="1" class="close-column" />
                     <v-col cols="12" xl="3">
-                      <h3 class="text-center">Funding Program</h3>
+                      <h3 class="text-center">{{ fundingProgramLabel }}</h3>
                     </v-col>
                     <v-col cols="12" xl="2">
-                      <h3 class="text-center">Application Date</h3>
+                      <h3 class="text-center">
+                        {{ isApplicationTemplateV4OrHigher ? 'Application/Claim Date' : 'Application Date' }}
+                      </h3>
                     </v-col>
                     <v-col cols="12" xl="2">
-                      <h3 class="text-center">Status of Application</h3>
+                      <h3 class="text-center">
+                        {{ isApplicationTemplateV4OrHigher ? 'Status of Application/Claim' : 'Status of Application' }}
+                      </h3>
                     </v-col>
                     <v-col cols="12" xl="2">
                       <h3 class="text-center">Amount Received</h3>
@@ -252,7 +261,7 @@
                       <v-text-field
                         v-model="fundInfo.fundingProgram"
                         :disabled="isReadOnly"
-                        label="Funding Program"
+                        :label="fundingProgramLabel"
                         variant="outlined"
                         clearable
                         :rules="rules.required"
@@ -1020,6 +1029,212 @@
 
       <!-- End Page 4 Indigenous Service Expansion-->
 
+      <v-card v-if="isApplicationTemplateV4OrHigher" elevation="6" class="my-10 rounded-lg">
+        <p class="px-6 py-3 card-title font-weight-bold">Priority Service Expansion: Inclusion</p>
+        <div class="px-8 py-4">
+          <div>
+            <label for="inclusionEligibleExpenseAndPolicy">Does your facility have:</label>
+            <ul class="ml-10">
+              <li>
+                an expense that meets an immediate inclusion need and is not covered by other funding sources; and
+              </li>
+              <li>
+                a documented inclusion policy aligned with the principles outlined in BC's Inclusive Child Care
+                Strategy?
+              </li>
+            </ul>
+            <v-radio-group
+              id="inclusionEligibleExpenseAndPolicy"
+              v-model="model.inclusionEligibleExpenseAndPolicy"
+              class="radio-label"
+              :disabled="isReadOnly"
+              :rules="rules.required"
+              inline
+            >
+              <v-radio
+                label="Yes"
+                :value="1"
+                @click="
+                  addObjToList(inclusionExpenseObj, model.inclusionExpenseList, model.inclusionExpenseList.length > 0)
+                "
+              />
+              <v-radio label="No" :value="0" />
+            </v-radio-group>
+          </div>
+
+          <template v-if="model.inclusionEligibleExpenseAndPolicy === 1">
+            <div class="mb-4">
+              <label for="inclusionBusinessCase">
+                Describe the expense and how it meets the immediate inclusion need, confirm it is not covered by other
+                funding sources, and submit evidence of the expense (e.g., receipts, quotes, or financial statements of
+                staffing costs incurred) and a copy of your inclusion policy. Please tell us anything else you would
+                like us to know about how your facility's business case provides an inclusive and supportive
+                environment.
+              </label>
+              <v-textarea
+                id="inclusionBusinessCase"
+                v-model="model.inclusionBusinessCase"
+                :disabled="isReadOnly"
+                :rules="rules.required"
+                variant="outlined"
+                placeholder="Describe here"
+              />
+            </div>
+
+            <div class="mb-4">
+              <label for="inclusionParentFeeScope">
+                Will your proposed Parent Fees be charged for all children occupying Enrolled Spaces and Drop-In Spaces,
+                or only for those with support needs?
+              </label>
+              <v-radio-group
+                id="inclusionParentFeeScope"
+                v-model="model.inclusionParentFeeScope"
+                class="radio-label"
+                :disabled="isReadOnly"
+                :rules="rules.required"
+                inline
+              >
+                <v-radio
+                  v-for="scope in RFI_PSE_INCLUSION_PARENT_FEE_SCOPES"
+                  :key="scope.value"
+                  :label="scope.label"
+                  :value="scope.value"
+                />
+              </v-radio-group>
+            </div>
+
+            <div class="mb-4">
+              <label for="inclusionStaffExpenses">
+                Do you have expenses related to wages, recruitment and retention of staff who support all enrolled
+                children (e.g., those who do not provide dedicated 1-1 support)?
+              </label>
+              <v-radio-group
+                id="inclusionStaffExpenses"
+                v-model="model.inclusionStaffExpenses"
+                class="radio-label"
+                :disabled="isReadOnly"
+                :rules="rules.required"
+                inline
+              >
+                <v-radio label="Yes" :value="1" />
+                <v-radio label="No" :value="0" />
+              </v-radio-group>
+
+              <template v-if="model.inclusionStaffExpenses === 1">
+                <label for="inclusionStaffingExplanation">
+                  If yes, explain your facility's wages and staffing model, and describe any specific skills or
+                  qualifications your facility requires of staff and why these skills or qualifications are necessary to
+                  provide an inclusive and supportive environment.
+                </label>
+                <v-textarea
+                  id="inclusionStaffingExplanation"
+                  v-model="model.inclusionStaffingExplanation"
+                  :disabled="isReadOnly"
+                  :rules="rules.required"
+                  variant="outlined"
+                  placeholder="Describe here"
+                />
+              </template>
+            </div>
+
+            <div class="my-4">
+              <p class="text-h5 text-primary mt-8">Expense Information</p>
+              <v-row class="hidden-sm-and-down">
+                <v-col cols="1" class="close-column" />
+                <v-col cols="12" md="3">
+                  <h3 class="text-center">Expense Description</h3>
+                </v-col>
+                <v-col cols="12" md="3">
+                  <h3 class="text-center">Date of expense</h3>
+                </v-col>
+                <v-col cols="12" md="3">
+                  <h3 class="text-center">Payment frequency details</h3>
+                </v-col>
+                <v-col cols="12" md>
+                  <h3 class="text-center">Expense amount</h3>
+                </v-col>
+              </v-row>
+              <v-row v-for="(inclusionExpense, index) in model.inclusionExpenseList" :key="inclusionExpense.id">
+                <v-col cols="1" class="close-column">
+                  <v-icon
+                    :disabled="isReadOnly"
+                    size="large"
+                    color="#003366"
+                    class="mt-md-4"
+                    @click="removeObjFromList(index, model.inclusionExpenseList)"
+                  >
+                    mdi-close
+                  </v-icon>
+                </v-col>
+                <v-col cols="12" md="3">
+                  <v-text-field
+                    v-model="inclusionExpense.description"
+                    :disabled="isReadOnly"
+                    label="Description"
+                    variant="outlined"
+                    clearable
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="12" md="3">
+                  <AppDateInput
+                    v-model="inclusionExpense.date"
+                    :rules="rules.required"
+                    :disabled="isReadOnly"
+                    :hide-details="isReadOnly"
+                    label="Date"
+                    clearable
+                  />
+                </v-col>
+                <v-col cols="12" md="3">
+                  <v-select
+                    v-model="inclusionExpense.frequency"
+                    :disabled="isReadOnly"
+                    :items="FREQUENCIES"
+                    label="Expense Frequency"
+                    variant="outlined"
+                    :rules="rules.required"
+                  />
+                </v-col>
+                <v-col cols="12" md>
+                  <v-text-field
+                    v-model.number="inclusionExpense.expense"
+                    :disabled="isReadOnly"
+                    type="number"
+                    variant="outlined"
+                    :rules="rules.required"
+                    prefix="$"
+                    @wheel="$event.target.blur()"
+                    @update:model-value="convertBlankNumberToNull(inclusionExpense, 'expense')"
+                  />
+                </v-col>
+              </v-row>
+
+              <AppButton
+                id="inclusion-add-expense-button"
+                :disabled="isReadOnly"
+                :primary="false"
+                size="medium"
+                @click="addObjToList(inclusionExpenseObj, model.inclusionExpenseList)"
+              >
+                Add Expense
+              </AppButton>
+            </div>
+            <RFIDocumentUpload
+              :current-facility="currentFacility"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_PSEINCL"
+              :r-f-i-documents="rfiDocumentsPSEINCL"
+              @add-r-f-i-document="addRFISupportingDocument"
+              @delete-r-f-i-document="deleteRFISupportingDocument"
+              @add-r-f-i-row="addNewRowToUploadedDocuments"
+              @add-r-f-i-document-description="addRFISupportingDocumentDescription"
+            />
+          </template>
+        </div>
+      </v-card>
+
+      <!-- End PSE Inclusion-->
+
       <v-card elevation="6" class="my-10 rounded-lg">
         <p class="px-6 py-3 card-title font-weight-bold">Affordable Child Care for Underserved Populations</p>
         <div class="px-8 py-4">
@@ -1157,7 +1372,7 @@ import globalMixin from '@/mixins/globalMixin.js';
 import { deepCloneObject } from '@/utils/common.js';
 import rules from '@/utils/rules.js';
 
-import { DOCUMENT_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES } from '@/utils/constants.js';
+import { DOCUMENT_TYPES, PROGRAM_YEAR_LANGUAGE_TYPES, RFI_PSE_INCLUSION_PARENT_FEE_SCOPES } from '@/utils/constants.js';
 
 let model = {
   expansionList: [],
@@ -1165,6 +1380,7 @@ let model = {
   fundingList: [],
   expenseList: [],
   indigenousExpenseList: [],
+  inclusionExpenseList: [],
 };
 
 export default {
@@ -1196,6 +1412,12 @@ export default {
         frequency: '',
       },
       indigenousExpenseObj: {
+        description: '',
+        date: undefined,
+        expense: 0,
+        frequency: '',
+      },
+      inclusionExpenseObj: {
         description: '',
         date: undefined,
         expense: 0,
@@ -1238,6 +1460,7 @@ export default {
       rfiDocumentsDCSWI: [],
       rfiDocumentsPSE: [],
       rfiDocumentsPSEIC: [],
+      rfiDocumentsPSEINCL: [],
     };
   },
 
@@ -1250,6 +1473,7 @@ export default {
       'formattedProgramYear',
       'programYearId',
       'showApplicationTemplateV1',
+      'isApplicationTemplateV4OrHigher',
     ]),
     ...mapState(useNavBarStore, [
       'nextPath',
@@ -1270,6 +1494,9 @@ export default {
     },
     languageYearLabel() {
       return this.getLanguageYearLabel;
+    },
+    fundingProgramLabel() {
+      return this.isApplicationTemplateV4OrHigher ? 'Funding Program or Insurer' : 'Funding Program';
     },
     isReadOnly() {
       //if submitted, lock er up. If unlock CCFRI - unlock
@@ -1312,6 +1539,13 @@ export default {
       if (this.model.IndigenousConnection === 1 && this.model.indigenousExpenseList.length === 0) {
         done = false;
       }
+      if (
+        this.isApplicationTemplateV4OrHigher &&
+        this.model.inclusionEligibleExpenseAndPolicy === 1 &&
+        !this.model.inclusionExpenseList?.length
+      ) {
+        done = false;
+      }
       return this.isValidForm && done; //false makes button clickable, true disables button
     },
   },
@@ -1325,6 +1559,9 @@ export default {
           await this.loadRfi(ccfriId);
           await this.refreshSupportingDocuments();
           this.model = deepCloneObject(this.rfiModel);
+          if (!this.model.inclusionExpenseList) {
+            this.model.inclusionExpenseList = [];
+          }
           this.$refs.form?.resetValidation();
         } catch (error) {
           console.log(error);
@@ -1342,6 +1579,7 @@ export default {
     this.DOCUMENT_TYPES = DOCUMENT_TYPES;
     this.PROGRAM_YEAR_LANGUAGE_TYPES = PROGRAM_YEAR_LANGUAGE_TYPES;
     this.FREQUENCIES = ['One-time', 'Daily', 'Weekly', 'Monthly'];
+    this.RFI_PSE_INCLUSION_PARENT_FEE_SCOPES = RFI_PSE_INCLUSION_PARENT_FEE_SCOPES;
   },
   methods: {
     ...mapActions(useRfiAppStore, ['loadRfi', 'saveRfi', 'setRfiModel']),
@@ -1384,6 +1622,11 @@ export default {
       for (let i = this.model.indigenousExpenseList.length - 1; i >= 0; i--) {
         if (isEqual(this.model.indigenousExpenseList[i], this.indigenousExpenseObj)) {
           this.model.indigenousExpenseList.splice(i, 1);
+        }
+      }
+      for (let i = this.model.inclusionExpenseList.length - 1; i >= 0; i--) {
+        if (isEqual(this.model.inclusionExpenseList[i], this.inclusionExpenseObj)) {
+          this.model.inclusionExpenseList.splice(i, 1);
         }
       }
 
@@ -1429,6 +1672,7 @@ export default {
       this.rfiDocumentsDCSWI = [];
       this.rfiDocumentsPSE = [];
       this.rfiDocumentsPSEIC = [];
+      this.rfiDocumentsPSEINCL = [];
       this.rfiDocumentsACCUP = [];
       this.rfiDocumentsEC =
         this.uploadedDocuments?.filter(
@@ -1445,6 +1689,10 @@ export default {
       this.rfiDocumentsPSEIC =
         this.uploadedDocuments?.filter(
           (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEIC && x.ccof_facility === facilityId,
+        ) || [];
+      this.rfiDocumentsPSEINCL =
+        this.uploadedDocuments?.filter(
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEINCL && x.ccof_facility === facilityId,
         ) || [];
       this.rfiDocumentsACCUP =
         this.uploadedDocuments?.filter(
@@ -1478,6 +1726,9 @@ export default {
           break;
         case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.unshift(item);
+          break;
+        case DOCUMENT_TYPES.RFI_PSEINCL:
+          this.rfiDocumentsPSEINCL.unshift(item);
           break;
         case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.unshift(item);
@@ -1520,6 +1771,9 @@ export default {
           break;
         case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEIC, item), 1);
+          break;
+        case DOCUMENT_TYPES.RFI_PSEINCL:
+          this.rfiDocumentsPSEINCL.splice(this.findRFIDocIndex(this.rfiDocumentsPSEINCL, item), 1);
           break;
         case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.splice(this.findRFIDocIndex(this.rfiDocumentsACCUP, item), 1);

@@ -80,6 +80,10 @@ export default {
     return version >= 3;
   },
 
+  isApplicationTemplateV4OrHigher(version) {
+    return version >= 4;
+  },
+
   isOrganizationComplete(organization, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [
@@ -147,7 +151,8 @@ export default {
     const areCCFRISectionsComplete =
       this.isCCFRIComplete(facility.ccfri, facility.applicationTemplateVersion) &&
       (facility?.ccfri?.ccfriOptInStatus === OPT_STATUSES.OPT_OUT ||
-        ((!facility?.hasRfi || this.isRFIComplete(facility.rfiApp, facility.languageYearLabel)) &&
+        ((!facility?.hasRfi ||
+          this.isRFIComplete(facility.rfiApp, facility.languageYearLabel, facility.applicationTemplateVersion)) &&
           (!facility?.hasNmf || this.isNMFComplete(facility.nmfApp)) &&
           this.isClosuresComplete(facility.ccfri, facility.applicationTemplateVersion) &&
           (!facility?.enableAfs || this.isAFSComplete(facility.afs, facility.uploadedDocuments))));
@@ -543,7 +548,7 @@ export default {
   },
 
   // RFI VALIDATIONS
-  isRFIComplete(rfi, languageYearLabel) {
+  isRFIComplete(rfi, languageYearLabel, applicationTemplateVersion) {
     const isProgramYearLanguageHistorical = languageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
     return (
       !isEmpty(rfi) &&
@@ -551,6 +556,7 @@ export default {
       this.isDirectCareStaffWagesIncreasesComplete(rfi, isProgramYearLanguageHistorical) &&
       this.isPSEIncreaseInHoursOfOperationComplete(rfi) &&
       this.isPSEIncreasingConnectionToIndigenousComplete(rfi) &&
+      (!this.isApplicationTemplateV4OrHigher(applicationTemplateVersion) || this.isPSEInclusionComplete(rfi)) &&
       this.isAffordableCCForUnderservedPopulationsComplete(rfi)
     );
   },
@@ -620,6 +626,19 @@ export default {
     const isExpenseInformationComplete =
       !isEmpty(rfi.indigenousExpenseList) &&
       rfi.indigenousExpenseList?.every((expense) => !hasEmptyFields(expense, expenseRequiredFields));
+    return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete;
+  },
+
+  isPSEInclusionComplete(rfi) {
+    if (!rfi.inclusionEligibleExpenseAndPolicy) return rfi.inclusionEligibleExpenseAndPolicy === YES_NO_VALUES.NO;
+    const requiredFields = ['inclusionBusinessCase', 'inclusionParentFeeScope', 'inclusionStaffExpenses'];
+    if (rfi.inclusionStaffExpenses === YES_NO_VALUES.YES) {
+      requiredFields.push('inclusionStaffingExplanation');
+    }
+    const expenseRequiredFields = ['description', 'date', 'frequency', 'expense'];
+    const isExpenseInformationComplete =
+      !isEmpty(rfi.inclusionExpenseList) &&
+      rfi.inclusionExpenseList?.every((expense) => !hasEmptyFields(expense, expenseRequiredFields));
     return !hasEmptyFields(rfi, requiredFields) && isExpenseInformationComplete;
   },
 

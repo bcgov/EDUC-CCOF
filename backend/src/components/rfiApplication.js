@@ -10,6 +10,7 @@ const {
   ExpenseInformationMappings,
   OtherFundingProgramMappings,
   IndigenousExpenseMappings,
+  InclusionExpenseMappings,
 } = require('../util/mapping/Mappings');
 const { formatDateForBack } = require('../util/common');
 
@@ -96,6 +97,27 @@ async function deleteRfiApplication(req, res) {
   }
 }
 
+const INCLUSION_EXPENSE_ENTITY = 'ccof_rfipfiserviceexpansioninclusions';
+const INCLUSION_EXPENSE_ID = 'ccof_rfipfiserviceexpansioninclusionid';
+const INCLUSION_EXPENSE_PARENT_FILTER = '_ccof_rfiparentfeeincrease_inclusion_value';
+
+async function getInclusionExpenses(rfipfiid) {
+  const query = `${INCLUSION_EXPENSE_ENTITY}?$filter=(${INCLUSION_EXPENSE_PARENT_FILTER} eq ${rfipfiid} and statecode eq 0)`;
+  const response = await getOperation(query);
+  return response?.value?.map((el) => formatDate(new MappableObjectForFront(el, InclusionExpenseMappings).data, 'date'));
+}
+
+async function saveInclusionExpenses(rfipfiid, inclusionExpenseList) {
+  await deleteChildTable(rfipfiid, INCLUSION_EXPENSE_ENTITY, INCLUSION_EXPENSE_ID, INCLUSION_EXPENSE_PARENT_FILTER);
+  const payload = inclusionExpenseList.map((el) => {
+    const mappedExpense = new MappableObjectForBack(el, InclusionExpenseMappings).data;
+    mappedExpense.ccof_date = formatDateForBack(mappedExpense.ccof_date);
+    mappedExpense['ccof_RFIParentFeeIncrease_Inclusion@odata.bind'] = `/ccof_rfipfis(${rfipfiid})`;
+    return mappedExpense;
+  });
+  await postOperationsInBatches(INCLUSION_EXPENSE_ENTITY, payload);
+}
+
 async function getRfiApplicationByCcfriId(ccfriId) {
   const query = `ccof_rfipfis?$filter=(_ccof_applicationccfri_value eq ${ccfriId} and statuscode eq 1)&$expand=ccof_ccof_rfipfi_ccof_rfi_pfi_fee_history_deta($select=ccof_feeafterincrease),ccof_ccof_rfipfi_ccof_rfipfiserviceexpansiondetail_rfipfi,ccof_rfi_pfi_other_funding_RFI_PFI, ccof_rfi_pfi_dcs_wi_detail_RFI_PFI_Detail,ccof_ccof_rfipfi_ccof_rfipfiexpenseinfo_rfipfi,ccof_rfipfi_ccof_rfipfi_IndegenousService`;
   const response = await getOperation(query);
@@ -113,6 +135,7 @@ async function getRfiApplicationByCcfriId(ccfriId) {
     rfiApplication.data['indigenousExpenseList'] = response.value[0].ccof_rfipfi_ccof_rfipfi_IndegenousService?.map((el) =>
       formatDate(new MappableObjectForFront(el, IndigenousExpenseMappings).data, 'date'),
     );
+    rfiApplication.data['inclusionExpenseList'] = await getInclusionExpenses(response.value[0].ccof_rfipfiid);
 
     return rfiApplication;
   } else {
@@ -149,7 +172,7 @@ async function updateRFIApplication(req, res) {
       });
     }
 
-    const { fundingList, wageList, expansionList, expenseList, indigenousExpenseList } = req.body;
+    const { fundingList, wageList, expansionList, expenseList, indigenousExpenseList, inclusionExpenseList } = req.body;
     if (fundingList) {
       await deleteChildTable(rfipfiid, 'ccof_rfi_pfi_other_fundings', 'ccof_rfi_pfi_other_fundingid');
       const fundingListPayload = fundingList.map((el) => {
@@ -205,6 +228,10 @@ async function updateRFIApplication(req, res) {
       await postOperationsInBatches('ccof_rfipfiserviceexpansionindigenouscommunities', indigenousExpensePayload);
     }
 
+    if (inclusionExpenseList) {
+      await saveInclusionExpenses(rfipfiid, inclusionExpenseList);
+    }
+
     return res.status(HttpStatus.OK).json(friApplicationResponse);
   } catch (e) {
     log.error('updateRFIApplication error:', e);
@@ -232,6 +259,10 @@ async function createRFIApplication(req, res) {
     friApplication['ccof_ApplicationCCFRI@odata.bind'] = `/ccof_applicationccfris(${req.params.ccfriId})`;
 
     const friApplicationGuid = await postOperation('ccof_rfipfis', friApplication);
+
+    if (req.body.inclusionExpenseList?.length > 0) {
+      await saveInclusionExpenses(friApplicationGuid, req.body.inclusionExpenseList);
+    }
 
     //set a flag in ccof_applicationccfri that an RFI exists for this application
     await patchOperationWithObjectId('ccof_applicationccfris', req.params.ccfriId, { ccof_has_rfi: true, ccof_rfi_formcomplete: req.body.isRfiComplete });
