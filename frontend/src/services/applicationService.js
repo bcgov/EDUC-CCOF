@@ -80,6 +80,10 @@ export default {
     return version >= 3;
   },
 
+  isApplicationTemplateV4OrHigher(version) {
+    return version >= 4;
+  },
+
   isOrganizationComplete(organization, applicationTemplateVersion) {
     if (isEmpty(organization)) return false;
     const requiredFields = [

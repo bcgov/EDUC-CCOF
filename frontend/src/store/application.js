@@ -274,5 +274,8 @@ export const useApplicationStore = defineStore('application', {
     isApplicationTemplateV3OrHigher: (state) => {
       return ApplicationService.isApplicationTemplateV3OrHigher(state.applicationTemplateVersion);
     },
+    isApplicationTemplateV4OrHigher: (state) => {
+      return ApplicationService.isApplicationTemplateV4OrHigher(state.applicationTemplateVersion);
+    },
   },
 });

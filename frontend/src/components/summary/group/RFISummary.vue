@@ -127,8 +127,14 @@
           </div>
 
           <div class="my-4">
-            <h5 class="mb-2">Other Sources of Ministry Funding</h5>
-            <p class="summary-label">
+            <h5 class="mb-2">
+              {{ isApplicationTemplateV4OrHigher ? 'Other Sources of Funding' : 'Other Sources of Ministry Funding' }}
+            </h5>
+            <p v-if="isApplicationTemplateV4OrHigher" class="summary-label">
+              Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants) or
+              submitted an insurance claim for any of the expenses you listed?
+            </p>
+            <p v-else class="summary-label">
               Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants)
               for any of the expenses you listed?
             </p>
@@ -788,7 +794,7 @@ export default {
         { title: 'Payment Frequency Details', value: 'frequency', sortable: true },
         { title: 'Expense Amount', value: 'expense', sortable: true },
       ],
-      otherSourcesFundingTableHeaders: [
+      otherSourcesFundingTableHeadersV1: [
         { title: 'Funding Program', value: 'fundingProgram', sortable: true },
         { title: 'Application Date', value: 'date', sortable: true },
         { title: 'Status of Application', value: 'status', sortable: true },
@@ -822,7 +828,17 @@ export default {
   },
   computed: {
     ...mapState(useNavBarStore, ['isChangeRequest']),
-    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1', 'isApplicationTemplateV4OrHigher']),
+    otherSourcesFundingTableHeaders() {
+      if (!this.isApplicationTemplateV4OrHigher) return this.otherSourcesFundingTableHeadersV1;
+      return [
+        { title: 'Funding Program or Insurer', value: 'fundingProgram', sortable: true },
+        { title: 'Application/Claim Date', value: 'date', sortable: true },
+        { title: 'Status of Application/Claim', value: 'status', sortable: true },
+        { title: 'Amount Received', value: 'amount', sortable: true },
+        { title: 'Expense(s)', value: 'expenses', sortable: true },
+      ];
+    },
     routingPath() {
       return this.isChangeRequest
         ? changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI)

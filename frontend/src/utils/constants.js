@@ -251,6 +251,11 @@ export const YES_NO_VALUES = {
   NO: 0,
 };
 
+export const RFI_PSE_INCLUSION_PARENT_FEE_SCOPES = Object.freeze([
+  { label: 'All children', value: 101510000 },
+  { label: 'Only children with support needs', value: 101510001 },
+]);
+
 export const OPT_STATUSES = {
   OPT_IN: 1,
   OPT_OUT: 0,
@@ -452,6 +457,8 @@ export const DOCUMENT_TYPES = Object.freeze({
   RFI_DCSWI: 'RFI-DCSWI',
   RFI_PSE: 'RFI-PSE',
   RFI_PSEIC: 'RFI-PSEIC',
+  // TODO: placeholder subject value until CMS confirms the document category for PSE Inclusion uploads
+  RFI_PSEINC: 'RFI-PSEINC',
   RFI_ACCUP: 'RFI-ACCUP',
 });
 
