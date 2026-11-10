@@ -1222,8 +1222,8 @@
             </div>
             <RFIDocumentUpload
               :current-facility="currentFacility"
-              :r-f-i-type="DOCUMENT_TYPES.RFI_PSEINC"
-              :r-f-i-documents="rfiDocumentsPSEINC"
+              :r-f-i-type="DOCUMENT_TYPES.RFI_PSEINCL"
+              :r-f-i-documents="rfiDocumentsPSEINCL"
               @add-r-f-i-document="addRFISupportingDocument"
               @delete-r-f-i-document="deleteRFISupportingDocument"
               @add-r-f-i-row="addNewRowToUploadedDocuments"
@@ -1460,7 +1460,7 @@ export default {
       rfiDocumentsDCSWI: [],
       rfiDocumentsPSE: [],
       rfiDocumentsPSEIC: [],
-      rfiDocumentsPSEINC: [],
+      rfiDocumentsPSEINCL: [],
     };
   },
 
@@ -1672,7 +1672,7 @@ export default {
       this.rfiDocumentsDCSWI = [];
       this.rfiDocumentsPSE = [];
       this.rfiDocumentsPSEIC = [];
-      this.rfiDocumentsPSEINC = [];
+      this.rfiDocumentsPSEINCL = [];
       this.rfiDocumentsACCUP = [];
       this.rfiDocumentsEC =
         this.uploadedDocuments?.filter(
@@ -1690,9 +1690,9 @@ export default {
         this.uploadedDocuments?.filter(
           (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEIC && x.ccof_facility === facilityId,
         ) || [];
-      this.rfiDocumentsPSEINC =
+      this.rfiDocumentsPSEINCL =
         this.uploadedDocuments?.filter(
-          (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEINC && x.ccof_facility === facilityId,
+          (x) => x.documentType === DOCUMENT_TYPES.RFI_PSEINCL && x.ccof_facility === facilityId,
         ) || [];
       this.rfiDocumentsACCUP =
         this.uploadedDocuments?.filter(
@@ -1727,8 +1727,8 @@ export default {
         case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.unshift(item);
           break;
-        case DOCUMENT_TYPES.RFI_PSEINC:
-          this.rfiDocumentsPSEINC.unshift(item);
+        case DOCUMENT_TYPES.RFI_PSEINCL:
+          this.rfiDocumentsPSEINCL.unshift(item);
           break;
         case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.unshift(item);
@@ -1772,8 +1772,8 @@ export default {
         case DOCUMENT_TYPES.RFI_PSEIC:
           this.rfiDocumentsPSEIC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEIC, item), 1);
           break;
-        case DOCUMENT_TYPES.RFI_PSEINC:
-          this.rfiDocumentsPSEINC.splice(this.findRFIDocIndex(this.rfiDocumentsPSEINC, item), 1);
+        case DOCUMENT_TYPES.RFI_PSEINCL:
+          this.rfiDocumentsPSEINCL.splice(this.findRFIDocIndex(this.rfiDocumentsPSEINCL, item), 1);
           break;
         case DOCUMENT_TYPES.RFI_ACCUP:
           this.rfiDocumentsACCUP.splice(this.findRFIDocIndex(this.rfiDocumentsACCUP, item), 1);

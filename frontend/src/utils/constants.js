@@ -457,8 +457,7 @@ export const DOCUMENT_TYPES = Object.freeze({
   RFI_DCSWI: 'RFI-DCSWI',
   RFI_PSE: 'RFI-PSE',
   RFI_PSEIC: 'RFI-PSEIC',
-  // TODO: placeholder subject value until CMS confirms the document category for PSE Inclusion uploads
-  RFI_PSEINC: 'RFI-PSEINC',
+  RFI_PSEINCL: 'RFI-PSEINCL',
   RFI_ACCUP: 'RFI-ACCUP',
 });
 
