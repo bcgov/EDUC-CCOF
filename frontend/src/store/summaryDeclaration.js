@@ -465,6 +465,8 @@ export const useSummaryDeclarationStore = defineStore('summaryDeclaration', {
 
               mtfiFacility.isProgramYearLanguageHistorical =
                 appStore.getLanguageYearLabel === PROGRAM_YEAR_LANGUAGE_TYPES.HISTORICAL;
+              mtfiFacility.languageYearLabel = appStore.getLanguageYearLabel;
+              mtfiFacility.applicationTemplateVersion = applicationStore.applicationTemplateVersion;
             }
             this.setSummaryModel(summaryModel);
           }),

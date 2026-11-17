@@ -31,7 +31,12 @@ export default {
       facility.newCcfri?.childCareTypes?.length === facility.oldCcfri?.childCareTypes?.length &&
       isChildCareTypesComplete;
     const isRFIComplete =
-      !facility?.hasRfi || ApplicationService.isRFIComplete(facility.rfiApp, facility.isProgramYearLanguageHistorical);
+      !facility?.hasRfi ||
+      ApplicationService.isRFIComplete(
+        facility.rfiApp,
+        facility.languageYearLabel,
+        facility.applicationTemplateVersion,
+      );
     const isAFSComplete =
       !facility?.enableAfs || ApplicationService.isAFSComplete(facility.afs, facility.uploadedDocuments);
     return isParentFeesComplete && isRFIComplete && isAFSComplete;

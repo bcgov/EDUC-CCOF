@@ -1201,6 +1201,7 @@
                     v-model.number="inclusionExpense.expense"
                     :disabled="isReadOnly"
                     type="number"
+                    label="Expense Amount"
                     variant="outlined"
                     :rules="rules.required"
                     prefix="$"
@@ -1347,7 +1348,7 @@
   />
 </template>
 <script>
-import { isEqual } from 'lodash';
+import { isEqual, omit } from 'lodash';
 import { mapActions, mapState } from 'pinia';
 import { uuid } from 'vue-uuid';
 
@@ -1625,7 +1626,7 @@ export default {
         }
       }
       for (let i = this.model.inclusionExpenseList.length - 1; i >= 0; i--) {
-        if (isEqual(this.model.inclusionExpenseList[i], this.inclusionExpenseObj)) {
+        if (isEqual(omit(this.model.inclusionExpenseList[i], 'id'), this.inclusionExpenseObj)) {
           this.model.inclusionExpenseList.splice(i, 1);
         }
       }
