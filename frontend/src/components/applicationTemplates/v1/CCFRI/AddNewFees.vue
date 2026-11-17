@@ -53,7 +53,10 @@
 
           <template v-if="item.feeFrequency">
             <div class="my-2">
-              <p>If you only offer care for <strong>4 days or fewer</strong> per week, select daily parent fee.</p>
+              <p>
+                If you only offer care for <strong>over 4 hours per day on 4 days or fewer</strong> per week, select
+                daily parent fee.
+              </p>
               <p class="py-2">
                 Enter your
                 <strong>highest {{ item.feeFrequency?.toLowerCase() }} parent fee before CCFRI is applied</strong>
