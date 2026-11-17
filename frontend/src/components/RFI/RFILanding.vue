@@ -1201,6 +1201,7 @@
                     v-model.number="inclusionExpense.expense"
                     :disabled="isReadOnly"
                     type="number"
+                    label="Expense Amount"
                     variant="outlined"
                     :rules="rules.required"
                     prefix="$"
