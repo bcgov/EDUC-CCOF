@@ -135,6 +135,13 @@ const RFIApplicationMappings = [
   { back: 'ccof_adjustyourhoursdaysofoperation', front: 'textbox4' },
   { back: 'ccof_facilityunabletofillspaces', front: 'textbox5' },
   { back: 'ccof_isthereanythingelseaboutyourexpensesyouw', front: 'textbox6' }, // "is there anything else about your expenses",
+
+  //Priority Service Expansion: Inclusion (application template V4+)
+  { back: 'ccof_pseinclusioneligibleexpenseandpolicy', front: 'inclusionEligibleExpenseAndPolicy' }, // 1 or 0
+  { back: 'ccof_pseinclusionbusinesscase', front: 'inclusionBusinessCase' },
+  { back: 'ccof_pseinclusionparentfeescope', front: 'inclusionParentFeeScope' }, // 101510000 or 101510001
+  { back: 'ccof_pseinclusionstaffexpenses', front: 'inclusionStaffExpenses' }, // 1 or 0
+  { back: 'ccof_pseinclusionstaffingexplanation', front: 'inclusionStaffingExplanation' },
 ];
 
 const ServiceExpansionDetailsMappings = [
@@ -183,6 +190,14 @@ const IndigenousExpenseMappings = [
   { back: 'ccof_paymentfrequency', front: 'frequency' },
   { back: 'ccof_amount', front: 'expense' },
   { back: 'ccof_rfipfiserviceexpansionindigenouscommunityid', front: 'id' },
+];
+
+const InclusionExpenseMappings = [
+  { back: 'ccof_expensedescription', front: 'description' },
+  { back: 'ccof_date', front: 'date' },
+  { back: 'ccof_paymentfrequency', front: 'frequency' },
+  { back: 'ccof_amount', front: 'expense' },
+  { back: 'ccof_rfipfiserviceexpansioninclusionid', front: 'id' },
 ];
 
 const NMFApplicationMappings = [
@@ -1035,6 +1050,7 @@ module.exports = {
   OtherFundingProgramMappings,
   NMFApplicationMappings,
   IndigenousExpenseMappings,
+  InclusionExpenseMappings,
   SystemMessagesMappings,
   ApplicationSummaryMappings,
   ApplicationSummaryCcfriMappings,

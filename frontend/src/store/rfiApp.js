@@ -14,6 +14,7 @@ export const useRfiAppStore = defineStore('rfiApp', {
       fundingList: [],
       expenseList: [],
       indigenousExpenseList: [],
+      inclusionExpenseList: [],
     },
     loadedModel: {},
     rfiStore: {},
@@ -56,6 +57,7 @@ export const useRfiAppStore = defineStore('rfiApp', {
               fundingList: [],
               expenseList: [],
               indigenousExpenseList: [],
+              inclusionExpenseList: [],
             };
             this.addRfiToStore({ ccfriId: ccfriId, model: rfi });
             this.setRfiModel(rfi);
@@ -93,6 +95,9 @@ export const useRfiAppStore = defineStore('rfiApp', {
       }
       if (isEqual({ ...this.rfiModel.indigenousExpenseList }, { ...this.loadedModel.indigenousExpenseList })) {
         rfiPayloadModel.indigenousExpenseList = undefined;
+      }
+      if (isEqual({ ...this.rfiModel.inclusionExpenseList }, { ...this.loadedModel.inclusionExpenseList })) {
+        rfiPayloadModel.inclusionExpenseList = undefined;
       }
 
       this.setLoadedModel(deepCloneObject(this.rfiModel));

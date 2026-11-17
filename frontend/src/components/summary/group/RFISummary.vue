@@ -127,8 +127,14 @@
           </div>
 
           <div class="my-4">
-            <h5 class="mb-2">Other Sources of Ministry Funding</h5>
-            <p class="summary-label">
+            <h5 class="mb-2">
+              {{ isApplicationTemplateV4OrHigher ? 'Other Sources of Funding' : 'Other Sources of Ministry Funding' }}
+            </h5>
+            <p v-if="isApplicationTemplateV4OrHigher" class="summary-label">
+              Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants) or
+              submitted an insurance claim for any of the expenses you listed?
+            </p>
+            <p v-else class="summary-label">
               Have you applied for any other sources of Ministry Funding (e.g., BC Maintenance Fund, Start-Up Grants)
               for any of the expenses you listed?
             </p>
@@ -674,6 +680,170 @@
         </template>
       </div>
 
+      <div v-if="isApplicationTemplateV4OrHigher" class="my-8">
+        <h4 class="my-2">Priority Service Expansion: Inclusion</h4>
+        <p class="summary-label">
+          Does your facility have: an expense that meets an immediate inclusion need and is not covered by other funding
+          sources; and a documented inclusion policy aligned with the principles outlined in BC's Inclusive Child Care
+          Strategy?
+        </p>
+        <v-text-field
+          placeholder="Required"
+          class="summary-value"
+          :model-value="getYesNoValue(rfiApp?.inclusionEligibleExpenseAndPolicy)"
+          density="compact"
+          flat
+          variant="solo"
+          hide-details
+          :rules="rules.required"
+        />
+
+        <template v-if="rfiApp?.inclusionEligibleExpenseAndPolicy">
+          <div class="my-2">
+            <p class="summary-label">
+              Describe the expense and how it meets the immediate inclusion need, confirm it is not covered by other
+              funding sources, and submit evidence of the expense (e.g., receipts, quotes, or financial statements of
+              staffing costs incurred) and a copy of your inclusion policy. Please tell us anything else you would like
+              us to know about how your facility's business case provides an inclusive and supportive environment.
+            </p>
+            <p v-if="rfiApp?.inclusionBusinessCase" class="mt-2">{{ rfiApp?.inclusionBusinessCase }}</p>
+            <v-text-field
+              v-else
+              placeholder="Required"
+              :model-value="rfiApp?.inclusionBusinessCase"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </div>
+
+          <div class="my-2">
+            <p class="summary-label">
+              Will your proposed Parent Fees be charged for all children occupying Enrolled Spaces and Drop-In Spaces,
+              or only for those with support needs?
+            </p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="inclusionParentFeeScopeLabel"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </div>
+
+          <div class="my-2">
+            <p class="summary-label">
+              Do you have expenses related to wages, recruitment and retention of staff who support all enrolled
+              children (e.g., those who do not provide dedicated 1-1 support)?
+            </p>
+            <v-text-field
+              placeholder="Required"
+              class="summary-value"
+              :model-value="getYesNoValue(rfiApp?.inclusionStaffExpenses)"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </div>
+
+          <div v-if="rfiApp?.inclusionStaffExpenses" class="my-2">
+            <p class="summary-label">
+              If yes, explain your facility's wages and staffing model, and describe any specific skills or
+              qualifications your facility requires of staff and why these skills or qualifications are necessary to
+              provide an inclusive and supportive environment.
+            </p>
+            <p v-if="rfiApp?.inclusionStaffingExplanation" class="mt-2">{{ rfiApp?.inclusionStaffingExplanation }}</p>
+            <v-text-field
+              v-else
+              placeholder="Required"
+              :model-value="rfiApp?.inclusionStaffingExplanation"
+              density="compact"
+              flat
+              variant="solo"
+              hide-details
+              :rules="rules.required"
+            />
+          </div>
+
+          <h5 class="my-2">Expense Information</h5>
+          <v-data-table
+            :headers="pseIndigenousExpenseInfoTableHeaders"
+            :items="rfiApp?.inclusionExpenseList"
+            :mobile="null"
+            mobile-breakpoint="md"
+            class="elevation-2 mb-6"
+          >
+            <template #no-data>
+              <v-text-field
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+                class="center-placeholder"
+              />
+            </template>
+            <template #[`item.description`]="{ item }">
+              <v-text-field
+                :model-value="item.description"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.date`]="{ item }">
+              <v-text-field
+                :model-value="item.date"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.frequency`]="{ item }">
+              <v-text-field
+                :model-value="item.frequency"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+            <template #[`item.expense`]="{ item }">
+              <v-text-field
+                :model-value="item.expense"
+                placeholder="Required"
+                readonly
+                density="compact"
+                flat
+                variant="solo"
+                hide-details
+                :rules="rules.required"
+              />
+            </template>
+          </v-data-table>
+        </template>
+      </div>
+
       <div class="my-8">
         <h4 class="my-2">Affordable Child Care for Underserved Populations</h4>
         <p class="summary-label">Does this Facility meet all the above criteria?</p>
@@ -759,7 +929,13 @@
 import summaryMixin from '@/mixins/summaryMixin.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useNavBarStore } from '@/store/navBar.js';
-import { CHANGE_TYPES, changeUrlGuid, PATHS, pcfUrlGuid } from '@/utils/constants.js';
+import {
+  CHANGE_TYPES,
+  changeUrlGuid,
+  PATHS,
+  pcfUrlGuid,
+  RFI_PSE_INCLUSION_PARENT_FEE_SCOPES,
+} from '@/utils/constants.js';
 import { mapState } from 'pinia';
 
 export default {
@@ -788,7 +964,7 @@ export default {
         { title: 'Payment Frequency Details', value: 'frequency', sortable: true },
         { title: 'Expense Amount', value: 'expense', sortable: true },
       ],
-      otherSourcesFundingTableHeaders: [
+      otherSourcesFundingTableHeadersV1: [
         { title: 'Funding Program', value: 'fundingProgram', sortable: true },
         { title: 'Application Date', value: 'date', sortable: true },
         { title: 'Status of Application', value: 'status', sortable: true },
@@ -822,7 +998,21 @@ export default {
   },
   computed: {
     ...mapState(useNavBarStore, ['isChangeRequest']),
-    ...mapState(useApplicationStore, ['showApplicationTemplateV1']),
+    ...mapState(useApplicationStore, ['showApplicationTemplateV1', 'isApplicationTemplateV4OrHigher']),
+    inclusionParentFeeScopeLabel() {
+      return RFI_PSE_INCLUSION_PARENT_FEE_SCOPES.find((scope) => scope.value === this.rfiApp?.inclusionParentFeeScope)
+        ?.label;
+    },
+    otherSourcesFundingTableHeaders() {
+      if (!this.isApplicationTemplateV4OrHigher) return this.otherSourcesFundingTableHeadersV1;
+      return [
+        { title: 'Funding Program or Insurer', value: 'fundingProgram', sortable: true },
+        { title: 'Application/Claim Date', value: 'date', sortable: true },
+        { title: 'Status of Application/Claim', value: 'status', sortable: true },
+        { title: 'Amount Received', value: 'amount', sortable: true },
+        { title: 'Expense(s)', value: 'expenses', sortable: true },
+      ];
+    },
     routingPath() {
       return this.isChangeRequest
         ? changeUrlGuid(PATHS.CCFRI_RFI, this.$route.params.changeRecGuid, this.ccfriId, CHANGE_TYPES.MTFI)
