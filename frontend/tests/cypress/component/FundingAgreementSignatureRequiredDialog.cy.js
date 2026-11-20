@@ -26,14 +26,14 @@ describe('<FundingAgreementSignatureRequiredDialog />', () => {
 
   it('should render dialog', () => {
     mountWithPinia();
-    cy.contains('You have a Funding Agreement ready to review and sign.');
-    cy.contains('Would you like to take action now?');
+    cy.contains('You have a Funding Agreement ready to review and sign.').should('be.visible');
+    cy.contains('Would you like to take action now?').should('be.visible');
   });
 
   it('should contain dialog buttons', () => {
     mountWithPinia();
-    cy.contains('button', 'Not now');
-    cy.contains('button', 'Yes, take me to my Funding Agreement');
+    cy.contains('button', 'Not now').should('be.visible');
+    cy.contains('button', 'Yes, take me to my Funding Agreement').should('be.visible');
   });
 
   it('should route to the Funding Agreement tab', () => {
