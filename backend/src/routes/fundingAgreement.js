@@ -3,10 +3,19 @@ const passport = require('passport');
 const router = express.Router();
 const auth = require('../components/auth');
 const isValidBackendToken = auth.isValidBackendToken();
-const { checkFundingAgreementExists, getFundingAgreement, getFundingAgreements, getFundingAgreementPDF, updateFundingAgreement } = require('../components/fundingAgreement');
+const {
+  checkFundingAgreementExists,
+  getFundingAgreement,
+  getFundingAgreements,
+  getFundingAgreementPDF,
+  getLatestFundingAgreementActionStatus,
+  updateFundingAgreement,
+} = require('../components/fundingAgreement');
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { oneOf, param, query, validationResult } = require('express-validator');
 const validatePermission = require('../middlewares/validatePermission');
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Get the list of Funding Agreements using OrgID
@@ -38,6 +47,26 @@ router.get(
   (req, res) => {
     validationResult(req).throw();
     return checkFundingAgreementExists(req, res);
+  },
+);
+
+/**
+ * Get the provider action status of the organization's latest Funding Agreement
+ * and whether the organization has any submitted change request (via applicationIds).
+ */
+router.get(
+  '/latest-action-status',
+  passport.authenticate('jwt', { session: false }),
+  isValidBackendToken,
+  validatePermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT),
+  query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
+  query('applicationIds')
+    .optional()
+    .custom((value) => value.split(',').every((id) => UUID_REGEX.test(id)))
+    .withMessage('applicationIds must be a comma-separated list of valid UUIDs'),
+  (req, res) => {
+    validationResult(req).throw();
+    return getLatestFundingAgreementActionStatus(req, res);
   },
 );
 
