@@ -247,6 +247,15 @@ const ECE_REPORT_TYPES = Object.freeze({
   ADJUSTMENT: 2,
 });
 
+const FUNDING_AGREEMENT_STATUS_CODES = Object.freeze({
+  DRAFTED: 101510002,
+});
+
+// Must match FUNDING_AGREEMENTS_STATUS in the frontend, which ViewFundingAgreement uses to allow signing.
+const FUNDING_AGREEMENT_EXTERNAL_STATUS_TEXTS = Object.freeze({
+  DRAFTED_PROVIDER_ACTION_REQUIRED: 'Drafted – Provider Action Required',
+});
+
 const UUID_VALIDATOR_VERSION = 'loose';
 
 module.exports = {
@@ -267,6 +276,8 @@ module.exports = {
   ENROLMENT_REPORT_STATUSES,
   ENROLMENT_REPORT_TYPES,
   FACILITY_AGE_GROUP_CODES,
+  FUNDING_AGREEMENT_EXTERNAL_STATUS_TEXTS,
+  FUNDING_AGREEMENT_STATUS_CODES,
   LICENCE_CATEGORIES,
   LICENCE_STATUS_CODES,
   OPT_STATUSES,
