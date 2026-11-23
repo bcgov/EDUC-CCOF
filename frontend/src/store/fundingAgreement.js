@@ -8,9 +8,9 @@ export const useFundingAgreementStore = defineStore('fundingAgreement', {
   }),
 
   actions: {
-    async checkLatestFundingAgreementActionStatus(organizationId, applicationIds) {
+    async checkLatestFundingAgreementActionStatus(organizationId) {
       this.latestFundingAgreementActionStatus =
-        (await FundingAgreementService.getLatestFundingAgreementActionStatus(organizationId, applicationIds)) ?? {};
+        (await FundingAgreementService.getLatestFundingAgreementActionStatus(organizationId)) ?? {};
     },
   },
 });

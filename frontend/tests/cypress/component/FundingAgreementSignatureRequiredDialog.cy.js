@@ -5,7 +5,9 @@ import { PATHS } from '@/utils/constants.js';
 function mountWithPinia(initialState = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
     const pushStub = cy.stub();
+    const closeStub = cy.stub();
     cy.mount(FundingAgreementSignatureRequiredDialog, {
+      props: { onClose: closeStub },
       global: {
         plugins: [pinia, vuetify],
         mocks: {
@@ -16,6 +18,7 @@ function mountWithPinia(initialState = {}) {
       },
     });
     cy.wrap(pushStub).as('routerPush');
+    cy.wrap(closeStub).as('close');
   });
 }
 
@@ -45,9 +48,10 @@ describe('<FundingAgreementSignatureRequiredDialog />', () => {
     );
   });
 
-  it('should close dialog', () => {
+  it('should close dialog and emit close', () => {
     mountWithPinia();
     cy.contains('button', 'Not now').click();
     cy.contains('You have a Funding Agreement ready to review and sign.').should('not.be.visible');
+    cy.get('@close').should('have.been.calledOnce');
   });
 });

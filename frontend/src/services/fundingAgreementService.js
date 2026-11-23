@@ -68,14 +68,11 @@ export default {
     }
   },
 
-  async getLatestFundingAgreementActionStatus(organizationId, applicationIds) {
+  async getLatestFundingAgreementActionStatus(organizationId) {
     try {
       if (!organizationId) return null;
-      const query = { organizationId };
-      const validApplicationIds = applicationIds?.filter(Boolean);
-      if (validApplicationIds?.length) query.applicationIds = validApplicationIds.join(',');
       const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.FUNDING_AGREEMENTS}/latest-action-status${buildQueryString(query)}`,
+        `${ApiRoutes.FUNDING_AGREEMENTS}/latest-action-status${buildQueryString({ organizationId })}`,
       );
       return response?.data;
     } catch (error) {

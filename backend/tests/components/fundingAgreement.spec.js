@@ -17,7 +17,8 @@ const { getOperation } = require('../../src/components/utils');
 const { getLatestFundingAgreementActionStatus } = require('../../src/components/fundingAgreement');
 
 const ORG_ID = '778ad039-3ade-ed11-8847-000d3af36bac';
-const APP_IDS = '11111111-1111-1111-1111-111111111111,22222222-2222-2222-2222-222222222222';
+const APPLICATIONS = [{ ccof_applicationid: '11111111-1111-1111-1111-111111111111' }, { ccof_applicationid: '22222222-2222-2222-2222-222222222222' }];
+const FOREIGN_APP_ID = '99999999-9999-9999-9999-999999999999';
 const PROVIDER_ACTION_REQUIRED = 'Drafted – Provider Action Required';
 const ACTIVE = 'Active';
 
@@ -37,13 +38,16 @@ function fundingAgreementRow(id, term, version, externalStatusText) {
   };
 }
 
-function mockDynamics({ fundingAgreements = [], changeRequests = [] }) {
+function mockDynamics({ fundingAgreements = [], applications = [], changeRequests = [] }) {
   getOperation.mockImplementation((operation) => {
     if (operation.startsWith('ccof_funding_agreements')) return Promise.resolve({ value: fundingAgreements });
+    if (operation.startsWith('ccof_applications')) return Promise.resolve({ value: applications });
     if (operation.startsWith('ccof_change_requests')) return Promise.resolve({ value: changeRequests });
     return Promise.resolve({ value: [] });
   });
 }
+
+const getQuery = (prefix) => getOperation.mock.calls.map(([op]) => op).find((op) => op.startsWith(prefix));
 
 describe('getLatestFundingAgreementActionStatus', () => {
   beforeEach(() => {
@@ -59,7 +63,7 @@ describe('getLatestFundingAgreementActionStatus', () => {
       ],
     });
     const res = mockRes();
-    await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID, applicationIds: APP_IDS } }, res);
+    await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID } }, res);
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
@@ -93,26 +97,37 @@ describe('getLatestFundingAgreementActionStatus', () => {
     });
   });
 
-  it('reports a submitted change request', async () => {
+  it("reports a submitted change request using the organization's own applications", async () => {
     mockDynamics({
       fundingAgreements: [fundingAgreementRow('fa-2025-01', '2025-26 FY', 1, PROVIDER_ACTION_REQUIRED)],
+      applications: APPLICATIONS,
       changeRequests: [{ ccof_change_requestid: 'cr-1' }],
     });
     const res = mockRes();
-    await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID, applicationIds: APP_IDS } }, res);
+    await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID } }, res);
 
     expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ hasSubmittedChangeRequest: true }));
-    const changeRequestQuery = getOperation.mock.calls.map(([op]) => op).find((op) => op.startsWith('ccof_change_requests'));
+    expect(getQuery('ccof_applications')).toContain(`_ccof_organization_value eq ${ORG_ID}`);
+    const changeRequestQuery = getQuery('ccof_change_requests');
     expect(changeRequestQuery).toContain('ccof_externalstatus eq 2');
     expect(changeRequestQuery).toContain("PropertyValues=['11111111-1111-1111-1111-111111111111','22222222-2222-2222-2222-222222222222']");
   });
 
-  it('skips the change request lookup when no applicationIds are given', async () => {
+  it('ignores applicationIds sent by the caller', async () => {
+    mockDynamics({ applications: APPLICATIONS });
+    const res = mockRes();
+    await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID, applicationIds: FOREIGN_APP_ID } }, res);
+
+    expect(getQuery('ccof_change_requests')).not.toContain(FOREIGN_APP_ID);
+  });
+
+  it('skips the change request lookup when the organization has no applications', async () => {
     mockDynamics({ fundingAgreements: [] });
     const res = mockRes();
     await getLatestFundingAgreementActionStatus({ query: { organizationId: ORG_ID } }, res);
 
-    expect(getOperation).toHaveBeenCalledTimes(1);
+    expect(getQuery('ccof_change_requests')).toBeUndefined();
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ hasSubmittedChangeRequest: false }));
   });
 
   it('returns 500 when Dynamics fails', async () => {

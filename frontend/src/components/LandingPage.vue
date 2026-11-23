@@ -3,7 +3,10 @@
   <Spinner v-if="!isLoadingComplete" />
   <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
-    <FundingAgreementSignatureRequiredDialog v-if="showFundingAgreementDialog" />
+    <FundingAgreementSignatureRequiredDialog
+      v-if="showFundingAgreementDialog"
+      @close="showFundingAgreementDialog = false"
+    />
     <EnrolmentReportDueDialog v-else-if="showEnrolmentReportDialog" />
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
@@ -770,7 +773,7 @@ export default {
           this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT) &&
           this.latestFundingAgreementActionStatus === null
         ) {
-          await this.checkLatestFundingAgreementActionStatus(this.organizationId, this.applicationIds);
+          await this.checkLatestFundingAgreementActionStatus(this.organizationId);
           this.showFundingAgreementDialog = this.isFundingAgreementActionRequired;
         }
         this.refreshNavBarList();

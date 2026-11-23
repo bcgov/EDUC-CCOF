@@ -73,13 +73,10 @@ async function checkFundingAgreementExists(req, res) {
   }
 }
 
-async function hasSubmittedChangeRequest(applicationIds) {
-  if (isEmpty(applicationIds)) return false;
-  const applicationIdList = applicationIds
-    .split(',')
-    .filter((id) => !isEmpty(id))
-    .map((id) => `'${id}'`)
-    .join(',');
+async function hasSubmittedChangeRequest(organizationId) {
+  const applicationsResponse = await getOperation(`ccof_applications?$select=ccof_applicationid&$filter=_ccof_organization_value eq ${organizationId}`);
+  const applicationIdList = (applicationsResponse?.value ?? []).map((application) => `'${application.ccof_applicationid}'`).join(',');
+  if (isEmpty(applicationIdList)) return false;
   const closureChangeTypes = [CHANGE_REQUEST_TYPES.NEW_CLOSURE, CHANGE_REQUEST_TYPES.EDIT_EXISTING_CLOSURE, CHANGE_REQUEST_TYPES.REMOVE_A_CLOSURE];
   const excludeClosuresFilter = closureChangeTypes.map((type) => `c/ccof_changetype ne ${type}`).join(' and ');
   const operation =
@@ -92,12 +89,12 @@ async function hasSubmittedChangeRequest(applicationIds) {
 
 async function getLatestFundingAgreementActionStatus(req, res) {
   try {
-    const { organizationId, applicationIds } = req.query;
+    const { organizationId } = req.query;
     const [fundingAgreementsResponse, hasSubmittedCR] = await Promise.all([
       getOperation(
         `ccof_funding_agreements?$select=ccof_funding_agreementid,ccof_version,statuscode,ccof_external_portal_status,_ccof_programyear_value&${buildFilterQuery({ organizationId }, FundingAgreementMappings)} and statuscode ne ${FUNDING_AGREEMENT_STATUS_CODES.DRAFTED}`,
       ),
-      hasSubmittedChangeRequest(applicationIds),
+      hasSubmittedChangeRequest(organizationId),
     ]);
     const latestFundingAgreement = fundingAgreementsResponse?.value
       ?.map((item) => new MappableObjectForFront(item, FundingAgreementMappings).toJSON())

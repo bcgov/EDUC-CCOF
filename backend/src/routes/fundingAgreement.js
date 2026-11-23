@@ -14,8 +14,7 @@ const {
 const { PERMISSIONS, UUID_VALIDATOR_VERSION } = require('../util/constants');
 const { oneOf, param, query, validationResult } = require('express-validator');
 const validatePermission = require('../middlewares/validatePermission');
-
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const validateUserInOrganization = require('../middlewares/validateUserInOrganization');
 
 /**
  * Get the list of Funding Agreements using OrgID
@@ -52,7 +51,7 @@ router.get(
 
 /**
  * Get the provider action status of the organization's latest Funding Agreement
- * and whether the organization has any submitted change request (via applicationIds).
+ * and whether the organization has any submitted change request.
  */
 router.get(
   '/latest-action-status',
@@ -60,10 +59,7 @@ router.get(
   isValidBackendToken,
   validatePermission(PERMISSIONS.SIGN_FUNDING_AGREEMENT),
   query('organizationId').notEmpty().withMessage('organizationId is required').isUUID(UUID_VALIDATOR_VERSION).withMessage('organizationId must be a valid UUID'),
-  query('applicationIds')
-    .optional()
-    .custom((value) => value.split(',').every((id) => UUID_REGEX.test(id)))
-    .withMessage('applicationIds must be a comma-separated list of valid UUIDs'),
+  validateUserInOrganization,
   (req, res) => {
     validationResult(req).throw();
     return getLatestFundingAgreementActionStatus(req, res);
