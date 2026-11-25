@@ -102,8 +102,10 @@ import FundingAgreementDeclarationTextV1 from '@/components/fundingAgreements/fu
 import FundingAgreementDeclarationTextV2 from '@/components/fundingAgreements/fundingAgreementDeclarationTextVersions/FundingAgreementDeclarationTextV2.vue';
 import FundingAgreementService from '@/services/fundingAgreementService.js';
 import LicenceService from '@/services/licenceService.js';
+import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import {
+  APPLICATION_TYPES,
   DECLARATION_TEXT_VERSIONS,
   FUNDING_AGREEMENTS_STATUS,
   FUNDING_AGREEMENT_EXTERNAL_STATUSES,
@@ -143,15 +145,21 @@ export default {
     };
   },
   computed: {
+    ...mapState(useApplicationStore, ['applicationMap']),
     ...mapState(useAuthStore, ['isMinistryUser']),
     isStatusReadOnly() {
       if (this.isMinistryUser) return true;
       return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
-    // Version 00 FAs are signed through the application declaration (SummaryDeclaration), never in this tab.
+    isNewOrgFundingAgreement() {
+      const application = this.applicationMap?.get(this.fundingAgreement?.programYearId);
+      return application?.applicationType === APPLICATION_TYPES.NEW_ORG;
+    },
+    // Renewal version 00 FAs are signed through the renewal application declaration (SummaryDeclaration), never in this tab.
+    // New organization applications have no other way to sign, so they are not blocked.
     isVersion00SigningBlocked() {
       const orderNumber = this.fundingAgreement?.fundingAgreementOrderNumber;
-      return orderNumber != null && Number(orderNumber) === 0;
+      return orderNumber != null && Number(orderNumber) === 0 && !this.isNewOrgFundingAgreement;
     },
     showRenewalSigningNotice() {
       return (
