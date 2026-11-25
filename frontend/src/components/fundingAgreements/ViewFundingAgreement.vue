@@ -29,10 +29,6 @@
     <br />
     <template v-if="isSignatureRequired">
       <h4 id="declaration" class="lg-px-10">Declaration</h4>
-      <v-alert v-if="showRenewalSigningNotice" type="info" variant="tonal" class="my-4">
-        This funding agreement must be signed as part of your renewal application. Go to the dashboard to renew your
-        funding agreement.
-      </v-alert>
       <v-skeleton-loader :loading="isLoading" type="table-tbody">
         <div>
           <FundingAgreementDeclarationTextV2 v-if="showDeclarationV2" />
@@ -78,7 +74,7 @@
       </v-skeleton-loader>
     </template>
     <NavButton
-      :is-submit-displayed="displaySignFundingAgreementSection && isSignatureRequired && !isVersion00SigningBlocked"
+      :is-submit-displayed="displaySignFundingAgreementSection && isSignatureRequired"
       :is-submit-disabled="isSubmitDisabled"
       :is-processing="processing || isLoading"
       @previous="goBackToManageFundingAgreement"
@@ -144,26 +140,12 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['isMinistryUser']),
-    isStatusReadOnly() {
+    isReadOnly() {
       if (this.isMinistryUser) return true;
       return READ_ONLY_STATUSES.includes(this.fundingAgreement?.externalStatusText);
     },
-    // Version 00 FAs are signed through the application declaration (SummaryDeclaration), never in this tab.
-    isVersion00SigningBlocked() {
-      const orderNumber = this.fundingAgreement?.fundingAgreementOrderNumber;
-      return orderNumber != null && Number(orderNumber) === 0;
-    },
-    showRenewalSigningNotice() {
-      return (
-        this.isVersion00SigningBlocked &&
-        this.fundingAgreement?.externalStatusText === FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED
-      );
-    },
-    isReadOnly() {
-      return this.isStatusReadOnly || this.isVersion00SigningBlocked;
-    },
     showDeclarationV2() {
-      return !this.isStatusReadOnly || this.fundingAgreement?.declarationVersion === DECLARATION_TEXT_VERSIONS.V2;
+      return !this.isReadOnly || this.fundingAgreement?.declarationVersion === DECLARATION_TEXT_VERSIONS.V2;
     },
     fundingAgreementNumber() {
       return this.fundingAgreement?.fundingAgreementNumber;
