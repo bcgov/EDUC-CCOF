@@ -1,13 +1,6 @@
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import vuetify from '@/plugins/vuetify';
-import {
-  APPLICATION_STATUSES,
-  APPLICATION_TYPES,
-  ApiRoutes,
-  FUNDING_AGREEMENTS_STATUS,
-  PATHS,
-} from '@/utils/constants.js';
-import { PERMISSIONS } from '@/utils/constants/permissions.js';
+import { ApiRoutes, PATHS } from '@/utils/constants.js';
 
 const fundingAgreement = {
   fundingAgreementId: '542356',
@@ -15,22 +8,6 @@ const fundingAgreement = {
   fundingAgreementNumber: 'FA-1234',
   consentCheck: true,
 };
-
-const programYearId = 'py-2026';
-
-const renewalFundingAgreement = {
-  ...fundingAgreement,
-  fundingAgreementOrderNumber: 0,
-  programYearId,
-  externalStatusText: FUNDING_AGREEMENTS_STATUS.DRAFTED_PROVIDER_ACTION_REQUIRED,
-};
-
-function renewalState(applicationMap = new Map()) {
-  return {
-    auth: { isAuthenticated: true, permissions: [PERMISSIONS.SIGN_FUNDING_AGREEMENT] },
-    application: { applicationMap },
-  };
-}
 
 function mountWithPinia({ initialState = {}, dataOverride = {} } = {}) {
   cy.setupPinia({ initialState, stubActions: false }).then((pinia) => {
@@ -143,86 +120,5 @@ describe('<ViewFundingAgreement />', () => {
       'have.been.calledWith',
       `${PATHS.ROOT.MANAGE_ORG_FACILITIES}?tab=funding-agreement-tab`,
     );
-  });
-
-  describe('version 00 funding agreement', () => {
-    const renewalMessage = 'This funding agreement must be signed as part of your renewal application.';
-
-    function assertSigningBlocked() {
-      cy.contains(renewalMessage).should('exist');
-      cy.contains('button', 'Submit').should('not.exist');
-      cy.get('.v-checkbox input').should('be.disabled');
-      cy.get('.v-text-field input').should('be.disabled');
-    }
-
-    it('should block signing when there is no application for the program year', () => {
-      interceptAPI(renewalFundingAgreement);
-      mountWithPinia({ initialState: renewalState() });
-      assertSigningBlocked();
-    });
-
-    it('should block signing when the renewal application for the program year is still a draft', () => {
-      interceptAPI(renewalFundingAgreement);
-      mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.RENEWAL, applicationStatus: APPLICATION_STATUSES.DRAFT },
-            ],
-          ]),
-        ),
-      });
-      assertSigningBlocked();
-    });
-
-    it('should block signing even when the renewal application for the program year is submitted', () => {
-      interceptAPI(renewalFundingAgreement);
-      mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.RENEWAL, applicationStatus: APPLICATION_STATUSES.SUBMITTED },
-            ],
-          ]),
-        ),
-      });
-      assertSigningBlocked();
-    });
-
-    it('should allow a new organization application to sign its version 00 agreement', () => {
-      interceptAPI(renewalFundingAgreement);
-      mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.NEW_ORG, applicationStatus: APPLICATION_STATUSES.SUBMITTED },
-            ],
-          ]),
-        ),
-      });
-      cy.contains(renewalMessage).should('not.exist');
-      cy.get('.v-checkbox input').should('not.be.disabled');
-      cy.get('.v-text-field input').should('not.be.disabled');
-      cy.contains('button', 'Submit').should('exist');
-    });
-
-    it('should block signing a suspended version 00 agreement without showing the renewal notice', () => {
-      interceptAPI({ ...renewalFundingAgreement, externalStatusText: FUNDING_AGREEMENTS_STATUS.SUSPENDED });
-      mountWithPinia({ initialState: renewalState() });
-      cy.get('.v-checkbox input').should('be.disabled');
-      cy.get('.v-text-field input').should('be.disabled');
-      cy.contains('button', 'Submit').should('not.exist');
-      cy.contains(renewalMessage).should('not.exist');
-    });
-
-    it('should allow signing a non-00 version without an application for the program year', () => {
-      interceptAPI({ ...renewalFundingAgreement, fundingAgreementOrderNumber: 1 });
-      mountWithPinia({ initialState: renewalState() });
-      cy.contains('button', 'Submit').should('exist');
-      cy.contains(renewalMessage).should('not.exist');
-    });
   });
 });

@@ -3,11 +3,7 @@
   <Spinner v-if="!isLoadingComplete" />
   <v-container v-else fluid class="pa-12">
     <MessagesToolbar />
-    <FundingAgreementSignatureRequiredDialog
-      v-if="showFundingAgreementDialog"
-      @close="showFundingAgreementDialog = false"
-    />
-    <EnrolmentReportDueDialog v-else-if="showEnrolmentReportDialog" />
+    <EnrolmentReportDueDialog v-if="showEnrolmentReportDialog" />
     <div v-if="organizationAccountNumber || organizationName" class="font-weight-bold pb-6 text-h5 text-center">
       <p v-if="organizationAccountNumber">Organization ID: {{ organizationAccountNumber }}</p>
       <p v-if="organizationName">Organization Name: {{ organizationName }}</p>
@@ -382,7 +378,6 @@ import { mapState, mapActions } from 'pinia';
 
 import CancelApplicationDialog from '@/components/CancelApplicationDialog.vue';
 import EnrolmentReportDueDialog from '@/components/EnrolmentReportDueDialog.vue';
-import FundingAgreementSignatureRequiredDialog from '@/components/FundingAgreementSignatureRequiredDialog.vue';
 import Spinner from '@/components/common/Spinner.vue';
 import AppButton from '@/components/guiComponents/AppButton.vue';
 import FiscalYearSlider from '@/components/guiComponents/FiscalYearSlider.vue';
@@ -396,7 +391,6 @@ import { useAppStore } from '@/store/app.js';
 import { useApplicationStore } from '@/store/application.js';
 import { useAuthStore } from '@/store/auth.js';
 import { useEnrolmentReport } from '@/store/enrolmentReport';
-import { useFundingAgreementStore } from '@/store/fundingAgreement.js';
 import { useMessageStore } from '@/store/message.js';
 import { useNavBarStore } from '@/store/navBar.js';
 import { useReportChangesStore } from '@/store/reportChanges.js';
@@ -436,7 +430,6 @@ export default {
     CancelApplicationDialog,
     EnrolmentReportDueDialog,
     FiscalYearSlider,
-    FundingAgreementSignatureRequiredDialog,
     MessagesToolbar,
     SmallCard,
     Spinner,
@@ -450,7 +443,6 @@ export default {
       isLoadingComplete: false,
       selectedProgramYear: undefined,
       showEnrolmentReportDialog: false,
-      showFundingAgreementDialog: false,
     };
   },
   computed: {
@@ -477,7 +469,6 @@ export default {
       'applicationId',
     ]),
     ...mapState(useEnrolmentReport, ['hasDueReports']),
-    ...mapState(useFundingAgreementStore, ['latestFundingAgreementActionStatus']),
     ...mapState(useNavBarStore, ['navBarList']),
     ...mapState(useOrganizationStore, [
       'organizationAccountNumber',
@@ -690,22 +681,6 @@ export default {
         ['APPROVED', 'NOT_APPROVED', 'INELIGIBLE', 'Opt-Out'].includes(facility.ccfriStatus),
       );
     },
-    isFundingAgreementActionRequired() {
-      const status = this.latestFundingAgreementActionStatus;
-      if (!status?.fundingAgreementId || !status.isProviderActionRequired || status.hasSubmittedChangeRequest) {
-        return false;
-      }
-      const latestApplicationType = this.applicationMap?.get(this.latestProgramYearId)?.applicationType;
-      const isInitialFundingAgreement = Number(status.fundingAgreementOrderNumber) === 0;
-      // A version 00 FA for a later program year is the renewal FA, which is signed in the renewal application (CCFRI-8302).
-      const isForLatestApplicationYear = status.programYearId === this.latestProgramYearId;
-      return (
-        (latestApplicationType === APPLICATION_TYPES.NEW_ORG &&
-          isInitialFundingAgreement &&
-          isForLatestApplicationYear) ||
-        (latestApplicationType === APPLICATION_TYPES.RENEWAL && !isInitialFundingAgreement)
-      );
-    },
     showFacilitiesCard() {
       return (
         this.navBarList?.length > 0 &&
@@ -746,7 +721,6 @@ export default {
   methods: {
     ...mapActions(useApplicationStore, ['loadApplicationFromStore', 'setIsRenewal']),
     ...mapActions(useEnrolmentReport, ['checkDueReports']),
-    ...mapActions(useFundingAgreementStore, ['checkLatestFundingAgreementActionStatus']),
     ...mapActions(useMessageStore, ['getAllMessages']),
     ...mapActions(useNavBarStore, ['refreshNavBarList']),
     ...mapActions(useOrganizationStore, ['renewApplication']),
@@ -772,13 +746,6 @@ export default {
             programYearId: this.nextProgramYear?.programYearId,
             internalStatusCode: FUNDING_AGREEMENT_INTERNAL_STATUS_CODES.DRAFTED_PROVIDER_ACTION_REQUIRED,
           });
-        }
-        if (
-          this.hasPermission(this.PERMISSIONS.SIGN_FUNDING_AGREEMENT) &&
-          this.latestFundingAgreementActionStatus === null
-        ) {
-          await this.checkLatestFundingAgreementActionStatus(this.organizationId);
-          this.showFundingAgreementDialog = this.isFundingAgreementActionRequired;
         }
         this.refreshNavBarList();
       } catch (error) {
