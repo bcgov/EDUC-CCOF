@@ -1,6 +1,7 @@
 import LandingPage from '@/components/LandingPage.vue';
 import vuetify from '@/plugins/vuetify';
 import {
+  ApiRoutes,
   APPLICATION_STATUSES,
   APPLICATION_TYPES,
   CHANGE_REQUEST_EXTERNAL_STATUS,
@@ -84,7 +85,7 @@ describe('<LandingPage />', () => {
     cy.contains('Organization Name:').should('not.exist');
   });
 
-/*  it('should not display app alert if good standing', () => {
+  /*  it('should not display app alert if good standing', () => {
     mountWithPinia({
       ...createAuthStore({
         organizationGoodStandingStatus: '',
@@ -584,7 +585,10 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should('exist');
+      cy.contains(
+        'p',
+        'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).',
+      ).should('exist');
     });
 
     it('should disable `Submit Enrolment Reports` card when CCOF not approved', () => {
@@ -596,11 +600,10 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
-        'have.css',
-        'pointer-events',
-        'none',
-      );
+      cy.contains(
+        'p',
+        'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).',
+      ).should('have.css', 'pointer-events', 'none');
     });
 
     it('should disable `Submit Enrolment Reports` card when action required applications exist', () => {
@@ -639,11 +642,10 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
-        'have.css',
-        'pointer-events',
-        'none',
-      );
+      cy.contains(
+        'p',
+        'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).',
+      ).should('have.css', 'pointer-events', 'none');
     });
 
     it('should enable `Submit Enrolment Reports` card when CCOF approved and no action required', () => {
@@ -655,11 +657,10 @@ describe('<LandingPage />', () => {
         ...createAuthStore({}, { permissions: [PERMISSIONS.VIEW_ER] }),
       });
 
-      cy.contains('p', 'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).').should(
-        'not.have.css',
-        'pointer-events',
-        'none',
-      );
+      cy.contains(
+        'p',
+        'Edit, submit, view, or adjust your Enrolment Reports and Monthly ECE Reports to receive Child Care Operating Funding (CCOF), the Child Care Fee Reduction Initiative (CCFRI), or the Early Childhood Educator Wage Enhancement (ECE-WE).',
+      ).should('not.have.css', 'pointer-events', 'none');
     });
 
     it('should redirect on clicking the `Manage Reports` button when enabled', () => {
@@ -1142,6 +1143,96 @@ describe('<LandingPage />', () => {
         ...createPermisions(),
       });
       cy.contains('button', `Update your PCF`).should('not.exist');
+    });
+  });
+
+  context('Funding Agreement Signature Required dialog', () => {
+    const organizationId = '4321';
+    const nextProgramYearId = '6666';
+    const dialogText = 'You have a Funding Agreement ready to review and sign.';
+
+    beforeEach(() => {
+      localStorage.setItem('jwtToken', 'test-token');
+      cy.intercept('GET', `${ApiRoutes.MESSAGE}/organization/${organizationId}`, { statusCode: 200, body: [] });
+    });
+
+    afterEach(() => {
+      localStorage.removeItem('jwtToken');
+    });
+
+    function mountWithFundingAgreementStatus(applicationType, actionStatus) {
+      cy.intercept('GET', `${ApiRoutes.FUNDING_AGREEMENTS}/latest-action-status*`, {
+        statusCode: 200,
+        body: {
+          fundingAgreementId: 'fa-1',
+          isProviderActionRequired: true,
+          hasSubmittedChangeRequest: false,
+          ...actionStatus,
+        },
+      }).as('getLatestFundingAgreementActionStatus');
+      mountWithPinia({
+        organization: { organizationId },
+        application: {
+          applicationMap: new Map([
+            [
+              programYearId,
+              {
+                applicationId: '1',
+                applicationType,
+                ccofProgramYearId: programYearId,
+                ccofProgramYearStatus: 'CURRENT',
+              },
+            ],
+          ]),
+        },
+        ...createAuthStore({}, { permissions: [PERMISSIONS.SIGN_FUNDING_AGREEMENT] }),
+      });
+      cy.wait('@getLatestFundingAgreementActionStatus');
+      cy.contains('What would you like to do?').should('exist');
+    }
+
+    it('should show for a New Org whose own version 00 FA requires action', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.NEW_ORG, { fundingAgreementOrderNumber: 0, programYearId });
+      cy.contains(dialogText).should('be.visible');
+    });
+
+    it('should not show for a renewal version 00 FA after a New Org application', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.NEW_ORG, {
+        fundingAgreementOrderNumber: 0,
+        programYearId: nextProgramYearId,
+      });
+      cy.contains(dialogText).should('not.exist');
+    });
+
+    it('should show for a Renewal org whose version 01 FA requires action', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.RENEWAL, { fundingAgreementOrderNumber: 1, programYearId });
+      cy.contains(dialogText).should('be.visible');
+    });
+
+    it('should not show for a Renewal org whose version 00 FA requires action', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.RENEWAL, {
+        fundingAgreementOrderNumber: 0,
+        programYearId: nextProgramYearId,
+      });
+      cy.contains(dialogText).should('not.exist');
+    });
+
+    it('should not show when the organization has a submitted change request', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.NEW_ORG, {
+        fundingAgreementOrderNumber: 0,
+        programYearId,
+        hasSubmittedChangeRequest: true,
+      });
+      cy.contains(dialogText).should('not.exist');
+    });
+
+    it('should not show when the latest FA does not require provider action', () => {
+      mountWithFundingAgreementStatus(APPLICATION_TYPES.RENEWAL, {
+        fundingAgreementOrderNumber: 1,
+        programYearId,
+        isProviderActionRequired: false,
+      });
+      cy.contains(dialogText).should('not.exist');
     });
   });
 });
