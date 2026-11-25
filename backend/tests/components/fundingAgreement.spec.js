@@ -34,6 +34,7 @@ function fundingAgreementRow(id, term, version, externalStatusText) {
     ccof_funding_agreementid: id,
     ccof_version: version,
     'ccof_external_portal_status@OData.Community.Display.V1.FormattedValue': externalStatusText,
+    _ccof_programyear_value: `py-${term}`,
     '_ccof_programyear_value@OData.Community.Display.V1.FormattedValue': term,
   };
 }
@@ -69,6 +70,7 @@ describe('getLatestFundingAgreementActionStatus', () => {
     expect(res.json).toHaveBeenCalledWith({
       fundingAgreementId: 'fa-2025-01',
       fundingAgreementOrderNumber: 1,
+      programYearId: 'py-2025-26 FY',
       isProviderActionRequired: true,
       hasSubmittedChangeRequest: false,
     });
@@ -92,6 +94,7 @@ describe('getLatestFundingAgreementActionStatus', () => {
     expect(res.json).toHaveBeenCalledWith({
       fundingAgreementId: null,
       fundingAgreementOrderNumber: null,
+      programYearId: null,
       isProviderActionRequired: false,
       hasSubmittedChangeRequest: false,
     });

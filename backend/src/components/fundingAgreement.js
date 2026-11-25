@@ -103,6 +103,7 @@ async function getLatestFundingAgreementActionStatus(req, res) {
     return res.status(HttpStatus.OK).json({
       fundingAgreementId: latestFundingAgreement?.fundingAgreementId ?? null,
       fundingAgreementOrderNumber: latestFundingAgreement?.fundingAgreementOrderNumber ?? null,
+      programYearId: latestFundingAgreement?.programYearId ?? null,
       isProviderActionRequired: latestFundingAgreement?.externalStatusText === FUNDING_AGREEMENT_EXTERNAL_STATUS_TEXTS.DRAFTED_PROVIDER_ACTION_REQUIRED,
       hasSubmittedChangeRequest: hasSubmittedCR,
     });
