@@ -697,12 +697,8 @@ export default {
       }
       const latestApplicationType = this.applicationMap?.get(this.latestProgramYearId)?.applicationType;
       const isInitialFundingAgreement = Number(status.fundingAgreementOrderNumber) === 0;
-      // A version 00 FA for a later program year is the renewal FA, which is signed in the renewal application (CCFRI-8302).
-      const isForLatestApplicationYear = status.programYearId === this.latestProgramYearId;
       return (
-        (latestApplicationType === APPLICATION_TYPES.NEW_ORG &&
-          isInitialFundingAgreement &&
-          isForLatestApplicationYear) ||
+        (latestApplicationType === APPLICATION_TYPES.NEW_ORG && isInitialFundingAgreement) ||
         (latestApplicationType === APPLICATION_TYPES.RENEWAL && !isInitialFundingAgreement)
       );
     },
