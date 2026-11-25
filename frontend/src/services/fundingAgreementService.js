@@ -67,17 +67,4 @@ export default {
       throw error;
     }
   },
-
-  async getLatestFundingAgreementActionStatus(organizationId) {
-    try {
-      if (!organizationId) return null;
-      const response = await ApiService.apiAxios.get(
-        `${ApiRoutes.FUNDING_AGREEMENTS}/latest-action-status${buildQueryString({ organizationId })}`,
-      );
-      return response?.data;
-    } catch (error) {
-      console.error(`Failed to get latest Funding Agreement action status - ${error}`);
-      throw error;
-    }
-  },
 };
