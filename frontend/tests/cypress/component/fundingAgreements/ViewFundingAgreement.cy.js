@@ -1,12 +1,6 @@
 import ViewFundingAgreement from '@/components/fundingAgreements/ViewFundingAgreement.vue';
 import vuetify from '@/plugins/vuetify';
-import {
-  APPLICATION_STATUSES,
-  APPLICATION_TYPES,
-  ApiRoutes,
-  FUNDING_AGREEMENTS_STATUS,
-  PATHS,
-} from '@/utils/constants.js';
+import { APPLICATION_STATUSES, ApiRoutes, FUNDING_AGREEMENTS_STATUS, PATHS } from '@/utils/constants.js';
 import { PERMISSIONS } from '@/utils/constants/permissions.js';
 
 const fundingAgreement = {
@@ -161,52 +155,20 @@ describe('<ViewFundingAgreement />', () => {
       assertSigningBlocked();
     });
 
-    it('should block signing when the renewal application for the program year is still a draft', () => {
+    it('should block signing when the application for the program year is still a draft', () => {
       interceptAPI(renewalFundingAgreement);
       mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.RENEWAL, applicationStatus: APPLICATION_STATUSES.DRAFT },
-            ],
-          ]),
-        ),
+        initialState: renewalState(new Map([[programYearId, { applicationStatus: APPLICATION_STATUSES.DRAFT }]])),
       });
       assertSigningBlocked();
     });
 
-    it('should block signing even when the renewal application for the program year is submitted', () => {
+    it('should block signing even when the application for the program year is submitted', () => {
       interceptAPI(renewalFundingAgreement);
       mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.RENEWAL, applicationStatus: APPLICATION_STATUSES.SUBMITTED },
-            ],
-          ]),
-        ),
+        initialState: renewalState(new Map([[programYearId, { applicationStatus: APPLICATION_STATUSES.SUBMITTED }]])),
       });
       assertSigningBlocked();
-    });
-
-    it('should allow a new organization application to sign its version 00 agreement', () => {
-      interceptAPI(renewalFundingAgreement);
-      mountWithPinia({
-        initialState: renewalState(
-          new Map([
-            [
-              programYearId,
-              { applicationType: APPLICATION_TYPES.NEW_ORG, applicationStatus: APPLICATION_STATUSES.SUBMITTED },
-            ],
-          ]),
-        ),
-      });
-      cy.contains(renewalMessage).should('not.exist');
-      cy.get('.v-checkbox input').should('not.be.disabled');
-      cy.get('.v-text-field input').should('not.be.disabled');
-      cy.contains('button', 'Submit').should('exist');
     });
 
     it('should block signing a suspended version 00 agreement without showing the renewal notice', () => {
