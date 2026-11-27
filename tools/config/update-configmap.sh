@@ -135,6 +135,8 @@ if [ "$ENV_VAL" != 'qa' ]; then
    Path   /mnt/log/*
    Parser docker
    Mem_Buf_Limit 20MB
+   Buffer_Max_Size 1MB
+   Skip_Long_Lines On
 [FILTER]
    Name record_modifier
    Match *
